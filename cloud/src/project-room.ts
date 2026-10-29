@@ -5,7 +5,7 @@ import { APIError, assert, body, failure, id, int, json, randomToken, record, sh
 import { itemKinds, validateItem } from './validation';
 
 interface ItemRow { id:string;kind:ItemKind;version:number;data:string;deleted:number }
-interface LeaseRow { item_id:string;session_id:string;token:string;fence:number;expires_at:number;epoch:number;user_id:string;name:string }
+interface LeaseRow { auth_session_id:string;item_id:string;session_id:string;token:string;fence:number;expires_at:number;epoch:number;user_id:string;name:string }
 interface EventRow { seq:number;epoch:number;command_id:string;actor_id:string;kind:string;at:number;data:string }
 interface Attachment { projectId:string;userId:string;name:string;sessionHash:string;sessionId:string;connectionId:string;expiresAt:number;premiumUntil:number;lastPresenceAt:number;lastMessageAt:number;messageCount:number;presence?:Record<string,unknown> }
 interface ThreadRow { id:string;item_id:string|null;anchor:string;resolved:number;created_at:number;updated_at:number }
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations(version INTEGER PRIMARY KEY, applie
 CREATE TABLE IF NOT EXISTS meta(id INTEGER PRIMARY KEY CHECK(id=1),project_id TEXT NOT NULL,epoch INTEGER NOT NULL DEFAULT 1,head_seq INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS items(id TEXT PRIMARY KEY,kind TEXT NOT NULL,version INTEGER NOT NULL,data TEXT NOT NULL,deleted INTEGER NOT NULL DEFAULT 0,scene_id TEXT,ordinal REAL,start_ms INTEGER,end_ms INTEGER,duration_ms INTEGER);
 CREATE INDEX IF NOT EXISTS items_scene ON items(scene_id,kind,deleted,ordinal);
-CREATE TABLE IF NOT EXISTS leases(item_id TEXT PRIMARY KEY,session_id TEXT NOT NULL,token TEXT NOT NULL,fence INTEGER NOT NULL,expires_at INTEGER NOT NULL,epoch INTEGER NOT NULL,user_id TEXT NOT NULL,name TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS leases(item_id TEXT PRIMARY KEY,auth_session_id TEXT NOT NULL,session_id TEXT NOT NULL,token TEXT NOT NULL,fence INTEGER NOT NULL,expires_at INTEGER NOT NULL,epoch INTEGER NOT NULL,user_id TEXT NOT NULL,name TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY,epoch INTEGER NOT NULL,command_id TEXT UNIQUE NOT NULL,actor_id TEXT NOT NULL,kind TEXT NOT NULL,at INTEGER NOT NULL,data TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS changes(seq INTEGER NOT NULL,item_id TEXT NOT NULL,before_json TEXT,after_json TEXT NOT NULL,PRIMARY KEY(seq,item_id));
 CREATE INDEX IF NOT EXISTS changes_item ON changes(item_id,seq);
@@ -55,7 +55,7 @@ export class ProjectRoom extends DurableObject<Env> {
   private putItem(item:Item){const d=item.data;this.sql.exec(`INSERT INTO items(id,kind,version,data,deleted,scene_id,ordinal,start_ms,end_ms,duration_ms) VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET kind=excluded.kind,version=excluded.version,data=excluded.data,deleted=excluded.deleted,scene_id=excluded.scene_id,ordinal=excluded.ordinal,start_ms=excluded.start_ms,end_ms=excluded.end_ms,duration_ms=excluded.duration_ms`,item.id,item.kind,item.version,JSON.stringify(d),item.deleted?1:0,typeof d.sceneId==='string'?d.sceneId:null,typeof d.order==='number'?d.order:null,typeof d.startMs==='number'?d.startMs:null,typeof d.endMs==='number'?d.endMs:null,typeof d.ownedDurationMs==='number'?d.ownedDurationMs:null);}
   private requireLease(itemId:string,lease:Operation['lease'],sessionId:string,identity:Identity,epoch:number){
     const row=this.one<LeaseRow>('SELECT * FROM leases WHERE item_id=?',itemId);
-    assert(row&&lease&&row.token===lease.token&&row.fence===lease.fence&&row.user_id===identity.user.id&&row.session_id===sessionId&&row.epoch===epoch&&row.expires_at>Date.now(),423,'lease_required','Acquire or renew the item edit lease before saving.',{itemId,owner:row&&row.expires_at>Date.now()?{userId:row.user_id,name:row.name,expiresAt:row.expires_at}:null});
+    assert(row&&lease&&row.token===lease.token&&row.fence===lease.fence&&row.user_id===identity.user.id&&row.auth_session_id===identity.sessionId&&row.session_id===sessionId&&row.epoch===epoch&&row.expires_at>Date.now(),423,'lease_required','Acquire or renew the item edit lease before saving.',{itemId,owner:row&&row.expires_at>Date.now()?{userId:row.user_id,name:row.name,expiresAt:row.expires_at}:null});
   }
   private validateReferences(changes:Change[]){
     const scenes=new Set<string>();
@@ -80,9 +80,9 @@ export class ProjectRoom extends DurableObject<Env> {
       for(const cue of this.rows<{start_ms:number;end_ms:number}>('SELECT start_ms,end_ms FROM items WHERE scene_id=? AND kind=? AND deleted=0 ORDER BY start_ms,id',sceneId,'cue')){assert(cue.start_ms>=end&&cue.end_ms<=duration,409,'cue_timing','Image cues must be non-overlapping and remain inside their scene. Resize related cues in the same atomic command.');end=cue.end_ms;}
     }
   }
-  private parseCommand(raw:Record<string,unknown>):Command {
+  private parseCommand(raw:Record<string,unknown>,maxOperations=100):Command {
     const commandId=id(raw.commandId,'commandId'),sessionId=id(raw.sessionId,'sessionId'),epoch=int(raw.epoch,'epoch',1);const label=str(raw.label??'Edit','label',200);
-    assert(Array.isArray(raw.operations)&&raw.operations.length>0&&raw.operations.length<=100,400,'invalid_operations','A command must contain 1–100 item operations.');
+    assert(Array.isArray(raw.operations)&&raw.operations.length>0&&raw.operations.length<=maxOperations,400,'invalid_operations',`A command must contain 1–${maxOperations} item operations.`);
     const seen=new Set<string>();const operations=raw.operations.map((value)=>{const op=record(value,'operation');const itemId=id(op.id);assert(!seen.has(itemId),400,'duplicate_operation','An item can be changed only once in a command.');seen.add(itemId);assert(op.op==='put'||op.op==='delete',400,'invalid_operation','Operation must be put or delete.');
       const expectedVersion=int(op.expectedVersion,'expectedVersion');let data:Record<string,unknown>|undefined,kind:ItemKind|undefined;
       if(op.op==='put'){assert(itemKinds.includes(op.kind as ItemKind),400,'invalid_kind','Unsupported project item kind.');kind=op.kind as ItemKind;data=record(op.data);validateItem({id:itemId,kind,data});}
@@ -90,7 +90,7 @@ export class ProjectRoom extends DurableObject<Env> {
       return{op:op.op as 'put'|'delete',id:itemId,kind,data,expectedVersion,lease};});
     return{commandId,sessionId,epoch,label,operations};
   }
-  private commit(identity:Identity,command:Command,hash:string){
+  private commit(identity:Identity,command:Command,hash:string,snapshotRequired=false){
     return this.ctx.storage.transactionSync(()=>{
       const previous=this.one<{user_id:string;request_hash:string;result:string}>('SELECT * FROM receipts WHERE command_id=?',command.commandId);
       if(previous){assert(previous.user_id===identity.user.id&&previous.request_hash===hash,409,'command_reused','A command ID cannot be reused for a different change.');return{receipt:JSON.parse(previous.result),event:null};}
@@ -102,10 +102,10 @@ export class ProjectRoom extends DurableObject<Env> {
       }
       this.validateReferences(changes);
       const itemCount=this.one<{n:number}>('SELECT COUNT(*) n FROM items WHERE deleted=0')!.n;assert(itemCount<=50000,413,'project_limit','A project cannot contain more than 50,000 items. Split it into multiple projects.');
-      const seq=state.head_seq+1,at=Date.now();const event:ProjectEvent={seq,epoch:state.epoch,commandId:command.commandId,actorId:identity.user.id,kind:'command',at,changes,data:{label:command.label}};
+      const seq=state.head_seq+1,at=Date.now();const event:ProjectEvent={seq,epoch:state.epoch,commandId:command.commandId,actorId:identity.user.id,kind:'command',at,changes:snapshotRequired?[]:changes,data:{label:command.label,...(snapshotRequired?{snapshotRequired:true}:{})}};
       this.sql.exec('UPDATE meta SET head_seq=? WHERE id=1',seq);this.sql.exec('INSERT INTO events(seq,epoch,command_id,actor_id,kind,at,data) VALUES(?,?,?,?,?,?,?)',seq,state.epoch,command.commandId,identity.user.id,event.kind,at,JSON.stringify(event.data));
       for(const c of changes)this.sql.exec('INSERT INTO changes(seq,item_id,before_json,after_json) VALUES(?,?,?,?)',seq,c.id,c.before?JSON.stringify(c.before):null,JSON.stringify(c.after));
-      const receipt={commandId:command.commandId,seq,epoch:state.epoch,items:changes.map(c=>c.after)};
+      const receipt={commandId:command.commandId,seq,epoch:state.epoch,items:snapshotRequired?[]:changes.map(c=>c.after),...(snapshotRequired?{snapshotRequired:true}:{})};
       this.sql.exec('INSERT INTO receipts(command_id,user_id,request_hash,result) VALUES(?,?,?,?)',command.commandId,identity.user.id,hash,JSON.stringify(receipt));
       return{receipt,event};
     });
@@ -134,9 +134,17 @@ export class ProjectRoom extends DurableObject<Env> {
       const url=new URL(request.url);const match=/^\/v1\/projects\/([^/]+)\/(.*)$/.exec(url.pathname);assert(match,404,'not_found','Project route not found.');
       const projectId=id(match[1]),route=match[2]!,identity=await authenticate(request,this.env),access=await projectAccess(this.env,projectId,identity.user.id);
       this.sql.exec('INSERT OR IGNORE INTO meta(id,project_id) VALUES(1,?)',projectId);assert(this.state().project_id===projectId,409,'project_identity','Incorrect project room.');
-      if(route==='socket'&&request.method==='GET')return this.connect(request,identity,access);
+      if(route==='socket'&&request.method==='GET')return this.upgradeSocket(request,identity,access);
       if(route==='snapshot'&&request.method==='GET'){const state=this.state();return json({projectId,epoch:state.epoch,headSeq:state.head_seq,items:this.allItems(),threads:this.rows<ThreadRow>('SELECT * FROM threads ORDER BY updated_at DESC').map(t=>this.thread(t)),leases:this.publicLeases()});}
       if((route==='events'||route==='history')&&request.method==='GET'){const after=int(Number(url.searchParams.get('after')??0),'after'),limit=int(Number(url.searchParams.get('limit')??100),'limit',1,200);return json(this.eventPage(after,limit));}
+      if(route==='import'&&request.method==='POST'){
+        const raw=await body(request,16*1024*1024);assert(Array.isArray(raw.items)&&raw.items.length>0,400,'invalid_import','Import must contain project items.');
+        const command=this.parseCommand({...raw,label:raw.label??'Import project',operations:raw.items.map(value=>{const item=record(value,'item');return{op:'put',id:item.id,kind:item.kind,data:item.data,expectedVersion:0};})},10000);
+        const hash=await sha256(stableJSON(raw));const cached=this.one<{user_id:string;request_hash:string;result:string}>('SELECT * FROM receipts WHERE command_id=?',command.commandId);
+        if(cached){assert(cached.user_id===identity.user.id&&cached.request_hash===hash,409,'command_reused','Command ID already used.');return json(JSON.parse(cached.result));}
+        assert(access.canWrite,403,'read_only','You cannot import into this project.');assert(this.state().head_seq===0,409,'project_not_empty','Atomic import is only available for a new empty project.');
+        const {receipt,event}=this.commit(identity,command,hash,true);if(event)this.broadcast({type:'event',event});return json(receipt);
+      }
       if(route==='commands'&&request.method==='POST'){
         const raw=await body(request);const command=this.parseCommand(raw),hash=await sha256(stableJSON(raw));
         const cached=this.one<{user_id:string;request_hash:string;result:string}>('SELECT * FROM receipts WHERE command_id=?',command.commandId);
@@ -145,9 +153,9 @@ export class ProjectRoom extends DurableObject<Env> {
         const {receipt,event}=this.commit(identity,command,hash);if(event)this.broadcast({type:'event',event});return json(receipt);
       }
       if(route==='restore'&&request.method==='POST'){assert(access.canManage&&access.canWrite,403,'not_allowed','Only an owner or administrator can restore history.');const raw=await body(request,8192);const {receipt,event}=this.restore(identity,raw,await sha256(stableJSON(raw)));if(event){this.broadcast({type:'event',event});this.broadcast({type:'leases',leases:[]});}return json(receipt);}
-      if(route==='leases')return this.handleLeases(request,identity,access);
-      if(route==='threads'||route.startsWith('threads/'))return this.handleDiscussion(request,route,identity,access);
-      if(route==='signals')return this.handleSignals(request,identity,access);
+      if(route==='leases')return await this.handleLeases(request,identity,access);
+      if(route==='threads'||route.startsWith('threads/'))return await this.handleDiscussion(request,route,identity,access);
+      if(route==='signals')return await this.handleSignals(request,identity,access);
       throw new APIError(404,'not_found','Project route not found.');
     }catch(error){return failure(error);}
   }
@@ -156,9 +164,9 @@ export class ProjectRoom extends DurableObject<Env> {
     assert(access.canWrite,403,'read_only','You cannot edit this project.');const raw=await body(request,4096);const itemId=id(raw.itemId,'itemId'),sessionId=id(raw.sessionId,'sessionId');const item=this.getItem(itemId);assert(item,404,'not_found','Item not found.');
     const result=this.ctx.storage.transactionSync(()=>{const state=this.state(),now=Date.now();const current=this.one<LeaseRow>('SELECT * FROM leases WHERE item_id=?',itemId);
       if(request.method==='POST'){
-        if(current&&current.expires_at>now&&current.epoch===state.epoch){assert(current.user_id===identity.user.id&&current.session_id===sessionId,423,'item_locked',`${current.name} is editing this item.`,{itemId,userId:current.user_id,name:current.name,expiresAt:current.expires_at});return this.lease(current);}
+        if(current&&current.expires_at>now&&current.epoch===state.epoch){assert(current.user_id===identity.user.id&&current.auth_session_id===identity.sessionId&&current.session_id===sessionId,423,'item_locked',`${current.name} is editing this item.`,{itemId,userId:current.user_id,name:current.name,expiresAt:current.expires_at});return this.lease(current);}
         const next:Lease={itemId,sessionId,token:randomToken(),fence:(current?.fence??0)+1,expiresAt:now+30000,epoch:state.epoch,userId:identity.user.id,name:identity.user.name};
-        this.sql.exec(`INSERT INTO leases(item_id,session_id,token,fence,expires_at,epoch,user_id,name) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(item_id) DO UPDATE SET session_id=excluded.session_id,token=excluded.token,fence=excluded.fence,expires_at=excluded.expires_at,epoch=excluded.epoch,user_id=excluded.user_id,name=excluded.name`,itemId,sessionId,next.token,next.fence,next.expiresAt,next.epoch,next.userId,next.name);return next;
+        this.sql.exec(`INSERT INTO leases(item_id,auth_session_id,session_id,token,fence,expires_at,epoch,user_id,name) VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(item_id) DO UPDATE SET auth_session_id=excluded.auth_session_id,session_id=excluded.session_id,token=excluded.token,fence=excluded.fence,expires_at=excluded.expires_at,epoch=excluded.epoch,user_id=excluded.user_id,name=excluded.name`,itemId,identity.sessionId,sessionId,next.token,next.fence,next.expiresAt,next.epoch,next.userId,next.name);return next;
       }
       const epoch=int(raw.epoch,'epoch',1);this.requireLease(itemId,{token:str(raw.token,'token',128),fence:int(raw.fence,'fence',1)},sessionId,identity,epoch);assert(epoch===state.epoch,409,'stale_epoch','Project has been restored.');
       if(request.method==='PUT'){this.sql.exec('UPDATE leases SET expires_at=? WHERE item_id=?',now+30000,itemId);return this.lease({...current!,expires_at:now+30000});}
@@ -202,7 +210,7 @@ export class ProjectRoom extends DurableObject<Env> {
     this.sql.exec('DELETE FROM signals WHERE expires_at<?',now);this.sql.exec('INSERT INTO signals(to_device_id,from_device_id,from_user_id,signal_type,payload,at,expires_at) VALUES(?,?,?,?,?,?,?)',recipient,identity.sessionId,identity.user.id,type,encoded,now,now+120000);
     for(const socket of this.ctx.getWebSockets()){const attachment=socket.deserializeAttachment() as Attachment;if(attachment.sessionId===recipient)this.send(socket,{type:'signal',fromDeviceId:identity.sessionId,fromUserId:identity.user.id,signalType:type,payload});}
   }
-  private connect(request:Request,identity:Identity,access:ProjectAccess):Response {
+  private upgradeSocket(request:Request,identity:Identity,access:ProjectAccess):Response {
     assert(request.headers.get('upgrade')?.toLowerCase()==='websocket',426,'websocket_required','Upgrade to WebSocket to join the live project.');assert(access.premium,402,'team_subscription_required','Live multiplayer requires a Team subscription.');
     assert(this.ctx.getWebSockets().length<1000,503,'room_full','This project currently has too many live connections. Retry shortly.');
     const pair=new WebSocketPair();const client=pair[0],server=pair[1];const connectionId=uuid();

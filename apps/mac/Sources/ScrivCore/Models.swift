@@ -1,5 +1,11 @@
 import Foundation
 
+public enum ScrivClock {
+    /// Stable millisecond precision matches the cloud protocol and durable JSON files.
+    public static var now: Date { normalized(Date()) }
+    public static func normalized(_ date: Date) -> Date { Date(timeIntervalSince1970: (date.timeIntervalSince1970 * 1000).rounded() / 1000) }
+}
+
 public enum EntryKind: String, Codable, CaseIterable, Sendable { case dialogue, direction }
 public enum WorkspaceTab: String, CaseIterable, Codable, Sendable { case script = "Script", storyboard = "Storyboard", characters = "Characters" }
 
@@ -61,7 +67,7 @@ public struct ImageAsset: Identifiable, Codable, Hashable, Sendable {
     public var createdAt: Date
     public var previousVersionId: String?
     public init(id: String = UUID().uuidString, version: Int = 1, fileName: String, sha256: String, mimeType: String = "image/png", byteCount: Int, characterIds: [String] = [], prompt: String = "", createdAt: Date = Date(), previousVersionId: String? = nil) {
-        self.id = id; self.version = version; self.fileName = fileName; self.sha256 = sha256; self.mimeType = mimeType; self.byteCount = byteCount; self.characterIds = characterIds; self.prompt = prompt; self.createdAt = createdAt; self.previousVersionId = previousVersionId
+        self.id = id; self.version = version; self.fileName = fileName; self.sha256 = sha256; self.mimeType = mimeType; self.byteCount = byteCount; self.characterIds = characterIds; self.prompt = prompt; self.createdAt = ScrivClock.normalized(createdAt); self.previousVersionId = previousVersionId
     }
 }
 public struct ImageCue: Identifiable, Codable, Hashable, Sendable {
@@ -91,7 +97,7 @@ public struct ScrivProject: Identifiable, Codable, Hashable, Sendable {
     public var images: [ImageAsset]
     public var cues: [ImageCue]
     public init(id: String = UUID().uuidString, title: String = "Untitled", scenes: [ScriptScene] = [], entries: [ScriptEntry] = [], characters: [ScriptCharacter] = [], images: [ImageAsset] = [], cues: [ImageCue] = [], cloudProjectId: String? = nil) {
-        self.id = id; self.title = title; self.createdAt = Date(); self.modifiedAt = Date(); self.revision = 0; self.cloudProjectId = cloudProjectId; self.scenes = scenes; self.entries = entries; self.characters = characters; self.images = images; self.cues = cues
+        self.id = id; self.title = title; self.createdAt = ScrivClock.now; self.modifiedAt = self.createdAt; self.revision = 0; self.cloudProjectId = cloudProjectId; self.scenes = scenes; self.entries = entries; self.characters = characters; self.images = images; self.cues = cues
     }
     public func entries(in sceneId: String) -> [ScriptEntry] { entries.filter { $0.sceneId == sceneId }.sorted { ($0.order, $0.id) < ($1.order, $1.id) } }
     public func cues(in sceneId: String) -> [ImageCue] { cues.filter { $0.sceneId == sceneId }.sorted { ($0.startMs, $0.id) < ($1.startMs, $1.id) } }
@@ -119,7 +125,7 @@ public struct HistoryEntry: Identifiable, Codable, Hashable, Sendable {
     public var label: String
     public var revision: Int
     public var snapshot: ScrivProject
-    public init(label: String, snapshot: ScrivProject) { id = UUID().uuidString; date = Date(); self.label = label; revision = snapshot.revision; self.snapshot = snapshot }
+    public init(label: String, snapshot: ScrivProject) { id = UUID().uuidString; date = ScrivClock.now; self.label = label; revision = snapshot.revision; self.snapshot = snapshot }
 }
 public enum ScrivError: LocalizedError, Equatable {
     case invalid(String), conflict(String), unavailable(String), permission(String)

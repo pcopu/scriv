@@ -5,12 +5,18 @@
   "description": "Native script-first Mac filmmaking workspace and Cloudflare collaboration service",
   "scripts": {
     "setup": "npm --prefix cloud ci",
-    "check": "npm --prefix cloud run check && node scripts/check-repo.mjs",
+    "check": "npm --prefix cloud run typecheck && node scripts/check-repo.mjs",
     "test": "npm --prefix cloud test && node --test tests/*.test.mjs",
     "dev:cloud": "npm --prefix cloud run dev",
     "build:mac": "bash scripts/build-mac.sh",
     "test:mac": "swift test --package-path apps/mac",
-    "verify": "bash scripts/verify.sh"
+    "verify": "bash scripts/verify.sh",
+    "test:peer": "node --test tests/peer-transfer.browser.mjs"
   },
-  "engines": { "node": ">=22.0.0" }
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
+  }
 }

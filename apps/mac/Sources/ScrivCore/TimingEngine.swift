@@ -30,7 +30,10 @@ public enum TimingEngine {
     public static func validate(_ project: ScrivProject) throws {
         guard project.schemaVersion == 1 else { throw ScrivError.invalid("This project needs a newer version of Scriv.") }
         let ids = project.scenes.map(\.id) + project.entries.map(\.id) + project.characters.map(\.id) + project.images.map(\.id) + project.cues.map(\.id)
-        guard Set(ids).count == ids.count else { throw ScrivError.invalid("Project contains duplicate item identities.") }
+        guard Set(ids).count == ids.count, ids.allSatisfy({ !$0.isEmpty && $0.utf8.count <= 128 }), project.entries.count <= 100_000 else { throw ScrivError.invalid("Project contains duplicate item identities.") }
+        guard project.scenes.allSatisfy({ $0.order.isFinite }), project.characters.allSatisfy({ !$0.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) else { throw ScrivError.invalid("Scene order and character names must be valid.") }
+        let allWordIDs = project.entries.flatMap { $0.words.map(\.id) }
+        guard Set(allWordIDs).count == allWordIDs.count else { throw ScrivError.invalid("Word identities must be unique throughout the project.") }
         let sceneIds = Set(project.scenes.map(\.id)), characterIds = Set(project.characters.map(\.id)), imageIds = Set(project.images.map(\.id))
         for entry in project.entries {
             guard sceneIds.contains(entry.sceneId), entry.order.isFinite, entry.ownedDurationMs >= (entry.kind == .dialogue ? 1 : 0), entry.ownedDurationMs <= 3_600_000 else { throw ScrivError.invalid("Invalid script timing or scene reference.") }
@@ -48,6 +51,10 @@ public enum TimingEngine {
         }
         for image in project.images {
             guard image.byteCount > 0, image.sha256.count == 64, image.sha256.allSatisfy({ $0.isHexDigit }), image.fileName == URL(fileURLWithPath: image.fileName).lastPathComponent, !image.fileName.contains(".."), image.characterIds.allSatisfy(characterIds.contains) else { throw ScrivError.invalid("Invalid image metadata or character tags.") }
+        }
+        guard project.cues.allSatisfy({ sceneIds.contains($0.sceneId) }) else { throw ScrivError.invalid("An image cue refers to a missing scene.") }
+        for character in project.characters {
+            if let portrait = character.portraitImageId, !imageIds.contains(portrait) { throw ScrivError.invalid("A character portrait refers to a missing image.") }
         }
         for scene in project.scenes {
             var end = 0
@@ -84,8 +91,10 @@ public enum TimingEngine {
         for j in project.entries.indices where project.entries[j].sceneId == entry.sceneId && project.entries[j].kind == .direction {
             let source = project.startMs(of: project.entries[j].id)
             let oldCoverageEnd = source + project.entries[j].coverageDurationMs
-            let newSource = project.entries[j].id == entryId ? start : mapped(source)
-            project.entries[j].coverageDurationMs = max(project.entries[j].ownedDurationMs, mapped(oldCoverageEnd) - newSource)
+            let follows = (project.entries[j].order, project.entries[j].id) > (entry.order, entry.id)
+            let newSource = source + (follows ? delta : 0)
+            let owned = project.entries[j].id == entryId ? durationMs : project.entries[j].ownedDurationMs
+            project.entries[j].coverageDurationMs = max(owned, mapped(oldCoverageEnd) - newSource)
         }
         project.entries[i].ownedDurationMs = durationMs
         if entry.kind == .dialogue { project.entries[i].words = retimeWords(text: entry.text, durationMs: durationMs, preserving: entry.words) }

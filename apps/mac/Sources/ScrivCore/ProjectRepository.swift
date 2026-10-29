@@ -19,7 +19,10 @@ public actor ProjectRepository {
         try data.write(to: package.appendingPathComponent("project.json"), options: .atomic)
     }
     public func load(at package: URL) throws -> ScrivProject {
-        let data = try Data(contentsOf: package.appendingPathComponent("project.json"))
+        let source = package.appendingPathComponent("project.json")
+        let size = try source.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
+        guard size <= 64*1024*1024 else { throw ScrivError.invalid("Project metadata exceeds the 64 MiB safety limit.") }
+        let data = try Data(contentsOf: source)
         guard data.count <= 64*1024*1024 else { throw ScrivError.invalid("Project metadata exceeds the 64 MiB safety limit.") }
         let p = try ScrivJSON.decoder.decode(ScrivProject.self, from: data)
         try TimingEngine.validate(p)
@@ -48,9 +51,25 @@ public actor ProjectRepository {
         } else { try data.write(to: destination, options: .atomic) }
         return ImageAsset(fileName: filename, sha256: hash, mimeType: mime, byteCount: data.count, characterIds: characterIds, prompt: prompt)
     }
+    /// Save a peer/hosted replica using its existing immutable metadata and identity.
+    public func storeReplica(_ data: Data, for asset: ImageAsset, at package: URL) throws {
+        guard data.count == asset.byteCount, data.count <= 25*1024*1024, ScrivDigest.sha256(data) == asset.sha256,
+              asset.fileName == URL(fileURLWithPath: asset.fileName).lastPathComponent, !asset.fileName.contains("..") else { throw ScrivError.invalid("The image replica failed its metadata or integrity check.") }
+        let imported = try importAsset(data: data, at: package)
+        guard imported.mimeType == asset.mimeType else { throw ScrivError.invalid("The image content does not match its declared format.") }
+        let directory = package.appendingPathComponent("assets")
+        let destination = directory.appendingPathComponent(asset.fileName)
+        guard destination.resolvingSymlinksInPath().deletingLastPathComponent() == directory.resolvingSymlinksInPath() else { throw ScrivError.invalid("Invalid image destination.") }
+        if imported.fileName != asset.fileName { try data.write(to: destination, options: .atomic) }
+    }
     public func assetData(_ asset: ImageAsset, at package: URL) throws -> Data {
         guard asset.fileName == URL(fileURLWithPath: asset.fileName).lastPathComponent, !asset.fileName.contains("..") else { throw ScrivError.invalid("Invalid asset path.") }
-        let data = try Data(contentsOf: package.appendingPathComponent("assets").appendingPathComponent(asset.fileName))
+        let directory = package.appendingPathComponent("assets").resolvingSymlinksInPath()
+        let source = directory.appendingPathComponent(asset.fileName).resolvingSymlinksInPath()
+        guard source.deletingLastPathComponent() == directory else { throw ScrivError.invalid("The image path leaves this project package.") }
+        let size = try source.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
+        guard size <= 25*1024*1024 else { throw ScrivError.invalid("The local image is too large.") }
+        let data = try Data(contentsOf: source)
         guard data.count == asset.byteCount, ScrivDigest.sha256(data) == asset.sha256 else { throw ScrivError.invalid("The image failed its integrity check; request another replica.") }
         return data
     }

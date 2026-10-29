@@ -35,6 +35,12 @@ final class WorkspaceStore: ObservableObject {
     @Published var projectURL: URL?
     @Published var lastJoinLink: String?
     @Published var hasConflicts = false
+    @Published var teamDetails: JSONValue?
+    @Published var localProjects: [URL] = []
+    @Published var discussionReplyToID: String?
+    @Published var discussionAttachments: [JSONValue] = []
+    @Published var peerTransferStatus = "Peer transfer stopped"
+    let peerMedia = PeerMediaBridge()
     let codex = CodexController()
     let cloud = CloudClient()
     private var repository: ProjectRepository?
@@ -46,6 +52,12 @@ final class WorkspaceStore: ObservableObject {
     private var redoStack: [ScrivProject] = []
     private var editingIDs: Set<String> = []
     private var rootURL: URL
+    private var bootstrapTask: Task<Void, Never>?
+    private var peerTask: Task<Void, Never>?
+    private var peerProjectId: String?
+    private var mediaRequests: Set<String> = []
+    private var peerDiscoveries: [String:String] = [:]
+    private var peerTransferStarted: Set<String> = []
     private var cancellables = Set<AnyCancellable>()
     var onProjectChanged: ((ScrivProject, URL?) -> Void)?
     var sceneEntries: [ScriptEntry] { project.entries(in: selectedSceneID) }
@@ -71,23 +83,47 @@ final class WorkspaceStore: ObservableObject {
         cloud.onMessage = { [weak self] message in guard let self, message.threadId == self.activeThread?.id else { return }; if !self.messages.contains(where: { $0.id == message.id }) { self.messages.append(message) } }
         cloud.onEvent = { [weak self] event in guard let self else { return }; if !self.cloudHistory.contains(where: { $0.seq == event.seq }) { self.cloudHistory.insert(event,at:0) } }
         codex.onChange = { [weak self] in self?.objectWillChange.send() }
-        Task { [weak self] in await self?.bootstrap() }
+        peerMedia.onSignal = { [weak self] signal in
+            guard let self else { return }; let projectID = self.cloud.projectId
+            Task { do { guard projectID == self.cloud.projectId else { return }; try await self.cloud.signal(signal) } catch { self.errorMessage = error.localizedDescription } }
+        }
+        cloud.onSignal = { [weak self] signal in
+            guard let self else { return }
+            let projectID = self.cloud.projectId
+            Task {
+                await self.peerTask?.value
+                guard self.cloud.projectId == projectID else { return }
+                do {
+                    if signal.type == "asset-request" { try await self.handleAssetDiscovery(signal) }
+                    else { try await self.peerMedia.handleSignal(signal) }
+                } catch { self.peerTransferStatus = error.localizedDescription }
+            }
+        }
+        peerMedia.onAsset = { [weak self] hash, data in self?.receivedPeerAsset(hash:hash,data:data) }
+        peerMedia.onError = { [weak self] error in self?.peerTransferStatus = error.localizedDescription }
+        peerMedia.$status.sink { [weak self] value in self?.peerTransferStatus = value }.store(in:&cancellables)
+        bootstrapTask = Task { [weak self] in await self?.bootstrap() }
     }
     private func repo() throws -> ProjectRepository { guard let repository else { throw ScrivError.unavailable("Local project storage is unavailable. Check folder permissions.") }; return repository }
     private func bootstrap() async {
         if let path = UserDefaults.standard.string(forKey:"lastProjectURL"), FileManager.default.fileExists(atPath:path) {
             do { try await open(URL(fileURLWithPath:path)) } catch { errorMessage = "The last project could not open: \(error.localizedDescription)" }
         } else { saveProject() }
+        if project.images.isEmpty && project.scenes.contains(where: { $0.id == "scene-farm" }) { do { try await installSampleImages() } catch { errorMessage = error.localizedDescription } }
         await cloud.restoreSession()
+        refreshLocalProjects()
     }
-    private func readCloudState() { account = cloud.account; teams = cloud.teams; cloudProjects = cloud.projects; peers = cloud.peers; leases = cloud.leases; syncStatus = cloud.status }
+    private func readCloudState() {
+        account = cloud.account; teams = cloud.teams; cloudProjects = cloud.projects; peers = cloud.peers; leases = cloud.leases; syncStatus = cloud.status
+        if peerProjectId != cloud.projectId { configurePeers() }
+    }
     private func change(_ label: String, _ mutate: (inout ScrivProject) throws -> Void) {
         do {
             let before = project
             var next = before
             try mutate(&next); try TimingEngine.validate(next)
             guard next != before else { return }
-            next.revision = before.revision + 1; next.modifiedAt = Date()
+            next.revision = before.revision + 1; next.modifiedAt = ScrivClock.now
             undoStack.append(before); redoStack = []
             project = next
             let event = HistoryEntry(label:label,snapshot:next); history.insert(event,at:0)
@@ -99,6 +135,7 @@ final class WorkspaceStore: ObservableObject {
                 for id in ids { dirtyItems[id] = next.revision }
                 enqueueCommit(before:before,after:next,label:label,changed:ids)
             }
+            refreshPeerAuthorization()
             playheadMs = min(playheadMs,Double(sceneDurationMs)); onProjectChanged?(project,projectURL)
         } catch { errorMessage = error.localizedDescription }
     }
@@ -134,7 +171,7 @@ final class WorkspaceStore: ObservableObject {
             let local = Dictionary(uniqueKeysWithValues:try CloudCodec.items(from:project).map { ($0.id,$0) })
             for id in dirtyItems.keys { if let item = local[id] { map[id] = item } else { map.removeValue(forKey:id) } }
             let next = try CloudCodec.applying(Array(map.values),to:project)
-            if next != project { var revised = next; revised.revision = project.revision+1; revised.modifiedAt = Date(); project = revised; queueSave(revised,label:"Live update"); onProjectChanged?(project,projectURL) }
+            if next != project { var revised = next; revised.revision = project.revision+1; revised.modifiedAt = ScrivClock.now; project = revised; queueSave(revised,label:"Live update"); refreshPeerAuthorization(); onProjectChanged?(project,projectURL) }
         } catch { errorMessage = "The incoming project could not be applied safely: \(error.localizedDescription)" }
     }
     func beginEdit(_ id: String) async -> Bool {
@@ -144,7 +181,7 @@ final class WorkspaceStore: ObservableObject {
     func endEdit(_ id: String) { editingIDs.remove(id); let pending = commitTask; Task { [weak self] in await pending?.value; await self?.cloud.releaseLease(id) } }
     func lockedByOther(_ itemId: String) -> String? { leases.first { $0.itemId == itemId && $0.sessionId != cloud.sessionId && $0.expiresAt > Int(Date().timeIntervalSince1970*1000) }.map { $0.name ?? "Another editor" } }
     func commitText(_ id: String, text: String) { change("Edit script") { try TimingEngine.updateText(&$0,entryId:id,text:text) } }
-    func setDuration(_ id: String, seconds: Double) { guard seconds.isFinite else { return }; change("Change duration") { try TimingEngine.setOwnedDuration(&$0,entryId:id,durationMs:Int((seconds*1000).rounded())) } }
+    func setDuration(_ id: String, seconds: Double) { guard seconds.isFinite, seconds >= 0, seconds <= 3600 else { errorMessage = "Duration must be between zero and one hour."; return }; change("Change duration") { try TimingEngine.setOwnedDuration(&$0,entryId:id,durationMs:Int((seconds*1000).rounded())) } }
     func setCoverage(_ id: String, endMs: Int) { change("Extend direction") { try TimingEngine.setCoverage(&$0,entryId:id,endMs:endMs) } }
     func selectEntry(_ id: String) { selectedEntryID = id; if let entry = project.entries.first(where: { $0.id == id }) { selectedSceneID = entry.sceneId; seek(toMs:Double(project.startMs(of:id))); cloud.presence(itemId:id) } }
     func selectCharacter(_ id: String) { selectedCharacterID = id; tab = .characters; cloud.presence(itemId:id) }
@@ -220,8 +257,12 @@ final class WorkspaceStore: ObservableObject {
     }
     private func attachImage(url: URL, cueId: String?, prompt: String, expectedCue: ImageCue?) async throws {
         guard let package = projectURL else { throw ScrivError.unavailable("Save this project before importing images.") }
+        let sourceProjectID = project.id
+        let attributes = try url.resourceValues(forKeys:[.fileSizeKey]); guard (attributes.fileSize ?? 0) <= 25*1024*1024 else { throw ScrivError.invalid("Choose an image smaller than 25 MiB.") }
         let data = try Data(contentsOf:url)
+        guard NSImage(data:data) != nil else { throw ScrivError.invalid("The image file could not be decoded.") }
         let asset = try await repo().importAsset(data:data,at:package,prompt:prompt)
+        guard project.id == sourceProjectID else { return }
         var stale = false
         if let expectedCue { stale = project.cues.first(where: { $0.id == expectedCue.id }) != expectedCue }
         change(stale ? "Keep generated candidate" : "Attach image") { p in
@@ -249,10 +290,43 @@ final class WorkspaceStore: ObservableObject {
             try await self.attachImage(url:result,cueId:target.id,prompt:prompt,expectedCue:target)
         }
     }
-    func downloadImage(_ asset: ImageAsset) { perform { guard let package = self.projectURL else { return }; let data = try await self.cloud.download(asset); _ = try await self.repo().importAsset(data:data,at:package,prompt:asset.prompt,characterIds:asset.characterIds); self.objectWillChange.send() } }
+    func downloadImage(_ asset: ImageAsset) {
+        guard !mediaRequests.contains(asset.sha256) else { return }
+        mediaRequests.insert(asset.sha256)
+        perform {
+            defer { self.mediaRequests.remove(asset.sha256) }
+            guard let package = self.projectURL else { return }
+            let projectID = self.project.id
+            do {
+                let data = try await self.cloud.download(asset)
+                guard projectID == self.project.id else { return }
+                try await self.repo().storeReplica(data,for:asset,at:package)
+                self.refreshPeerAuthorization(); self.objectWillChange.send()
+            } catch {
+                // Free projects and offline replicas use authorized peers. A missing replica never becomes a fake image.
+                guard projectID == self.project.id else { return }
+                let devices = try await self.cloud.peerDevices()
+                let candidates = devices.compactMap { $0["deviceId"]?.string ?? $0["id"]?.string }.filter { $0 != self.cloud.deviceId }
+                guard !candidates.isEmpty else { throw ScrivError.unavailable("No hosted image or other authorized Mac is available. Open this project on a Mac that has the image, then retry.") }
+                await self.peerTask?.value
+                let requestID = UUID().uuidString
+                self.peerDiscoveries[asset.sha256] = requestID; self.peerTransferStarted.remove(asset.sha256)
+                self.peerTransferStatus = "Looking for a Mac that has this image…"
+                for peer in candidates.prefix(40) {
+                    try await self.cloud.signal(PeerSignal(toDeviceId:peer,type:"asset-request",payload:.object(["action":.string("query"),"hash":.string(asset.sha256),"requestId":.string(requestID)])))
+                }
+                Task { [weak self] in
+                    try? await Task.sleep(for:.seconds(65))
+                    guard let self, self.project.id == projectID, self.peerDiscoveries[asset.sha256] == requestID else { return }
+                    self.peerDiscoveries.removeValue(forKey:asset.sha256); self.peerTransferStarted.remove(asset.sha256)
+                    self.peerTransferStatus = "No peer delivered the image. Keep the source Mac open and retry."
+                }
+            }
+        }
+    }
     func newProject() { install(.blank()) }
     func openProject() { let panel = NSOpenPanel(); panel.canChooseDirectories = true; panel.canChooseFiles = true; panel.allowsMultipleSelection = false; panel.message = "Choose a .scriv project package"; guard panel.runModal() == .OK, let url = panel.url else { return }; perform { try await self.open(url) } }
-    private func open(_ url: URL) async throws { let loaded = try await repo().load(at:url); cloud.disconnect(); dirtyItems = [:]; hasConflicts = false; project = loaded; projectURL = url; selectedSceneID = loaded.scenes.first?.id ?? ""; selectedEntryID = loaded.entries(in:selectedSceneID).first?.id; selectedCueID = loaded.cues(in:selectedSceneID).first?.id; selectedCharacterID = loaded.characters.first?.id; history = try await repo().history(at:url,through:loaded.revision); undoStack = []; redoStack = []; isPlaying = false; playheadMs = 0; UserDefaults.standard.set(url.path,forKey:"lastProjectURL"); onProjectChanged?(project,projectURL) }
+    private func open(_ url: URL) async throws { await flushPendingSaves(); let loaded = try await repo().load(at:url); cloud.disconnect(); dirtyItems = [:]; hasConflicts = false; project = loaded; projectURL = url; selectedSceneID = loaded.scenes.first?.id ?? ""; selectedEntryID = loaded.entries(in:selectedSceneID).first?.id; selectedCueID = loaded.cues(in:selectedSceneID).first?.id; selectedCharacterID = loaded.characters.first?.id; history = try await repo().history(at:url,through:loaded.revision); undoStack = []; redoStack = []; isPlaying = false; playheadMs = 0; UserDefaults.standard.set(url.path,forKey:"lastProjectURL"); refreshPeerAuthorization(); onProjectChanged?(project,projectURL) }
     private func install(_ value: ScrivProject) { cloud.disconnect(); dirtyItems = [:]; hasConflicts = false; project = value; projectURL = rootURL.appendingPathComponent(value.id).appendingPathExtension("scriv"); selectedSceneID = value.scenes.first?.id ?? ""; selectedEntryID = value.entries(in:selectedSceneID).first?.id; selectedCueID = value.cues(in:selectedSceneID).first?.id; selectedCharacterID = value.characters.first?.id; history = []; undoStack = []; redoStack = []; isPlaying = false; playheadMs = 0; saveProject(); onProjectChanged?(project,projectURL) }
     func saveProject() { queueSave(project,label:"Save project") }
     func flushPendingSaves() async { await saveTask?.value }
@@ -267,7 +341,7 @@ final class WorkspaceStore: ObservableObject {
     func redo() { guard let next = redoStack.popLast() else { return }; undoStack.append(project); restoreContent(next,label:"Redo",registerUndo:false) }
     private func restoreContent(_ snapshot: ScrivProject, label: String, registerUndo: Bool = true) { let oldUndo = undoStack, oldRedo = redoStack; change(label) { p in let cloudId = p.cloudProjectId, id = p.id, rev = p.revision; p = snapshot; p.id = id; p.cloudProjectId = cloudId; p.revision = rev }; if !registerUndo { undoStack = oldUndo; redoStack = oldRedo } }
     func restoreHistory(_ entry: HistoryEntry) { restoreContent(entry.snapshot,label:"Restore revision \(entry.revision)") }
-    func restoreCloudHistory(_ event: CloudEvent) { perform { try await self.cloud.restore(seq:event.seq); self.cloudHistory = try await self.cloud.history() } }
+    func restoreCloudHistory(_ event: CloudEvent) { perform { await self.flushPendingSaves(); try await self.cloud.restore(seq:event.seq); self.dirtyItems = [:]; self.hasConflicts = false; self.applyRemote(Array(self.cloud.items.values)); self.cloudHistory = try await self.cloud.history() } }
     func signIn() { perform { try await self.cloud.signIn(); self.readCloudState() } }
     func signOut() { perform { try await self.cloud.signOut(); self.readCloudState() } }
     func createTeam(name: String) { perform { _ = try await self.cloud.createTeam(name:name); self.readCloudState() } }
@@ -298,6 +372,28 @@ final class WorkspaceStore: ObservableObject {
             self.cloudHistory = try await self.cloud.history(); self.readCloudState()
         }
     }
+    func shareProjectWithTeam(_ teamId: String) {
+        guard account != nil else { signIn(); return }
+        if project.cloudProjectId == nil { syncProject(teamId:teamId); return }
+        // Preserve the original solo project, all its history, and its remote identity.
+        perform {
+            await self.flushPendingSaves()
+            await self.commitTask?.value
+            var copy = self.project
+            copy.id = UUID().uuidString; copy.cloudProjectId = nil; copy.revision = 0
+            copy.title += " — Team copy"; copy.createdAt = ScrivClock.now; copy.modifiedAt = copy.createdAt
+            let destination = self.rootURL.appendingPathComponent(copy.id).appendingPathExtension("scriv")
+            if let original = self.projectURL {
+                try await self.repo().copyPackage(from:original,to:destination)
+                // A new content lineage gets a new history directory; the original package is untouched.
+                let copiedHistory = destination.appendingPathComponent("history")
+                if FileManager.default.fileExists(atPath:copiedHistory.path) { try FileManager.default.removeItem(at:copiedHistory) }
+            }
+            self.install(copy)
+            await self.flushPendingSaves()
+            self.syncProject(teamId:teamId)
+        }
+    }
     func openCloudProject(_ remote: CloudProject) {
         perform {
             await self.flushPendingSaves()
@@ -308,12 +404,14 @@ final class WorkspaceStore: ObservableObject {
         }
     }
     func loadDiscussion(itemId: String?) {
-        discussionItemID = itemId; messages = []; activeThread = nil; showDiscussion = true
-        perform { let thread = try await self.cloud.thread(itemId:itemId); guard self.discussionItemID == itemId else { return }; self.activeThread = thread; self.messages = try await self.cloud.messages(threadId:thread.id) }
+        discussionItemID = itemId; messages = []; activeThread = nil; discussionReplyToID = nil; discussionAttachments = []; showDiscussion = true
+        guard project.cloudProjectId != nil, account != nil else { return }
+        let contextProjectID = project.id
+        perform { let thread = try await self.cloud.thread(itemId:itemId); guard self.discussionItemID == itemId, self.project.id == contextProjectID else { return }; self.activeThread = thread; self.messages = try await self.cloud.messages(threadId:thread.id) }
     }
     func sendMessage(_ text: String) {
         let body = text.trimmingCharacters(in:.whitespacesAndNewlines); guard !body.isEmpty else { return }
-        perform { let thread: DiscussionThread; if let existing = self.activeThread { thread = existing } else { thread = try await self.cloud.thread(itemId:self.discussionItemID); self.activeThread = thread }; let message = try await self.cloud.postMessage(threadId:thread.id,text:body); if !self.messages.contains(where: { $0.id == message.id }) { self.messages.append(message) } }
+        perform { let thread: DiscussionThread; if let existing = self.activeThread { thread = existing } else { thread = try await self.cloud.thread(itemId:self.discussionItemID); self.activeThread = thread }; let message = try await self.cloud.postMessage(threadId:thread.id,text:body,replyToId:self.discussionReplyToID,attachments:self.discussionAttachments); if self.activeThread?.id == message.threadId && !self.messages.contains(where: { $0.id == message.id }) { self.messages.append(message); self.discussionReplyToID = nil; self.discussionAttachments = [] } }
     }
     func resolveThread() { guard let thread = activeThread else { return }; perform { self.activeThread = try await self.cloud.resolve(threadId:thread.id,resolved:!thread.resolved) } }
     func handleOpenURL(_ url: URL) {
@@ -323,5 +421,87 @@ final class WorkspaceStore: ObservableObject {
     }
     func retryCloudSync() { perform { try await self.cloud.retryPendingCommands(); self.readCloudState() } }
     func refreshAccount() { perform { try await self.cloud.refreshAccount(); self.readCloudState() } }
+    func refreshLocalProjects() { perform { self.localProjects = try await self.repo().projects().sorted { $0.lastPathComponent < $1.lastPathComponent } } }
+    func openLocalProject(_ url: URL) { perform { try await self.open(url) } }
+    func loadTeamDetails(teamId: String) { perform { self.teamDetails = try await self.cloud.teamDetails(teamId) } }
+    func revokeJoinLink(teamId: String, linkId: String) { perform { try await self.cloud.revokeJoinLink(teamId:teamId,linkId:linkId); self.teamDetails = try await self.cloud.teamDetails(teamId) } }
+    func setMemberRole(teamId: String, userId: String, role: String) { perform { try await self.cloud.setMemberRole(teamId:teamId,userId:userId,role:role); self.teamDetails = try await self.cloud.teamDetails(teamId) } }
+    func removeMember(teamId: String, userId: String) { perform { try await self.cloud.removeMember(teamId:teamId,userId:userId); self.teamDetails = try await self.cloud.teamDetails(teamId) } }
+    func addDiscussionAttachment(itemId: String, imageVersionId: String? = nil) {
+        var value: [String:JSONValue] = ["itemId":.string(itemId)]
+        if let imageVersionId { value["imageVersionId"] = .string(imageVersionId) }
+        if !discussionAttachments.contains(.object(value)) { discussionAttachments.append(.object(value)) }
+    }
+    /// Deterministic local sample used by the native visual-verification runner.
+    func prepareSampleForScreenshot() async {
+        await bootstrapTask?.value
+        await flushPendingSaves()
+        install(.example())
+        do { try await installSampleImages(); await flushPendingSaves() } catch { errorMessage = error.localizedDescription }
+        selectedEntryID = "line-08"; selectedCueID = "cue-08b"; playheadMs = 5000
+    }
+    private func installSampleImages() async throws {
+        guard let package = projectURL, project.images.isEmpty else { return }
+        let projectID = project.id
+        var assets: [String:ImageAsset] = [:]
+        for name in ["farm-wide","franklin","miyazaki"] {
+            guard let url = Bundle.scrivResources.url(forResource:name,withExtension:"png",subdirectory:"SampleImages") ?? Bundle.scrivResources.url(forResource:name,withExtension:"png") else { throw ScrivError.unavailable("The sample scene images are missing from this app bundle.") }
+            let tags = name == "farm-wide" ? ["character-randy","character-franklin","character-miyazaki"] : ["character-" + name]
+            let asset = try await repo().importAsset(data:Data(contentsOf:url),at:package,prompt:"Built-in generated sample frame",characterIds:tags)
+            guard project.id == projectID else { return }; assets[name] = asset
+        }
+        change("Install sample scene images") { project in
+            project.images = Array(assets.values).sorted { $0.fileName < $1.fileName }
+            for index in project.cues.indices {
+                let label = project.cues[index].label
+                let name = ["08B","09A","10A","12A"].contains(label) ? "franklin" : label == "10B" ? "miyazaki" : "farm-wide"
+                project.cues[index].imageId = assets[name]?.id
+            }
+            for index in project.characters.indices {
+                let id = project.characters[index].id
+                project.characters[index].portraitImageId = assets[id == "character-franklin" ? "franklin" : id == "character-miyazaki" ? "miyazaki" : "farm-wide"]?.id
+            }
+        }
+    }
+    private func configurePeers() {
+        peerTask?.cancel(); peerMedia.disconnect(); peerDiscoveries = [:]; peerTransferStarted = []; peerProjectId = cloud.projectId
+        guard let projectID = cloud.projectId, let deviceID = cloud.deviceId else { return }
+        peerTask = Task { [weak self] in
+            guard let self else { return }
+            do {
+                let configuration = try await self.cloud.peerConfiguration()
+                guard self.cloud.projectId == projectID, !Task.isCancelled else { return }
+                try await self.peerMedia.start(deviceId:deviceID,iceServers:configuration)
+                guard self.cloud.projectId == projectID, !Task.isCancelled else { self.peerMedia.disconnect(); return }
+                self.refreshPeerAuthorization()
+            } catch { self.peerTransferStatus = "Peer transfer unavailable: " + error.localizedDescription }
+        }
+    }
+    private func refreshPeerAuthorization() {
+        var available: [String:URL] = [:]
+        for asset in project.images { if let url = assetURL(asset) { available[asset.sha256] = url } }
+        peerMedia.authorize(knownHashes:Set(project.images.map(\.sha256)),localAssets:available)
+    }
+    private func handleAssetDiscovery(_ signal: PeerSignal) async throws {
+        guard let sender = signal.fromDeviceId, let hash = signal.payload["hash"]?.string,
+              let requestID = signal.payload["requestId"]?.string, let asset = project.images.first(where: { $0.sha256 == hash }) else { return }
+        if signal.payload["action"]?.string == "query" {
+            guard assetURL(asset) != nil else { return }
+            try await cloud.signal(PeerSignal(toDeviceId:sender,type:"asset-request",payload:.object(["action":.string("available"),"hash":.string(hash),"requestId":.string(requestID)])))
+        } else if signal.payload["action"]?.string == "available", peerDiscoveries[hash] == requestID, !peerTransferStarted.contains(hash) {
+            peerTransferStarted.insert(hash)
+            try await peerMedia.requestAsset(hash:hash,fromDeviceId:sender)
+        }
+    }
+    private func receivedPeerAsset(hash: String, data: Data) {
+        peerDiscoveries.removeValue(forKey:hash); peerTransferStarted.remove(hash)
+        guard let asset = project.images.first(where: { $0.sha256 == hash }), let package = projectURL else { return }
+        let projectID = project.id
+        perform {
+            try await self.repo().storeReplica(data,for:asset,at:package)
+            guard self.project.id == projectID else { return }
+            self.refreshPeerAuthorization(); self.objectWillChange.send(); self.statusMessage = "Peer image received and verified"
+        }
+    }
     private func perform(_ work: @escaping @MainActor () async throws -> Void) { Task { do { try await work() } catch { errorMessage = error.localizedDescription } } }
 }
