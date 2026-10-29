@@ -100,8 +100,8 @@ final class WorkspaceStore: ObservableObject {
                 await self.peerTask?.value
                 guard self.cloud.projectId == projectID else { return }
                 do {
-                    if signal.type == "asset-request" { try await self.handleAssetDiscovery(signal) }
-                    else { try await self.peerMedia.handleSignal(signal) }
+                    if PeerMediaBridge.isTransportSignal(signal) { try await self.peerMedia.handleSignal(signal) }
+                    else if signal.type == "asset-request" { try await self.handleAssetDiscovery(signal) }
                 } catch { self.peerTransferStatus = error.localizedDescription }
             }
         }
