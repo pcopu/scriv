@@ -8,8 +8,10 @@ struct PreviewPane: View {
     @State private var tagsOpen = false
     @State private var versionsOpen = false
     @State private var choosingImage = false
+    @State private var anchorEditor: CueAnchorSelection?
     private var cue: ImageCue? { store.isPlaying ? store.currentCue : (store.selectedCue ?? store.currentCue) }
     private var asset: ImageAsset? { store.project.asset(cue?.imageId) }
+    private var overlappingCues: [ImageCue] { store.sceneCues.filter { $0.startMs <= Int(store.playheadMs) && $0.endMs > Int(store.playheadMs) } }
     var body: some View {
         ScrollView {
         VStack(spacing: 10) {
@@ -46,6 +48,55 @@ struct PreviewPane: View {
                         .frame(width: 30, height: 28).background(.black.opacity(0.4), in: RoundedRectangle(cornerRadius: 7))
                 }.menuStyle(.borderlessButton).fixedSize().padding(11)
             }
+            if overlappingCues.count > 1 {
+                HStack(spacing: 8) {
+                    Menu {
+                        ForEach(overlappingCues.reversed()) { candidate in
+                            Button {
+                                if store.isPlaying { store.togglePlayback() }
+                                store.selectedCueID = candidate.id
+                            } label: {
+                                Label(candidate.label.isEmpty ? "Placement at \(ScrivFormat.time(candidate.startMs))" : candidate.label,
+                                      systemImage: candidate.id == cue?.id ? "checkmark.circle.fill" : "photo")
+                            }
+                        }
+                    } label: { Label("\(overlappingCues.count) overlapping pictures", systemImage: "square.3.layers.3d") }
+                        .font(.caption).menuStyle(.borderlessButton).fixedSize()
+                    Spacer()
+                    Text("Playback uses latest start").font(.caption2).foregroundStyle(.secondary)
+                }.help("All placements are preserved. Choose one to inspect it while paused; playback shows one picture, not a blend.")
+            }
+            if let cue {
+                if cue.durationMs == 0, (cue.authoredDurationMs ?? 0) > 0 {
+                    Label("Dormant · waiting for following script time", systemImage: "clock")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                HStack(alignment: .top) {
+                    Text("\(ScrivFormat.duration(cue.authoredDurationMs ?? cue.durationMs)) authored · \(ScrivFormat.duration(cue.durationMs)) in scene")
+                        .font(.caption2).foregroundStyle(.secondary)
+                    Spacer()
+                    if !store.isPlaying, cue.id != store.currentCue?.id {
+                        Button("Follow playhead") { store.selectedCueID = store.currentCue?.id }.font(.caption).buttonStyle(.borderless)
+                            .help("Currently inspecting a selected picture instead of the playback picture")
+                    }
+                }
+            }
+            if let cue {
+                Button {
+                    if store.isPlaying { store.togglePlayback() }
+                    anchorEditor = CueAnchorSelection(cue: cue, navigationContext: store.navigationContext)
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "link")
+                        if let anchor = cue.startAnchor, let entry = store.project.entries.first(where: { $0.id == anchor.entryId }) {
+                            Text("Source: " + CueAnchorEditor.label(entry, project: store.project)).lineLimit(1)
+                        } else { Text("Choose picture source… (legacy scene placement)") }
+                        Spacer(minLength: 0)
+                        Image(systemName: "pencil").font(.caption2)
+                    }.font(.caption)
+                }.buttonStyle(.borderless).disabled(store.lockedByOther(cue.id) != nil)
+                    .help("Choose an explicit source owner, including a zero-owned direction, and its entry-relative offset")
+            }
             HStack(spacing: 5) {
                 if let asset {
                     ForEach(store.project.characters.filter { asset.characterIds.contains($0.id) }) { character in
@@ -73,6 +124,7 @@ struct PreviewPane: View {
             .sheet(isPresented: $choosingImage) {
                 if let cue { ProjectImagePicker(cueID: cue.id, navigationContext: store.navigationContext).environmentObject(store) }
             }
+            .sheet(item: $anchorEditor) { CueAnchorEditor(selection: $0).environmentObject(store) }
             .sheet(isPresented: $fullScreen) {
                 VStack(spacing: 16) {
                     HStack { Text(store.project.title).font(.headline); Spacer(); Button("Done") { fullScreen = false }.keyboardShortcut(.cancelAction) }
@@ -135,15 +187,19 @@ struct GenerationBar: View {
     @EnvironmentObject private var store: WorkspaceStore
     @ObservedObject var controller: CodexController
     @State private var cancelling = false
-    private var savedPrompt: String { (store.selectedCue ?? store.currentCue)?.prompt ?? "" }
-    private var hasPrompt: Bool { !store.generationPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !savedPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    @State private var showingContext = false
     var body: some View {
+        let context = store.selectedImageGenerationContext
         VStack(alignment: .leading, spacing: 6) {
+        if let context {
+            Text("Script-aware · \(context.cueLabel.isEmpty ? "Selected cue" : context.cueLabel) · \(context.passages.count) source passages · \(context.portraits.count) portraits")
+                .font(.system(size: 10, weight: .medium)).foregroundStyle(.secondary)
+        }
         HStack(alignment: .center, spacing: 10) {
-            TextField(savedPrompt.isEmpty ? "Describe the image for this moment…" : savedPrompt, text: $store.generationPrompt, axis: .vertical)
+            TextField("Optional visual override for this cue…", text: $store.generationPrompt, axis: .vertical)
                 .font(.system(size: 12)).textFieldStyle(.plain).lineLimit(1...3)
-                .accessibilityLabel("Image generation prompt")
-                .help(savedPrompt.isEmpty ? "Describe the image for this moment" : "Leave blank to use this image's saved direction: " + savedPrompt)
+                .accessibilityLabel("Visual override for this image cue")
+                .help("Dialogue, active forward directions and relevant identities are included automatically. This cue's override changes visual choices without rewriting the script. Clear it to follow only the source.")
 
             Button { store.generateImage(cueId: store.selectedCue?.id ?? store.currentCue?.id) } label: {
                 HStack(spacing: 6) {
@@ -151,7 +207,7 @@ struct GenerationBar: View {
                     else { Image(systemName: "sparkles") }
                     Text(controller.isGenerating ? "Generating" : "Generate image")
                 }.font(.system(size: 12, weight: .semibold)).padding(.vertical, 5)
-            }.buttonStyle(.borderedProminent).disabled(controller.isGenerating || !hasPrompt)
+            }.buttonStyle(.borderedProminent).disabled(controller.isGenerating || context?.hasContent != true)
                 .help(controller.isConnected ? "Generate with Codex on this Mac" : "Connect Codex on this Mac to generate")
             if controller.isGenerating {
                 Button {
@@ -160,6 +216,20 @@ struct GenerationBar: View {
                 } label: { Image(systemName: "xmark.circle.fill").font(.system(size: 17)) }
                     .buttonStyle(.plain).disabled(cancelling).help("Cancel image generation")
                     .accessibilityLabel("Cancel image generation")
+            }
+        }
+        if let context {
+            DisclosureGroup("Review source, identities and exact brief", isExpanded: $showingContext) {
+                ScrollView {
+                    Text(context.prompt).font(.system(size: 11)).textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 5)
+                }.frame(maxHeight: 200)
+                Text("This brief and copied portraits stay in local generation history. Only this cue's manual direction is saved with the generated image.")
+                    .font(.system(size: 10)).foregroundStyle(.secondary)
+            }.font(.system(size: 10)).foregroundStyle(.secondary)
+            if !context.unreferencedCharacters.isEmpty {
+                Text("Text identity only (no local portrait attached): \(context.unreferencedCharacters.map(\.name).joined(separator: ", "))")
+                    .font(.system(size: 10)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             }
         }
         if controller.isGenerating { Text(controller.status).font(.system(size: 10)).foregroundStyle(.secondary) }

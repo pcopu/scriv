@@ -29,7 +29,7 @@ public enum CloudReconciliation {
             let keys: [String]
             switch item.kind {
             case "entry": keys = ["sceneId","order","kind","ownedDurationMs","coverageDurationMs"] + (geometryOnly ? [] : ["text","words"])
-            case "cue": keys = ["sceneId","startMs","endMs"]
+            case "cue": keys = ["sceneId","startMs","endMs","startAnchor","authoredDurationMs"]
             default: continue
             }
             values[id] = .object(Dictionary(uniqueKeysWithValues: keys.map { ($0,item.data[$0] ?? .null) }))

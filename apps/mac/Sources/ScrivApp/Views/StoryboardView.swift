@@ -70,7 +70,7 @@ struct StoryboardView: View {
                     }.onEnded { _ in selecting = false; marquee = nil })
             }
             HStack(spacing: 20) {
-                Text("Select words or drag a marquee. Move the last words forward, or the first words back, to shift the cut.")
+                Text("Select words or drag a marquee. Drag boundary words between images to move the cut. Use Edit word timing or the Words track to retime speech separately.")
                     .font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(2).frame(maxWidth: .infinity, alignment: .leading)
                 PlaybackBar(compact: true).frame(width: 430)
             }.padding(.horizontal, 22).padding(.vertical, 14).background(ScrivTheme.panel.opacity(0.92))
@@ -100,10 +100,10 @@ private struct StoryboardRow: View {
     let coordinateSpace: String
     private let gap: CGFloat = 18
     private var directions: [ScriptEntry] {
-        guard let first = cues.first, let last = cues.last else { return [] }
+        guard let first = cues.first, let end = cues.map(\.endMs).max() else { return [] }
         return store.sceneEntries.filter { entry in
             let start = store.project.startMs(of: entry.id)
-            return entry.kind == .direction && start < last.endMs && start + entry.coverageDurationMs > first.startMs
+            return entry.kind == .direction && start < end && start + entry.coverageDurationMs > first.startMs
         }
     }
     var body: some View {
@@ -162,6 +162,8 @@ private struct StoryboardCard: View {
     @State private var selectionAnchor: String?
     @State private var confirmingRemoval = false
     @State private var choosingImage = false
+    @State private var timingEditor: WordTimingSelection?
+    @State private var cutContext: Int?
     private var asset: ImageAsset? { store.project.asset(cue.imageId) }
     private var words: [BoardWord] {
         store.sceneEntries.flatMap { entry -> [BoardWord] in
@@ -177,9 +179,12 @@ private struct StoryboardCard: View {
                     .aspectRatio(1.5, contentMode: .fit)
                     .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(dropTarget ? ScrivTheme.accent : cue.id == store.selectedCueID ? ScrivTheme.accent.opacity(0.7) : Color.clear, lineWidth: dropTarget ? 3 : 2))
                     .measureFrame("cue:" + cue.id, in: coordinateSpace)
-                    .onTapGesture { store.selectedCueID = cue.id; store.seek(toMs: Double(cue.startMs)) }
+                    .onTapGesture {
+                        if store.isPlaying { store.togglePlayback() }
+                        store.seek(toMs: Double(cue.startMs)); store.selectedCueID = cue.id
+                    }
                     .overlay(alignment: .trailing) {
-                        if canResize, let next = nextCue, next.startMs == cue.endMs, hovering || dragDelta != 0 {
+                        if canResize, let next = nextCue, TimingEngine.canMoveBoundary(store.project, leftCueId: cue.id, rightCueId: next.id), hovering || dragDelta != 0 {
                             Capsule().fill(.white).frame(width: 4, height: 48).padding(8)
                                 .background(.black.opacity(0.25), in: RoundedRectangle(cornerRadius: 8))
                                 .contentShape(Rectangle()).gesture(cutGesture)
@@ -188,10 +193,9 @@ private struct StoryboardCard: View {
                                 .help("Drag this cut; the next image keeps the remaining time")
                         }
                     }
-                DurationPill(milliseconds: clampedDuration(cue.durationMs + Int(dragDelta * 20)), dark: true, editable: canResize, minimumMilliseconds: 1, title: "Image duration") { duration in resize(to: duration) }
+                DurationPill(milliseconds: cue.authoredDurationMs ?? cue.durationMs, dark: true, editable: store.lockedByOther(cue.id) == nil, minimumMilliseconds: 1, title: "Authored image coverage") { duration in store.setCueDuration(cueId: cue.id, durationMs: duration) }
                     .padding(10)
-                    .highPriorityGesture(cutGesture, including: canResize ? .all : .none)
-                    .help("Drag left or right to transfer time with an adjacent image")
+                    .help("Edit this picture's source-owned forward coverage. Use the right-edge handle only to move a shared cut.")
                 if hovering {
                     HStack {
                         Text(cue.label.isEmpty ? "Image" : cue.label).font(.system(size: 11, weight: .medium)).padding(6).background(.black.opacity(0.4), in: RoundedRectangle(cornerRadius: 5))
@@ -207,9 +211,22 @@ private struct StoryboardCard: View {
                 Button("Generate image", systemImage: "sparkles") { store.generateImage(cueId: cue.id) }
                 Button("Split image in half", systemImage: "scissors") { store.seek(toMs: Double(cue.startMs + cue.durationMs / 2)); store.splitCue(cue.id) }
                 Button("Discuss image", systemImage: "bubble.left") { store.loadDiscussion(itemId: cue.imageId ?? cue.id); store.showDiscussion = true }
-                if let next = nextCue, next.startMs == cue.endMs { Button("Merge with next placement", systemImage: "rectangle.on.rectangle") { store.mergeCue(cue.id, with: next.id) }.disabled(!canResize) }
+                if let next = nextCue, next.startMs == cue.endMs { Button("Merge with next placement", systemImage: "rectangle.on.rectangle") { store.mergeCue(cue.id, with: next.id) }.disabled(!TimingEngine.canMoveBoundary(store.project, leftCueId: cue.id, rightCueId: next.id) || !canResize) }
                 Divider()
                 Button("Remove placement…", systemImage: "trash", role: .destructive) { confirmingRemoval = true }.disabled(store.lockedByOther(cue.id) != nil)
+            }
+            if cue.durationMs == 0, (cue.authoredDurationMs ?? 0) > 0 {
+                Label("Dormant · waiting for following script time", systemImage: "clock")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            if (cue.authoredDurationMs ?? cue.durationMs) != cue.durationMs {
+                Text("\(ScrivFormat.duration(cue.durationMs)) visible · \(ScrivFormat.duration(cue.authoredDurationMs ?? cue.durationMs)) authored (scene-clipped)")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            if overlapCount > 0 {
+                Label("\(overlapCount) overlapping placement\(overlapCount == 1 ? "" : "s") · preserved", systemImage: "square.3.layers.3d")
+                    .font(.caption).foregroundStyle(ScrivTheme.accent)
+                    .help("Click any card to inspect it. Playback uses the latest-starting active placement; images are not blended.")
             }
             FlowLayout(spacing: 5, rowSpacing: 6) {
                 ForEach(words) { item in
@@ -219,8 +236,13 @@ private struct StoryboardCard: View {
                         .onDrag { provider(for: item) }
                         .contextMenu {
                             Button("Play word") { store.seek(toMs: Double(item.startMs)) }
-                            if let previous = previousCue { Button("Move to previous image") { move(item, to: previous.id) }.disabled(previous.endMs != cue.startMs) }
-                            if let next = nextCue { Button("Move to next image") { move(item, to: next.id) }.disabled(cue.endMs != next.startMs) }
+                            Button("Edit word timing…", systemImage: "clock") {
+                                if let entry = store.project.entries.first(where: { $0.id == item.entryId }) {
+                                    timingEditor = WordTimingSelection(entry: entry, word: item.word, navigationContext: store.navigationContext)
+                                }
+                            }.disabled(store.lockedByOther(item.entryId) != nil)
+                            if let previous = previousCue { Button("Move to previous image") { move(item, to: previous.id) }.disabled(!TimingEngine.canMoveBoundary(store.project, leftCueId: previous.id, rightCueId: cue.id)) }
+                            if let next = nextCue { Button("Move to next image") { move(item, to: next.id) }.disabled(!TimingEngine.canMoveBoundary(store.project, leftCueId: cue.id, rightCueId: next.id)) }
                             Button("Discuss line") { store.loadDiscussion(itemId: item.entryId); store.showDiscussion = true }
                         }
                 }
@@ -231,14 +253,16 @@ private struct StoryboardCard: View {
         .sheet(isPresented: $choosingImage) {
             ProjectImagePicker(cueID: cue.id, navigationContext: store.navigationContext).environmentObject(store)
         }
+        .sheet(item: $timingEditor) { WordTimingEditor(selection: $0).environmentObject(store) }
         .confirmationDialog("Remove this image placement?", isPresented: $confirmingRemoval, titleVisibility: .visible) {
             Button("Remove placement", role: .destructive) { store.deleteCue(cue.id) }
         } message: { Text("The image asset, script, words and their timing are preserved.") }
         .onDrop(of: [UTType.utf8PlainText], isTargeted: $dropTarget) { providers in
             guard let provider = providers.first else { return false }
+            let context = store.navigationContext, sceneID = store.selectedSceneID
             _ = provider.loadObject(ofClass: String.self) { text, _ in
                 guard let text, let data = text.data(using: .utf8), let payload = try? JSONDecoder().decode(BoardDragPayload.self, from: data), payload.type == "scriv.words.v1" else { return }
-                Task { @MainActor in store.moveWords(Set(payload.wordIds), fromCueId: payload.cueId, toCueId: cue.id) }
+                Task { @MainActor in guard store.navigationContext == context, store.selectedSceneID == sceneID else { return }; store.moveWords(Set(payload.wordIds), fromCueId: payload.cueId, toCueId: cue.id) }
             }
             return true
         }
@@ -252,14 +276,19 @@ private struct StoryboardCard: View {
         return store.sceneCues[index + 1]
     }
     private var adjacent: ImageCue? {
-        if let next = nextCue, next.startMs == cue.endMs { return next }
-        if let previous = previousCue, previous.endMs == cue.startMs { return previous }
+        if let next = nextCue, TimingEngine.canMoveBoundary(store.project, leftCueId: cue.id, rightCueId: next.id) { return next }
+        if let previous = previousCue, TimingEngine.canMoveBoundary(store.project, leftCueId: previous.id, rightCueId: cue.id) { return previous }
         return nil
     }
+    private var overlapCount: Int { store.sceneCues.filter { $0.id != cue.id && $0.startMs < cue.endMs && $0.endMs > cue.startMs }.count }
     private var canResize: Bool { adjacent != nil && store.lockedByOther(cue.id) == nil && adjacent.map { store.lockedByOther($0.id) == nil } == true }
     private var cutGesture: some Gesture {
-        DragGesture(minimumDistance: 5).onChanged { dragDelta = $0.translation.width }.onEnded { value in
-            dragDelta = 0; resize(to: cue.durationMs + Int(value.translation.width * 20))
+        DragGesture(minimumDistance: 5).onChanged { value in
+            if cutContext == nil { cutContext = store.navigationContext }; dragDelta = value.translation.width
+        }.onEnded { value in
+            let context = cutContext; cutContext = nil; dragDelta = 0
+            guard context == store.navigationContext, store.selectedSceneID == cue.sceneId else { return }
+            resize(to: cue.durationMs + Int(value.translation.width * 20))
         }
     }
     private func clampedDuration(_ proposed: Int) -> Int {

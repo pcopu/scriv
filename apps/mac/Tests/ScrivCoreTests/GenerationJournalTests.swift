@@ -39,6 +39,23 @@ final class GenerationJournalTests: XCTestCase {
             XCTAssertEqual(value.threadID, "thread"); XCTAssertEqual(value.turnID, "turn")
         }
     }
+    func testScriptAwarePromptAndManualDirectionRemainDistinctAcrossRecovery() throws {
+        try withJournal { journal, _ in
+            var value = job()
+            value.prompt = "SCRIPT SOURCE\nOriginal dialogue and identity snapshot\nMANUAL VISUAL OVERRIDE\nLow angle"
+            value.context?.userDirection = "Low angle"
+            try journal.save(value)
+            let loaded = try XCTUnwrap(journal.load().jobs.first)
+            XCTAssertEqual(loaded.prompt, value.prompt)
+            XCTAssertEqual(loaded.context?.userDirection, "Low angle")
+            var legacy = try JSONSerialization.jsonObject(with: ScrivJSON.encoder.encode(value)) as! [String: Any]
+            var context = legacy["context"] as! [String: Any]
+            context.removeValue(forKey: "userDirection"); legacy["context"] = context
+            let recovered = try ScrivJSON.decoder.decode(LocalGenerationJob.self, from: JSONSerialization.data(withJSONObject: legacy))
+            XCTAssertNil(recovered.context?.userDirection)
+            XCTAssertEqual(recovered.prompt, value.prompt, "Old local journals still retain their exact retry prompt")
+        }
+    }
     func testCorruptAndIdentityMismatchedRecordsDoNotHideOtherJobs() throws {
         try withJournal { journal, _ in
             let value = job(); try journal.save(value)

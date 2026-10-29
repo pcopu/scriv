@@ -41,6 +41,7 @@ struct AssetImageView: View {
 struct LinkedScriptText: View {
     let text: String
     let characters: [ScriptCharacter]
+    var characterLinks: [CharacterTextLink] = []
     var size: CGFloat = 17
     var direction = false
     var color: Color = ScrivTheme.ink
@@ -77,7 +78,13 @@ struct LinkedScriptText: View {
     private var attributedText: AttributedString {
         var value = AttributedString(text)
         value.foregroundColor = color
-        for mention in CharacterMentions.find(in: text, characters: characters) {
+        for suggestion in characterLinks where !suggestion.isConfirmed && CharacterMentions.matchesSource(suggestion, in: text) {
+            guard let range = Range(suggestion.range, in: text),
+                  let start = AttributedString.Index(range.lowerBound, within: value),
+                  let end = AttributedString.Index(range.upperBound, within: value) else { continue }
+            value[start..<end].backgroundColor = Color.orange.opacity(0.09)
+        }
+        for mention in CharacterMentions.resolved(in: text, links: characterLinks) {
             guard let character = characters.first(where: { $0.id == mention.characterId }),
                   let range = Range(mention.range, in: text),
                   let start = AttributedString.Index(range.lowerBound, within: value),

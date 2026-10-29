@@ -24,7 +24,7 @@ final class EditingTests: XCTestCase {
         XCTAssertEqual(sample.cues(in: "scene-farm").map(\.durationMs).reduce(0, +), 56_300)
         try TimingEngine.validate(sample)
     }
-    func testInsertionAtCutKeepsImagesContiguousAndReanchorsCoverage() throws {
+    func testInsertionPreservesImageOwnersAndReanchorsDirectionCoverage() throws {
         var p = fixture()
         let words = p.entries.flatMap(\.words)
         try ProjectEditing.insertEntry(&p, entry: ScriptEntry(id: "insert", sceneId: "s", order: 42, text: "New", ownedDurationMs: 500), after: "a")
@@ -33,17 +33,17 @@ final class EditingTests: XCTestCase {
         XCTAssertEqual(p.startMs(of: "later"), 2500)
         XCTAssertEqual(p.entries.first { $0.id == "note" }?.coverageDurationMs, 3000)
         XCTAssertEqual(p.entries.first { $0.id == "later" }?.coverageDurationMs, 1000)
-        XCTAssertEqual(p.cues(in: "s").map(\.startMs), [0, 1000])
+        XCTAssertEqual(p.cues(in: "s").map(\.startMs), [0, 1500])
         XCTAssertEqual(p.cues(in: "s").map(\.endMs), [1000, 3500])
         XCTAssertEqual(p.entries.filter { $0.id != "insert" }.flatMap(\.words), words)
     }
-    func testInsertionAtBeginningAndEndDoesNotLeaveUncoveredTime() throws {
+    func testInsertionDoesNotSilentlyAssignExistingPicturesToNewOwners() throws {
         var p = fixture()
         try ProjectEditing.insertEntry(&p, entry: ScriptEntry(id: "intro", sceneId: "s", order: 0, text: "Start", ownedDurationMs: 500), after: "note")
-        XCTAssertEqual(p.cues.first { $0.id == "first" }?.startMs, 0)
+        XCTAssertEqual(p.cues.first { $0.id == "first" }?.startMs, 500)
         XCTAssertEqual(p.cues.first { $0.id == "first" }?.endMs, 1500)
         try ProjectEditing.insertEntry(&p, entry: ScriptEntry(id: "outro", sceneId: "s", order: 0, text: "End", ownedDurationMs: 700))
-        XCTAssertEqual(p.cues(in: "s").last?.endMs, 4200)
+        XCTAssertEqual(p.cues(in: "s").last?.endMs, 3500)
         XCTAssertEqual(p.durationMs(of: "s"), 4200)
     }
     func testDeleteLineRemapsCrossingCoverageAndPreservesLaterLength() throws {
@@ -53,7 +53,8 @@ final class EditingTests: XCTestCase {
         XCTAssertEqual(p.entries.first { $0.id == "note" }?.coverageDurationMs, 1500)
         XCTAssertEqual(p.startMs(of: "later"), 1000)
         XCTAssertEqual(p.entries.first { $0.id == "later" }?.coverageDurationMs, 1000)
-        XCTAssertEqual(p.cues(in: "s").map(\.endMs), [1000, 2000])
+        XCTAssertEqual(p.cues(in: "s").map(\.endMs), [1000])
+        XCTAssertFalse(p.cues.contains { $0.id == "second" })
     }
     func testDeleteZeroOwnedNoteChangesNoTiming() throws {
         var p = fixture(); let cues = p.cues, words = TimingEngine.absoluteWords(p, sceneId: "s")

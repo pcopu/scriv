@@ -4,7 +4,9 @@ A native Mac workspace for writing a script, timing its words and directions, an
 
 Scriv is a new SwiftUI/AppKit application. The inherited Movie AI Workspace implementation has been removed; the Git history and all 25 Scriv design images remain available. The cloud service runs on Cloudflare Workers, D1, SQLite Durable Objects and private R2 storage.
 
-**Release status:** further implementation and parity verification are in progress. Historical cloud, real-WebRTC and native Mac verification passed for [runtime commit `0eb779b`](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01). The [successful CI run](https://github.com/pcopu/scriv/actions/runs/40921544866) includes the universal development build and native captures. [Verification](docs/verification.md) records the results and remaining account-bound acceptance checks; the [deployment handoff](docs/deployment.md) covers production configuration, signing and release.
+**Current source handoff:** the later workspace, audio, discussion, history, generation, source-owned timing, character-link, durable editor recovery, email sign-in and collaboration changes are described in the [current integration handoff](docs/verification/current-handoff.md). These changes have **not** been compiled or run as a native Mac app in the Linux workspace. The successful [historical CI run](https://github.com/pcopu/scriv/actions/runs/40921544866), universal development build and screenshots apply only to [runtime commit `0eb779b`](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01), not current `main`. [Verification](docs/verification.md) separates those results from current local evidence; the [deployment handoff](docs/deployment.md) retains production, signing and live-account acceptance gates.
+
+**Backend:** deployed at `https://scriv-api.muddy-recipe-a722.workers.dev`, with D1, private R2 and email-code login. [Deployment evidence](docs/verification/cloud-deployment-20261029.md) distinguishes service checks from delivery/session acceptance. Stripe and multiplayer acceptance are deferred; native release/signing remains unverified.
 
 ![Scriv native Script view](docs/screenshots/01-script.png)
 
@@ -59,7 +61,7 @@ The app opens locally without signing in. Use **File → Open Project** for a `.
 
 ### Two independent accounts
 
-**Scriv account:** the top-right account control signs in through GitHub OAuth to access hosted scripts and teams. Scriv session tokens are stored in Keychain and scoped to the API origin.
+**Scriv account:** the account control sends a six-digit email code and verifies it in the app to access hosted scripts and teams. Codes are short-lived, single-use and bound to the requesting sign-in flow. Scriv session tokens are stored in Keychain and scoped to the API origin. Existing GitHub identities remain supported separately; matching contact emails do not silently merge accounts.
 
 **Codex on this Mac:** Start launches the installed `codex app-server` as a child process. Connect attaches to an explicitly configured loopback WebSocket endpoint. Sign in with ChatGPT is handled by Codex. Stop terminates only the child Scriv started; disconnecting an external server leaves that server running. No ChatGPT credential is sent to Scriv's cloud.
 
@@ -79,7 +81,7 @@ npm --prefix cloud run db:migrate:local
 npm run dev:cloud
 ```
 
-Configure a development GitHub OAuth app for interactive Scriv login. Local development does not offer an authentication bypass. Stripe and TURN credentials are optional until you exercise those integrations. See [cloud setup](cloud/README.md) for provider-specific configuration.
+The isolated email-auth tests inject a fake sender and never send live mail. Interactive email sign-in requires a configured Email Sending binding and verified sender, or point the app at the deployed HTTPS service. Optional legacy GitHub OAuth needs a separate development OAuth app. There is no local authentication bypass. Stripe and TURN remain separate optional integrations; see [cloud setup](cloud/README.md).
 
 ## Verify
 

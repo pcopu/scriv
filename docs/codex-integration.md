@@ -48,6 +48,16 @@ Each generation has its own working directory. Reference images are copied into 
 
 An image-generation item in the protocol establishes an artifact format; availability still depends on the installed runtime, selected model, account and runtime configuration. A successful turn without an image produces an actionable error. The integration never substitutes a placeholder for a successful generation.
 
+### Script-aware generation brief
+
+Generate uses the selected cue's resolved time interval, not a global prompt. Its preview shows the exact brief: overlapping spoken-word excerpts (including a cue spanning several entries), active forward directions, and relevant character identities, aliases, appearance and biography. Excerpts preserve authored wording and whitespace. Confirmed character links retain their identity after a rename; unconfirmed name suggestions do not silently select a profile. Speakers, confirmed source links, names in the cue's visual override, and explicit tags on its current image are the only profile sources.
+
+The optional visual override is scoped to server/account/project/package/scene/cue. It is separately labeled and can be cleared without removing script context. Up to five readable, relevant local portraits are copied, deduplicated by content digest and labeled in input order. Missing or excess portraits remain text-only identities; another project's or unrelated character's picture is never a fallback.
+
+The assembled source/profile brief and reference snapshots remain in the local generation journal. Shared image metadata receives only the cue's manual visual direction, not the assembled brief. Explicit retries use the original journaled prompt and reference copies, rather than rebuilding them from a changed script. Existing recovery, source-change candidate retention and output identity rules are unchanged.
+
+Portable `GenerationContextTests` and `GenerationJournalTests` cover cue/source selection, authored word timing, profile exclusion and rename stability, override separation, portrait selection and legacy journal decoding. Native preview layout and actual generated fidelity still require the signed-in Mac acceptance below; no model call is made by these tests.
+
 ## Reproduce the contract check
 
 The optional checker requires **Python 3.10+** and **`jsonschema` 4.x** (the latest recorded check used **4.26.0**). These are verification dependencies; they are not Mac application runtime dependencies.

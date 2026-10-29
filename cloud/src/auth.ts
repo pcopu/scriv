@@ -1,3 +1,4 @@
+import { emailAuthRoutes } from './email-auth';
 import { refreshUserAccess } from './notifications';
 import type { Env } from './types';
 import { authenticate } from './access';
@@ -5,6 +6,7 @@ import { APIError, assert, body, challenge, json, publicBase, randomToken, rateL
 
 export async function authRoutes(request: Request, env: Env): Promise<Response | null> {
   const url = new URL(request.url); const path = url.pathname;
+  if (path.startsWith('/auth/email/')) return emailAuthRoutes(request,env);
   if (path === '/auth/github/start' && request.method === 'GET') {
     assert(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET,503,'auth_not_configured','Scriv sign-in is not configured on this server.');
     await rateLimit(env,`oauth:${request.headers.get('cf-connecting-ip') ?? 'local'}`,30,600000);

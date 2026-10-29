@@ -24,7 +24,7 @@ struct ProjectBrowserSheet: View {
                     if store.account == nil {
                         VStack(alignment: .leading, spacing: 9) {
                             Text("Sign in to access your scripts and team projects.").foregroundStyle(.secondary)
-                            Button("Sign in to Scriv") { store.signIn() }.buttonStyle(.bordered)
+                            ScrivEmailSignInForm(cloud:store.cloud).frame(maxWidth:350)
                         }.padding(.vertical, 8)
                     }
                     ForEach(store.cloudProjects.filter { search.isEmpty || $0.title.localizedCaseInsensitiveContains(search) }) { project in

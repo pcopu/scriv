@@ -16,6 +16,12 @@ public enum TimingEngine {
                 while i < old.count && j < tokens.count { if old[i].text == tokens[j] { matched[j] = old[i].id; i += 1; j += 1 } else if table[i+1][j] >= table[i][j+1] { i += 1 } else { j += 1 } }
             }
         }
+        if old.count * tokens.count > 250_000 {
+            var oldIndex = 0
+            for (index, token) in tokens.enumerated() {
+                if let found = old[oldIndex...].firstIndex(where: { $0.text == token }) { matched[index] = old[found].id; oldIndex = found + 1 }
+            }
+        }
         let weights = tokens.map { max(1, $0.count) }
         let total = weights.reduce(0,+)
         let spare = max(0, duration - tokens.count)
@@ -39,6 +45,7 @@ public enum TimingEngine {
         guard Set(allWordIDs).count == allWordIDs.count, allWordIDs.allSatisfy({ !$0.isEmpty && $0.utf8.count <= 128 }) else { throw ScrivError.invalid("Word identities must be unique throughout the project.") }
         let sceneIds = Set(project.scenes.map(\.id)), characterIds = Set(project.characters.map(\.id)), imageIds = Set(project.images.map(\.id))
         for entry in project.entries {
+            try CharacterMentions.validate(entry: entry, characterIDs: characterIds)
             guard sceneIds.contains(entry.sceneId), entry.order.isFinite, entry.ownedDurationMs >= (entry.kind == .dialogue ? 1 : 0), entry.ownedDurationMs <= 3_600_000 else { throw ScrivError.invalid("Invalid script timing or scene reference.") }
             if let id = entry.characterId, !characterIds.contains(id) { throw ScrivError.invalid("A speaker no longer exists.") }
             if entry.kind == .direction {
@@ -65,27 +72,39 @@ public enum TimingEngine {
         for character in project.characters {
             if let portrait = character.portraitImageId, !imageIds.contains(portrait) { throw ScrivError.invalid("A character portrait refers to a missing image.") }
         }
+        let entriesByID = Dictionary(uniqueKeysWithValues: project.entries.map { ($0.id, $0) })
         for scene in project.scenes {
-            guard project.durationMs(of:scene.id) <= 86_400_000 else { throw ScrivError.invalid("A scene cannot exceed 24 hours.") }
-            var end = 0
+            let duration = project.durationMs(of: scene.id)
+            guard duration <= 86_400_000 else { throw ScrivError.invalid("A scene cannot exceed 24 hours.") }
+            var starts: [String: Int] = [:], clock = 0
+            for entry in project.entries(in: scene.id) { starts[entry.id] = clock; clock += entry.ownedDurationMs }
+            var end = 0, legacyEnd = 0
             for cue in project.cues(in: scene.id) {
-                guard cue.startMs >= end, cue.endMs > cue.startMs, cue.endMs <= project.durationMs(of: scene.id), cue.imageId == nil || imageIds.contains(cue.imageId!) else { throw ScrivError.invalid("Image cues must be ordered, non-overlapping, and inside the scene.") }
-                end = cue.endMs
+                guard cue.startMs >= 0, (cue.endMs > cue.startMs || cue.startAnchor != nil && cue.startMs == duration && cue.endMs == duration), cue.endMs <= duration, cue.imageId == nil || imageIds.contains(cue.imageId!) else { throw ScrivError.invalid("Image cues must have positive coverage inside the scene.") }
+                try CueAnchoring.validate(cue, project: project, starts: starts, entries: entriesByID, sceneDuration: duration)
+                // Overlap is intentional only when both placements carry validated source ownership.
+                guard cue.startMs >= legacyEnd, cue.startAnchor != nil || cue.startMs >= end else { throw ScrivError.invalid("Overlapping image cues need source-owned script anchors.") }
+                end = max(end, cue.endMs)
+                if cue.startAnchor == nil { legacyEnd = cue.endMs }
             }
         }
     }
-    public static func updateText(_ project: inout ScrivProject, entryId: String, text: String) throws {
+    public static func updateText(_ project: inout ScrivProject, entryId: String, text: String, edits: [CharacterTextEdit]? = nil) throws {
         var next = project
         guard let i = next.entries.firstIndex(where: { $0.id == entryId }) else { throw ScrivError.invalid("Line not found.") }
         let previous = next.entries[i].words
+        let links = CharacterMentions.reconcile(entry: next.entries[i], editedText: text, characters: next.characters, edits: edits)
         if next.entries[i].kind == .dialogue {
             let count = text.split(whereSeparator: { $0.isWhitespace }).count
             // Resize while the old text/word pair is still valid. Updating text first
             // makes resize validation fail whenever an edit needs additional time.
             if count > next.entries[i].ownedDurationMs { try setOwnedDuration(&next, entryId: entryId, durationMs: count) }
-            next.entries[i].words = retimeWords(text: text, durationMs: next.entries[i].ownedDurationMs, preserving: previous)
+            if previous.map(\.text) != text.split(whereSeparator: { $0.isWhitespace }).map(String.init) {
+                next.entries[i].words = try retimePreservingAuthored(text: text, durationMs: next.entries[i].ownedDurationMs, preserving: previous)
+            }
         }
         next.entries[i].text = text
+        next.entries[i].characterLinks = links
         try validate(next)
         project = next
     }
@@ -100,6 +119,8 @@ public enum TimingEngine {
         let entry = project.entries[i]
         let minimum = entry.kind == .dialogue ? max(1, entry.words.count) : 0
         guard durationMs >= minimum, durationMs <= 3_600_000 else { throw ScrivError.invalid("Duration must be between \(minimum)ms and one hour.") }
+        guard durationMs != entry.ownedDurationMs else { return }
+        try CueAnchoring.materialize(&project, sceneId: entry.sceneId)
         let start = project.startMs(of: entry.id), oldEnd = start + entry.ownedDurationMs, delta = durationMs - entry.ownedDurationMs
         func mapped(_ time: Int) -> Int {
             if time <= start { return time }
@@ -117,14 +138,25 @@ public enum TimingEngine {
             project.entries[j].coverageDurationMs = max(owned, mapped(oldCoverageEnd) - newSource)
         }
         project.entries[i].ownedDurationMs = durationMs
-        if entry.kind == .dialogue { project.entries[i].words = retimeWords(text: entry.text, durationMs: durationMs, preserving: entry.words) }
+        if entry.kind == .dialogue { project.entries[i].words = try retimePreservingAuthored(text: entry.text, durationMs: durationMs, preserving: entry.words) }
         else { project.entries[i].coverageDurationMs = max(durationMs, project.entries[i].coverageDurationMs) }
         for j in project.cues.indices where project.cues[j].sceneId == entry.sceneId {
-            let terminalInsertion = entry.ownedDurationMs == 0 && start == project.durationMs(of:entry.sceneId) - delta && project.cues[j].endMs == start
-            project.cues[j].startMs = mapped(project.cues[j].startMs)
-            project.cues[j].endMs = terminalInsertion ? project.cues[j].endMs + delta : mapped(project.cues[j].endMs)
+            let terminalInsertion = entry.ownedDurationMs == 0 && start == project.durationMs(of: entry.sceneId) - delta && project.cues[j].endMs == start
+            let oldStart = project.cues[j].startMs
+            let authoredEnd = oldStart + (project.cues[j].authoredDurationMs ?? project.cues[j].durationMs)
+            guard var anchor = project.cues[j].startAnchor else { throw ScrivError.invalid("Image source anchor is missing.") }
+            if anchor.entryId == entryId {
+                anchor.offsetMs = entry.ownedDurationMs == 0 ? 0 : min(max(0, durationMs - 1), Int((Double(anchor.offsetMs) * Double(durationMs) / Double(entry.ownedDurationMs)).rounded()))
+            }
+            let newStart = project.startMs(of: anchor.entryId) + anchor.offsetMs
+            let newEnd = terminalInsertion ? authoredEnd + delta : mapped(authoredEnd)
+            guard newEnd > newStart, newStart <= project.durationMs(of: entry.sceneId) else {
+                throw ScrivError.invalid("This duration would erase an image placement. Move or remove that image first; its identity and authored coverage have been preserved.")
+            }
+            project.cues[j].startAnchor = anchor
+            project.cues[j].authoredDurationMs = newEnd - newStart
         }
-        project.cues.removeAll { $0.endMs <= $0.startMs }
+        try CueAnchoring.resolve(&project, sceneId: entry.sceneId)
         try validate(project)
     }
     public static func setCoverage(_ project: inout ScrivProject, entryId: String, endMs: Int) throws {
@@ -134,9 +166,19 @@ public enum TimingEngine {
         project.entries[i].coverageDurationMs = endMs - start
     }
     public static func moveBoundary(_ project: inout ScrivProject, leftCueId: String, rightCueId: String, toMs: Int) throws {
-        guard let l = project.cues.firstIndex(where: { $0.id == leftCueId }), let r = project.cues.firstIndex(where: { $0.id == rightCueId }), project.cues[l].sceneId == project.cues[r].sceneId, project.cues[l].endMs == project.cues[r].startMs else { throw ScrivError.invalid("Only adjacent image cuts can share time.") }
-        guard toMs > project.cues[l].startMs, toMs < project.cues[r].endMs else { throw ScrivError.invalid("Both images must retain positive duration.") }
-        project.cues[l].endMs = toMs; project.cues[r].startMs = toMs
+        var next = project
+        guard canMoveBoundary(next, leftCueId: leftCueId, rightCueId: rightCueId),
+              let l = next.cues.firstIndex(where: { $0.id == leftCueId }), let r = next.cues.firstIndex(where: { $0.id == rightCueId }) else {
+            throw ScrivError.invalid("These images do not have an unobscured shared cut. Edit each image's coverage instead.")
+        }
+        guard toMs > next.cues[l].startMs, toMs < next.cues[r].endMs else { throw ScrivError.invalid("Both images must retain positive duration.") }
+        let sceneId = next.cues[l].sceneId
+        try CueAnchoring.materialize(&next, sceneId: sceneId)
+        next.cues[l].authoredDurationMs = toMs - next.cues[l].startMs
+        next.cues[r].authoredDurationMs = next.cues[r].endMs - toMs
+        next.cues[r].startAnchor = try CueAnchoring.anchor(atMs: toMs, in: next, sceneId: sceneId)
+        try CueAnchoring.resolve(&next, sceneId: sceneId)
+        try validate(next); project = next
     }
     public static func moveWords(_ project: inout ScrivProject, wordIds: Set<String>, fromCueId: String, toCueId: String) throws {
         guard !wordIds.isEmpty, let from = project.cues.first(where: { $0.id == fromCueId }), let to = project.cues.first(where: { $0.id == toCueId }), from.sceneId == to.sceneId else { throw ScrivError.invalid("Choose words and a neighboring image.") }
@@ -159,14 +201,22 @@ public enum TimingEngine {
     public static func absoluteWords(_ project: ScrivProject, sceneId: String) -> [TimedWord] {
         var clock = 0, result: [TimedWord] = []
         for entry in project.entries(in: sceneId) {
-            result += entry.words.map { TimedWord(id: $0.id, text: $0.text, startMs: clock + $0.startMs, endMs: clock + $0.endMs) }
+            result += entry.words.map { TimedWord(id: $0.id, text: $0.text, startMs: clock + $0.startMs, endMs: clock + $0.endMs, timingSource: $0.timingSource) }
             clock += entry.ownedDurationMs
         }
         return result
     }
-    public static func splitCue(_ project: inout ScrivProject, cueId: String, atMs: Int) throws {
-        guard let i = project.cues.firstIndex(where: { $0.id == cueId }), atMs > project.cues[i].startMs, atMs < project.cues[i].endMs else { throw ScrivError.invalid("Place the playhead inside an image to split it.") }
-        var next = project.cues[i]; next.id = UUID().uuidString; next.startMs = atMs; next.label += "B"
-        project.cues[i].endMs = atMs; project.cues.append(next)
+    public static func splitCue(_ project: inout ScrivProject, cueId: String, atMs: Int, newCueId: String = UUID().uuidString) throws {
+        var next = project
+        guard let i = next.cues.firstIndex(where: { $0.id == cueId }), atMs > next.cues[i].startMs, atMs < next.cues[i].endMs else { throw ScrivError.invalid("Place the playhead inside an image to split it.") }
+        let sceneId = next.cues[i].sceneId
+        try CueAnchoring.materialize(&next, sceneId: sceneId)
+        var right = next.cues[i]; right.id = newCueId; right.startMs = atMs; right.label += "B"
+        right.authoredDurationMs = next.cues[i].startMs + next.cues[i].authoredDurationMs! - atMs
+        right.startAnchor = try CueAnchoring.anchor(atMs: atMs, in: next, sceneId: sceneId)
+        next.cues[i].authoredDurationMs = atMs - next.cues[i].startMs
+        next.cues.append(right)
+        try CueAnchoring.resolve(&next, sceneId: sceneId)
+        try validate(next); project = next
     }
 }

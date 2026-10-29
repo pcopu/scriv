@@ -3,11 +3,13 @@ import type { Change, Command, Env, Identity, Item, ItemKind, Lease, Operation, 
 import { authenticate, projectAccess } from './access';
 import { APIError, assert, body, failure, id, int, json, randomToken, record, sha256, stableJSON, str, uuid } from './http';
 import { itemKinds, validateItem } from './validation';
+import { batchLimits, batchManifest, type BatchManifest } from './atomic-batch';
 
 interface ItemRow { id:string;kind:ItemKind;version:number;data:string;deleted:number }
 interface LeaseRow { auth_session_id:string;item_id:string;session_id:string;token:string;fence:number;expires_at:number;epoch:number;user_id:string;name:string }
 interface EventRow { seq:number;epoch:number;command_id:string;actor_id:string;kind:string;at:number;data:string }
-interface Attachment { projectId:string;userId:string;name:string;sessionHash:string;sessionId:string;connectionId:string;expiresAt:number;premiumUntil:number;lastPresenceAt:number;lastMessageAt:number;messageCount:number;presence?:Record<string,unknown> }
+interface Attachment { projectId:string;userId:string;name:string;sessionHash:string;sessionId:string;connectionId:string;expiresAt:number;premiumUntil:number;lastPresenceAt:number;lastSeenAt?:number;lastMessageAt:number;messageCount:number;presence?:Record<string,unknown>;presenceProtocol?:'delta-v1' }
+interface BatchRow { command_id:string;user_id:string;auth_session_id:string;request_hash:string;manifest:string;reserved_bytes:number;expires_at:number }
 interface ThreadRow { id:string;item_id:string|null;anchor:string;resolved:number;created_at:number;updated_at:number }
 interface MessageRow { id:string;thread_id:string;user_id:string;name:string;body:string;reply_to_id:string|null;attachments:string;mentioned_user_ids:string;at:number }
 
@@ -24,6 +26,9 @@ CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY,epoch INTEGER NOT NULL
 CREATE TABLE IF NOT EXISTS changes(seq INTEGER NOT NULL,item_id TEXT NOT NULL,before_json TEXT,after_json TEXT NOT NULL,PRIMARY KEY(seq,item_id));
 CREATE INDEX IF NOT EXISTS changes_item ON changes(item_id,seq);
 CREATE TABLE IF NOT EXISTS receipts(command_id TEXT PRIMARY KEY,user_id TEXT NOT NULL,request_hash TEXT NOT NULL,result TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS command_batches(command_id TEXT PRIMARY KEY,user_id TEXT NOT NULL,auth_session_id TEXT NOT NULL,request_hash TEXT NOT NULL,manifest TEXT NOT NULL,reserved_bytes INTEGER NOT NULL,expires_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS command_batch_parts(command_id TEXT NOT NULL,part_index INTEGER NOT NULL,content TEXT NOT NULL,PRIMARY KEY(command_id,part_index));
+CREATE INDEX IF NOT EXISTS command_batches_expiry ON command_batches(expires_at);
 CREATE TABLE IF NOT EXISTS threads(id TEXT PRIMARY KEY,item_id TEXT,anchor TEXT NOT NULL,resolved INTEGER NOT NULL DEFAULT 0,created_at INTEGER NOT NULL,updated_at INTEGER NOT NULL);
 CREATE UNIQUE INDEX IF NOT EXISTS thread_item ON threads(COALESCE(item_id,''));
 CREATE TABLE IF NOT EXISTS messages(id TEXT PRIMARY KEY,thread_id TEXT NOT NULL REFERENCES threads(id),user_id TEXT NOT NULL,name TEXT NOT NULL,body TEXT NOT NULL,reply_to_id TEXT,attachments TEXT NOT NULL,at INTEGER NOT NULL);
@@ -36,6 +41,11 @@ INSERT OR IGNORE INTO schema_migrations(version,applied_at) VALUES(1,0);
 export class ProjectRoom extends DurableObject<Env> {
   private sql: SqlStorage;
   private lastPresenceBroadcast = 0;
+  private presenceFlushScheduled = false;
+  private lastPresenceSweep = 0;
+  // A fresh/hibernated instance publishes a snapshot before deltas. Presence is
+  // ephemeral; losing this baseline must not leave phantom peers on clients.
+  private publishedPresence: Map<string,string> | undefined;
   private pendingEvents: ProjectEvent[] = [];
   private pendingEventBytes = 0;
   private eventFlushScheduled = false;
@@ -152,7 +162,7 @@ export class ProjectRoom extends DurableObject<Env> {
     for(const change of changes){const item=change.after,d=item.data;
       // Text, word timings, labels and appearance do not alter scene geometry.
       // Keep their per-item/reference checks below without scanning every cue.
-      const geometryKeys=item.kind==='entry'?['sceneId','order','kind','ownedDurationMs','coverageDurationMs']:item.kind==='cue'?['sceneId','startMs','endMs']:item.kind==='scene'?['order']:null;
+      const geometryKeys=item.kind==='entry'?['sceneId','order','kind','ownedDurationMs','coverageDurationMs']:item.kind==='cue'?['sceneId','startMs','endMs','startAnchor','authoredDurationMs']:item.kind==='scene'?['order']:null;
       if(geometryKeys&&(!change.before||change.before.deleted!==item.deleted||geometryKeys.some(key=>change.before!.data[key]!==d[key]))){
         if(change.before?.data.sceneId)scenes.add(String(change.before.data.sceneId));
         if(d.sceneId)scenes.add(String(d.sceneId));
@@ -161,6 +171,7 @@ export class ProjectRoom extends DurableObject<Env> {
       if(!item.deleted){
         if(item.kind==='entry'){
           reference(d.sceneId,'scene','sceneId');reference(d.characterId,'character','characterId');
+          for(const link of (d.characterLinks??[]) as {characterId?:string|null}[])reference(link.characterId,'character','characterLinks.characterId');
           assert(!this.one('SELECT word_id FROM word_owners WHERE word_id IN (SELECT word_id FROM word_owners WHERE item_id=?) GROUP BY word_id HAVING COUNT(*)>1 LIMIT 1',item.id),400,'duplicate_word','Word IDs must be unique throughout the project.');
         }
         if(item.kind==='cue'){reference(d.sceneId,'scene','sceneId');reference(d.imageId,'image','imageId');}
@@ -171,15 +182,35 @@ export class ProjectRoom extends DurableObject<Env> {
         if(item.kind==='character')reference(d.portraitImageId,'image','portraitImageId');
       } else {
         if(item.kind==='scene')assert(!this.one('SELECT id FROM items WHERE scene_id=? AND deleted=0 LIMIT 1',item.id),409,'item_in_use','Delete the scene contents in the same command before deleting the scene.');
-        if(item.kind==='character')assert(!this.one(`SELECT id FROM items WHERE deleted=0 AND ((kind='entry' AND json_extract(data,'$.characterId')=?) OR (kind='image' AND EXISTS(SELECT 1 FROM json_each(items.data,'$.characterIds') WHERE value=?))) LIMIT 1`,item.id,item.id),409,'item_in_use','Remove character links and image tags in the same command before deleting this character.');
+        if(item.kind==='character')assert(!this.one(`SELECT id FROM items WHERE deleted=0 AND ((kind='entry' AND (json_extract(data,'$.characterId')=? OR EXISTS(SELECT 1 FROM json_each(items.data,'$.characterLinks') WHERE json_extract(value,'$.characterId')=?))) OR (kind='image' AND EXISTS(SELECT 1 FROM json_each(items.data,'$.characterIds') WHERE value=?))) LIMIT 1`,item.id,item.id,item.id),409,'item_in_use','Remove character links and image tags in the same command before deleting this character.');
         if(item.kind==='image')assert(!this.one(`SELECT id FROM items WHERE deleted=0 AND ((kind='cue' AND json_extract(data,'$.imageId')=?) OR (kind='character' AND json_extract(data,'$.portraitImageId')=?) OR (kind='image' AND json_extract(data,'$.previousVersionId')=?)) LIMIT 1`,item.id,item.id,item.id),409,'item_in_use','This image version is still referenced. Remove its references first.');
       }
     }
-    for(const sceneId of scenes){const entries=this.rows<{duration_ms:number}>('SELECT duration_ms FROM items WHERE scene_id=? AND kind=? AND deleted=0',sceneId,'entry');const duration=entries.reduce((sum,e)=>sum+e.duration_ms,0);let end=0;
+    for(const sceneId of scenes){
+      const entries=this.rows<{id:string;duration_ms:number;entry_kind:string}>("SELECT id,duration_ms,json_extract(data,'$.kind') entry_kind FROM items WHERE scene_id=? AND kind=? AND deleted=0 ORDER BY ordinal,id",sceneId,'entry');
+      let duration=0;const starts=new Map<string,{start:number;duration:number;kind:string}>();
+      for(const entry of entries){starts.set(entry.id,{start:duration,duration:entry.duration_ms,kind:entry.entry_kind});duration+=entry.duration_ms;}
       assert(duration<=86400000,400,'scene_too_long','A scene cannot exceed 24 hours.');
-      for(const cue of this.rows<{start_ms:number;end_ms:number}>('SELECT start_ms,end_ms FROM items WHERE scene_id=? AND kind=? AND deleted=0 ORDER BY start_ms,id',sceneId,'cue')){assert(cue.start_ms>=end&&cue.end_ms<=duration,409,'cue_timing','Image cues must be non-overlapping and remain inside their scene. Resize related cues in the same atomic command.');end=cue.end_ms;}
+      const cues=this.rows<{start_ms:number;end_ms:number;data:string}>('SELECT start_ms,end_ms,data FROM items WHERE scene_id=? AND kind=? AND deleted=0 ORDER BY start_ms,id',sceneId,'cue');
+      let previousEnd=0,legacyEnd=0;
+      for(const cue of cues){
+        const data=JSON.parse(cue.data),anchor=data.startAnchor as {entryId:string;offsetMs:number}|undefined;
+        assert(cue.end_ms<=duration,409,'cue_timing','Image cues must remain inside their scene. Resize related cues in the same atomic command.');
+        if(anchor){
+          const source=starts.get(anchor.entryId);
+          // A zero-owned direction at the exact scene tail may retain dormant
+          // positive authored coverage. The exact clamp below is the only case
+          // where resolved start==end is valid; it reappears with later content.
+          assert(source&&((source.duration>0&&anchor.offsetMs<source.duration)||(source.kind==='direction'&&source.duration===0&&anchor.offsetMs===0))&&cue.start_ms===source.start+anchor.offsetMs&&cue.end_ms===Math.min(duration,cue.start_ms+Number(data.authoredDurationMs)),409,'cue_anchor','Image coverage must resolve from its source entry and authored duration.');
+          assert(cue.start_ms>=legacyEnd,409,'cue_timing','Migrate overlapping legacy image cues to source anchors in the same edit.');
+        }else{
+          assert(cue.start_ms>=previousEnd,409,'cue_timing','Legacy image cues must not overlap. Migrate their source anchors in the same edit.');legacyEnd=cue.end_ms;
+        }
+        previousEnd=Math.max(previousEnd,cue.end_ms);
+      }
     }
   }
+
   private parseCommand(raw:Record<string,unknown>,maxOperations=100):Command {
     const commandId=id(raw.commandId,'commandId'),sessionId=id(raw.sessionId,'sessionId'),epoch=int(raw.epoch,'epoch',1);const label=str(raw.label??'Edit','label',200);
     assert(Array.isArray(raw.operations)&&raw.operations.length>0&&raw.operations.length<=maxOperations,400,'invalid_operations',`A command must contain 1–${maxOperations} item operations.`);
@@ -190,23 +221,44 @@ export class ProjectRoom extends DurableObject<Env> {
       return{op:op.op as 'put'|'delete',id:itemId,kind,data,expectedVersion,lease};});
     return{commandId,sessionId,epoch,label,operations,expectedTimingVersion:raw.expectedTimingVersion===undefined?undefined:int(raw.expectedTimingVersion,'expectedTimingVersion')};
   }
-  private commit(identity:Identity,command:Command,hash:string,snapshotRequired=false){
+  private commit(identity:Identity,command:Command,hash:string,snapshotRequired=false,atomicLeases=false){
     return this.ctx.storage.transactionSync(()=>{
       const previous=this.one<{user_id:string;request_hash:string;result:string}>('SELECT * FROM receipts WHERE command_id=?',command.commandId);
       if(previous){assert(previous.user_id===identity.user.id&&previous.request_hash===hash,409,'command_reused','A command ID cannot be reused for a different change.');return{receipt:JSON.parse(previous.result),event:null};}
       const state=this.state();assert(command.epoch===state.epoch,409,'stale_epoch','The project was restored. Refresh it before editing.',{epoch:state.epoch});
       const timingKeys=['sceneId','order','kind','ownedDurationMs','coverageDurationMs','text','words'];
-      const touchesTiming=command.operations.some(operation=>{const prior=this.getItem(operation.id),kind=operation.kind??prior?.kind;if(kind!=='entry'&&kind!=='cue')return false;if(!prior||prior.deleted||operation.op==='delete')return true;const keys=kind==='entry'?timingKeys:['sceneId','startMs','endMs'];return keys.some(key=>stableJSON(prior.data[key])!==stableJSON(operation.data?.[key]));});
-      const changesTimeline=command.operations.some(operation=>{const prior=this.getItem(operation.id),kind=operation.kind??prior?.kind;if(kind!=='entry'&&kind!=='cue')return false;if(!prior||prior.deleted||operation.op==='delete')return true;const keys=kind==='entry'?['sceneId','order','kind','ownedDurationMs','coverageDurationMs']:['sceneId','startMs','endMs'];return keys.some(key=>stableJSON(prior.data[key])!==stableJSON(operation.data?.[key]));});
+      const touchesTiming=command.operations.some(operation=>{const prior=this.getItem(operation.id),kind=operation.kind??prior?.kind;if(kind!=='entry'&&kind!=='cue')return false;if(!prior||prior.deleted||operation.op==='delete')return true;const keys=kind==='entry'?timingKeys:['sceneId','startMs','endMs','startAnchor','authoredDurationMs'];return keys.some(key=>stableJSON(prior.data[key])!==stableJSON(operation.data?.[key]));});
+      const changesTimeline=command.operations.some(operation=>{const prior=this.getItem(operation.id),kind=operation.kind??prior?.kind;if(kind!=='entry'&&kind!=='cue')return false;if(!prior||prior.deleted||operation.op==='delete')return true;const keys=kind==='entry'?['sceneId','order','kind','ownedDurationMs','coverageDurationMs']:['sceneId','startMs','endMs','startAnchor','authoredDurationMs'];return keys.some(key=>stableJSON(prior.data[key])!==stableJSON(operation.data?.[key]));});
       if(changesTimeline)assert(command.expectedTimingVersion===state.timing_version,409,'timing_conflict','The project timing changed. Refresh and reapply this edit.',{timingVersion:state.timing_version});
       const timingVersion=state.timing_version+(touchesTiming?1:0);
-      const changes:Change[]=[];
-      for(const operation of command.operations){const existing=this.getItem(operation.id);assert((existing?.version??0)===operation.expectedVersion,409,'version_conflict','This item changed on another device.',{itemId:operation.id,current:existing});if(existing)this.requireLease(operation.id,operation.lease,command.sessionId,identity,state.epoch);
+      const changes:Change[]=[];let changeBytes=0;const temporaryLeases:string[]=[];
+      for(const operation of command.operations){const existing=this.getItem(operation.id);assert((existing?.version??0)===operation.expectedVersion,409,'version_conflict','This item changed on another device.',{itemId:operation.id,current:existing});if(existing){
+          if(atomicLeases&&!operation.lease){
+            const current=this.one<LeaseRow>('SELECT * FROM leases WHERE item_id=?',operation.id),now=Date.now();
+            if(current&&current.expires_at>now&&current.epoch===state.epoch){
+              assert(current.user_id===identity.user.id&&current.auth_session_id===identity.sessionId&&current.session_id===command.sessionId,423,'item_locked',`${current.name} is editing this item.`,{itemId:operation.id});
+              operation.lease={token:current.token,fence:current.fence};
+            }else{
+              const token=randomToken(),fence=(current?.fence??0)+1;
+              this.sql.exec(`INSERT INTO leases(item_id,auth_session_id,session_id,token,fence,expires_at,epoch,user_id,name) VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(item_id) DO UPDATE SET auth_session_id=excluded.auth_session_id,session_id=excluded.session_id,token=excluded.token,fence=excluded.fence,expires_at=excluded.expires_at,epoch=excluded.epoch,user_id=excluded.user_id,name=excluded.name`,operation.id,identity.sessionId,command.sessionId,token,fence,now+30000,state.epoch,identity.user.id,identity.user.name);
+              operation.lease={token,fence};temporaryLeases.push(operation.id);
+            }
+          }
+          this.requireLease(operation.id,operation.lease,command.sessionId,identity,state.epoch);
+        }
         assert(operation.op!=='delete'||(existing&&!existing.deleted),404,'not_found','The item no longer exists.');assert(!existing||operation.kind===undefined||operation.kind===existing.kind,409,'kind_conflict','An item cannot change kind.');
+        if(existing?.kind==='entry'&&operation.op==='put'&&Array.isArray(existing.data.characterLinks))assert(Array.isArray(operation.data?.characterLinks),409,'schema_upgrade_required','This edit would remove saved character links. Update Scriv and reload the project before retrying.');
+        if(existing?.kind==='cue'&&operation.op==='put'&&existing.data.startAnchor!=null)assert(operation.data?.startAnchor!=null&&operation.data?.authoredDurationMs!=null,409,'schema_upgrade_required','This edit would remove saved image source anchors. Update Scriv and reload the project before retrying.');
+        if(existing?.kind==='entry'&&operation.op==='put'){
+          const nextWords=new Map((operation.data!.words as {id:string;timingSource?:string|null}[]).map(word=>[word.id,word]));
+          for(const word of existing.data.words as {id:string;timingSource?:string|null}[])if(word.timingSource==='authored'&&nextWords.has(word.id))assert(nextWords.get(word.id)!.timingSource==='authored',409,'schema_upgrade_required','This edit would remove authored word timing. Update Scriv and reload the project before retrying.');
+        }
         if(existing?.kind==='image'&&operation.op==='put')for(const key of ['version','fileName','sha256','mimeType','byteCount','createdAt','previousVersionId'])assert(stableJSON(existing.data[key]??null)===stableJSON(operation.data?.[key]??null),409,'immutable_image','Image bytes and version lineage are immutable. Create a new image version instead.');
-        const after:Item={id:operation.id,kind:operation.kind??existing!.kind,version:(existing?.version??0)+1,data:operation.data??existing!.data,deleted:operation.op==='delete'};this.putItem(after);changes.push({id:operation.id,before:existing,after});
+        const after:Item={id:operation.id,kind:operation.kind??existing!.kind,version:(existing?.version??0)+1,data:operation.data??existing!.data,deleted:operation.op==='delete'};if(atomicLeases){changeBytes+=new TextEncoder().encode(JSON.stringify(existing)).byteLength+new TextEncoder().encode(JSON.stringify(after)).byteLength;assert(changeBytes<=batchLimits.bytes,413,'batch_history_too_large','This edit exceeds the 16 MiB atomic before/after history budget.');}
+        this.putItem(after);changes.push({id:operation.id,before:existing,after});
       }
       this.validateReferences(changes);
+      for(const itemId of temporaryLeases)this.sql.exec('UPDATE leases SET expires_at=0 WHERE item_id=?',itemId);
       const itemCount=this.one<{n:number}>('SELECT COUNT(*) n FROM items WHERE deleted=0')!.n;assert(itemCount<=50000,413,'project_limit','A project cannot contain more than 50,000 items. Split it into multiple projects.');
       const seq=state.head_seq+1,at=Date.now();const event:ProjectEvent={seq,epoch:state.epoch,commandId:command.commandId,actorId:identity.user.id,kind:'command',at,changes:snapshotRequired?[]:changes,data:{label:command.label,timingVersion,...(snapshotRequired?{snapshotRequired:true}:{})}};
       this.sql.exec('UPDATE meta SET head_seq=?,timing_version=? WHERE id=1',seq,timingVersion);this.sql.exec('INSERT INTO events(seq,epoch,command_id,actor_id,kind,at,data) VALUES(?,?,?,?,?,?,?)',seq,state.epoch,command.commandId,identity.user.id,event.kind,at,JSON.stringify(event.data));
@@ -303,6 +355,7 @@ export class ProjectRoom extends DurableObject<Env> {
         assert(access.canWrite,403,'read_only','You can read this project but cannot edit it.');
         this.requireCurrentAccess(authorizationGeneration);const {receipt,event}=this.commit(identity,command,hash);if(event)this.queueEvent(event);return json(receipt);
       }
+      if(route==='batches'||route.startsWith('batches/'))return await this.handleBatch(request,route,identity,access,authorizationGeneration);
       if(route==='restore'&&request.method==='POST'){
         const raw=await body(request,8192),hash=await sha256(stableJSON(raw));
         this.requireCurrentAccess(authorizationGeneration);
@@ -316,6 +369,83 @@ export class ProjectRoom extends DurableObject<Env> {
       if(route==='signals')return await this.handleSignals(request,identity,access,authorizationGeneration);
       throw new APIError(404,'not_found','Project route not found.');
     }catch(error){return failure(error);}
+  }
+  private discardBatch(commandId:string){this.sql.exec('DELETE FROM command_batch_parts WHERE command_id=?',commandId);this.sql.exec('DELETE FROM command_batches WHERE command_id=?',commandId);}
+  async alarm(){
+    this.cleanBatches();const next=this.one<{at:number|null}>('SELECT MIN(expires_at) at FROM command_batches')?.at;
+    if(next!==null&&next!==undefined)await this.ctx.storage.setAlarm(next);
+  }
+  private cleanBatches(){
+    const now=Date.now();
+    this.sql.exec('DELETE FROM command_batch_parts WHERE command_id IN (SELECT command_id FROM command_batches WHERE expires_at<=?)',now);
+    this.sql.exec('DELETE FROM command_batches WHERE expires_at<=?',now);
+  }
+  private batchReceipt(commandId:string,userId:string,hash:string){
+    const prior=this.one<{user_id:string;request_hash:string;result:string}>('SELECT * FROM receipts WHERE command_id=?',commandId);
+    if(!prior)return null;
+    assert(prior.user_id===userId&&prior.request_hash===hash,409,'command_reused','A command ID cannot be reused for a different change.');
+    return JSON.parse(prior.result);
+  }
+  private async handleBatch(request:Request,route:string,identity:Identity,access:ProjectAccess,authorizationGeneration:number):Promise<Response>{
+    const match=/^batches(?:\/([^/]+)\/(commit|parts\/(\d+)))?$/.exec(route);assert(match,404,'not_found','Batch route not found.');
+    if(route==='batches'||match[2]==='commit'){
+      assert(request.method==='POST',405,'method_not_allowed','Use POST for batch preparation or commit.');
+      const manifest=batchManifest(await body(request,192*1024)),hash='batch:'+await sha256(stableJSON(manifest));
+      if(match[1])assert(id(match[1])===manifest.commandId,400,'batch_identity','Batch identity does not match its manifest.');
+      this.requireCurrentAccess(authorizationGeneration);
+      // A lost success remains recoverable after entitlement/leases/epoch change.
+      const accepted=this.batchReceipt(manifest.commandId,identity.user.id,hash);if(accepted)return json(accepted);
+      assert(access.canWrite,403,'read_only','You can read this project but cannot edit it.');
+      this.cleanBatches();
+      const existing=this.one<BatchRow>('SELECT * FROM command_batches WHERE command_id=?',manifest.commandId);
+      if(existing){
+        assert(existing.user_id===identity.user.id&&existing.request_hash===hash,409,'command_reused','A batch ID cannot be reused for a different edit.');
+        if(existing.auth_session_id!==identity.sessionId){this.discardBatch(manifest.commandId);throw new APIError(409,'batch_session_changed','Sign-in changed before this edit committed. Reconcile your saved draft before retrying.');}
+      }
+      if(route==='batches'){
+        if(!existing){
+          const reserved=manifest.parts.reduce((n,p)=>n+p.bytes,0),room=this.one<{n:number;bytes:number}>('SELECT COUNT(*) n,COALESCE(SUM(reserved_bytes),0) bytes FROM command_batches')!;
+          assert(room.n<64&&room.bytes+reserved<=batchLimits.roomBytes,429,'batch_capacity','Too many structural edits are uploading. Retry shortly.');
+          assert(this.one<{n:number}>('SELECT COUNT(*) n FROM command_batches WHERE user_id=?',identity.user.id)!.n<2,429,'batch_capacity','Finish or retry your pending structural edit first.');
+          this.sql.exec('INSERT INTO command_batches(command_id,user_id,auth_session_id,request_hash,manifest,reserved_bytes,expires_at) VALUES(?,?,?,?,?,?,?)',manifest.commandId,identity.user.id,identity.sessionId,hash,JSON.stringify(manifest),reserved,Date.now()+batchLimits.ttl);
+        }
+        await this.ctx.storage.setAlarm(this.one<{at:number}>('SELECT MIN(expires_at) at FROM command_batches')!.at);
+        return json({commandId:manifest.commandId,staged:true});
+      }
+      assert(existing,409,'batch_incomplete','Upload all parts before committing the edit.');
+      const parts=this.rows<{part_index:number;content:string}>('SELECT part_index,content FROM command_batch_parts WHERE command_id=? ORDER BY part_index',manifest.commandId);
+      assert(parts.length===manifest.parts.length&&parts.every((p,i)=>p.part_index===i),409,'batch_incomplete','Upload all parts before committing the edit.');
+      const operations=parts.flatMap(part=>JSON.parse(part.content) as unknown[]);
+      const command=this.parseCommand({...manifest,operations},batchLimits.operations);
+      assert(command.operations.length===manifest.operationCount,400,'invalid_batch','The complete edit has the wrong operation count.');
+      this.requireCurrentAccess(authorizationGeneration);
+      try{
+        const {receipt,event}=this.ctx.storage.transactionSync(()=>{
+          const result=this.commit(identity,command,hash,true,true);
+          this.discardBatch(manifest.commandId);return result;
+        });
+        if(event)this.queueEvent(event);return json(receipt);
+      }catch(error){
+        // The transaction rolled back completely. Do not leave rejected edits
+        // reserving upload capacity while the client reconciles a fresh command.
+        if(error instanceof APIError)this.discardBatch(manifest.commandId);
+        throw error;
+      }
+    }
+    assert(request.method==='PUT',405,'method_not_allowed','Use PUT to upload a batch part.');
+    const commandId=id(match[1]),index=int(Number(match[3]),'partIndex',0,batchLimits.parts-1),raw=await body(request,1024*1024),content=str(raw.content,'content',batchLimits.partBytes,2),hash=await sha256(content);
+    this.requireCurrentAccess(authorizationGeneration);assert(access.canWrite,403,'read_only','You cannot upload edits to this project.');this.cleanBatches();
+    const staged=this.one<BatchRow>('SELECT * FROM command_batches WHERE command_id=?',commandId);assert(staged,409,'batch_incomplete','Prepare the batch before uploading parts.');
+    assert(staged.user_id===identity.user.id&&staged.auth_session_id===identity.sessionId,409,'batch_session_changed','This upload belongs to a different sign-in session.');
+    const manifest=JSON.parse(staged.manifest) as BatchManifest,expected=manifest.parts[index];
+    assert(expected&&expected.hash===hash&&expected.bytes===new TextEncoder().encode(content).byteLength,400,'batch_part_mismatch','Part bytes do not match the immutable edit manifest.');
+    let operations:unknown;try{operations=JSON.parse(content);}catch{throw new APIError(400,'invalid_json','A batch part must contain JSON operations.');}
+    assert(Array.isArray(operations)&&operations.length===expected.count,400,'invalid_batch','Part operation count does not match the manifest.');
+    this.parseCommand({...manifest,operations},batchLimits.partOperations);
+    const previous=this.one<{content:string}>('SELECT content FROM command_batch_parts WHERE command_id=? AND part_index=?',commandId,index);
+    assert(!previous||previous.content===content,409,'batch_part_mismatch','A part cannot be replaced by different bytes.');
+    this.sql.exec('INSERT OR IGNORE INTO command_batch_parts(command_id,part_index,content) VALUES(?,?,?)',commandId,index,content);
+    return json({commandId,partIndex:index,staged:true});
   }
   private async handleLeases(request:Request,identity:Identity,access:ProjectAccess,authorizationGeneration:number):Promise<Response>{
     if(request.method==='GET')return json({leases:this.publicLeases(),epoch:this.state().epoch});
@@ -468,11 +598,36 @@ export class ProjectRoom extends DurableObject<Env> {
     assert(request.headers.get('upgrade')?.toLowerCase()==='websocket',426,'websocket_required','Upgrade to WebSocket to join the live project.');assert(access.premium,402,'team_subscription_required','Live multiplayer requires a Team subscription.');
     assert(this.ctx.getWebSockets().filter(socket=>socket.readyState===WebSocket.OPEN).length<1000,503,'room_full','This project currently has too many live connections. Retry shortly.');
     const pair=new WebSocketPair();const client=pair[0],server=pair[1];const connectionId=uuid();
-    this.ctx.acceptWebSocket(server);server.serializeAttachment({projectId:access.project.id,userId:identity.user.id,name:identity.user.name,sessionHash:identity.tokenHash,sessionId:identity.sessionId,connectionId,expiresAt:identity.expiresAt,premiumUntil:access.team?.paid_until??0,lastPresenceAt:0,lastMessageAt:Date.now(),messageCount:0} satisfies Attachment);
+    this.ctx.acceptWebSocket(server);server.serializeAttachment({projectId:access.project.id,userId:identity.user.id,name:identity.user.name,sessionHash:identity.tokenHash,sessionId:identity.sessionId,connectionId,expiresAt:identity.expiresAt,premiumUntil:access.team?.paid_until??0,lastPresenceAt:Date.now(),lastSeenAt:Date.now(),lastMessageAt:Date.now(),messageCount:0,presence:{},...(request.headers.get('X-Scriv-Presence')==='delta-v1'?{presenceProtocol:'delta-v1' as const}:{})} satisfies Attachment);
     const state=this.state();this.send(server,{type:'hello',projectId:access.project.id,epoch:state.epoch,headSeq:state.head_seq,timingVersion:state.timing_version,connectionId,deviceId:identity.sessionId});this.send(server,{type:'leases',leases:this.publicLeases()});this.send(server,{type:'presence',peers:this.peers()});
+    this.queuePresenceBroadcast();
     return new Response(null,{status:101,webSocket:client});
   }
-  private peers(){const now=Date.now();return this.ctx.getWebSockets().filter(socket=>socket.readyState===WebSocket.OPEN).map(socket=>socket.deserializeAttachment() as Attachment).filter(a=>a.presence&&now-a.lastPresenceAt<30000&&a.expiresAt>now&&a.premiumUntil>now).map(a=>({connectionId:a.connectionId,deviceId:a.sessionId,userId:a.userId,name:a.name,...a.presence,at:a.lastPresenceAt}));}
+  private peers(){const now=Date.now();return this.ctx.getWebSockets().filter(socket=>socket.readyState===WebSocket.OPEN).map(socket=>socket.deserializeAttachment() as Attachment).filter(a=>now-(a.lastSeenAt??a.lastPresenceAt)<30000&&a.expiresAt>now&&a.premiumUntil>now).map(a=>({connectionId:a.connectionId,deviceId:a.sessionId,userId:a.userId,name:a.name,...(a.presence??{}),at:a.lastPresenceAt}));}
+  private queuePresenceBroadcast(){
+    if(this.presenceFlushScheduled)return;
+    this.presenceFlushScheduled=true;
+    // One trailing-latest room batch, never one fanout per moving cursor.
+    const interval=this.ctx.getWebSockets().length>100?250:200;
+    const delay=Math.max(0,interval-(Date.now()-this.lastPresenceBroadcast));
+    this.ctx.waitUntil(new Promise<void>(resolve=>setTimeout(resolve,delay)).then(()=>{this.presenceFlushScheduled=false;this.flushPresence();}));
+  }
+  private flushPresence(){
+    this.lastPresenceBroadcast=Date.now();this.lastPresenceSweep=this.lastPresenceBroadcast;
+    const peers=this.peers(),baseline=this.publishedPresence,current=new Map<string,string>();
+    const changed=peers.filter(peer=>{const {at,...visible}=peer;const fingerprint=JSON.stringify(visible);current.set(peer.connectionId,fingerprint);return baseline?.get(peer.connectionId)!==fingerprint;});
+    const removedConnectionIds=baseline?[...baseline.keys()].filter(key=>!current.has(key)):[];
+    this.publishedPresence=current;
+    if(baseline&&changed.length===0&&removedConnectionIds.length===0)return;
+    const snapshot=JSON.stringify({type:'presence',peers});
+    const delta=JSON.stringify({type:'presence-delta',peers:changed,removedConnectionIds});
+    for(const socket of this.ctx.getWebSockets()){
+      if(socket.readyState!==WebSocket.OPEN)continue;
+      const a=socket.deserializeAttachment() as Attachment;
+      if(a.expiresAt<=Date.now()||a.premiumUntil<=Date.now()){try{socket.close(4001,'Access expired');}catch{}continue;}
+      try{socket.send(baseline&&a.presenceProtocol==='delta-v1'?delta:snapshot);}catch{try{socket.close(1011,'Connection lost');}catch{}}
+    }
+  }
   private async socketIdentity(socket:WebSocket):Promise<{identity:Identity;access:ProjectAccess;attachment:Attachment}>{
     const a=socket.deserializeAttachment() as Attachment;
     const session=await this.env.DB.prepare('SELECT s.id,s.user_id,s.expires_at,u.name,u.email,u.avatar_url FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.revoked_at IS NULL AND s.expires_at>?').bind(a.sessionHash,Date.now()).first<{id:string;user_id:string;expires_at:number;name:string;email:string|null;avatar_url:string|null}>();
@@ -489,14 +644,14 @@ export class ProjectRoom extends DurableObject<Env> {
       try{decoded=JSON.parse(new TextDecoder('utf-8',{fatal:true,ignoreBOM:false}).decode(bytes));}
       catch{throw new APIError(400,'invalid_json','Live messages must contain valid UTF-8 JSON.');}
       const raw=record(decoded);const {identity,access,attachment:a}=await this.socketIdentity(socket);this.requireCurrentAccess(authorizationGeneration);authorized=true;
-      const now=Date.now();if(now-a.lastMessageAt>1000){a.lastMessageAt=now;a.messageCount=0;}a.messageCount++;assert(a.messageCount<=30,429,'rate_limited','Live messages are arriving too quickly.');a.expiresAt=identity.expiresAt;a.premiumUntil=access.team?.paid_until??0;a.name=identity.user.name;socket.serializeAttachment(a);
+      const now=Date.now();if(now-a.lastMessageAt>1000){a.lastMessageAt=now;a.messageCount=0;}a.messageCount++;assert(a.messageCount<=30,429,'rate_limited','Live messages are arriving too quickly.');a.expiresAt=identity.expiresAt;a.premiumUntil=access.team?.paid_until??0;a.name=identity.user.name;a.lastSeenAt=now;socket.serializeAttachment(a);
       if(raw.type==='resume'){this.flushEvents();this.send(socket,{type:'events',...this.eventPage(int(raw.after??0,'after'),100)});return;}
-      if(raw.type==='ping'){this.flushEvents();const state=this.state();this.send(socket,{type:'watermark',headSeq:state.head_seq,epoch:state.epoch,timingVersion:state.timing_version});this.send(socket,{type:'presence',peers:this.peers()});return;}
+      if(raw.type==='ping'){this.flushEvents();const state=this.state();this.send(socket,{type:'watermark',headSeq:state.head_seq,epoch:state.epoch,timingVersion:state.timing_version});if(now-this.lastPresenceSweep>=10000||!this.publishedPresence?.has(a.connectionId))this.queuePresenceBroadcast();return;}
       if(raw.type==='presence'){
-        if(now-a.lastPresenceAt<200)return;const presence:Record<string,unknown>={};if(raw.itemId!==undefined&&raw.itemId!==null){presence.itemId=id(raw.itemId,'itemId');const item=this.getItem(presence.itemId as string);assert(item&&!item.deleted,400,'invalid_presence','Presence item is unavailable; refresh the project.');}
+        const presence:Record<string,unknown>={};if(raw.itemId!==undefined&&raw.itemId!==null){presence.itemId=id(raw.itemId,'itemId');const item=this.getItem(presence.itemId as string);assert(item&&!item.deleted,400,'invalid_presence','Presence item is unavailable; refresh the project.');}
         if(raw.selection){const selection=record(raw.selection,'selection');presence.selection={start:int(selection.start,'selection.start',0,50000),end:int(selection.end,'selection.end',int(selection.start,'selection.start',0,50000),50000)};}
         if(raw.cursor){const cursor=record(raw.cursor,'cursor');assert(typeof cursor.x==='number'&&Number.isFinite(cursor.x)&&typeof cursor.y==='number'&&Number.isFinite(cursor.y),400,'invalid_cursor','Cursor coordinates must be finite.');presence.cursor={x:cursor.x,y:cursor.y};}
-        a.presence=presence;a.lastPresenceAt=now;socket.serializeAttachment(a);const presenceInterval=this.ctx.getWebSockets().length>100?1000:200;if(now-this.lastPresenceBroadcast>=presenceInterval){this.lastPresenceBroadcast=now;this.broadcast({type:'presence',peers:this.peers()});}return;
+        a.presence=presence;a.lastPresenceAt=now;socket.serializeAttachment(a);this.queuePresenceBroadcast();return;
       }
       if(raw.type==='signal'){await this.routeSignal(raw,identity,access,authorizationGeneration);return;}
       throw new APIError(400,'unknown_message','Unsupported live message. Use HTTP commands for durable edits.');
@@ -538,8 +693,8 @@ export class ProjectRoom extends DurableObject<Env> {
       catch{try{socket.close(4001,'Access changed');}catch{}}
     }
     if(leasesChanged)this.broadcast({type:'leases',leases:this.publicLeases()});
-    this.broadcast({type:'presence',peers:this.peers()});
+    this.queuePresenceBroadcast();
   }
-  async webSocketClose(socket:WebSocket,code:number,reason:string,wasClean:boolean){try{socket.close(code,reason);}catch{}this.broadcast({type:'presence',peers:this.peers()});}
-  async webSocketError(socket:WebSocket){try{socket.close(1011,'Connection error');}catch{}this.broadcast({type:'presence',peers:this.peers()});}
+  async webSocketClose(socket:WebSocket,code:number,reason:string,wasClean:boolean){try{socket.close(code,reason);}catch{}this.queuePresenceBroadcast();}
+  async webSocketError(socket:WebSocket){try{socket.close(1011,'Connection error');}catch{}this.queuePresenceBroadcast();}
 }

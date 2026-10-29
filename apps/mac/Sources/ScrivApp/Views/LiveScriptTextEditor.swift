@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import ScrivCore
 
 /// NSTextView exposes UTF-16 caret/selection anchors on macOS 14, so presence is
 /// the actual editing selection rather than an invented cursor position.
@@ -7,6 +8,7 @@ struct LiveScriptTextEditor: NSViewRepresentable {
     @Binding var text: String
     var pointSize: CGFloat
     var italic: Bool
+    var onEdit: (CharacterTextEdit) -> Bool
     var onSelection: (NSRange) -> Void
     var onFinish: () -> Void
 
@@ -73,6 +75,12 @@ struct LiveScriptTextEditor: NSViewRepresentable {
         var updating = false
         var focused = false
         init(_ parent: LiveScriptTextEditor) { self.parent = parent }
+        func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String?) -> Bool {
+            guard !updating, let replacementString else { return true }
+            // Report the native UTF-16 operation before the binding changes.
+            // Repeated identical names cannot be disambiguated from a text diff.
+            return parent.onEdit(CharacterTextEdit(range: affectedCharRange, replacement: replacementString))
+        }
         func textDidChange(_ notification: Notification) {
             guard !updating, let view = notification.object as? NSTextView else { return }
             parent.text = view.string

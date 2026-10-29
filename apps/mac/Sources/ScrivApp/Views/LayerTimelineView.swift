@@ -1,6 +1,21 @@
 import SwiftUI
 import ScrivCore
 
+private struct ImageCueLane: Identifiable {
+    let cue: ImageCue
+    let lane: Int
+    var id: String { cue.id }
+    static func layout(_ cues: [ImageCue]) -> [ImageCueLane] {
+        var ends: [Int] = [], result: [ImageCueLane] = []
+        for cue in cues {
+            let lane = ends.firstIndex { $0 <= cue.startMs } ?? ends.count
+            if lane == ends.count { ends.append(cue.endMs) } else { ends[lane] = cue.endMs }
+            result.append(ImageCueLane(cue: cue, lane: lane))
+        }
+        return result
+    }
+}
+
 struct LayerTimelineView: View {
     @EnvironmentObject private var store: WorkspaceStore
     @State private var zoom = 1.0
@@ -30,7 +45,7 @@ struct LayerTimelineView: View {
                 HStack(alignment: .top, spacing: 0) {
                 VStack(spacing: 5) {
                     Color.clear.frame(height: 22)
-                    layerLabel("Images", symbol: "photo", height: 55)
+                    layerLabel("Images", symbol: "photo", height: imageHeight)
                     layerLabel("Dialogue", symbol: "waveform", height: 40)
                     layerLabel("Direction", symbol: "arrow.turn.down.right", height: directionHeight)
                     layerLabel("Words", symbol: "text.word.spacing", height: 32)
@@ -38,7 +53,7 @@ struct LayerTimelineView: View {
                 }.frame(width: 68)
                 ScrollViewReader { proxy in
                     ScrollView(.horizontal, showsIndicators: true) {
-                        TimelineCanvas(scale: scale, snap: snapToWords, directionHeight: directionHeight, audioHeight: audioHeight)
+                        TimelineCanvas(scale: scale, snap: snapToWords, imageHeight: imageHeight, directionHeight: directionHeight, audioHeight: audioHeight)
                             .measureFrame("timeline-canvas", in: "timeline-viewport")
                     }.coordinateSpace(name: "timeline-viewport")
                         .background(GeometryReader { geometry in
@@ -56,7 +71,7 @@ struct LayerTimelineView: View {
                     }
                 }
                 }
-            }.frame(maxHeight: 22 + 55 + 40 + directionHeight + 32 + 20 + audioHeight + (audioHeight > 0 ? 5 : 0))
+            }.frame(maxHeight: 22 + imageHeight + 40 + directionHeight + 32 + 20 + audioHeight + (audioHeight > 0 ? 5 : 0))
             .background(ScrivTheme.inset.opacity(0.3), in: RoundedRectangle(cornerRadius: 10))
             .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(ScrivTheme.hairline.opacity(0.3)))
             overview.frame(height: 20)
@@ -75,6 +90,7 @@ struct LayerTimelineView: View {
             }.padding(20).frame(width: 1040, height: 480)
         }
     }
+    private var imageHeight: CGFloat { CGFloat((ImageCueLane.layout(store.sceneCues).map(\.lane).max() ?? 0) + 1) * 60 - 5 }
     private var audioHeight: CGFloat {
         let lanes = AudioLaneItem.sceneTracks(project: store.project, sceneID: store.selectedSceneID)
         return lanes.isEmpty ? 0 : CGFloat((lanes.map(\.lane).max() ?? 0) + 1) * 36
@@ -122,16 +138,17 @@ private struct TimelineCanvas: View {
     @EnvironmentObject private var store: WorkspaceStore
     let scale: CGFloat
     let snap: Bool
+    let imageHeight: CGFloat
     let directionHeight: CGFloat
     let audioHeight: CGFloat
     @State private var editingAudio: AudioClip?
     @State private var audioDrag: [String: CGFloat] = [:]
     private var width: CGFloat { max(400, CGFloat(store.sceneDurationMs) * scale) }
-    private var height: CGFloat { 22 + 55 + 40 + directionHeight + 32 + 20 + audioHeight + (audioHeight > 0 ? 5 : 0) }
+    private var height: CGFloat { 22 + imageHeight + 40 + directionHeight + 32 + 20 + audioHeight + (audioHeight > 0 ? 5 : 0) }
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             ruler.frame(height: 22)
-            images.frame(height: 55)
+            images.frame(height: imageHeight)
             dialogue.frame(height: 40)
             directions.frame(height: directionHeight)
             words.frame(height: 32)
@@ -161,10 +178,12 @@ private struct TimelineCanvas: View {
     }
     private var images: some View {
         ZStack(alignment: .topLeading) {
-            ForEach(store.sceneCues) { cue in
+            ForEach(ImageCueLane.layout(store.sceneCues)) { row in
+                let cue = row.cue
                 let asset = store.project.asset(cue.imageId)
                 Button {
-                    store.selectedCueID = cue.id; store.seek(toMs: Double(cue.startMs))
+                    if store.isPlaying { store.togglePlayback() }
+                    store.seek(toMs: Double(cue.startMs)); store.selectedCueID = cue.id
                 } label: {
                     AssetImageView(url: asset.flatMap { store.assetURL($0) }, title: cue.label, cornerRadius: 5)
                         .overlay(alignment: .bottomLeading) {
@@ -173,7 +192,8 @@ private struct TimelineCanvas: View {
                         }
                         .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(cue.id == store.selectedCueID || cue.id == store.currentCue?.id ? ScrivTheme.accent : Color.clear, lineWidth: 2))
                 }.buttonStyle(.plain).frame(width: max(2, CGFloat(cue.durationMs) * scale - 2), height: 55)
-                    .offset(x: CGFloat(cue.startMs) * scale).id(cue.id)
+                    .offset(x: CGFloat(cue.startMs) * scale, y: CGFloat(row.lane) * 60).id(cue.id)
+                    .help("\(cue.label) · \(ScrivFormat.duration(cue.authoredDurationMs ?? cue.durationMs)) authored; \(ScrivFormat.duration(cue.durationMs)) visible in scene. Overlapping placements stay on separate lanes.")
                     .contextMenu {
                         Button("Import image…") { store.importImage(cueId: cue.id) }
                         Button("Generate image") { store.generateImage(cueId: cue.id) }
@@ -182,9 +202,9 @@ private struct TimelineCanvas: View {
             }
             ForEach(Array(store.sceneCues.dropLast().enumerated()), id: \.element.id) { index, cue in
                 let next = store.sceneCues[index + 1]
-                if cue.endMs == next.startMs {
+                if TimingEngine.canMoveBoundary(store.project, leftCueId: cue.id, rightCueId: next.id) {
                     CutHandle(left: cue, right: next, scale: scale, snap: snap)
-                        .offset(x: CGFloat(cue.endMs) * scale - 5)
+                        .offset(x: CGFloat(cue.endMs) * scale - 5, y: CGFloat(ImageCueLane.layout(store.sceneCues).first { $0.id == cue.id }?.lane ?? 0) * 60)
                 }
             }
         }
@@ -238,15 +258,8 @@ private struct TimelineCanvas: View {
     private var words: some View {
         ZStack(alignment: .topLeading) {
             ForEach(store.sceneEntries.filter { $0.kind == .dialogue }) { entry in
-                let start = store.project.startMs(of: entry.id)
                 ForEach(entry.words) { word in
-                    Text(word.text).font(.system(size: 11)).lineLimit(1).minimumScaleFactor(0.7)
-                        .foregroundStyle(store.currentWordID == word.id ? Color.white : ScrivTheme.accent)
-                        .frame(width: max(3, CGFloat(word.endMs - word.startMs) * scale - 1), height: 28)
-                        .background(store.currentWordID == word.id ? ScrivTheme.accent : ScrivTheme.accent.opacity(0.06), in: RoundedRectangle(cornerRadius: 4))
-                        .offset(x: CGFloat(start + word.startMs) * scale)
-                        .onTapGesture { store.seek(toMs: Double(start + word.startMs)) }
-                        .help(word.text)
+                    WordTimelineBlock(entry: entry, word: word, scale: scale)
                 }
             }
         }
@@ -324,10 +337,20 @@ private struct CutHandle: View {
     let scale: CGFloat
     let snap: Bool
     @State private var delta: CGFloat = 0
+    @State private var dragContext: Int?
+    @State private var originalBoundary: Int?
     var body: some View {
         Capsule().fill(ScrivTheme.accent.opacity(delta == 0 ? 0.65 : 1)).frame(width: 3, height: 44).padding(.horizontal, 4).frame(height: 55)
             .contentShape(Rectangle()).offset(x: delta)
-            .gesture(DragGesture(minimumDistance: 1).onChanged { delta = $0.translation.width }.onEnded { value in
+            .gesture(DragGesture(minimumDistance: 1).onChanged { value in
+                if dragContext == nil { dragContext = store.navigationContext; originalBoundary = left.endMs }
+                delta = value.translation.width
+            }.onEnded { value in
+                let context = dragContext, original = originalBoundary
+                delta = 0; dragContext = nil; originalBoundary = nil
+                guard context == store.navigationContext, store.selectedSceneID == left.sceneId,
+                      store.project.cues.first(where: { $0.id == left.id })?.endMs == original,
+                      TimingEngine.canMoveBoundary(store.project, leftCueId: left.id, rightCueId: right.id) else { return }
                 let requested = left.endMs + Int(value.translation.width / scale)
                 let boundary: Int
                 if snap {

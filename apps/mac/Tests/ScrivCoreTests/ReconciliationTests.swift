@@ -92,4 +92,14 @@ final class ReconciliationTests: XCTestCase {
         XCTAssertTrue(try discussionOnly.decoded(CloudSnapshot.self).validatedItems(for:"p").isEmpty)
     }
 
+    func testClippedAuthoredImageExtentIsStillAnOfflineTimingConflict() throws {
+        var base = fixture()
+        try CueAnchoring.materialize(&base, sceneId: "scene")
+        var local = base, remote = base
+        try TimingEngine.setCueDuration(&local, cueId: "cue", durationMs: 6000)
+        XCTAssertEqual(local.cues[0].endMs, base.cues[0].endMs)
+        try TimingEngine.updateText(&remote, entryId: "b", text: "Good evening")
+        XCTAssertThrowsError(try merge(base, local, remote))
+    }
+
 }

@@ -28,12 +28,159 @@ struct AccountPopover: View {
             } else {
                 Text("Single-person editing is free. Sign in for free script storage, then add a team when you are ready to collaborate.")
                     .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
-                Button("Continue with GitHub") { store.signIn() }.buttonStyle(.borderedProminent)
+                ScrivEmailSignInForm(cloud:store.cloud)
                 Text("ChatGPT sign-in is separate, under Codex on this Mac.").font(.caption).foregroundStyle(.secondary)
             }
             Divider()
             SettingsLink { Label("Settings…", systemImage: "gearshape") }
-        }.padding(19).frame(width: 295).buttonStyle(.borderless)
+        }.padding(19).frame(width: 330).buttonStyle(.borderless)
+    }
+}
+
+/// Shared by the account popover, settings and team sign-in. The only persisted
+/// credential is the completed server session in the origin-scoped Keychain.
+struct ScrivEmailSignInForm: View {
+    @EnvironmentObject private var store: WorkspaceStore
+    @ObservedObject var cloud: CloudClient
+    @State private var email = ""
+    @State private var code = ""
+    @State private var operationTask: Task<Void,Never>?
+    @State private var operationID: UUID?
+    @State private var browserError: String?
+    @State private var ownerID = UUID()
+    @FocusState private var focusedField: Field?
+    private enum Field: Hashable { case email, code }
+    private var busy: Bool { cloud.emailSignIn.isBusy || operationID != nil }
+    private var ownedElsewhere: Bool { cloud.signInOwnerID != nil && cloud.signInOwnerID != ownerID }
+
+    var body: some View {
+        TimelineView(.periodic(from:.now,by:1)) { timeline in
+            let flow = cloud.emailSignIn
+            VStack(alignment:.leading,spacing:10) {
+                if ownedElsewhere {
+                    Text("Sign-in is open in another Scriv window.").font(.callout).foregroundStyle(.secondary)
+                    Button("Start sign-in here") { cloud.cancelSignIn(); email = ""; code = ""; focusedField = .email }
+                } else if flow.challengeID != nil {
+                    Text("Check your email").font(.headline)
+                    Text("Enter the six-digit code sent to \(flow.email).")
+                        .font(.callout).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)
+                    TextField("Six-digit code",text:$code)
+                        .textFieldStyle(.roundedBorder).textContentType(.oneTimeCode)
+                        .font(.system(.body,design:.monospaced)).focused($focusedField,equals:.code)
+                        .disabled(busy || flow.isExpired(at:timeline.date))
+                        .accessibilityLabel("Email sign-in code")
+                        .onChange(of:code) { _, value in
+                            let clean = String(value.filter { $0.isASCII && $0.isNumber }.prefix(6))
+                            if clean != value { code = clean }
+                        }
+                        .onSubmit { verifyCode() }
+                    Button(action:verifyCode) {
+                        HStack(spacing:7) {
+                            if flow.phase == .verifying { ProgressView().controlSize(.mini) }
+                            Text(flow.phase == .verifying ? "Signing in…" : "Sign in with code")
+                        }
+                    }.buttonStyle(.borderedProminent)
+                        .disabled(busy || (try? EmailSignInFlow.normalizedCode(code)) == nil || flow.isExpired(at:timeline.date))
+                    Text(flow.isExpired(at:timeline.date) ? "This code has expired. Request a new one below." : "Expires in \(countdown(flow.expirySeconds(at:timeline.date))) · Check spam if needed.")
+                        .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)
+                    HStack(spacing:12) {
+                        Button(flow.resendSeconds(at:timeline.date) > 0 ? "Resend in \(flow.resendSeconds(at:timeline.date))s" : "Resend code") { requestCode() }
+                            .disabled(busy || !flow.canResend(at:timeline.date))
+                        Button("Use another email") { cancel(); focusedField = .email }
+                    }.font(.caption)
+                } else {
+                    TextField("Email address",text:$email)
+                        .textFieldStyle(.roundedBorder).textContentType(.emailAddress)
+                        .focused($focusedField,equals:.email).accessibilityLabel("Scriv account email address")
+                        .disabled(busy || !flow.email.isEmpty)
+                        .onChange(of:email) { _, value in if value.utf8.count > 254 { email = String(value.prefix(254)) } }
+                        .onSubmit { requestCode() }
+                    HStack(spacing:12) {
+                        Button(action:requestCode) {
+                            HStack(spacing:7) {
+                                if flow.phase == .requesting { ProgressView().controlSize(.mini) }
+                                Text(flow.phase == .requesting ? "Sending code…" : flow.resendSeconds(at:timeline.date) > 0 ? "Try again in \(flow.resendSeconds(at:timeline.date))s" : "Continue with email")
+                            }
+                        }.buttonStyle(.borderedProminent)
+                            .disabled(busy || flow.resendSeconds(at:timeline.date) > 0 || (try? EmailSignInFlow.normalizedEmail(email)) == nil)
+                        if busy || !flow.email.isEmpty { Button("Cancel") { cancel(); focusedField = .email } }
+                    }
+                    Text("We'll email you a one-time sign-in code. No password required.")
+                        .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)
+                }
+                if !ownedElsewhere, let error = browserError ?? flow.errorMessage {
+                    Text(error).font(.caption).foregroundStyle(.red).textSelection(.enabled).fixedSize(horizontal:false,vertical:true)
+                        .accessibilityLabel("Sign-in error: \(error)")
+                }
+                if !ownedElsewhere, flow.challengeID != nil { Button("Cancel sign-in") { cancel(); focusedField = .email }.font(.caption) }
+                if !ownedElsewhere, flow.phase == .idle, flow.email.isEmpty {
+                    Button("Existing GitHub account…") { signInWithGitHub() }
+                        .font(.caption).disabled(busy).help("For Scriv accounts previously created with GitHub.")
+                }
+            }.font(.system(size:12))
+        }
+        .onAppear { email = cloud.emailSignIn.email }
+        .onDisappear {
+            // Account publication removes this form before account/team refresh
+            // finishes. Do not cancel that successful session's refresh request.
+            if cloud.account == nil { cancel() }
+            code = ""; email = ""
+        }
+        .onChange(of:store.cloudBaseURL) { _, _ in cancel(); email = "" }
+        .onChange(of:store.navigationContext) { _, _ in cancel() }
+        .onChange(of:cloud.emailSignIn.challengeID) { _, _ in code = "" }
+        .onChange(of:cloud.signInOwnerID) { _, next in if next != ownerID, operationID != nil, cloud.account == nil { cancel() } }
+    }
+    private func countdown(_ seconds: Int) -> String { "\(seconds / 60):" + String(format:"%02d",seconds % 60) }
+    private func requestCode() {
+        guard !busy, (try? EmailSignInFlow.normalizedEmail(email)) != nil, cloud.emailSignIn.resendSeconds(at:Date()) == 0 else { return }
+        let address = email; code = ""; browserError = nil
+        let id = UUID(); operationID = id
+        operationTask = Task {
+            await store.requestEmailCode(address,ownerID:ownerID)
+            guard operationID == id else { return }
+            operationID = nil; operationTask = nil
+            if cloud.emailSignIn.challengeID != nil { focusedField = .code }
+        }
+    }
+    private func verifyCode() {
+        guard !busy, (try? EmailSignInFlow.normalizedCode(code)) != nil, !cloud.emailSignIn.isExpired(at:Date()) else { return }
+        let enteredCode = code, id = UUID(); operationID = id; browserError = nil
+        operationTask = Task {
+            await store.verifyEmailCode(enteredCode,ownerID:ownerID)
+            guard operationID == id else { return }
+            operationID = nil; operationTask = nil; code = ""
+            if cloud.account == nil { focusedField = .code }
+        }
+    }
+    private func signInWithGitHub() {
+        guard !busy else { return }
+        let id = UUID(); operationID = id; browserError = nil
+        operationTask = Task {
+            do { try await store.signInWithGitHub(ownerID:ownerID) }
+            catch is CancellationError { }
+            catch { if operationID == id { browserError = error.localizedDescription } }
+            guard operationID == id else { return }
+            operationID = nil; operationTask = nil
+        }
+    }
+    private func cancel() {
+        operationID = nil; operationTask?.cancel(); operationTask = nil
+        cloud.cancelSignIn(ownerID:ownerID); code = ""; browserError = nil
+    }
+}
+
+struct ScrivSignInSheet: View {
+    @EnvironmentObject private var store: WorkspaceStore
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        VStack(alignment:.leading,spacing:18) {
+            HStack { Label("Sign in to Scriv",systemImage:"person.crop.circle").font(.title2.weight(.semibold)); Spacer(); Button("Close") { dismiss() }.keyboardShortcut(.cancelAction) }
+            Text("Keep writing locally, or sign in for free script storage and team access.").font(.callout).foregroundStyle(.secondary)
+            ScrivEmailSignInForm(cloud:store.cloud)
+            Text("Codex and ChatGPT sign-in stay separate on this Mac.").font(.caption).foregroundStyle(.secondary)
+        }.padding(24).frame(width:420)
+            .onChange(of:store.account?.id) { _, id in if id != nil { dismiss() } }
     }
 }
 
@@ -256,7 +403,7 @@ private struct CloudSettings: View {
             }
             Section("Account") {
                 if let account = store.account { LabeledContent("Signed in", value: account.name); Button("Sign out") { store.signOut() } }
-                else { Button("Sign in to Scriv") { store.signIn() } }
+                else { ScrivEmailSignInForm(cloud:store.cloud) }
                 Text("Solo script storage is free. Teams are $9.99/month, with no per-seat charge. Team subscriptions include collaboration and hosted images.").font(.caption).foregroundStyle(.secondary)
             }
         }.formStyle(.grouped).onAppear { endpoint = store.cloudBaseURL }

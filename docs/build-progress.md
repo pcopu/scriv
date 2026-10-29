@@ -1,8 +1,7 @@
 # Build checkpoints
 
 This branch was rebuilt as a new native Scriv application. This document preserves
-the implementation checkpoints; [verification.md](verification.md) records the
-final source verification and deployment gates.
+the historical implementation checkpoints. The [current integration handoff](verification/current-handoff.md) identifies later source work; [verification.md](verification.md) separates historical runtime evidence from current verification and deployment gates.
 
 ## First implementation checkpoint — 2026-10-29
 
