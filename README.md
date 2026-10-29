@@ -31,13 +31,15 @@ The bundled farm-scene sample includes the full 56.3-second authored sequence an
 | Capability | Free personal project | Team — USD $9.99/month |
 | --- | --- | --- |
 | Local writing, timing, playback, import/export | Included | Included |
-| Hosted scripts, character metadata and history | Included after Scriv sign-in | Included |
+| Hosted scripts, timing, character metadata, image prompts and history | Included after Scriv sign-in | Included |
 | Local Codex image generation | Uses your own local Codex account | Uses each member's own local Codex account |
 | Image transfer between authorized devices | Your own devices | Team members' devices |
 | Live collaboration, cursors and exclusive item editing | — | Included |
 | Project/item discussions with collaborators | — | Included |
 | Private hosted image replicas | — | Included within the configured storage quota |
 | Team membership | One person | No per-seat charge or membership cap |
+
+Only **image binary hosting** is paid-only. In linked cloud projects, scripts, authored timing and image metadata—including the exact captured generation text for each new image version—sync for free accounts too. Manual visual direction remains separate. Older/imported images without a captured generation prompt are explicitly unknown, not reconstructed from the current script. Private runtime paths, reference-image bytes and Codex credentials are never injected into that text metadata.
 
 The subscription is **one recurring $9.99 USD payment per team, quantity one**. Owners can create reusable, expiring and revocable invitation links. Viewers, members, admins and the owner have distinct permissions. The initial hosted-media quota is 10 GiB/team and 25 MiB/image; membership is not metered. There is a 1,000-connection protection limit per live project room, independent of team membership.
 

@@ -1,7 +1,8 @@
 import Foundation
 
-/// This context is local-only. In particular, package paths and prompts must never
-/// be serialized as a cloud request; use the explicit metadata projection instead.
+/// This recovery context is local-only. Never serialize its package/runtime paths
+/// as a cloud request. Only the exact submitted prompt is copied separately into
+/// ImageAsset metadata, which syncs for personal and team projects alike.
 public struct GenerationJobContext: Codable, Hashable, Sendable {
     public var projectID: String
     public var projectTitle: String
@@ -14,8 +15,8 @@ public struct GenerationJobContext: Codable, Hashable, Sendable {
     public var deviceID: String?
     public var sourceHeadSeq: Int?
     public var sourceItemVersion: Int?
-    /// Only the cue's manual direction belongs in shared image metadata. The
-    /// assembled script/profile/reference prompt stays in the local job journal.
+    /// The manual direction is distinct from the complete submitted prompt and
+    /// remains the image's editable `prompt` field.
     public var userDirection: String?
     public init(projectID: String, projectTitle: String, packagePath: String, targetCue: ImageCue, sourceRevision: Int,
                 cloudProjectID: String? = nil, cloudServer: String? = nil, accountID: String? = nil,
@@ -51,6 +52,9 @@ public struct LocalGenerationJob: Codable, Identifiable, Hashable, Sendable {
     public var ownerInstallationID: String
     public var context: GenerationJobContext?
     public var prompt: String
+    /// Frozen effective turn text, including Scriv's instruction wrapper. Older
+    /// journals remain nil: recovering an output must never invent its prompt.
+    public var submittedPrompt: String?
     public var model: String
     public var runtimeIdentity: String
     public var retryOf: String?
@@ -67,9 +71,9 @@ public struct LocalGenerationJob: Codable, Identifiable, Hashable, Sendable {
     public var errorDetail: String?
     public var errorCode: String?
     public init(id: String = UUID().uuidString, ownerInstallationID: String, context: GenerationJobContext?,
-                prompt: String, model: String, runtimeIdentity: String, retryOf: String? = nil) {
+                prompt: String, submittedPrompt: String? = nil, model: String, runtimeIdentity: String, retryOf: String? = nil) {
         self.id = id.lowercased(); self.ownerInstallationID = ownerInstallationID; self.context = context
-        self.prompt = prompt; self.model = model; self.runtimeIdentity = runtimeIdentity; self.retryOf = retryOf
+        self.prompt = prompt; self.submittedPrompt = submittedPrompt; self.model = model; self.runtimeIdentity = runtimeIdentity; self.retryOf = retryOf
         status = .queued; progressText = "Preparing reference images"; references = []
         createdAt = ScrivClock.now; updatedAt = createdAt
     }
@@ -83,7 +87,8 @@ public struct LocalGenerationJob: Codable, Identifiable, Hashable, Sendable {
     public var canRetry: Bool { status == .failed || status == .cancelled || status == .waiting }
 }
 
-/// Safe project-visible metadata; no prompt, local path, references or Codex IDs.
+/// Safe project-visible progress metadata; no local path, references or Codex IDs.
+/// Completed image versions carry their captured prompt separately as ImageAsset.
 public struct CloudGenerationJob: Codable, Identifiable, Hashable, Sendable {
     public var schemaVersion: Int
     public var id: String
@@ -145,6 +150,7 @@ public struct GenerationJournal {
         return file
     }
     private static func validate(_ job: LocalGenerationJob) throws {
+        if let submittedPrompt = job.submittedPrompt { try GenerationPrompt.validate(submittedPrompt) }
         guard UUID(uuidString: job.id) != nil, UUID(uuidString: job.ownerInstallationID) != nil,
               job.prompt.utf8.count <= 1_000_000, job.model.count <= 256, job.runtimeIdentity.count <= 2048,
               job.createdAt.timeIntervalSince1970.isFinite, job.updatedAt.timeIntervalSince1970.isFinite,

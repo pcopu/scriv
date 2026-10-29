@@ -54,6 +54,14 @@ After a known transactional lease/version/epoch/timing, reference/geometry or bu
 
 Native snapshot installation is monotonic against both applied history and accepted command-receipt progress. A late older snapshot cannot replace newer canonical item state or restore an older epoch; it leaves the replay cursor unchanged and catch-up fetches newer state. Receipt progress never skips unapplied history events.
 
+### Image prompt storage and paid media boundary
+
+Scripts, authored timing, characters and image metadata use the project command/snapshot/history protocol for both free personal and paid team projects. Only image binary upload to R2 requires the existing active paid-Team entitlement; metadata never grants that entitlement.
+
+Image `prompt` is the manual visual direction or import description. Optional nullable `generationPrompt` is the exact captured app-submitted generation text, including the assembled source/profile brief and generic wrapper. It is at most 30,000 UTF-16 units and must fit within the existing 64 KiB encoded item limit; no truncation occurs. It is immutable for an image version alongside its bytes/lineage identity. A changed prompt belongs to a new image version. Omitted/null means not captured, including historical/imported images; ordinary updates cannot manufacture a prompt for such a version.
+
+This field is plain text, not a serialized local job. The native projection never injects package/runtime/reference paths, portrait bytes, credentials or Codex identifiers. Authored text itself is preserved, not silently redacted. The generation-job endpoints retain their narrow progress/ownership metadata allowlist and continue rejecting prompt/private-context payloads. Image prompt storage does not require that a binary has been uploaded or is still available.
+
 ### Authored-field compatibility
 
 Entry `characterLinks` is optional/missing/null only for legacy unbootstrapped text. A present array contains unique, ordered nonoverlapping UTF-16 `{id,characterId?,location,length,text,isConfirmed}` ranges matching the exact authored text; missing/null identity is an explicitly confirmed unlink. Linked IDs must resolve to live characters. Character deletion must unlink the annotations in the same edit.

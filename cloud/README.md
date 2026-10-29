@@ -11,6 +11,8 @@ optional TURN relay usage have their own allocations and overage pricing. See th
 [R2 pricing](https://developers.cloudflare.com/r2/pricing/) and
 [TURN pricing](https://developers.cloudflare.com/realtime/turn/).
 
+Scripts, authored timing and image-prompt metadata are cloud data for free personal and paid team projects alike. Each newly captured image version can retain its exact submitted `generationPrompt` separately from editable manual `prompt`; unknown legacy/import provenance stays absent. Only hosted **image bytes** require the existing paid-Team entitlement. See [the protocol](../docs/cloud-api.md#image-prompt-storage-and-paid-media-boundary).
+
 ## Local verification
 
 Node 22.14 or later is required. Dependencies and their lockfile are pinned.

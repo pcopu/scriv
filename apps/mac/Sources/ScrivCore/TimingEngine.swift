@@ -60,6 +60,7 @@ public enum TimingEngine {
             }
         }
         for image in project.images {
+            try GenerationPrompt.validateStorage(image)
             guard image.version >= 1, image.byteCount > 0, image.byteCount <= 25*1024*1024, ["image/png", "image/jpeg", "image/webp"].contains(image.mimeType), !image.fileName.isEmpty, image.createdAt.timeIntervalSince1970.isFinite, Set(image.characterIds).count == image.characterIds.count, image.sha256.count == 64, image.sha256.allSatisfy({ $0.isHexDigit }), image.fileName == URL(fileURLWithPath: image.fileName).lastPathComponent, !image.fileName.contains(".."), !image.fileName.contains("\\"), image.characterIds.allSatisfy(characterIds.contains) else { throw ScrivError.invalid("Invalid image metadata or character tags.") }
         }
         let assets = Dictionary(uniqueKeysWithValues: project.images.map { ($0.id, $0) })

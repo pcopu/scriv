@@ -570,7 +570,7 @@ final class WorkspaceStore: ObservableObject {
         perform { guard self.navigationGeneration == context else { return }; try await self.attachImage(url:url,cueId:target,prompt:"Imported image",expectedCue:nil) }
     }
     @discardableResult
-    private func attachImage(url: URL, cueId: String?, prompt: String, expectedCue: ImageCue?, expectedRevision: Int? = nil) async throws -> String? {
+    private func attachImage(url: URL, cueId: String?, prompt: String, generationPrompt: String? = nil, expectedCue: ImageCue?, expectedRevision: Int? = nil) async throws -> String? {
         guard let package = projectURL else { throw ScrivError.unavailable("Save this project before importing images.") }
         let sourceProjectID = project.id, navigation = navigationGeneration
         let attributes = try url.resourceValues(forKeys:[.fileSizeKey]); guard (attributes.fileSize ?? 0) <= 25*1024*1024 else { throw ScrivError.invalid("Choose an image smaller than 25 MiB.") }
@@ -583,11 +583,15 @@ final class WorkspaceStore: ObservableObject {
         if let expectedRevision, project.revision != expectedRevision { stale = true }
         if let cueId, lockedByOther(cueId) != nil { stale = true }
         let accepted = change(stale ? "Keep generated candidate" : "Attach image") { p in
-            var version = asset
+            var version = asset; version.generationPrompt = generationPrompt
             let predecessor: String?
             if let expectedCue { predecessor = expectedCue.imageId }
             else { predecessor = p.cues.first(where: { $0.id == cueId })?.imageId }
-            if let previous = p.asset(predecessor) { version.version = previous.version+1; version.previousVersionId = previous.id; version.characterIds = previous.characterIds }
+            if let previous = p.asset(predecessor) {
+                let nextVersion = previous.version.addingReportingOverflow(1)
+                guard !nextVersion.overflow else { throw ScrivError.invalid("The image version cannot be incremented.") }
+                version.version = nextVersion.partialValue; version.previousVersionId = previous.id; version.characterIds = previous.characterIds
+            }
             if let cueId, let index = p.cues.firstIndex(where: { $0.id == cueId }), !stale { p.cues[index].imageId = version.id }
             p.images.append(version)
         }
@@ -634,8 +638,11 @@ final class WorkspaceStore: ObservableObject {
         project.id == context.projectID && projectURL?.standardizedFileURL.path == URL(fileURLWithPath:context.packagePath).standardizedFileURL.path &&
         (context.cloudProjectID == nil || (project.cloudProjectId == context.cloudProjectID && cloud.baseURL.absoluteString == context.cloudServer && account?.id == context.accountID))
     }
-    private func runGeneration(prompt: String, references: [URL], context: GenerationJobContext, retryOf: String? = nil) async throws {
+    private func runGeneration(prompt: String, submittedPrompt suppliedPrompt: String? = nil, references: [URL], context: GenerationJobContext, retryOf: String? = nil) async throws {
         guard generationContextMatches(context) else { throw ScrivError.conflict("Open the original project package before starting this generation.") }
+        let submittedPrompt = suppliedPrompt ?? GenerationPrompt.submitted(brief:prompt)
+        let manualDirection = context.userDirection ?? prompt
+        try GenerationPrompt.validateBeforeGeneration(submittedPrompt:submittedPrompt,manualDirection:manualDirection,predecessor:project.asset(context.targetCue.imageId))
         let navigation = navigationGeneration, jobID = UUID().uuidString.lowercased()
         var context = context; context.deviceID = cloud.deviceId
         let shared = await prepareSharedGeneration(id:jobID,context:context)
@@ -644,7 +651,12 @@ final class WorkspaceStore: ObservableObject {
             throw CancellationError()
         }
         let result: URL
-        do { result = try await codex.generate(prompt:prompt,references:references,context:context,jobID:jobID,retryOf:retryOf) }
+        do {
+            // Shared claim setup can suspend. Recheck inherited metadata before
+            // crossing the usage boundary, without rebuilding the captured text.
+            try GenerationPrompt.validateBeforeGeneration(submittedPrompt:submittedPrompt,manualDirection:manualDirection,predecessor:project.asset(context.targetCue.imageId))
+            result = try await codex.generate(prompt:prompt,submittedPrompt:submittedPrompt,references:references,context:context,jobID:jobID,retryOf:retryOf)
+        }
         catch {
             if let job = codex.jobs.first(where: { $0.id == jobID }) { queueGenerationMirror(job) }
             else if let shared, let cloudID = context.cloudProjectID { _ = try? await cloud.updateGenerationJob(id:jobID,expectedVersion:shared.version,status:.failed,progressText:"Local generation did not start",errorCode:"local_start_failed",projectID:cloudID) }
@@ -661,7 +673,8 @@ final class WorkspaceStore: ObservableObject {
         }
         generationAttachmentIDs.insert(jobID)
         defer { generationAttachmentIDs.remove(jobID) }
-        if let imageID = try await attachImage(url:result,cueId:context.targetCue.id,prompt:context.userDirection ?? prompt,expectedCue:context.targetCue,expectedRevision:context.sourceRevision) { codex.markJobAttached(id:jobID,imageID:imageID) }
+        guard let capturedPrompt = codex.jobs.first(where: { $0.id == jobID })?.submittedPrompt else { throw ScrivError.invalid("The generated image is retained locally, but its submitted prompt could not be recovered. Inspect this job before attaching it.") }
+        if let imageID = try await attachImage(url:result,cueId:context.targetCue.id,prompt:manualDirection,generationPrompt:capturedPrompt,expectedCue:context.targetCue,expectedRevision:context.sourceRevision) { codex.markJobAttached(id:jobID,imageID:imageID) }
     }
     private func heartbeatGenerationAttachment(_ job: LocalGenerationJob) {
         guard generationAttachmentIDs.contains(job.id), !generationCompletionIDs.contains(job.id), generationAttachmentHeartbeats[job.id] == nil, let context = job.context else { return }
@@ -707,7 +720,7 @@ final class WorkspaceStore: ObservableObject {
                 self.queueGenerationMirror(job)
                 await self.generationMirrorTask?.value
                 self.statusMessage = "Image is already attached. Shared completion is being reconciled; sync any local draft first."
-            } else if let result, let imageID = try await self.attachImage(url:result,cueId:context.targetCue.id,prompt:context.userDirection ?? job.prompt,expectedCue:context.targetCue,expectedRevision:context.sourceRevision) {
+            } else if let result, let imageID = try await self.attachImage(url:result,cueId:context.targetCue.id,prompt:context.userDirection ?? job.prompt,generationPrompt:job.submittedPrompt,expectedCue:context.targetCue,expectedRevision:context.sourceRevision) {
                 self.codex.markJobAttached(id:job.id,imageID:imageID)
             }
         }
@@ -733,7 +746,7 @@ final class WorkspaceStore: ObservableObject {
     }
     private func retryGenerationJob(_ job: LocalGenerationJob) {
         guard let context = job.context, generationContextMatches(context) else { errorMessage = "Open this job's original project package before explicitly retrying."; return }
-        perform { try await self.runGeneration(prompt:job.prompt,references:self.codex.referenceURLs(for:job.id),context:context,retryOf:job.id) }
+        perform { try await self.runGeneration(prompt:job.prompt,submittedPrompt:job.submittedPrompt,references:self.codex.referenceURLs(for:job.id),context:context,retryOf:job.id) }
     }
     private func generationCloudScopeMatches(_ context: GenerationJobContext) -> Bool {
         context.cloudProjectID != nil && context.cloudServer == cloud.baseURL.absoluteString && context.accountID != nil && context.accountID == account?.id

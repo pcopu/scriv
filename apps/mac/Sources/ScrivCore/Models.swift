@@ -69,10 +69,13 @@ public struct ImageAsset: Identifiable, Codable, Hashable, Sendable {
     public var byteCount: Int
     public var characterIds: [String]
     public var prompt: String
+    /// Exact text sent to the image-generation turn for this immutable version.
+    /// Nil means imported/legacy output with no trustworthy submission capture.
+    public var generationPrompt: String?
     public var createdAt: Date
     public var previousVersionId: String?
-    public init(id: String = UUID().uuidString, version: Int = 1, fileName: String, sha256: String, mimeType: String = "image/png", byteCount: Int, characterIds: [String] = [], prompt: String = "", createdAt: Date = Date(), previousVersionId: String? = nil) {
-        self.id = id; self.version = version; self.fileName = fileName; self.sha256 = sha256; self.mimeType = mimeType; self.byteCount = byteCount; self.characterIds = characterIds; self.prompt = prompt; self.createdAt = ScrivClock.normalized(createdAt); self.previousVersionId = previousVersionId
+    public init(id: String = UUID().uuidString, version: Int = 1, fileName: String, sha256: String, mimeType: String = "image/png", byteCount: Int, characterIds: [String] = [], prompt: String = "", generationPrompt: String? = nil, createdAt: Date = Date(), previousVersionId: String? = nil) {
+        self.id = id; self.version = version; self.fileName = fileName; self.sha256 = sha256; self.mimeType = mimeType; self.byteCount = byteCount; self.characterIds = characterIds; self.prompt = prompt; self.generationPrompt = generationPrompt; self.createdAt = ScrivClock.normalized(createdAt); self.previousVersionId = previousVersionId
     }
 }
 /// A durable script-relative edge. Cue scene milliseconds are its resolved projection.
