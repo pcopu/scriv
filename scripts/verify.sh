@@ -9,8 +9,8 @@ npm --prefix cloud run build
 node scripts/check-repo.mjs
 node --test tests/*.test.mjs
 if [[ "$(uname -s)" == Darwin ]]; then
-  swift test --package-path apps/mac
-  bash scripts/build-mac.sh
+  bash scripts/verify-native.sh --native
 else
-  echo 'Cloud and portable checks complete. macOS UI build remains a separate required gate.'
+  bash scripts/verify-native.sh --portable
+  echo 'Cloud and portable checks complete. macOS UI build remains a separate required gate; it was not run.'
 fi
