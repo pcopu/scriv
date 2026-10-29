@@ -34,6 +34,14 @@
     return Array.from(hash, b => b.toString(16).padStart(2, '0')).join('');
   }
   function signal(peer, type, payload) { if (peers.get(peer.id) === peer) emit({ kind: 'signal', toDeviceId: peer.id, type, payload }); }
+  function retire(peer, message) {
+    if (peers.get(peer.id) !== peer) return;
+    peers.delete(peer.id);
+    for (const pending of Array.from(requested.values())) if (pending.peer === peer.id) error(peer.id, pending.hash, message);
+    peer.receiving = null;
+    peer.channel?.close(); peer.pc.close();
+    emit({ kind: 'disconnected', fromDeviceId: peer.id });
+  }
   function flush(peer) {
     if (peer.channel?.readyState !== 'open') return;
     for (const pending of requested.values()) {
@@ -50,10 +58,7 @@
     channel.onopen = () => { if (peers.get(peer.id) !== peer || peer.channel !== channel) return; emit({ kind: 'connected', fromDeviceId: peer.id }); flush(peer); };
     channel.onclose = () => {
       if (peers.get(peer.id) !== peer || peer.channel !== channel) return;
-      for (const pending of Array.from(requested.values())) if (pending.peer === peer.id) error(peer.id, pending.hash, 'Peer disconnected. Try another device or the hosted copy.');
-      peer.receiving = null;
-      peers.delete(peer.id); peer.pc.close();
-      emit({ kind: 'disconnected', fromDeviceId: peer.id });
+      retire(peer, 'Peer disconnected. Try another device or the hosted copy.');
     };
     channel.onerror = () => { if (peers.get(peer.id) === peer) emit({ kind: 'error', fromDeviceId: peer.id, message: 'The encrypted peer channel failed.' }); };
     channel.onmessage = event => {
@@ -68,7 +73,7 @@
     if (typeof id !== 'string' || !id || id.length > 128 || id === identity) throw new Error('Invalid peer identity.');
     if (peers.has(id)) return peers.get(id);
     if (peers.size >= 8) throw new Error('Too many active peer transfers.');
-    const peer = { id, pc: new RTCPeerConnection({ iceServers }), channel: null, offerer: identity < id, makingOffer: false, connectionRequested: false, requestId: crypto.randomUUID(), candidates: [], receiving: null, signalQueue: Promise.resolve(), receiveQueue: Promise.resolve(), sendQueue: Promise.resolve() };
+    const peer = { id, pc: new RTCPeerConnection({ iceServers }), channel: null, offerer: identity < id, makingOffer: false, connectionRequested: false, requestId: crypto.randomUUID(), remoteConnectId: null, candidates: [], receiving: null, signalQueue: Promise.resolve(), receiveQueue: Promise.resolve(), sendQueue: Promise.resolve() };
     peers.set(id, peer);
     peer.pc.onicecandidate = event => { if (event.candidate && peers.get(id) === peer) signal(peer, 'ice', event.candidate.toJSON()); };
     peer.pc.ondatachannel = event => { if (peers.get(id) === peer) attach(peer, event.channel); else event.channel.close(); };
@@ -77,16 +82,18 @@
       // same offerer at both ends, even when requests cross or ICE arrives first.
       // This avoids rolling back the initial SCTP transport during offer glare.
       if (peers.get(id) !== peer || !peer.offerer || peer.makingOffer || peer.pc.localDescription || peer.pc.remoteDescription) return;
-      try { peer.makingOffer = true; await peer.pc.setLocalDescription(); signal(peer, peer.pc.localDescription.type, peer.pc.localDescription.toJSON()); }
+      try {
+        peer.makingOffer = true;
+        await peer.pc.setLocalDescription();
+        if (peers.get(id) === peer) signal(peer, peer.pc.localDescription.type, peer.pc.localDescription.toJSON());
+      }
       catch (e) { if (peers.get(id) === peer) emit({ kind: 'error', fromDeviceId: id, message: e.message }); }
       finally { peer.makingOffer = false; }
     };
     peer.pc.onconnectionstatechange = () => {
       if (peers.get(id) !== peer) return;
       if (['failed', 'closed'].includes(peer.pc.connectionState)) {
-        for (const pending of Array.from(requested.values())) if (pending.peer === id) error(id, pending.hash, 'Peer unavailable. TURN may be needed on this network.');
-        peers.delete(id); peer.pc.close();
-        emit({ kind: 'disconnected', fromDeviceId: id });
+        retire(peer, 'Peer unavailable. TURN may be needed on this network.');
       }
     };
     // Both ends create the same negotiated channel. The higher-ID device asks
@@ -133,6 +140,7 @@
     });
   }
   async function addCandidate(peer, candidate) {
+    if (peers.get(peer.id) !== peer) return;
     if (!candidate || typeof candidate.candidate !== 'string' || candidate.candidate.length > 4096) throw new Error('Invalid ICE candidate.');
     // Independent HTTP signals can deliver candidates before their SDP. Keep a
     // bounded queue by ICE generation instead of dropping a future generation.
@@ -143,7 +151,8 @@
       peer.candidates.push(candidate);
       return;
     }
-    await peer.pc.addIceCandidate(candidate);
+    try { await peer.pc.addIceCandidate(candidate); }
+    catch (e) { if (peers.get(peer.id) === peer) throw e; }
   }
   async function applySignal(peer, message) {
     if (peers.get(peer.id) !== peer) return;
@@ -162,6 +171,7 @@
     if (peers.get(peer.id) !== peer) return;
     if (description.type === 'offer') {
       await peer.pc.setLocalDescription();
+      if (peers.get(peer.id) !== peer) return;
       signal(peer, peer.pc.localDescription.type, peer.pc.localDescription.toJSON());
     }
     for (const candidate of peer.candidates.splice(0)) await addCandidate(peer, candidate);
@@ -177,7 +187,16 @@
       if (!HASH.test(hash)) throw new Error('Invalid image hash.');
       if (requested.size >= 8) throw new Error('Too many image requests.');
       if (requested.has(key(fromDeviceId, hash))) return;
-      const pending = { peer: fromDeviceId, hash, sent: false, timer: setTimeout(() => error(fromDeviceId, hash, 'Peer transfer timed out.'), 60000) };
+      const pending = { peer: fromDeviceId, hash, sent: false, timer: setTimeout(() => {
+        if (requested.get(key(fromDeviceId, hash)) !== pending) return;
+        // An unanswered handshake or incomplete stream cannot resume. Retire it
+        // so a user retry creates a fresh offer/connect nonce instead of reusing
+        // a permanently waiting connection. An ordinary unavailable asset does
+        // not take this path and keeps its healthy channel open.
+        const peer = peers.get(fromDeviceId);
+        if (peer) retire(peer, 'Peer transfer timed out. Try another device or the hosted copy.');
+        else error(fromDeviceId, hash, 'Peer transfer timed out.');
+      }, 60000) };
       requested.set(key(fromDeviceId, hash), pending);
       try {
         const peer = ensurePeer(fromDeviceId);
@@ -192,10 +211,22 @@
       catch (e) { error(fromDeviceId, hash, e.message); throw e; }
     },
     async handleSignal(message) {
+      const connectionRequest = message.type === 'asset-request';
+      if (connectionRequest) {
+        if (message.payload?.action !== 'connect' || typeof message.payload.requestId !== 'string' || !/^[a-f0-9-]{36}$/.test(message.payload.requestId) || !(identity < message.fromDeviceId)) throw new Error('Invalid peer connection request.');
+        const previous = peers.get(message.fromDeviceId);
+        // A retry must renew both endpoints. If an offer or answer was lost,
+        // the responder can otherwise keep an unanswered offer forever.
+        if (previous?.remoteConnectId && previous.remoteConnectId !== message.payload.requestId) retire(previous, 'Peer restarted its connection. Request the image again.');
+      }
       const peer = ensurePeer(message.fromDeviceId);
+      if (connectionRequest) peer.remoteConnectId = message.payload.requestId;
       // Serialize SDP and candidate application per peer; network arrival is
       // unordered, but no second handler can change a description mid-operation.
-      peer.signalQueue = peer.signalQueue.catch(() => {}).then(() => applySignal(peer, message));
+      peer.signalQueue = peer.signalQueue.catch(() => {}).then(async () => {
+        try { await applySignal(peer, message); }
+        catch (e) { if (peers.get(peer.id) === peer) throw e; }
+      });
       return peer.signalQueue;
     },
     async provideAsset(peerId, hash, base64) {

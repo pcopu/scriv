@@ -19,7 +19,7 @@ before(async () => {
 });
 after(async () => { await browser?.close(); if(server) await new Promise(resolve => server.close(resolve)); });
 
-async function pair({ holdSignals = false, cpu = 1 } = {}) {
+async function pair({ holdSignals = false, cpu = 1, dropFirstSignal } = {}) {
   const context = await browser.newContext();
   await context.addInitScript(() => {
     const Native = RTCPeerConnection;
@@ -40,12 +40,14 @@ async function pair({ holdSignals = false, cpu = 1 } = {}) {
   const failures = [];
   const held = [];
   let paused = holdSignals;
+  let dropped = false;
   const deliver = async (from, event) => pages[event.toDeviceId].evaluate(async signal => await ScrivPeer.handleSignal(signal), { fromDeviceId: from, type: event.type, payload: event.payload });
   for (const [id,page] of Object.entries(pages)) {
     await page.exposeFunction('scrivPeerTestSink', async event => {
       events[id].push(event);
       try {
         if (event.kind === 'signal') {
+          if (!dropped && event.type === dropFirstSignal) { dropped = true; return; }
           // Hold every signal until both requesters exist. Holding only offers
           // can accidentally create a passive peer through earlier ICE delivery.
           if (paused) held.push({ id, event });
@@ -160,4 +162,26 @@ test('a closed peer reconnects without stale channel callbacks cancelling its ne
     const attempts=p.events.bob.filter(e=>e.kind==='signal'&&e.type==='asset-request').map(e=>e.payload.requestId);
     assert.equal(attempts.length,2);assert.equal(new Set(attempts).size,2);
   } finally {await p.close();}
+});
+test('either requester can retry after a dropped connect request, offer or answer', {timeout:45000}, async () => {
+  const scenarios=[{type:'asset-request',requester:'bob'},{type:'offer',requester:'bob'},{type:'answer',requester:'bob'},{type:'offer',requester:'alice'},{type:'answer',requester:'alice'}];
+  for (const {type,requester} of scenarios) {
+    const p=await pair({dropFirstSignal:type});
+    try {
+      const owner=requester==='alice'?'bob':'alice';
+      const bytes=randomBytes(54219), hash=sha(bytes);p.assets[owner].set(hash,bytes);
+      // Advance only the JavaScript request deadline; transport and all media
+      // continue to use the real browser's native RTCPeerConnection.
+      await p.pages[requester].clock.install();
+      await p.pages[requester].evaluate(({hash,owner})=>ScrivPeer.requestAsset(hash,owner),{hash,owner});
+      await waitFor(()=>Object.values(p.events).some(events=>events.some(e=>e.kind==='signal'&&e.type===type)));
+      await p.pages[requester].clock.fastForward(60001);
+      await waitFor(()=>p.events[requester].some(e=>e.kind==='error'&&e.hash===hash&&/timed out/.test(e.message)));
+      await p.pages[requester].evaluate(({hash,owner})=>ScrivPeer.requestAsset(hash,owner),{hash,owner});
+      const received=await waitFor(()=>p.events[requester].find(e=>e.kind==='asset'&&e.hash===hash));
+      assert.deepEqual(Buffer.from(received.base64,'base64'),bytes);
+      assert.deepEqual(p.failures,[]);
+      assert.equal(Object.values(p.events).flat().filter(e=>e.kind==='signal'&&e.type===type).length,2);
+    } finally {await p.close();}
+  }
 });
