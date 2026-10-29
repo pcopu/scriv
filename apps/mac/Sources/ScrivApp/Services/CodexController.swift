@@ -32,6 +32,9 @@ final class CodexController: ObservableObject {
     private var connectionGeneration = 0
     private var isConnecting = false
     private var cancelRequested = false
+    private var activeDirectory: URL?
+    private var generatedArtifacts: [URL] = []
+    private var imageGenerationError: String?
     var onChange: (() -> Void)?
     init() {
         executablePath = UserDefaults.standard.string(forKey: "codexExecutable") ?? Self.locateExecutable() ?? "/opt/homebrew/bin/codex"
@@ -86,15 +89,25 @@ final class CodexController: ObservableObject {
     }
     private func initialize(generation: Int) async throws {
         _ = try await rpc("initialize", .object(["clientInfo":.object(["name":.string("scriv_mac"),"title":.string("Scriv"),"version":.string("1.0.0")])]))
-        try await send(.object(["method":.string("initialized"),"params":.object([:])]))
+        try await send(.object(["method":.string("initialized")]))
         guard generation == connectionGeneration else { throw CancellationError() }
         isConnected = true; status = "Connected"; onChange?()
         try await readAccount()
-        let result = try await rpc("model/list", .object(["limit":.number(100),"includeHidden":.bool(false)]))
-        guard generation == connectionGeneration else { throw CancellationError() }
-        let models = result["data"]?.array ?? []
+        try await readModels()
+    }
+    private func readModels() async throws {
+        let generation = connectionGeneration
+        var models: [JSONValue] = [], cursor: String?, seenCursors: Set<String> = []
+        repeat {
+            var parameters: [String:JSONValue] = ["limit":.number(100),"includeHidden":.bool(false)]
+            if let cursor { parameters["cursor"] = .string(cursor) }
+            let result = try await rpc("model/list",.object(parameters))
+            guard generation == connectionGeneration else { throw CancellationError() }
+            models += result["data"]?.array ?? []; cursor = result["nextCursor"]?.string
+            if let cursor { guard !seenCursors.contains(cursor) else { throw ScrivError.invalid("Codex model pagination did not advance.") }; seenCursors.insert(cursor) }
+        } while cursor != nil
         availableModels = models.compactMap { $0["model"]?.string ?? $0["id"]?.string }
-        if selectedModel.isEmpty { selectedModel = models.first(where: { $0["isDefault"] == .bool(true) })?["model"]?.string ?? availableModels.first ?? "" }
+        if !availableModels.contains(selectedModel) { selectedModel = models.first(where: { $0["isDefault"] == .bool(true) })?["model"]?.string ?? availableModels.first ?? "" }
         onChange?()
     }
     func signIn() async throws {
@@ -103,7 +116,7 @@ final class CodexController: ObservableObject {
         guard let address = result["authUrl"]?.string, let url = URL(string: address), url.scheme == "https" else { throw ScrivError.invalid("Codex did not return a valid sign-in URL.") }
         NSWorkspace.shared.open(url); status = "Waiting for ChatGPT sign-in…"; onChange?()
     }
-    func signOut() async throws { _ = try await rpc("account/logout", .object([:])); try await readAccount() }
+    func signOut() async throws { _ = try await rpc("account/logout", .null); try await readAccount() }
     func readAccount() async throws {
         let generation = connectionGeneration
         let result = try await rpc("account/read", .object(["refreshToken":.bool(false)]))
@@ -135,10 +148,11 @@ final class CodexController: ObservableObject {
         guard !isGenerating else { throw ScrivError.conflict("An image is already being generated on this Mac.") }
         guard !prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw ScrivError.invalid("Write an image direction first.") }
         let generation = connectionGeneration
-        isGenerating = true; cancelRequested = false; log = ""; status = "Generating image…"; lastError = nil; onChange?()
-        defer { if let activeTurn { completedTurns.removeValue(forKey:activeTurn) }; isGenerating = false; activeThread = nil; activeTurn = nil; status = isConnected ? "Connected" : "Stopped"; onChange?() }
+        isGenerating = true; cancelRequested = false; generatedArtifacts = []; imageGenerationError = nil; log = ""; status = "Generating image…"; lastError = nil; onChange?()
+        defer { if let activeTurn { completedTurns.removeValue(forKey:activeTurn) }; isGenerating = false; activeThread = nil; activeTurn = nil; activeDirectory = nil; status = isConnected ? "Connected" : "Stopped"; onChange?() }
         let directory = try generationRoot().appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        activeDirectory = directory
         var input: [JSONValue] = []
         for (index, reference) in references.prefix(5).enumerated() {
             guard (try reference.resourceValues(forKeys:[.fileSizeKey]).fileSize ?? 0) <= 25*1024*1024 else { throw ScrivError.invalid("Reference image exceeds 25 MiB.") }
@@ -148,7 +162,9 @@ final class CodexController: ObservableObject {
         }
         let instruction = "Generate one cinematic storyboard image using the available image generation tool. Follow the user's direction below. Save the final generated PNG or JPEG in the current working directory as storyboard.png (or storyboard.jpg). Do not change reference files. If image generation is unavailable, explain the actual error and do not create a placeholder. The file is the requested deliverable. User direction:\n\n" + prompt
         input.insert(.object(["type":.string("text"),"text":.string(instruction)]),at:0)
-        var threadParams: [String:JSONValue] = ["cwd":.string(directory.path),"approvalPolicy":.string("never"),"sandbox":.string("workspaceWrite")]
+        // Verified against `codex app-server generate-json-schema` from Codex 0.165.0.
+        // ThreadStartParams.SandboxMode is kebab-case; TurnStartParams.sandboxPolicy uses camelCase.
+        var threadParams: [String:JSONValue] = ["cwd":.string(directory.path),"approvalPolicy":.string("never"),"sandbox":.string("workspace-write")]
         if !selectedModel.isEmpty { threadParams["model"] = .string(selectedModel) }
         let thread = try await rpc("thread/start",.object(threadParams))
         guard !cancelRequested, connectionGeneration == generation else { throw CancellationError() }
@@ -166,9 +182,10 @@ final class CodexController: ObservableObject {
         guard !cancelRequested, connectionGeneration == generation else { throw CancellationError() }
         let final = completedTurns.removeValue(forKey: turnId)!
         guard final["status"]?.string == "completed" else { let message = final["error"]?["message"]?.string ?? "Image generation was interrupted."; lastError = message; throw ScrivError.unavailable(message) }
+        for item in final["items"]?.array ?? [] { recordImageArtifact(item) }
         let candidates = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.isRegularFileKey,.isSymbolicLinkKey]).filter { ["png","jpg","jpeg","webp"].contains($0.pathExtension.lowercased()) && !$0.lastPathComponent.hasPrefix("reference-") }.sorted { $0.lastPathComponent < $1.lastPathComponent }
-        let exact = candidates.first { $0.deletingPathExtension().lastPathComponent == "storyboard" } ?? candidates.first
-        guard let file = exact, try file.resourceValues(forKeys: [.isRegularFileKey,.isSymbolicLinkKey]).isRegularFile == true, try file.resourceValues(forKeys:[.isSymbolicLinkKey]).isSymbolicLink != true, file.resolvingSymlinksInPath().deletingLastPathComponent() == directory.resolvingSymlinksInPath() else { throw ScrivError.unavailable("Codex completed without a generated image file. The installed runtime or account may not offer image generation. Its response is available in the Codex panel.") }
+        let exact = candidates.first { $0.deletingPathExtension().lastPathComponent == "storyboard" } ?? generatedArtifacts.last ?? candidates.first
+        guard let file = exact, try file.resourceValues(forKeys: [.isRegularFileKey,.isSymbolicLinkKey]).isRegularFile == true, try file.resourceValues(forKeys:[.isSymbolicLinkKey]).isSymbolicLink != true, file.resolvingSymlinksInPath().path.hasPrefix(directory.resolvingSymlinksInPath().path + "/") else { throw ScrivError.unavailable(imageGenerationError ?? "Codex completed without a generated image file. The installed runtime or account may not offer image generation. Its response is available in the Codex panel.") }
         let attributes = try FileManager.default.attributesOfItem(atPath: file.path)
         guard let size = attributes[.size] as? NSNumber, size.intValue > 0, size.intValue <= 25*1024*1024 else { throw ScrivError.invalid("The generated image exceeds the 25 MiB limit.") }
         guard NSImage(contentsOf:file) != nil else { throw ScrivError.invalid("Codex produced a file that could not be decoded as an image.") }
@@ -188,7 +205,7 @@ final class CodexController: ObservableObject {
     }
     private func send(_ value: JSONValue) async throws {
         let data = try ScrivJSON.encoder.encode(value)
-        if let socket { try await socket.send(.data(data)) }
+        if let socket { try await socket.send(.string(String(decoding:data,as:UTF8.self))) }
         else if let input { try input.write(contentsOf:data+Data([10])) }
         else { throw ScrivError.unavailable("Codex is not connected.") }
     }
@@ -206,9 +223,23 @@ final class CodexController: ObservableObject {
             Task {
                 let response: JSONValue
                 guard generation == connectionGeneration else { return }
-                if method.hasSuffix("requestApproval") { response = .object(["id":id,"result":.object(["decision":.string("decline")])]); lastError = "Codex requested additional permissions. Review this generation in Codex before retrying." }
-                else { response = .object(["id":id,"error":.object(["code":.number(-32601),"message":.string("This client does not implement \(method).")])]) }
+                switch method {
+                case "item/commandExecution/requestApproval", "item/fileChange/requestApproval":
+                    response = .object(["id":id,"result":.object(["decision":.string("decline")])])
+                    lastError = "Codex requested additional permissions. Review this generation in Codex before retrying."
+                case "item/permissions/requestApproval":
+                    response = .object(["id":id,"result":.object(["permissions":.object([:]),"scope":.string("turn")])])
+                    lastError = "Codex requested additional permissions. No extra access was granted."
+                case "mcpServer/elicitation/request":
+                    response = .object(["id":id,"result":.object(["action":.string("decline"),"content":.null])])
+                    lastError = "A connected Codex tool requested additional input. Review it in Codex before retrying."
+                case "item/tool/requestUserInput":
+                    response = .object(["id":id,"result":.object(["answers":.object([:])])])
+                    lastError = "Codex needs additional input. Add the details to the image direction and retry."
+                default: response = .object(["id":id,"error":.object(["code":.number(-32601),"message":.string("This client does not implement \(method).")])])
+                }
                 try? await send(response); onChange?()
+                if method == "item/tool/requestUserInput" { await cancelGeneration() }
             }
             return
         }
@@ -221,12 +252,27 @@ final class CodexController: ObservableObject {
         let params = message["params"] ?? .null
         switch message["method"]?.string {
         case "turn/completed": if isGenerating, activeThread != nil, let turn = params["turn"], let id = turn["id"]?.string, params["threadId"]?.string == activeThread { completedTurns[id] = turn }
+        case "item/completed": if isGenerating, params["threadId"]?.string == activeThread, let item = params["item"] { recordImageArtifact(item) }
         case "item/agentMessage/delta": if params["threadId"]?.string == activeThread, let delta = params["delta"]?.string { log += delta; if log.count > 32_000 { log = String(log.suffix(32_000)) } }
-        case "account/login/completed", "account/updated": Task { try? await readAccount(); if isConnected { status = "Connected" }; onChange?() }
+        case "account/login/completed":
+            if params["success"] == .bool(false) { lastError = params["error"]?.string ?? "ChatGPT sign-in was not completed." }
+            else { Task { try? await readAccount(); try? await readModels(); if isConnected && !isGenerating { status = "Connected" }; onChange?() } }
+        case "account/updated": Task { try? await readAccount(); if isConnected && !isGenerating { status = "Connected" }; onChange?() }
         case "error": lastError = params["error"]?["message"]?.string
         case "warning", "configWarning": lastError = params["message"]?.string ?? params["summary"]?.string
         default: break
         }
         onChange?()
+    }
+    private func recordImageArtifact(_ item: JSONValue) {
+        guard item["type"]?.string == "imageGeneration", let directory = activeDirectory else { return }
+        if item["failure"]?["type"]?.string == "usageLimitExceeded" { imageGenerationError = "The connected ChatGPT account reached its image generation usage limit."; lastError = imageGenerationError }
+        guard let path = item["savedPath"]?.string, path.hasPrefix("/") else { return }
+        let file = URL(fileURLWithPath:path)
+        // Runtime-reported artifacts are accepted only inside this isolated generation folder.
+        // The prompt asks Codex to copy its final image here if its tool initially saves elsewhere.
+        guard file.resolvingSymlinksInPath().path.hasPrefix(directory.resolvingSymlinksInPath().path + "/"),
+              !file.lastPathComponent.hasPrefix("reference-"), ["png","jpg","jpeg","webp"].contains(file.pathExtension.lowercased()) else { return }
+        if !generatedArtifacts.contains(file) { generatedArtifacts.append(file) }
     }
 }

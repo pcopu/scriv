@@ -1,0 +1,211 @@
+{
+  "runtime": "codex-cli 0.165.0",
+  "sourcePackage": "@openai/codex@0.165.0-linux-x64",
+  "fixtures": [
+    {
+      "name": "initialize",
+      "schema": "ClientRequest.json",
+      "payload": {
+        "id": 1,
+        "method": "initialize",
+        "params": {
+          "clientInfo": {
+            "name": "scriv_mac",
+            "title": "Scriv",
+            "version": "1.0.0"
+          }
+        }
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "initialized",
+      "schema": "ClientNotification.json",
+      "payload": {
+        "method": "initialized"
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "model/list",
+      "schema": "ClientRequest.json",
+      "payload": {
+        "id": 2,
+        "method": "model/list",
+        "params": {
+          "limit": 100,
+          "includeHidden": false
+        }
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "model/list next page",
+      "schema": "ClientRequest.json",
+      "payload": {
+        "id": 3,
+        "method": "model/list",
+        "params": {
+          "limit": 100,
+          "includeHidden": false,
+          "cursor": "opaque-cursor"
+        }
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "account/read",
+      "schema": "ClientRequest.json",
+      "payload": {
+        "id": 4,
+        "method": "account/read",
+        "params": {
+          "refreshToken": false
+        }
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "account/login/start",
+      "schema": "ClientRequest.json",
+      "payload": {
+        "id": 5,
+        "method": "account/login/start",
+        "params": {
+          "type": "chatgpt"
+        }
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "account/logout",
+      "schema": "ClientRequest.json",
+      "payload": {
+        "id": 6,
+        "method": "account/logout",
+        "params": null
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "thread/start",
+      "schema": "ClientRequest.json",
+      "payload": {
+        "id": 7,
+        "method": "thread/start",
+        "params": {
+          "cwd": "/tmp/scriv-generation-contract",
+          "approvalPolicy": "never",
+          "sandbox": "workspace-write",
+          "model": "example-account-returned-model"
+        }
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "turn/start text and image",
+      "schema": "ClientRequest.json",
+      "payload": {
+        "id": 8,
+        "method": "turn/start",
+        "params": {
+          "threadId": "thread-test",
+          "input": [
+            {
+              "type": "text",
+              "text": "Generate one storyboard image."
+            },
+            {
+              "type": "localImage",
+              "path": "/tmp/scriv-generation-contract/reference-0.png"
+            }
+          ]
+        }
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "turn/interrupt",
+      "schema": "ClientRequest.json",
+      "payload": {
+        "id": 9,
+        "method": "turn/interrupt",
+        "params": {
+          "threadId": "thread-test",
+          "turnId": "turn-test"
+        }
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "command approval decline",
+      "schema": "CommandExecutionRequestApprovalResponse.json",
+      "payload": {
+        "decision": "decline"
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "file approval decline",
+      "schema": "FileChangeRequestApprovalResponse.json",
+      "payload": {
+        "decision": "decline"
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "permissions approval no grant",
+      "schema": "PermissionsRequestApprovalResponse.json",
+      "payload": {
+        "permissions": {},
+        "scope": "turn"
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "MCP elicitation decline",
+      "schema": "McpServerElicitationRequestResponse.json",
+      "payload": {
+        "action": "decline",
+        "content": null
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "user input unanswered",
+      "schema": "ToolRequestUserInputResponse.json",
+      "payload": {
+        "answers": {}
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "camelCase thread sandbox rejected",
+      "schema": "v2/ThreadStartParams.json",
+      "expectedValid": false,
+      "payload": {
+        "cwd": "/tmp/test",
+        "approvalPolicy": "never",
+        "sandbox": "workspaceWrite"
+      }
+    },
+    {
+      "name": "non-null logout params rejected",
+      "schema": "ClientRequest.json",
+      "expectedValid": false,
+      "payload": {
+        "id": 10,
+        "method": "account/logout",
+        "params": {}
+      }
+    },
+    {
+      "name": "generic permissions decline rejected",
+      "schema": "PermissionsRequestApprovalResponse.json",
+      "expectedValid": false,
+      "payload": {
+        "decision": "decline"
+      }
+    }
+  ]
+}

@@ -112,7 +112,7 @@ final class WorkspaceStore: ObservableObject {
     }
     private func repo() throws -> ProjectRepository { guard let repository else { throw ScrivError.unavailable("Local project storage is unavailable. Check folder permissions.") }; return repository }
     private func bootstrap() async {
-        if ProcessInfo.processInfo.arguments.contains("--screenshots") { return }
+        if ProcessInfo.processInfo.arguments.contains("--screenshots") || ProcessInfo.processInfo.arguments.contains("--peer-smoke") { return }
         if let path = UserDefaults.standard.string(forKey:"lastProjectURL"), FileManager.default.fileExists(atPath:path) {
             do { try await open(URL(fileURLWithPath:path)) } catch { errorMessage = "The last project could not open: \(error.localizedDescription)" }
         } else { saveProject() }

@@ -17,6 +17,7 @@ struct ScrivApp: App {
                         await store.flushPendingSaves()
                         return store.statusMessage != "Save failed"
                     }
+                    if await NativePeerSmoke.runIfRequested() { return }
                     await NativeScreenshotRunner.runIfRequested(store: store)
                 }
         }
