@@ -77,21 +77,15 @@ struct LinkedScriptText: View {
     private var attributedText: AttributedString {
         var value = AttributedString(text)
         value.foregroundColor = color
-        let candidates = characters.flatMap { character in ([character.name] + character.aliases).filter { !$0.isEmpty }.map { ($0, character) } }.sorted { $0.0.count > $1.0.count }
-        var matched: [Range<String.Index>] = []
-        for (name, character) in candidates {
-            let pattern = "(?<![\\p{L}\\p{N}_])" + NSRegularExpression.escapedPattern(for: name) + "(?![\\p{L}\\p{N}_])"
-            guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else { continue }
-            for match in regex.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
-                guard let range = Range(match.range, in: text), !matched.contains(where: { $0.overlaps(range) }),
-                      let start = AttributedString.Index(range.lowerBound, within: value),
-                      let end = AttributedString.Index(range.upperBound, within: value),
-                      let url = URL(string: "scriv-character://open/" + character.id) else { continue }
-                value[start..<end].link = url
-                value[start..<end].backgroundColor = ScrivTheme.color(character.color).opacity(0.13)
-                value[start..<end].foregroundColor = ScrivTheme.accent
-                matched.append(range)
-            }
+        for mention in CharacterMentions.find(in: text, characters: characters) {
+            guard let character = characters.first(where: { $0.id == mention.characterId }),
+                  let range = Range(mention.range, in: text),
+                  let start = AttributedString.Index(range.lowerBound, within: value),
+                  let end = AttributedString.Index(range.upperBound, within: value),
+                  let url = URL(string: "scriv-character://open/" + character.id) else { continue }
+            value[start..<end].link = url
+            value[start..<end].backgroundColor = ScrivTheme.color(character.color).opacity(0.13)
+            value[start..<end].foregroundColor = ScrivTheme.accent
         }
         for (index, peer) in remoteSelections.enumerated() {
             guard let begin = peer.selection?["start"]?.int, let end = peer.selection?["end"]?.int, begin >= 0, end > begin,
@@ -138,9 +132,9 @@ struct WordPill: View {
     var onSelect: () -> Void
     var body: some View {
         Button(action: onSelect) {
-            Text(text).font(.system(size: small ? 10 : 15, weight: selected || active ? .medium : .regular))
+            Text(text).font(.system(size: small ? 10 : 18, weight: selected || active ? .medium : .regular))
                 .foregroundStyle(selected || active ? Color.white : ScrivTheme.ink)
-                .padding(.horizontal, small ? 7 : 11).padding(.vertical, small ? 5 : 7)
+                .padding(.horizontal, small ? 7 : 13).padding(.vertical, small ? 5 : 8)
                 .background(selected || active ? ScrivTheme.accent : ScrivTheme.inset.opacity(0.85), in: RoundedRectangle(cornerRadius: small ? 5 : 8))
                 .overlay(RoundedRectangle(cornerRadius: small ? 5 : 8).strokeBorder(selected ? ScrivTheme.accent : ScrivTheme.hairline.opacity(0.35)))
         }.buttonStyle(.plain).accessibilityAddTraits(selected ? .isSelected : [])
@@ -156,7 +150,7 @@ struct DirectionBand: View {
         Button(action: onSelect) {
             HStack(spacing: 8) {
                 Image(systemName: "line.3.horizontal.decrease").font(.system(size: 8, weight: .medium)).rotationEffect(.degrees(90))
-                Text(text).font(.system(size: 12)).italic().lineLimit(2).frame(maxWidth: .infinity)
+                Text(text).font(.system(size: 14)).italic().lineLimit(2).minimumScaleFactor(0.8).frame(maxWidth: .infinity)
                 Image(systemName: "line.3.horizontal.decrease").font(.system(size: 8, weight: .medium)).rotationEffect(.degrees(90))
             }.foregroundStyle(color).padding(.vertical, 7).padding(.horizontal, 8)
                 .background(color.opacity(selected ? 0.22 : 0.12), in: RoundedRectangle(cornerRadius: 8))
@@ -180,5 +174,110 @@ struct PillSegmentPicker<Value: Hashable>: View {
                 }.buttonStyle(.plain).accessibilityAddTraits(selection == value ? .isSelected : [])
             }
         }.padding(3).background(ScrivTheme.inset.opacity(0.65), in: RoundedRectangle(cornerRadius: 10))
+    }
+}
+
+/// Choosing a version changes only this placement. Historical image identities,
+/// character tags and discussions continue to reference their original assets.
+struct ImageVersionsPopover: View {
+    @EnvironmentObject private var store: WorkspaceStore
+    @Environment(\.dismiss) private var dismiss
+    let cueID: String
+    let imageID: String
+    private var versions: [ImageAsset] { ProjectEditing.imageVersions(in: store.project, imageId: imageID) }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Image versions").font(.headline)
+            Text("Use a version for this placement. Existing discussions keep their original image.").font(.caption).foregroundStyle(.secondary)
+            ScrollView {
+                VStack(spacing: 8) {
+                    ForEach(versions) { image in
+                        Button {
+                            store.setCueImage(cueID, imageId: image.id)
+                            dismiss()
+                        } label: {
+                            HStack(spacing: 10) {
+                                AssetImageView(url: store.assetURL(image), title: "Version \(image.version)", cornerRadius: 6, unavailableText: "Not downloaded")
+                                    .frame(width: 94, height: 58)
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text("Version \(image.version)").font(.system(size: 13, weight: .semibold))
+                                    Text(image.createdAt, style: .date).font(.caption).foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                if store.project.cues.first(where: { $0.id == cueID })?.imageId == image.id { Image(systemName: "checkmark.circle.fill").foregroundStyle(ScrivTheme.accent) }
+                            }.padding(7).background(ScrivTheme.inset, in: RoundedRectangle(cornerRadius: 8))
+                        }.buttonStyle(.plain).disabled(store.lockedByOther(cueID) != nil)
+                    }
+                }
+            }.frame(maxHeight: 330)
+            Button("Done") { dismiss() }.keyboardShortcut(.cancelAction)
+        }.padding(16).frame(width: 340)
+    }
+}
+
+/// Reusing an image never imports a duplicate or rewrites its version identity.
+struct ProjectImagePicker: View {
+    @EnvironmentObject private var store: WorkspaceStore
+    @Environment(\.dismiss) private var dismiss
+    let cueID: String
+    let navigationContext: Int
+    @State private var search = ""
+    @State private var selectedImageID: String?
+    private var images: [ImageAsset] {
+        store.project.images.filter { image in
+            search.isEmpty || image.prompt.localizedCaseInsensitiveContains(search)
+                || store.project.characters.contains { image.characterIds.contains($0.id) && ([$0.name] + $0.aliases).contains { $0.localizedCaseInsensitiveContains(search) } }
+        }.sorted { ($0.createdAt, $0.id) > ($1.createdAt, $1.id) }
+    }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Choose an image").font(.title2.weight(.semibold))
+                    Text("Reuse an existing asset for this placement. Other placements and image discussions stay unchanged.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+            }
+            TextField("Find by image direction, character or alias", text: $search).textFieldStyle(.roundedBorder)
+            if images.isEmpty {
+                EmptyPanel(symbol: "photo.on.rectangle", title: search.isEmpty ? "No project images yet" : "No matching images", message: search.isEmpty ? "Import or generate an image first, then reuse it in any placement." : "Try another character name or a word from the image direction.")
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
+                        ForEach(images) { image in
+                            Button { selectedImageID = image.id } label: {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    AssetImageView(url: store.assetURL(image), title: "Image version \(image.version)", cornerRadius: 9, unavailableText: "Not downloaded")
+                                        .aspectRatio(16 / 9, contentMode: .fit)
+                                        .overlay(alignment: .topTrailing) {
+                                            if selectedImageID == image.id { Image(systemName: "checkmark.circle.fill").foregroundStyle(.white, ScrivTheme.accent).font(.title3).padding(8) }
+                                        }
+                                        .overlay(RoundedRectangle(cornerRadius: 9).strokeBorder(selectedImageID == image.id ? ScrivTheme.accent : .clear, lineWidth: 3))
+                                    Text(image.prompt.isEmpty ? "Image" : image.prompt).font(.system(size: 11)).lineLimit(2).frame(maxWidth: .infinity, alignment: .leading)
+                                    HStack {
+                                        Text("Version \(image.version)")
+                                        Spacer()
+                                        if store.assetURL(image) == nil { Image(systemName: "icloud.and.arrow.down") }
+                                    }.font(.system(size: 10)).foregroundStyle(.secondary)
+                                }.padding(4).contentShape(Rectangle())
+                            }.buttonStyle(.plain).accessibilityAddTraits(selectedImageID == image.id ? .isSelected : [])
+                        }
+                    }
+                }
+            }
+            HStack {
+                Text("Only this image placement changes.").font(.caption).foregroundStyle(.secondary)
+                Spacer()
+                Button("Cancel") { dismiss() }.keyboardShortcut(.cancelAction)
+                Button("Use image") {
+                    guard store.navigationContext == navigationContext, let selectedImageID else { dismiss(); return }
+                    store.setCueImage(cueID, imageId: selectedImageID); dismiss()
+                }.buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
+                    .disabled(selectedImageID == nil || store.lockedByOther(cueID) != nil || !store.project.cues.contains(where: { $0.id == cueID }))
+            }
+        }.padding(22).frame(width: 820, height: 600)
+            .onAppear { selectedImageID = store.project.cues.first(where: { $0.id == cueID })?.imageId }
+            .onChange(of: store.navigationContext) { _, context in if context != navigationContext { dismiss() } }
     }
 }

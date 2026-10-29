@@ -22,25 +22,69 @@ GitHub OAuth is the initial Scriv identity provider. ChatGPT login belongs solel
 
 ## Project state and commands
 
-- `GET /v1/projects/:id/snapshot` → `{projectId,epoch,headSeq,timingVersion,items:[{id,kind,version,data,deleted:false}],threads:[...],leases:[...]}`.
-- `GET /v1/projects/:id/events?after=0&limit=100` → `{events,headSeq,epoch,timingVersion,hasMore}`. Events are `{seq,epoch,commandId,actorId,kind,at,changes:[{id,before,after}],data}`. History is immutable. `GET .../history` aliases events.
+- `GET /v1/projects/:id/snapshot` → `{projectId,epoch,headSeq,timingVersion,items:[{id,kind,version,data,deleted:false}],deletedItems:[{id,kind,version,data:{},deleted:true}],canImport,threads:[...],leases:[...]}`. `deletedItems` exposes only tombstone identity/version metadata, not deleted content. Retain it with the client's version map so undo/reinsertion after reconnect can obtain a lease and use the correct expected version. `canImport` is true only if no content item has ever been stored; discussion-only history does not prevent initial import, but restore-to-empty does. Older responses may omit these additive fields.
+- `GET /v1/projects/:id/events?after=0&limit=100` → `{events,headSeq,epoch,timingVersion,hasMore}`. Events are `{seq,epoch,commandId,actorId,kind,at,changes:[{id,before,after}],data}`. History is immutable. `GET .../history` aliases events. Pages contain at most the requested count and approximately 512 KiB of event JSON; honor `hasMore` rather than assuming a full count. An individual event exceeding 256 KiB is represented by `changes:[]` and `data.snapshotRequired:true`; its complete changes remain in durable storage.
 - Item kinds: `scene`, `entry`, `character`, `image`, `cue`. `data` is the native model's JSON object. Stable `id` appears both on item and data. Individual data <=64KiB; commands <=512KiB and <=100 operations.
 - `POST .../leases` `{itemId,sessionId}` → `{itemId,sessionId,token,fence,expiresAt,epoch,userId,name}`. Existing items require an exclusive 30-second lease. Renew every 10 seconds using `PUT .../leases` `{itemId,sessionId,token,fence,epoch}`. Release `DELETE .../leases` with same body. Leases conflict with `423` and owner details. New items can be created without a lease; replacing/deleting existing items requires it, including same-user other windows.
 - `POST .../commands` `{commandId,sessionId,epoch,expectedTimingVersion,label,operations:[{op:"put"|"delete",id,kind?,data?,expectedVersion,lease?:{token,fence}}]}` → `{commandId,seq,epoch,timingVersion,items:[changed items]}`. Create uses expectedVersion 0. A batch is atomic and idempotent. Existing version mismatch returns409; stale epoch409; expired/missing lease423. Same commandId with another payload is409. Replays return original receipt before checking expired leases, but after current access authorization.
 - `POST .../restore` `{commandId,sessionId,epoch,seq}` → receipt. Owner/admin only. Reconstructs item state at sequence, creates a new history event, increments epoch, invalidates all leases. Does not restore users, memberships, billing or discussion messages.
 
+### Read-only history preview
+
+`GET .../snapshot?seq=<0..headSeq>&after=<itemId>&limit=200` reconstructs the exact item state at a journal sequence using the same reducer as restore, including import/restore/large events whose public changes are truncated. This never mutates current items, leases, discussions, epoch or journal. Optional `epoch` must match the historical event epoch (epoch 1 at sequence 0). Unauthorized readers are rejected before projection; future/negative/non-integer sequences and limits above 200 are rejected.
+
+The response has the snapshot fields plus `{hasMore,nextCursor,historyEvent:{seq,epoch,actorId,kind,at}|null}`. `headSeq` is the requested sequence, and epoch/timingVersion are historical. Pages are ordered by item ID across live items and minimal tombstones, capped at 200 items and approximately 512 KiB of item payload. Fetch every page with the same sequence before displaying a complete preview. `canImport:false`, `threads:[]` and `leases:[]` are intentional: this is item-only read-only history, not a reconnect snapshot and not permission to overwrite current versions. Historical media metadata does not bypass asset authorization or guarantee deleted hosted bytes still exist.
+
 ## Item discussions
 
-- `GET .../threads?itemId=<id>` (omit for project discussion) → `{threads}`.
-- `POST .../threads` `{itemId?:null,anchor?:{wordIds?,imageVersionId?,...}}` → `{thread}`. One canonical thread per item plus one project thread.
+- `GET .../threads?itemId=<id>` (omit for project discussion) → `{threads}`. Image versions resolve to one canonical conversation for their lineage.
+- `GET .../threads?scope=all&after=<threadId>&limit=100` → `{threads,hasMore,nextCursor}`. Authorized, ID-ordered browsing includes resolved, deleted-item and legacy image-version conversations; limit 1–200. Do not combine `scope=all` with `itemId`.
+- `POST .../threads` `{itemId?:null,anchor?:{wordIds?,imageVersionId?,...}}` → `{thread}`. One canonical thread per item/image lineage plus one project thread.
 - `GET .../threads/:threadId/messages?after=<timestamp>&afterId=<id>` → `{messages,hasMore,nextCursor:{at,id}|null}`. Pages contain up to 500 messages, ordered by timestamp and ID. Send both returned cursor parts to avoid same-time gaps.
 - `POST .../threads/:threadId/messages` `{id,body,replyToId?:null,attachments?:[{itemId,imageVersionId?}]}` → `{message}`. Client UUID makes send idempotent; maximum body8000 characters. No line edit lease required.
 - `PATCH .../threads/:threadId` `{resolved:true|false}` → `{thread}`.
+
+Image discussions follow `previousVersionId` to a stable root, including tombstoned predecessors, so regeneration does not split the conversation. A newly created image conversation is keyed by root ID; its initial `anchor.imageVersionId` defaults to the selected live revision. Missing/cyclic/non-decreasing lineages fail closed. Existing root conversations win; if an older release created only revision-specific threads, the earliest family conversation is canonical. Other legacy threads and messages are never deleted or merged and remain addressable by thread ID and `scope=all`. The returned canonical `thread.itemId` can differ from the selected revision. Read-only discovery does not mutate historical anchors or advance the journal.
+
+Project mentions are additive and stay in-app: `GET .../members?after=<userId>&limit=100&q=<name>` returns `{members:[{id,name,role}],hasMore,nextCursor}` to current project readers. `limit` is 1–200; `q` is a literal, case-insensitive display-name substring (maximum 100 characters). Member IDs are ordered for pagination. Personal projects expose only their owner; team projects expose the authoritative team owner and current members, with no email or session data.
+
+Message POST accepts optional `mentionedUserIds:[string]` (maximum 20 unique current project-member IDs). Responses and durable message events include `mentionedUserIds`; old persisted messages migrate to `[]`, and older journal events may omit the field. Lists are canonicalized by ID for idempotency; changing recipients on a reused message ID is rejected. A previously accepted retry still returns its original recipients after a recipient leaves, while fresh sends cannot mention removed/nonmember users. Paid viewers retain their existing discussion/mention permissions. Mentions do not send email or create external notifications.
+
+Discussion creation, new messages and resolution changes commit in the same
+ordered journal as content: `discussion.thread-created` and
+`discussion.thread-updated` carry `data.thread`; `discussion.message-created`
+carries `data.message`. Each has `changes:[]`, `data.label` and the unchanged
+`data.timingVersion`. Apply these payloads during both live delivery and replay.
+The existing immediate `thread`/`message` socket notifications remain supported;
+deduplicate messages by ID. Repeated identical message sends and resolution of
+an already-resolved thread do not append duplicate history. Earlier discussion
+data remains readable when upgrading an existing room; historical ordering is
+not fabricated for messages accepted before this journal support.
+
+Returning an existing canonical thread is a read and remains available during
+subscription grace. Identical accepted message/restore retries return the
+original result after current read authorization, even if the actor has since
+lost write permission. New attachments must reference live items; previously
+accepted attachments remain readable when an item is deleted. Initial word
+anchors must reference distinct words in the annotated entry; image anchors
+must reference an available image version. A canonical thread retains its
+original anchor instead of being moved to another selection on repeated opens.
+
+New message timestamps advance monotonically within a thread, including when
+the wall clock repeats or regresses. Continue sending both cursor fields when
+paging. A snapshot-required event advances the content checkpoint past other
+events, so clients must also reload the active discussion's thread and messages
+after snapshot replacement/reconnection; a content snapshot has thread metadata,
+not message bodies. A history restore changes only content, never discussion.
 
 ## Live connection and peer media signaling
 
 Open `GET /v1/projects/:id/socket` with bearer header and `Upgrade:websocket`.
 Requires an active team subscription; free owners use HTTP sync and history.
+Client JSON can use text frames or UTF-8 binary frames (including native
+`URLSessionWebSocketTask.Message.data`). The 64 KiB limit measures encoded bytes;
+invalid UTF-8/JSON returns a structured error. Invalid presence or an unavailable
+signal recipient does not close an otherwise authorized collaboration socket.
 Server first sends `{type:"hello",projectId,epoch,headSeq,timingVersion,connectionId,deviceId}`.
 The server-issued `deviceId` identifies the authenticated device session; it is
 separate from the native editor-window `sessionId` used for leases.
@@ -70,6 +114,15 @@ message. Membership removal, session revocation and subscription changes also
 proactively revalidate and close affected sockets. Max 1,000 simultaneous
 connections per project; membership has no seat cap. The limit protects a live
 room and does not constrain how many people may join a team.
+Access refresh also invalidates leases belonging to removed members, editors
+downgraded to viewers or revoked device sessions, even without a live socket.
+Lease rows/fences survive invalidation; the next claim receives a higher fence.
+Access refresh also fences HTTP/socket operations that authorized before the
+change but are still awaiting a request body, digest or peer lookup. These return
+409 `access_changed` before a mutation or cached receipt is returned. A slow
+upload cannot create a new unleased item/message after removal has completed;
+retrying must pass fresh authorization. This fence can also reject an otherwise
+authorized request racing with a different member's access change.
 
 Peer signaling is `POST .../signals` `{toDeviceId,type:"offer"|"answer"|"ice"|"asset-request"|"asset-available",payload}` and the same JSON with `type:"signal",signalType:...` over socket. Receiver gets authenticated sender ID. Signaling contains no media bytes; local-only assets remain local until peer transfer or premium upload. Free solo's other authenticated devices may use HTTP `GET .../signals?deviceId=...&after=...` / POST to exchange signals. Signal messages expire after120s. Recipient must currently have access.
 
@@ -166,6 +219,16 @@ Image `createdAt` accepts finite nonnegative milliseconds, including a fractiona
 millisecond from Swift's Date encoder. Server event and session times remain
 integer milliseconds.
 
+Word IDs are unique across all live entries, including atomic imports and
+multi-entry edits. A batch may move a word identity between entries if the final
+state is unique. Reinstating a deleted entry or cue is a geometry change and
+requires the current timing version even when its payload is unchanged.
+An existing image item's version, filename, digest, MIME type, byte count,
+creation time and predecessor are immutable; regeneration creates a new item.
+Tags and prompt metadata remain editable under its lease. Character tags are
+distinct; a predecessor must be an available image with a strictly lower version,
+which rules out self-links and version cycles.
+
 ## Retrying a saved command
 
 Persist the exact command payload and ID before submitting. Replay that exact
@@ -178,3 +241,9 @@ outbox entry, fetch current state, reconcile the local draft against its prior
 checkpoint, acquire fresh leases and submit a new command ID. `command_reused`
 means the ID already identifies a different payload and must be surfaced as an
 error instead of automatically retrying a changed body.
+
+`access_changed` differs: the current attempt was fenced before mutation **or
+receipt lookup**, so an earlier attempt with the same ID may already have
+committed. Keep its original outbox payload/ID and retry it unchanged after
+fresh authorization. Do not discard it or infer that a new command ID is safe
+from this error alone.

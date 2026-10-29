@@ -72,6 +72,7 @@ The room's schema is initialized in [`cloud/src/project-room.ts`](../cloud/src/p
 | `schema_migrations` | Room schema-version markers. |
 | `meta` | Project ID, restore epoch, accepted history sequence and timing version. |
 | `items` | Stable ID, kind, version, JSON payload, tombstone and indexed scene/order/timing columns. |
+| `word_owners` | Indexed live word-to-entry identity ownership; updated atomically with content and restore, with a forward migration for existing rooms. |
 | `leases` | Item, authenticated device session, editor-window session, random token, monotonic fence, expiry, epoch and user display data. |
 | `events` | Immutable accepted command sequence, actor, time, epoch, kind and metadata. |
 | `changes` | Per-item before/after content attached to an event. |
@@ -92,7 +93,7 @@ Timing-changing commands also use an expected project timing version. This preve
 
 The native app persists drafts and a scoped command outbox. Reconnecting compares the last durable canonical checkpoint, the local draft and current remote items. Unchanged or independently changed items can merge; same-item conflicts are retained for explicit review. Network failure does not silently discard the local draft or mark an unaccepted change as cloud-saved.
 
-Cloud history is an append-only sequence. Restore reconstructs a selected content state and writes a new event under a new epoch. It invalidates leases. It does not rewind membership, subscriptions or conversation messages. Local project history stores complete native snapshots and remains usable offline. Both cloud event and message clients page through results; equal-timestamp messages use a two-part `(at,id)` cursor.
+Cloud history is an append-only sequence. New thread/message/resolution mutations share its sequence and watermark, storing their discussion payload and an empty item-change list atomically with the discussion update. Lost socket notifications therefore recover through the same replay path as content. Existing pre-upgrade discussion remains readable without inventing historical sequence numbers. Restore reconstructs a selected content state and writes a new event under a new epoch. It invalidates leases. It does not rewind membership, subscriptions or conversation messages. Local project history stores complete native snapshots and remains usable offline. Both cloud event and message clients page through results; messages use a two-part `(at,id)` cursor, with monotonically advancing per-thread timestamps for new sends. Replay responses are byte-bounded; oversized events request a fresh snapshot while preserving the full journal changes. Native clients also refresh the active discussion after snapshot replacement so skipped message payloads are recovered.
 
 The new-project import endpoint validates and commits up to 10,000 items / 16 MiB atomically. It supports cyclic character/portrait references by validating after the entire proposed state is present. It is only available for an empty project, making retries safe without partial bootstrap state.
 
@@ -100,7 +101,7 @@ The new-project import endpoint validates and commits up to 10,000 items / 16 Mi
 
 Premium rooms use authenticated WebSockets. Accepted changes are streamed with a durable sequence; reconnect uses replay after the last applied sequence. Watermarks detect gaps. Presence includes real item/selection/cursor data and is transient, expiring after 30 seconds. Client presence is limited to 5 Hz. Presence movement is not a history revision.
 
-Membership, session and subscription changes notify affected rooms. Messages are reauthorized server-side, and revoked access closes/rejects the corresponding live connection. Read-only viewers cannot obtain write leases or send content mutations. An item editing lease does not lock its discussion thread.
+Membership, session and subscription changes notify affected rooms. Messages are reauthorized server-side, and revoked access closes/rejects the corresponding live connection. Revoked sessions, removed members and viewer downgrades immediately invalidate affected edit leases even when no socket is open; their monotonically increasing fencing rows are retained. Read-only viewers cannot obtain write leases or send content mutations. An item editing lease does not lock its discussion thread. Both browser text and native UTF-8 binary JSON frames use the same validated protocol; a missing signal recipient or stale cursor target does not disconnect the sender's valid room connection.
 
 Free personal projects use authenticated HTTP synchronization and history. Same-account devices can exchange authorized peer signals over HTTP. Multiple people collaborating on a project require an active team subscription. Team size is not a billable seat count; room connection limits protect a single coordinator from overload.
 

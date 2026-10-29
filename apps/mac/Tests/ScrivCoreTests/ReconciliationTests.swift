@@ -63,4 +63,33 @@ final class ReconciliationTests: XCTestCase {
         let paid = try ScrivJSON.decoder.decode(CloudTeam.self,from:Data("{\"id\":\"team\",\"name\":\"Team\",\"status\":\"active\",\"plan\":\"team\"}".utf8))
         XCTAssertTrue(paid.isPaid)
     }
+    func testSnapshotKeepsDeletionVersionsForReconnectedUndo() throws {
+        let source = fixture()
+        let active = try CloudCodec.items(from:source).filter { $0.id != "one" }
+        let tombstone = CloudItem(id:"one",kind:"character",version:7,data:.object([:]),deleted:true)
+        let payload: JSONValue = .object(["projectId":.string("remote"),"epoch":.number(2),"headSeq":.number(15),"timingVersion":.number(9),"items":try .encoded(active),"deletedItems":try .encoded([tombstone]),"canImport":.bool(false)])
+        let snapshot = try payload.decoded(CloudSnapshot.self)
+        let items = try snapshot.validatedItems(for:"remote")
+        XCTAssertEqual(items.first { $0.id == "one" }?.version,7)
+        XCTAssertEqual(items.count,active.count+1)
+        let restored = try CloudCodec.applying(items,to:source)
+        XCTAssertFalse(restored.characters.contains { $0.id == "one" })
+        var resurrected = restored; resurrected.characters.append(source.characters[0])
+        let merged = try CloudReconciliation.merge(base:items,local:CloudCodec.items(from:resurrected),remote:items)
+        // The merge retains canonical tombstone version even though the desired item is active.
+        XCTAssertEqual(merged.first { $0.id == "one" }?.version,7)
+        XCTAssertEqual(items.first { $0.id == "one" }?.version,7) // CloudClient's expectedVersion source.
+        XCTAssertThrowsError(try snapshot.validatedItems(for:"wrong-project"))
+    }
+    func testSnapshotRejectsDuplicateTombstoneAndImpossibleImportFlag() throws {
+        let item = CloudItem(id:"a",kind:"character",version:2,data:.object([:]))
+        var tombstone = item; tombstone.deleted = true
+        let duplicate: JSONValue = .object(["projectId":.string("p"),"epoch":.number(1),"headSeq":.number(1),"items":try .encoded([item]),"deletedItems":try .encoded([tombstone])])
+        XCTAssertThrowsError(try duplicate.decoded(CloudSnapshot.self).validatedItems(for:"p"))
+        let impossible: JSONValue = .object(["projectId":.string("p"),"epoch":.number(1),"headSeq":.number(1),"items":.array([]),"deletedItems":try .encoded([tombstone]),"canImport":.bool(true)])
+        XCTAssertThrowsError(try impossible.decoded(CloudSnapshot.self).validatedItems(for:"p"))
+        let discussionOnly: JSONValue = .object(["projectId":.string("p"),"epoch":.number(1),"headSeq":.number(4),"items":.array([]),"deletedItems":.array([]),"canImport":.bool(true)])
+        XCTAssertTrue(try discussionOnly.decoded(CloudSnapshot.self).validatedItems(for:"p").isEmpty)
+    }
+
 }

@@ -10,7 +10,16 @@ public extension ScrivProject {
         let randy = ScriptCharacter(id: "character-randy", name: "Randy", biography: "The enthusiastic negotiator.", appearance: "Curly hair, faded gray hoodie.", color: "blue")
         let franklin = ScriptCharacter(id: "character-franklin", name: "Farmer Franklin", aliases: ["Franklin"], biography: "A cautious farmer, weighing the boys' proposal.", appearance: "Sun-worn cap, blue plaid shirt, overalls.", color: "orange")
         let miyazaki = ScriptCharacter(id: "character-miyazaki", name: "Miyazaki", biography: "Quietly observes the negotiation.", appearance: "Dark hair, plaid shirt, holding the invoice.", color: "teal")
+        // Exact wording and editorial durations transcribed from the preserved YAM MAN
+        // page-12 reference (design/images/02-characters.png). Zero-owned notes are
+        // separate editable entries; they do not inflate the 16 authored-slot count.
         var entries: [ScriptEntry] = [
+            ScriptEntry(id: "line-01", sceneId: scene.id, order: -6, text: "Miyazaki, do you have any questions?", characterId: randy.id, ownedDurationMs: 3200),
+            ScriptEntry(id: "line-02", sceneId: scene.id, order: -5, kind: .direction, text: "Miyazaki presents the preliminary invoice.", ownedDurationMs: 2400, coverageDurationMs: 2400, color: "teal"),
+            ScriptEntry(id: "line-03", sceneId: scene.id, order: -4, text: "Yes. Can you pay the...? Can you...? I would like you to pay.", characterId: miyazaki.id, ownedDurationMs: 7600),
+            ScriptEntry(id: "line-04", sceneId: scene.id, order: -3, text: "What? Why? I'm not paying anything.\nYou guys just got here.", characterId: franklin.id, ownedDurationMs: 5300),
+            ScriptEntry(id: "line-05", sceneId: scene.id, order: -2, text: "Miyazaki, chill.", characterId: randy.id, ownedDurationMs: 1400),
+            ScriptEntry(id: "line-06", sceneId: scene.id, order: -1, text: "But you told me to.", characterId: miyazaki.id, ownedDurationMs: 2400),
             ScriptEntry(id: "line-07", sceneId: scene.id, order: 0, text: "Calm down, Miyazaki. This is America.", characterId: randy.id, ownedDurationMs: 3000),
             ScriptEntry(id: "direction-08", sceneId: scene.id, order: 1, kind: .direction, text: "(To the farmer)", ownedDurationMs: 0, coverageDurationMs: 5400, color: "purple"),
             ScriptEntry(id: "line-08", sceneId: scene.id, order: 2, text: "He gets a little gung ho with our flavor of capitalism.", characterId: randy.id, ownedDurationMs: 5000),
@@ -18,15 +27,19 @@ public extension ScrivProject {
             ScriptEntry(id: "direction-10", sceneId: scene.id, order: 4, kind: .direction, text: "(Re: Miyazaki)", ownedDurationMs: 0, coverageDurationMs: 3200, color: "teal"),
             ScriptEntry(id: "line-10", sceneId: scene.id, order: 5, text: "Can I trust this guy?", characterId: franklin.id, ownedDurationMs: 2800),
             ScriptEntry(id: "line-11", sceneId: scene.id, order: 6, text: "Yeah, you can trust this guy.", characterId: randy.id, ownedDurationMs: 2800),
-            ScriptEntry(id: "line-12", sceneId: scene.id, order: 7, text: "Are you sure?", characterId: franklin.id, ownedDurationMs: 1600)
+            ScriptEntry(id: "line-12", sceneId: scene.id, order: 7, text: "Are you sure?", characterId: franklin.id, ownedDurationMs: 1600),
+            ScriptEntry(id: "line-13", sceneId: scene.id, order: 8, text: "Listen, this guy is a left-handed pitcher. He throws the baseball better than any American. 87. 88. MPH.", characterId: randy.id, ownedDurationMs: 9800),
+            ScriptEntry(id: "line-14", sceneId: scene.id, order: 9, text: "That's not so fast....", characterId: franklin.id, ownedDurationMs: 2600),
+            ScriptEntry(id: "line-15", sceneId: scene.id, order: 10, text: "That's a curveball.", characterId: miyazaki.id, ownedDurationMs: 1800),
+            ScriptEntry(id: "line-16", sceneId: scene.id, order: 11, text: "What's his fastball?", characterId: franklin.id, ownedDurationMs: 2200)
         ]
         let timings = [0,250,600,750,1400,1700,2000,2350,2700,3450,3800,5000]
-        entries[2].words = entries[2].words.enumerated().map { index, word in TimedWord(id: "word-08-\(index)", text: word.text, startMs: timings[index], endMs: timings[index+1]) }
+        entries[8].words = entries[8].words.enumerated().map { index, word in TimedWord(id: "word-08-\(index)", text: word.text, startMs: timings[index], endMs: timings[index+1]) }
         let question = [0,400,700,1500,2000,2800]
-        entries[5].words = entries[5].words.enumerated().map { index, word in TimedWord(id: "word-10-\(index)", text: word.text, startMs: question[index], endMs: question[index+1]) }
-        let cuts = [0,3000,4400,6800,8000,10400,11900,13200,16000,17600]
-        let labels = ["07A","08A","08B","08C","09A","10A","10B","11A","12A"]
-        let cues = labels.enumerated().map { index,label in ImageCue(id: "cue-\(label.lowercased())", sceneId: scene.id, label: label, startMs: cuts[index], endMs: cuts[index+1], prompt: "Cinematic storyboard, warm natural light in a farm office. \(index == 4 ? "Franklin studies the invoice." : "Randy, Miyazaki, and Farmer Franklin discuss an invoice.")") }
-        return ScrivProject(title: "YAM MAN", scenes: [scene], entries: entries, characters: [randy,franklin,miyazaki], cues: cues)
+        entries[11].words = entries[11].words.enumerated().map { index, word in TimedWord(id: "word-10-\(index)", text: word.text, startMs: question[index], endMs: question[index+1]) }
+        let cuts = [0,3200,5600,13200,18500,19900,22300,25300,26700,29100,30300,32700,34200,35500,38300,39900,49700,52300,54100,56300]
+        let labels = ["01A","02A","03A","04A","05A","06A","07A","08A","08B","08C","09A","10A","10B","11A","12A","13A","14A","15A","16A"]
+        let cues = labels.enumerated().map { index,label in ImageCue(id: "cue-\(label.lowercased())", sceneId: scene.id, label: label, startMs: cuts[index], endMs: cuts[index+1], prompt: "Cinematic storyboard, warm natural light in a farm office. \(label == "09A" ? "Franklin studies the invoice." : "Randy, Miyazaki, and Farmer Franklin discuss an invoice.")") }
+        return ScrivProject(title: "YAM MAN", scenes: [scene], entries: entries, characters: [randy,miyazaki,franklin], cues: cues)
     }
 }

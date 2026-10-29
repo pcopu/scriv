@@ -28,12 +28,15 @@ public enum TimingEngine {
         }
     }
     public static func validate(_ project: ScrivProject) throws {
+        try AudioTimeline.validate(assets:project.audioAssets,clips:project.audioClips,scenes:project.scenes,entries:project.entries,volume:project.audioVolume)
         guard project.schemaVersion == 1 else { throw ScrivError.invalid("This project needs a newer version of Scriv.") }
+        guard !project.id.isEmpty, project.id.utf8.count <= 128, !project.id.contains("/"), !project.id.contains("\\"), project.id != ".", project.id != "..", project.revision >= 0, project.revision < Int.max,
+              project.createdAt.timeIntervalSince1970.isFinite, project.modifiedAt.timeIntervalSince1970.isFinite else { throw ScrivError.invalid("Project identity, revision and dates must be valid.") }
         let ids = project.scenes.map(\.id) + project.entries.map(\.id) + project.characters.map(\.id) + project.images.map(\.id) + project.cues.map(\.id)
         guard Set(ids).count == ids.count, ids.allSatisfy({ !$0.isEmpty && $0.utf8.count <= 128 }), project.entries.count <= 100_000 else { throw ScrivError.invalid("Project contains duplicate item identities.") }
         guard project.scenes.allSatisfy({ $0.order.isFinite }), project.characters.allSatisfy({ !$0.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) else { throw ScrivError.invalid("Scene order and character names must be valid.") }
         let allWordIDs = project.entries.flatMap { $0.words.map(\.id) }
-        guard Set(allWordIDs).count == allWordIDs.count else { throw ScrivError.invalid("Word identities must be unique throughout the project.") }
+        guard Set(allWordIDs).count == allWordIDs.count, allWordIDs.allSatisfy({ !$0.isEmpty && $0.utf8.count <= 128 }) else { throw ScrivError.invalid("Word identities must be unique throughout the project.") }
         let sceneIds = Set(project.scenes.map(\.id)), characterIds = Set(project.characters.map(\.id)), imageIds = Set(project.images.map(\.id))
         for entry in project.entries {
             guard sceneIds.contains(entry.sceneId), entry.order.isFinite, entry.ownedDurationMs >= (entry.kind == .dialogue ? 1 : 0), entry.ownedDurationMs <= 3_600_000 else { throw ScrivError.invalid("Invalid script timing or scene reference.") }
@@ -50,13 +53,20 @@ public enum TimingEngine {
             }
         }
         for image in project.images {
-            guard image.byteCount > 0, image.sha256.count == 64, image.sha256.allSatisfy({ $0.isHexDigit }), image.fileName == URL(fileURLWithPath: image.fileName).lastPathComponent, !image.fileName.contains(".."), image.characterIds.allSatisfy(characterIds.contains) else { throw ScrivError.invalid("Invalid image metadata or character tags.") }
+            guard image.version >= 1, image.byteCount > 0, image.byteCount <= 25*1024*1024, ["image/png", "image/jpeg", "image/webp"].contains(image.mimeType), !image.fileName.isEmpty, image.createdAt.timeIntervalSince1970.isFinite, Set(image.characterIds).count == image.characterIds.count, image.sha256.count == 64, image.sha256.allSatisfy({ $0.isHexDigit }), image.fileName == URL(fileURLWithPath: image.fileName).lastPathComponent, !image.fileName.contains(".."), !image.fileName.contains("\\"), image.characterIds.allSatisfy(characterIds.contains) else { throw ScrivError.invalid("Invalid image metadata or character tags.") }
+        }
+        let assets = Dictionary(uniqueKeysWithValues: project.images.map { ($0.id, $0) })
+        for image in project.images {
+            if let predecessor = image.previousVersionId {
+                guard let previous = assets[predecessor], previous.version < image.version else { throw ScrivError.invalid("An image version must refer to an earlier existing version.") }
+            }
         }
         guard project.cues.allSatisfy({ sceneIds.contains($0.sceneId) }) else { throw ScrivError.invalid("An image cue refers to a missing scene.") }
         for character in project.characters {
             if let portrait = character.portraitImageId, !imageIds.contains(portrait) { throw ScrivError.invalid("A character portrait refers to a missing image.") }
         }
         for scene in project.scenes {
+            guard project.durationMs(of:scene.id) <= 86_400_000 else { throw ScrivError.invalid("A scene cannot exceed 24 hours.") }
             var end = 0
             for cue in project.cues(in: scene.id) {
                 guard cue.startMs >= end, cue.endMs > cue.startMs, cue.endMs <= project.durationMs(of: scene.id), cue.imageId == nil || imageIds.contains(cue.imageId!) else { throw ScrivError.invalid("Image cues must be ordered, non-overlapping, and inside the scene.") }
@@ -65,17 +75,27 @@ public enum TimingEngine {
         }
     }
     public static func updateText(_ project: inout ScrivProject, entryId: String, text: String) throws {
-        guard let i = project.entries.firstIndex(where: { $0.id == entryId }) else { throw ScrivError.invalid("Line not found.") }
-        let previous = project.entries[i].words
-        project.entries[i].text = text
-        if project.entries[i].kind == .dialogue {
+        var next = project
+        guard let i = next.entries.firstIndex(where: { $0.id == entryId }) else { throw ScrivError.invalid("Line not found.") }
+        let previous = next.entries[i].words
+        if next.entries[i].kind == .dialogue {
             let count = text.split(whereSeparator: { $0.isWhitespace }).count
-            if count > project.entries[i].ownedDurationMs { try setOwnedDuration(&project, entryId: entryId, durationMs: count) }
-            project.entries[i].words = retimeWords(text: text, durationMs: project.entries[i].ownedDurationMs, preserving: previous)
+            // Resize while the old text/word pair is still valid. Updating text first
+            // makes resize validation fail whenever an edit needs additional time.
+            if count > next.entries[i].ownedDurationMs { try setOwnedDuration(&next, entryId: entryId, durationMs: count) }
+            next.entries[i].words = retimeWords(text: text, durationMs: next.entries[i].ownedDurationMs, preserving: previous)
         }
+        next.entries[i].text = text
+        try validate(next)
+        project = next
     }
     /// Resize an owned slot; map cues by anchored scene time so the image sequence follows the script.
     public static func setOwnedDuration(_ project: inout ScrivProject, entryId: String, durationMs: Int) throws {
+        var next = project
+        try resizeOwnedDuration(&next, entryId: entryId, durationMs: durationMs)
+        project = next
+    }
+    private static func resizeOwnedDuration(_ project: inout ScrivProject, entryId: String, durationMs: Int) throws {
         guard let i = project.entries.firstIndex(where: { $0.id == entryId }) else { throw ScrivError.invalid("Line not found.") }
         let entry = project.entries[i]
         let minimum = entry.kind == .dialogue ? max(1, entry.words.count) : 0
@@ -99,7 +119,11 @@ public enum TimingEngine {
         project.entries[i].ownedDurationMs = durationMs
         if entry.kind == .dialogue { project.entries[i].words = retimeWords(text: entry.text, durationMs: durationMs, preserving: entry.words) }
         else { project.entries[i].coverageDurationMs = max(durationMs, project.entries[i].coverageDurationMs) }
-        for j in project.cues.indices where project.cues[j].sceneId == entry.sceneId { project.cues[j].startMs = mapped(project.cues[j].startMs); project.cues[j].endMs = mapped(project.cues[j].endMs) }
+        for j in project.cues.indices where project.cues[j].sceneId == entry.sceneId {
+            let terminalInsertion = entry.ownedDurationMs == 0 && start == project.durationMs(of:entry.sceneId) - delta && project.cues[j].endMs == start
+            project.cues[j].startMs = mapped(project.cues[j].startMs)
+            project.cues[j].endMs = terminalInsertion ? project.cues[j].endMs + delta : mapped(project.cues[j].endMs)
+        }
         project.cues.removeAll { $0.endMs <= $0.startMs }
         try validate(project)
     }

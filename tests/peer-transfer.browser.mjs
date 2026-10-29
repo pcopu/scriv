@@ -19,7 +19,7 @@ before(async () => {
 });
 after(async () => { await browser?.close(); if(server) await new Promise(resolve => server.close(resolve)); });
 
-async function pair({ holdSignals = false, cpu = 1, dropFirstSignal } = {}) {
+async function pair({ holdSignals = false, cpu = 1, dropFirstSignal, holdAssets = false } = {}) {
   const context = await browser.newContext();
   await context.addInitScript(() => {
     const Native = RTCPeerConnection;
@@ -52,7 +52,7 @@ async function pair({ holdSignals = false, cpu = 1, dropFirstSignal } = {}) {
           // can accidentally create a passive peer through earlier ICE delivery.
           if (paused) held.push({ id, event });
           else await deliver(id, event);
-        } else if (event.kind === 'request') {
+        } else if (event.kind === 'request' && !holdAssets) {
           const data = assets[id].get(event.hash);
           await page.evaluate(async request => await ScrivPeer.provideAsset(request.peer, request.hash, request.data), { peer: event.fromDeviceId, hash: event.hash, data: data?.toString('base64') ?? null });
         }
@@ -184,4 +184,71 @@ test('either requester can retry after a dropped connect request, offer or answe
       assert.equal(Object.values(p.events).flat().filter(e=>e.kind==='signal'&&e.type===type).length,2);
     } finally {await p.close();}
   }
+});
+test('disconnect during an asynchronous checksum cannot publish into a retried transfer', {timeout:30000}, async () => {
+  const p = await pair({holdAssets:true});
+  try {
+    const bytes = randomBytes(48321), hash = sha(bytes);
+    await p.pages.alice.evaluate(() => {
+      const original = crypto.subtle.digest.bind(crypto.subtle);
+      let first = true;
+      crypto.subtle.digest = async (...args) => {
+        const result = await original(...args);
+        if (first) { first = false; await new Promise(resolve => { globalThis.releaseOldDigest = resolve; }); }
+        return result;
+      };
+    });
+    await p.pages.alice.evaluate(hash => ScrivPeer.requestAsset(hash, 'bob'), hash);
+    await waitFor(() => p.events.bob.some(e => e.kind === 'request'));
+    await p.pages.bob.evaluate(({hash, base64}) => ScrivPeer.provideAsset('alice', hash, base64), {hash, base64:bytes.toString('base64')});
+    await p.pages.alice.waitForFunction(() => typeof globalThis.releaseOldDigest === 'function');
+    await p.pages.alice.evaluate(() => { ScrivPeer.disconnect(); ScrivPeer.configure({deviceId:'alice', iceServers:[]}); });
+    await waitFor(() => p.events.bob.some(e => e.kind === 'disconnected'));
+    await p.pages.alice.evaluate(hash => ScrivPeer.requestAsset(hash, 'bob'), hash);
+    await waitFor(() => p.events.bob.filter(e => e.kind === 'request').length === 2);
+    await p.pages.alice.evaluate(() => globalThis.releaseOldDigest());
+    await new Promise(resolve => setTimeout(resolve, 100));
+    assert.equal(p.events.alice.filter(e => e.kind === 'asset').length, 0, 'Retired channel checksum published an old asset');
+    await p.pages.bob.evaluate(({hash, base64}) => ScrivPeer.provideAsset('alice', hash, base64), {hash, base64:bytes.toString('base64')});
+    const received = await waitFor(() => p.events.alice.find(e => e.kind === 'asset'));
+    assert.deepEqual(Buffer.from(received.base64, 'base64'), bytes);
+    assert.equal(p.events.alice.filter(e => e.kind === 'asset').length, 1);
+    assert.deepEqual(p.failures, []);
+  } finally { await p.close(); }
+});
+test('duplicate requests stay idempotent at capacity and invalid configuration is rejected', {timeout:25000}, async () => {
+  const p = await pair({holdSignals:true});
+  try {
+    for (const maxBytes of [0, -1, 1.5, NaN, Infinity]) {
+      await assert.rejects(() => p.pages.alice.evaluate(maxBytes => ScrivPeer.configure({deviceId:'alice', iceServers:[], maxBytes}), maxBytes), /Invalid peer configuration/);
+    }
+    await assert.rejects(() => p.pages.alice.evaluate(() => ScrivPeer.configure({deviceId:4, iceServers:[]})), /Invalid peer configuration/);
+    const hashes = Array.from({length:8}, (_, index) => sha(Buffer.from(`request-${index}`)));
+    for (const hash of hashes) await p.pages.alice.evaluate(hash => ScrivPeer.requestAsset(hash, 'bob'), hash);
+    await p.pages.alice.evaluate(hash => ScrivPeer.requestAsset(hash, 'bob'), hashes[0]);
+    await assert.rejects(() => p.pages.alice.evaluate(hash => ScrivPeer.requestAsset(hash, 'bob'), sha(Buffer.from('ninth'))), /Too many image requests/);
+    assert.deepEqual(p.failures, []);
+  } finally { await p.close(); }
+});
+test('corrupted bytes on a real channel fail integrity verification without delivering an asset', {timeout:25000}, async () => {
+  const p = await pair();
+  try {
+    const missing = sha(Buffer.from('establish-channel'));
+    await p.pages.alice.evaluate(hash => ScrivPeer.requestAsset(hash, 'bob'), missing);
+    await waitFor(() => p.events.alice.some(e => e.kind === 'error' && e.hash === missing));
+    await p.pages.bob.evaluate(() => {
+      const channel = globalThis.scrivRTC.at(-1).channels[0], send = channel.send.bind(channel);
+      let changed = false;
+      channel.send = data => {
+        if (!changed && ArrayBuffer.isView(data)) { const copy = new Uint8Array(data); copy[0] ^= 1; changed = true; send(copy); }
+        else send(data);
+      };
+    });
+    const bytes = randomBytes(53123), hash = sha(bytes); p.assets.bob.set(hash, bytes);
+    await p.pages.alice.evaluate(hash => ScrivPeer.requestAsset(hash, 'bob'), hash);
+    const failure = await waitFor(() => p.events.alice.find(e => e.kind === 'error' && /integrity/.test(e.message)));
+    assert.match(failure.message, /integrity/);
+    assert.equal(p.events.alice.filter(e => e.kind === 'asset').length, 0);
+    assert.deepEqual(p.failures, []);
+  } finally { await p.close(); }
 });

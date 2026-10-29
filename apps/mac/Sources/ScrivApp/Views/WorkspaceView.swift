@@ -14,7 +14,7 @@ struct WorkspaceView: View {
         VStack(spacing: 0) {
             chrome
             ZStack(alignment: .bottomTrailing) {
-                workspace.padding(10)
+                workspace.padding(12)
                 if store.showDiscussion {
                     DiscussionPanel().environmentObject(store)
                         .frame(width: 368, height: 515)
@@ -24,6 +24,7 @@ struct WorkspaceView: View {
             }
         }.background(ScrivTheme.canvas)
             .background(WindowStyleReader())
+            .onReceive(NotificationCenter.default.publisher(for: .scrivShowCodexControls)) { _ in codexOpen = true }
             .sheet(isPresented: $projectBrowserOpen) { ProjectBrowserSheet().environmentObject(store) }
             .sheet(isPresented: $teamOpen) { TeamSheet().environmentObject(store) }
             .sheet(isPresented: $historyOpen) { HistorySheet().environmentObject(store) }
@@ -47,7 +48,14 @@ struct WorkspaceView: View {
                     if store.showDiscussion { store.showDiscussion = false }
                     else { store.loadDiscussion(itemId: store.discussionItemID) }
                 }
-            }
+            }.overlay(alignment: .topTrailing) {
+                if store.unreadDiscussionMentionCount > 0 {
+                    Text(store.unreadDiscussionMentionCount > 99 ? "99+" : "\(store.unreadDiscussionMentionCount)")
+                        .font(.system(size: 8, weight: .bold)).foregroundStyle(.white)
+                        .padding(.horizontal, 4).padding(.vertical, 2).background(ScrivTheme.accent, in: Capsule())
+                        .offset(x: 4, y: -3).allowsHitTesting(false)
+                }
+            }.accessibilityValue("\(store.unreadDiscussionMentionCount) unread mentions")
             Button { historyOpen = true } label: { Image(systemName: "clock.arrow.circlepath").font(.system(size: 15)) }
                 .buttonStyle(.plain).help("History").accessibilityLabel("History")
             Button { teamOpen = true } label: { Image(systemName: "square.and.arrow.up").font(.system(size: 15)) }
@@ -63,7 +71,7 @@ struct WorkspaceView: View {
             CodexToolbarButton(controller: store.codex, isOpen: $codexOpen)
                 .popover(isPresented: $codexOpen, arrowEdge: .bottom) { CodexPopover(controller: store.codex) }
         }.padding(.leading, 80).padding(.trailing, 17).frame(height: 60)
-            .background(.ultraThinMaterial)
+            .background(ScrivTheme.chrome.opacity(0.72))
             .overlay(alignment: .bottom) { Divider().opacity(0.25) }
     }
     private var projectControls: some View {
@@ -95,13 +103,13 @@ struct WorkspaceView: View {
         switch store.tab {
         case .script:
             HSplitView {
-                ScriptEditorView().frame(minWidth: 430, idealWidth: 650)
-                PreviewPane().frame(minWidth: 470, idealWidth: 660)
+                ScriptEditorView().frame(minWidth: 440, idealWidth: 690)
+                PreviewPane().frame(minWidth: 470, idealWidth: 650)
             }
         case .characters:
             HSplitView {
-                ScriptEditorView(compact: true).frame(minWidth: 410, idealWidth: 610)
-                CharactersView().frame(minWidth: 460, idealWidth: 700)
+                ScriptEditorView(compact: true).frame(minWidth: 410, idealWidth: 690)
+                CharactersView().frame(minWidth: 460, idealWidth: 650)
             }
         case .storyboard:
             StoryboardView()

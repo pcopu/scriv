@@ -46,6 +46,7 @@ public enum CloudReconciliation {
         if (localGeometryChanged && remoteTiming != originalTiming || remoteGeometryChanged && localTiming != originalTiming) && localTiming != remoteTiming {
             throw ScrivError.conflict("The script timing changed on another Mac while this draft was offline. Both versions are retained; review the cloud version before applying this timing edit.")
         }
+        let canonicalVersions = Dictionary(uniqueKeysWithValues:remote.map { ($0.id,$0.version) })
         var merged: [CloudItem] = []
         for id in Set(baseline.keys).union(draft.keys).union(canonical.keys).sorted() {
             let before = content(baseline[id]), here = content(draft[id]), there = content(canonical[id])
@@ -53,7 +54,7 @@ public enum CloudReconciliation {
             if here == before { selected = canonical[id] }
             else if there == before || here == there { selected = draft[id] }
             else { throw ScrivError.conflict("An item was edited on both Macs (\(id)). Your local draft and the complete cloud history are retained.") }
-            if var selected { selected.version = canonical[id]?.version ?? 0; merged.append(selected) }
+            if var selected { selected.version = canonicalVersions[id] ?? 0; merged.append(selected) }
         }
         return merged
     }

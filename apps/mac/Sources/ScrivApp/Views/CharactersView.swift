@@ -7,31 +7,33 @@ struct CharactersView: View {
     @State private var search = ""
     @State private var editing: ScriptCharacter?
     @State private var deleting: ScriptCharacter?
+    @State private var editRequestID: UUID?
+    @State private var editingContext: Int?
     private var characters: [ScriptCharacter] {
         store.project.characters.filter { search.isEmpty || ([$0.name] + $0.aliases).contains { $0.localizedCaseInsensitiveContains(search) } }
     }
-    private var selected: ScriptCharacter? { store.selectedCharacter ?? characters.first }
+    private var selected: ScriptCharacter? { characters.first { $0.id == store.selectedCharacterID } ?? characters.first }
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Characters").font(.system(size: 25, weight: .semibold))
+                Text("Characters").font(.system(size: 29, weight: .semibold))
                 Spacer()
                 IconButton(symbol: "plus", label: "Add character") { store.addCharacter() }
             }
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                 TextField("Search characters", text: $search).textFieldStyle(.plain)
-            }.font(.system(size: 13)).padding(10).background(ScrivTheme.inset, in: RoundedRectangle(cornerRadius: 9))
+            }.font(.system(size: 14)).padding(11).background(ScrivTheme.inset, in: RoundedRectangle(cornerRadius: 9))
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(characters) { character in
                         Button { store.selectCharacter(character.id) } label: {
                             VStack(spacing: 9) {
-                                CharacterPortrait(character: character).frame(width: 82, height: 82)
+                                CharacterPortrait(character: character).frame(width: 92, height: 92)
                                     .clipShape(Circle()).padding(3)
                                     .overlay(Circle().strokeBorder(selected?.id == character.id ? ScrivTheme.accent : .clear, lineWidth: 2))
-                                Text(character.name).font(.system(size: 12, weight: .medium)).lineLimit(1)
-                            }.frame(width: 145).padding(.vertical, 10)
+                                Text(character.name).font(.system(size: 14, weight: .medium)).lineLimit(1)
+                            }.frame(width: 156).padding(.vertical, 10)
                                 .background(selected?.id == character.id ? ScrivTheme.accent.opacity(0.075) : .clear, in: RoundedRectangle(cornerRadius: 14))
                         }.buttonStyle(.plain).accessibilityAddTraits(selected?.id == character.id ? .isSelected : [])
                     }
@@ -39,20 +41,30 @@ struct CharactersView: View {
             }
             if let selected {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 14) {
                         profile(selected)
                         imageGallery(selected)
-                    }.padding(17).background(ScrivTheme.inset.opacity(0.3), in: RoundedRectangle(cornerRadius: 14))
+                    }.padding(17).background(ScrivTheme.panel, in: RoundedRectangle(cornerRadius: 14))
                 }
+            } else if !search.isEmpty {
+                EmptyPanel(symbol: "magnifyingglass", title: "No matching characters", message: "Try another name or alias.")
+                Button("Clear search") { search = "" }.buttonStyle(.borderless)
             } else {
                 EmptyPanel(symbol: "person.crop.rectangle.stack", title: "People make the scene", message: "Add your characters and their aliases. Names in the script open their profiles; image tags track who is pictured.")
             }
             Label("Select a name in the script to open its character.", systemImage: "info.circle.fill")
                 .font(.system(size: 11)).foregroundStyle(.secondary)
-        }.padding(18).background(ScrivTheme.panel).clipShape(RoundedRectangle(cornerRadius: 17))
+        }.padding(16).background(ScrivTheme.inset.opacity(0.42)).clipShape(RoundedRectangle(cornerRadius: 17))
+            .onChange(of: store.selectedCharacterID) { _, id in
+                editRequestID = nil
+                if let id, !characters.contains(where: { $0.id == id }) { search = "" }
+            }
+            .onDisappear { editRequestID = nil }
             .sheet(item: $editing) { character in
-                CharacterEditor(character: character).environmentObject(store)
-                    .onDisappear { store.endEdit(character.id) }
+                if let editingContext {
+                    CharacterEditor(character: character, navigationContext: editingContext).environmentObject(store)
+                        .onDisappear { store.endEdit(character.id, context: editingContext) }
+                }
             }
             .confirmationDialog("Delete \(deleting?.name ?? "character")?", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }), titleVisibility: .visible) {
                 Button("Delete Character", role: .destructive) { if let deleting { store.deleteCharacter(deleting.id) }; deleting = nil }
@@ -61,15 +73,15 @@ struct CharactersView: View {
     private func profile(_ character: ScriptCharacter) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .top, spacing: 18) {
-                CharacterPortrait(character: character).frame(width: 125, height: 125).clipShape(RoundedRectangle(cornerRadius: 12))
+                CharacterPortrait(character: character).frame(width: 132, height: 132).clipShape(RoundedRectangle(cornerRadius: 12))
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(character.name).font(.system(size: 23, weight: .semibold))
+                            Text(character.name).font(.system(size: 25, weight: .semibold))
                             Text("Character").font(.system(size: 12)).foregroundStyle(.secondary)
                         }
                         Spacer()
-                        Button("Edit") { Task { if await store.beginEdit(character.id) { editing = character } } }.buttonStyle(.bordered).disabled(store.lockedByOther(character.id) != nil)
+                        Button("Edit") { beginEditing(character) }.buttonStyle(.bordered).disabled(store.lockedByOther(character.id) != nil)
                     }
                     Divider().padding(.vertical, 5)
                     HStack(alignment: .top, spacing: 16) {
@@ -84,12 +96,28 @@ struct CharactersView: View {
                     }.font(.system(size: 11)).buttonStyle(.borderless).padding(.top, 4)
                 }
             }
-            if !character.biography.isEmpty { Text(character.biography).font(.system(size: 13)).lineSpacing(3).textSelection(.enabled) }
-            if !character.appearance.isEmpty {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Appearance & image direction").font(.system(size: 11, weight: .semibold)).foregroundStyle(.secondary)
-                    Text(character.appearance).font(.system(size: 12)).textSelection(.enabled)
-                }
+            if !character.biography.isEmpty || !character.appearance.isEmpty {
+                DisclosureGroup("Character notes & image direction") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        if !character.biography.isEmpty { Text(character.biography).font(.system(size: 13)).lineSpacing(3).textSelection(.enabled) }
+                        if !character.appearance.isEmpty {
+                            Text(character.appearance).font(.system(size: 12)).foregroundStyle(.secondary).textSelection(.enabled)
+                        }
+                    }.frame(maxWidth: .infinity, alignment: .leading).padding(.top, 6)
+                }.font(.system(size: 12)).foregroundStyle(.secondary)
+            }
+        }
+    }
+    private func beginEditing(_ character: ScriptCharacter) {
+        guard editRequestID == nil else { return }
+        let request = UUID(), projectID = store.project.id, context = store.navigationContext; editRequestID = request
+        Task { @MainActor in
+            let allowed = await store.beginEdit(character.id)
+            guard editRequestID == request, store.project.id == projectID, store.navigationContext == context else { if allowed { store.endEdit(character.id, context: context) }; return }
+            editRequestID = nil
+            if allowed {
+                if let current = store.project.character(character.id) { editingContext = context; editing = current }
+                else { store.endEdit(character.id, context: context) }
             }
         }
     }
@@ -106,7 +134,7 @@ struct CharactersView: View {
                 Text("Tag this character in an image to add it here.").font(.callout).foregroundStyle(.secondary).padding(.vertical, 16)
             }
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], alignment: .leading, spacing: 15) {
-                ForEach(images) { image in CharacterImageCard(image: image).environmentObject(store) }
+                ForEach(images) { image in CharacterImageCard(image: image, profileCharacterID: character.id).environmentObject(store) }
             }
         }
     }
@@ -133,6 +161,7 @@ struct CharacterPortrait: View {
 private struct CharacterImageCard: View {
     @EnvironmentObject private var store: WorkspaceStore
     let image: ImageAsset
+    let profileCharacterID: String
     @State private var tagsOpen = false
     @State private var previewing = false
     private var cue: ImageCue? { store.project.cues.first { $0.imageId == image.id } }
@@ -142,11 +171,11 @@ private struct CharacterImageCard: View {
                 .aspectRatio(1.6, contentMode: .fit)
                 .onTapGesture { previewing = true }
                 .contextMenu {
-                    if let cue { Button("Show in script") { store.selectedSceneID = cue.sceneId; store.selectedCueID = cue.id; store.seek(toMs: Double(cue.startMs)); store.tab = .script } }
+                    if let cue { Button("Show in script") { store.selectScene(cue.sceneId); store.selectedCueID = cue.id; store.seek(toMs: Double(cue.startMs)); store.tab = .script } }
                     Button("Discuss image") { store.loadDiscussion(itemId: image.id) }
                     if store.assetURL(image) == nil { Button("Download image") { store.downloadImage(image) } }
-                    if let character = store.selectedCharacter {
-                        Button("Use as \(character.name)'s portrait") { var changed = character; changed.portraitImageId = image.id; store.updateCharacter(changed) }
+                    if let character = store.project.character(profileCharacterID) {
+                        Button("Use as \(character.name)'s portrait") { store.setCharacterPortrait(character.id, imageId: image.id) }.disabled(store.lockedByOther(character.id) != nil)
                     }
                 }
             HStack {
@@ -182,7 +211,11 @@ private struct CharacterEditor: View {
     @Environment(\.dismiss) private var dismiss
     @State private var draft: ScriptCharacter
     @State private var aliases: String
-    init(character: ScriptCharacter) { _draft = State(initialValue: character); _aliases = State(initialValue: character.aliases.joined(separator: ", ")) }
+    let navigationContext: Int
+    init(character: ScriptCharacter, navigationContext: Int) {
+        _draft = State(initialValue: character); _aliases = State(initialValue: character.aliases.joined(separator: ", "))
+        self.navigationContext = navigationContext
+    }
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Edit character").font(.title2.weight(.semibold))
@@ -203,8 +236,10 @@ private struct CharacterEditor: View {
             }.formStyle(.grouped)
             HStack { Spacer(); Button("Cancel") { dismiss() }.keyboardShortcut(.cancelAction); Button("Save") { save() }.buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction).disabled(draft.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) }
         }.padding(24).frame(width: 540, height: 540)
+            .onChange(of: store.navigationContext) { _, context in if context != navigationContext { dismiss() } }
     }
     private func save() {
+        guard store.navigationContext == navigationContext else { dismiss(); return }
         draft.name = draft.name.trimmingCharacters(in: .whitespacesAndNewlines)
         draft.aliases = Array(Set(aliases.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty })).sorted()
         store.updateCharacter(draft); dismiss()

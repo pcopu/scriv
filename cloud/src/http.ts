@@ -19,14 +19,19 @@ export function failure(error: unknown): Response {
   console.error('Scriv request failed', error instanceof Error ? error.name : 'UnknownError');
   return json({ error: { code: 'internal_error', message: 'The server could not complete this request. Please retry.' } }, 500);
 }
-export async function body<T = Record<string, unknown>>(request: Request, limit = 524288): Promise<T> {
+export async function body(request: Request, limit = 524288): Promise<Record<string, unknown>> {
   const data = await bytes(request, limit);
-  try { return JSON.parse(new TextDecoder().decode(data)) as T; }
+  let value: unknown;
+  try { value = JSON.parse(new TextDecoder('utf-8', { fatal: true, ignoreBOM: false }).decode(data)); }
   catch { throw new APIError(400, 'invalid_json', 'Request body must be valid JSON.'); }
+  return record(value, 'Request body');
 }
 export async function bytes(request: Request, limit: number): Promise<Uint8Array> {
   const length = request.headers.get('content-length');
-  assert(!length || (Number.isSafeInteger(Number(length)) && Number(length) <= limit), 413, 'body_too_large', 'Request exceeds the size limit.');
+  if(length&&(!Number.isSafeInteger(Number(length))||Number(length)<0||Number(length)>limit)){
+    await request.body?.cancel();
+    throw new APIError(413, 'body_too_large', 'Request exceeds the size limit.');
+  }
   if (!request.body) return new Uint8Array();
   const reader = request.body.getReader();
   const chunks: Uint8Array[] = []; let total = 0;

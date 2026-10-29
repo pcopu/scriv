@@ -6,7 +6,7 @@ Scriv runs the user's installed Codex app-server locally. The managed connection
 
 On **2026-10-29**, the integration was checked against **`codex-cli 0.165.0`**, downloaded from the official package `@openai/codex@0.165.0-linux-x64`. Its own `app-server generate-json-schema` command produced the schemas used for validation. This audit ran no account login, model turn, image generation, or paid request.
 
-The result was **18 passing checks**: 15 valid request/response fixtures and three invalid regression fixtures that the schema correctly rejected. The exact evidence is committed here:
+The result was **21 passing checks**: 17 valid request/response fixtures and four invalid regression fixtures that the schema correctly rejected. The exact evidence is committed here:
 
 - [Request and response fixtures](../tests/fixtures/codex-0.165.0.json)
 - [Recorded verification result](verification/codex-0.165.0.json)
@@ -23,6 +23,7 @@ The executable and full generated schema bundle are intentionally external build
 | Model discovery | `model/list` supplies `limit` and `includeHidden`; subsequent pages use `nextCursor` as `cursor`. The app chooses from the returned catalog. |
 | Account read | `account/read` uses `refreshToken: false`. |
 | ChatGPT login | `account/login/start` uses `type: "chatgpt"`; the returned `authUrl` opens in the browser. Login completion can report failure. |
+| Cancel login | `account/login/cancel` supplies the pending `loginId`; canceled or already-finished login returns to refreshed account state. |
 | Logout | `account/logout` sends `params: null`. An empty object is rejected by the generated request schema. |
 | Thread creation | `thread/start` supplies an isolated working directory, `approvalPolicy: "never"`, and `sandbox: "workspace-write"`. |
 | Image reference input | `turn/start.input` accepts `{"type":"localImage","path":"/absolute/path.png"}` alongside a text instruction. |
@@ -49,7 +50,7 @@ An image-generation item in the protocol establishes an artifact format; availab
 
 ## Reproduce the contract check
 
-The optional checker requires **Python 3.10+** and **`jsonschema==4.25.1`**. These are verification dependencies; they are not Mac application runtime dependencies.
+The optional checker requires **Python 3.10+** and **`jsonschema` 4.x** (the latest recorded check used **4.26.0**). These are verification dependencies; they are not Mac application runtime dependencies.
 
 From the repository root, use an existing Codex 0.165.0 executable:
 
@@ -74,12 +75,33 @@ The checker accepts `--fixtures PATH` for another fixture set and `--report PATH
 
 For a runtime upgrade, generate that runtime's schemas into a separate directory and run the same fixtures first. Record the actual version independently, investigate every difference, and update the fixtures and implementation together. Do not label an upgraded runtime as verified merely because its version command succeeds.
 
+## Isolated, signed-out runtime smoke
+
+A separate [recorded Linux smoke](verification/codex-isolated-runtime-0.165.0.json) launched the actual official **0.165.0** app-server over stdio. Initialization succeeded, `account/read` confirmed a signed-out account, `model/list` returned nine catalog entries, and the owned process stopped. This test supplies no credentials and starts no thread, turn, login or image generation. It does **not** exercise the native Swift controller or prove an authenticated model/tool capability.
+
+Run the reusable smoke with an explicitly selected Codex executable:
+
+```sh
+python3 scripts/smoke-codex-runtime.py /absolute/path/to/codex \
+  --report /tmp/scriv-codex-runtime-smoke.json
+```
+
+The tool creates a fresh temporary HOME and CODEX_HOME, forwards only PATH and non-secret locale/temp settings, suppresses runtime logs, and records only aggregate check results. It checks signed-out state rather than accessing an existing account. Its three fixture regressions verify credential-environment isolation, unexpected-account rejection, timeout handling and child cleanup. The smoke requires Python 3.10+ and no additional packages.
+
+## Lifecycle and delivery regressions
+
+The portable `CodexGenerationTests` cover cancellation before the turn-start response, single interruption of a late-started turn, completion arriving before that response, rejection of unrelated completions, fresh-job isolation, and valid artifact fallback when a preferred filename is empty, oversized or a symlink. AppKit still validates actual image decoding; those portable file fixtures are not generated images.
+
+The native controller correlates browser sign-in completions with the active login ID, exposes Cancel sign-in, prevents account changes during generation, and rejects duplicate login starts. A canceled Swift task also requests interruption; its job and connection IDs prevent a late cancellation handler from affecting a new job. No extra sandbox or tool approval is granted.
+
+These regressions and schema checks do **not** establish authenticated image generation or native Start/Stop/Connect behavior. The release smoke test below remains required.
+
 ## Required signed-in Mac smoke test
 
 Schema validation is complete. Release verification still requires a real Mac and the intended account:
 
 1. Start the installed Codex runtime from Scriv and confirm initialization, account state and model discovery. Stop it and verify that only Scriv's child process is terminated.
-2. Sign into ChatGPT through Codex, verify the completion notification and refreshed model catalog, and keep the Scriv cloud sign-in independent.
+2. Cancel a pending ChatGPT browser sign-in, retry, then sign in through Codex and verify the correlated completion notification and refreshed model catalog, and keep the Scriv cloud sign-in independent.
 3. Generate a storyboard image from a real scene. Confirm the resulting image file, cue attachment, local package persistence, and reopening behavior.
 4. Generate with a copied character reference; cancel a separate in-progress generation; edit the source during another generation and verify candidate retention.
 5. Exercise an unavailable capability or usage-limit response and confirm that the actual failure remains visible without a fabricated image.
