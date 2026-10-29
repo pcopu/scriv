@@ -33,7 +33,7 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = self
         view = webView
-        guard let url = Bundle.module.url(forResource: "bridge", withExtension: "html", subdirectory: "PeerTransfer") ?? Bundle.module.url(forResource: "bridge", withExtension: "html") else {
+        guard let url = Bundle.scrivResources.url(forResource: "bridge", withExtension: "html", subdirectory: "PeerTransfer") ?? Bundle.scrivResources.url(forResource: "bridge", withExtension: "html") else {
             throw ScrivError.unavailable("The peer transfer resource is missing from this build.")
         }
         webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())

@@ -43,15 +43,35 @@ struct LinkedScriptText: View {
     var size: CGFloat = 17
     var direction = false
     var color: Color = ScrivTheme.ink
+    var activeWordIndex: Int? = nil
+    var remoteSelections: [PresencePeer] = []
     var onCharacter: (String) -> Void
     var body: some View {
         Text(attributedText).font(direction ? Font.system(size: size).italic() : Font.system(size: size))
             .lineSpacing(3)
             .frame(maxWidth: .infinity, alignment: .leading)
             .environment(\.openURL, OpenURLAction { url in
-                guard url.scheme == "scriv-character", let id = url.host else { return .systemAction }
+                guard url.scheme == "scriv-character" else { return .systemAction }
+                let id = url.lastPathComponent
+                guard !id.isEmpty else { return .discarded }
                 onCharacter(id); return .handled
             })
+            .overlay(alignment: .topLeading) {
+                GeometryReader { proxy in
+                    ForEach(Array(remoteSelections.enumerated()), id: \.element.id) { index, peer in
+                        if let offset = peer.selection?["end"]?.int {
+                            let point = caretPoint(offset: offset, width: proxy.size.width)
+                            let peerColor = ScrivTheme.color(["blue", "green", "purple", "orange"][index % 4])
+                            Rectangle().fill(peerColor).frame(width: 2, height: size + 3)
+                                .overlay(alignment: .bottomLeading) {
+                                    Text(peer.name).font(.system(size: 9, weight: .medium)).foregroundStyle(.white)
+                                        .padding(.horizontal, 4).padding(.vertical, 2).background(peerColor, in: RoundedRectangle(cornerRadius: 3))
+                                        .fixedSize().offset(y: 15)
+                                }.offset(x: point.x, y: point.y)
+                        }
+                    }
+                }.allowsHitTesting(false)
+            }
     }
     private var attributedText: AttributedString {
         var value = AttributedString(text)
@@ -65,14 +85,47 @@ struct LinkedScriptText: View {
                 guard let range = Range(match.range, in: text), !matched.contains(where: { $0.overlaps(range) }),
                       let start = AttributedString.Index(range.lowerBound, within: value),
                       let end = AttributedString.Index(range.upperBound, within: value),
-                      let url = URL(string: "scriv-character://" + character.id) else { continue }
+                      let url = URL(string: "scriv-character://open/" + character.id) else { continue }
                 value[start..<end].link = url
                 value[start..<end].backgroundColor = ScrivTheme.color(character.color).opacity(0.13)
                 value[start..<end].foregroundColor = ScrivTheme.accent
                 matched.append(range)
             }
         }
+        for (index, peer) in remoteSelections.enumerated() {
+            guard let begin = peer.selection?["start"]?.int, let end = peer.selection?["end"]?.int, begin >= 0, end > begin,
+                  let range = Range(NSRange(location: begin, length: end - begin), in: text),
+                  let lower = AttributedString.Index(range.lowerBound, within: value), let upper = AttributedString.Index(range.upperBound, within: value) else { continue }
+            value[lower..<upper].backgroundColor = ScrivTheme.color(["blue", "green", "purple", "orange"][index % 4]).opacity(0.16)
+        }
+        if let index = activeWordIndex, let regex = try? NSRegularExpression(pattern: "\\S+") {
+            let words = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
+            if words.indices.contains(index), let range = Range(words[index].range, in: text),
+               let lower = AttributedString.Index(range.lowerBound, within: value), let upper = AttributedString.Index(range.upperBound, within: value) {
+                value[lower..<upper].backgroundColor = ScrivTheme.accent
+                value[lower..<upper].foregroundColor = .white
+            }
+        }
         return value
+    }
+    private func caretPoint(offset: Int, width: CGFloat) -> CGPoint {
+        let paragraph = NSMutableParagraphStyle(); paragraph.lineSpacing = 3
+        let baseFont = NSFont.systemFont(ofSize: size)
+        let font = direction ? NSFontManager.shared.convert(baseFont, toHaveTrait: .italicFontMask) : baseFont
+        let storage = NSTextStorage(string: text, attributes: [.font: font, .paragraphStyle: paragraph])
+        let manager = NSLayoutManager(), container = NSTextContainer(size: CGSize(width: max(1, width), height: .greatestFiniteMagnitude))
+        container.lineFragmentPadding = 0; manager.addTextContainer(container); storage.addLayoutManager(manager); manager.ensureLayout(for: container)
+        let length = (text as NSString).length
+        guard length > 0 else { return .zero }
+        let position = min(max(0, offset), length)
+        if position == length {
+            let glyph = manager.glyphIndexForCharacter(at: length - 1)
+            let rect = manager.boundingRect(forGlyphRange: NSRange(location: glyph, length: 1), in: container)
+            return CGPoint(x: min(width - 1, rect.maxX), y: rect.minY)
+        }
+        let glyph = manager.glyphIndexForCharacter(at: position)
+        let rect = manager.boundingRect(forGlyphRange: NSRange(location: glyph, length: 1), in: container)
+        return CGPoint(x: rect.minX, y: rect.minY)
     }
 }
 

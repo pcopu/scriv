@@ -79,7 +79,9 @@
         peer.pc.close(); peers.delete(id);
       }
     };
-    if (initiator) attach(peer, peer.pc.createDataChannel('scriv-media', { ordered: true }));
+    // A negotiated channel has the same ID at both ends, including when two Macs
+    // request images simultaneously. Perfect negotiation below resolves offer glare.
+    attach(peer, peer.pc.createDataChannel('scriv-media', { ordered: true, negotiated: true, id: 0 }));
     return peer;
   }
   async function receive(peer, data) {

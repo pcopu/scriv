@@ -1,0 +1,55 @@
+name: Verify Scriv
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  cloud:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: cloud/package-lock.json
+      - run: npm --prefix cloud ci
+      - run: npm --prefix cloud run typecheck
+      - run: npm --prefix cloud test
+      - run: npm --prefix cloud run build
+      - run: node scripts/check-repo.mjs
+  mac:
+    runs-on: macos-14
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and test native core
+        run: swift test --package-path apps/mac
+      - name: Package the native app
+        run: bash scripts/build-mac.sh
+      - name: Render the three native views
+        run: |
+          mkdir -p build/screenshots
+          open -n build/Scriv.app --args --screenshots "$PWD/build/screenshots"
+          for attempt in $(seq 1 60); do
+            count=$(find build/screenshots -name '*.png' | wc -l | tr -d ' ')
+            if [ "$count" -ge 3 ]; then exit 0; fi
+            sleep 1
+          done
+          echo 'Native screenshots did not complete.' >&2
+          exit 1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scriv-mac-build
+          path: |
+            build/Scriv-macOS.zip
+            build/screenshots/*.png
+          if-no-files-found: warn

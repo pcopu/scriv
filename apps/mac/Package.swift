@@ -1,14 +1,20 @@
 // swift-tools-version: 5.10
 import PackageDescription
 
+var products: [Product] = [.library(name: "ScrivCore", targets: ["ScrivCore"])]
+var targets: [Target] = [
+    .target(name: "ScrivCore"),
+    .testTarget(name: "ScrivCoreTests", dependencies: ["ScrivCore"])
+]
+#if os(macOS)
+products.append(.executable(name: "Scriv", targets: ["ScrivApp"]))
+targets.append(.executableTarget(name: "ScrivApp", dependencies: ["ScrivCore"], resources: [.process("Resources")]))
+#endif
+
 let package = Package(
     name: "Scriv",
     platforms: [.macOS(.v14)],
-    products: [.library(name: "ScrivCore", targets: ["ScrivCore"]), .executable(name: "Scriv", targets: ["ScrivApp"])],
-    targets: [
-        .target(name: "ScrivCore"),
-        .executableTarget(name: "ScrivApp", dependencies: ["ScrivCore"], resources: [.process("Resources")]),
-        .testTarget(name: "ScrivCoreTests", dependencies: ["ScrivCore"])
-    ],
+    products: products,
+    targets: targets,
     swiftLanguageVersions: [.v5]
 )

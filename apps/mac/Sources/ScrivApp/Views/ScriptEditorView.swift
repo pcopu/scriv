@@ -115,6 +115,7 @@ private struct ScriptRow: View {
     let search: String
     @State private var draft = ""
     @State private var acquiring = false
+    @State private var editDebounce: Task<Void, Never>?
     @FocusState private var isFocused: Bool
     private var isEditing: Bool { editingID == entry.id }
     private var start: Int { store.project.startMs(of: entry.id) }
@@ -134,16 +135,22 @@ private struct ScriptRow: View {
                 if !direction { speakerLabel }
                 else if compact { Text("Direction").font(.system(size: 11)).italic().foregroundStyle(.secondary) }
                 if isEditing {
-                    TextField(direction ? "Describe the action…" : "Write dialogue…", text: $draft, axis: .vertical)
-                        .font(direction ? Font.system(size: compact ? 13 : 17).italic() : Font.system(size: compact ? 13 : 17))
-                        .textFieldStyle(.plain).lineLimit(1...30).focused($isFocused)
-                        .onSubmit { finishEdit() }
-                        .onChange(of: draft) { _, value in if isEditing { store.commitText(entry.id, text: value) } }
-                        .onExitCommand { finishEdit() }
-                        .onChange(of: isFocused) { _, focused in if !focused && isEditing { finishEdit() } }
+                    LiveScriptTextEditor(text: $draft, pointSize: compact ? 13 : 17, italic: direction,
+                        onSelection: { range in store.updatePresence(itemId: entry.id, selectionStart: range.location, selectionEnd: range.location + range.length) },
+                        onFinish: finishEdit)
+                        .onChange(of: draft) { _, value in
+                            editDebounce?.cancel()
+                            editDebounce = Task {
+                                try? await Task.sleep(for: .milliseconds(250))
+                                guard !Task.isCancelled, isEditing else { return }
+                                store.commitText(entry.id, text: value)
+                            }
+                        }
                         .accessibilityLabel(direction ? "Direction text" : "Dialogue text")
                 } else if !entry.text.isEmpty {
-                    LinkedScriptText(text: entry.text, characters: store.project.characters, size: compact ? 13 : 17, direction: direction, color: rowColor) { store.selectCharacter($0) }
+                    LinkedScriptText(text: entry.text, characters: store.project.characters, size: compact ? 13 : 17, direction: direction, color: rowColor,
+                        activeWordIndex: store.isPlaying ? entry.words.firstIndex(where: { $0.id == store.currentWordID }) : nil,
+                        remoteSelections: store.peers.filter { $0.itemId == entry.id }) { store.selectCharacter($0) }
                 } else {
                     Text(direction ? "Describe the action…" : "Write dialogue…").font(.system(size: compact ? 13 : 17)).foregroundStyle(.tertiary)
                 }
@@ -172,6 +179,11 @@ private struct ScriptRow: View {
             Button("Delete entry", systemImage: "trash", role: .destructive) { store.deleteEntry(entry.id) }
         }
         .onDisappear { if isEditing { finishEdit() } }
+        .onChange(of: editingID) { old, new in
+            if old == entry.id && new != entry.id {
+                editDebounce?.cancel(); store.commitText(entry.id, text: draft); store.endEdit(entry.id)
+            }
+        }
         .accessibilityElement(children: .contain)
         .accessibilityHint("Double-click to edit. Context menu contains timing, discussion and reorder actions.")
     }
@@ -208,7 +220,7 @@ private struct ScriptRow: View {
             draft = entry.text; editingID = entry.id; isFocused = true
         }
     }
-    private func finishEdit() { store.commitText(entry.id, text: draft); store.endEdit(entry.id); editingID = nil; isFocused = false }
+    private func finishEdit() { guard isEditing else { return }; editDebounce?.cancel(); store.commitText(entry.id, text: draft); store.endEdit(entry.id); editingID = nil; isFocused = false }
 }
 
 private struct DirectionRailOverlay: View {

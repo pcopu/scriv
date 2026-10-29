@@ -41,6 +41,7 @@ public struct PeerSignal: Codable, Sendable { public var fromDeviceId: String?; 
 
 public enum CloudCodec {
     public static func items(from project: ScrivProject) throws -> [CloudItem] {
+        try TimingEngine.validate(project)
         var items = try project.scenes.map { CloudItem(id: $0.id, kind: "scene", data: try .encoded($0)) }
         items += try project.entries.map { CloudItem(id: $0.id, kind: "entry", data: try .encoded($0)) }
         items += try project.characters.map { CloudItem(id: $0.id, kind: "character", data: try .encoded($0)) }
@@ -49,9 +50,11 @@ public enum CloudCodec {
         return items
     }
     public static func applying(_ items: [CloudItem], to project: ScrivProject) throws -> ScrivProject {
+        guard Set(items.map(\.id)).count == items.count else { throw ScrivError.invalid("The server returned duplicate item identities.") }
         var result = project
         result.scenes = []; result.entries = []; result.characters = []; result.images = []; result.cues = []
         for item in items where item.deleted != true {
+            guard item.data["id"]?.string == item.id else { throw ScrivError.invalid("Item identity does not match its contents.") }
             switch item.kind {
             case "scene": result.scenes.append(try item.data.decoded(ScriptScene.self))
             case "entry": result.entries.append(try item.data.decoded(ScriptEntry.self))
