@@ -25,8 +25,22 @@ jobs:
       - run: npm --prefix cloud test
       - run: npm --prefix cloud run build
       - run: node scripts/check-repo.mjs
+      - run: node --test tests/*.test.mjs
+  peer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify real WebRTC image transfers
+        run: npm run test:peer
   mac:
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -51,5 +65,5 @@ jobs:
           name: scriv-mac-build
           path: |
             build/Scriv-macOS.zip
-            build/screenshots/*.png
+            build/screenshots/*
           if-no-files-found: warn
