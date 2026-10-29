@@ -40,7 +40,11 @@ jobs:
       - name: Verify real WebRTC image transfers
         run: npm run test:peer
   mac:
-    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-15-intel, macos-26]
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -62,7 +66,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: scriv-mac-build
+          name: scriv-${{ matrix.runner }}-build
           path: |
             build/Scriv-macOS.zip
             build/screenshots/*

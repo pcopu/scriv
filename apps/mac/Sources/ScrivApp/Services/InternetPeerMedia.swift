@@ -27,6 +27,7 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
     func start(deviceId: String, iceServers: JSONValue) async throws {
         disconnect()
         generation += 1
+        let current = generation
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
         configuration.userContentController.add(self, name: "scrivPeer")
@@ -38,8 +39,10 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
         }
         webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
         try await awaitReady()
+        guard generation == current, view === webView else { throw CancellationError() }
         let servers = try JSONSerialization.jsonObject(with: ScrivJSON.encoder.encode(iceServers))
         _ = try await webView.callAsyncJavaScript("ScrivPeer.configure({deviceId, iceServers, maxBytes});", arguments: ["deviceId": deviceId, "iceServers": servers, "maxBytes": limit], in: nil, contentWorld: .page)
+        guard generation == current, view === webView else { throw CancellationError() }
         status = "Ready for peer images"
     }
 
@@ -66,11 +69,13 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
     func requestAsset(hash: String, fromDeviceId: String) async throws {
         guard knownHashes.contains(hash), hash.count == 64 else { throw ScrivError.permission("This image does not belong to the open project.") }
         guard ready, let view else { throw ScrivError.unavailable("Peer transfer is not connected.") }
+        let current = generation
         requests.insert(hash)
+        status = "Receiving image from another Mac…"
         do {
             _ = try await view.callAsyncJavaScript("return await ScrivPeer.requestAsset(hash, peer);", arguments: ["hash": hash, "peer": fromDeviceId], in: nil, contentWorld: .page)
-            status = "Receiving image from another Mac…"
-        } catch { requests.remove(hash); throw error }
+            guard generation == current, self.view === view else { throw CancellationError() }
+        } catch { if generation == current { requests.remove(hash) }; throw error }
     }
 
     func handleSignal(_ signal: PeerSignal) async throws {
@@ -82,13 +87,13 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
     func disconnect() {
         generation += 1
         if let view { view.evaluateJavaScript("globalThis.ScrivPeer?.disconnect()") { _, _ in }; view.configuration.userContentController.removeScriptMessageHandler(forName: "scrivPeer"); view.stopLoading() }
-        view = nil; ready = false; requests.removeAll()
+        view = nil; ready = false; requests.removeAll(); knownHashes.removeAll(); availableAssets.removeAll()
         finishReady(ScrivError.unavailable("Peer transport disconnected."))
         status = "Peer transfer stopped"
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard message.frameInfo.isMainFrame, let body = message.body as? [String: Any], let kind = body["kind"] as? String else { return }
+        guard let currentView = view, message.webView === currentView, message.frameInfo.isMainFrame, let body = message.body as? [String: Any], let kind = body["kind"] as? String else { return }
         switch kind {
         case "ready": ready = true; finishReady()
         case "signal":
@@ -97,8 +102,9 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
         case "request":
             guard let peer = body["fromDeviceId"] as? String, let hash = body["hash"] as? String else { return }
             let localURL = availableAssets[hash]
+            let current = generation
             Task { [weak self] in
-                guard let self else { return }
+                guard let self, self.generation == current, self.view === currentView else { return }
                 var encoded: Any = NSNull()
                 if self.knownHashes.contains(hash), let localURL {
                     let limit = self.limit
@@ -109,8 +115,10 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
                     }.value
                     if let data { encoded = data.base64EncodedString() }
                 }
-                do { _ = try await self.view?.callAsyncJavaScript("return await ScrivPeer.provideAsset(peer, hash, base64);", arguments: ["peer": peer, "hash": hash, "base64": encoded], in: nil, contentWorld: .page) }
-                catch { self.onError?(error) }
+                guard self.generation == current, self.view === currentView else { return }
+                if !self.knownHashes.contains(hash) || self.availableAssets[hash] != localURL { encoded = NSNull() }
+                do { _ = try await currentView.callAsyncJavaScript("return await ScrivPeer.provideAsset(peer, hash, base64);", arguments: ["peer": peer, "hash": hash, "base64": encoded], in: nil, contentWorld: .page) }
+                catch { if self.generation == current, self.view === currentView { self.onError?(error) } }
             }
         case "asset":
             guard let hash = body["hash"] as? String, requests.contains(hash), knownHashes.contains(hash), let encoded = body["base64"] as? String, encoded.utf8.count <= ((limit + 2) / 3) * 4,
@@ -127,8 +135,8 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
         }
     }
 
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { finishReady(error); onError?(error) }
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { finishReady(error); onError?(error) }
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { guard view === webView else { return }; finishReady(error); onError?(error) }
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { guard view === webView else { return }; finishReady(error); onError?(error) }
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         decisionHandler(navigationAction.request.url?.isFileURL == true ? .allow : .cancel)
     }

@@ -88,7 +88,7 @@ export class BillingCoordinator extends DurableObject<Env> {
       assert(typeof checkout.url==='string'&&checkout.url.startsWith('https://checkout.stripe.com/'),502,'billing_provider_error','The checkout URL was invalid.');
       await this.ctx.storage.put(`checkout:${teamId}`,{id:checkout.id,expiresAt:Number(checkout.expires_at)*1000});await this.ctx.storage.delete(`checkout-attempt:${teamId}`);
       return json({url:checkout.url});
-    });}catch(error){if(this.env.ENVIRONMENT==='test')console.error(error);return failure(error);}
+    });}catch(error){return failure(error);}
   }
 }
 

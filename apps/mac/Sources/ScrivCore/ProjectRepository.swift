@@ -74,6 +74,17 @@ public actor ProjectRepository {
         return data
     }
     public func projects() throws -> [URL] { try FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil).filter { $0.pathExtension == "scriv" } }
+    public func checkpoint(at package: URL) throws -> CloudCheckpoint? {
+        let file = package.appendingPathComponent("cloud-sync.json")
+        guard FileManager.default.fileExists(atPath:file.path) else { return nil }
+        let size = try file.resourceValues(forKeys:[.fileSizeKey]).fileSize ?? 0
+        guard size <= 64*1024*1024 else { throw ScrivError.invalid("Cloud checkpoint exceeds the metadata limit.") }
+        return try ScrivJSON.decoder.decode(CloudCheckpoint.self,from:Data(contentsOf:file))
+    }
+    public func saveCheckpoint(_ checkpoint: CloudCheckpoint, at package: URL) throws {
+        try FileManager.default.createDirectory(at:package,withIntermediateDirectories:true)
+        try ScrivJSON.encoder.encode(checkpoint).write(to:package.appendingPathComponent("cloud-sync.json"),options:.atomic)
+    }
     public func copyPackage(from source: URL, to destination: URL) throws {
         guard source.standardizedFileURL != destination.standardizedFileURL else { return }
         guard !FileManager.default.fileExists(atPath: destination.path) else { throw ScrivError.invalid("A project already exists at this destination.") }

@@ -13,7 +13,7 @@ interface MessageRow { id:string;thread_id:string;user_id:string;name:string;bod
 
 const SQL = `
 CREATE TABLE IF NOT EXISTS schema_migrations(version INTEGER PRIMARY KEY, applied_at INTEGER NOT NULL);
-CREATE TABLE IF NOT EXISTS meta(id INTEGER PRIMARY KEY CHECK(id=1),project_id TEXT NOT NULL,epoch INTEGER NOT NULL DEFAULT 1,head_seq INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE IF NOT EXISTS meta(id INTEGER PRIMARY KEY CHECK(id=1),project_id TEXT NOT NULL,epoch INTEGER NOT NULL DEFAULT 1,head_seq INTEGER NOT NULL DEFAULT 0,timing_version INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS items(id TEXT PRIMARY KEY,kind TEXT NOT NULL,version INTEGER NOT NULL,data TEXT NOT NULL,deleted INTEGER NOT NULL DEFAULT 0,scene_id TEXT,ordinal REAL,start_ms INTEGER,end_ms INTEGER,duration_ms INTEGER);
 CREATE INDEX IF NOT EXISTS items_scene ON items(scene_id,kind,deleted,ordinal);
 CREATE TABLE IF NOT EXISTS leases(item_id TEXT PRIMARY KEY,auth_session_id TEXT NOT NULL,session_id TEXT NOT NULL,token TEXT NOT NULL,fence INTEGER NOT NULL,expires_at INTEGER NOT NULL,epoch INTEGER NOT NULL,user_id TEXT NOT NULL,name TEXT NOT NULL);
@@ -33,10 +33,13 @@ INSERT OR IGNORE INTO schema_migrations(version,applied_at) VALUES(1,0);
 export class ProjectRoom extends DurableObject<Env> {
   private sql: SqlStorage;
   private lastPresenceBroadcast = 0;
+  private pendingEvents: ProjectEvent[] = [];
+  private pendingEventBytes = 0;
+  private eventFlushScheduled = false;
   constructor(ctx:DurableObjectState,env:Env){super(ctx,env);this.sql=ctx.storage.sql;this.sql.exec(SQL);}
   private rows<T>(query:string,...bindings:(string|number|null)[]):T[]{return this.sql.exec(query,...bindings).toArray() as T[];}
   private one<T>(query:string,...bindings:(string|number|null)[]):T|undefined{return this.rows<T>(query,...bindings)[0];}
-  private state(){const value=this.one<{project_id:string;epoch:number;head_seq:number}>('SELECT * FROM meta WHERE id=1');assert(value,500,'uninitialized','Project state is not initialized.');return value;}
+  private state(){const value=this.one<{project_id:string;epoch:number;head_seq:number;timing_version:number}>('SELECT * FROM meta WHERE id=1');assert(value,500,'uninitialized','Project state is not initialized.');return value;}
   private item(row:ItemRow):Item{return{id:row.id,kind:row.kind,version:row.version,data:JSON.parse(row.data),deleted:!!row.deleted};}
   private getItem(itemId:string):Item|null {const row=this.one<ItemRow>('SELECT * FROM items WHERE id=?',itemId);return row?this.item(row):null;}
   private allItems(includeDeleted=false):Item[]{return this.rows<ItemRow>(`SELECT * FROM items${includeDeleted?'':' WHERE deleted=0'} ORDER BY kind,id`).map(r=>this.item(r));}
@@ -49,8 +52,23 @@ export class ProjectRoom extends DurableObject<Env> {
     const changes=skip?[]:this.rows<{item_id:string;before_json:string|null;after_json:string}>('SELECT item_id,before_json,after_json FROM changes WHERE seq=? ORDER BY item_id',row.seq).map(c=>({id:c.item_id,before:c.before_json?JSON.parse(c.before_json):null,after:JSON.parse(c.after_json)}));
     return{seq:row.seq,epoch:row.epoch,commandId:row.command_id,actorId:row.actor_id,kind:row.kind,at:row.at,changes,data};
   }
-  private eventPage(after:number,limit=100){const state=this.state();const rows=this.rows<EventRow>('SELECT * FROM events WHERE seq>? ORDER BY seq LIMIT ?',after,limit);return{events:rows.map(r=>this.event(r)),headSeq:state.head_seq,epoch:state.epoch,hasMore:(rows.at(-1)?.seq??after)<state.head_seq};}
+  private eventPage(after:number,limit=100){const state=this.state();const rows=this.rows<EventRow>('SELECT * FROM events WHERE seq>? ORDER BY seq LIMIT ?',after,limit);return{events:rows.map(r=>this.event(r)),headSeq:state.head_seq,epoch:state.epoch,timingVersion:state.timing_version,hasMore:(rows.at(-1)?.seq??after)<state.head_seq};}
   private broadcast(value:unknown,except?:WebSocket){const text=JSON.stringify(value);for(const socket of this.ctx.getWebSockets()){if(socket===except)continue;const a=socket.deserializeAttachment() as Attachment;if(a.expiresAt<=Date.now()||a.premiumUntil<=Date.now()){try{socket.close(4001,'Access expired');}catch{}continue;}try{socket.send(text);}catch{try{socket.close(1011,'Connection lost');}catch{}}}}
+  // Persist commands synchronously, but combine their notifications to avoid one
+  // socket send per writer per reader. Reconnect/replay repairs a lost flush.
+  private queueEvent(event:ProjectEvent){
+    if(!this.ctx.getWebSockets().length)return;
+    let notification=event,bytes=new TextEncoder().encode(JSON.stringify(event)).byteLength;
+    if(bytes>262144){notification={...event,changes:[],data:{...event.data,snapshotRequired:true}};bytes=new TextEncoder().encode(JSON.stringify(notification)).byteLength;}
+    if(this.pendingEvents.length&&(this.pendingEvents.length>=64||this.pendingEventBytes+bytes>262144))this.flushEvents();
+    this.pendingEvents.push(notification);this.pendingEventBytes+=bytes;
+    if(this.eventFlushScheduled)return;this.eventFlushScheduled=true;
+    this.ctx.waitUntil(new Promise<void>(resolve=>setTimeout(resolve,50)).then(()=>{this.eventFlushScheduled=false;this.flushEvents();}));
+  }
+  private flushEvents(){
+    const events=this.pendingEvents.splice(0);this.pendingEventBytes=0;if(!events.length)return;
+    const last=events.at(-1)!;this.broadcast({type:'events',events,headSeq:last.seq,epoch:last.epoch,timingVersion:last.data.timingVersion,hasMore:false});
+  }
   private send(socket:WebSocket,value:unknown){socket.send(JSON.stringify(value));}
   private putItem(item:Item){const d=item.data;this.sql.exec(`INSERT INTO items(id,kind,version,data,deleted,scene_id,ordinal,start_ms,end_ms,duration_ms) VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET kind=excluded.kind,version=excluded.version,data=excluded.data,deleted=excluded.deleted,scene_id=excluded.scene_id,ordinal=excluded.ordinal,start_ms=excluded.start_ms,end_ms=excluded.end_ms,duration_ms=excluded.duration_ms`,item.id,item.kind,item.version,JSON.stringify(d),item.deleted?1:0,typeof d.sceneId==='string'?d.sceneId:null,typeof d.order==='number'?d.order:null,typeof d.startMs==='number'?d.startMs:null,typeof d.endMs==='number'?d.endMs:null,typeof d.ownedDurationMs==='number'?d.ownedDurationMs:null);}
   private requireLease(itemId:string,lease:Operation['lease'],sessionId:string,identity:Identity,epoch:number){
@@ -88,13 +106,18 @@ export class ProjectRoom extends DurableObject<Env> {
       if(op.op==='put'){assert(itemKinds.includes(op.kind as ItemKind),400,'invalid_kind','Unsupported project item kind.');kind=op.kind as ItemKind;data=record(op.data);validateItem({id:itemId,kind,data});}
       let lease:Operation['lease'];if(op.lease){const l=record(op.lease,'lease');lease={token:str(l.token,'lease.token',128),fence:int(l.fence,'lease.fence',1)};}
       return{op:op.op as 'put'|'delete',id:itemId,kind,data,expectedVersion,lease};});
-    return{commandId,sessionId,epoch,label,operations};
+    return{commandId,sessionId,epoch,label,operations,expectedTimingVersion:raw.expectedTimingVersion===undefined?undefined:int(raw.expectedTimingVersion,'expectedTimingVersion')};
   }
   private commit(identity:Identity,command:Command,hash:string,snapshotRequired=false){
     return this.ctx.storage.transactionSync(()=>{
       const previous=this.one<{user_id:string;request_hash:string;result:string}>('SELECT * FROM receipts WHERE command_id=?',command.commandId);
       if(previous){assert(previous.user_id===identity.user.id&&previous.request_hash===hash,409,'command_reused','A command ID cannot be reused for a different change.');return{receipt:JSON.parse(previous.result),event:null};}
       const state=this.state();assert(command.epoch===state.epoch,409,'stale_epoch','The project was restored. Refresh it before editing.',{epoch:state.epoch});
+      const timingKeys=['sceneId','order','kind','ownedDurationMs','coverageDurationMs','text','words'];
+      const touchesTiming=command.operations.some(operation=>{const prior=this.getItem(operation.id),kind=operation.kind??prior?.kind;if(kind!=='entry'&&kind!=='cue')return false;if(!prior||operation.op==='delete')return true;const keys=kind==='entry'?timingKeys:['sceneId','startMs','endMs'];return keys.some(key=>stableJSON(prior.data[key])!==stableJSON(operation.data?.[key]));});
+      const changesTimeline=command.operations.some(operation=>{const prior=this.getItem(operation.id),kind=operation.kind??prior?.kind;if(kind!=='entry'&&kind!=='cue')return false;if(!prior||operation.op==='delete')return true;const keys=kind==='entry'?['sceneId','order','kind','ownedDurationMs','coverageDurationMs']:['sceneId','startMs','endMs'];return keys.some(key=>stableJSON(prior.data[key])!==stableJSON(operation.data?.[key]));});
+      if(changesTimeline)assert(command.expectedTimingVersion===state.timing_version,409,'timing_conflict','The project timing changed. Refresh and reapply this edit.',{timingVersion:state.timing_version});
+      const timingVersion=state.timing_version+(touchesTiming?1:0);
       const changes:Change[]=[];
       for(const operation of command.operations){const existing=this.getItem(operation.id);assert((existing?.version??0)===operation.expectedVersion,409,'version_conflict','This item changed on another device.',{itemId:operation.id,current:existing});if(existing)this.requireLease(operation.id,operation.lease,command.sessionId,identity,state.epoch);
         assert(operation.op!=='delete'||(existing&&!existing.deleted),404,'not_found','The item no longer exists.');assert(!existing||operation.kind===undefined||operation.kind===existing.kind,409,'kind_conflict','An item cannot change kind.');
@@ -102,10 +125,10 @@ export class ProjectRoom extends DurableObject<Env> {
       }
       this.validateReferences(changes);
       const itemCount=this.one<{n:number}>('SELECT COUNT(*) n FROM items WHERE deleted=0')!.n;assert(itemCount<=50000,413,'project_limit','A project cannot contain more than 50,000 items. Split it into multiple projects.');
-      const seq=state.head_seq+1,at=Date.now();const event:ProjectEvent={seq,epoch:state.epoch,commandId:command.commandId,actorId:identity.user.id,kind:'command',at,changes:snapshotRequired?[]:changes,data:{label:command.label,...(snapshotRequired?{snapshotRequired:true}:{})}};
-      this.sql.exec('UPDATE meta SET head_seq=? WHERE id=1',seq);this.sql.exec('INSERT INTO events(seq,epoch,command_id,actor_id,kind,at,data) VALUES(?,?,?,?,?,?,?)',seq,state.epoch,command.commandId,identity.user.id,event.kind,at,JSON.stringify(event.data));
+      const seq=state.head_seq+1,at=Date.now();const event:ProjectEvent={seq,epoch:state.epoch,commandId:command.commandId,actorId:identity.user.id,kind:'command',at,changes:snapshotRequired?[]:changes,data:{label:command.label,timingVersion,...(snapshotRequired?{snapshotRequired:true}:{})}};
+      this.sql.exec('UPDATE meta SET head_seq=?,timing_version=? WHERE id=1',seq,timingVersion);this.sql.exec('INSERT INTO events(seq,epoch,command_id,actor_id,kind,at,data) VALUES(?,?,?,?,?,?,?)',seq,state.epoch,command.commandId,identity.user.id,event.kind,at,JSON.stringify(event.data));
       for(const c of changes)this.sql.exec('INSERT INTO changes(seq,item_id,before_json,after_json) VALUES(?,?,?,?)',seq,c.id,c.before?JSON.stringify(c.before):null,JSON.stringify(c.after));
-      const receipt={commandId:command.commandId,seq,epoch:state.epoch,items:snapshotRequired?[]:changes.map(c=>c.after),...(snapshotRequired?{snapshotRequired:true}:{})};
+      const receipt={commandId:command.commandId,seq,epoch:state.epoch,timingVersion,items:snapshotRequired?[]:changes.map(c=>c.after),...(snapshotRequired?{snapshotRequired:true}:{})};
       this.sql.exec('INSERT INTO receipts(command_id,user_id,request_hash,result) VALUES(?,?,?,?)',command.commandId,identity.user.id,hash,JSON.stringify(receipt));
       return{receipt,event};
     });
@@ -121,11 +144,11 @@ export class ProjectRoom extends DurableObject<Env> {
       const changed:Change[]=[];
       for(const item of current){const wanted=desired.get(item.id);if(!wanted&&item.deleted)continue;const after:Item=wanted?{...wanted,version:item.version+1,deleted:false}:{...item,version:item.version+1,deleted:true};if(wanted&&stableJSON(item.data)===stableJSON(wanted.data)&&!item.deleted)continue;this.putItem(after);changed.push({id:item.id,before:item,after});}
       for(const item of desired.values()){if(currentMap.has(item.id))continue;const after={...item,version:1,deleted:false};this.putItem(after);changed.push({id:item.id,before:null,after});}
-      const data={label:`Restore history ${targetSeq}`,restoreSeq:targetSeq,snapshotRequired:true};
-      this.sql.exec('UPDATE meta SET head_seq=?,epoch=? WHERE id=1',seq,newEpoch);this.sql.exec('UPDATE leases SET expires_at=0,token=?',randomToken());
+      const data={label:`Restore history ${targetSeq}`,restoreSeq:targetSeq,snapshotRequired:true,timingVersion:state.timing_version+1};
+      this.sql.exec('UPDATE meta SET head_seq=?,epoch=?,timing_version=timing_version+1 WHERE id=1',seq,newEpoch);this.sql.exec('UPDATE leases SET expires_at=0,token=?',randomToken());
       this.sql.exec('INSERT INTO events(seq,epoch,command_id,actor_id,kind,at,data) VALUES(?,?,?,?,?,?,?)',seq,newEpoch,commandId,identity.user.id,'restore',at,JSON.stringify(data));
       for(const c of changed)this.sql.exec('INSERT INTO changes(seq,item_id,before_json,after_json) VALUES(?,?,?,?)',seq,c.id,c.before?JSON.stringify(c.before):null,JSON.stringify(c.after));
-      const receipt={commandId,seq,epoch:newEpoch,items:[],snapshotRequired:true};this.sql.exec('INSERT INTO receipts(command_id,user_id,request_hash,result) VALUES(?,?,?,?)',commandId,identity.user.id,hash,JSON.stringify(receipt));
+      const receipt={commandId,seq,epoch:newEpoch,timingVersion:state.timing_version+1,items:[],snapshotRequired:true};this.sql.exec('INSERT INTO receipts(command_id,user_id,request_hash,result) VALUES(?,?,?,?)',commandId,identity.user.id,hash,JSON.stringify(receipt));
       const event:ProjectEvent={seq,epoch:newEpoch,commandId,actorId:identity.user.id,kind:'restore',at,changes:[],data};return{receipt,event};
     });
   }
@@ -135,7 +158,7 @@ export class ProjectRoom extends DurableObject<Env> {
       const projectId=id(match[1]),route=match[2]!,identity=await authenticate(request,this.env),access=await projectAccess(this.env,projectId,identity.user.id);
       this.sql.exec('INSERT OR IGNORE INTO meta(id,project_id) VALUES(1,?)',projectId);assert(this.state().project_id===projectId,409,'project_identity','Incorrect project room.');
       if(route==='socket'&&request.method==='GET')return this.upgradeSocket(request,identity,access);
-      if(route==='snapshot'&&request.method==='GET'){const state=this.state();return json({projectId,epoch:state.epoch,headSeq:state.head_seq,items:this.allItems(),threads:this.rows<ThreadRow>('SELECT * FROM threads ORDER BY updated_at DESC').map(t=>this.thread(t)),leases:this.publicLeases()});}
+      if(route==='snapshot'&&request.method==='GET'){const state=this.state();return json({projectId,epoch:state.epoch,headSeq:state.head_seq,timingVersion:state.timing_version,items:this.allItems(),threads:this.rows<ThreadRow>('SELECT * FROM threads ORDER BY updated_at DESC').map(t=>this.thread(t)),leases:this.publicLeases()});}
       if((route==='events'||route==='history')&&request.method==='GET'){const after=int(Number(url.searchParams.get('after')??0),'after'),limit=int(Number(url.searchParams.get('limit')??100),'limit',1,200);return json(this.eventPage(after,limit));}
       if(route==='import'&&request.method==='POST'){
         const raw=await body(request,16*1024*1024);assert(Array.isArray(raw.items)&&raw.items.length>0,400,'invalid_import','Import must contain project items.');
@@ -143,16 +166,16 @@ export class ProjectRoom extends DurableObject<Env> {
         const hash=await sha256(stableJSON(raw));const cached=this.one<{user_id:string;request_hash:string;result:string}>('SELECT * FROM receipts WHERE command_id=?',command.commandId);
         if(cached){assert(cached.user_id===identity.user.id&&cached.request_hash===hash,409,'command_reused','Command ID already used.');return json(JSON.parse(cached.result));}
         assert(access.canWrite,403,'read_only','You cannot import into this project.');assert(this.state().head_seq===0,409,'project_not_empty','Atomic import is only available for a new empty project.');
-        const {receipt,event}=this.commit(identity,command,hash,true);if(event)this.broadcast({type:'event',event});return json(receipt);
+        const {receipt,event}=this.commit(identity,command,hash,true);if(event)this.queueEvent(event);return json(receipt);
       }
       if(route==='commands'&&request.method==='POST'){
         const raw=await body(request);const command=this.parseCommand(raw),hash=await sha256(stableJSON(raw));
         const cached=this.one<{user_id:string;request_hash:string;result:string}>('SELECT * FROM receipts WHERE command_id=?',command.commandId);
         if(cached){assert(cached.user_id===identity.user.id&&cached.request_hash===hash,409,'command_reused','Command ID already used.');return json(JSON.parse(cached.result));}
         assert(access.canWrite,403,'read_only','You can read this project but cannot edit it.');
-        const {receipt,event}=this.commit(identity,command,hash);if(event)this.broadcast({type:'event',event});return json(receipt);
+        const {receipt,event}=this.commit(identity,command,hash);if(event)this.queueEvent(event);return json(receipt);
       }
-      if(route==='restore'&&request.method==='POST'){assert(access.canManage&&access.canWrite,403,'not_allowed','Only an owner or administrator can restore history.');const raw=await body(request,8192);const {receipt,event}=this.restore(identity,raw,await sha256(stableJSON(raw)));if(event){this.broadcast({type:'event',event});this.broadcast({type:'leases',leases:[]});}return json(receipt);}
+      if(route==='restore'&&request.method==='POST'){assert(access.canManage&&access.canWrite,403,'not_allowed','Only an owner or administrator can restore history.');const raw=await body(request,8192);const {receipt,event}=this.restore(identity,raw,await sha256(stableJSON(raw)));if(event){this.queueEvent(event);this.broadcast({type:'leases',leases:[]});}return json(receipt);}
       if(route==='leases')return await this.handleLeases(request,identity,access);
       if(route==='threads'||route.startsWith('threads/'))return await this.handleDiscussion(request,route,identity,access);
       if(route==='signals')return await this.handleSignals(request,identity,access);
@@ -185,7 +208,7 @@ export class ProjectRoom extends DurableObject<Env> {
     }
     const existing=this.one<ThreadRow>('SELECT * FROM threads WHERE id=?',threadId);assert(existing,404,'not_found','Discussion not found.');
     if(match[2]==='messages'){
-      if(request.method==='GET'){const after=int(Number(url.searchParams.get('after')??0),'after');const rows=this.rows<MessageRow>('SELECT * FROM messages WHERE thread_id=? AND at>=? ORDER BY at,id LIMIT 500',threadId,after);return json({messages:rows.map(m=>this.message(m)),hasMore:rows.length===500});}
+      if(request.method==='GET'){const after=int(Number(url.searchParams.get('after')??0),'after'),afterId=url.searchParams.get('afterId')??'';if(afterId)id(afterId,'afterId');const rows=this.rows<MessageRow>('SELECT * FROM messages WHERE thread_id=? AND (at>? OR (at=? AND id>?)) ORDER BY at,id LIMIT 500',threadId,after,after,afterId);const last=rows.at(-1);return json({messages:rows.map(m=>this.message(m)),hasMore:rows.length===500,nextCursor:last?{at:last.at,id:last.id}:null});}
       assert(request.method==='POST',405,'method_not_allowed','Unsupported discussion operation.');assert(access.canWrite||access.premium,403,'read_only','Discussion is read-only for this inactive team.');
       const raw=await body(request,32768);const messageId=id(raw.id,'message.id'),text=str(raw.body,'message.body',8000).trim();assert(text,400,'empty_message','Enter a message.');const reply=raw.replyToId?id(raw.replyToId,'replyToId'):null;const attachments=raw.attachments??[];
       assert(Array.isArray(attachments)&&attachments.length<=20,400,'invalid_attachments','Messages accept up to 20 attachments.');
@@ -215,7 +238,7 @@ export class ProjectRoom extends DurableObject<Env> {
     assert(this.ctx.getWebSockets().length<1000,503,'room_full','This project currently has too many live connections. Retry shortly.');
     const pair=new WebSocketPair();const client=pair[0],server=pair[1];const connectionId=uuid();
     this.ctx.acceptWebSocket(server);server.serializeAttachment({projectId:access.project.id,userId:identity.user.id,name:identity.user.name,sessionHash:identity.tokenHash,sessionId:identity.sessionId,connectionId,expiresAt:identity.expiresAt,premiumUntil:access.team?.paid_until??0,lastPresenceAt:0,lastMessageAt:Date.now(),messageCount:0} satisfies Attachment);
-    const state=this.state();this.send(server,{type:'hello',projectId:access.project.id,epoch:state.epoch,headSeq:state.head_seq,connectionId,deviceId:identity.sessionId});this.send(server,{type:'leases',leases:this.publicLeases()});this.send(server,{type:'presence',peers:this.peers()});
+    const state=this.state();this.send(server,{type:'hello',projectId:access.project.id,epoch:state.epoch,headSeq:state.head_seq,timingVersion:state.timing_version,connectionId,deviceId:identity.sessionId});this.send(server,{type:'leases',leases:this.publicLeases()});this.send(server,{type:'presence',peers:this.peers()});
     return new Response(null,{status:101,webSocket:client});
   }
   private peers(){const now=Date.now();return this.ctx.getWebSockets().map(socket=>socket.deserializeAttachment() as Attachment).filter(a=>a.presence&&now-a.lastPresenceAt<30000&&a.expiresAt>now).map(a=>({connectionId:a.connectionId,deviceId:a.sessionId,userId:a.userId,name:a.name,...a.presence,at:a.lastPresenceAt}));}
@@ -228,13 +251,13 @@ export class ProjectRoom extends DurableObject<Env> {
     try{
       assert(typeof message==='string'&&message.length<=65536,413,'message_too_large','Live messages must be JSON up to 64 KiB.');const raw=record(JSON.parse(message));const {identity,access,attachment:a}=await this.socketIdentity(socket);
       const now=Date.now();if(now-a.lastMessageAt>1000){a.lastMessageAt=now;a.messageCount=0;}a.messageCount++;assert(a.messageCount<=30,429,'rate_limited','Live messages are arriving too quickly.');socket.serializeAttachment(a);
-      if(raw.type==='resume'){this.send(socket,{type:'events',...this.eventPage(int(raw.after??0,'after'),100)});return;}
-      if(raw.type==='ping'){const state=this.state();this.send(socket,{type:'watermark',headSeq:state.head_seq,epoch:state.epoch});this.send(socket,{type:'presence',peers:this.peers()});return;}
+      if(raw.type==='resume'){this.flushEvents();this.send(socket,{type:'events',...this.eventPage(int(raw.after??0,'after'),100)});return;}
+      if(raw.type==='ping'){this.flushEvents();const state=this.state();this.send(socket,{type:'watermark',headSeq:state.head_seq,epoch:state.epoch,timingVersion:state.timing_version});this.send(socket,{type:'presence',peers:this.peers()});return;}
       if(raw.type==='presence'){
         if(now-a.lastPresenceAt<200)return;const presence:Record<string,unknown>={};if(raw.itemId!==undefined&&raw.itemId!==null){presence.itemId=id(raw.itemId,'itemId');assert(this.getItem(presence.itemId as string),404,'not_found','Presence item not found.');}
         if(raw.selection){const selection=record(raw.selection,'selection');presence.selection={start:int(selection.start,'selection.start',0,50000),end:int(selection.end,'selection.end',0,50000)};}
         if(raw.cursor){const cursor=record(raw.cursor,'cursor');assert(typeof cursor.x==='number'&&Number.isFinite(cursor.x)&&typeof cursor.y==='number'&&Number.isFinite(cursor.y),400,'invalid_cursor','Cursor coordinates must be finite.');presence.cursor={x:cursor.x,y:cursor.y};}
-        a.presence=presence;a.lastPresenceAt=now;socket.serializeAttachment(a);if(now-this.lastPresenceBroadcast>=200){this.lastPresenceBroadcast=now;this.broadcast({type:'presence',peers:this.peers()});}return;
+        a.presence=presence;a.lastPresenceAt=now;socket.serializeAttachment(a);const presenceInterval=this.ctx.getWebSockets().length>100?1000:200;if(now-this.lastPresenceBroadcast>=presenceInterval){this.lastPresenceBroadcast=now;this.broadcast({type:'presence',peers:this.peers()});}return;
       }
       if(raw.type==='signal'){await this.routeSignal(raw,identity,access);return;}
       throw new APIError(400,'unknown_message','Unsupported live message. Use HTTP commands for durable edits.');

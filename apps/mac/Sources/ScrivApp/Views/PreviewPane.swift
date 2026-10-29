@@ -21,9 +21,16 @@ struct PreviewPane: View {
                 IconButton(symbol: "arrow.up.left.and.arrow.down.right", label: "Expand preview") { fullScreen = true }
             }
             ZStack(alignment: .bottomTrailing) {
-                AssetImageView(url: asset.flatMap { store.assetURL($0) }, title: cue?.label ?? "Scene preview")
+                AssetImageView(url: asset.flatMap { store.assetURL($0) }, title: cue?.label ?? "Scene preview", unavailableText: asset == nil ? nil : "Image not on this Mac")
                     .aspectRatio(16 / 9, contentMode: .fit)
+                    .overlay(alignment: .bottom) {
+                        if let asset, store.assetURL(asset) == nil {
+                            Button("Fetch image", systemImage: "arrow.down.circle") { store.downloadImage(asset) }
+                                .buttonStyle(.borderedProminent).padding(.bottom, 20)
+                        }
+                    }
                 Menu {
+                    if let asset, store.assetURL(asset) == nil { Button("Fetch image", systemImage: "arrow.down.circle") { store.downloadImage(asset) } }
                     Button("Import image…", systemImage: "photo.badge.plus") { store.importImage(cueId: cue?.id) }
                     Button("Generate image", systemImage: "sparkles") { store.generateImage(cueId: cue?.id) }
                     if let cue {
@@ -56,7 +63,7 @@ struct PreviewPane: View {
             .sheet(isPresented: $fullScreen) {
                 VStack(spacing: 16) {
                     HStack { Text(store.project.title).font(.headline); Spacer(); Button("Done") { fullScreen = false }.keyboardShortcut(.cancelAction) }
-                    AssetImageView(url: asset.flatMap { store.assetURL($0) }, title: cue?.label ?? "Preview", fill: false).frame(minWidth: 800, minHeight: 450)
+                    AssetImageView(url: asset.flatMap { store.assetURL($0) }, title: cue?.label ?? "Preview", fill: false, unavailableText: asset == nil ? nil : "Image not on this Mac").frame(minWidth: 800, minHeight: 450)
                     PlaybackBar(compact: false).environmentObject(store)
                 }.padding(20).frame(width: 960, height: 640)
             }
@@ -73,7 +80,6 @@ struct PreviewPane: View {
 struct PlaybackBar: View {
     @EnvironmentObject private var store: WorkspaceStore
     var compact = false
-    @State private var rate = 1.0
     var body: some View {
         HStack(spacing: compact ? 14 : 12) {
             Button { previous() } label: { Image(systemName: "backward.end.fill").font(.system(size: 16)) }.buttonStyle(.plain).help("Previous image")
@@ -136,7 +142,12 @@ struct CharacterTagsPopover: View {
                     var tags = current.characterIds
                     if enabled { tags.append(character.id) } else { tags.removeAll { $0 == character.id } }
                     store.setCharacterTags(imageId: current.id, characterIds: Array(Set(tags)))
-                })) { CharacterChip(character: character, compact: false) }
+                })) {
+                    HStack(spacing: 8) {
+                        InitialAvatar(name: character.name, color: ScrivTheme.color(character.color), size: 23)
+                        Text(character.name).font(.system(size: 12))
+                    }
+                }.disabled(store.lockedByOther(current.id) != nil)
             }
             if store.project.characters.isEmpty { Button("Add a character") { store.addCharacter() } }
         }.padding(18).frame(width: 270)

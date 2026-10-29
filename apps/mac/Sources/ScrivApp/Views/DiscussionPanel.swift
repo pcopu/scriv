@@ -20,7 +20,7 @@ struct DiscussionPanel: View {
     @EnvironmentObject private var store: WorkspaceStore
     @State private var draft = ""
     @State private var submittedText: String?
-    @State private var context: String = "Project"
+    @State private var messageIDsAtSubmit: Set<String> = []
     private var ready: Bool { store.account != nil && store.project.cloudProjectId != nil }
     var body: some View {
         VStack(spacing: 10) {
@@ -68,7 +68,7 @@ struct DiscussionPanel: View {
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18))
             .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(ScrivTheme.hairline))
             .shadow(color: .black.opacity(0.15), radius: 25, y: 7)
-            .onChange(of: store.discussionItemID) { _, _ in submittedText = nil }
+            .onChange(of: store.discussionItemID) { _, _ in submittedText = nil; messageIDsAtSubmit = [] }
     }
     private var contextSelector: some View {
         Menu {
@@ -170,11 +170,15 @@ struct DiscussionPanel: View {
             if draft.count > 7500 { Text("\(draft.count) / 8,000 characters").font(.system(size: 9)).foregroundStyle(draft.count > 8000 ? Color.red : .secondary) }
         }
     }
-    private func send() { let text = draft.trimmingCharacters(in: .whitespacesAndNewlines); guard !text.isEmpty, text.count <= 8000 else { return }; submittedText = text; store.sendMessage(text) }
+    private func send() {
+        let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty, text.count <= 8000 else { return }
+        submittedText = text; messageIDsAtSubmit = Set(store.messages.map(\.id)); store.sendMessage(text)
+    }
     private func clearSentDraft() {
-        guard let submittedText, let userId = store.account?.id, store.messages.contains(where: { $0.body == submittedText && ($0.userId == userId || $0.authorId == userId) }) else { return }
+        guard let submittedText, let userId = store.account?.id, store.messages.contains(where: { !messageIDsAtSubmit.contains($0.id) && $0.body == submittedText && ($0.userId == userId || $0.authorId == userId) }) else { return }
         if draft.trimmingCharacters(in: .whitespacesAndNewlines) == submittedText { draft = "" }
-        self.submittedText = nil
+        self.submittedText = nil; messageIDsAtSubmit = []
     }
     private func imageLabel(_ image: ImageAsset) -> String { "\(store.project.cues.first(where: { $0.imageId == image.id })?.label ?? "Image") · v\(image.version)" }
     private func itemLabel(_ id: String?) -> String {

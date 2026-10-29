@@ -69,7 +69,7 @@ struct CharactersView: View {
                             Text("Character").font(.system(size: 12)).foregroundStyle(.secondary)
                         }
                         Spacer()
-                        Button("Edit") { Task { if await store.beginEdit(character.id) { editing = character } } }.buttonStyle(.bordered)
+                        Button("Edit") { Task { if await store.beginEdit(character.id) { editing = character } } }.buttonStyle(.bordered).disabled(store.lockedByOther(character.id) != nil)
                     }
                     Divider().padding(.vertical, 5)
                     HStack(alignment: .top, spacing: 16) {
@@ -79,7 +79,7 @@ struct CharactersView: View {
                     HStack(spacing: 12) {
                         Button { store.loadDiscussion(itemId: character.id) } label: { Label("Discuss", systemImage: "bubble.left") }
                         Menu {
-                            Button("Delete character…", role: .destructive) { deleting = character }
+                            Button("Delete character…", role: .destructive) { deleting = character }.disabled(store.lockedByOther(character.id) != nil)
                         } label: { Image(systemName: "ellipsis") }.menuStyle(.borderlessButton).fixedSize()
                     }.font(.system(size: 11)).buttonStyle(.borderless).padding(.top, 4)
                 }
@@ -134,13 +134,15 @@ private struct CharacterImageCard: View {
     @EnvironmentObject private var store: WorkspaceStore
     let image: ImageAsset
     @State private var tagsOpen = false
+    @State private var previewing = false
     private var cue: ImageCue? { store.project.cues.first { $0.imageId == image.id } }
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            AssetImageView(url: store.assetURL(image), title: cue?.label ?? "Character image", cornerRadius: 9)
+            AssetImageView(url: store.assetURL(image), title: cue?.label ?? "Character image", cornerRadius: 9, unavailableText: "Image not on this Mac")
                 .aspectRatio(1.6, contentMode: .fit)
-                .onTapGesture { if let cue { store.selectedSceneID = cue.sceneId; store.selectedCueID = cue.id; store.seek(toMs: Double(cue.startMs)); store.tab = .script } }
+                .onTapGesture { previewing = true }
                 .contextMenu {
+                    if let cue { Button("Show in script") { store.selectedSceneID = cue.sceneId; store.selectedCueID = cue.id; store.seek(toMs: Double(cue.startMs)); store.tab = .script } }
                     Button("Discuss image") { store.loadDiscussion(itemId: image.id) }
                     if store.assetURL(image) == nil { Button("Download image") { store.downloadImage(image) } }
                     if let character = store.selectedCharacter {
@@ -148,7 +150,7 @@ private struct CharacterImageCard: View {
                     }
                 }
             HStack {
-                Text(cue?.label.isEmpty == false ? cue!.label : "Image").font(.system(size: 11, weight: .medium))
+                Text(cue.flatMap { $0.label.isEmpty ? nil : $0.label } ?? "Image").font(.system(size: 11, weight: .medium))
                 Spacer()
                 Text("v\(image.version)").font(.system(size: 10)).foregroundStyle(.secondary)
             }
@@ -160,6 +162,17 @@ private struct CharacterImageCard: View {
                     .buttonStyle(.plain).foregroundStyle(ScrivTheme.accent).accessibilityLabel("Edit character tags")
                     .popover(isPresented: $tagsOpen) { CharacterTagsPopover(image: image).environmentObject(store) }
             }
+        }.sheet(isPresented: $previewing) {
+            VStack(spacing: 16) {
+                HStack {
+                    Text("\(cue?.label.isEmpty == false ? cue?.label ?? "Image" : "Image") · Version \(image.version)").font(.headline)
+                    Spacer()
+                    if store.assetURL(image) == nil { Button("Fetch image") { store.downloadImage(image) } }
+                    Button("Done") { previewing = false }.keyboardShortcut(.cancelAction)
+                }
+                AssetImageView(url: store.assetURL(image), title: "Character image", fill: false, unavailableText: "Image not on this Mac")
+                if !image.prompt.isEmpty { Text(image.prompt).font(.caption).foregroundStyle(.secondary).lineLimit(3).textSelection(.enabled) }
+            }.padding(20).frame(width: 860, height: 590)
         }
     }
 }
