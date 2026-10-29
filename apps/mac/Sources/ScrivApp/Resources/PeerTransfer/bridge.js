@@ -64,12 +64,16 @@
     if (typeof id !== 'string' || !id || id.length > 128 || id === identity) throw new Error('Invalid peer identity.');
     if (peers.has(id)) return peers.get(id);
     if (peers.size >= 8) throw new Error('Too many active peer transfers.');
-    const peer = { id, pc: new RTCPeerConnection({ iceServers }), channel: null, makingOffer: false, ignoreOffer: false, candidates: [], receiving: null, receiveQueue: Promise.resolve(), sendQueue: Promise.resolve() };
+    const peer = { id, pc: new RTCPeerConnection({ iceServers }), channel: null, makingOffer: false, ignoreOffer: false, isSettingRemoteAnswerPending: false, candidates: [], receiving: null, receiveQueue: Promise.resolve(), sendQueue: Promise.resolve() };
     peers.set(id, peer);
     peer.pc.onicecandidate = event => { if (event.candidate) signal(peer, 'ice', event.candidate.toJSON()); };
     peer.pc.ondatachannel = event => attach(peer, event.channel);
     peer.pc.onnegotiationneeded = async () => {
-      try { peer.makingOffer = true; await peer.pc.setLocalDescription(); signal(peer, 'offer', peer.pc.localDescription.toJSON()); }
+      // This connection has one fixed negotiated channel. A peer constructed by
+      // incoming ICE/SDP must answer that offer instead of racing it with another
+      // initial offer. A requester starts negotiation once; failed peers rebuild.
+      if (!initiator || peer.pc.localDescription || peer.pc.remoteDescription) return;
+      try { peer.makingOffer = true; await peer.pc.setLocalDescription(); signal(peer, peer.pc.localDescription.type, peer.pc.localDescription.toJSON()); }
       catch (e) { emit({ kind: 'error', fromDeviceId: id, message: e.message }); }
       finally { peer.makingOffer = false; }
     };
@@ -122,6 +126,15 @@
       channel.addEventListener('bufferedamountlow', low); channel.addEventListener('close', closed);
     });
   }
+  async function addCandidate(peer, candidate) {
+    // Candidates may arrive before SDP over HTTP or belong to a rolled-back
+    // offer. Never feed an old ICE generation into the accepted description.
+    const ufrag = candidate.usernameFragment;
+    const active = peer.pc.remoteDescription?.sdp.match(/^a=ice-ufrag:(.+)$/gm)?.map(line => line.slice(12).trim()) ?? [];
+    if (ufrag && active.length && !active.includes(ufrag)) return;
+    try { await peer.pc.addIceCandidate(candidate); }
+    catch (e) { if (!peer.ignoreOffer) throw e; }
+  }
   globalThis.ScrivPeer = Object.freeze({
     configure(options) {
       if (peers.size) throw new Error('Disconnect transfers before changing identity.');
@@ -141,17 +154,24 @@
     async handleSignal(message) {
       const peer = ensurePeer(message.fromDeviceId);
       if (message.type === 'ice') {
-        if (!peer.pc.remoteDescription) peer.candidates.push(message.payload);
-        else try { await peer.pc.addIceCandidate(message.payload); } catch (e) { if (!peer.ignoreOffer) throw e; }
+        if (!peer.pc.remoteDescription) {
+          if (peer.candidates.length >= 128) throw new Error('Too many pending ICE candidates.');
+          peer.candidates.push(message.payload);
+        } else await addCandidate(peer, message.payload);
       } else if (message.type === 'offer' || message.type === 'answer') {
         const description = message.payload;
         if (description.type !== message.type || typeof description.sdp !== 'string' || description.sdp.length > 65536) throw new Error('Invalid peer description.');
-        const collision = description.type === 'offer' && (peer.makingOffer || peer.pc.signalingState !== 'stable');
+        // W3C perfect negotiation: an answer being applied already queues the
+        // connection back to stable, even before signalingState reflects it.
+        const readyForOffer = !peer.makingOffer && (peer.pc.signalingState === 'stable' || peer.isSettingRemoteAnswerPending);
+        const collision = description.type === 'offer' && !readyForOffer;
         peer.ignoreOffer = identity.localeCompare(peer.id) < 0 && collision;
         if (peer.ignoreOffer) return;
-        await peer.pc.setRemoteDescription(description);
-        for (const candidate of peer.candidates.splice(0)) await peer.pc.addIceCandidate(candidate);
-        if (description.type === 'offer') { await peer.pc.setLocalDescription(); signal(peer, 'answer', peer.pc.localDescription.toJSON()); }
+        peer.isSettingRemoteAnswerPending = description.type === 'answer';
+        try { await peer.pc.setRemoteDescription(description); }
+        finally { peer.isSettingRemoteAnswerPending = false; }
+        for (const candidate of peer.candidates.splice(0)) await addCandidate(peer, candidate);
+        if (description.type === 'offer') { await peer.pc.setLocalDescription(); signal(peer, peer.pc.localDescription.type, peer.pc.localDescription.toJSON()); }
       }
     },
     async provideAsset(peerId, hash, base64) {

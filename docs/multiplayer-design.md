@@ -1,5 +1,7 @@
 # Scriv: multiplayer, storage, history, billing, and local Codex
 
+> **Historical proposal — superseded for implementation.** This document preserves the earlier conversation plan. The final instruction changed billing to **USD $9.99/month per team**, with no per-seat charge, and chose **Cloudflare Workers + D1 + SQLite Durable Objects + R2** instead of Postgres and Redis. Read [architecture.md](architecture.md), [cloud-api.md](cloud-api.md) and [deployment.md](deployment.md) for the current system. The original text below is retained rather than silently rewritten.
+
 **Design date:** October 28, 2026  
 **Status:** Standalone greenfield implementation specification. The application, services, and integrations described below are intended behavior to build and validate; this document does not claim they have been implemented or deployed.
 

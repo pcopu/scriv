@@ -51,12 +51,28 @@ jobs:
       - name: Compile and test native core
         run: swift test --package-path apps/mac
       - name: Package the native app
+        id: package
+        env:
+          SCRIV_UNIVERSAL: ${{ matrix.runner == 'macos-15-intel' && '1' || '0' }}
         run: bash scripts/build-mac.sh
+      - name: Verify native WebKit peer transfer
+        run: |
+          mkdir -p build/peer-smoke
+          open -n build/Scriv.app --args --peer-smoke "$PWD/build/peer-smoke"
+          for attempt in $(seq 1 55); do
+            if [ -f build/peer-smoke/error.txt ]; then cat build/peer-smoke/error.txt; exit 1; fi
+            if [ -f build/peer-smoke/result.txt ]; then cat build/peer-smoke/result.txt; exit 0; fi
+            sleep 1
+          done
+          echo 'Native WebKit transfer did not complete.' >&2
+          exit 1
       - name: Render the three native views
+        if: always() && steps.package.outcome == 'success'
         run: |
           mkdir -p build/screenshots
           open -n build/Scriv.app --args --screenshots "$PWD/build/screenshots"
           for attempt in $(seq 1 60); do
+            if [ -f build/screenshots/error.txt ]; then cat build/screenshots/error.txt; exit 1; fi
             count=$(find build/screenshots -name '*.png' | wc -l | tr -d ' ')
             if [ "$count" -ge 3 ]; then exit 0; fi
             sleep 1
@@ -70,4 +86,5 @@ jobs:
           path: |
             build/Scriv-macOS.zip
             build/screenshots/*
+            build/peer-smoke/*
           if-no-files-found: warn

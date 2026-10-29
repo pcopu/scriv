@@ -7,7 +7,7 @@ This contract is shared by the native Mac app and Cloudflare Worker. JSON uses c
 1. Generate a random PKCE verifier and SHA-256/base64url challenge plus independent client `state`.
 2. Open `GET /auth/github/start?codeChallenge=...&state=...` using ASWebAuthenticationSession. Worker callback is `/auth/github/callback`; final redirect is **exactly** `scriv://auth/callback?code=<single-use code>&state=<original state>`.
 3. `POST /auth/exchange` `{code,codeVerifier,deviceName}` → `{token,expiresAt,user:{id,name,email,avatarUrl}}`. Store token in Keychain.
-4. `POST /auth/logout` revokes current session. `GET /v1/me` returns `{user,currentSessionId,teams:[{id,name,role,plan,status}],projects:[...]}`. `GET /auth/sessions` returns `{currentSessionId,sessions}`; `DELETE /auth/sessions/:id` revokes one of your sessions and disconnects its live sockets.
+4. `POST /auth/logout` revokes current session. `GET /v1/me` returns `{user,sessionId,teams:[{id,name,role,plan,status}],projects:[...]}`. `GET /auth/sessions` returns `{currentSessionId,sessions}`; `DELETE /auth/sessions/:id` revokes one of your sessions and disconnects its live sockets.
 
 GitHub OAuth is the initial Scriv identity provider. ChatGPT login belongs solely to local Codex and is separate.
 

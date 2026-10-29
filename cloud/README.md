@@ -88,7 +88,8 @@ must supply the account-specific settings below.
    Successful redirects never grant subscription entitlement; only canonical
    provider state does.
 7. For reliable internet P2P across restrictive NATs, create a Cloudflare Realtime
-   TURN key. Add `TURN_KEY_ID` and `TURN_API_TOKEN` secrets. The authenticated
+   [TURN key](https://developers.cloudflare.com/realtime/turn/generate-credentials/).
+   Add `TURN_KEY_ID` and `TURN_API_TOKEN` secrets. The authenticated
    `/ice-servers` route issues one-hour credentials. Without these secrets only
    STUN/direct connections are available, so some peer pairs cannot connect.
 8. Apply migrations, validate and deploy:
@@ -140,7 +141,8 @@ versions and timed placements.
 - Timeline geometry changes require `expectedTimingVersion`. Word/text edits
   increment this version so pending cut edits can detect stale word timings.
   Text-only edits inside an unchanged owned duration remain independent under
-  their item leases, allowing many writers on separate lines.
+  their item leases, allowing many writers on separate lines. They retain all
+  item/reference checks while avoiding redundant whole-scene cue scans.
 - Receipt replay precedes fresh lease/epoch/timing checks after current read
   authorization. A reused command ID with a different body is rejected.
 - History restore appends a new event, advances epoch and timing version, and

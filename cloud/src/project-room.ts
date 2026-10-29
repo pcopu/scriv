@@ -79,9 +79,14 @@ export class ProjectRoom extends DurableObject<Env> {
     const scenes=new Set<string>();
     const reference=(value:unknown,kind:ItemKind,name:string)=>{if(value===undefined||value===null)return;const target=this.getItem(String(value));assert(target&&!target.deleted&&target.kind===kind,400,'invalid_reference',`${name} refers to an unavailable ${kind}.`);};
     for(const change of changes){const item=change.after,d=item.data;
-      if(change.before?.data.sceneId)scenes.add(String(change.before.data.sceneId));
-      if(d.sceneId)scenes.add(String(d.sceneId));
-      if(item.kind==='scene')scenes.add(item.id);
+      // Text, word timings, labels and appearance do not alter scene geometry.
+      // Keep their per-item/reference checks below without scanning every cue.
+      const geometryKeys=item.kind==='entry'?['sceneId','order','kind','ownedDurationMs','coverageDurationMs']:item.kind==='cue'?['sceneId','startMs','endMs']:item.kind==='scene'?['order']:null;
+      if(geometryKeys&&(!change.before||change.before.deleted!==item.deleted||geometryKeys.some(key=>change.before!.data[key]!==d[key]))){
+        if(change.before?.data.sceneId)scenes.add(String(change.before.data.sceneId));
+        if(d.sceneId)scenes.add(String(d.sceneId));
+        if(item.kind==='scene')scenes.add(item.id);
+      }
       if(!item.deleted){
         if(item.kind==='entry'){reference(d.sceneId,'scene','sceneId');reference(d.characterId,'character','characterId');}
         if(item.kind==='cue'){reference(d.sceneId,'scene','sceneId');reference(d.imageId,'image','imageId');}

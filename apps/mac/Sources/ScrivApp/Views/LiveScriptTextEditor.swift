@@ -28,7 +28,7 @@ struct LiveScriptTextEditor: NSViewRepresentable {
         view.isHorizontallyResizable = false
         view.isVerticallyResizable = true
         view.minSize = NSSize(width: 0, height: pointSize + 5)
-        view.maxSize = NSSize(width: .greatestFiniteMagnitude, height: .greatestFiniteMagnitude)
+        view.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         view.delegate = context.coordinator
         view.string = text
         view.textColor = .labelColor

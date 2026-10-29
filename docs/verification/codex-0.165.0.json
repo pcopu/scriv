@@ -1,0 +1,102 @@
+{
+  "runtime": "codex-cli 0.165.0",
+  "sourcePackage": "@openai/codex@0.165.0-linux-x64",
+  "schemaCommand": "codex app-server generate-json-schema --out schema",
+  "authenticated": false,
+  "generationRun": false,
+  "results": [
+    {
+      "name": "initialize",
+      "schema": "ClientRequest.json",
+      "passed": true
+    },
+    {
+      "name": "initialized",
+      "schema": "ClientNotification.json",
+      "passed": true
+    },
+    {
+      "name": "model/list",
+      "schema": "ClientRequest.json",
+      "passed": true
+    },
+    {
+      "name": "model/list next page",
+      "schema": "ClientRequest.json",
+      "passed": true
+    },
+    {
+      "name": "account/read",
+      "schema": "ClientRequest.json",
+      "passed": true
+    },
+    {
+      "name": "account/login/start",
+      "schema": "ClientRequest.json",
+      "passed": true
+    },
+    {
+      "name": "account/logout",
+      "schema": "ClientRequest.json",
+      "passed": true
+    },
+    {
+      "name": "thread/start",
+      "schema": "ClientRequest.json",
+      "passed": true
+    },
+    {
+      "name": "turn/start text and image",
+      "schema": "ClientRequest.json",
+      "passed": true
+    },
+    {
+      "name": "turn/interrupt",
+      "schema": "ClientRequest.json",
+      "passed": true
+    },
+    {
+      "name": "command approval decline",
+      "schema": "CommandExecutionRequestApprovalResponse.json",
+      "passed": true
+    },
+    {
+      "name": "file approval decline",
+      "schema": "FileChangeRequestApprovalResponse.json",
+      "passed": true
+    },
+    {
+      "name": "permissions approval no grant",
+      "schema": "PermissionsRequestApprovalResponse.json",
+      "passed": true
+    },
+    {
+      "name": "MCP elicitation decline",
+      "schema": "McpServerElicitationRequestResponse.json",
+      "passed": true
+    },
+    {
+      "name": "user input unanswered",
+      "schema": "ToolRequestUserInputResponse.json",
+      "passed": true
+    },
+    {
+      "name": "camelCase thread sandbox rejected",
+      "schema": "v2/ThreadStartParams.json",
+      "passed": true,
+      "negative": true
+    },
+    {
+      "name": "non-null logout params rejected",
+      "schema": "ClientRequest.json",
+      "passed": true,
+      "negative": true
+    },
+    {
+      "name": "generic permissions decline rejected",
+      "schema": "PermissionsRequestApprovalResponse.json",
+      "passed": true,
+      "negative": true
+    }
+  ]
+}

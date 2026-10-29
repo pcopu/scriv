@@ -5,7 +5,7 @@ struct LayerTimelineView: View {
     @EnvironmentObject private var store: WorkspaceStore
     @State private var zoom = 1.0
     @State private var snapToWords = true
-    private var scale: CGFloat { min(0.04 * zoom, 30_000 / CGFloat(max(1, store.sceneDurationMs))) }
+    private var scale: CGFloat { min(CGFloat(0.04) * CGFloat(zoom), CGFloat(30_000) / CGFloat(max(1, store.sceneDurationMs))) }
     var body: some View {
         VStack(spacing: 8) {
             HStack(spacing: 8) {

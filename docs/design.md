@@ -1,6 +1,6 @@
 # Scriv product and interaction design
 
-**Status:** Design specification. The new application implementation has not started. The interface images are concepts; the [timing fixture](../design/storyboard-timing-example.json) defines the precise provisional example values.
+**Status:** Product and interaction specification implemented by the native app in `apps/mac`. The interface images remain design references; actual build and visual verification are recorded in [verification.md](verification.md). The [timing fixture](../design/storyboard-timing-example.json) defines the precise example values.
 
 Scriv is a script-first Mac workspace. Its Script, Characters and Storyboard views share the same project. Collaboration and local Codex controls extend that workspace.
 
@@ -51,7 +51,7 @@ Concept images may show a focused script excerpt. Rendered hooks and colors illu
 
 Use a full-width image sequence with minimal metadata: large images, duration pills overlaid on each image, spoken-word pills below, and direction coverage bands underneath.
 
-Every spoken word is an individual pill. Click a word or use a rectangular, Photoshop-style marquee to select several. Drag a contiguous selection into the previous or next image to move the cut. Any intervening words travel with that boundary, preserving the exact source wording and order. Word timestamps remain fixed; image assignments change.
+Every spoken word is an individual pill. Click a word or use a rectangular, Photoshop-style marquee to select several. Drag a contiguous selection at an image's edge into the previous or next image to move the cut: a prefix moves backward, a suffix moves forward. A selection inside the image cannot jump over unselected words; Scriv reports that the edge words must be selected too. Word timestamps and exact source wording/order remain fixed; image assignments change.
 
 Dragging a shared image boundary transfers time between adjacent cues. Their combined duration and total sequence duration stay fixed. Prevent zero-length images.
 
@@ -89,4 +89,4 @@ Scriv account controls and **Codex on this Mac** are separate. The local control
 
 Generation executes on the user's Mac. The cloud stores scripts, membership, collaboration, history and premium media; local AI credentials stay on the Mac. A generated result attaches to stable project items with source-version checks, preserving newer edits when generation finishes late.
 
-The [multiplayer architecture](multiplayer-design.md) specifies proposed persistence, lease fencing, replay, discussions, storage, billing and local-runtime responsibilities. These remain implementation plans, not claims of deployed or tested behavior.
+The [current architecture](architecture.md) specifies persistence, lease fencing, replay, discussions, storage, $9.99-per-team billing and local-runtime responsibilities. The [original multiplayer proposal](multiplayer-design.md) is preserved as design history. Neither design images nor implementation code imply that a production service has been deployed.
