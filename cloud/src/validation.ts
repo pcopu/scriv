@@ -39,6 +39,9 @@ export function validateItem(item: Pick<Item,'id'|'kind'|'data'>): void {
     int(d.version,'image.version',1);const name=str(d.fileName,'fileName',255);assert(!name.includes('/')&&!name.includes('\\')&&!name.includes('..'),400,'invalid_filename','Image fileName must be a local filename.');
     assert(typeof d.sha256==='string'&&/^[a-fA-F0-9]{64}$/.test(d.sha256),400,'invalid_hash','Images require a SHA-256 digest.');
     assert(['image/png','image/jpeg','image/webp'].includes(String(d.mimeType)),400,'invalid_media','Supported image types are PNG, JPEG and WebP.');int(d.byteCount,'byteCount',1,26214400);const characterIds=strings(d.characterIds,'characterIds',100);assert(new Set(characterIds).size===characterIds.length,400,'duplicate_character','Image character tags must be distinct.');str(d.prompt,'prompt',30000,0);assert(typeof d.createdAt==='number'&&Number.isFinite(d.createdAt)&&d.createdAt>=0,400,'invalid_timestamp','createdAt must be milliseconds since the Unix epoch.');
+    // The captured submitted prompt is distinct from editable manual direction.
+    // Legacy/imported images may truthfully have no captured generation text.
+    if(d.generationPrompt!==undefined&&d.generationPrompt!==null)str(d.generationPrompt,'generationPrompt',30000,0);
     if(d.previousVersionId!==undefined&&d.previousVersionId!==null)id(d.previousVersionId,'previousVersionId');
   }
   if(item.kind==='cue'){

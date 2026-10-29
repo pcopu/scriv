@@ -314,8 +314,8 @@ struct GenerationJobsSheet: View {
                                         Button("Retry…") { retrying = job }.disabled(controller.isGenerating || !controller.isConnected || controller.inspectingJobID != nil)
                                     }
                                 }.controlSize(.small)
-                                DisclosureGroup("Original prompt (stored only on this Mac)") {
-                                    Text(job.prompt).font(.caption).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
+                                DisclosureGroup(job.submittedPrompt == nil ? "Original brief (full submission unknown)" : "Captured generation prompt") {
+                                    Text(job.submittedPrompt ?? job.prompt).font(.caption).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
                                 }.font(.caption)
                             }.padding(14).background(ScrivTheme.inset.opacity(0.45), in: RoundedRectangle(cornerRadius: 11))
                         }
@@ -335,7 +335,7 @@ struct GenerationJobsSheet: View {
                 Text("Status only. Another collaborator cannot run work under this Mac's ChatGPT identity.").font(.caption).foregroundStyle(.secondary)
                 if let message = controller.sharedJobsError { Text(message).font(.callout).foregroundStyle(.orange) }
                 if controller.sharedJobs.isEmpty {
-                    Text("No shared generation jobs are available for the current project. Local prompts, paths and runtime credentials are never uploaded.").font(.callout).foregroundStyle(.secondary).padding(.vertical, 20)
+                    Text("No shared generation jobs are available for the current project. Image prompts sync as project metadata. Recovery paths and runtime credentials stay on this Mac.").font(.callout).foregroundStyle(.secondary).padding(.vertical, 20)
                 }
                 ForEach(controller.sharedJobs) { job in
                     VStack(alignment: .leading, spacing: 8) {
