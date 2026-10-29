@@ -1,0 +1,115 @@
+import { refreshProjectAccess, refreshTeamAccess } from './notifications';
+import type { Env, Identity, ProjectRow, Role, TeamRow } from './types';
+import { getTeam, premium, projectAccess, projectView, requireTeam, teamView } from './access';
+import { assert, body, escapeHTML, id, int, json, publicBase, randomToken, rateLimit, sha256, str, uuid } from './http';
+
+export async function listTeams(env: Env, userId: string) {
+  const rows = await env.DB.prepare('SELECT t.*,m.role FROM teams t JOIN team_members m ON m.team_id=t.id WHERE m.user_id=? ORDER BY t.created_at DESC').bind(userId).all<TeamRow&{role:Role}>();
+  return rows.results.map(t=>teamView(t,t.role));
+}
+export async function listProjects(env: Env, userId: string) {
+  const rows = await env.DB.prepare(`SELECT DISTINCT p.* FROM projects p LEFT JOIN team_members m ON m.team_id=p.team_id AND m.user_id=? WHERE p.archived_at IS NULL AND (p.owner_id=? OR m.user_id=?) ORDER BY p.updated_at DESC`).bind(userId,userId,userId).all<ProjectRow>();
+  const result: ReturnType<typeof projectView>[] = [];
+  for (const p of rows.results) {
+    try { const a=await projectAccess(env,p.id,userId); result.push(projectView(p,{role:a.role,premium:a.premium,canWrite:a.canWrite})); } catch { /* Expired access is intentionally excluded. */ }
+  }
+  return result;
+}
+export async function teamRoutes(request: Request, env: Env, identity: Identity): Promise<Response | null> {
+  const path=new URL(request.url).pathname; const method=request.method; const userId=identity.user.id;
+  if (path==='/v1/me' && method==='GET') return json({user:identity.user,sessionId:identity.sessionId,teams:await listTeams(env,userId),projects:await listProjects(env,userId)});
+  if (path==='/v1/teams') {
+    if(method==='GET') return json({teams:await listTeams(env,userId)});
+    if(method==='POST') {
+      await rateLimit(env,`team-create:${userId}`,20,86400000);
+      const input=await body(request,4096); const name=str(input.name,'name',100).trim(); assert(name,400,'invalid_name','Enter a team name.');
+      const teamId=uuid(); const now=Date.now();
+      await env.DB.batch([
+        env.DB.prepare('INSERT INTO teams(id,name,owner_id,created_at,storage_limit) VALUES(?,?,?,?,?)').bind(teamId,name,userId,now,Number(env.TEAM_STORAGE_BYTES)||10737418240),
+        env.DB.prepare('INSERT INTO team_members(team_id,user_id,role,joined_at) VALUES(?,?,?,?)').bind(teamId,userId,'owner',now)
+      ]);
+      return json({team:teamView(await getTeam(env,teamId),'owner')},201);
+    }
+  }
+  const teamMatch=/^\/v1\/teams\/([^/]+)$/.exec(path);
+  if(teamMatch) {
+    const teamId=id(teamMatch[1]); const {team,role}=await requireTeam(env,teamId,userId);
+    if(method==='GET') {
+      const members=await env.DB.prepare('SELECT u.id,u.name,u.email,u.avatar_url avatarUrl,m.role,m.joined_at joinedAt FROM team_members m JOIN users u ON u.id=m.user_id WHERE m.team_id=? ORDER BY m.joined_at').bind(teamId).all();
+      const links=['owner','admin'].includes(role)?await env.DB.prepare('SELECT id,role,created_at createdAt,expires_at expiresAt,revoked_at revokedAt FROM join_links WHERE team_id=? ORDER BY created_at DESC').bind(teamId).all():{results:[]};
+      return json({team:teamView(team,role),members:members.results,joinLinks:links.results});
+    }
+    if(method==='PATCH') {
+      assert(['owner','admin'].includes(role),403,'not_allowed','Only team administrators can rename the team.');
+      const input=await body(request,4096); const name=str(input.name,'name',100).trim();assert(name,400,'invalid_name','Enter a team name.');
+      await env.DB.prepare('UPDATE teams SET name=? WHERE id=?').bind(name,teamId).run();
+      return json({team:teamView(await getTeam(env,teamId),role)});
+    }
+  }
+  const linksMatch=/^\/v1\/teams\/([^/]+)\/join-links(?:\/([^/]+))?$/.exec(path);
+  if(linksMatch) {
+    const teamId=id(linksMatch[1]); await requireTeam(env,teamId,userId,['owner','admin']);
+    if(method==='POST'&&!linksMatch[2]) {
+      await rateLimit(env,`joinlink:${teamId}`,30,3600000);
+      const input=await body(request,4096); const role=input.role??'member';assert(['member','viewer'].includes(String(role)),400,'invalid_role','Join links can grant member or viewer access.');
+      const days=int(input.expiresInDays??30,'expiresInDays',1,365); const token=randomToken(); const now=Date.now(); const linkId=uuid();const expiresAt=now+days*86400000;
+      await env.DB.prepare('INSERT INTO join_links(id,team_id,token_hash,role,created_by,created_at,expires_at) VALUES(?,?,?,?,?,?,?)').bind(linkId,teamId,await sha256(token),role,userId,now,expiresAt).run();
+      return json({token,url:`${publicBase(env)}/join/${token}`,link:{id:linkId,role,createdAt:now,expiresAt}},201);
+    }
+    if(method==='DELETE'&&linksMatch[2]) {await env.DB.prepare('UPDATE join_links SET revoked_at=? WHERE id=? AND team_id=?').bind(Date.now(),id(linksMatch[2]),teamId).run();return json({ok:true});}
+  }
+  const joinMatch=/^\/v1\/join\/([A-Za-z0-9_-]{32,128})$/.exec(path);
+  if(joinMatch&&method==='POST') {
+    await rateLimit(env,`join:${userId}`,30,3600000);
+    const link=await env.DB.prepare('SELECT * FROM join_links WHERE token_hash=? AND revoked_at IS NULL AND expires_at>?').bind(await sha256(joinMatch[1]!),Date.now()).first<{team_id:string;role:'member'|'viewer'}>();
+    assert(link,404,'invite_invalid','This invite has expired or been revoked.');
+    const team=await getTeam(env,link.team_id);assert(premium(team),402,'team_subscription_required','The team owner needs an active Team subscription before others can join.');
+    await env.DB.prepare('INSERT INTO team_members(team_id,user_id,role,joined_at) VALUES(?,?,?,?) ON CONFLICT(team_id,user_id) DO NOTHING').bind(team.id,userId,link.role,Date.now()).run();
+    const {role}=await requireTeam(env,team.id,userId);return json({team:teamView(team,role)});
+  }
+  const memberMatch=/^\/v1\/teams\/([^/]+)\/members\/([^/]+)$/.exec(path);
+  if(memberMatch) {
+    const teamId=id(memberMatch[1]); const memberId=id(memberMatch[2]); const {role}=await requireTeam(env,teamId,userId);
+    const target=await env.DB.prepare('SELECT role FROM team_members WHERE team_id=? AND user_id=?').bind(teamId,memberId).first<{role:Role}>();
+    assert(target,404,'not_found','Team member not found.'); assert(target.role!=='owner',409,'owner_required','Team ownership must be transferred before the owner can leave.');
+    assert(role==='owner'||(role==='admin'&&target.role!=='admin')||(memberId===userId&&method==='DELETE'),403,'not_allowed','You cannot change this membership.');
+    if(method==='PATCH') {
+      const input=await body(request,4096);assert(['admin','member','viewer'].includes(String(input.role)),400,'invalid_role','Choose admin, member, or viewer.');
+      assert(input.role!=='admin'||role==='owner',403,'not_allowed','Only the owner can appoint an admin.');
+      await env.DB.prepare('UPDATE team_members SET role=? WHERE team_id=? AND user_id=?').bind(input.role,teamId,memberId).run();
+      await refreshTeamAccess(env,teamId,memberId);return json({ok:true});
+    }
+    if(method==='DELETE') {await env.DB.prepare('DELETE FROM team_members WHERE team_id=? AND user_id=?').bind(teamId,memberId).run();await refreshTeamAccess(env,teamId,memberId);return json({ok:true});}
+  }
+  if(path==='/v1/projects') {
+    if(method==='GET') return json({projects:await listProjects(env,userId)});
+    if(method==='POST') {
+      await rateLimit(env,`project-create:${userId}`,100,86400000);
+      const input=await body(request,4096); const title=str(input.title,'title',200).trim();assert(title,400,'invalid_title','Enter a project title.');
+      const projectId=input.id?id(input.id):uuid(); const teamId=input.teamId?id(input.teamId,'teamId'):null; let ownerId=userId;
+      if(teamId){const {team,role}=await requireTeam(env,teamId,userId);assert(premium(team),402,'team_subscription_required','A Team subscription is required for team projects.');assert(role!=='viewer',403,'not_allowed','Viewers cannot create projects.');ownerId=team.owner_id;}
+      const existing=await env.DB.prepare('SELECT * FROM projects WHERE id=?').bind(projectId).first<ProjectRow>();
+      if(existing){assert(existing.owner_id===ownerId&&existing.team_id===teamId&&existing.title===title,409,'project_exists','This project ID is already in use.');return json({project:projectView(existing)});}
+      const now=Date.now();await env.DB.prepare('INSERT INTO projects(id,title,owner_id,team_id,created_at,updated_at) VALUES(?,?,?,?,?,?)').bind(projectId,title,ownerId,teamId,now,now).run();
+      return json({project:projectView({id:projectId,title,owner_id:ownerId,team_id:teamId,created_at:now,updated_at:now,archived_at:null})},201);
+    }
+  }
+  const projectMatch=/^\/v1\/projects\/([^/]+)$/.exec(path);
+  if(projectMatch) {
+    const projectId=id(projectMatch[1]);const access=await projectAccess(env,projectId,userId);
+    if(method==='GET')return json({project:projectView(access.project,{role:access.role,premium:access.premium,canWrite:access.canWrite})});
+    assert(access.canManage,403,'not_allowed','Only a project owner or team administrator can manage the project.');
+    if(method==='PATCH'){
+      const input=await body(request,4096);const title=str(input.title,'title',200).trim();assert(title,400,'invalid_title','Enter a project title.');
+      await env.DB.prepare('UPDATE projects SET title=?,updated_at=? WHERE id=?').bind(title,Date.now(),projectId).run();
+      return json({project:projectView({...access.project,title})});
+    }
+    if(method==='DELETE') {await env.DB.prepare('UPDATE projects SET archived_at=?,updated_at=? WHERE id=?').bind(Date.now(),Date.now(),projectId).run();await refreshProjectAccess(env,projectId);return json({ok:true});}
+  }
+  return null;
+}
+export function joinPage(token: string): Response {
+  assert(/^[A-Za-z0-9_-]{32,128}$/.test(token),404,'not_found','Invite not found.');
+  const target=`scriv://join/${token}`;
+  return new Response(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Join a Scriv team</title><style>body{font:17px system-ui;max-width:32rem;margin:12vh auto;padding:2rem;background:#f5f7fc;color:#17213b}a{display:inline-block;background:#1769ff;color:white;padding:.8rem 1.4rem;border-radius:12px;text-decoration:none}p{line-height:1.6}small{color:#5b677e;word-break:break-all}</style><h1>Make the story together.</h1><p>Open this invitation in Scriv for Mac. Sign in with your own Scriv account to join the team.</p><a href="${escapeHTML(target)}">Open Scriv</a><p><small>Already in Scriv? Choose Join team and paste this invitation link.</small></p></html>`,{headers:{'content-type':'text/html; charset=utf-8','content-security-policy':"default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'",'referrer-policy':'no-referrer','cache-control':'no-store'}});
+}

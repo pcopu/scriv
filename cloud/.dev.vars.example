@@ -1,0 +1,11 @@
+# Copy to .dev.vars, keep it out of Git. OAuth requires real provider credentials.
+ENVIRONMENT=development
+PUBLIC_URL=http://localhost:8787
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_TEAM_PRICE_ID=
+# Optional TURN issuer for internet P2P connectivity (Cloudflare Realtime TURN).
+TURN_KEY_ID=
+TURN_API_TOKEN=
