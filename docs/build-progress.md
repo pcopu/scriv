@@ -1,7 +1,8 @@
 # Build checkpoints
 
-This branch is being rebuilt as a new native Scriv application. Checkpoint commits
-preserve implementation work; they are not release announcements.
+This branch was rebuilt as a new native Scriv application. This document preserves
+the implementation checkpoints; [verification.md](verification.md) records the
+final source verification and deployment gates.
 
 ## First implementation checkpoint — 2026-10-29
 
@@ -26,6 +27,10 @@ The final release report and deployment handoff will record actual verification 
 - `f292971`: integrated native editing, account/team/discussion UI, backend and packaging/CI.
 - `beae0de`: moved away from the retiring macOS 14 runner and added real WebRTC CI tests.
 - `4fce12c`: durable offline reconciliation/outbox, timing fences, complete cloud bootstrap, paginated discussion/history, source-safe media generation and native UI finishing.
+- `f612e5f`: corrected app-server contracts against the official Codex 0.165.0 generated schema; first successful native universal package and WebKit smoke test.
+- `03cc3d2`: immutable history recovery and the visual corrections from the three actual Mac screenshots; native build, 28 core tests, universal packaging, WebKit transfer and renders passed.
+- `ee55a46`: deterministic lower-device-ID WebRTC offerer, explicit connection request, serialized SDP/candidates and higher-ID native smoke coverage.
+- `0eb779b`: timeout retirement, responder renewal on a fresh nonce, and recovery after lost connect/offer/answer signals for either requester.
 
 ## Release verification checkpoint
 
@@ -40,10 +45,22 @@ The final release report and deployment handoff will record actual verification 
   Visual review produced a small control-placement correction; the final build
   includes that correction and additional history/reconnect regression tests.
 - Browser CI exposed an intermittent initial-negotiation race. The transport now
-  distinguishes initiators from answering peers, checks answer-in-progress state,
-  filters stale ICE generations and is tested with forced and staggered requests.
+  uses a sole deterministic offerer, queues early ICE candidates, and renews both
+  sides on a fresh connection attempt. All six final browser tests pass, including
+  25 simultaneous/staggered scenarios under CPU throttling and five lost-signal
+  recovery cases in the local stress run.
 - The current source map, architecture, cloud setup and deployment runbook now
   describe the implemented Cloudflare/$9.99-per-team product.
 
 See [verification.md](verification.md) for the final test state rather than treating
 any individual work-in-progress commit as a production release.
+
+## Final source verification and handoff
+
+Runtime commit `0eb779b8e07935235d4584b09abe05bd0504be01` passed all three jobs in
+[run 40921544866](https://github.com/pcopu/scriv/actions/runs/40921544866): cloud,
+real-browser peer transport, and native Mac. The Mac job built the universal app,
+ran the higher-ID-requester WebKit smoke test, and captured the three actual
+views. The final documentation-only checkpoint preserves those captures, artifact
+checksums and test evidence. Production configuration, account-bound acceptance,
+Developer ID signing and notarization are recorded in the deployment handoff.

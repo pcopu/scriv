@@ -4,11 +4,11 @@ A native Mac workspace for writing a script, timing its words and directions, an
 
 Scriv is a new SwiftUI/AppKit application. The inherited Movie AI Workspace implementation has been removed; the Git history and all 25 Scriv design images remain available. The cloud service runs on Cloudflare Workers, D1, SQLite Durable Objects and private R2 storage.
 
-**Release status:** implementation and verification are in progress. This repository contains the application, backend, tests and packaging workflow. No production service, paid subscription or signed public release has been created. [Verification](docs/verification.md) records the actual test results and remaining release gates; [deployment handoff](docs/deployment.md) explains the account configuration and release procedure.
+**Release status:** implementation complete, with cloud, real-WebRTC and native Mac verification passing for [runtime commit `0eb779b`](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01). The [successful CI run](https://github.com/pcopu/scriv/actions/runs/40921544866) includes the universal development build and native captures. [Verification](docs/verification.md) records the results and remaining account-bound acceptance checks; the [deployment handoff](docs/deployment.md) covers production configuration, signing and release.
 
-![Selected Scriv script-editor concept](design/images/01-script-editor.png)
+![Scriv native Script view](docs/screenshots/01-script.png)
 
-*The image above is the approved design reference. The macOS CI job captures the actual Script, Characters and Storyboard views as downloadable build artifacts.*
+*Actual SwiftUI/AppKit application capture. View the [Script](docs/screenshots/01-script.png), [Characters](docs/screenshots/02-characters.png) and [Storyboard](docs/screenshots/03-storyboard.png) screenshots, with build provenance in the [capture notes](docs/screenshots/README.md). The original approved concepts remain in [design/images](design/images).*
 
 ## The workspace
 
@@ -95,7 +95,7 @@ bash scripts/build-mac.sh
 
 The Cloudflare tests run inside the real Workers runtime with local D1, Durable Objects and R2 bindings. The peer tests use real Chromium WebRTC data channels. Swift core tests can also run on Linux; compiling the native interface and rendering its screenshots require macOS.
 
-CI runs the backend, fixture and peer tests plus the native Mac build, packages the `.app`, then captures all three native views. It does not deploy, create Stripe charges, sign with a private Developer ID certificate or log into a ChatGPT account.
+CI runs the backend, fixture and six real-browser peer tests plus the native Mac build. It packages a universal `.app`, checks a real multi-chunk transfer between two native WebKit bridges, then captures all three native views. The browser cases include simultaneous requests on throttled CPUs, ICE arriving before SDP, either device initiating, reconnection, and retry after lost signaling. CI does not deploy, create Stripe charges, sign with a private Developer ID certificate or log into a ChatGPT account.
 
 ## Project map
 

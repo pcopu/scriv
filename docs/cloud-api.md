@@ -90,7 +90,7 @@ signal to the lower-ID device:
   "type": "asset-request",
   "payload": {
     "action": "connect",
-    "requestId": "<unique connection-attempt ID>"
+    "requestId": "<fresh UUID for this connection attempt>"
   }
 }
 ```
@@ -98,10 +98,21 @@ signal to the lower-ID device:
 The connection request starts transport negotiation; it does not request an
 image or grant permission to serve one. The lower-ID device creates the offer
 even when it has no pending image request of its own. SDP `offer`/`answer` and
-`ice` messages then use the existing signaling route. Use a fresh `requestId`
-when rebuilding a closed connection so native signal deduplication does not
-discard a later legitimate attempt. Duplicate requests for the same attempt
-must not create competing offers.
+`ice` messages then use the existing signaling route. The bridge uses a fresh
+UUID `requestId` as the connection-attempt nonce. Repeated requests with the
+same nonce reuse the active attempt and cannot create another offer. A different
+nonce replaces the earlier connection request's transport and fails its pending
+transfers, so a lost offer or answer cannot leave the lower-ID peer waiting on
+an obsolete handshake. A fresh nonce also prevents native signal deduplication
+from suppressing a legitimate reconnect.
+
+An image request has a 60-second deadline. An unanswered handshake or incomplete
+transfer retires the peer, closes its channel/connection and fails all pending
+requests on that peer. The next retry creates fresh transport state and a new
+connection nonce where needed. An ordinary `unavailable` image response fails
+only that image request and keeps the healthy channel open. SDP and ICE
+application is serialized per peer; candidates that arrive before their matching
+remote description remain in a bounded queue for later application.
 
 `asset-request` also carries discovery actions: `query` and `available` include
 the image `hash` and discovery `requestId`. Dispatch `action:"connect"` to the
