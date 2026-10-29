@@ -29,15 +29,16 @@ The final release report and deployment handoff will record actual verification 
 
 ## Release verification checkpoint
 
-- 26 portable Swift core tests and 24 local Workers integration tests pass.
+- 28 portable Swift core tests and 24 local Workers integration tests pass.
 - A real local room test accepts 500 authenticated sockets and 100 concurrent
   independent content writes; all 50,000 expected mutation observations arrive.
 - All original design/sample image digests match their manifests.
 - The official Codex 0.165.0 generated schema exposed concrete request/transport
   mismatches; those have been corrected and contract-checked.
-- First actual Intel Mac compilation exposed two CGFloat inference errors; those
-  are corrected. Native packaging, screenshot review and WebKit peer smoke are
-  being run in the next CI checkpoint.
+- The actual Intel Mac job passed compilation, core tests, optimized universal
+  packaging, native screenshot capture and a real 2,150,385-byte WebKit transfer.
+  Visual review produced a small control-placement correction; the final build
+  includes that correction and additional history/reconnect regression tests.
 - Browser CI exposed an intermittent initial-negotiation race. The transport now
   distinguishes initiators from answering peers, checks answer-in-progress state,
   filters stale ICE generations and is tested with forced and staggered requests.

@@ -15,7 +15,9 @@ struct ScrivApp: App {
                 .task {
                     delegate.flushBeforeTermination = {
                         await store.flushPendingSaves()
-                        return store.statusMessage != "Save failed"
+                        guard store.statusMessage != "Save failed" else { return false }
+                        store.codex.stop()
+                        return true
                     }
                     if await NativePeerSmoke.runIfRequested() { return }
                     await NativeScreenshotRunner.runIfRequested(store: store)

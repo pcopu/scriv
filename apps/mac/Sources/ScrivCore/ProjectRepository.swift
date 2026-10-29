@@ -14,9 +14,24 @@ public actor ProjectRepository {
         let data = try ScrivJSON.encoder.encode(project)
         let event = HistoryEntry(label: label, snapshot: project)
         let revisionURL = history.appendingPathComponent(String(format: "%012d", project.revision)).appendingPathExtension("json")
-        // History snapshot lands before the atomic current-state replacement. A crash cannot lose an accepted local revision.
-        if !fm.fileExists(atPath: revisionURL.path) { try ScrivJSON.encoder.encode(event).write(to: revisionURL, options: .atomic) }
-        try data.write(to: package.appendingPathComponent("project.json"), options: .atomic)
+        let currentURL = package.appendingPathComponent("project.json")
+        let published = fm.fileExists(atPath:currentURL.path) ? try load(at:package) : nil
+        if let published {
+            guard published.id == project.id, project.revision >= published.revision else { throw ScrivError.conflict("This project package already contains a newer revision or a different project. Reopen it before saving.") }
+            guard project.revision != published.revision || project == published else { throw ScrivError.conflict("An accepted project revision cannot be replaced with different content. Save the change as a new revision.") }
+        }
+        // History lands before current-state publication. A failed publication may leave
+        // an orphan future snapshot; only that unpublished revision may be replaced.
+        var writeHistory = true
+        if fm.fileExists(atPath:revisionURL.path) {
+            let existing = try ScrivJSON.decoder.decode(HistoryEntry.self,from:Data(contentsOf:revisionURL))
+            if existing.snapshot == project { writeHistory = false }
+            else {
+                if let published, project.revision <= published.revision { throw ScrivError.conflict("The accepted history snapshot differs from this revision. Its original contents have been preserved.") }
+            }
+        }
+        if writeHistory { try ScrivJSON.encoder.encode(event).write(to:revisionURL,options:.atomic) }
+        try data.write(to:currentURL,options:.atomic)
     }
     public func load(at package: URL) throws -> ScrivProject {
         let source = package.appendingPathComponent("project.json")

@@ -481,12 +481,16 @@ final class WorkspaceStore: ObservableObject {
             } else {
                 let created = try await self.cloud.createProject(draft,teamId:teamId)
                 guard self.project.id == contextID else { return }
-                self.project.cloudProjectId = created.id; self.queueSave(self.project,label:"Enable cloud sync")
+                let sourceUnchanged = self.project.revision == draft.revision
+                self.project.cloudProjectId = created.id; self.project.revision += 1; self.project.modifiedAt = ScrivClock.now
+                let linkedRevision = self.project.revision
+                self.history.insert(HistoryEntry(label:"Enable cloud sync",snapshot:self.project),at:0)
+                self.queueSave(self.project,label:"Enable cloud sync")
                 await self.flushPendingSaves()
                 _ = try await self.cloud.attach(projectId:created.id,realtime:false)
                 try await self.cloud.seed(draft)
                 self.recordCheckpoint()
-                guard self.project.revision == draft.revision else { throw ScrivError.conflict("New edits remain local while the first copy uploads. Sync again to include them.") }
+                guard sourceUnchanged, self.project.revision == linkedRevision else { throw ScrivError.conflict("New edits remain local while the first copy uploads. Sync again to include them.") }
                 if self.isPremiumProject(created) { _ = try await self.cloud.attach(projectId:created.id,realtime:true) }
             }
             guard self.project.id == contextID else { return }
@@ -524,6 +528,10 @@ final class WorkspaceStore: ObservableObject {
                 if FileManager.default.fileExists(atPath:copiedHistory.path) { try FileManager.default.removeItem(at:copiedHistory) }
                 let copiedCheckpoint = destination.appendingPathComponent("cloud-sync.json")
                 if FileManager.default.fileExists(atPath:copiedCheckpoint.path) { try FileManager.default.removeItem(at:copiedCheckpoint) }
+                // This new package has a new identity and revision lineage. Publishing
+                // its first snapshot must not reuse the original project's current head.
+                let copiedCurrent = destination.appendingPathComponent("project.json")
+                if FileManager.default.fileExists(atPath:copiedCurrent.path) { try FileManager.default.removeItem(at:copiedCurrent) }
             }
             guard self.project.id == contextID else { return }
             self.install(copy)

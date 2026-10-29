@@ -157,7 +157,7 @@ SCRIV_NOTARY_PROFILE=scriv-notary bash scripts/notarize-mac.sh
 
 The script submits the signed ZIP, waits for acceptance, staples and validates the ticket, checks Gatekeeper and rebuilds the final archive. Test that exact ZIP on a different Mac/account after downloading it through the intended distribution channel. Confirm `.scriv` file opening, invitation deep links, OAuth return, embedded images and local Codex launching.
 
-CI artifacts are development builds and ad-hoc signed. The Intel Mac job produces a universal app; the Apple Silicon job also verifies a native build. They are useful for review; the Developer ID/notarized universal archive is the public release artifact. Do not publish a development build with the loopback default as the production app.
+CI artifacts are development builds and ad-hoc signed. The required Intel Mac job compiles both architectures, produces a universal app and runs the native runtime checks on Intel. The manual workflow's `apple_silicon_runtime` input adds execution on an Apple Silicon runner when available. They are useful for review; the Developer ID/notarized universal archive is the public release artifact. Do not publish a development build with the loopback default as the production app.
 
 ## 9. Acceptance on two real Macs
 

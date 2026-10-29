@@ -80,7 +80,7 @@ struct ScriptEditorView: View {
                         Text(store.project.scenes.first { $0.id == store.selectedSceneID }?.title ?? "No scene")
                         Image(systemName: "chevron.down").font(.system(size: 8, weight: .semibold))
                     }.font(.system(size: 12)).foregroundStyle(.secondary)
-                }.menuStyle(.borderlessButton).fixedSize()
+                }.menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
             }
             Spacer(minLength: 0)
             if !compact {
@@ -213,7 +213,7 @@ private struct ScriptRow: View {
                     ForEach(store.project.characters) { character in
                         Button(character.name) { store.setEntryCharacter(entry.id, characterId: character.id) }
                     }
-                } label: { Image(systemName: "chevron.down").font(.system(size: 8)) }.menuStyle(.borderlessButton).fixedSize().disabled(store.lockedByOther(entry.id) != nil)
+                } label: { Image(systemName: "chevron.down").font(.system(size: 8)) }.menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize().disabled(store.lockedByOther(entry.id) != nil)
                 Spacer()
                 Button { beginEdit() } label: { Image(systemName: "pencil").font(.system(size: 10)) }.buttonStyle(.plain).foregroundStyle(.secondary).help("Edit line").disabled(store.lockedByOther(entry.id) != nil)
             }
@@ -252,10 +252,10 @@ private struct DirectionRailOverlay: View {
                             path.move(to: CGPoint(x: x, y: end))
                             path.addLine(to: CGPoint(x: x, y: top + 9))
                             path.addQuadCurve(to: CGPoint(x: x + 18, y: top), control: CGPoint(x: x, y: top))
-                            path.addLine(to: CGPoint(x: 145, y: top))
+                            path.addLine(to: CGPoint(x: 137, y: top))
                         }.stroke(color.opacity(selected ? 1 : 0.8), style: StrokeStyle(lineWidth: selected ? 3 : 2.5, lineCap: .round, dash: selected ? [] : [6, 4], dashPhase: CGFloat(index * 3))).allowsHitTesting(false)
                         Path { path in
-                            path.move(to: CGPoint(x: 151, y: top)); path.addLine(to: CGPoint(x: 143, y: top - 4)); path.addLine(to: CGPoint(x: 143, y: top + 4)); path.closeSubpath()
+                            path.move(to: CGPoint(x: 143, y: top)); path.addLine(to: CGPoint(x: 135, y: top - 4)); path.addLine(to: CGPoint(x: 135, y: top + 4)); path.closeSubpath()
                         }.fill(color).allowsHitTesting(false)
                         Circle().fill(color).frame(width: 9, height: 9).position(x: x, y: top).allowsHitTesting(false)
                         Button { store.selectEntry(entry.id) } label: { Circle().fill(color).frame(width: selected ? 11 : 8, height: selected ? 11 : 8).padding(8).contentShape(Circle()) }

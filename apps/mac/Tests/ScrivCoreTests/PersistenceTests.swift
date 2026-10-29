@@ -23,6 +23,51 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(history.first?.label, "Rename")
         XCTAssertEqual(history.last?.snapshot.title, "YAM MAN")
     }
+    func testCrashBeforePublicationReplacesOnlyTheUnpublishedHistorySnapshot() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at:root) }
+        let repo = try ProjectRepository(root:root)
+        let accepted = ScrivProject.example()
+        let package = await repo.defaultURL(for:accepted)
+        try await repo.save(accepted,at:package,label:"Accepted initial revision")
+        var interrupted = accepted; interrupted.revision = 1; interrupted.title = "Interrupted save"
+        let orphanURL = package.appendingPathComponent("history/000000000001.json")
+        // Simulate process death after writing history but before replacing project.json.
+        try ScrivJSON.encoder.encode(HistoryEntry(label:"Never published",snapshot:interrupted)).write(to:orphanURL,options:.atomic)
+        let reopened = try ProjectRepository(root:root)
+        var recovered = try await reopened.load(at:package)
+        XCTAssertEqual(recovered,accepted)
+        recovered.revision = 1; recovered.title = "New edit after restart"
+        try await reopened.save(recovered,at:package,label:"Recovered edit")
+        let current = try await reopened.load(at:package), history = try await reopened.history(at:package)
+        XCTAssertEqual(current,recovered)
+        XCTAssertEqual(history.count,2)
+        XCTAssertEqual(history.first?.snapshot,current)
+        XCTAssertEqual(history.first?.label,"Recovered edit")
+        XCTAssertEqual(history.last?.snapshot,accepted)
+    }
+    func testAcceptedRevisionCollisionPreservesCurrentAndHistoryBytes() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at:root) }
+        let repo = try ProjectRepository(root:root)
+        var accepted = ScrivProject.example()
+        let package = await repo.defaultURL(for:accepted)
+        try await repo.save(accepted,at:package,label:"Initial")
+        accepted.revision = 1; accepted.title = "Accepted revision"
+        try await repo.save(accepted,at:package,label:"Accepted edit")
+        let currentURL = package.appendingPathComponent("project.json"), historyURL = package.appendingPathComponent("history/000000000001.json")
+        let currentBytes = try Data(contentsOf:currentURL), historyBytes = try Data(contentsOf:historyURL)
+        var collision = accepted; collision.title = "Different content under the same revision"
+        do { try await repo.save(collision,at:package,label:"Collision"); XCTFail("An accepted revision was overwritten") }
+        catch { guard case ScrivError.conflict = error else { return XCTFail("Expected an immutable-history conflict, got \(error)") } }
+        XCTAssertEqual(try Data(contentsOf:currentURL),currentBytes)
+        XCTAssertEqual(try Data(contentsOf:historyURL),historyBytes)
+        var later = accepted; later.revision = 2; later.title = "Later accepted revision"
+        try await repo.save(later,at:package,label:"Later edit")
+        do { try await repo.save(accepted,at:package,label:"Stale writer"); XCTFail("A stale save rolled the published head backward") }
+        catch { guard case ScrivError.conflict = error else { return XCTFail("Expected a stale-revision conflict, got \(error)") } }
+        let current = try await repo.load(at:package)
+        XCTAssertEqual(current,later)
+        XCTAssertEqual(try Data(contentsOf:historyURL),historyBytes)
+    }
     func testReplicaIsVerifiedAndKeepsRemoteFilename() async throws {
         let root = try directory(); defer { try? FileManager.default.removeItem(at: root) }
         let repo = try ProjectRepository(root: root)

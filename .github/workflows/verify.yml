@@ -4,6 +4,11 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      apple_silicon_runtime:
+        description: Also run the native app on an Apple Silicon runner
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -43,7 +48,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [macos-15-intel, macos-26]
+        # Every required Mac job compiles both architectures and packages a
+        # universal app. Apple Silicon execution is an additional on-demand job;
+        # its public runner queue does not block the reproducible Intel gate.
+        runner: ${{ fromJSON(github.event_name == 'workflow_dispatch' && inputs.apple_silicon_runtime && '["macos-15-intel","macos-26"]' || '["macos-15-intel"]') }}
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 25
     steps:

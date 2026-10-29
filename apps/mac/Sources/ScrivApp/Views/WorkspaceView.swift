@@ -20,13 +20,6 @@ struct WorkspaceView: View {
                         .frame(width: 368, height: 515)
                         .padding(.trailing, 24).padding(.bottom, 24)
                         .transition(.move(edge: .trailing).combined(with: .opacity))
-                } else {
-                    Button { withAnimation(.spring(response: 0.3)) { store.showDiscussion = true; store.loadDiscussion(itemId: store.discussionItemID) } } label: {
-                        Label("Discussion", systemImage: "bubble.left.and.bubble.right")
-                            .font(.system(size: 12, weight: .medium)).padding(.horizontal, 14).padding(.vertical, 10)
-                            .background(.regularMaterial, in: Capsule())
-                            .overlay(Capsule().strokeBorder(ScrivTheme.hairline)).shadow(color: .black.opacity(0.08), radius: 12, y: 4)
-                    }.buttonStyle(.plain).foregroundStyle(ScrivTheme.accent).padding(.trailing, 24).padding(.bottom, store.tab == .storyboard ? 90 : 22)
                 }
             }
         }.background(ScrivTheme.canvas)
@@ -45,28 +38,16 @@ struct WorkspaceView: View {
     }
     private var chrome: some View {
         HStack(spacing: 14) {
-            Menu {
-                Button("Projects…", systemImage: "folder") { projectBrowserOpen = true }
-                Button("New project", systemImage: "plus") { store.newProject() }
-                Button("Open…", systemImage: "folder.badge.plus") { store.openProject() }
-                Button("Rename…", systemImage: "pencil") { titleDraft = store.project.title; renaming = true }
-                Divider()
-                Button("Import script…") { store.importScript() }
-                Button("Export script…") { store.exportScript() }
-                Button("Export project…") { store.exportProject() }
-            } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: "doc.text.fill").font(.system(size: 22, weight: .ultraLight)).foregroundStyle(ScrivTheme.accent.opacity(0.55))
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text(store.project.title).font(.system(size: 14, weight: .semibold)).lineLimit(1)
-                        Text("Scriv").font(.system(size: 11)).foregroundStyle(.secondary)
-                    }
-                    Image(systemName: "chevron.down").font(.system(size: 8, weight: .semibold)).foregroundStyle(.secondary)
-                }
-            }.menuStyle(.borderlessButton).fixedSize().frame(maxWidth: 220, alignment: .leading)
+            projectControls
             Spacer(minLength: 8)
             PillSegmentPicker(values: WorkspaceTab.allCases, selection: $store.tab) { $0.rawValue }
             Spacer(minLength: 8)
+            IconButton(symbol: "bubble.left.and.bubble.right", label: "Discussion", prominent: store.showDiscussion) {
+                withAnimation(.spring(response: 0.3)) {
+                    if store.showDiscussion { store.showDiscussion = false }
+                    else { store.loadDiscussion(itemId: store.discussionItemID) }
+                }
+            }
             Button { historyOpen = true } label: { Image(systemName: "clock.arrow.circlepath").font(.system(size: 15)) }
                 .buttonStyle(.plain).help("History").accessibilityLabel("History")
             Button { teamOpen = true } label: { Image(systemName: "square.and.arrow.up").font(.system(size: 15)) }
@@ -84,6 +65,31 @@ struct WorkspaceView: View {
         }.padding(.leading, 80).padding(.trailing, 17).frame(height: 60)
             .background(.ultraThinMaterial)
             .overlay(alignment: .bottom) { Divider().opacity(0.25) }
+    }
+    private var projectControls: some View {
+        HStack(spacing: 8) {
+            Button { projectBrowserOpen = true } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "doc.text.fill").font(.system(size: 22, weight: .ultraLight)).foregroundStyle(ScrivTheme.accent.opacity(0.55))
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(store.project.title).font(.system(size: 14, weight: .semibold)).lineLimit(1)
+                        Text("Scriv").font(.system(size: 11)).foregroundStyle(.secondary)
+                    }
+                }
+            }.buttonStyle(.plain).help("Open project browser")
+            Menu {
+                Button("Projects…", systemImage: "folder") { projectBrowserOpen = true }
+                Button("New project", systemImage: "plus") { store.newProject() }
+                Button("Open…", systemImage: "folder.badge.plus") { store.openProject() }
+                Button("Rename…", systemImage: "pencil") { titleDraft = store.project.title; renaming = true }
+                Divider()
+                Button("Import script…") { store.importScript() }
+                Button("Export script…") { store.exportScript() }
+                Button("Export project…") { store.exportProject() }
+            } label: {
+                Image(systemName: "chevron.down").font(.system(size: 9, weight: .semibold)).foregroundStyle(.secondary)
+            }.menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize().accessibilityLabel("Project actions")
+        }.frame(maxWidth: 220, alignment: .leading)
     }
     @ViewBuilder private var workspace: some View {
         switch store.tab {
