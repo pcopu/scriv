@@ -64,21 +64,21 @@
       });
     };
   }
-  function ensurePeer(id, initiator = false) {
+  function ensurePeer(id) {
     if (typeof id !== 'string' || !id || id.length > 128 || id === identity) throw new Error('Invalid peer identity.');
     if (peers.has(id)) return peers.get(id);
     if (peers.size >= 8) throw new Error('Too many active peer transfers.');
-    const peer = { id, pc: new RTCPeerConnection({ iceServers }), channel: null, makingOffer: false, ignoreOffer: false, isSettingRemoteAnswerPending: false, candidates: [], receiving: null, receiveQueue: Promise.resolve(), sendQueue: Promise.resolve() };
+    const peer = { id, pc: new RTCPeerConnection({ iceServers }), channel: null, offerer: identity < id, makingOffer: false, connectionRequested: false, requestId: crypto.randomUUID(), candidates: [], receiving: null, signalQueue: Promise.resolve(), receiveQueue: Promise.resolve(), sendQueue: Promise.resolve() };
     peers.set(id, peer);
     peer.pc.onicecandidate = event => { if (event.candidate && peers.get(id) === peer) signal(peer, 'ice', event.candidate.toJSON()); };
     peer.pc.ondatachannel = event => { if (peers.get(id) === peer) attach(peer, event.channel); else event.channel.close(); };
     peer.pc.onnegotiationneeded = async () => {
-      // This connection has one fixed negotiated channel. A peer constructed by
-      // incoming ICE/SDP must answer that offer instead of racing it with another
-      // initial offer. A requester starts negotiation once; failed peers rebuild.
-      if (peers.get(id) !== peer || !initiator || peer.pc.localDescription || peer.pc.remoteDescription) return;
+      // One fixed channel needs only one initial offer. Device IDs choose the
+      // same offerer at both ends, even when requests cross or ICE arrives first.
+      // This avoids rolling back the initial SCTP transport during offer glare.
+      if (peers.get(id) !== peer || !peer.offerer || peer.makingOffer || peer.pc.localDescription || peer.pc.remoteDescription) return;
       try { peer.makingOffer = true; await peer.pc.setLocalDescription(); signal(peer, peer.pc.localDescription.type, peer.pc.localDescription.toJSON()); }
-      catch (e) { emit({ kind: 'error', fromDeviceId: id, message: e.message }); }
+      catch (e) { if (peers.get(id) === peer) emit({ kind: 'error', fromDeviceId: id, message: e.message }); }
       finally { peer.makingOffer = false; }
     };
     peer.pc.onconnectionstatechange = () => {
@@ -89,8 +89,8 @@
         emit({ kind: 'disconnected', fromDeviceId: id });
       }
     };
-    // A negotiated channel has the same ID at both ends, including when two Macs
-    // request images simultaneously. Perfect negotiation below resolves offer glare.
+    // Both ends create the same negotiated channel. The higher-ID device asks
+    // its partner to offer when it needs a connection; media stays off signaling.
     attach(peer, peer.pc.createDataChannel('scriv-media', { ordered: true, negotiated: true, id: 0 }));
     return peer;
   }
@@ -133,13 +133,38 @@
     });
   }
   async function addCandidate(peer, candidate) {
-    // Candidates may arrive before SDP over HTTP or belong to a rolled-back
-    // offer. Never feed an old ICE generation into the accepted description.
+    if (!candidate || typeof candidate.candidate !== 'string' || candidate.candidate.length > 4096) throw new Error('Invalid ICE candidate.');
+    // Independent HTTP signals can deliver candidates before their SDP. Keep a
+    // bounded queue by ICE generation instead of dropping a future generation.
     const ufrag = candidate.usernameFragment;
     const active = peer.pc.remoteDescription?.sdp.match(/^a=ice-ufrag:(.+)$/gm)?.map(line => line.slice(12).trim()) ?? [];
-    if (ufrag && active.length && !active.includes(ufrag)) return;
-    try { await peer.pc.addIceCandidate(candidate); }
-    catch (e) { if (!peer.ignoreOffer) throw e; }
+    if (!peer.pc.remoteDescription || (ufrag && active.length && !active.includes(ufrag))) {
+      if (peer.candidates.length >= 128) throw new Error('Too many pending ICE candidates.');
+      peer.candidates.push(candidate);
+      return;
+    }
+    await peer.pc.addIceCandidate(candidate);
+  }
+  async function applySignal(peer, message) {
+    if (peers.get(peer.id) !== peer) return;
+    if (message.type === 'asset-request') {
+      if (message.payload?.action !== 'connect' || !peer.offerer) throw new Error('Invalid peer connection request.');
+      // ensurePeer installed the offerer's negotiation handler. Duplicate
+      // connection requests reuse it and cannot start a second offer.
+      return;
+    }
+    if (message.type === 'ice') { await addCandidate(peer, message.payload); return; }
+    if (message.type !== 'offer' && message.type !== 'answer') throw new Error('Unsupported peer signal.');
+    const description = message.payload;
+    if (description?.type !== message.type || typeof description.sdp !== 'string' || description.sdp.length > 65536) throw new Error('Invalid peer description.');
+    if ((description.type === 'offer') === peer.offerer) throw new Error('Unexpected peer negotiation role.');
+    await peer.pc.setRemoteDescription(description);
+    if (peers.get(peer.id) !== peer) return;
+    if (description.type === 'offer') {
+      await peer.pc.setLocalDescription();
+      signal(peer, peer.pc.localDescription.type, peer.pc.localDescription.toJSON());
+    }
+    for (const candidate of peer.candidates.splice(0)) await addCandidate(peer, candidate);
   }
   globalThis.ScrivPeer = Object.freeze({
     configure(options) {
@@ -154,31 +179,24 @@
       if (requested.has(key(fromDeviceId, hash))) return;
       const pending = { peer: fromDeviceId, hash, sent: false, timer: setTimeout(() => error(fromDeviceId, hash, 'Peer transfer timed out.'), 60000) };
       requested.set(key(fromDeviceId, hash), pending);
-      try { const peer = ensurePeer(fromDeviceId, true); flush(peer); }
+      try {
+        const peer = ensurePeer(fromDeviceId);
+        if (!peer.offerer && !peer.pc.remoteDescription && !peer.connectionRequested) {
+          peer.connectionRequested = true;
+          // A unique ID keeps native signaling deduplication from suppressing a
+          // later reconnection between the same two devices.
+          signal(peer, 'asset-request', { action: 'connect', requestId: peer.requestId });
+        }
+        flush(peer);
+      }
       catch (e) { error(fromDeviceId, hash, e.message); throw e; }
     },
     async handleSignal(message) {
       const peer = ensurePeer(message.fromDeviceId);
-      if (message.type === 'ice') {
-        if (!peer.pc.remoteDescription) {
-          if (peer.candidates.length >= 128) throw new Error('Too many pending ICE candidates.');
-          peer.candidates.push(message.payload);
-        } else await addCandidate(peer, message.payload);
-      } else if (message.type === 'offer' || message.type === 'answer') {
-        const description = message.payload;
-        if (description.type !== message.type || typeof description.sdp !== 'string' || description.sdp.length > 65536) throw new Error('Invalid peer description.');
-        // W3C perfect negotiation: an answer being applied already queues the
-        // connection back to stable, even before signalingState reflects it.
-        const readyForOffer = !peer.makingOffer && (peer.pc.signalingState === 'stable' || peer.isSettingRemoteAnswerPending);
-        const collision = description.type === 'offer' && !readyForOffer;
-        peer.ignoreOffer = identity.localeCompare(peer.id) < 0 && collision;
-        if (peer.ignoreOffer) return;
-        peer.isSettingRemoteAnswerPending = description.type === 'answer';
-        try { await peer.pc.setRemoteDescription(description); }
-        finally { peer.isSettingRemoteAnswerPending = false; }
-        for (const candidate of peer.candidates.splice(0)) await addCandidate(peer, candidate);
-        if (description.type === 'offer') { await peer.pc.setLocalDescription(); signal(peer, peer.pc.localDescription.type, peer.pc.localDescription.toJSON()); }
-      }
+      // Serialize SDP and candidate application per peer; network arrival is
+      // unordered, but no second handler can change a description mid-operation.
+      peer.signalQueue = peer.signalQueue.catch(() => {}).then(() => applySignal(peer, message));
+      return peer.signalQueue;
     },
     async provideAsset(peerId, hash, base64) {
       const peer = peers.get(peerId);

@@ -50,12 +50,17 @@ enum NativePeerSmoke {
                 "bytes": received.count,
                 "sha256": hash,
                 "signals": session.signalCount,
+                "connectRequests": session.connectRequestCount,
+                "offererOffers": session.offerCount,
+                "offererDeviceId": session.senderID,
+                "requesterDeviceId": session.receiverID,
+                "higherIDRequester": session.receiverID > session.senderID,
                 "elapsedSeconds": Date().timeIntervalSince(began),
                 "iceServers": 0,
                 "byteEquality": received == expected
             ]
             try JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted, .sortedKeys]).write(to: output.appendingPathComponent("result.json"), options: .atomic)
-            try Data("PASS: two native WKWebView bridges transferred \(received.count) bytes over a real WebRTC data channel. SHA-256 and byte equality verified. No cloud account or external ICE service was used.\n".utf8).write(to: output.appendingPathComponent("result.txt"), options: .atomic)
+            try Data("PASS: the higher-ID requester sent an explicit connection request through the native transport router; the lower-ID sender offered the connection. Two native WKWebView bridges transferred \(received.count) bytes over a real WebRTC data channel. SHA-256 and byte equality verified. No cloud account or external ICE service was used.\n".utf8).write(to: output.appendingPathComponent("result.txt"), options: .atomic)
             try? FileManager.default.removeItem(at: temporary)
             NSApp.terminate(nil)
             return true
@@ -76,12 +81,15 @@ private final class NativePeerSmokeSession {
     let sender = PeerMediaBridge()
     let receiver = PeerMediaBridge()
     private(set) var signalCount = 0
+    private(set) var connectRequestCount = 0
+    private(set) var offerCount = 0
     private var received: Data?
     private var failure: Error?
-    private let senderID = "native-peer-smoke-sender"
-    private let receiverID = "native-peer-smoke-receiver"
+    let senderID = "a-native-peer-smoke-sender"
+    let receiverID = "z-native-peer-smoke-receiver"
 
     func transfer(source: URL, expected: Data, hash: String) async throws -> Data {
+        guard senderID < receiverID else { throw ScrivError.invalid("The native smoke requester must have the higher device ID.") }
         sender.onError = { [weak self] error in self?.failure = error }
         receiver.onError = { [weak self] error in self?.failure = error }
         sender.onSignal = { [weak self] signal in
@@ -110,7 +118,7 @@ private final class NativePeerSmokeSession {
             try await Task.sleep(for: .milliseconds(50))
         }
         if let failure { throw failure }
-        guard let received, signalCount > 0 else { throw ScrivError.invalid("The native transfer completed without signaling evidence.") }
+        guard let received, signalCount > 0, connectRequestCount > 0, offerCount > 0 else { throw ScrivError.invalid("The native transfer completed without the required connection-request and sole-offerer evidence.") }
         return received
     }
 
@@ -119,8 +127,21 @@ private final class NativePeerSmokeSession {
             failure = ScrivError.invalid("Native peer smoke signaled an unexpected device.")
             return
         }
-        signalCount += 1
         let routed = PeerSignal(fromDeviceId: from, toDeviceId: to, type: signal.type, payload: signal.payload)
+        // Exercise the same classifier used by WorkspaceStore before forwarding
+        // the explicit connect action into the actual WKWebView bridge.
+        guard PeerMediaBridge.isTransportSignal(routed) else {
+            failure = ScrivError.invalid("Native peer smoke emitted a signal outside the transport route.")
+            return
+        }
+        if routed.type == "asset-request" {
+            guard from == receiverID, to == senderID else { failure = ScrivError.invalid("The connection request did not originate at the higher-ID requester."); return }
+            connectRequestCount += 1
+        } else if routed.type == "offer" {
+            guard from == senderID else { failure = ScrivError.invalid("The higher-ID requester attempted to create an offer."); return }
+            offerCount += 1
+        }
+        signalCount += 1
         Task { [weak self] in
             do { try await bridge.handleSignal(routed) }
             catch { self?.failure = error }

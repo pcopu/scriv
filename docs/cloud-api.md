@@ -73,6 +73,51 @@ room and does not constrain how many people may join a team.
 
 Peer signaling is `POST .../signals` `{toDeviceId,type:"offer"|"answer"|"ice"|"asset-request"|"asset-available",payload}` and the same JSON with `type:"signal",signalType:...` over socket. Receiver gets authenticated sender ID. Signaling contains no media bytes; local-only assets remain local until peer transfer or premium upload. Free solo's other authenticated devices may use HTTP `GET .../signals?deviceId=...&after=...` / POST to exchange signals. Signal messages expire after120s. Recipient must currently have access.
 
+### Deterministic WebRTC connection setup
+
+For each pair, the device with the lexicographically lower server-issued device
+ID is the sole initial SDP offerer. The other device answers. This role is
+independent of which device requests or supplies an image. Both endpoints use the
+fixed negotiated `scriv-media` data channel with ID `0`; simultaneous image
+requests share that connection instead of generating competing initial offers.
+
+If the higher-ID device needs a connection, it sends the following directed
+signal to the lower-ID device:
+
+```json
+{
+  "toDeviceId": "<lower device ID>",
+  "type": "asset-request",
+  "payload": {
+    "action": "connect",
+    "requestId": "<unique connection-attempt ID>"
+  }
+}
+```
+
+The connection request starts transport negotiation; it does not request an
+image or grant permission to serve one. The lower-ID device creates the offer
+even when it has no pending image request of its own. SDP `offer`/`answer` and
+`ice` messages then use the existing signaling route. Use a fresh `requestId`
+when rebuilding a closed connection so native signal deduplication does not
+discard a later legitimate attempt. Duplicate requests for the same attempt
+must not create competing offers.
+
+`asset-request` also carries discovery actions: `query` and `available` include
+the image `hash` and discovery `requestId`. Dispatch `action:"connect"` to the
+transport before applying those hash-based discovery checks. Actual image
+requests and bytes travel through the opened data channel and retain project
+hash authorization, size limits and digest verification.
+
+The cloud relays the bounded JSON control payload without interpreting these
+actions or choosing the offerer. It authenticates the sender, derives sender
+IDs from the session, verifies the recipient's unexpired/unrevoked session and
+checks both users' current project access. Same-account device exchange remains
+available for free personal projects. Exchange between different accounts still
+requires an active team subscription for both project accesses; the connection
+control action introduces no bypass. Each device can read only its own signal
+inbox, and the existing signal expiry and request limits also apply.
+
 ## Images
 
 `PUT /v1/projects/:id/assets/:sha256` with raw PNG/JPEG/WebP bytes, Content-Type, and `X-Scriv-Asset-Id` uploads immutable content-addressed media. Premium only, maximum25MiB/file, 10GiB/team default quota. SHA-256 is verified against bytes. `GET .../assets/:sha256` requires membership/ownership; `HEAD` returns the same metadata without bytes. No public bucket or permanent public links. `DELETE` removes a hosted replica (owner/admin). Metadata/tags/timed cues remain project items; uploading bytes does not mutate script. Download/export works during configured downgrade grace and is never made public.

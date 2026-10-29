@@ -78,8 +78,14 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
         } catch { if generation == current { requests.remove(hash) }; throw error }
     }
 
+    /// Discovery query/available messages stay with WorkspaceStore. Only the
+    /// explicit connect action joins SDP and ICE on the WebRTC transport path.
+    static func isTransportSignal(_ signal: PeerSignal) -> Bool {
+        ["offer", "answer", "ice"].contains(signal.type) || signal.type == "asset-request" && signal.payload["action"]?.string == "connect"
+    }
+
     func handleSignal(_ signal: PeerSignal) async throws {
-        guard let from = signal.fromDeviceId, !from.isEmpty, ["offer", "answer", "ice"].contains(signal.type), ready, let view else { return }
+        guard let from = signal.fromDeviceId, !from.isEmpty, Self.isTransportSignal(signal), ready, let view else { return }
         let payload = try JSONSerialization.jsonObject(with: ScrivJSON.encoder.encode(signal.payload))
         _ = try await view.callAsyncJavaScript("return await ScrivPeer.handleSignal(message);", arguments: ["message": ["fromDeviceId": from, "type": signal.type, "payload": payload]], in: nil, contentWorld: .page)
     }
