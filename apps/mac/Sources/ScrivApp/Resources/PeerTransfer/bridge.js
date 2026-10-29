@@ -33,7 +33,7 @@
     const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
     return Array.from(hash, b => b.toString(16).padStart(2, '0')).join('');
   }
-  function signal(peer, type, payload) { emit({ kind: 'signal', toDeviceId: peer.id, type, payload }); }
+  function signal(peer, type, payload) { if (peers.get(peer.id) === peer) emit({ kind: 'signal', toDeviceId: peer.id, type, payload }); }
   function flush(peer) {
     if (peer.channel?.readyState !== 'open') return;
     for (const pending of requested.values()) {
@@ -47,15 +47,19 @@
     if (channel.label !== 'scriv-media') { channel.close(); return; }
     if (peer.channel && peer.channel !== channel && peer.channel.readyState === 'open') { channel.close(); return; }
     peer.channel = channel; channel.binaryType = 'arraybuffer'; channel.bufferedAmountLowThreshold = 64 * 1024;
-    channel.onopen = () => { emit({ kind: 'connected', fromDeviceId: peer.id }); flush(peer); };
+    channel.onopen = () => { if (peers.get(peer.id) !== peer || peer.channel !== channel) return; emit({ kind: 'connected', fromDeviceId: peer.id }); flush(peer); };
     channel.onclose = () => {
-      if (peer.channel !== channel) return;
+      if (peers.get(peer.id) !== peer || peer.channel !== channel) return;
       for (const pending of Array.from(requested.values())) if (pending.peer === peer.id) error(peer.id, pending.hash, 'Peer disconnected. Try another device or the hosted copy.');
       peer.receiving = null;
+      peers.delete(peer.id); peer.pc.close();
+      emit({ kind: 'disconnected', fromDeviceId: peer.id });
     };
-    channel.onerror = () => emit({ kind: 'error', fromDeviceId: peer.id, message: 'The encrypted peer channel failed.' });
+    channel.onerror = () => { if (peers.get(peer.id) === peer) emit({ kind: 'error', fromDeviceId: peer.id, message: 'The encrypted peer channel failed.' }); };
     channel.onmessage = event => {
+      if (peers.get(peer.id) !== peer || peer.channel !== channel) return;
       peer.receiveQueue = peer.receiveQueue.then(() => receive(peer, event.data)).catch(e => {
+        if (peers.get(peer.id) !== peer) return;
         error(peer.id, peer.receiving?.hash ?? '', e.message); peer.receiving = null; channel.close();
       });
     };
@@ -66,21 +70,23 @@
     if (peers.size >= 8) throw new Error('Too many active peer transfers.');
     const peer = { id, pc: new RTCPeerConnection({ iceServers }), channel: null, makingOffer: false, ignoreOffer: false, isSettingRemoteAnswerPending: false, candidates: [], receiving: null, receiveQueue: Promise.resolve(), sendQueue: Promise.resolve() };
     peers.set(id, peer);
-    peer.pc.onicecandidate = event => { if (event.candidate) signal(peer, 'ice', event.candidate.toJSON()); };
-    peer.pc.ondatachannel = event => attach(peer, event.channel);
+    peer.pc.onicecandidate = event => { if (event.candidate && peers.get(id) === peer) signal(peer, 'ice', event.candidate.toJSON()); };
+    peer.pc.ondatachannel = event => { if (peers.get(id) === peer) attach(peer, event.channel); else event.channel.close(); };
     peer.pc.onnegotiationneeded = async () => {
       // This connection has one fixed negotiated channel. A peer constructed by
       // incoming ICE/SDP must answer that offer instead of racing it with another
       // initial offer. A requester starts negotiation once; failed peers rebuild.
-      if (!initiator || peer.pc.localDescription || peer.pc.remoteDescription) return;
+      if (peers.get(id) !== peer || !initiator || peer.pc.localDescription || peer.pc.remoteDescription) return;
       try { peer.makingOffer = true; await peer.pc.setLocalDescription(); signal(peer, peer.pc.localDescription.type, peer.pc.localDescription.toJSON()); }
       catch (e) { emit({ kind: 'error', fromDeviceId: id, message: e.message }); }
       finally { peer.makingOffer = false; }
     };
     peer.pc.onconnectionstatechange = () => {
+      if (peers.get(id) !== peer) return;
       if (['failed', 'closed'].includes(peer.pc.connectionState)) {
         for (const pending of Array.from(requested.values())) if (pending.peer === id) error(id, pending.hash, 'Peer unavailable. TURN may be needed on this network.');
-        peer.pc.close(); peers.delete(id);
+        peers.delete(id); peer.pc.close();
+        emit({ kind: 'disconnected', fromDeviceId: id });
       }
     };
     // A negotiated channel has the same ID at both ends, including when two Macs
@@ -192,8 +198,9 @@
     disconnect() {
       for (const pending of requested.values()) clearTimeout(pending.timer);
       requested.clear();
-      for (const peer of peers.values()) { peer.channel?.close(); peer.pc.close(); }
+      const closing = Array.from(peers.values());
       peers.clear();
+      for (const peer of closing) { peer.channel?.close(); peer.pc.close(); }
     }
   });
   emit({ kind: 'ready' });

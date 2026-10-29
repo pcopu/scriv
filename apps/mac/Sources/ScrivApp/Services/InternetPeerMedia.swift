@@ -127,6 +127,7 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
             }
             requests.remove(hash); status = "Image received and verified"; onAsset?(hash, data)
         case "connected": status = "Encrypted peer connection"
+        case "disconnected": status = "Peer disconnected — ready to reconnect"
         case "error":
             if let hash = body["hash"] as? String { requests.remove(hash) }
             let text = body["message"] as? String ?? "Peer image transfer failed."

@@ -112,18 +112,21 @@ struct PlaybackBar: View {
 struct GenerationBar: View {
     @EnvironmentObject private var store: WorkspaceStore
     @ObservedObject var controller: CodexController
+    private var savedPrompt: String { (store.selectedCue ?? store.currentCue)?.prompt ?? "" }
+    private var hasPrompt: Bool { !store.generationPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !savedPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     var body: some View {
         HStack(alignment: .center, spacing: 10) {
             TextField("Describe the image for this moment…", text: $store.generationPrompt, axis: .vertical)
                 .font(.system(size: 12)).textFieldStyle(.plain).lineLimit(1...3)
                 .accessibilityLabel("Image generation prompt")
+                .help(savedPrompt.isEmpty ? "Describe the image for this moment" : "Leave blank to use this image's saved direction: " + savedPrompt)
             Button { store.generateImage(cueId: store.selectedCue?.id ?? store.currentCue?.id) } label: {
                 HStack(spacing: 6) {
                     if controller.isGenerating { ProgressView().controlSize(.mini).tint(.white) }
                     else { Image(systemName: "sparkles") }
                     Text(controller.isGenerating ? "Generating" : "Generate image")
                 }.font(.system(size: 12, weight: .semibold)).padding(.vertical, 5)
-            }.buttonStyle(.borderedProminent).disabled(controller.isGenerating || store.generationPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }.buttonStyle(.borderedProminent).disabled(controller.isGenerating || !hasPrompt)
                 .help(controller.isConnected ? "Generate with Codex on this Mac" : "Connect Codex on this Mac to generate")
         }.padding(10).background(ScrivTheme.inset.opacity(0.4), in: RoundedRectangle(cornerRadius: 10))
     }

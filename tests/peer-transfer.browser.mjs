@@ -101,3 +101,19 @@ test('offline asset, invalid hash and unsolicited transfer fail explicitly', {ti
     assert.ok(rejected);assert.equal(p.events.alice.filter(e=>e.kind==='asset').length,0);
   } finally {await p.close();}
 });
+test('a closed peer reconnects without stale channel callbacks cancelling its new transfer', {timeout:30000}, async () => {
+  const p=await pair();
+  try {
+    const first=randomBytes(48213), firstHash=sha(first);p.assets.bob.set(firstHash,first);
+    await p.pages.alice.evaluate(hash=>ScrivPeer.requestAsset(hash,'bob'),firstHash);
+    await waitFor(()=>p.events.alice.find(e=>e.kind==='asset'&&e.hash===firstHash));
+    await p.pages.bob.evaluate(()=>{ScrivPeer.disconnect();ScrivPeer.configure({deviceId:'bob',iceServers:[]});});
+    await waitFor(()=>p.events.alice.find(e=>e.kind==='disconnected'));
+    const next=randomBytes(67291), nextHash=sha(next);p.assets.bob.set(nextHash,next);
+    await p.pages.alice.evaluate(hash=>ScrivPeer.requestAsset(hash,'bob'),nextHash);
+    const received=await waitFor(()=>p.events.alice.find(e=>e.kind==='asset'&&e.hash===nextHash));
+    assert.deepEqual(Buffer.from(received.base64,'base64'),next);
+    assert.deepEqual(p.failures,[]);
+    assert.equal(p.events.alice.filter(e=>e.kind==='connected').length,2);
+  } finally {await p.close();}
+});
