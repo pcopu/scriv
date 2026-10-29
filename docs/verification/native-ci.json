@@ -1,0 +1,134 @@
+{
+  "verifiedAt": "2026-10-29",
+  "repository": "https://github.com/pcopu/scriv",
+  "runtimeCommit": "0eb779b8e07935235d4584b09abe05bd0504be01",
+  "workflow": {
+    "id": 40921544866,
+    "url": "https://github.com/pcopu/scriv/actions/runs/40921544866",
+    "conclusion": "success",
+    "completedAt": "2026-10-29T17:40:07Z",
+    "jobs": {
+      "cloud": {
+        "id": 123616157671,
+        "conclusion": "success",
+        "functionalTestsPassed": 24,
+        "loadTestSkippedInDefaultSuite": true,
+        "designFixtureTestsPassed": 3
+      },
+      "peer": {
+        "id": 123616157656,
+        "conclusion": "success",
+        "browserTestsPassed": 6
+      },
+      "mac": {
+        "id": 123616157151,
+        "conclusion": "success",
+        "runner": "macos-15-intel",
+        "nativeCoreTestsPassed": 28,
+        "nativeCoreTestsFailed": 0,
+        "coreTestBreakdown": {
+          "Fountain": 3,
+          "Persistence": 7,
+          "Reconciliation": 7,
+          "Timing": 11
+        }
+      }
+    }
+  },
+  "artifact": {
+    "id": 12918682797,
+    "name": "scriv-macos-15-intel-build",
+    "url": "https://github.com/pcopu/scriv/actions/runs/40921544866/artifacts/12918682797",
+    "bytes": 15276354,
+    "sha256": "dadf432fba4a4d087e46862e3224bbb7e34f3278513f08fad745f7b50d7f1115",
+    "matchesGitHubDigest": true
+  },
+  "application": {
+    "pathInArtifact": "Scriv-macOS.zip",
+    "bytes": 10525097,
+    "sha256": "063feebcb98710fb0f1053fd2381b2f7467f08297699f41c9ce670baaabe9c56",
+    "version": "0.1.0",
+    "build": "1",
+    "architectures": [
+      "arm64",
+      "x86_64"
+    ],
+    "runtimeTestArchitecture": "x86_64",
+    "signature": "ad-hoc",
+    "signatureVerificationPassed": true,
+    "productionNotarizationCompleted": false,
+    "packagedBridgeMatchesRuntimeCommit": true,
+    "packagedBridgeSha256": "bf048c9888b4007e3eeed2cf99b890dcbfa47734ff380b133f7be951fbcd48b1"
+  },
+  "nativePeerSmoke": {
+    "byteEquality": true,
+    "bytes": 2150385,
+    "connectRequests": 1,
+    "elapsedSeconds": 6.905220985412598,
+    "higherIDRequester": true,
+    "iceServers": 0,
+    "offererDeviceId": "a-native-peer-smoke-sender",
+    "offererOffers": 1,
+    "requesterDeviceId": "z-native-peer-smoke-receiver",
+    "sha256": "4eabd5b2f94eb1e42cab254343fccb86f4c9c3e4c587811719fa1147d0eae415",
+    "signals": 5,
+    "transport": "WKWebView RTCPeerConnection"
+  },
+  "screenshots": [
+    {
+      "path": "docs/screenshots/01-script.png",
+      "view": "Script",
+      "width": 1440,
+      "height": 970,
+      "bytes": 593036,
+      "sha256": "ac7aeae4015a6a40e70024107de0383754d75a837a29b2324f56d08db0ba072e"
+    },
+    {
+      "path": "docs/screenshots/02-characters.png",
+      "view": "Characters",
+      "width": 1440,
+      "height": 970,
+      "bytes": 552357,
+      "sha256": "530bc4c94d7e17d0af17028c73ffa03611c4b59445962bd545ca5537992e3c12"
+    },
+    {
+      "path": "docs/screenshots/03-storyboard.png",
+      "view": "Storyboard",
+      "width": 1440,
+      "height": 970,
+      "bytes": 1597838,
+      "sha256": "916351c5e41fc0be9fb678edb9471c5fb6566f61b9c904173bc3026d0bc603e3"
+    }
+  ],
+  "visualReview": {
+    "completed": true,
+    "finalCapturesByteIdenticalToReviewed03cc3d2Captures": true,
+    "checks": [
+      "Script rows and shared forward direction rails",
+      "Image preview and layered playback editor",
+      "Character links, portraits and tagged images",
+      "Storyboard images, duration pills and word pills",
+      "Discussion launcher clears generation controls",
+      "Single scene/speaker menu indicators and readable arrow/text clearance"
+    ]
+  },
+  "localBrowserStress": {
+    "sourceCommit": "0eb779b8e07935235d4584b09abe05bd0504be01",
+    "command": "PLAYWRIGHT_BROWSERS_PATH=<installed browsers> SCRIV_PEER_CPU=4 SCRIV_PEER_REPEATS=5 node --test tests/peer-transfer.browser.mjs",
+    "playwrightVersion": "1.56.1",
+    "cpuThrottlingRate": 4,
+    "simultaneousAndStaggeredScenarios": 25,
+    "lostSignalRecoveryScenarios": 5,
+    "testsPassed": 6,
+    "testsFailed": 0,
+    "durationMs": 11198.968133
+  },
+  "releaseBoundary": {
+    "productionDeploymentPerformed": false,
+    "liveStripeCheckoutVerified": false,
+    "liveCodexGenerationVerified": false,
+    "productionTURNVerified": false,
+    "appleSiliconRuntimeExecuted": false,
+    "handoff": "docs/deployment.md"
+  }
+}
