@@ -61,6 +61,14 @@ final class TimingTests: XCTestCase {
         XCTAssertThrowsError(try TimingEngine.moveBoundary(&project, leftCueId: "cue-08a", rightCueId: "cue-08c", toMs: 4500))
         XCTAssertThrowsError(try TimingEngine.moveBoundary(&project, leftCueId: "cue-08a", rightCueId: "cue-08b", toMs: 3000))
     }
+    func testMiddleWordDragDoesNotSilentlyMoveUnselectedWords() throws {
+        var project = ScrivProject.example()
+        let original = project
+        XCTAssertThrowsError(try TimingEngine.moveWords(&project,wordIds:["word-08-6"],fromCueId:"cue-08b",toCueId:"cue-08c"))
+        XCTAssertEqual(project,original)
+        XCTAssertThrowsError(try TimingEngine.moveWords(&project,wordIds:["word-08-6"],fromCueId:"cue-08b",toCueId:"cue-08a"))
+        XCTAssertEqual(project,original)
+    }
     func testWordIdentitySurvivesRepeatedWordsAndInsertion() {
         let original = TimingEngine.retimeWords(text: "the cat and the dog", durationMs: 2000)
         let next = TimingEngine.retimeWords(text: "the small cat and the dog", durationMs: 3000, preserving: original)

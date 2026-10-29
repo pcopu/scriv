@@ -12,7 +12,13 @@ struct ScrivApp: App {
                 .frame(minWidth: 1080, minHeight: 720)
                 .tint(ScrivTheme.accent)
                 .onOpenURL { store.handleOpenURL($0) }
-                .task { await NativeScreenshotRunner.runIfRequested(store: store) }
+                .task {
+                    delegate.flushBeforeTermination = {
+                        await store.flushPendingSaves()
+                        return store.statusMessage != "Save failed"
+                    }
+                    await NativeScreenshotRunner.runIfRequested(store: store)
+                }
         }
         .defaultSize(width: 1440, height: 1000)
         .windowStyle(.hiddenTitleBar)
@@ -51,12 +57,31 @@ struct ScrivApp: App {
     }
 }
 
+@MainActor
 final class ScrivApplicationDelegate: NSObject, NSApplicationDelegate {
+    var flushBeforeTermination: (() async -> Bool)?
+    private var terminating = false
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        guard !terminating else { return .terminateLater }
+        terminating = true
+        NotificationCenter.default.post(name: .scrivFinishEditing, object: nil)
+        sender.keyWindow?.makeFirstResponder(nil)
+        Task {
+            let saved = await flushBeforeTermination?() ?? true
+            if !saved { terminating = false }
+            sender.reply(toApplicationShouldTerminate: saved)
+        }
+        return .terminateLater
+    }
+}
+
+extension Notification.Name {
+    static let scrivFinishEditing = Notification.Name("ScrivFinishEditing")
 }
 
 /// CI captures the actual native view tree. This does not use screen recording,
@@ -81,7 +106,12 @@ enum NativeScreenshotRunner {
             let views: [(WorkspaceTab, String)] = [(.script, "01-script.png"), (.characters, "02-characters.png"), (.storyboard, "03-storyboard.png")]
             for (tab, name) in views {
                 store.tab = tab
-                if tab == .script { store.seek(toMs: 29400); store.selectedEntryID = store.project.activeEntry(at: 29400, sceneId: store.selectedSceneID)?.id; store.selectedCueID = store.project.activeCue(at: 29400, sceneId: store.selectedSceneID)?.id }
+                if tab == .script {
+                    let moment = min(5000, max(0, store.sceneDurationMs - 1))
+                    store.seek(toMs: Double(moment))
+                    store.selectedEntryID = store.project.activeEntry(at: moment, sceneId: store.selectedSceneID)?.id
+                    store.selectedCueID = store.project.activeCue(at: moment, sceneId: store.selectedSceneID)?.id
+                }
                 if tab == .characters { store.selectedCharacterID = store.project.characters.first(where: { $0.name.contains("Franklin") })?.id ?? store.project.characters.first?.id }
                 try await Task.sleep(for: .seconds(2))
                 guard let content = window.contentView else { throw ScrivError.unavailable("The native window has no content view.") }

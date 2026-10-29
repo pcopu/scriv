@@ -121,8 +121,15 @@ public enum TimingEngine {
         guard selected.count == wordIds.count, selected.allSatisfy({ $0.startMs >= from.startMs && $0.startMs < from.endMs }) else { throw ScrivError.invalid("All selected words must belong to the source image.") }
         let indices = words.indices.filter { wordIds.contains(words[$0].id) }
         guard let first = indices.first, let last = indices.last, last - first + 1 == indices.count else { throw ScrivError.invalid("Drag a contiguous phrase; source order is always preserved.") }
-        if from.endMs == to.startMs { try moveBoundary(&project, leftCueId: from.id, rightCueId: to.id, toMs: selected.first!.startMs) }
-        else if to.endMs == from.startMs { try moveBoundary(&project, leftCueId: to.id, rightCueId: from.id, toMs: selected.last!.endMs) }
+        let sourceWords = words.filter { $0.startMs >= from.startMs && $0.startMs < from.endMs }
+        if from.endMs == to.startMs {
+            guard sourceWords.last?.id == selected.last?.id else { throw ScrivError.invalid("Select through the last word in this image to move the phrase forward without moving unselected words.") }
+            try moveBoundary(&project, leftCueId: from.id, rightCueId: to.id, toMs: selected.first!.startMs)
+        }
+        else if to.endMs == from.startMs {
+            guard sourceWords.first?.id == selected.first?.id else { throw ScrivError.invalid("Select from the first word in this image to move the phrase backward without moving unselected words.") }
+            try moveBoundary(&project, leftCueId: to.id, rightCueId: from.id, toMs: selected.last!.endMs)
+        }
         else { throw ScrivError.invalid("Words can move only to the previous or next image.") }
     }
     public static func absoluteWords(_ project: ScrivProject, sceneId: String) -> [TimedWord] {

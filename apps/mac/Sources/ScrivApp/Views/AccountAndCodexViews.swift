@@ -17,6 +17,7 @@ struct AccountPopover: View {
                 }
                 Divider()
                 Text(store.syncStatus).font(.caption).foregroundStyle(.secondary)
+                Text(store.peerTransferStatus).font(.caption).foregroundStyle(.secondary)
                 Button("Sync this script") { store.syncProject() }.buttonStyle(.borderedProminent)
                 if store.hasConflicts {
                     Text("Your local draft is safe. Export a copy before opening a different cloud revision.").font(.caption).foregroundStyle(.orange)

@@ -14,8 +14,9 @@ struct TeamSheet: View {
     @State private var removalName = ""
     private var team: CloudTeam? { store.teams.first { $0.id == selectedTeamID } }
     private var canManage: Bool { team?.role == "owner" || team?.role == "admin" }
-    private var members: [JSONValue] { store.teamDetails?["members"]?.array ?? [] }
-    private var links: [JSONValue] { store.teamDetails?["joinLinks"]?.array ?? [] }
+    private var details: JSONValue? { store.teamDetails?["team"]?["id"]?.string == selectedTeamID ? store.teamDetails : nil }
+    private var members: [JSONValue] { details?["members"]?.array ?? [] }
+    private var links: [JSONValue] { details?["joinLinks"]?.array ?? [] }
     var body: some View {
         VStack(alignment: .leading, spacing: 17) {
             HStack {
@@ -42,7 +43,12 @@ struct TeamSheet: View {
         }.padding(24).frame(width: 710, height: 680)
             .onAppear { if let id = store.teams.first?.id { selectedTeamID = id; store.loadTeamDetails(teamId: id) } }
             .onChange(of: selectedTeamID) { _, id in store.lastJoinLink = nil; if !id.isEmpty { store.loadTeamDetails(teamId: id) } }
-            .onChange(of: store.teams) { _, teams in if selectedTeamID.isEmpty, let id = teams.first?.id { selectedTeamID = id } }
+            .onChange(of: store.teams) { old, teams in
+                let previousIDs = Set(old.map(\.id))
+                if let added = teams.first(where: { !previousIDs.contains($0.id) }) { selectedTeamID = added.id }
+                else if !teams.contains(where: { $0.id == selectedTeamID }) { selectedTeamID = teams.first?.id ?? "" }
+            }
+            .onChange(of: store.lastJoinLink) { _, link in if link != nil, !selectedTeamID.isEmpty { store.loadTeamDetails(teamId: selectedTeamID) } }
             .alert("Create a team", isPresented: $creating) {
                 TextField("Team name", text: $teamName)
                 Button("Cancel", role: .cancel) {}

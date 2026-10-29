@@ -57,7 +57,7 @@ struct StoryboardView: View {
                     }.onEnded { _ in selecting = false; marquee = nil })
             }
             HStack(spacing: 20) {
-                Text("Select words or drag a marquee. Move them to an adjacent image to move the cut.")
+                Text("Select words or drag a marquee. Move the last words forward, or the first words back, to shift the cut.")
                     .font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(2).frame(maxWidth: .infinity, alignment: .leading)
                 PlaybackBar(compact: true).frame(width: 430)
             }.padding(.horizontal, 22).padding(.vertical, 14).background(.regularMaterial)
@@ -133,16 +133,16 @@ private struct StoryboardCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 9) {
             ZStack(alignment: .topTrailing) {
-                AssetImageView(url: asset.flatMap { store.assetURL($0) }, title: cue.label)
+                AssetImageView(url: asset.flatMap { store.assetURL($0) }, title: cue.label, unavailableText: asset == nil ? nil : "Image not on this Mac")
                     .aspectRatio(1.6, contentMode: .fit)
                     .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(dropTarget ? ScrivTheme.accent : cue.id == store.selectedCueID ? ScrivTheme.accent.opacity(0.7) : Color.clear, lineWidth: dropTarget ? 3 : 2))
                     .measureFrame("cue:" + cue.id, in: coordinateSpace)
                     .onTapGesture { store.selectedCueID = cue.id; store.seek(toMs: Double(cue.startMs)) }
-                DurationPill(milliseconds: max(1, cue.durationMs + Int(dragDelta * 20)), dark: true, editable: adjacent != nil) { duration in resize(to: duration) }
+                DurationPill(milliseconds: max(1, cue.durationMs + Int(dragDelta * 20)), dark: true, editable: canResize) { duration in resize(to: duration) }
                     .padding(10)
-                    .simultaneousGesture(DragGesture(minimumDistance: 5).onChanged { dragDelta = $0.translation.width }.onEnded { value in
+                    .highPriorityGesture(DragGesture(minimumDistance: 5).onChanged { dragDelta = $0.translation.width }.onEnded { value in
                         dragDelta = 0; resize(to: cue.durationMs + Int(value.translation.width * 20))
-                    })
+                    }, including: canResize ? .all : .none)
                     .help("Drag left or right to transfer time with an adjacent image")
                 if hovering {
                     HStack {
@@ -153,6 +153,7 @@ private struct StoryboardCard: View {
             }
             .onHover { hovering = $0 }
             .contextMenu {
+                if let asset, store.assetURL(asset) == nil { Button("Fetch image", systemImage: "arrow.down.circle") { store.downloadImage(asset) } }
                 Button("Import image…", systemImage: "photo.badge.plus") { store.importImage(cueId: cue.id) }
                 Button("Generate image", systemImage: "sparkles") { store.generateImage(cueId: cue.id) }
                 Button("Split image in half", systemImage: "scissors") { store.seek(toMs: Double(cue.startMs + cue.durationMs / 2)); store.splitCue(cue.id) }
@@ -196,7 +197,9 @@ private struct StoryboardCard: View {
         return store.sceneCues[index + 1]
     }
     private var adjacent: ImageCue? { nextCue ?? previousCue }
+    private var canResize: Bool { adjacent != nil && store.lockedByOther(cue.id) == nil && adjacent.map { store.lockedByOther($0.id) == nil } == true }
     private func resize(to duration: Int) {
+        guard canResize else { return }
         if let next = nextCue, next.startMs == cue.endMs { store.moveBoundary(leftId: cue.id, rightId: next.id, toMs: cue.startMs + max(1, duration)) }
         else if let previous = previousCue, previous.endMs == cue.startMs { store.moveBoundary(leftId: previous.id, rightId: cue.id, toMs: cue.endMs - max(1, duration)) }
     }

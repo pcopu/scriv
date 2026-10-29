@@ -7,6 +7,7 @@ struct AssetImageView: View {
     var title: String = "Storyboard image"
     var cornerRadius: CGFloat = 12
     var fill = true
+    var unavailableText: String?
     @State private var loaded: NSImage?
     var body: some View {
         GeometryReader { proxy in
@@ -21,7 +22,7 @@ struct AssetImageView: View {
                 } else {
                     VStack(spacing: 9) {
                         Image(systemName: "photo").font(.system(size: 29, weight: .ultraLight))
-                        Text(url == nil ? "Add an image" : "Image unavailable on this Mac").font(.system(size: 12, weight: .medium))
+                        Text(unavailableText ?? (url == nil ? "Add an image" : "Image unavailable on this Mac")).font(.system(size: 12, weight: .medium))
                     }.foregroundStyle(.secondary)
                 }
             }

@@ -18,7 +18,8 @@ struct LayerTimelineView: View {
                     Button { zoom = min(2.5, zoom * 1.25) } label: { Image(systemName: "plus") }.buttonStyle(.plain).accessibilityLabel("Zoom timeline in")
                 }.font(.system(size: 11)).foregroundStyle(ScrivTheme.accent)
             }
-            HStack(alignment: .top, spacing: 0) {
+            ScrollView(.vertical, showsIndicators: laneCount > 4) {
+                HStack(alignment: .top, spacing: 0) {
                 VStack(spacing: 5) {
                     Color.clear.frame(height: 22)
                     layerLabel("Images", symbol: "photo", height: 55)
@@ -34,7 +35,8 @@ struct LayerTimelineView: View {
                         withAnimation(.linear(duration: 0.2)) { proxy.scrollTo(id, anchor: .center) }
                     }
                 }
-            }
+                }
+            }.frame(maxHeight: 22 + 55 + 40 + directionHeight + 32 + 20)
             .background(ScrivTheme.inset.opacity(0.3), in: RoundedRectangle(cornerRadius: 10))
             .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(ScrivTheme.hairline.opacity(0.3)))
             overview.frame(height: 20)
@@ -46,7 +48,7 @@ struct LayerTimelineView: View {
             Spacer(minLength: 0)
         }
     }
-    private var directionHeight: CGFloat { CGFloat(min(4, max(1, laneCount))) * 28 + 3 }
+    private var directionHeight: CGFloat { CGFloat(max(1, laneCount)) * 28 + 3 }
     private var laneCount: Int {
         var ends: [Int] = []
         for entry in store.sceneEntries where entry.kind == .direction {
@@ -162,7 +164,7 @@ private struct TimelineCanvas: View {
                 let entry = placement.entry, start = store.project.startMs(of: entry.id)
                 TimelineBlock(title: entry.text, subtitle: "\(ScrivFormat.time(start)) – \(ScrivFormat.time(start + entry.coverageDurationMs))", color: ScrivTheme.color(entry.color))
                     .frame(width: max(20, CGFloat(entry.coverageDurationMs) * scale - 2), height: 25)
-                    .offset(x: CGFloat(start) * scale, y: CGFloat(placement.lane % 4) * 28)
+                    .offset(x: CGFloat(start) * scale, y: CGFloat(placement.lane) * 28)
                     .onTapGesture { store.selectEntry(entry.id) }
             }
         }
@@ -232,5 +234,6 @@ private struct CutHandle: View {
             .help("Drag the cut to transfer time between images")
             .accessibilityLabel("Cut between \(left.label) and \(right.label)")
             .accessibilityAdjustableAction { value in store.moveBoundary(leftId: left.id, rightId: right.id, toMs: left.endMs + (value == .increment ? 100 : -100)) }
+            .disabled(store.lockedByOther(left.id) != nil || store.lockedByOther(right.id) != nil)
     }
 }

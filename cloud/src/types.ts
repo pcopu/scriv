@@ -32,6 +32,6 @@ export type ItemKind = 'scene' | 'entry' | 'character' | 'image' | 'cue';
 export interface Item { id: string; kind: ItemKind; version: number; data: Record<string, unknown>; deleted: boolean }
 export interface Lease { itemId: string; sessionId: string; token: string; fence: number; expiresAt: number; epoch: number; userId: string; name: string }
 export interface Operation { op: 'put' | 'delete'; id: string; kind?: ItemKind; data?: Record<string, unknown>; expectedVersion: number; lease?: {token: string; fence: number} }
-export interface Command { commandId: string; sessionId: string; epoch: number; label: string; operations: Operation[] }
+export interface Command { commandId: string; sessionId: string; epoch: number; expectedTimingVersion?: number; label: string; operations: Operation[] }
 export interface Change { id: string; before: Item | null; after: Item }
 export interface ProjectEvent { seq: number; epoch: number; commandId: string; actorId: string; kind: string; at: number; changes: Change[]; data: Record<string, unknown> }

@@ -98,12 +98,21 @@ struct ScriptEditorView: View {
     }
     private var footer: some View {
         HStack(spacing: 10) {
-            Image(systemName: store.isSyncing ? "arrow.triangle.2.circlepath" : "checkmark.circle.fill")
-                .foregroundStyle(store.isSyncing ? ScrivTheme.secondary : Color.green).font(.system(size: 11))
+            Image(systemName: saveSymbol)
+                .foregroundStyle(saveColor).font(.system(size: 11)).help(store.statusMessage + (store.hasConflicts ? " · Cloud changes need review" : ""))
             Text("\(store.sceneEntries.count) entries · \(ScrivFormat.duration(store.sceneDurationMs))").font(.system(size: 11)).foregroundStyle(.secondary)
             Spacer(minLength: 0)
             Toggle("Follow playback", isOn: $store.followPlayback).toggleStyle(.switch).controlSize(.mini).font(.system(size: 11))
         }.padding(.horizontal, 18).padding(.vertical, 12)
+    }
+    private var saveSymbol: String {
+        if store.statusMessage == "Save failed" || store.hasConflicts { return "exclamationmark.circle.fill" }
+        return store.isSyncing || store.statusMessage == "Saving…" ? "arrow.triangle.2.circlepath" : "checkmark.circle.fill"
+    }
+    private var saveColor: Color {
+        if store.statusMessage == "Save failed" { return .red }
+        if store.hasConflicts { return .orange }
+        return store.isSyncing || store.statusMessage == "Saving…" ? ScrivTheme.secondary : .green
     }
 }
 
@@ -127,7 +136,7 @@ private struct ScriptRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
             VStack(spacing: 5) {
-                DurationPill(milliseconds: entry.ownedDurationMs) { store.setDuration(entry.id, seconds: Double($0) / 1000) }
+                DurationPill(milliseconds: entry.ownedDurationMs, editable: store.lockedByOther(entry.id) == nil) { store.setDuration(entry.id, seconds: Double($0) / 1000) }
                 Text(ScrivFormat.time(start)).font(.system(size: compact ? 10 : 11, design: .monospaced)).foregroundStyle(.secondary)
             }.frame(width: compact ? 65 : 72).padding(.top, 2)
             Color.clear.frame(width: compact ? 12 : 60)
@@ -174,11 +183,12 @@ private struct ScriptRow: View {
             Button("Discuss this \(direction ? "direction" : "line")", systemImage: "bubble.left") { store.loadDiscussion(itemId: entry.id); store.showDiscussion = true }
             Button("Play from here", systemImage: "play") { store.seek(toMs: Double(start)); if !store.isPlaying { store.togglePlayback() } }
             Divider()
-            Button("Move up", systemImage: "arrow.up") { store.moveEntry(entry.id, offset: -1) }
-            Button("Move down", systemImage: "arrow.down") { store.moveEntry(entry.id, offset: 1) }
-            Button("Delete entry", systemImage: "trash", role: .destructive) { store.deleteEntry(entry.id) }
+            Button("Move up", systemImage: "arrow.up") { store.moveEntry(entry.id, offset: -1) }.disabled(store.lockedByOther(entry.id) != nil)
+            Button("Move down", systemImage: "arrow.down") { store.moveEntry(entry.id, offset: 1) }.disabled(store.lockedByOther(entry.id) != nil)
+            Button("Delete entry", systemImage: "trash", role: .destructive) { store.deleteEntry(entry.id) }.disabled(store.lockedByOther(entry.id) != nil)
         }
         .onDisappear { if isEditing { finishEdit() } }
+        .onReceive(NotificationCenter.default.publisher(for: .scrivFinishEditing)) { _ in finishEdit() }
         .onChange(of: editingID) { old, new in
             if old == entry.id && new != entry.id {
                 editDebounce?.cancel(); store.commitText(entry.id, text: draft); store.endEdit(entry.id)
@@ -203,20 +213,19 @@ private struct ScriptRow: View {
                     ForEach(store.project.characters) { character in
                         Button(character.name) { store.setEntryCharacter(entry.id, characterId: character.id) }
                     }
-                } label: { Image(systemName: "chevron.down").font(.system(size: 8)) }.menuStyle(.borderlessButton).fixedSize()
+                } label: { Image(systemName: "chevron.down").font(.system(size: 8)) }.menuStyle(.borderlessButton).fixedSize().disabled(store.lockedByOther(entry.id) != nil)
                 Spacer()
-                Button { beginEdit() } label: { Image(systemName: "pencil").font(.system(size: 10)) }.buttonStyle(.plain).foregroundStyle(.secondary).help("Edit line")
+                Button { beginEdit() } label: { Image(systemName: "pencil").font(.system(size: 10)) }.buttonStyle(.plain).foregroundStyle(.secondary).help("Edit line").disabled(store.lockedByOther(entry.id) != nil)
             }
         }
     }
     private func beginEdit() {
-        guard !acquiring else { return }
+        guard !acquiring, !isEditing, store.lockedByOther(entry.id) == nil else { return }
         acquiring = true
         Task {
             let allowed = await store.beginEdit(entry.id)
             acquiring = false
             guard allowed else { return }
-            if let old = editingID, old != entry.id { store.endEdit(old) }
             draft = entry.text; editingID = entry.id; isFocused = true
         }
     }
@@ -251,6 +260,7 @@ private struct DirectionRailOverlay: View {
                         Circle().fill(color).frame(width: 9, height: 9).position(x: x, y: top).allowsHitTesting(false)
                         Button { store.selectEntry(entry.id) } label: { Circle().fill(color).frame(width: selected ? 11 : 8, height: selected ? 11 : 8).padding(8).contentShape(Circle()) }
                             .buttonStyle(.plain).position(x: x, y: end)
+                            .disabled(store.lockedByOther(entry.id) != nil)
                             .gesture(DragGesture(minimumDistance: selected ? 0 : 8).onChanged { value in
                                 store.selectEntry(entry.id)
                                 // Location is measured in the local handle; use the initial baseline plus translation.
