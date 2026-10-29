@@ -5,12 +5,12 @@ final class TimingTests: XCTestCase {
     func testSampleAndBlankAreValid() throws {
         try TimingEngine.validate(.example())
         try TimingEngine.validate(.blank())
-        XCTAssertEqual(ScrivProject.example().durationMs(of: "scene-farm"), 17_600)
+        XCTAssertEqual(ScrivProject.example().durationMs(of: "scene-farm"), 56_300)
     }
     func testCoverageDoesNotCreateSequenceTime() throws {
         var project = ScrivProject.example()
         let duration = project.durationMs(of: "scene-farm"), cues = project.cues, words = TimingEngine.absoluteWords(project, sceneId: "scene-farm")
-        try TimingEngine.setCoverage(&project, entryId: "direction-08", endMs: 15_000)
+        try TimingEngine.setCoverage(&project, entryId: "direction-08", endMs: 37_300)
         XCTAssertEqual(project.durationMs(of: "scene-farm"), duration)
         XCTAssertEqual(project.cues, cues)
         XCTAssertEqual(TimingEngine.absoluteWords(project, sceneId: "scene-farm"), words)
@@ -18,19 +18,19 @@ final class TimingTests: XCTestCase {
     }
     func testCoverageCannotReachBeforeAuthoredStartOrOwnedEnd() throws {
         var project = ScrivProject.example()
-        XCTAssertThrowsError(try TimingEngine.setCoverage(&project, entryId: "direction-08", endMs: 2999))
-        XCTAssertThrowsError(try TimingEngine.setCoverage(&project, entryId: "line-09", endMs: 10_399))
-        XCTAssertThrowsError(try TimingEngine.setCoverage(&project, entryId: "line-08", endMs: 10_000))
+        XCTAssertThrowsError(try TimingEngine.setCoverage(&project, entryId: "direction-08", endMs: 25_299))
+        XCTAssertThrowsError(try TimingEngine.setCoverage(&project, entryId: "line-09", endMs: 32_699))
+        XCTAssertThrowsError(try TimingEngine.setCoverage(&project, entryId: "line-08", endMs: 32_300))
     }
     func testOwnedDirectionResizesRuntimeAndFollowingEntries() throws {
         var project = ScrivProject.example()
         try TimingEngine.setOwnedDuration(&project, entryId: "line-09", durationMs: 3400)
-        XCTAssertEqual(project.durationMs(of: "scene-farm"), 18_600)
-        XCTAssertEqual(project.startMs(of: "line-10"), 11_400)
+        XCTAssertEqual(project.durationMs(of: "scene-farm"), 57_300)
+        XCTAssertEqual(project.startMs(of: "line-10"), 33_700)
         XCTAssertEqual(project.cues.first { $0.id == "cue-09a" }?.durationMs, 3400)
         try TimingEngine.validate(project)
         try TimingEngine.setOwnedDuration(&project, entryId: "line-09", durationMs: 1400)
-        XCTAssertEqual(project.startMs(of: "line-10"), 9400)
+        XCTAssertEqual(project.startMs(of: "line-10"), 31_700)
         try TimingEngine.validate(project)
     }
     func testZeroOwnedInsertionKeepsFollowingDirectionCoverageLength() throws {
@@ -47,7 +47,7 @@ final class TimingTests: XCTestCase {
     }
     func testApprovedWordBoundaryTransferPreservesEveryWordAndTime() throws {
         var project = ScrivProject.example()
-        try TimingEngine.moveBoundary(&project, leftCueId: "cue-08a", rightCueId: "cue-08b", toMs: 5000)
+        try TimingEngine.moveBoundary(&project, leftCueId: "cue-08a", rightCueId: "cue-08b", toMs: 27_300)
         let entries = project.entries, total = project.durationMs(of: "scene-farm")
         try TimingEngine.moveWords(&project, wordIds: ["word-08-4", "word-08-5"], fromCueId: "cue-08a", toCueId: "cue-08b")
         XCTAssertEqual(project.cues.first { $0.id == "cue-08a" }?.durationMs, 1400)
@@ -58,8 +58,8 @@ final class TimingTests: XCTestCase {
     func testRejectNonContiguousWordsAndNonAdjacentImages() throws {
         var project = ScrivProject.example()
         XCTAssertThrowsError(try TimingEngine.moveWords(&project, wordIds: ["word-08-4", "word-08-6"], fromCueId: "cue-08b", toCueId: "cue-08a"))
-        XCTAssertThrowsError(try TimingEngine.moveBoundary(&project, leftCueId: "cue-08a", rightCueId: "cue-08c", toMs: 4500))
-        XCTAssertThrowsError(try TimingEngine.moveBoundary(&project, leftCueId: "cue-08a", rightCueId: "cue-08b", toMs: 3000))
+        XCTAssertThrowsError(try TimingEngine.moveBoundary(&project, leftCueId: "cue-08a", rightCueId: "cue-08c", toMs: 26_800))
+        XCTAssertThrowsError(try TimingEngine.moveBoundary(&project, leftCueId: "cue-08a", rightCueId: "cue-08b", toMs: 25_300))
     }
     func testMiddleWordDragDoesNotSilentlyMoveUnselectedWords() throws {
         var project = ScrivProject.example()
@@ -89,9 +89,9 @@ final class TimingTests: XCTestCase {
     func testSplittingKeepsAssetIdentityAndTotalImageTime() throws {
         var project = ScrivProject.example()
         let before = project.cues.reduce(0) { $0 + $1.durationMs }
-        try TimingEngine.splitCue(&project, cueId: "cue-08b", atMs: 5600)
+        try TimingEngine.splitCue(&project, cueId: "cue-08b", atMs: 27_900)
         XCTAssertEqual(project.cues.reduce(0) { $0 + $1.durationMs }, before)
-        XCTAssertEqual(project.cues.count, 10)
+        XCTAssertEqual(project.cues.count, 20)
         try TimingEngine.validate(project)
     }
 }

@@ -26,7 +26,7 @@ export async function requireTeam(env: Env, teamId: string, userId: string, role
   return {team:await getTeam(env,teamId),role};
 }
 export function teamView(team: TeamRow, role?: Role) {
-  return {id:team.id,name:team.name,ownerId:team.owner_id,role,plan:premium(team)?'team':'free',status:team.subscription_status,currentPeriodEnd:team.current_period_end,storageUsed:team.storage_used,createdAt:team.created_at};
+  return {id:team.id,name:team.name,ownerId:team.owner_id,role,plan:premium(team)?'team':'free',status:team.subscription_status,currentPeriodEnd:team.current_period_end,storageUsed:team.storage_used,createdAt:team.created_at,...(role==='owner'?{billingCustomer:!!team.stripe_customer_id}:{})};
 }
 export function projectView(project: ProjectRow, access?: Pick<ProjectAccess,'role'|'premium'|'canWrite'>) {
   return {id:project.id,title:project.title,ownerId:project.owner_id,teamId:project.team_id,createdAt:project.created_at,updatedAt:project.updated_at,archivedAt:project.archived_at,...(access ?? {})};
@@ -36,11 +36,12 @@ export async function projectAccess(env: Env, projectId: string, userId: string)
   assert(project,404,'not_found','Project not found.');
   const team = project.team_id ? await getTeam(env,project.team_id) : null;
   const role = project.team_id ? await teamRole(env,project.team_id,userId) : null;
-  const owner = userId === project.owner_id || userId === team?.owner_id;
+  // Team ownership is authoritative; a historical catalog owner must not bypass membership.
+  const owner = team ? userId === team.owner_id : userId === project.owner_id;
   assert(owner || role,404,'not_found','Project not found.');
   const paid = premium(team);
   // A lapsed team's members retain read/export access for 30 days. Ownership is never lost.
   const graceRead = team && Date.now() < (team.canceled_at ?? team.paid_until ?? 0) + 30 * 86400000;
   assert(owner || paid || graceRead,402,'team_subscription_required','This team subscription is inactive. Ask the owner to reactivate it.');
-  return {project,role:owner?'owner':role!,premium:paid,canWrite:owner || (paid && role !== 'viewer'),canManage:owner || role === 'admin',team};
+  return {project,role:owner?'owner':role!,premium:paid,canWrite:owner || (paid && role !== 'viewer'),canManage:owner || (paid && role === 'admin'),team};
 }

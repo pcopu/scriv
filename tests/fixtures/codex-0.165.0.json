@@ -206,6 +206,36 @@
       "payload": {
         "decision": "decline"
       }
+    },
+    {
+      "name": "account/login/cancel",
+      "schema": "ClientRequest.json",
+      "payload": {
+        "id": 11,
+        "method": "account/login/cancel",
+        "params": {
+          "loginId": "login-contract"
+        }
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "account/login/cancel response",
+      "schema": "v2/CancelLoginAccountResponse.json",
+      "payload": {
+        "status": "canceled"
+      },
+      "expectedValid": true
+    },
+    {
+      "name": "account/login/cancel requires loginId",
+      "schema": "ClientRequest.json",
+      "payload": {
+        "id": 12,
+        "method": "account/login/cancel",
+        "params": {}
+      },
+      "expectedValid": false
     }
   ]
 }

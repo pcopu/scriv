@@ -109,4 +109,86 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(ScrivDigest.sha256(Data("abc".utf8)), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
         XCTAssertEqual(ScrivDigest.sha256(Data(repeating: 97, count: 1000)), "41edece42d63e8d9bf515a9ba6932e1c20cbc9f5a5d134645adb5db1b9737ea3")
     }
+    func testUnpublishedFutureHistoryIsNeverOfferedAsAccepted() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at:root) }
+        let repo = try ProjectRepository(root:root), original = ScrivProject.example()
+        let package = await repo.defaultURL(for:original)
+        try await repo.save(original,at:package,label:"Accepted")
+        var orphan = original; orphan.revision = 1; orphan.title = "Not published"
+        try ScrivJSON.encoder.encode(HistoryEntry(label:"Orphan",snapshot:orphan)).write(to:package.appendingPathComponent("history/000000000001.json"))
+        let events = try await repo.history(at:package)
+        XCTAssertEqual(events.map(\.revision),[0])
+        XCTAssertEqual(events[0].snapshot,original)
+    }
+    func testHistoryRejectsWrongProjectIdentityWithoutChangingCurrent() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at:root) }
+        let repo = try ProjectRepository(root:root), original = ScrivProject.example()
+        let package = await repo.defaultURL(for:original)
+        try await repo.save(original,at:package,label:"Accepted")
+        var foreign = original; foreign.id = UUID().uuidString
+        try ScrivJSON.encoder.encode(HistoryEntry(label:"Wrong project",snapshot:foreign)).write(to:package.appendingPathComponent("history/000000000000.json"))
+        do { _ = try await repo.history(at:package); XCTFail("Foreign history was accepted") } catch { }
+        let current = try await repo.load(at:package)
+        XCTAssertEqual(current,original)
+    }
+    func testPackageExportReopensWithAllImagesWordsAndHistory() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at:root) }
+        let repo = try ProjectRepository(root:root)
+        var project = ScrivProject.example()
+        let package = await repo.defaultURL(for:project)
+        let bytes = Data([137,80,78,71,13,10,26,10,1,2,3,4])
+        let asset = try await repo.importAsset(data:bytes,at:package,characterIds:["character-randy"])
+        project.images.append(asset); project.cues[0].imageId = asset.id
+        try await repo.save(project,at:package,label:"Initial")
+        try ProjectEditing.deleteEntry(&project,entryId:"line-02"); project.revision = 1
+        try await repo.save(project,at:package,label:"Remove action")
+        let exported = root.appendingPathComponent("Export.scriv")
+        try await repo.copyPackage(from:package,to:exported)
+        let reopened = try await repo.load(at:exported), history = try await repo.history(at:exported), data = try await repo.assetData(asset,at:exported)
+        XCTAssertEqual(reopened,project); XCTAssertEqual(history.count,2); XCTAssertEqual(data,bytes)
+        XCTAssertEqual(history.last?.snapshot.entries.first { $0.id == "line-02" }?.text,"Miyazaki presents the preliminary invoice.")
+        do { try await repo.copyPackage(from:package,to:package.appendingPathComponent("Nested.scriv")); XCTFail("Recursive package export accepted") } catch { }
+    }
+    func testSymlinkedPackageMembersCannotReadOrWriteExternalFiles() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at:root) }
+        let repo = try ProjectRepository(root:root)
+        let package = root.appendingPathComponent("Project.scriv"), outside = root.appendingPathComponent("Outside")
+        try FileManager.default.createDirectory(at:package,withIntermediateDirectories:true)
+        try FileManager.default.createDirectory(at:outside,withIntermediateDirectories:true)
+        try FileManager.default.createSymbolicLink(at:package.appendingPathComponent("assets"),withDestinationURL:outside)
+        let bytes = Data([137,80,78,71,13,10,26,10,1,2,3,4])
+        do { _ = try await repo.importAsset(data:bytes,at:package); XCTFail("Wrote through an asset-directory symlink") } catch { }
+        XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath:outside.path).isEmpty)
+        let externalProject = outside.appendingPathComponent("external.json")
+        try ScrivJSON.encoder.encode(ScrivProject.example()).write(to:externalProject)
+        try FileManager.default.createSymbolicLink(at:package.appendingPathComponent("project.json"),withDestinationURL:externalProject)
+        do { _ = try await repo.load(at:package); XCTFail("Read through a project symlink") } catch { }
+    }
+    func testLargeRevisionNumbersKeepUnambiguousHistoryFilenames() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at:root) }
+        let repo = try ProjectRepository(root:root)
+        var p = ScrivProject.example(); p.revision = 4_294_967_297
+        let package = await repo.defaultURL(for:p)
+        try await repo.save(p,at:package,label:"Large revision")
+        XCTAssertTrue(FileManager.default.fileExists(atPath:package.appendingPathComponent("history/004294967297.json").path))
+        let history = try await repo.history(at:package)
+        XCTAssertEqual(history.map(\.revision),[4_294_967_297])
+    }
+
+    func testVerifiedReplicaRepairsCorruptExistingHashNamedFile() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at:root) }
+        let repo = try ProjectRepository(root:root)
+        let bytes = Data([137,80,78,71,13,10,26,10,1,2,3,4])
+        let asset = try await repo.importAsset(data:bytes,at:root)
+        let path = root.appendingPathComponent("assets/" + asset.fileName)
+        try Data(repeating:0,count:bytes.count).write(to:path)
+        do { _ = try await repo.assetData(asset,at:root); XCTFail("Corruption was not detected") } catch { }
+        try await repo.storeReplica(bytes,for:asset,at:root)
+        let recovered = try await repo.assetData(asset,at:root)
+        XCTAssertEqual(recovered,bytes)
+        var wrongType = asset; wrongType.mimeType = "image/jpeg"
+        do { try await repo.storeReplica(bytes,for:wrongType,at:root); XCTFail("Mismatched MIME was accepted") } catch { }
+        XCTAssertEqual(try Data(contentsOf:path),bytes)
+    }
+
 }

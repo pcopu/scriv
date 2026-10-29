@@ -58,6 +58,7 @@ struct CodexPopover: View {
     @State private var busy = false
     @State private var error: String?
     @State private var showLog = false
+    @State private var showJobs = false
     var body: some View {
         VStack(alignment: .leading, spacing: 13) {
             Text("Codex on this Mac").font(.system(size: 15, weight: .semibold))
@@ -69,15 +70,17 @@ struct CodexPopover: View {
                     Spacer()
                     if let account = controller.accountLabel {
                         Text(account).lineLimit(1).foregroundStyle(.secondary)
-                        Menu { Button("Refresh account") { run { try await controller.readAccount() } }; Button("Sign out of ChatGPT") { run { try await controller.signOut() } } } label: { Image(systemName: "ellipsis") }.menuStyle(.borderlessButton).fixedSize()
-                    } else { Button("Sign in") { run { try await controller.signIn() } }.buttonStyle(.borderless).disabled(!controller.isConnected || busy) }
+                        Menu { Button("Refresh account") { run { try await controller.readAccount() } }; Button("Sign out of ChatGPT") { run { try await controller.signOut() } }.disabled(controller.isGenerating) } label: { Image(systemName: "ellipsis") }.menuStyle(.borderlessButton).fixedSize()
+                    } else if controller.pendingLoginID != nil {
+                        Button("Cancel sign-in") { run { try await controller.cancelSignIn() } }.buttonStyle(.borderless).disabled(busy)
+                    } else { Button("Sign in") { run { try await controller.signIn() } }.buttonStyle(.borderless).disabled(!controller.isConnected || controller.isGenerating || busy) }
                 }
             }.font(.system(size: 12)).padding(11).background(ScrivTheme.inset.opacity(0.45), in: RoundedRectangle(cornerRadius: 9))
             HStack(spacing: 7) {
-                Button("Start") { run { try await controller.start() } }.buttonStyle(.borderedProminent).disabled(busy || controller.isConnected)
-                Button("Connect…") { connecting.toggle() }.buttonStyle(.bordered).disabled(busy || controller.isConnected)
+                Button("Start") { run { try await controller.start() } }.buttonStyle(.borderedProminent).disabled(busy || controller.isConnecting || controller.isConnected)
+                Button("Connect…") { connecting.toggle() }.buttonStyle(.bordered).disabled(busy || controller.isConnecting || controller.isConnected)
                 if controller.isRunning { Button("Stop") { controller.stop() }.buttonStyle(.bordered) }
-                else { Button("Disconnect") { controller.disconnect() }.buttonStyle(.bordered).disabled(!controller.isConnected) }
+                else { Button("Disconnect") { controller.disconnect() }.buttonStyle(.bordered).disabled(controller.isGenerating || (busy && !controller.isConnecting) || (!controller.isConnected && !controller.isConnecting)).help(controller.isGenerating ? "Cancel generation before disconnecting from the external runtime." : "Leave the external runtime running.") }
             }.controlSize(.large)
             if connecting {
                 VStack(alignment: .leading, spacing: 8) {
@@ -86,21 +89,124 @@ struct CodexPopover: View {
                 }.font(.system(size: 11))
             }
             if controller.isConnected && !controller.availableModels.isEmpty {
-                Picker("Model", selection: $controller.selectedModel) { ForEach(controller.availableModels, id: \.self) { Text($0).tag($0) } }.font(.system(size: 11))
+                Picker("Model", selection: $controller.selectedModel) { ForEach(controller.availableModels, id: \.self) { Text($0).tag($0) } }.font(.system(size: 11)).disabled(controller.isGenerating)
             }
-            if controller.isGenerating { Button("Cancel generation", role: .destructive) { Task { await controller.cancelGeneration() } }.buttonStyle(.bordered) }
+            if controller.isGenerating { Button("Cancel generation", role: .destructive) { run { await controller.cancelGeneration() } }.buttonStyle(.bordered).disabled(busy) }
             if let text = error ?? controller.lastError { Text(text).font(.system(size: 11)).foregroundStyle(.red).textSelection(.enabled).fixedSize(horizontal: false, vertical: true) }
-            Text(controller.isRunning ? "Scriv started this process and can stop it." : "Start here, or connect to a running local server.")
+            Text(controller.isRunning ? "Scriv started this process and can stop it." : controller.isConnected ? "Connected to an external local server. Disconnect leaves it running." : "Start here, or connect to a running local server.")
                 .font(.system(size: 11)).foregroundStyle(.secondary)
             if !controller.log.isEmpty {
                 DisclosureGroup("Generation response", isExpanded: $showLog) { ScrollView { Text(controller.log).font(.system(size: 10, design: .monospaced)).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading) }.frame(maxHeight: 170) }
             }
+            Button { showJobs = true } label: { Label("Generation jobs (\(controller.jobs.count))", systemImage: "clock.arrow.circlepath") }
+                .buttonStyle(.borderless)
+            if let journalError = controller.journalError { Text(journalError).font(.caption).foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true) }
             SettingsLink { Label("Codex settings…", systemImage: "gearshape") }.font(.system(size: 11))
         }.padding(18).frame(width: 345)
+            .sheet(isPresented: $showJobs) { GenerationJobsSheet(controller: controller) }
     }
     private func run(_ action: @escaping @MainActor () async throws -> Void) {
         busy = true; error = nil
         Task { defer { busy = false }; do { try await action() } catch { self.error = error.localizedDescription } }
+    }
+}
+
+struct GenerationJobsSheet: View {
+    @ObservedObject var controller: CodexController
+    @Environment(\.dismiss) private var dismiss
+    @State private var retrying: LocalGenerationJob?
+    @State private var error: String?
+    @State private var source = "This Mac"
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack { Label("Generation jobs on this Mac", systemImage: "sparkles.rectangle.stack").font(.title2.weight(.semibold)); Spacer(); Button("Done") { dismiss() }.keyboardShortcut(.cancelAction) }
+            Text("Jobs survive app restarts. Inspect an existing turn before retrying. Reconnecting never starts paid generation automatically.")
+                .font(.callout).foregroundStyle(.secondary)
+            HStack {
+                PillSegmentPicker(values: ["This Mac", "Shared project"], selection: $source) { $0 }
+                Spacer()
+                if source == "Shared project" { Button("Refresh") { controller.onRefreshSharedJobs?() } }
+            }
+            if let error { Text(error).font(.callout).foregroundStyle(.red).textSelection(.enabled) }
+            if let issue = controller.journalError { Text(issue).font(.callout).foregroundStyle(.orange).textSelection(.enabled) }
+            if source == "Shared project" {
+                sharedJobs
+            } else if controller.jobs.isEmpty {
+                EmptyPanel(symbol: "sparkles", title: "No local image jobs yet", message: "Each requested generation keeps its original prompt, references and runtime identity on this Mac for safe recovery.")
+            } else {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 12) {
+                        ForEach(controller.jobs) { job in
+                            VStack(alignment: .leading, spacing: 9) {
+                                HStack(alignment: .top) {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(job.context?.projectTitle ?? "Local image generation").font(.headline)
+                                        if let context = job.context { Text("\(context.targetCue.label.isEmpty ? "Image placement" : context.targetCue.label) · source revision \(context.sourceRevision)").font(.caption).foregroundStyle(.secondary) }
+                                    }
+                                    Spacer()
+                                    Text(job.status.label).font(.caption.weight(.medium)).foregroundStyle(job.status == .failed ? Color.red : job.status == .completed ? Color.green : Color.secondary)
+                                }
+                                Text(job.progressText).font(.callout)
+                                if let detail = job.errorDetail { Text(detail).font(.caption).foregroundStyle(.secondary).lineLimit(4).textSelection(.enabled) }
+                                HStack {
+                                    Text(job.createdAt, format: .dateTime.month().day().hour().minute()).font(.caption2).foregroundStyle(.secondary)
+                                    Text("This Mac").font(.caption2).foregroundStyle(.secondary)
+                                    Spacer()
+                                    if job.outputImageID != nil { Label("Imported", systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(.green) }
+                                    if job.artifactRelativePath != nil {
+                                        Button("Reveal image") { run { NSWorkspace.shared.activateFileViewerSelecting([try controller.artifactURL(for: job.id)]) } }
+                                        if controller.onRecoverJob != nil, job.outputImageID == nil || job.context?.cloudProjectID != nil {
+                                            Button(job.outputImageID != nil ? "Finish shared status" : job.status == .completed ? "Use in original project" : "Use local candidate") { controller.onRecoverJob?(job) }.buttonStyle(.borderedProminent)
+                                        }
+                                    }
+                                    if job.status != .completed {
+                                        Button(controller.inspectingJobID == job.id ? "Inspecting…" : "Inspect existing turn") { run { try await controller.inspectJob(job.id) } }
+                                            .disabled(controller.isGenerating || controller.inspectingJobID != nil)
+                                    }
+                                    if job.canRetry, controller.onRetryJob != nil {
+                                        Button("Retry…") { retrying = job }.disabled(controller.isGenerating || !controller.isConnected || controller.inspectingJobID != nil)
+                                    }
+                                }.controlSize(.small)
+                                DisclosureGroup("Original prompt (stored only on this Mac)") {
+                                    Text(job.prompt).font(.caption).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
+                                }.font(.caption)
+                            }.padding(14).background(ScrivTheme.inset.opacity(0.45), in: RoundedRectangle(cornerRadius: 11))
+                        }
+                    }
+                }
+            }
+        }.padding(22).frame(width: 760, height: 590)
+            .onChange(of: source) { _, value in if value == "Shared project" { controller.onRefreshSharedJobs?() } }
+            .confirmationDialog("Start a new image generation?", isPresented: Binding(get: { retrying != nil }, set: { if !$0 { retrying = nil } }), presenting: retrying) { job in
+                Button("Start new generation") { controller.onRetryJob?(job); retrying = nil }
+                Button("Cancel", role: .cancel) { retrying = nil }
+            } message: { _ in Text("This is a new request using the original prompt and reference snapshots. The old turn may still be running. It can consume additional Codex usage; inspect the original turn first.") }
+    }
+    private var sharedJobs: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 12) {
+                Text("Status only. Another collaborator cannot run work under this Mac's ChatGPT identity.").font(.caption).foregroundStyle(.secondary)
+                if let message = controller.sharedJobsError { Text(message).font(.callout).foregroundStyle(.orange) }
+                if controller.sharedJobs.isEmpty {
+                    Text("No shared generation jobs are available for the current project. Local prompts, paths and runtime credentials are never uploaded.").font(.callout).foregroundStyle(.secondary).padding(.vertical, 20)
+                }
+                ForEach(controller.sharedJobs) { job in
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack { Text(job.ownerDeviceName).font(.headline); Spacer(); Text(job.status == .running ? "Running on owning Mac" : job.status == .queued ? "Queued" : job.status.label).font(.caption.weight(.medium)) }
+                        Text(job.progressText).font(.callout)
+                        HStack {
+                            Text("Source revision \(job.sourceRevision)").font(.caption).foregroundStyle(.secondary)
+                            Spacer()
+                            Text(Date(timeIntervalSince1970: Double(job.updatedAt) / 1000), style: .relative).font(.caption).foregroundStyle(.secondary)
+                        }
+                        if job.status == .waiting { Text("Waiting for its owning Mac. Refresh after that Mac reconnects.").font(.caption).foregroundStyle(.secondary) }
+                    }.padding(14).background(ScrivTheme.inset.opacity(0.45), in: RoundedRectangle(cornerRadius: 11))
+                }
+            }.frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+    private func run(_ action: @escaping @MainActor () async throws -> Void) {
+        error = nil; Task { do { try await action() } catch { self.error = error.localizedDescription } }
     }
 }
 

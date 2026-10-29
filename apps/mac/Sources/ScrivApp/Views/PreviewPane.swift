@@ -6,14 +6,17 @@ struct PreviewPane: View {
     @EnvironmentObject private var store: WorkspaceStore
     @State private var fullScreen = false
     @State private var tagsOpen = false
+    @State private var versionsOpen = false
+    @State private var choosingImage = false
     private var cue: ImageCue? { store.isPlaying ? store.currentCue : (store.selectedCue ?? store.currentCue) }
     private var asset: ImageAsset? { store.project.asset(cue?.imageId) }
     var body: some View {
-        VStack(spacing: 11) {
+        ScrollView {
+        VStack(spacing: 10) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Preview").font(.system(size: 23, weight: .semibold))
-                    Text(previewSubtitle).font(.system(size: 12)).foregroundStyle(.secondary)
+                    Text("Preview").font(.system(size: 27, weight: .semibold))
+                    Text(previewSubtitle).font(.system(size: 13)).foregroundStyle(.secondary)
                 }
                 Spacer()
                 Text("16:9").font(.system(size: 11, weight: .medium)).padding(.horizontal, 10).padding(.vertical, 7)
@@ -31,6 +34,7 @@ struct PreviewPane: View {
                     }
                 Menu {
                     if let asset, store.assetURL(asset) == nil { Button("Fetch image", systemImage: "arrow.down.circle") { store.downloadImage(asset) } }
+                    if cue != nil { Button("Choose existing image…", systemImage: "photo.on.rectangle") { choosingImage = true } }
                     Button("Import image…", systemImage: "photo.badge.plus") { store.importImage(cueId: cue?.id) }
                     Button("Generate image", systemImage: "sparkles") { store.generateImage(cueId: cue?.id) }
                     if let cue {
@@ -45,7 +49,7 @@ struct PreviewPane: View {
             HStack(spacing: 5) {
                 if let asset {
                     ForEach(store.project.characters.filter { asset.characterIds.contains($0.id) }) { character in
-                        CharacterChip(character: character, compact: true) { store.selectCharacter(character.id) }
+                        CharacterChip(character: character) { store.selectCharacter(character.id) }
                     }
                     Button { tagsOpen = true } label: { Image(systemName: "plus").font(.system(size: 13)).frame(width: 24, height: 24).background(ScrivTheme.inset, in: Circle()) }
                         .buttonStyle(.plain).foregroundStyle(ScrivTheme.accent).help("Tag characters in this image")
@@ -54,12 +58,21 @@ struct PreviewPane: View {
                     Button("Import an image…") { store.importImage(cueId: cue?.id) }.font(.system(size: 11)).buttonStyle(.borderless)
                 }
                 Spacer(minLength: 0)
-                if let asset { Text("Version \(asset.version)").font(.system(size: 10)).foregroundStyle(.tertiary) }
-            }.frame(height: 24)
+                if let asset, let cue {
+                    Button { versionsOpen = true } label: {
+                        HStack(spacing: 4) { Text("Version \(asset.version)"); Image(systemName: "chevron.down").font(.system(size: 8)) }.font(.system(size: 11))
+                    }.buttonStyle(.borderless).help("View and restore image versions")
+                        .popover(isPresented: $versionsOpen) { ImageVersionsPopover(cueID: cue.id, imageID: asset.id).environmentObject(store) }
+                }
+            }.frame(minHeight: 28)
             PlaybackBar(compact: false)
-            LayerTimelineView().frame(maxHeight: .infinity)
+            LayerTimelineView().frame(height: 320)
             GenerationBar(controller: store.codex).environmentObject(store)
-        }.padding(17).background(ScrivTheme.panel).clipShape(RoundedRectangle(cornerRadius: 17))
+        }.padding(12)
+        }.background(ScrivTheme.panel).clipShape(RoundedRectangle(cornerRadius: ScrivTheme.panelRadius))
+            .sheet(isPresented: $choosingImage) {
+                if let cue { ProjectImagePicker(cueID: cue.id, navigationContext: store.navigationContext).environmentObject(store) }
+            }
             .sheet(isPresented: $fullScreen) {
                 VStack(spacing: 16) {
                     HStack { Text(store.project.title).font(.headline); Spacer(); Button("Done") { fullScreen = false }.keyboardShortcut(.cancelAction) }
@@ -70,7 +83,8 @@ struct PreviewPane: View {
     }
     private var previewSubtitle: String {
         if let entry = store.project.activeEntry(at: Int(store.playheadMs), sceneId: store.selectedSceneID) {
-            let number = (store.sceneEntries.firstIndex { $0.id == entry.id } ?? 0) + 1
+            let timedEntries = store.sceneEntries.filter { $0.ownedDurationMs > 0 }
+            let number = (timedEntries.firstIndex { $0.id == entry.id } ?? 0) + 1
             return "Entry \(String(format: "%02d", number)) · \(entry.kind == .direction ? "Direction" : store.project.character(entry.characterId)?.name ?? "Dialogue")"
         }
         return cue?.label ?? "Select an entry or image"
@@ -81,7 +95,7 @@ struct PlaybackBar: View {
     @EnvironmentObject private var store: WorkspaceStore
     var compact = false
     var body: some View {
-        HStack(spacing: compact ? 14 : 12) {
+        HStack(spacing: compact ? 10 : 10) {
             Button { previous() } label: { Image(systemName: "backward.end.fill").font(.system(size: 16)) }.buttonStyle(.plain).help("Previous image")
             Button { store.togglePlayback() } label: {
                 Image(systemName: store.isPlaying ? "pause.fill" : "play.fill").font(.system(size: 17, weight: .semibold))
@@ -90,11 +104,19 @@ struct PlaybackBar: View {
             Button { next() } label: { Image(systemName: "forward.end.fill").font(.system(size: 16)) }.buttonStyle(.plain).help("Next image")
             if !compact {
                 Text("\(ScrivFormat.time(Int(store.playheadMs))) / \(ScrivFormat.time(store.sceneDurationMs))")
-                    .font(.system(size: 11, weight: .medium, design: .monospaced)).lineLimit(1).fixedSize()
+                    .font(.system(size: 12, weight: .medium, design: .rounded)).lineLimit(1).fixedSize()
             }
             Slider(value: Binding(get: { min(Double(max(1, store.sceneDurationMs)), max(0, store.playheadMs)) }, set: { store.seek(toMs: $0) }), in: 0...Double(max(1, store.sceneDurationMs)))
                 .controlSize(.small).accessibilityLabel("Playback position")
             if compact { Text(ScrivFormat.time(Int(store.playheadMs))).font(.system(size: 11, design: .monospaced)).foregroundStyle(.secondary).monospacedDigit() }
+            Button { store.toggleAudioMute() } label: {
+                Image(systemName: store.project.audioVolume == 0 ? "speaker.slash.fill" : "speaker.wave.2.fill").font(.system(size: 14))
+            }.buttonStyle(.plain).disabled(store.project.audioClips.isEmpty)
+                .help(store.project.audioClips.isEmpty ? "Import local audio in Layers to enable sound" : store.project.audioVolume == 0 ? "Unmute local audio" : "Mute local audio")
+                .accessibilityLabel(store.project.audioVolume == 0 ? "Unmute local audio" : "Mute local audio")
+            Slider(value: Binding(get: { store.project.audioVolume }, set: { store.setAudioVolume($0) }), in: 0...1)
+                .frame(width: compact ? 50 : 64).controlSize(.small).disabled(store.project.audioClips.isEmpty)
+                .accessibilityLabel("Local audio volume").help("Volume of imported project audio")
         }.foregroundStyle(ScrivTheme.accent).padding(.horizontal, 13).padding(.vertical, 7)
             .background(ScrivTheme.inset.opacity(0.35), in: RoundedRectangle(cornerRadius: 11))
             .overlay(RoundedRectangle(cornerRadius: 11).strokeBorder(ScrivTheme.hairline.opacity(0.35)))
@@ -112,14 +134,17 @@ struct PlaybackBar: View {
 struct GenerationBar: View {
     @EnvironmentObject private var store: WorkspaceStore
     @ObservedObject var controller: CodexController
+    @State private var cancelling = false
     private var savedPrompt: String { (store.selectedCue ?? store.currentCue)?.prompt ?? "" }
     private var hasPrompt: Bool { !store.generationPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !savedPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
         HStack(alignment: .center, spacing: 10) {
-            TextField("Describe the image for this moment…", text: $store.generationPrompt, axis: .vertical)
+            TextField(savedPrompt.isEmpty ? "Describe the image for this moment…" : savedPrompt, text: $store.generationPrompt, axis: .vertical)
                 .font(.system(size: 12)).textFieldStyle(.plain).lineLimit(1...3)
                 .accessibilityLabel("Image generation prompt")
                 .help(savedPrompt.isEmpty ? "Describe the image for this moment" : "Leave blank to use this image's saved direction: " + savedPrompt)
+
             Button { store.generateImage(cueId: store.selectedCue?.id ?? store.currentCue?.id) } label: {
                 HStack(spacing: 6) {
                     if controller.isGenerating { ProgressView().controlSize(.mini).tint(.white) }
@@ -128,6 +153,16 @@ struct GenerationBar: View {
                 }.font(.system(size: 12, weight: .semibold)).padding(.vertical, 5)
             }.buttonStyle(.borderedProminent).disabled(controller.isGenerating || !hasPrompt)
                 .help(controller.isConnected ? "Generate with Codex on this Mac" : "Connect Codex on this Mac to generate")
+            if controller.isGenerating {
+                Button {
+                    cancelling = true
+                    Task { await controller.cancelGeneration(); cancelling = false }
+                } label: { Image(systemName: "xmark.circle.fill").font(.system(size: 17)) }
+                    .buttonStyle(.plain).disabled(cancelling).help("Cancel image generation")
+                    .accessibilityLabel("Cancel image generation")
+            }
+        }
+        if controller.isGenerating { Text(controller.status).font(.system(size: 10)).foregroundStyle(.secondary) }
         }.padding(10).background(ScrivTheme.inset.opacity(0.4), in: RoundedRectangle(cornerRadius: 10))
     }
 }

@@ -102,6 +102,7 @@
     return peer;
   }
   async function receive(peer, data) {
+    if (peers.get(peer.id) !== peer) return;
     if (typeof data !== 'string') {
       const transfer = peer.receiving;
       if (!transfer || !(data instanceof ArrayBuffer)) throw new Error('Unexpected media data.');
@@ -115,16 +116,21 @@
     if (message.type === 'request') {
       emit({ kind: 'request', fromDeviceId: peer.id, hash: message.hash });
     } else if (message.type === 'unavailable') {
-      error(peer.id, message.hash, 'That device does not have the requested image.');
+      if (requested.has(key(peer.id, message.hash))) error(peer.id, message.hash, 'That device does not have the requested image.');
     } else if (message.type === 'begin') {
       if (!requested.has(key(peer.id, message.hash)) || peer.receiving || !Number.isSafeInteger(message.bytes) || message.bytes < 1 || message.bytes > maxBytes) throw new Error('Unrequested or oversized image.');
-      peer.receiving = { hash: message.hash, bytes: message.bytes, received: 0, data: new Uint8Array(message.bytes) };
+      peer.receiving = { request: requested.get(key(peer.id, message.hash)), hash: message.hash, bytes: message.bytes, received: 0, data: new Uint8Array(message.bytes) };
     } else if (message.type === 'end') {
       const transfer = peer.receiving; peer.receiving = null;
       if (!transfer || transfer.hash !== message.hash || transfer.received !== transfer.bytes) throw new Error('Incomplete image transfer.');
-      if (await digest(transfer.data) !== message.hash) throw new Error('Image integrity check failed.');
+      const actualHash = await digest(transfer.data);
+      // Hashing is asynchronous. A disconnect/retry may have replaced this peer
+      // and its request while the old checksum was in flight. Never publish the
+      // old result into the new session or consume its request deadline.
+      if (peers.get(peer.id) !== peer) return;
       const pending = requested.get(key(peer.id, message.hash));
-      if (!pending) throw new Error('Transfer expired.');
+      if (!pending || pending !== transfer.request) throw new Error('Transfer expired.');
+      if (actualHash !== message.hash) throw new Error('Image integrity check failed.');
       clearTimeout(pending.timer); requested.delete(key(peer.id, message.hash));
       emit({ kind: 'asset', fromDeviceId: peer.id, hash: message.hash, base64: encode(transfer.data) });
     } else throw new Error('Unsupported peer control message.');
@@ -179,14 +185,14 @@
   globalThis.ScrivPeer = Object.freeze({
     configure(options) {
       if (peers.size) throw new Error('Disconnect transfers before changing identity.');
-      identity = options.deviceId; iceServers = options.iceServers ?? [];
-      maxBytes = Math.min(HARD_LIMIT, options.maxBytes ?? HARD_LIMIT);
-      if (!identity || !Array.isArray(iceServers)) throw new Error('Invalid peer configuration.');
+      const nextID = options?.deviceId, servers = options?.iceServers ?? [], limit = options?.maxBytes ?? HARD_LIMIT;
+      if (typeof nextID !== 'string' || !nextID || nextID.length > 128 || !Array.isArray(servers) || !Number.isSafeInteger(limit) || limit < 1) throw new Error('Invalid peer configuration.');
+      identity = nextID; iceServers = servers; maxBytes = Math.min(HARD_LIMIT, limit);
     },
     async requestAsset(hash, fromDeviceId) {
       if (!HASH.test(hash)) throw new Error('Invalid image hash.');
-      if (requested.size >= 8) throw new Error('Too many image requests.');
       if (requested.has(key(fromDeviceId, hash))) return;
+      if (requested.size >= 8) throw new Error('Too many image requests.');
       const pending = { peer: fromDeviceId, hash, sent: false, timer: setTimeout(() => {
         if (requested.get(key(fromDeviceId, hash)) !== pending) return;
         // An unanswered handshake or incomplete stream cannot resume. Retire it
@@ -211,6 +217,7 @@
       catch (e) { error(fromDeviceId, hash, e.message); throw e; }
     },
     async handleSignal(message) {
+      if (!['offer', 'answer', 'ice', 'asset-request'].includes(message?.type)) throw new Error('Unsupported peer signal.');
       const connectionRequest = message.type === 'asset-request';
       if (connectionRequest) {
         if (message.payload?.action !== 'connect' || typeof message.payload.requestId !== 'string' || !/^[a-f0-9-]{36}$/.test(message.payload.requestId) || !(identity < message.fromDeviceId)) throw new Error('Invalid peer connection request.');
@@ -233,11 +240,13 @@
       const peer = peers.get(peerId);
       if (!peer?.channel || peer.channel.readyState !== 'open' || !HASH.test(hash)) throw new Error('Peer not connected.');
       peer.sendQueue = peer.sendQueue.catch(() => {}).then(async () => {
+        if (peers.get(peerId) !== peer || peer.channel?.readyState !== 'open') throw new Error('Peer not connected.');
         const channel = peer.channel;
         if (base64 === null) { channel.send(JSON.stringify({ type: 'unavailable', hash })); return; }
         if (base64.length > Math.ceil(maxBytes / 3) * 4) throw new Error('Image too large.');
         const bytes = decode(base64);
         if (!bytes.length || bytes.length > maxBytes || await digest(bytes) !== hash) throw new Error('Local image integrity check failed.');
+        if (peers.get(peerId) !== peer || channel.readyState !== 'open') throw new Error('Peer not connected.');
         channel.send(JSON.stringify({ type: 'begin', hash, bytes: bytes.length }));
         for (let offset = 0; offset < bytes.length; offset += CHUNK) { await backpressure(channel); channel.send(bytes.subarray(offset, offset + CHUNK)); }
         channel.send(JSON.stringify({ type: 'end', hash }));
@@ -249,7 +258,7 @@
       requested.clear();
       const closing = Array.from(peers.values());
       peers.clear();
-      for (const peer of closing) { peer.channel?.close(); peer.pc.close(); }
+      for (const peer of closing) { peer.receiving = null; peer.channel?.close(); peer.pc.close(); }
     }
   });
   emit({ kind: 'ready' });

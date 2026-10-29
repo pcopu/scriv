@@ -37,7 +37,7 @@ public struct ScriptEntry: Identifiable, Codable, Hashable, Sendable {
     public var words: [TimedWord]
     public init(id: String = UUID().uuidString, sceneId: String, order: Double, kind: EntryKind = .dialogue, text: String = "", characterId: String? = nil, ownedDurationMs: Int = 3000, coverageDurationMs: Int = 0, color: String = "purple", words: [TimedWord] = []) {
         self.id = id; self.sceneId = sceneId; self.order = order; self.kind = kind; self.text = text; self.characterId = characterId
-        self.ownedDurationMs = max(kind == .dialogue ? 1 : 0, ownedDurationMs)
+        self.ownedDurationMs = max(kind == .dialogue ? max(1, text.split(whereSeparator: { $0.isWhitespace }).count) : 0, ownedDurationMs)
         self.coverageDurationMs = max(coverageDurationMs, kind == .direction ? self.ownedDurationMs : 0)
         self.color = color; self.words = words
         if kind == .dialogue && words.isEmpty { self.words = TimingEngine.retimeWords(text: text, durationMs: self.ownedDurationMs) }
@@ -96,9 +96,25 @@ public struct ScrivProject: Identifiable, Codable, Hashable, Sendable {
     public var characters: [ScriptCharacter]
     public var images: [ImageAsset]
     public var cues: [ImageCue]
-    public init(id: String = UUID().uuidString, title: String = "Untitled", scenes: [ScriptScene] = [], entries: [ScriptEntry] = [], characters: [ScriptCharacter] = [], images: [ImageAsset] = [], cues: [ImageCue] = [], cloudProjectId: String? = nil) {
-        self.id = id; self.title = title; self.createdAt = ScrivClock.now; self.modifiedAt = self.createdAt; self.revision = 0; self.cloudProjectId = cloudProjectId; self.scenes = scenes; self.entries = entries; self.characters = characters; self.images = images; self.cues = cues
+    /// Local package audio; the image-only cloud protocol does not upload these bytes.
+    public var audioAssets: [AudioAsset]
+    public var audioClips: [AudioClip]
+    public var audioVolume: Double
+    public init(id: String = UUID().uuidString, title: String = "Untitled", scenes: [ScriptScene] = [], entries: [ScriptEntry] = [], characters: [ScriptCharacter] = [], images: [ImageAsset] = [], cues: [ImageCue] = [], cloudProjectId: String? = nil, audioAssets: [AudioAsset] = [], audioClips: [AudioClip] = [], audioVolume: Double = 1) {
+        self.id = id; self.title = title; self.createdAt = ScrivClock.now; self.modifiedAt = self.createdAt; self.revision = 0; self.cloudProjectId = cloudProjectId; self.scenes = scenes; self.entries = entries; self.characters = characters; self.images = images; self.cues = cues; self.audioAssets = audioAssets; self.audioClips = audioClips; self.audioVolume = audioVolume
     }
+    private enum CodingKeys: String, CodingKey { case schemaVersion, id, title, createdAt, modifiedAt, revision, cloudProjectId, scenes, entries, characters, images, cues, audioAssets, audioClips, audioVolume }
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy:CodingKeys.self)
+        schemaVersion = try c.decode(Int.self,forKey:.schemaVersion); id = try c.decode(String.self,forKey:.id); title = try c.decode(String.self,forKey:.title)
+        createdAt = try c.decode(Date.self,forKey:.createdAt); modifiedAt = try c.decode(Date.self,forKey:.modifiedAt); revision = try c.decode(Int.self,forKey:.revision); cloudProjectId = try c.decodeIfPresent(String.self,forKey:.cloudProjectId)
+        scenes = try c.decode([ScriptScene].self,forKey:.scenes); entries = try c.decode([ScriptEntry].self,forKey:.entries); characters = try c.decode([ScriptCharacter].self,forKey:.characters)
+        images = try c.decode([ImageAsset].self,forKey:.images); cues = try c.decode([ImageCue].self,forKey:.cues)
+        audioAssets = try c.decodeIfPresent([AudioAsset].self,forKey:.audioAssets) ?? []; audioClips = try c.decodeIfPresent([AudioClip].self,forKey:.audioClips) ?? []; audioVolume = try c.decodeIfPresent(Double.self,forKey:.audioVolume) ?? 1
+    }
+    public var orderedScenes: [ScriptScene] { scenes.sorted { ($0.order, $0.id) < ($1.order, $1.id) } }
+    /// Parenthetical notes are editable items, not additional authored timed slots.
+    public func authoredEntryCount(in sceneId: String) -> Int { entries(in: sceneId).filter { $0.kind == .dialogue || $0.ownedDurationMs > 0 }.count }
     public func entries(in sceneId: String) -> [ScriptEntry] { entries.filter { $0.sceneId == sceneId }.sorted { ($0.order, $0.id) < ($1.order, $1.id) } }
     public func cues(in sceneId: String) -> [ImageCue] { cues.filter { $0.sceneId == sceneId }.sorted { ($0.startMs, $0.id) < ($1.startMs, $1.id) } }
     public func durationMs(of sceneId: String) -> Int { entries(in: sceneId).reduce(0) { $0 + $1.ownedDurationMs } }

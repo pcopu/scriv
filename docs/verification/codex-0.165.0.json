@@ -97,6 +97,24 @@
       "schema": "PermissionsRequestApprovalResponse.json",
       "passed": true,
       "negative": true
+    },
+    {
+      "name": "account/login/cancel",
+      "schema": "ClientRequest.json",
+      "passed": true
+    },
+    {
+      "name": "account/login/cancel response",
+      "schema": "v2/CancelLoginAccountResponse.json",
+      "passed": true
+    },
+    {
+      "name": "account/login/cancel requires loginId",
+      "schema": "ClientRequest.json",
+      "passed": true,
+      "negative": true
     }
-  ]
+  ],
+  "verificationDate": "2026-10-29",
+  "validatorVersion": "jsonschema 4.26.0"
 }

@@ -10,17 +10,20 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
     var onSignal: ((PeerSignal) -> Void)?
     var onAsset: ((String, Data) -> Void)?
     var onError: ((Error) -> Void)?
+    var onTransferError: ((_ peer: String, _ hash: String, _ error: Error) -> Void)?
     private var view: WKWebView?
     private var ready = false
     private var readyWaiters: [CheckedContinuation<Void, Error>] = []
     private var knownHashes: Set<String> = []
     private var availableAssets: [String: URL] = [:]
-    private var requests: Set<String> = []
+    private struct Request: Hashable { let peer: String; let hash: String }
+    private var requests: Set<Request> = []
     private var generation = 0
     private let limit = 25 * 1024 * 1024
 
     func authorize(knownHashes: Set<String>, localAssets: [String: URL]) {
         self.knownHashes = knownHashes
+        requests = requests.filter { knownHashes.contains($0.hash) }
         availableAssets = localAssets.filter { knownHashes.contains($0.key) && $0.value.isFileURL }
     }
 
@@ -38,7 +41,8 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
             throw ScrivError.unavailable("The peer transfer resource is missing from this build.")
         }
         webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
-        try await awaitReady()
+        do { try await awaitReady() }
+        catch { if generation == current { disconnect() }; throw error }
         guard generation == current, view === webView else { throw CancellationError() }
         let servers = try JSONSerialization.jsonObject(with: ScrivJSON.encoder.encode(iceServers))
         _ = try await webView.callAsyncJavaScript("ScrivPeer.configure({deviceId, iceServers, maxBytes});", arguments: ["deviceId": deviceId, "iceServers": servers, "maxBytes": limit], in: nil, contentWorld: .page)
@@ -67,15 +71,19 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
     }
 
     func requestAsset(hash: String, fromDeviceId: String) async throws {
-        guard knownHashes.contains(hash), hash.count == 64 else { throw ScrivError.permission("This image does not belong to the open project.") }
+        guard knownHashes.contains(hash), hash.count == 64, hash.allSatisfy({ "0123456789abcdef".contains($0) }) else { throw ScrivError.permission("This image does not belong to the open project.") }
         guard ready, let view else { throw ScrivError.unavailable("Peer transfer is not connected.") }
         let current = generation
-        requests.insert(hash)
+        let request = Request(peer: fromDeviceId, hash: hash)
+        requests.insert(request)
         status = "Receiving image from another Mac…"
         do {
             _ = try await view.callAsyncJavaScript("return await ScrivPeer.requestAsset(hash, peer);", arguments: ["hash": hash, "peer": fromDeviceId], in: nil, contentWorld: .page)
             guard generation == current, self.view === view else { throw CancellationError() }
-        } catch { if generation == current { requests.remove(hash) }; throw error }
+        } catch {
+            if generation == current, requests.remove(request) != nil { onTransferError?(fromDeviceId, hash, error) }
+            throw error
+        }
     }
 
     /// Discovery query/available messages stay with WorkspaceStore. Only the
@@ -127,17 +135,26 @@ final class PeerMediaBridge: NSObject, ObservableObject, WKScriptMessageHandler,
                 catch { if self.generation == current, self.view === currentView { self.onError?(error) } }
             }
         case "asset":
-            guard let hash = body["hash"] as? String, requests.contains(hash), knownHashes.contains(hash), let encoded = body["base64"] as? String, encoded.utf8.count <= ((limit + 2) / 3) * 4,
-                  let data = Data(base64Encoded: encoded), data.count <= limit, ScrivDigest.sha256(data) == hash else {
-                onError?(ScrivError.invalid("The peer image failed its integrity check.")); return
+            guard let hash = body["hash"] as? String, let peer = body["fromDeviceId"] as? String else { return }
+            let request = Request(peer: peer, hash: hash)
+            // A different source may still be fulfilling the same image. Its
+            // authorization cannot be consumed by this source's result/error.
+            guard requests.contains(request), knownHashes.contains(hash) else { return }
+            requests.remove(request)
+            guard let encoded = body["base64"] as? String, encoded.utf8.count <= ((limit + 2) / 3) * 4,
+                  let data = Data(base64Encoded: encoded), !data.isEmpty, data.count <= limit, ScrivDigest.sha256(data) == hash else {
+                let error = ScrivError.invalid("The peer image failed its integrity check.")
+                onTransferError?(peer, hash, error); onError?(error); return
             }
-            requests.remove(hash); status = "Image received and verified"; onAsset?(hash, data)
+            status = "Image received and verified"; onAsset?(hash, data)
         case "connected": status = "Encrypted peer connection"
         case "disconnected": status = "Peer disconnected — ready to reconnect"
         case "error":
-            if let hash = body["hash"] as? String { requests.remove(hash) }
             let text = body["message"] as? String ?? "Peer image transfer failed."
-            status = text; onError?(ScrivError.unavailable(text))
+            let error = ScrivError.unavailable(text)
+            if let hash = body["hash"] as? String, let peer = body["fromDeviceId"] as? String,
+               requests.remove(Request(peer: peer, hash: hash)) != nil { onTransferError?(peer, hash, error) }
+            status = text; onError?(error)
         default: break
         }
     }

@@ -49,6 +49,8 @@ struct ScrivApp: App {
                 Button("Script View") { store.tab = .script }.keyboardShortcut("1")
                 Button("Storyboard View") { store.tab = .storyboard }.keyboardShortcut("2")
                 Button("Characters View") { store.tab = .characters }.keyboardShortcut("3")
+                Divider()
+                Button("Codex on this Mac") { NotificationCenter.default.post(name: .scrivShowCodexControls, object: nil) }
             }
             CommandMenu("Playback") {
                 Button(store.isPlaying ? "Pause" : "Play") { store.togglePlayback() }.keyboardShortcut(" ", modifiers: [.option])
@@ -85,6 +87,7 @@ final class ScrivApplicationDelegate: NSObject, NSApplicationDelegate {
 
 extension Notification.Name {
     static let scrivFinishEditing = Notification.Name("ScrivFinishEditing")
+    static let scrivShowCodexControls = Notification.Name("ScrivShowCodexControls")
 }
 
 /// CI captures the actual native view tree. This does not use screen recording,
@@ -99,32 +102,56 @@ enum NativeScreenshotRunner {
         let output = URL(fileURLWithPath: args[index + 1], isDirectory: true)
         do {
             try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
+            guard try FileManager.default.contentsOfDirectory(atPath: output.path).isEmpty else {
+                throw ScrivError.invalid("Screenshot output must be empty. Use a fresh directory so old renders cannot pass as current evidence.")
+            }
             await store.prepareSampleForScreenshot()
             store.showDiscussion = false; store.isPlaying = false
             try await Task.sleep(for: .seconds(1))
             guard let window = NSApp.windows.first(where: { $0.contentView != nil && $0.isVisible }) else { throw ScrivError.unavailable("No Scriv window was available for screenshots.") }
-            window.setContentSize(NSSize(width: 1440, height: 1000))
+            window.setContentSize(NSSize(width: 1448, height: 1086))
             window.appearance = NSAppearance(named: .aqua)
             window.makeKeyAndOrderFront(nil)
+            var captures: [[String: Any]] = []
             let views: [(WorkspaceTab, String)] = [(.script, "01-script.png"), (.characters, "02-characters.png"), (.storyboard, "03-storyboard.png")]
             for (tab, name) in views {
                 store.tab = tab
                 if tab == .script {
-                    let moment = min(5000, max(0, store.sceneDurationMs - 1))
+                    let moment = min(29_400, max(0, store.sceneDurationMs - 1))
                     store.seek(toMs: Double(moment))
                     store.selectedEntryID = store.project.activeEntry(at: moment, sceneId: store.selectedSceneID)?.id
                     store.selectedCueID = store.project.activeCue(at: moment, sceneId: store.selectedSceneID)?.id
                 }
                 if tab == .characters { store.selectedCharacterID = store.project.characters.first(where: { $0.name.contains("Franklin") })?.id ?? store.project.characters.first?.id }
                 try await Task.sleep(for: .seconds(2))
-                guard let content = window.contentView else { throw ScrivError.unavailable("The native window has no content view.") }
-                content.layoutSubtreeIfNeeded()
-                guard let bitmap = content.bitmapImageRepForCachingDisplay(in: content.bounds) else { throw ScrivError.unavailable("Native bitmap creation failed.") }
-                content.cacheDisplay(in: content.bounds, to: bitmap)
-                guard let png = bitmap.representation(using: .png, properties: [:]) else { throw ScrivError.unavailable("Native PNG encoding failed.") }
-                try png.write(to: output.appendingPathComponent(name), options: .atomic)
+                captures.append(try capture(window, filename: name, role: "workspace", output: output, store: store))
             }
-            try Data("Native SwiftUI/AppKit screenshots captured successfully.\n".utf8).write(to: output.appendingPathComponent("result.txt"), options: .atomic)
+            store.tab = .script
+            store.seek(toMs: Double(min(29_400, max(0, store.sceneDurationMs - 1))))
+            store.loadDiscussion(itemId: "line-08")
+            try await Task.sleep(for: .seconds(1))
+            let priorWindows = Set(NSApp.windows.filter(\.isVisible).map { ObjectIdentifier($0) })
+            NotificationCenter.default.post(name: .scrivShowCodexControls, object: nil)
+            try await Task.sleep(for: .seconds(1))
+            captures.append(try capture(window, filename: "04-collaboration-local.png", role: "workspace", output: output, store: store))
+            // NSPopover is a separate native window. Preserve that raw capture
+            // separately rather than compositing it into a fabricated screenshot.
+            let popovers = NSApp.windows.filter {
+                $0 !== window && $0.isVisible && !priorWindows.contains(ObjectIdentifier($0)) && $0.contentView != nil && $0.frame.width > 200 && $0.frame.height > 100
+            }
+            guard let popover = popovers.max(by: { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }) else {
+                throw ScrivError.unavailable("The real Codex popover window did not open; fourth-state capture is incomplete.")
+            }
+            captures.append(try capture(popover, filename: "04-codex-popover.png", role: "codex-popover", output: output, store: store))
+            let metadata: [String: Any] = [
+                "schemaVersion": 1, "status": "captured", "platform": "macOS",
+                "coordinateSystem": "AppKit screen points (bottom-left origin); PNGs are raw content-view captures",
+                "requestedContentSize": ["width": 1448, "height": 1086],
+                "collaborationState": "Local sample; no synthetic collaborators, messages, account or runtime status",
+                "captures": captures
+            ]
+            try JSONSerialization.data(withJSONObject: metadata, options: [.prettyPrinted, .sortedKeys]).write(to: output.appendingPathComponent("capture-metadata.json"), options: .atomic)
+            try Data("Native SwiftUI/AppKit screenshots captured successfully. Five raw images cover four workspace concepts; Codex popover is a separate native-window capture.\n".utf8).write(to: output.appendingPathComponent("result.txt"), options: .atomic)
             await store.flushPendingSaves()
             NSApp.terminate(nil)
         } catch {
@@ -132,6 +159,27 @@ enum NativeScreenshotRunner {
             fputs("Scriv screenshot capture failed: \(error.localizedDescription)\n", stderr)
             exit(1)
         }
+    }
+    private static func capture(_ window: NSWindow, filename: String, role: String, output: URL, store: WorkspaceStore) throws -> [String: Any] {
+        guard let content = window.contentView else { throw ScrivError.unavailable("The native window has no content view.") }
+        content.layoutSubtreeIfNeeded()
+        guard let bitmap = content.bitmapImageRepForCachingDisplay(in: content.bounds) else { throw ScrivError.unavailable("Native bitmap creation failed.") }
+        content.cacheDisplay(in: content.bounds, to: bitmap)
+        guard let png = bitmap.representation(using: .png, properties: [:]) else { throw ScrivError.unavailable("Native PNG encoding failed.") }
+        try png.write(to: output.appendingPathComponent(filename), options: .atomic)
+        func rectangle(_ rect: NSRect) -> [String: Double] {
+            ["x": Double(rect.origin.x), "y": Double(rect.origin.y), "width": Double(rect.width), "height": Double(rect.height)]
+        }
+        return [
+            "filename": filename, "windowRole": role, "windowClass": window.className,
+            "windowFrame": rectangle(window.frame), "contentBounds": rectangle(content.bounds),
+            "pixelWidth": bitmap.pixelsWide, "pixelHeight": bitmap.pixelsHigh,
+            "selectedTab": store.tab.rawValue, "playheadMs": store.playheadMs,
+            "selectedEntryID": store.selectedEntryID ?? "", "selectedCueID": store.selectedCueID ?? "",
+            "discussionVisible": store.showDiscussion, "codexStatus": store.codex.status,
+            "codexConnected": store.codex.isConnected, "collaboratorCount": store.peers.count,
+            "discussionMessageCount": store.messages.count
+        ]
     }
 }
 

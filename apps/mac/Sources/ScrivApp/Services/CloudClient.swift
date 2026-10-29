@@ -20,10 +20,12 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     var onSignal: ((PeerSignal) -> Void)?
     var onError: ((Error) -> Void)?
     var onEvent: ((CloudEvent) -> Void)?
+    var onDiscussionRefresh: (() -> Void)?
     let sessionId = UUID().uuidString
     private(set) var epoch = 1
     private(set) var headSeq = 0
     private(set) var timingVersion = 0
+    private(set) var canImport = false
     private(set) var projectId: String?
     private(set) var deviceId: String?
     private var generation = 0
@@ -32,6 +34,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     private var deliveredSignals: Set<String> = []
     private var signalOrder: [String] = []
     private(set) var items: [String: CloudItem] = [:]
+    private(set) var threads: [String: DiscussionThread] = [:]
     private var token: String?
     private var socket: URLSessionWebSocketTask?
     private var receiver: Task<Void, Never>?
@@ -40,6 +43,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     private var renewal: Task<Void, Never>?
     private var authSession: ASWebAuthenticationSession?
     private var heldLeases: [String: EditLease] = [:]
+    private let leaseReleases = LeaseReleaseBarrier()
     private var stopped = false
     private var lastPresence: Date = .distantPast
     private var retryCount = 0
@@ -52,23 +56,19 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         }
         set {
             guard Self.validEndpoint(newValue), newValue != baseURL else { return }
-            disconnect(); account = nil; teams = []; projects = []; deviceId = nil
+            authSession?.cancel(); authSession = nil; disconnect(); account = nil; teams = []; projects = []; deviceId = nil
             UserDefaults.standard.set(newValue.absoluteString, forKey: "cloudBaseURL")
             token = try? KeychainToken.read(account: newValue.absoluteString)
             notify()
         }
     }
-    static func validEndpoint(_ url: URL) -> Bool {
-        guard url.user == nil, url.password == nil, url.query == nil, url.fragment == nil,
-              url.path.isEmpty || url.path == "/", let host = url.host, !host.isEmpty else { return false }
-        return url.scheme == "https" || url.scheme == "http" && ["127.0.0.1","localhost","::1","[::1]"].contains(host)
-    }
+    static func validEndpoint(_ url: URL) -> Bool { CloudEndpoint.isValid(url) }
     override init() {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.timeoutIntervalForRequest = 30; configuration.timeoutIntervalForResource = 120
-        urlSession = URLSession(configuration: configuration)
+        urlSession = URLSession(configuration: configuration, delegate: CloudRedirectPolicy(), delegateQueue: nil)
         super.init()
-        token = try? KeychainToken.read(account: baseURL.absoluteString)
+        if !ProcessInfo.processInfo.arguments.contains("--screenshots"), !ProcessInfo.processInfo.arguments.contains("--peer-smoke") { token = try? KeychainToken.read(account:baseURL.absoluteString) }
     }
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor { NSApp.keyWindow ?? NSApp.windows.first ?? ASPresentationAnchor() }
     private func notify() { onState?() }
@@ -77,8 +77,8 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         return try ScrivJSON.decoder.decode(T.self, from: data)
     }
     private func requestData(_ path: String, method: String, body: JSONValue? = nil, data: Data? = nil, headers: [String: String] = [:]) async throws -> Data {
-        guard Self.validEndpoint(baseURL), let url = URL(string: path, relativeTo: baseURL)?.absoluteURL else { throw ScrivError.invalid("Set a valid HTTPS Scriv server in Settings.") }
-        let requestBase = baseURL, requestToken = token
+        let url = try CloudEndpoint.apiURL(path:path,base:baseURL)
+        let requestBase = baseURL, requestToken = token, requestGeneration = generation
         var request = URLRequest(url: url)
         request.httpMethod = method
         if let token { request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
@@ -87,7 +87,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         if let data { request.httpBody = data }
         for (key, value) in headers { request.setValue(value, forHTTPHeaderField: key) }
         let (responseData, response) = try await urlSession.data(for: request)
-        guard requestBase == baseURL, requestToken == token else { throw CancellationError() }
+        guard requestBase == baseURL, requestToken == token, requestGeneration == generation, !Task.isCancelled else { throw CancellationError() }
         guard let http = response as? HTTPURLResponse else { throw ScrivError.unavailable("The cloud response was not HTTP.") }
         guard (200..<300).contains(http.statusCode) else {
             let error = try? ScrivJSON.decoder.decode(JSONValue.self, from: responseData)
@@ -103,7 +103,8 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     }
     func signIn() async throws {
         guard authSession == nil else { throw ScrivError.conflict("A sign-in window is already open.") }
-        let loginServer = baseURL
+        let loginServer = baseURL, loginGeneration = generation
+        defer { authSession = nil }
         var bytes = [UInt8](repeating: 0, count: 32)
         guard SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes) == errSecSuccess else { throw ScrivError.unavailable("Could not create a secure sign-in challenge.") }
         let verifier = Data(bytes).base64URLEncoded
@@ -121,8 +122,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
             session.presentationContextProvider = self; session.prefersEphemeralWebBrowserSession = false; authSession = session
             if !session.start() { continuation.resume(throwing: ScrivError.unavailable("The sign-in browser could not open.")) }
         }
-        defer { authSession = nil }
-        guard baseURL == loginServer else { throw ScrivError.conflict("The server changed during sign-in. Start sign-in again for the current server.") }
+        guard baseURL == loginServer, generation == loginGeneration else { throw ScrivError.conflict("The server changed during sign-in. Start sign-in again for the current server.") }
         let values = URLComponents(url: callback, resolvingAgainstBaseURL: false)?.queryItems ?? []
         guard callback.scheme == "scriv", callback.host == "auth", callback.path == "/callback", values.first(where: { $0.name == "state" })?.value == state, let code = values.first(where: { $0.name == "code" })?.value else { throw ScrivError.permission("Sign-in callback did not match this Mac's request.") }
         struct Exchange: Decodable { var token: String; var user: CloudUser }
@@ -140,13 +140,16 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         status = projectId == nil ? "Signed in" : status; notify()
     }
     func signOut() async throws {
+        authSession?.cancel(); authSession = nil
         if token != nil { let _: JSONValue = try await request("/auth/logout", method: "POST") }
         try KeychainToken.delete(account: baseURL.absoluteString); token = nil; account = nil; teams = []; projects = []; deviceId = nil; disconnect(); notify()
     }
     func createTeam(name: String) async throws -> CloudTeam { struct Response: Decodable { var team: CloudTeam }; let response: Response = try await request("/v1/teams", method: "POST", body: .object(["name":.string(name)])); try await refreshAccount(); return response.team }
-    func joinTeam(token: String) async throws { let _: JSONValue = try await request("/v1/join/\(token)", method: "POST"); try await refreshAccount() }
-    func joinLink(teamId: String) async throws -> URL { let result: JSONValue = try await request("/v1/teams/\(teamId)/join-links", method: "POST", body: .object(["role":.string("member"),"expiresInDays":.number(30)])); guard let string = result["url"]?.string, let url = URL(string: string) else { throw ScrivError.invalid("The server returned an invalid join link.") }; return url }
-    func billing(teamId: String, portal: Bool) async throws -> URL { let result: JSONValue = try await request("/v1/teams/\(teamId)/billing/\(portal ? "portal" : "checkout")", method: "POST"); guard let string = result["url"]?.string, let url = URL(string: string), url.scheme == "https" else { throw ScrivError.invalid("The billing URL is invalid.") }; return url }
+    @discardableResult
+    func joinTeam(token: String) async throws -> CloudTeam { struct Response: Decodable { var team: CloudTeam }; let response: Response = try await request("/v1/join/\(token)",method:"POST"); try await refreshAccount(); return response.team }
+    func joinLink(teamId: String, role: String = "member", expiresInDays: Int = 30) async throws -> URL { let result: JSONValue = try await request("/v1/teams/\(teamId)/join-links", method: "POST", body: .object(["role":.string(role),"expiresInDays":.number(Double(expiresInDays))])); guard let string = result["url"]?.string, let url = URL(string: string) else { throw ScrivError.invalid("The server returned an invalid join link.") }; return url }
+    func renameTeam(teamId: String, name: String) async throws { let _: JSONValue = try await request("/v1/teams/\(teamId)",method:"PATCH",body:.object(["name":.string(name)])); try await refreshAccount() }
+    func billing(teamId: String, portal: Bool) async throws -> URL { let result: JSONValue = try await request("/v1/teams/\(teamId)/billing/\(portal ? "portal" : "checkout")", method: "POST"); guard let string = result["url"]?.string, let url = URL(string:string), url.scheme == "https", url.user == nil, url.password == nil, ["checkout.stripe.com","billing.stripe.com"].contains(url.host ?? "") else { throw ScrivError.invalid("The billing URL is invalid.") }; return url }
     func createProject(_ project: ScrivProject, teamId: String?) async throws -> CloudProject {
         var payload: [String:JSONValue] = ["title":.string(project.title)]
         if let teamId { payload["teamId"] = .string(teamId) }
@@ -160,32 +163,44 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         let operationGeneration = generation
         let snapshot: CloudSnapshot = try await request("/v1/projects/\(projectId)/snapshot")
         guard operationGeneration == generation, self.projectId == projectId else { throw CancellationError() }
-        guard Set(snapshot.items.map(\.id)).count == snapshot.items.count else { throw ScrivError.invalid("The server returned duplicate item identities.") }
-        epoch = snapshot.epoch; headSeq = snapshot.headSeq; timingVersion = snapshot.timingVersion ?? 0; items = Dictionary(uniqueKeysWithValues: snapshot.items.map { ($0.id,$0) }); status = realtime ? "Connecting…" : "Cloud sync"; notify()
+        _ = try snapshot.validatedItems(for:projectId)
+        canImport = snapshot.canImport ?? (snapshot.headSeq == 0 && snapshot.allItems.isEmpty)
+        epoch = snapshot.epoch; headSeq = snapshot.headSeq; timingVersion = snapshot.timingVersion ?? 0; items = Dictionary(uniqueKeysWithValues: snapshot.allItems.map { ($0.id,$0) }); status = realtime ? "Connecting…" : "Cloud sync"; notify()
         if realtime { connectSocket() }
         else { startHeartbeat(realtime: false) }
+        threads = Dictionary((snapshot.threads ?? []).map { ($0.id,$0) },uniquingKeysWith: { _,latest in latest })
+        for thread in snapshot.threads ?? [] { onThread?(thread) }
         startSignalPolling()
+        onDiscussionRefresh?()
         return snapshot
     }
     func disconnect() {
         generation += 1; signalCursor = 0; deliveredSignals = []; signalOrder = []; signalPolling?.cancel(); signalPolling = nil
         stopped = true; socket?.cancel(with: .normalClosure, reason: nil); socket = nil; receiver?.cancel(); heartbeat?.cancel(); reconnect?.cancel(); renewal?.cancel()
-        receiver = nil; heartbeat = nil; renewal = nil; peers = []; leases = []; heldLeases = [:]; isConnected = false; projectId = nil; items = [:]; status = "Local only"; notify()
+        receiver = nil; heartbeat = nil; reconnect = nil; renewal = nil; retryCount = 0; peers = []; leases = []; heldLeases = [:]; isConnected = false; projectId = nil; items = [:]; threads = [:]; canImport = false; status = "Local only"; notify()
     }
     func acquireLease(_ itemId: String) async throws -> EditLease? {
         guard let projectId, items[itemId] != nil else { return nil }
         let operationGeneration = generation
+        await leaseReleases.task(for:"\(operationGeneration):\(itemId)")?.value
+        guard generation == operationGeneration, self.projectId == projectId else { throw CancellationError() }
         if let lease = heldLeases[itemId], lease.expiresAt > Int(Date().timeIntervalSince1970*1000)+5_000 { return lease }
         let lease: EditLease = try await request("/v1/projects/\(projectId)/leases", method: "POST", body: .object(["itemId":.string(itemId),"sessionId":.string(sessionId)]))
         guard operationGeneration == generation, self.projectId == projectId else { throw CancellationError() }
         heldLeases[itemId] = lease; leases.removeAll { $0.itemId == itemId }; leases.append(lease); notify(); startRenewal(); return lease
     }
     func releaseLease(_ itemId: String) async {
-        guard let projectId, let lease = heldLeases.removeValue(forKey: itemId) else { return }
-        let currentGeneration = generation
-        do { let _: JSONValue = try await request("/v1/projects/\(projectId)/leases", method: "DELETE", body: leaseBody(lease)) } catch { /* Expiry fences this lease even if offline. */ }
-        guard generation == currentGeneration else { return }
-        leases.removeAll { $0.itemId == itemId && $0.sessionId == sessionId }; notify()
+        guard let projectId, let lease = heldLeases.removeValue(forKey:itemId) else { return }
+        let currentGeneration = generation, leaseEpoch = epoch
+        let pending = leaseReleases.enqueue(key:"\(currentGeneration):\(itemId)") { [weak self] in
+            guard let self, self.generation == currentGeneration, self.epoch == leaseEpoch, self.projectId == projectId else { return }
+            do { let _: JSONValue = try await self.request("/v1/projects/\(projectId)/leases",method:"DELETE",body:self.leaseBody(lease)) }
+            catch { /* Expiry and the server fence make an offline release safe. */ }
+            guard self.generation == currentGeneration else { return }
+            self.leases.removeAll { $0.itemId == itemId && $0.sessionId == self.sessionId && $0.fence == lease.fence }
+            self.notify()
+        }
+        await pending.value
     }
     private func leaseBody(_ lease: EditLease) -> JSONValue { .object(["itemId":.string(lease.itemId),"sessionId":.string(sessionId),"token":.string(lease.token ?? ""),"fence":.number(Double(lease.fence)),"epoch":.number(Double(epoch))]) }
     private func startRenewal() {
@@ -196,8 +211,19 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
                 guard let self, !Task.isCancelled, let projectId = self.projectId else { return }
                 let currentGeneration = self.generation
                 for lease in Array(self.heldLeases.values) {
-                    do { let renewed: EditLease = try await self.request("/v1/projects/\(projectId)/leases", method: "PUT", body: self.leaseBody(lease)); guard self.generation == currentGeneration, !Task.isCancelled else { return }; self.heldLeases[lease.itemId] = renewed; self.leases.removeAll { $0.itemId == lease.itemId }; self.leases.append(renewed) }
-                    catch { guard self.generation == currentGeneration, !Task.isCancelled else { return }; self.heldLeases.removeValue(forKey: lease.itemId); self.leases.removeAll { $0.itemId == lease.itemId }; self.onError?(ScrivError.conflict("Editing lease expired. Your local draft is kept; reacquire the line before saving.")) }
+                    guard LeaseLifecycle.matches(self.heldLeases[lease.itemId],expected:lease,epoch:self.epoch) else { continue }
+                    do {
+                        let renewed: EditLease = try await self.request("/v1/projects/\(projectId)/leases",method:"PUT",body:self.leaseBody(lease))
+                        guard self.generation == currentGeneration, !Task.isCancelled else { return }
+                        guard LeaseLifecycle.matches(self.heldLeases[lease.itemId],expected:lease,epoch:self.epoch) else { continue }
+                        guard LeaseLifecycle.matches(renewed,expected:lease,epoch:self.epoch) else { throw ScrivError.invalid("The renewed editing lease has a different fence or identity.") }
+                        self.heldLeases[lease.itemId] = renewed; self.leases.removeAll { $0.itemId == lease.itemId }; self.leases.append(renewed)
+                    } catch {
+                        guard self.generation == currentGeneration, !Task.isCancelled else { return }
+                        guard LeaseLifecycle.matches(self.heldLeases[lease.itemId],expected:lease,epoch:self.epoch) else { continue }
+                        self.heldLeases.removeValue(forKey:lease.itemId); self.leases.removeAll { $0.itemId == lease.itemId && $0.fence == lease.fence }
+                        self.onError?(ScrivError.conflict("Editing lease expired. Your local draft is kept; reacquire the line before saving."))
+                    }
                 }
                 self.notify()
             }
@@ -239,7 +265,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         // Only event replay advances the cursor, including our own history entry.
         // Applying a receipt must not skip its event or an earlier remote event.
         try? FileManager.default.removeItem(at: pendingURL)
-        status = isConnected ? "Live" : "Cloud sync"; notify()
+        canImport = false; status = isConnected ? "Live" : "Cloud sync"; notify()
     }
     func seed(_ project: ScrivProject) async throws {
         guard let projectId else { throw ScrivError.unavailable("No cloud project is open.") }
@@ -259,9 +285,11 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         let _: JSONValue = try await request("/v1/projects/\(projectId)/import", method: "POST", body: payload)
         let snapshot: CloudSnapshot = try await request("/v1/projects/\(projectId)/snapshot")
         guard generation == currentGeneration, self.projectId == projectId else { throw CancellationError() }
-        guard Set(snapshot.items.map(\.id)).count == snapshot.items.count else { throw ScrivError.invalid("The server returned duplicate item identities.") }
-        items = Dictionary(uniqueKeysWithValues: snapshot.items.map { ($0.id,$0) }); epoch = snapshot.epoch; headSeq = snapshot.headSeq; timingVersion = snapshot.timingVersion ?? 0
+        _ = try snapshot.validatedItems(for:projectId)
+        items = Dictionary(uniqueKeysWithValues: snapshot.allItems.map { ($0.id,$0) }); epoch = snapshot.epoch; headSeq = snapshot.headSeq; timingVersion = snapshot.timingVersion ?? 0; canImport = snapshot.canImport ?? false
         try? FileManager.default.removeItem(at:savedURL)
+        threads = Dictionary((snapshot.threads ?? []).map { ($0.id,$0) },uniquingKeysWith: { _,latest in latest })
+        for thread in snapshot.threads ?? [] { onThread?(thread) }; onDiscussionRefresh?()
     }
     func retryPendingCommands() async throws {
         guard let projectId else { return }
@@ -305,6 +333,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         var request = URLRequest(url: components.url!)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization"); request.setValue(sessionId, forHTTPHeaderField: "X-Scriv-Device-Id")
         let currentGeneration = generation
+        socket?.cancel(with:.goingAway,reason:nil)
         let ws = urlSession.webSocketTask(with: request); socket = ws; ws.resume()
         receiver?.cancel()
         receiver = Task { [weak self] in
@@ -312,17 +341,18 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
                 while !Task.isCancelled {
                     let message = try await ws.receive(), data: Data
                     switch message { case .data(let value): data = value; case .string(let value): data = Data(value.utf8); @unknown default: continue }
-                    guard let self, self.generation == currentGeneration else { return }
+                    guard let self, self.generation == currentGeneration, self.socket === ws else { return }
                     if let event = try? ScrivJSON.decoder.decode(JSONValue.self, from: data) { try await self.handle(event) }
                 }
-            } catch { guard let self, self.generation == currentGeneration, !self.stopped, !Task.isCancelled else { return }; self.isConnected = false; self.status = "Reconnecting…"; self.notify(); self.scheduleReconnect() }
+            } catch { guard let self, self.generation == currentGeneration, self.socket === ws, !self.stopped, !Task.isCancelled else { return }; self.isConnected = false; self.status = "Reconnecting…"; self.notify(); self.scheduleReconnect() }
         }
         startHeartbeat(realtime: true)
     }
     private func scheduleReconnect() {
         reconnect?.cancel(); retryCount += 1
         let delay = min(30.0,pow(2.0,Double(min(retryCount,5)))) + Double.random(in: 0...1)
-        reconnect = Task { [weak self] in try? await Task.sleep(for: .seconds(delay)); guard let self, !Task.isCancelled, !self.stopped else { return }; self.connectSocket() }
+        let currentGeneration = generation
+        reconnect = Task { [weak self] in try? await Task.sleep(for: .seconds(delay)); guard let self, self.generation == currentGeneration, !Task.isCancelled, !self.stopped else { return }; self.connectSocket() }
     }
     private func startHeartbeat(realtime: Bool) {
         heartbeat?.cancel()
@@ -337,7 +367,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     }
     private func handle(_ event: JSONValue) async throws {
         switch event["type"]?.string {
-        case "hello": deviceId = event["deviceId"]?.string ?? deviceId; isConnected = true; retryCount = 0; status = "Live"; notify(); try await send(.object(["type":.string("resume"),"after":.number(Double(headSeq))]))
+        case "hello": deviceId = event["deviceId"]?.string ?? deviceId; isConnected = true; retryCount = 0; status = "Live"; notify(); try await send(.object(["type":.string("resume"),"after":.number(Double(headSeq))])); onDiscussionRefresh?()
         case "event": if let value = event["event"] { try await consume(try value.decoded(CloudEvent.self)) }
         case "events":
             let startSeq = headSeq
@@ -348,10 +378,10 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         case "presence": peers = try (event["peers"]?.array ?? []).map { try $0.decoded(PresencePeer.self) }; notify()
         case "leases": leases = try (event["leases"]?.array ?? []).map { try $0.decoded(EditLease.self) }; notify()
         case "message": if let value = event["message"] { onMessage?(try value.decoded(DiscussionMessage.self)) }
-        case "thread": if let value = event["thread"] { onThread?(try value.decoded(DiscussionThread.self)) }
+        case "thread": if let value = event["thread"] { let thread = try value.decoded(DiscussionThread.self); threads[thread.id] = thread; onThread?(thread) }
         case "signal":
             if let from = event["fromDeviceId"]?.string, let type = event["signalType"]?.string, let payload = event["payload"] { deliverSignal(PeerSignal(fromDeviceId: from,toDeviceId: deviceId ?? "",type: type,payload: payload)) }
-        case "error": onError?(ScrivError.unavailable(event["message"]?.string ?? "Live connection error."))
+        case "error": onError?(ScrivError.unavailable(event["error"]?["message"]?.string ?? event["message"]?.string ?? "Live connection error."))
         default: break
         }
     }
@@ -362,9 +392,12 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
             guard let projectId else { return }; let currentGeneration = generation
             let snapshot: CloudSnapshot = try await request("/v1/projects/\(projectId)/snapshot")
             guard generation == currentGeneration, self.projectId == projectId else { throw CancellationError() }
-            guard Set(snapshot.items.map(\.id)).count == snapshot.items.count else { throw ScrivError.invalid("The server returned duplicate item identities.") }
+            _ = try snapshot.validatedItems(for:projectId)
             if epoch != snapshot.epoch { heldLeases = [:]; leases = [] }
-            items = Dictionary(uniqueKeysWithValues:snapshot.items.map { ($0.id,$0) }); epoch = snapshot.epoch; headSeq = snapshot.headSeq; timingVersion = snapshot.timingVersion ?? timingVersion
+            items = Dictionary(uniqueKeysWithValues:snapshot.allItems.map { ($0.id,$0) }); epoch = snapshot.epoch; headSeq = snapshot.headSeq; timingVersion = snapshot.timingVersion ?? timingVersion; canImport = snapshot.canImport ?? false
+            threads = Dictionary((snapshot.threads ?? []).map { ($0.id,$0) },uniquingKeysWith: { _,latest in latest })
+        for thread in snapshot.threads ?? [] { onThread?(thread) }
+            onDiscussionRefresh?()
             if notifyItems { onItems?(Array(items.values)); notify() }; onEvent?(event); return
         }
         if event.epoch != epoch { epoch = event.epoch; heldLeases = [:]; leases = [] }
@@ -372,6 +405,9 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
             if let after = change.after { if after.version >= (items[change.id]?.version ?? 0) { items[change.id] = after } }
             else { items.removeValue(forKey: change.id) }
         }
+        if let value = event.data?["thread"], event.kind.hasPrefix("discussion.") { let thread = try value.decoded(DiscussionThread.self); threads[thread.id] = thread; onThread?(thread) }
+        if let message = event.data?["message"], event.kind == "discussion.message-created" { onMessage?(try message.decoded(DiscussionMessage.self)) }
+        if !event.changes.isEmpty { canImport = false }
         headSeq = event.seq; timingVersion = max(timingVersion,event.data?["timingVersion"]?.int ?? 0)
         if notifyItems { onItems?(Array(items.values)); notify() }; onEvent?(event)
     }
@@ -397,7 +433,8 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         guard isConnected, Date().timeIntervalSince(lastPresence) >= 0.2 else { return }; lastPresence = Date()
         var payload: [String:JSONValue] = ["type":.string("presence"),"itemId": itemId.map(JSONValue.string) ?? .null]
         if let selection { payload["selection"] = selection }; if let cursor { payload["cursor"] = cursor }
-        Task { try? await send(.object(payload)) }
+        let currentGeneration = generation
+        Task { guard currentGeneration == generation else { return }; try? await send(.object(payload)) }
     }
     func send(_ value: JSONValue) async throws { guard let socket else { throw ScrivError.unavailable("Live connection is not ready.") }; try await socket.send(.data(ScrivJSON.encoder.encode(value))) }
     func signal(_ signal: PeerSignal) async throws {
@@ -445,7 +482,35 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         var body: [String:JSONValue] = ["itemId":itemId.map(JSONValue.string) ?? .null]
         if let anchor { body["anchor"] = anchor }
         let response: Response = try await request("/v1/projects/\(projectId)/threads", method: "POST", body: .object(body))
-        return response.thread
+        threads[response.thread.id] = response.thread; return response.thread
+    }
+    func refreshThreads() async throws {
+        guard let projectId else { return }
+        struct Page: Decodable { var threads: [DiscussionThread]; var hasMore: Bool; var nextCursor: String? }
+        let operation = generation
+        var cursor = ""
+        while true {
+            let page: Page = try await request("/v1/projects/\(projectId)/threads?scope=all&limit=100&after=\(CloudEndpoint.queryValue(cursor))")
+            guard generation == operation else { throw CancellationError() }
+            for thread in page.threads { threads[thread.id] = thread }
+            if !page.hasMore { return }
+            guard let next = page.nextCursor, next > cursor else { throw ScrivError.invalid("The discussion directory stopped advancing.") }
+            cursor = next
+        }
+    }
+    func projectMembers() async throws -> [DiscussionMember] {
+        guard let projectId else { throw ScrivError.unavailable("Sync this project to choose team members.") }
+        struct Page: Decodable { var members: [DiscussionMember]; var hasMore: Bool; var nextCursor: String? }
+        let operation = generation
+        var result: [String:DiscussionMember] = [:], cursor = ""
+        while true {
+            let page: Page = try await request("/v1/projects/\(projectId)/members?limit=200&after=\(CloudEndpoint.queryValue(cursor))")
+            guard generation == operation else { throw CancellationError() }
+            for member in page.members { result[member.id] = member }
+            if !page.hasMore { return result.values.sorted { ($0.name.localizedLowercase,$0.id) < ($1.name.localizedLowercase,$1.id) } }
+            guard let next = page.nextCursor, next > cursor else { throw ScrivError.invalid("The member directory stopped advancing.") }
+            cursor = next
+        }
     }
     func messages(threadId: String) async throws -> [DiscussionMessage] {
         guard let projectId else { return [] }
@@ -453,7 +518,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         let currentGeneration = generation
         var collected: [String:DiscussionMessage] = [:], after = 0, afterID = ""
         while true {
-            let response: Response = try await request("/v1/projects/\(projectId)/threads/\(threadId)/messages?after=\(after)&afterId=\(afterID)")
+            let response: Response = try await request("/v1/projects/\(projectId)/threads/\(threadId)/messages?after=\(after)&afterId=\(CloudEndpoint.queryValue(afterID))")
             guard generation == currentGeneration else { throw CancellationError() }
             for message in response.messages { collected[message.id] = message }
             if response.hasMore != true { return collected.values.sorted { ($0.createdAt ?? $0.at ?? 0,$0.id) < ($1.createdAt ?? $1.at ?? 0,$1.id) } }
@@ -462,9 +527,9 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
             after = timestamp; afterID = identifier
         }
     }
-    func postMessage(threadId: String, text: String, replyToId: String? = nil, attachments: [JSONValue] = [], messageId: String = UUID().uuidString) async throws -> DiscussionMessage {
+    func postMessage(threadId: String, text: String, replyToId: String? = nil, attachments: [JSONValue] = [], mentionedUserIds: [String] = [], messageId: String = UUID().uuidString) async throws -> DiscussionMessage {
         guard let projectId else { throw ScrivError.unavailable("No cloud project is open.") }; struct Response: Decodable { var message: DiscussionMessage }
-        let response: Response = try await request("/v1/projects/\(projectId)/threads/\(threadId)/messages", method: "POST", body: .object(["id":.string(messageId),"body":.string(text),"replyToId":replyToId.map(JSONValue.string) ?? .null,"attachments":.array(attachments)])); return response.message
+        let response: Response = try await request("/v1/projects/\(projectId)/threads/\(threadId)/messages", method: "POST", body: .object(["id":.string(messageId),"body":.string(text),"replyToId":replyToId.map(JSONValue.string) ?? .null,"attachments":.array(attachments),"mentionedUserIds":.array(mentionedUserIds.map(JSONValue.string))])); return response.message
     }
     func resolve(threadId: String, resolved: Bool) async throws -> DiscussionThread {
         guard let projectId else { throw ScrivError.unavailable("No cloud project is open.") }; struct Response: Decodable { var thread: DiscussionThread }
@@ -483,6 +548,29 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
             after = last.seq
         }
     }
+    func historicalSnapshot(seq: Int) async throws -> CloudSnapshot {
+        guard let projectId else { throw ScrivError.unavailable("Reconnect this project to preview cloud history.") }
+        let operation = generation
+        var combined: CloudSnapshot?, cursor = ""
+        while true {
+            let page: CloudSnapshot = try await request("/v1/projects/\(projectId)/snapshot?seq=\(seq)&limit=200&after=\(CloudEndpoint.queryValue(cursor))")
+            guard operation == generation else { throw CancellationError() }
+            _ = try page.validatedItems(for:projectId)
+            guard page.headSeq == seq else { throw ScrivError.invalid("The server returned a different history revision.") }
+            if var existing = combined {
+                guard existing.epoch == page.epoch, existing.timingVersion == page.timingVersion else { throw ScrivError.invalid("Historical snapshot pages disagree.") }
+                existing.items += page.items; existing.deletedItems = (existing.deletedItems ?? []) + (page.deletedItems ?? [])
+                combined = existing
+            } else { combined = page }
+            if page.hasMore != true {
+                guard var result = combined else { throw ScrivError.invalid("No history snapshot was returned.") }
+                result.hasMore = false; result.nextCursor = nil; _ = try result.validatedItems(for:projectId)
+                return result
+            }
+            guard let next = page.nextCursor, next > cursor else { throw ScrivError.invalid("Historical snapshot pagination stopped advancing.") }
+            cursor = next
+        }
+    }
     func restore(seq: Int) async throws {
         guard let projectId else { return }
         let _: JSONValue = try await request("/v1/projects/\(projectId)/restore", method: "POST", body: .object(["commandId":.string(UUID().uuidString),"sessionId":.string(sessionId),"epoch":.number(Double(epoch)),"expectedTimingVersion":.number(Double(timingVersion)),"seq":.number(Double(seq))])); try await replay()
@@ -498,7 +586,11 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     }
 }
 
-private struct CloudRequestError: LocalizedError {
+private final class CloudRedirectPolicy: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+    func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) { completionHandler(nil) }
+}
+
+struct CloudRequestError: LocalizedError {
     let status: Int
     let code: String
     let message: String

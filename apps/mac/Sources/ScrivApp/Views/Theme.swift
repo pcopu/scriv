@@ -12,8 +12,19 @@ enum ScrivTheme {
         ? NSColor(red: 0.10, green: 0.13, blue: 0.18, alpha: 1)
         : NSColor(red: 0.91, green: 0.95, blue: 0.98, alpha: 1)
     })
-    static let panel = Color(nsColor: .textBackgroundColor)
-    static let inset = Color(nsColor: .controlBackgroundColor)
+    static let panel = adaptive(light: NSColor(red: 0.995, green: 0.998, blue: 1, alpha: 1), dark: .textBackgroundColor)
+    static let inset = adaptive(light: NSColor(red: 0.935, green: 0.950, blue: 0.975, alpha: 1), dark: .controlBackgroundColor)
+    static let chrome = adaptive(light: NSColor(red: 0.90, green: 0.95, blue: 0.985, alpha: 1), dark: .windowBackgroundColor)
+    static let panelRadius: CGFloat = 18
+    static let scriptBodySize: CGFloat = 20
+    static let compactBodySize: CGFloat = 14
+    static let scriptGutter: CGFloat = 158
+    static let scriptRowSpacing: CGFloat = 23
+    static func adaptive(light: NSColor, dark: NSColor) -> Color {
+        Color(nsColor: NSColor(name: nil) { appearance in
+            appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? dark : light
+        })
+    }
     static let hairline = Color(nsColor: .separatorColor).opacity(0.45)
     static let directionColors = ["#A350EA", "#F47A63", "#16B9B7", "#5A85D4", "#C89D31"]
     static func color(_ hex: String) -> Color {
@@ -130,35 +141,45 @@ struct DurationPill: View {
     let milliseconds: Int
     var dark = false
     var editable = true
+    var minimumMilliseconds = 0
+    var title = "Owned duration"
     let onChange: (Int) -> Void
     @State private var editing = false
     @State private var seconds = ""
+    @State private var validationMessage: String?
+    @FocusState private var durationFocused: Bool
     var body: some View {
         Button {
             seconds = String(format: "%.2f", Double(milliseconds) / 1000)
+            validationMessage = nil
             editing = true
         } label: {
-            Text(ScrivFormat.duration(milliseconds)).font(.system(size: 12, weight: .semibold, design: .rounded)).monospacedDigit()
+            Text(ScrivFormat.duration(milliseconds)).font(.system(size: 14, weight: .semibold, design: .rounded)).monospacedDigit()
                 .foregroundStyle(dark ? Color.white : ScrivTheme.ink)
                 .padding(.horizontal, 11).padding(.vertical, 5)
                 .background(dark ? Color.black.opacity(0.55) : ScrivTheme.inset, in: Capsule())
                 .overlay(Capsule().strokeBorder(dark ? .white.opacity(0.5) : ScrivTheme.hairline.opacity(0.4)))
         }.buttonStyle(.plain).disabled(!editable)
-            .help("Edit owned duration")
+            .help("Edit " + title.lowercased())
+            .accessibilityLabel("\(title), \(ScrivFormat.duration(milliseconds))")
             .popover(isPresented: $editing, arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Duration").font(.headline)
+                    Text(title).font(.headline)
                     HStack {
                         TextField("Seconds", text: $seconds).textFieldStyle(.roundedBorder).frame(width: 100)
-                            .onSubmit(commit)
+                            .focused($durationFocused).onSubmit(commit)
                         Text("seconds").foregroundStyle(.secondary)
                     }
-                    Button("Apply", action: commit).buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
-                }.padding(18)
+                    if let validationMessage { Text(validationMessage).font(.caption).foregroundStyle(.red).frame(maxWidth: 240, alignment: .leading) }
+                    HStack { Spacer(); Button("Cancel") { editing = false }.keyboardShortcut(.cancelAction); Button("Apply", action: commit).buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction) }
+                }.padding(18).onAppear { durationFocused = true }
             }
     }
     private func commit() {
-        guard let value = Double(seconds), value.isFinite, value >= 0, value <= 86400 else { NSSound.beep(); return }
+        guard let value = Double(seconds), value.isFinite, value >= Double(minimumMilliseconds) / 1000, value <= 3600 else {
+            validationMessage = "Enter a duration from \(String(format: "%.3f", Double(minimumMilliseconds) / 1000)) to 3,600 seconds."
+            return
+        }
         onChange(Int((value * 1000).rounded())); editing = false
     }
 }

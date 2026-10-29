@@ -5,6 +5,7 @@ import { billingReturn, billingRoutes, reconcileBilling, webhook } from './billi
 import { APIError, assert, failure, id, json, rateLimit } from './http';
 import { iceServers, mediaRoutes, projectDevices, reconcileMedia } from './media';
 import { joinPage, teamRoutes } from './teams';
+import { generationRoutes } from './generation';
 export { ProjectRoom } from './project-room';
 export { BillingCoordinator } from './billing';
 
@@ -24,13 +25,14 @@ export default {
       await rateLimit(env,`request:${identity.sessionId}`,1200,60000);
       const billing=await billingRoutes(request,env,identity);if(billing)return billing;
       const media=await mediaRoutes(request,env,identity);if(media)return media;
+      const generation=await generationRoutes(request,env,identity);if(generation)return generation;
       const team=await teamRoutes(request,env,identity);if(team)return team;
       const project=/^\/v1\/projects\/([^/]+)\/(.+)$/.exec(url.pathname);
       if(project){
         const projectId=id(project[1]);
         if(project[2]==='ice-servers'&&request.method==='GET')return await iceServers(request,env,identity,projectId);
         if(project[2]==='devices'&&request.method==='GET')return await projectDevices(env,identity,projectId);
-        const allowed=/^(snapshot|events|history|commands|import|restore|leases|threads(?:\/[^/]+(?:\/messages)?)?|signals|socket)$/.test(project[2]!);assert(allowed,404,'not_found','Project API route not found.');
+        const allowed=/^(snapshot|events|history|commands|import|restore|leases|members|threads(?:\/[^/]+(?:\/messages)?)?|signals|socket)$/.test(project[2]!);assert(allowed,404,'not_found','Project API route not found.');
         return await env.PROJECTS.get(env.PROJECTS.idFromName(projectId)).fetch(request);
       }
       throw new APIError(404,'not_found','Scriv API route not found.');

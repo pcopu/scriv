@@ -4,7 +4,7 @@ A native Mac workspace for writing a script, timing its words and directions, an
 
 Scriv is a new SwiftUI/AppKit application. The inherited Movie AI Workspace implementation has been removed; the Git history and all 25 Scriv design images remain available. The cloud service runs on Cloudflare Workers, D1, SQLite Durable Objects and private R2 storage.
 
-**Release status:** implementation complete, with cloud, real-WebRTC and native Mac verification passing for [runtime commit `0eb779b`](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01). The [successful CI run](https://github.com/pcopu/scriv/actions/runs/40921544866) includes the universal development build and native captures. [Verification](docs/verification.md) records the results and remaining account-bound acceptance checks; the [deployment handoff](docs/deployment.md) covers production configuration, signing and release.
+**Release status:** further implementation and parity verification are in progress. Historical cloud, real-WebRTC and native Mac verification passed for [runtime commit `0eb779b`](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01). The [successful CI run](https://github.com/pcopu/scriv/actions/runs/40921544866) includes the universal development build and native captures. [Verification](docs/verification.md) records the results and remaining account-bound acceptance checks; the [deployment handoff](docs/deployment.md) covers production configuration, signing and release.
 
 ![Scriv native Script view](docs/screenshots/01-script.png)
 
@@ -22,7 +22,7 @@ Scriv is a new SwiftUI/AppKit application. The inherited Movie AI Workspace impl
 
 Directions have **owned time** and **coverage**. A direction may own zero seconds while extending forward over other lines. Extending its coverage never adds time. Moving an image cut preserves the two cues' combined duration and the script's word order. The [design specification](docs/design.md) and [timing fixture](design/storyboard-timing-example.json) define the interaction precisely.
 
-The bundled farm-scene excerpt includes three real sample images. It starts at zero for playback; the design fixture retains the original full-scene time offsets.
+The bundled farm-scene sample includes the full 56.3-second authored sequence and three real sample images. The selected storyboard excerpt retains its original full-scene time offsets.
 
 ## Free and Team
 
@@ -65,7 +65,7 @@ The app opens locally without signing in. Use **File → Open Project** for a `.
 
 Image generation requests a real image file in an isolated local generation directory. The installed Codex runtime, selected model and account must support image generation. Scriv reports an actual missing-capability or missing-file error instead of substituting an image. This integration still requires the live-account release smoke test described in the handoff.
 
-The protocol is checked against the official Codex **0.165.0** generated schema, with 18 passing contract checks. See [Codex integration](docs/codex-integration.md) for the tested version and reproducible validation.
+The protocol is checked against the official Codex **0.165.0** generated schema, with 21 passing contract checks. See [Codex integration](docs/codex-integration.md) for the tested version and reproducible validation.
 
 ## Run the backend locally
 
@@ -89,11 +89,13 @@ npm test
 npm --prefix cloud run test:load
 npx playwright install chromium
 npm run test:peer
-swift test --package-path apps/mac
-bash scripts/build-mac.sh
+# Linux or macOS with an official Swift toolchain:
+bash scripts/verify-native.sh --portable
+# macOS only, for actual native app compilation and packaging:
+bash scripts/verify-native.sh --native
 ```
 
-The Cloudflare tests run inside the real Workers runtime with local D1, Durable Objects and R2 bindings. The peer tests use real Chromium WebRTC data channels. Swift core tests can also run on Linux; compiling the native interface and rendering its screenshots require macOS.
+The Cloudflare tests run inside the real Workers runtime with local D1, Durable Objects and R2 bindings. The peer tests use real Chromium WebRTC data channels. Swift core tests and optimized core builds run on Linux using the portable verification wrapper, which uses project-local caches. `npm run verify` now requires Swift rather than skipping those checks. Compiling the native interface and rendering its screenshots require macOS; parsing Swift source on Linux is not native UI type-checking. See [current local native evidence](docs/verification/doppler-linux-native.md).
 
 CI runs the backend, fixture and six real-browser peer tests plus the native Mac build. It packages a universal `.app`, checks a real multi-chunk transfer between two native WebKit bridges, then captures all three native views. The browser cases include simultaneous requests on throttled CPUs, ICE arriving before SDP, either device initiating, reconnection, and retry after lost signaling. CI does not deploy, create Stripe charges, sign with a private Developer ID certificate or log into a ChatGPT account.
 

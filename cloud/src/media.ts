@@ -41,10 +41,19 @@ export async function mediaRoutes(request:Request,env:Env,identity:Identity):Pro
   const assetId=request.headers.get('x-scriv-asset-id');if(assetId)id(assetId,'assetId');
   const key=`projects/${projectId}/${hash}`,now=Date.now();
   let reserved:unknown;
-  try{reserved=await env.DB.prepare("INSERT INTO assets(project_id,sha256,team_id,asset_id,object_key,content_type,bytes,state,uploaded_by,created_at) VALUES(?,?,?,?,?,?,?,'uploading',?,?) ON CONFLICT(project_id,sha256) DO NOTHING RETURNING sha256")
-    .bind(projectId,hash,access.team.id,assetId,key,type,content.length,identity.user.id,now).first();}
+  // Upload bodies/hash verification may take time. Linearize authorization with
+  // the quota reservation so removal, viewer downgrade, archive, session revoke
+  // or subscription lapse cannot be bypassed by finishing an older request.
+  try{reserved=await env.DB.prepare(`INSERT INTO assets(project_id,sha256,team_id,asset_id,object_key,content_type,bytes,state,uploaded_by,created_at)
+    SELECT p.id,?,t.id,?,?,?,?,'uploading',?,? FROM projects p JOIN teams t ON t.id=p.team_id
+    LEFT JOIN team_members actor ON actor.team_id=t.id AND actor.user_id=?
+    WHERE p.id=? AND p.archived_at IS NULL AND t.subscription_status IN ('active','trialing') AND t.paid_until>?
+      AND (t.owner_id=? OR actor.role IN ('owner','admin','member'))
+      AND EXISTS(SELECT 1 FROM sessions actor_session WHERE actor_session.id=? AND actor_session.user_id=? AND actor_session.revoked_at IS NULL AND actor_session.expires_at>?)
+    ON CONFLICT(project_id,sha256) DO NOTHING RETURNING sha256`)
+    .bind(hash,assetId,key,type,content.length,identity.user.id,now,identity.user.id,projectId,now,identity.user.id,identity.sessionId,identity.user.id,now).first();}
   catch(error){if(String(error).includes('team_storage_quota'))throw new APIError(413,'storage_quota','This team has reached its hosted image storage quota. Remove hosted replicas or raise the quota.');throw error;}
-  assert(reserved,409,'upload_in_progress','Another device is uploading this image. Retry shortly.');
+  assert(reserved,409,'upload_unavailable','Access changed or another device is uploading this image. Refresh and retry.');
   try{
     await env.MEDIA.put(key,content,{httpMetadata:{contentType:type},customMetadata:{sha256:hash,projectId,teamId:access.team.id}});
     await env.DB.prepare("UPDATE assets SET state='ready' WHERE project_id=? AND sha256=? AND state='uploading' AND created_at=?").bind(projectId,hash,now).run();
