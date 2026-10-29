@@ -121,7 +121,7 @@ struct TeamSheet: View {
             Text("Your entire team. One subscription.").font(.title2.weight(.semibold))
             Text("$9.99/month per team. Invite collaborators with a link, share projects, edit live, and keep images available in the cloud.")
                 .font(.callout).foregroundStyle(.secondary).multilineTextAlignment(.center).frame(maxWidth: 430)
-            Button("Sign in to Scriv") { run { try await store.cloud.signIn() } }.buttonStyle(.borderedProminent).controlSize(.large).disabled(isWorking)
+            ScrivEmailSignInForm(cloud:store.cloud).frame(width:350)
             Text("Single-person editing and script storage stay free.").font(.caption).foregroundStyle(.secondary)
             Spacer()
         }.frame(maxWidth: .infinity)

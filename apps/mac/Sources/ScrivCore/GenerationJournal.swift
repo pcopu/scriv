@@ -14,13 +14,17 @@ public struct GenerationJobContext: Codable, Hashable, Sendable {
     public var deviceID: String?
     public var sourceHeadSeq: Int?
     public var sourceItemVersion: Int?
+    /// Only the cue's manual direction belongs in shared image metadata. The
+    /// assembled script/profile/reference prompt stays in the local job journal.
+    public var userDirection: String?
     public init(projectID: String, projectTitle: String, packagePath: String, targetCue: ImageCue, sourceRevision: Int,
                 cloudProjectID: String? = nil, cloudServer: String? = nil, accountID: String? = nil,
-                deviceID: String? = nil, sourceHeadSeq: Int? = nil, sourceItemVersion: Int? = nil) {
+                deviceID: String? = nil, sourceHeadSeq: Int? = nil, sourceItemVersion: Int? = nil, userDirection: String? = nil) {
         self.projectID = projectID; self.projectTitle = projectTitle; self.packagePath = packagePath
         self.targetCue = targetCue; self.sourceRevision = sourceRevision; self.cloudProjectID = cloudProjectID
         self.cloudServer = cloudServer; self.accountID = accountID; self.deviceID = deviceID
         self.sourceHeadSeq = sourceHeadSeq; self.sourceItemVersion = sourceItemVersion
+        self.userDirection = userDirection
     }
 }
 

@@ -20,7 +20,7 @@ public enum ProjectEditing {
                 insertion = index + 1
             } else { insertion = sequence.count }
             let start = sequence.prefix(insertion).reduce(0) { $0 + $1.ownedDurationMs }
-            let oldDuration = next.durationMs(of: entry.sceneId)
+            try CueAnchoring.materialize(&next, sceneId: entry.sceneId)
             // Earlier coverage is anchored in scene time; later directions move as a whole.
             for index in next.entries.indices where next.entries[index].sceneId == entry.sceneId && next.entries[index].kind == .direction {
                 let source = next.startMs(of: next.entries[index].id)
@@ -29,15 +29,13 @@ public enum ProjectEditing {
                     next.entries[index].coverageDurationMs += entry.ownedDurationMs
                 }
             }
-            for index in next.cues.indices where next.cues[index].sceneId == entry.sceneId {
-                if next.cues[index].startMs > start { next.cues[index].startMs += entry.ownedDurationMs }
-                if next.cues[index].endMs > start || start == oldDuration && next.cues[index].endMs == start { next.cues[index].endMs += entry.ownedDurationMs }
-            }
             sequence.insert(entry, at: insertion)
             next.entries.append(entry)
             assignOrder(in:&next,sequence:sequence,changedId:entry.id)
+            try CueAnchoring.resolve(&next, sceneId: entry.sceneId)
             if next.cues(in: entry.sceneId).isEmpty && entry.ownedDurationMs > 0 {
                 next.cues.append(ImageCue(sceneId: entry.sceneId, label: "01A", startMs: 0, endMs: next.durationMs(of: entry.sceneId)))
+                try CueAnchoring.materialize(&next, sceneId: entry.sceneId)
             }
         }
     }
@@ -45,18 +43,16 @@ public enum ProjectEditing {
     public static func deleteEntry(_ project: inout ScrivProject, entryId: String) throws {
         try edit(&project) { next in
             guard let entry = next.entries.first(where: { $0.id == entryId }) else { throw ScrivError.invalid("Line not found.") }
+            if entry.ownedDurationMs > 0 { try CueAnchoring.materialize(&next, sceneId: entry.sceneId) }
             let start = next.startMs(of: entryId), end = start + entry.ownedDurationMs
             func mapped(_ time: Int) -> Int { time <= start ? time : time < end ? start : time - entry.ownedDurationMs }
             for index in next.entries.indices where next.entries[index].sceneId == entry.sceneId && next.entries[index].kind == .direction && next.entries[index].id != entryId {
                 let source = next.startMs(of: next.entries[index].id)
                 next.entries[index].coverageDurationMs = max(next.entries[index].ownedDurationMs, mapped(source + next.entries[index].coverageDurationMs) - mapped(source))
             }
-            for index in next.cues.indices where next.cues[index].sceneId == entry.sceneId {
-                next.cues[index].startMs = mapped(next.cues[index].startMs)
-                next.cues[index].endMs = mapped(next.cues[index].endMs)
-            }
-            next.cues.removeAll { $0.endMs <= $0.startMs }
+            next.cues.removeAll { $0.startAnchor?.entryId == entryId }
             next.entries.removeAll { $0.id == entryId }
+            if entry.ownedDurationMs > 0 { try CueAnchoring.resolve(&next, sceneId: entry.sceneId) }
             next.audioClips.removeAll { $0.entryId == entryId }
         }
     }
@@ -67,10 +63,12 @@ public enum ProjectEditing {
             var sequence = next.entries(in: entry.sceneId)
             guard let index = sequence.firstIndex(where: { $0.id == entryId }), offset >= -index, offset < sequence.count - index else { throw ScrivError.invalid("This line cannot move beyond its scene.") }
             guard offset != 0 else { return }
+            try CueAnchoring.materialize(&next, sceneId: entry.sceneId)
             sequence.insert(sequence.remove(at:index),at:index + offset)
             assignOrder(in:&next,sequence:sequence,changedId:entryId)
-            // Images stay on the scene clock; direction anchors and their coverage move
-            // with the authored source. No spoken word is rewritten or retimed.
+            // Source-owned outgoing image/direction coverage travels with its parent.
+            // Incoming coverage stays at its original parent and covers the replacement child.
+            try CueAnchoring.resolve(&next, sceneId: entry.sceneId)
         }
     }
 
@@ -93,16 +91,15 @@ public enum ProjectEditing {
             let duration = next.durationMs(of: sceneId)
             guard atMs >= 0, atMs < duration else { throw ScrivError.invalid("Place the playhead inside a scene with positive duration.") }
             let cues = next.cues(in: sceneId)
-            if let existing = cues.first(where: { atMs >= $0.startMs && atMs < $0.endMs }) {
+            if let existing = next.activeCue(at: atMs, sceneId: sceneId) {
                 guard atMs > existing.startMs else { throw ScrivError.invalid("Move inside the image before adding a cut.") }
-                let index = next.cues.firstIndex { $0.id == existing.id }!
-                next.cues[index].endMs = atMs
-                var split = existing; split.id = id; split.startMs = atMs; split.label = uniqueCueLabel(in: next, base: existing.label)
-                next.cues.append(split)
+                try TimingEngine.splitCue(&next, cueId: existing.id, atMs: atMs, newCueId: id)
+                if let index = next.cues.firstIndex(where: { $0.id == id }) { next.cues[index].label = uniqueCueLabel(in: next, base: existing.label) }
             } else {
-                let start = cues.last(where: { $0.endMs <= atMs })?.endMs ?? 0
+                let start = cues.filter { $0.endMs <= atMs }.map(\.endMs).max() ?? 0
                 let end = cues.first(where: { $0.startMs > atMs })?.startMs ?? duration
                 next.cues.append(ImageCue(id: id, sceneId: sceneId, label: uniqueCueLabel(in: next, base: "Image"), startMs: start, endMs: end))
+                try CueAnchoring.materialize(&next, sceneId: sceneId)
             }
         }
         return id
@@ -116,9 +113,11 @@ public enum ProjectEditing {
     /// The left cue keeps its image/version; all script words and total scene time stay fixed.
     public static func mergeCues(_ project: inout ScrivProject, leftCueId: String, rightCueId: String) throws {
         try edit(&project) { next in
-            guard let left = next.cues.firstIndex(where: { $0.id == leftCueId }), let right = next.cues.first(where: { $0.id == rightCueId }), next.cues[left].sceneId == right.sceneId, next.cues[left].endMs == right.startMs else { throw ScrivError.invalid("Only neighboring image cues can be merged.") }
-            next.cues[left].endMs = right.endMs
+            guard TimingEngine.canMoveBoundary(next, leftCueId: leftCueId, rightCueId: rightCueId), let left = next.cues.firstIndex(where: { $0.id == leftCueId }), let right = next.cues.first(where: { $0.id == rightCueId }) else { throw ScrivError.invalid("Only neighboring image cues can be merged.") }
+            try CueAnchoring.materialize(&next, sceneId: right.sceneId)
+            next.cues[left].authoredDurationMs = right.endMs - next.cues[left].startMs
             next.cues.removeAll { $0.id == rightCueId }
+            try CueAnchoring.resolve(&next, sceneId: right.sceneId)
         }
     }
     public static func setCueImage(_ project: inout ScrivProject, cueId: String, imageId: String?) throws {

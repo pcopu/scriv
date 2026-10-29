@@ -1,4 +1,6 @@
-# Copy to .dev.vars, keep it out of Git. OAuth requires real provider credentials.
+# Copy to .dev.vars and keep it out of Git. No authentication bypass is provided.
+# Email OTP needs a configured EMAIL binding and verified EMAIL_FROM sender; tests fake it.
+# The following GitHub values are optional legacy-provider credentials.
 ENVIRONMENT=development
 PUBLIC_URL=http://localhost:8787
 GITHUB_CLIENT_ID=

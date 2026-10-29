@@ -15,13 +15,17 @@ public struct ScriptScene: Identifiable, Codable, Hashable, Sendable {
     public var order: Double
     public init(id: String = UUID().uuidString, title: String = "Untitled scene", order: Double = 0) { self.id = id; self.title = title; self.order = order }
 }
+public enum WordTimingSource: String, Codable, Hashable, Sendable { case authored }
+
 public struct TimedWord: Identifiable, Codable, Hashable, Sendable {
     public var id: String
     public var text: String
     /// Milliseconds relative to the start of its script entry.
     public var startMs: Int
     public var endMs: Int
-    public init(id: String = UUID().uuidString, text: String, startMs: Int, endMs: Int) { self.id = id; self.text = text; self.startMs = startMs; self.endMs = endMs }
+    /// Nil is an editorial estimate; authored timings are preserved during later edits.
+    public var timingSource: WordTimingSource?
+    public init(id: String = UUID().uuidString, text: String, startMs: Int, endMs: Int, timingSource: WordTimingSource? = nil) { self.id = id; self.text = text; self.startMs = startMs; self.endMs = endMs; self.timingSource = timingSource }
 }
 public struct ScriptEntry: Identifiable, Codable, Hashable, Sendable {
     public var id: String
@@ -35,11 +39,12 @@ public struct ScriptEntry: Identifiable, Codable, Hashable, Sendable {
     public var coverageDurationMs: Int
     public var color: String
     public var words: [TimedWord]
-    public init(id: String = UUID().uuidString, sceneId: String, order: Double, kind: EntryKind = .dialogue, text: String = "", characterId: String? = nil, ownedDurationMs: Int = 3000, coverageDurationMs: Int = 0, color: String = "purple", words: [TimedWord] = []) {
+    public var characterLinks: [CharacterTextLink]?
+    public init(id: String = UUID().uuidString, sceneId: String, order: Double, kind: EntryKind = .dialogue, text: String = "", characterId: String? = nil, ownedDurationMs: Int = 3000, coverageDurationMs: Int = 0, color: String = "purple", words: [TimedWord] = [], characterLinks: [CharacterTextLink]? = nil) {
         self.id = id; self.sceneId = sceneId; self.order = order; self.kind = kind; self.text = text; self.characterId = characterId
         self.ownedDurationMs = max(kind == .dialogue ? max(1, text.split(whereSeparator: { $0.isWhitespace }).count) : 0, ownedDurationMs)
         self.coverageDurationMs = max(coverageDurationMs, kind == .direction ? self.ownedDurationMs : 0)
-        self.color = color; self.words = words
+        self.color = color; self.words = words; self.characterLinks = characterLinks
         if kind == .dialogue && words.isEmpty { self.words = TimingEngine.retimeWords(text: text, durationMs: self.ownedDurationMs) }
     }
 }
@@ -70,6 +75,12 @@ public struct ImageAsset: Identifiable, Codable, Hashable, Sendable {
         self.id = id; self.version = version; self.fileName = fileName; self.sha256 = sha256; self.mimeType = mimeType; self.byteCount = byteCount; self.characterIds = characterIds; self.prompt = prompt; self.createdAt = ScrivClock.normalized(createdAt); self.previousVersionId = previousVersionId
     }
 }
+/// A durable script-relative edge. Cue scene milliseconds are its resolved projection.
+public struct ScriptTimeAnchor: Codable, Hashable, Sendable {
+    public var entryId: String
+    public var offsetMs: Int
+    public init(entryId: String, offsetMs: Int) { self.entryId = entryId; self.offsetMs = offsetMs }
+}
 public struct ImageCue: Identifiable, Codable, Hashable, Sendable {
     public var id: String
     public var sceneId: String
@@ -78,9 +89,12 @@ public struct ImageCue: Identifiable, Codable, Hashable, Sendable {
     public var startMs: Int
     public var endMs: Int
     public var prompt: String
+    public var startAnchor: ScriptTimeAnchor?
+    /// Source-owned forward extent, preserved even when the scene ends sooner.
+    public var authoredDurationMs: Int?
     public var durationMs: Int { endMs - startMs }
-    public init(id: String = UUID().uuidString, sceneId: String, imageId: String? = nil, label: String = "", startMs: Int, endMs: Int, prompt: String = "") {
-        self.id = id; self.sceneId = sceneId; self.imageId = imageId; self.label = label; self.startMs = startMs; self.endMs = endMs; self.prompt = prompt
+    public init(id: String = UUID().uuidString, sceneId: String, imageId: String? = nil, label: String = "", startMs: Int, endMs: Int, prompt: String = "", startAnchor: ScriptTimeAnchor? = nil, authoredDurationMs: Int? = nil) {
+        self.id = id; self.sceneId = sceneId; self.imageId = imageId; self.label = label; self.startMs = startMs; self.endMs = endMs; self.prompt = prompt; self.startAnchor = startAnchor; self.authoredDurationMs = authoredDurationMs
     }
 }
 public struct ScrivProject: Identifiable, Codable, Hashable, Sendable {
@@ -130,7 +144,7 @@ public struct ScrivProject: Identifiable, Codable, Hashable, Sendable {
         for entry in sequence { let end = clock + entry.ownedDurationMs; if ms >= clock && ms < end { return entry }; clock = end }
         return ms == clock ? sequence.last : nil
     }
-    public func activeCue(at ms: Int, sceneId: String) -> ImageCue? { cues(in: sceneId).first { ms >= $0.startMs && ms < $0.endMs } }
+    public func activeCue(at ms: Int, sceneId: String) -> ImageCue? { cues(in: sceneId).last { ms >= $0.startMs && ms < $0.endMs } }
     public func character(_ id: String?) -> ScriptCharacter? { characters.first { $0.id == id } }
     public func asset(_ id: String?) -> ImageAsset? { images.first { $0.id == id } }
 }

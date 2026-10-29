@@ -5,6 +5,8 @@ export interface Env {
   BILLING: DurableObjectNamespace;
   ENVIRONMENT: string;
   PUBLIC_URL: string;
+  EMAIL?: SendEmail;
+  EMAIL_FROM?: string;
   GITHUB_CLIENT_ID?: string;
   GITHUB_CLIENT_SECRET?: string;
   STRIPE_SECRET_KEY?: string;

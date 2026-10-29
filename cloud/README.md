@@ -25,24 +25,25 @@ npm run build
 
 `build` is a Wrangler **dry run**. Tests use the real local Workers runtime,
 D1/SQLite and R2 emulation. Provider requests are mocked in integration tests;
-these do not charge Stripe or OpenAI. `test:load` exercises 500 authenticated
+these do not send real email or charge Stripe or OpenAI. `test:load` exercises 500 authenticated
 WebSocket connections, presence, 100 concurrent independent script writers,
 and delivery of 50,000 mutation observations. Local timings are not a production
 SLA. Exact results and untested production cases are recorded in
 [`../docs/backend-verification.md`](../docs/backend-verification.md).
 
-For interactive development, copy `.dev.vars.example` to `.dev.vars`, fill in real
-OAuth credentials and use:
+For interactive development, copy `.dev.vars.example` to `.dev.vars` and configure
+only the providers you intend to exercise, then use:
 
 ```sh
 npm run db:migrate:local
 npm run dev
 ```
 
-There is no development-auth bypass in production or local routes. The OAuth
-provider callback for local work must exactly match the configured origin. Use
-an HTTPS tunnel if the provider does not accept your loopback callback. The Mac
-client can target `http://127.0.0.1:8787` in Settings.
+There is no development-auth bypass in production or local routes. Email OTP
+tests inject a fake `EMAIL` sender; interactive email sign-in needs a verified
+Email Sending domain/binding or the deployed service. Optional legacy OAuth
+requires a callback matching the configured origin. The Mac client can target
+`http://127.0.0.1:8787` in Settings.
 
 ## Deployment sequence
 
@@ -61,18 +62,17 @@ must supply the account-specific settings below.
 3. Set `d1_databases[0].database_id` in `wrangler.jsonc` to the returned ID and
    `vars.PUBLIC_URL` to the actual HTTPS Worker/custom-domain origin. Keep
    `ENVIRONMENT=production`. Configure the desired route/custom domain.
-4. Create a GitHub OAuth App for Scriv. Callback:
-   `https://<api-origin>/auth/github/callback`. Store its client ID and secret as
-   Worker secrets. The Mac signs into Scriv through the system web session with
-   a separate PKCE verifier; it receives a single-use code at
-   `scriv://auth/callback`. OpenAI credentials are never sent to this service.
-5. In Stripe, create **one recurring USD $9.99/month Team price**. Its quantity is
+4. Configure Cloudflare Email Sending for a verified sender domain, restrict the
+   `EMAIL` binding to the login sender, and set `EMAIL_FROM`. Disable email content
+   preview. The primary native flow uses six-digit, ten-minute, single-use email
+   codes bound to a PKCE verifier. No email API token is needed for the binding.
+   GitHub OAuth remains optional for existing identities; its callback is
+   `https://<api-origin>/auth/github/callback`. OpenAI credentials never enter this service.
+5. **Deferred in the current deployment:** In Stripe, create **one recurring USD $9.99/month Team price**. Its quantity is
    always 1 per team. Membership has no seat limit or per-seat charge. Activate
    the customer billing portal. Put these secrets into Workers:
 
    ```sh
-   npx wrangler secret put GITHUB_CLIENT_ID
-   npx wrangler secret put GITHUB_CLIENT_SECRET
    npx wrangler secret put STRIPE_SECRET_KEY
    npx wrangler secret put STRIPE_TEAM_PRICE_ID
    npx wrangler secret put STRIPE_WEBHOOK_SECRET
@@ -107,8 +107,9 @@ must supply the account-specific settings below.
 
 D1 stores users, hashed sessions, OAuth states and exchange codes, teams,
 membership, hashed/revocable join links, project catalog, billing events,
-subscriptions and image replica reservations. The D1 migration is
-[`migrations/0001_identity_teams.sql`](migrations/0001_identity_teams.sql).
+subscriptions, verified email identities, hashed PKCE-bound email challenges
+and image replica reservations. Apply every ordered file under `migrations/`,
+including additive `0003_email_auth.sql`; do not rewrite applied migrations.
 
 One SQLite `ProjectRoom` Durable Object owns each project's items, immutable
 command history and before/after changes, receipts, edit leases, discussions,
@@ -120,7 +121,7 @@ transaction between D1 and the live project state. Schema initialization is in
 A per-team `BillingCoordinator` serializes checkout and canonical Stripe state
 reconciliation. An old subscription event cannot replace a newer active
 subscription. Hourly maintenance retries missed billing updates, removes expired
-OAuth/rate-limit state, and resolves abandoned R2 reservations.
+OAuth/email-challenge/rate-limit state, and resolves abandoned R2 reservations.
 
 R2 keys are private, immutable project/content-hash addresses. Upload bytes are
 hashed and checked against the path; content signatures must match PNG/JPEG/WebP
@@ -135,7 +136,9 @@ versions and timed placements.
   are secret; fences monotonically increase. Each lease is bound to both the
   authenticated device session and the editor-window session.
 - Existing items require a current lease and expected version. Creates use
-  version 0. Batches are atomic, up to 100 operations/512 KiB.
+  version 0. Direct commands are atomic up to 100 operations/512 KiB. Larger
+  indivisible edits stage immutable parts before one atomic commit, up to 10,000
+  operations with separate 16 MiB upload and before/after history limits.
 - `POST /import` bootstraps an empty project atomically, up to 10,000 items/16 MiB.
   It supports cyclic character-portrait references and returns a snapshot hint.
 - Timeline geometry changes require `expectedTimingVersion`. Word/text edits
@@ -179,8 +182,9 @@ add forward migrations and test old-client compatibility.
 
 ## Production smoke checklist
 
-- Fresh GitHub sign-in; expired/mismatched PKCE rejection; logout and session
-  revocation; no credential leakage in logs or redirect URLs.
+- Fresh email code delivery/sign-in; resend, expiry, replay, wrong-code and
+  mismatched-PKCE rejection; logout and session revocation; no credentials/codes
+  in logs. Optional GitHub sign-in remains a separate compatibility check.
 - Free solo create/edit/save/history and a second signed-in device syncing script.
 - Team test checkout at exactly $9.99, join-link reuse/revocation, member removal,
   viewer access, portal cancellation, restoration and late webhook delivery.

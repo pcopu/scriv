@@ -23,11 +23,11 @@ SQLite Durable Objects provide the project coordinator and live distribution rol
 | --- | --- |
 | Project | Stable ID, title, ordered scenes, entries, characters, images, cues and local revision. |
 | Scene | Stable ID, title and order. |
-| Entry | Scene ID, order, dialogue/direction kind, text, optional speaker character ID, owned duration, forward direction coverage, color and words. |
-| Word | Stable ID, exact text, start/end milliseconds relative to its entry. |
+| Entry | Scene ID, order, dialogue/direction kind, exact text, speaker ID, owned duration, forward coverage, words and optional persisted UTF-16 character identity links. |
+| Word | Stable ID, exact text, start/end milliseconds relative to its entry and optional authored-timing marker. |
 | Character | Stable ID, name, aliases, biography, appearance, color and optional portrait image-version ID. |
 | Image | Stable asset ID and version, prior-version link, filename, MIME type, byte count, SHA-256, creation time, prompt/metadata and explicit depicted-character tags. Bytes are immutable; tags can be edited. |
-| Cue | Stable ID, scene, start/end milliseconds, label, prompt and optional image-version ID. |
+| Cue | Stable ID, scene, resolved start/end, optional script-entry start anchor and authored forward duration, label, prompt and image-version ID. |
 
 Script and direction text remain authoritative. Character names are linked without rewriting the wording. Image tags describe the people actually depicted, not every character mentioned in nearby dialogue. One entry can have multiple cues, and a cue can span neighboring entries. Image bytes and cue timing are separate records.
 
@@ -37,7 +37,9 @@ Script and direction text remain authoritative. Character names are linked witho
 - Dialogue owns positive time. A direction can own zero or positive time.
 - A direction begins at its authored position and can cover only itself and later content.
 - Direction coverage cannot end before its own action slot ends and does not advance sequence time.
-- Word times remain ordered and inside their dialogue duration.
+- Word times remain ordered and inside their dialogue duration. Explicit authored endpoints survive compatible text edits; incompatible edits fail without canonical mutation.
+- Source-owned images move with their source and retain authored extent across scene-tail clipping. Valid anchored overlap remains separate; playback uses the latest-starting active cue.
+- A zero-owned direction can own an image at offset zero; a scene-tail placement may be dormant without losing its authored extent.
 - Moving a shared image cut preserves the combined duration and prevents a zero-length cue.
 - Dragging a selected contiguous prefix to the previous image or suffix to the next image changes the cut/assignment while preserving source word order and timestamps. Non-edge selections cannot move past unselected words.
 
@@ -45,11 +47,13 @@ The design fixture retains full-scene absolute offsets. The bundled playable exc
 
 ## D1 schema
 
-The schema is executable in [`cloud/migrations/0001_identity_teams.sql`](../cloud/migrations/0001_identity_teams.sql).
+The schema is executable in the ordered [`cloud/migrations`](../cloud/migrations) files. Email authentication is additive in `0003_email_auth.sql`; existing identity/project foreign keys remain intact.
 
 | Table | Purpose and key constraints |
 | --- | --- |
-| `users` | Internal identity keyed by UUID with unique GitHub provider ID. |
+| `users` | Internal identity keyed by UUID. Legacy GitHub IDs remain unchanged; email-only users use a reserved nonnumeric provider-key namespace for compatibility. |
+| `email_identities` | Normalized verified email mapped uniquely to one user. Never inferred from an existing GitHub contact email. |
+| `email_auth_challenges` | Hashed random challenge ID/code, PKCE binding, expiration, sent state, bounded attempts and single-use consume marker. No plaintext code is stored. |
 | `sessions` | Hash of opaque bearer token, server-issued device/session ID, user, device name, expiration and revocation. Raw token is returned only at issuance. |
 | `oauth_states` | Short-lived hashed OAuth state, original native state and PKCE challenge. |
 | `auth_codes` | Single-use hashed native exchange code bound to the user and PKCE challenge. |
@@ -87,11 +91,11 @@ Generic items let one atomic command validate and modify a scene, entry, cue or 
 
 Entering edit mode obtains a 30-second exclusive item lease, renewed every 10 seconds. A lease is scoped to the authenticated device and the native-client editor session. Ownership, token, fence, item version, expiry and restore epoch are checked server-side. A restored or revoked session cannot reuse an old lease. Different entries can be edited concurrently.
 
-Each command has a unique ID, expected versions and up to 100 operations. The room commits content, before/after changes, the history event and receipt in one SQLite transaction. A retry with the same payload gets the original receipt; reusing the ID for different content fails. Authorization is checked before honoring a retry, so a former member cannot use old command receipts to regain access.
+Each command has a unique ID and expected versions. Direct commands support 100 operations/512 KiB; larger indivisible edits stage immutable upload parts, then commit up to 10,000 operations with separate 16 MiB upload and before/after history budgets. The room commits content, before/after changes, the history event and receipt in one SQLite transaction. A retry with the same payload gets the original receipt; reusing the ID for different content fails. Authorization is checked before honoring a retry, so a former member cannot use old command receipts to regain access.
 
 Timing-changing commands also use an expected project timing version. This prevents simultaneous duration/cut edits from shifting the same sequence inconsistently. Independent text edits under separate entry leases can proceed; they still advance the timing counter so an older pending word/cut operation cannot overwrite newly timed text.
 
-The native app persists drafts and a scoped command outbox. Reconnecting compares the last durable canonical checkpoint, the local draft and current remote items. Unchanged or independently changed items can merge; same-item conflicts are retained for explicit review. Network failure does not silently discard the local draft or mark an unaccepted change as cloud-saved.
+The native app persists a bounded local editor-recovery journal outside project packages, plus a scoped command outbox. Invalid text is journaled before native acceptance but never installed in canonical/cloud state; source/epoch drift requires review, and recovery clears only after successful disk save or explicit discard. Reconnecting compares the last durable canonical checkpoint, the local draft and current remote items. Unchanged or independently changed items can merge; same-item conflicts are retained for explicit review. Network failure does not silently discard the local draft or mark an unaccepted change as cloud-saved.
 
 Cloud history is an append-only sequence. New thread/message/resolution mutations share its sequence and watermark, storing their discussion payload and an empty item-change list atomically with the discussion update. Lost socket notifications therefore recover through the same replay path as content. Existing pre-upgrade discussion remains readable without inventing historical sequence numbers. Restore reconstructs a selected content state and writes a new event under a new epoch. It invalidates leases. It does not rewind membership, subscriptions or conversation messages. Local project history stores complete native snapshots and remains usable offline. Both cloud event and message clients page through results; messages use a two-part `(at,id)` cursor, with monotonically advancing per-thread timestamps for new sends. Replay responses are byte-bounded; oversized events request a fresh snapshot while preserving the full journal changes. Native clients also refresh the active discussion after snapshot replacement so skipped message payloads are recovered.
 
@@ -117,7 +121,7 @@ Premium R2 media is private. Every read/write is authorized through the Worker. 
 
 ## Identity and billing
 
-The initial Scriv identity provider is GitHub OAuth. A native authorization flow uses PKCE and state, returns a short-lived single-use exchange code to `scriv://auth/callback`, and stores the resulting opaque Scriv session in Keychain. The server stores only its hash. HTTPS is required for remote API endpoints; loopback HTTP is allowed for development.
+Email OTP is the primary Scriv sign-in. Six-digit codes expire after ten minutes, allow at most five attempts and are bound to an in-memory native PKCE verifier. A D1 transaction consumes the challenge and creates/reuses the explicitly verified email identity and session. Email identities never silently merge with GitHub contact addresses. Legacy GitHub OAuth remains optional with PKCE/state and the single-use `scriv://auth/callback` exchange. Both flows store the opaque session in the API-origin-scoped Keychain; the server stores only its hash. HTTPS is required for remote API endpoints; loopback HTTP is allowed for development.
 
 The Team price is exactly one recurring monthly USD 999-cent Stripe price at quantity one. Checkout and portal require the team owner. The server checks the configured price before creating checkout. A per-team billing coordinator serializes checkout attempts and reconciliation. Signed webhook events trigger retrieval of the customer's current matching subscriptions, so an old cancellation notification cannot override a newer active subscription. Duplicate events are idempotent.
 

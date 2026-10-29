@@ -32,7 +32,7 @@ export default {
         const projectId=id(project[1]);
         if(project[2]==='ice-servers'&&request.method==='GET')return await iceServers(request,env,identity,projectId);
         if(project[2]==='devices'&&request.method==='GET')return await projectDevices(env,identity,projectId);
-        const allowed=/^(snapshot|events|history|commands|import|restore|leases|members|threads(?:\/[^/]+(?:\/messages)?)?|signals|socket)$/.test(project[2]!);assert(allowed,404,'not_found','Project API route not found.');
+        const allowed=/^(snapshot|events|history|commands|batches(?:\/[^/]+\/(?:commit|parts\/\d+))?|import|restore|leases|members|threads(?:\/[^/]+(?:\/messages)?)?|signals|socket)$/.test(project[2]!);assert(allowed,404,'not_found','Project API route not found.');
         return await env.PROJECTS.get(env.PROJECTS.idFromName(projectId)).fetch(request);
       }
       throw new APIError(404,'not_found','Scriv API route not found.');
@@ -43,6 +43,7 @@ export default {
       await env.DB.batch([
         env.DB.prepare('DELETE FROM oauth_states WHERE expires_at<?').bind(Date.now()),
         env.DB.prepare('DELETE FROM auth_codes WHERE expires_at<?').bind(Date.now()),
+        env.DB.prepare('DELETE FROM email_auth_challenges WHERE expires_at<=?').bind(Date.now()),
         env.DB.prepare('DELETE FROM sessions WHERE expires_at<?').bind(Date.now()-30*86400000),
         env.DB.prepare('DELETE FROM security_limits WHERE expires_at<?').bind(Date.now())
       ]);

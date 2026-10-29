@@ -50,9 +50,9 @@ struct CharactersView: View {
                 EmptyPanel(symbol: "magnifyingglass", title: "No matching characters", message: "Try another name or alias.")
                 Button("Clear search") { search = "" }.buttonStyle(.borderless)
             } else {
-                EmptyPanel(symbol: "person.crop.rectangle.stack", title: "People make the scene", message: "Add your characters and their aliases. Names in the script open their profiles; image tags track who is pictured.")
+                EmptyPanel(symbol: "person.crop.rectangle.stack", title: "People make the scene", message: "Add your characters and their aliases. Confirm suggested names from a script line’s Character links review; image tags track who is pictured.")
             }
-            Label("Select a name in the script to open its character.", systemImage: "info.circle.fill")
+            Label("Confirmed script names open their character. Review suggestions from a line’s menu.", systemImage: "info.circle.fill")
                 .font(.system(size: 11)).foregroundStyle(.secondary)
         }.padding(16).background(ScrivTheme.inset.opacity(0.42)).clipShape(RoundedRectangle(cornerRadius: 17))
             .onChange(of: store.selectedCharacterID) { _, id in
@@ -68,7 +68,7 @@ struct CharactersView: View {
             }
             .confirmationDialog("Delete \(deleting?.name ?? "character")?", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }), titleVisibility: .visible) {
                 Button("Delete Character", role: .destructive) { if let deleting { store.deleteCharacter(deleting.id) }; deleting = nil }
-            } message: { Text("Their script text and images are preserved. Speaker links and character tags are removed.") }
+            } message: { Text("Their script text and images are preserved. Speaker links, inline links and character tags are removed; old words will not link to a reused name.") }
     }
     private func profile(_ character: ScriptCharacter) -> some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -222,6 +222,8 @@ private struct CharacterEditor: View {
             Form {
                 TextField("Name", text: $draft.name)
                 TextField("Aliases, separated by commas", text: $aliases)
+                Text("Renaming or removing an alias keeps confirmed script links and authored wording unchanged. New name matches remain suggestions until reviewed.")
+                    .font(.caption).foregroundStyle(.secondary)
                 Picker("Color", selection: $draft.color) {
                     ForEach(["blue", "teal", "orange", "purple", "coral", "green", "pink"], id: \.self) { color in Text(color.capitalized).tag(color) }
                 }
@@ -242,6 +244,6 @@ private struct CharacterEditor: View {
         guard store.navigationContext == navigationContext else { dismiss(); return }
         draft.name = draft.name.trimmingCharacters(in: .whitespacesAndNewlines)
         draft.aliases = Array(Set(aliases.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty })).sorted()
-        store.updateCharacter(draft); dismiss()
+        if store.updateCharacter(draft) { dismiss() }
     }
 }

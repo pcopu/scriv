@@ -1,8 +1,12 @@
 # Verification report
 
-Date: 2026-10-29. This report distinguishes source implementation, actual automated results and account-bound release checks. No production service has been deployed and no real subscription or image-generation charge was created by this build work.
+Date: 2026-10-29. This report distinguishes source implementation, actual automated results and account-bound release checks. The backend is now deployed; see [current deployment evidence](verification/cloud-deployment-20261029.md). Stripe is explicitly deferred, and no real subscription or image-generation charge was created by this build work.
 
-## Completed automated checks
+## Current source versus historical runtime
+
+The [current integration handoff](verification/current-handoff.md) and [final integration checks](verification/final-integration-20261029.md) cover the later source: 181 portable core tests, 182 local cloud tests (one opt-in skip), 21 Node tests, syntax/build/preservation checks, and the explicitly failed/excluded peer run. No native Mac build, launch or fresh capture ran for those changes in this Linux workspace. Production service/email/session evidence is separate. The table, runtime CI and native screenshots below are historical evidence for `0eb779b`, not verification of current `main`.
+
+## Historical automated checks — runtime `0eb779b`
 
 | Check | Result | Environment and evidence |
 | --- | --- | --- |
@@ -18,13 +22,13 @@ Date: 2026-10-29. This report distinguishes source implementation, actual automa
 | Asset preservation | **Passed** | All 25 original design images and all 3 sample frames match their stored SHA-256 manifests. |
 | Shell/package source checks | **Passed** | Shell syntax, bridge JavaScript syntax and required release-file checks. |
 
-The final runtime source is [0eb779b](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01). Its [verification run 40921544866](https://github.com/pcopu/scriv/actions/runs/40921544866) **completed successfully**: the [cloud job](https://github.com/pcopu/scriv/actions/runs/40921544866/job/123616157671), [peer job](https://github.com/pcopu/scriv/actions/runs/40921544866/job/123616157656) and [native Mac job](https://github.com/pcopu/scriv/actions/runs/40921544866/job/123616157151) all passed. The later documentation-only commit adds the captured images and this report without changing the verified runtime source.
+The historically verified runtime source is [0eb779b](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01). Its [verification run 40921544866](https://github.com/pcopu/scriv/actions/runs/40921544866) **completed successfully**: the [cloud job](https://github.com/pcopu/scriv/actions/runs/40921544866/job/123616157671), [peer job](https://github.com/pcopu/scriv/actions/runs/40921544866/job/123616157656) and [native Mac job](https://github.com/pcopu/scriv/actions/runs/40921544866/job/123616157151) all passed. The later documentation-only commit adds the captured images and this report without changing the verified runtime source.
 
 A separate final-source browser stress run used CPU throttling rate 4 and five repetitions of all five simultaneous/staggered scenarios: **25 scenarios**, plus the other five test categories, with **6/6 tests passing** in **11.199 seconds**. Its recovery test covers all five lost-signal combinations: the higher-ID requester losing a connect request, offer or answer, and the lower-ID requester losing an offer or answer. Only the request deadline is advanced for the timeout test; image bytes still cross the real browser transport. No retry-on-failure wrapper or increased production timeout hides negotiation failures.
 
 ## Native build and visual gate
 
-**Passed at the final runtime commit `0eb779b`:** actual AppKit/SwiftUI/WebKit compilation, 28 native core tests, optimized builds for both `arm64` and `x86_64`, universal app packaging and signature verification, packaged application launch, real WebKit peer transfer, and all three native screenshot captures. Evidence: [Mac job 123616157151](https://github.com/pcopu/scriv/actions/runs/40921544866/job/123616157151).
+**Passed at historical runtime commit `0eb779b` only:** actual AppKit/SwiftUI/WebKit compilation, 28 native core tests, optimized builds for both `arm64` and `x86_64`, universal app packaging and signature verification, packaged application launch, real WebKit peer transfer, and all three native screenshot captures. Evidence: [Mac job 123616157151](https://github.com/pcopu/scriv/actions/runs/40921544866/job/123616157151).
 
 The native smoke test opened two genuine WKWebView instances and transferred **2,150,385 bytes** over WebRTC in **6.905 seconds**, including fresh view startup. It checked SHA-256 and byte equality and deliberately made the higher-ID device request the image, proving that its explicit connection request reached the lower-ID offerer. It observed one connect request and one offer, and used no cloud account or external ICE service. The exact byte count, elapsed time, signal counts, artifact checksum and image hashes are retained in [native-ci.json](verification/native-ci.json).
 
@@ -42,8 +46,8 @@ The test sends one presence update per connected client. It does not simulate 50
 
 The following require deployment inputs or a real user's runtime/account and have **not** been claimed as tested:
 
-- Production Cloudflare routing, D1/R2/DO provisioning and recovery/backup drill.
-- Actual GitHub OAuth authorization and native callback on a user's Mac.
+- Production recovery/backup drill and authenticated multi-device acceptance beyond the [recorded deployment checks](verification/cloud-deployment-20261029.md).
+- Native email-login UI/Keychain acceptance on a real Mac; optional existing-GitHub OAuth callback acceptance. See deployment evidence for server-side delivery/session results.
 - Stripe test-mode and live-mode checkout/portal/webhook delivery in the intended account.
 - TURN-only transfer between Macs on separate networks.
 - ChatGPT sign-in and a real image generation through the installed local Codex runtime.

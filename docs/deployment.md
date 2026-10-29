@@ -1,16 +1,17 @@
 # Deployment-agent handoff
 
-This repository contains the new native Mac app and its Cloudflare service. **No production deployment has been performed.** Follow this runbook from a reviewed commit whose cloud, peer and native CI jobs pass. The [verification report](verification.md) lists what has actually run; account-bound smoke tests below are release gates rather than claims of completion.
+The Cloudflare backend is deployed at **https://scriv-api.muddy-recipe-a722.workers.dev** with D1, private R2, SQLite Durable Objects and restricted login email from `login@scriv.why-not.work`. See [deployment verification](verification/cloud-deployment-20261029.md) for the exact Worker version, resource read-backs and email/session acceptance outcome. Stripe and multiplayer acceptance are explicitly deferred for the current single-user delivery. This is not a claim of a native production release: the [final integration record](verification/final-integration-20261029.md) separates passed Linux/cloud checks, actual failures and unrun Mac/signing gates. The remaining runbook below is for later authorized acceptance and distribution.
 
 ## 1. Inputs to collect
 
 | Input | Used for |
 | --- | --- |
 | Intended Cloudflare account with Workers Paid and R2 enabled | Worker, SQLite Durable Objects, D1 and private media bucket. |
-| Production HTTPS API origin | OAuth callback, native API configuration, invitations and billing return URLs. |
+| Production HTTPS API origin | Native API configuration, email-origin checks, optional OAuth callback, invitations and billing return URLs. |
 | D1 database ID and private R2 bucket name | `cloud/wrangler.jsonc` bindings. |
-| GitHub OAuth App client ID and secret | Scriv account login. This is independent of the GitHub connector used to develop the repository. |
-| Stripe secret key, recurring Team price ID and webhook signing secret | $9.99/month per team billing. Use test mode for acceptance, then the matching live resources. |
+| Verified Cloudflare Email Sending domain and restricted `EMAIL` binding | Primary six-digit email-code Scriv login. No mail API token is needed for the Worker binding. |
+| Optional GitHub OAuth App client ID and secret | Compatibility login for existing GitHub identities; not required for email sign-in. |
+| Stripe secret key, recurring Team price ID and webhook signing secret | Deferred by the current deployment authorization. Later: $9.99/month per team billing, test-mode acceptance before live resources. |
 | Cloudflare Realtime TURN key ID and API token | Reliable peer transfer across restrictive NATs. Optional for local/direct tests; required before advertising broad internet peer connectivity. |
 | Apple Developer ID Application signing identity and notary credentials | Public Mac distribution. |
 | Codex installed on the acceptance-test Macs and the testers' own ChatGPT accounts | Real local generation smoke test. These credentials stay on the Macs. |
@@ -52,7 +53,7 @@ npx wrangler d1 create scriv
 npx wrangler r2 bucket create scriv-media
 ```
 
-Set the returned D1 ID in `wrangler.jsonc`, replace `YOUR_SUBDOMAIN` in `vars.PUBLIC_URL` with the actual production HTTPS origin, and configure a custom domain/route if desired. Keep the public origin exactly consistent with the GitHub OAuth callback and native release configuration. The committed all-zero D1 ID and example hostname intentionally fail `npm run check:config`.
+The current `wrangler.jsonc` records the provisioned `scriv` D1 ID, private `scriv-media` bucket, API origin `https://scriv-api.muddy-recipe-a722.workers.dev` and sender `login@scriv.why-not.work`. These are ordinary resource identifiers, not credentials. Do not recreate existing resources when updating this deployment. For another account, create its resources and deliberately replace the bindings/origin. Keep the public origin consistent with native release configuration, email-origin checks and any optional OAuth callback. `npm run check:config` rejects missing resource/sender configuration.
 
 Keep R2 private: do not enable public R2.dev access or a public media domain. The Worker authorizes every media request. The deployment creates `ProjectRoom` and `BillingCoordinator` as SQLite Durable Object classes using the checked-in `v1` migration. Future schema changes require forward migrations; do not edit an already-applied D1 migration to change a running database.
 
@@ -60,24 +61,17 @@ Current defaults are 25 MiB per image, 10 GiB hosted media per team, 30-day Scri
 
 ## 4. Configure Scriv account login
 
-Create a GitHub OAuth App for Scriv. Use the exact authorization callback:
+Email codes are primary. Verify a Cloudflare Email Sending domain and sender, bind `EMAIL` with `allowed_sender_addresses` restricted to the login sender, and set `EMAIL_FROM`. The current sender is `login@scriv.why-not.work`; that domain's sending DNS is separate from the Worker API hostname. Keep email content preview disabled and never log request bodies, codes, PKCE verifiers or bearer tokens. The Worker sends only a fixed login template, not arbitrary user-provided mail.
 
-```text
-https://YOUR_API_ORIGIN/auth/github/callback
-```
+Apply additive migration `0003_email_auth.sql`. It preserves existing user IDs/foreign keys and never silently links GitHub contact emails to email identities. The native app requests and verifies a short-lived six-digit code using an in-memory PKCE verifier, then stores the opaque session token in the origin-scoped Keychain. The exact expiry, resend, attempts and request limits are in the [API contract](cloud-api.md#native-sign-in).
 
-Set the two Worker secrets:
+Tests inject a fake sender and cannot establish real delivery. Use only an explicitly authorized recipient for a production delivery test. Verify delivery metadata, user-entered code consumption, replay/expiry, cancellation, wrong verifier, logout and revoked device sessions without recording secret values in evidence.
 
-```sh
-npx wrangler secret put GITHUB_CLIENT_ID
-npx wrangler secret put GITHUB_CLIENT_SECRET
-```
+Existing GitHub accounts may still use optional OAuth if `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` are configured. Its exact callback is `https://<api-origin>/auth/github/callback`; the native return remains `scriv://auth/callback`. This provider is not required for email-only launch. There is no unauthenticated development shortcut, no automatic account merge and no ChatGPT credential sent to this backend.
 
-The native app opens a system authentication session, uses state and PKCE, and exchanges a single-use code after the `scriv://auth/callback` redirect. The application registration in `Info.plist` handles that URL scheme. No external callback should deliver a long-lived Scriv bearer token in a query string.
+## 5. Configure Team billing — deferred
 
-For development use a separate OAuth App with its local/tunneled callback and `.dev.vars`. There is no unauthenticated development shortcut. Verify a fresh sign-in, denial, wrong verifier, expired code, logout and revoked device session.
-
-## 5. Configure Team billing
+**Stripe was explicitly excluded from the current deployment.** The source remains implemented, but checkout/webhook/paid-team acceptance is not claimed. Existing paid-access and private-media authorization gates are not bypassed to compensate. The following is the future authorized setup runbook, not an instruction to provision billing now.
 
 Create one Stripe recurring price with these exact values:
 
@@ -129,7 +123,7 @@ npm run db:migrate:remote
 npm run deploy
 ```
 
-Check `GET /health` on the deployed origin for `{ok:true,service:"scriv",version:"0.1.0"}`. Then sign in using the Mac app. Public health does not prove D1, OAuth, Stripe or R2 are correctly configured; the authenticated acceptance tests below do.
+Check `GET /health` on the deployed origin for `{ok:true,service:"scriv",version:"0.1.0"}`. Then sign in using the Mac app. Public health does not prove email delivery, completed sign-in, D1/DO authenticated mutation, Stripe or R2 access; record the actual checks separately. Stripe acceptance remains deferred.
 
 Make sure the hourly maintenance trigger is active. It expires auth/rate-limit state, reconciles billing, and repairs abandoned media reservations. Keep Worker observability enabled and monitor unexpected authorization failures, 5xx responses, rejected timing/version commands, storage quota failures and replay gaps.
 
@@ -155,7 +149,7 @@ Create a notary Keychain profile using `xcrun notarytool store-credentials` with
 SCRIV_NOTARY_PROFILE=scriv-notary bash scripts/notarize-mac.sh
 ```
 
-The script submits the signed ZIP, waits for acceptance, staples and validates the ticket, checks Gatekeeper and rebuilds the final archive. Test that exact ZIP on a different Mac/account after downloading it through the intended distribution channel. Confirm `.scriv` file opening, invitation deep links, OAuth return, embedded images and local Codex launching.
+The script submits the signed ZIP, waits for acceptance, staples and validates the ticket, checks Gatekeeper and rebuilds the final archive. Test that exact ZIP on a different Mac/account after downloading it through the intended distribution channel. Confirm `.scriv` file opening, invitation deep links, email login/cancellation, optional OAuth return, embedded images and local Codex launching.
 
 CI artifacts are development builds and ad-hoc signed. The required Intel Mac job compiles both architectures, produces a universal app and runs the native runtime checks on Intel. The manual workflow's `apple_silicon_runtime` input adds execution on an Apple Silicon runner when available. They are useful for review; the Developer ID/notarized universal archive is the public release artifact. Do not publish a development build with the loopback default as the production app.
 
@@ -167,7 +161,7 @@ CI artifacts are development builds and ad-hoc signed. The required Intel Mac jo
 | Timing | A 0-second direction overlaps following words without extending the sequence; positive action time shifts subsequent content; coverage remains forward-only; multiple overlap lanes remain selectable. |
 | Storyboard | A line spans multiple images; word selection/marquee selects exact words; dragging adjacent edge words or cuts preserves source order and combined duration. |
 | Characters | Explicit names/aliases open the intended profile; tags describe depicted characters; portrait/gallery/version changes remain consistent. |
-| Free cloud | Sign in, save script/metadata/history, reopen from another device; image bytes remain local until authorized peer transfer. |
+| Free cloud | Request/verify an email code, sign out/revoke a session; save script/metadata/history and reopen from another device. Image bytes remain local until authorized peer transfer. |
 | Team access | Pay in Stripe test mode at $9.99; reuse an invitation with multiple signed-in users; test viewer/member/admin rules, revocation and removal. |
 | Collaboration | Independent line edits stream; same-line entry is excluded; actual text caret/selection appears; disconnect/reconnect repairs gaps; stale drafts stay recoverable. |
 | Restore | Restore during active editing; old leases/epochs are rejected and restored content is a new history event. |

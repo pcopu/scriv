@@ -25,6 +25,7 @@ final class WorkspaceStore: ObservableObject {
     @Published var messages: [DiscussionMessage] = []
     @Published var activeThread: DiscussionThread?
     @Published var account: CloudUser?
+    @Published var showAccountSignIn = false
     @Published var teams: [CloudTeam] = []
     @Published var cloudProjects: [CloudProject] = []
     @Published var peers: [PresencePeer] = []
@@ -33,7 +34,10 @@ final class WorkspaceStore: ObservableObject {
     @Published var syncStatus = "Local only"
     @Published private var generationPromptDrafts: [String:String] = [:]
     var generationPrompt: String {
-        get { generationPromptDrafts[generationPromptKey(for:selectedCue?.id ?? currentCue?.id)] ?? "" }
+        get {
+            let cue = selectedCue ?? currentCue
+            return generationPromptDrafts[generationPromptKey(for:cue?.id)] ?? cue?.prompt ?? ""
+        }
         set { generationPromptDrafts[generationPromptKey(for:selectedCue?.id ?? currentCue?.id)] = newValue }
     }
     private func generationPromptKey(for cueID: String?) -> String {
@@ -89,7 +93,7 @@ final class WorkspaceStore: ObservableObject {
     private var isProjectSynchronizing = false
     private var undoStack: [ScrivProject] = []
     private var redoStack: [ScrivProject] = []
-    private var editingIDs: Set<String> = []
+    private var editingIntents = LocalEditIntents()
     private var rootURL: URL
     private let verificationMode = ProcessInfo.processInfo.arguments.contains("--screenshots") || ProcessInfo.processInfo.arguments.contains("--peer-smoke")
     private var bootstrapTask: Task<Void, Never>?
@@ -200,7 +204,7 @@ final class WorkspaceStore: ObservableObject {
         if peerProjectId != cloud.projectId { configurePeers() }
     }
     @discardableResult
-    private func change(_ label: String, _ mutate: (inout ScrivProject) throws -> Void) -> Bool {
+    private func change(_ label: String, afterSave: (() -> Void)? = nil, _ mutate: (inout ScrivProject) throws -> Void) -> Bool {
         do {
             let before = project
             var next = before
@@ -214,7 +218,7 @@ final class WorkspaceStore: ObservableObject {
             undoStack.append(before); redoStack = []
             project = next
             let event = HistoryEntry(label:label,snapshot:next); history.insert(event,at:0)
-            queueSave(next,label:label)
+            queueSave(next,label:label,onSuccess:afterSave)
             if next.cloudProjectId != nil {
                 for id in ids { dirtyItems[id] = next.revision }
                 enqueueCommit(before:before,after:next,label:label,changed:ids)
@@ -225,7 +229,7 @@ final class WorkspaceStore: ObservableObject {
             return true
         } catch { errorMessage = error.localizedDescription; return false }
     }
-    private func queueSave(_ snapshot: ScrivProject, label: String) {
+    private func queueSave(_ snapshot: ScrivProject, label: String, onSuccess: (() -> Void)? = nil) {
         guard let package = projectURL else { errorMessage = "Choose a project location before saving."; return }
         if project.id == snapshot.id, !history.contains(where: { $0.revision == snapshot.revision }) { history.insert(HistoryEntry(label:label,snapshot:snapshot),at:0) }
         let previous = saveTask
@@ -233,7 +237,7 @@ final class WorkspaceStore: ObservableObject {
         saveTask = Task { [weak self] in
             await previous?.value
             guard let self else { return }
-            do { try await self.repo().save(snapshot,at:package,label:label); if self.project.id == snapshot.id && self.project.revision == snapshot.revision { self.statusMessage = "Saved on this Mac" }; if !self.verificationMode { UserDefaults.standard.set(package.path,forKey:"lastProjectURL") } }
+            do { try await self.repo().save(snapshot,at:package,label:label); onSuccess?(); if self.project.id == snapshot.id && self.project.revision == snapshot.revision { self.statusMessage = "Saved on this Mac" }; if !self.verificationMode { UserDefaults.standard.set(package.path,forKey:"lastProjectURL") } }
             catch { self.errorMessage = "Could not save your project: \(error.localizedDescription)"; self.statusMessage = "Save failed" }
         }
     }
@@ -251,7 +255,7 @@ final class WorkspaceStore: ObservableObject {
                 for id in changed where self.dirtyItems[id] == after.revision { self.dirtyItems.removeValue(forKey:id) }
                 self.hasConflicts = !self.dirtyItems.isEmpty
                 self.recordCheckpoint()
-                for id in changed where !self.editingIDs.contains(id) { await self.cloud.releaseLease(id) }
+                for id in changed where !self.editingIntents.contains(id) { await self.cloud.releaseLease(id) }
             } catch { guard self.navigationGeneration == navigation, self.project.id == after.id else { return }; self.errorMessage = error.localizedDescription; self.hasConflicts = true; self.syncStatus = "Draft saved locally — needs review" }
             if self.navigationGeneration == navigation, self.project.id == after.id { self.isSyncing = self.isProjectSynchronizing }
         }
@@ -286,22 +290,101 @@ final class WorkspaceStore: ObservableObject {
         }
     }
     var navigationContext: Int { navigationGeneration }
+    var editorLifecycleContext: Int { cloud.lifecycleContext }
+    var editorAccountContext: String { cloud.baseURL.absoluteString + "|" + (cloud.account?.id ?? "<local>") }
+    var editorDraftEpoch: Int? { project.cloudProjectId != nil && project.cloudProjectId == cloud.projectId ? cloud.epoch : nil }
+    private func editorJournal() throws -> EditorDraftJournal {
+        try EditorDraftJournal(root:rootURL.deletingLastPathComponent().appendingPathComponent("EditorDrafts",isDirectory:true))
+    }
+    private func editorDraftScope(_ id: String) throws -> EditorDraftScope {
+        guard let package = projectURL else { throw ScrivError.unavailable("Choose a local project location before editing.") }
+        return EditorDraftScope(packagePath:package.resolvingSymlinksInPath().path,projectID:project.id,cloudProjectID:project.cloudProjectId,
+                                server:cloud.baseURL.absoluteString,accountID:cloud.account?.id,entryID:id)
+    }
+    func editorDraftForEditing(_ id: String) throws -> (draft: LocalEditorDraft, recovered: Bool) {
+        let scope = try editorDraftScope(id)
+        if let saved = try editorJournal().load(scope) { return (saved,true) }
+        guard let entry = project.entries.first(where: { $0.id == id }) else { throw ScrivError.invalid("Line not found.") }
+        return (LocalEditorDraft(scope:scope,sourceRevision:project.revision,sourceEpoch:editorDraftEpoch,sourceEntry:entry),false)
+    }
+    func persistEditorDraft(_ draft: LocalEditorDraft, replacing revisionID: String) throws {
+        // The captured scope is deliberate: late navigation must never redirect
+        // this write into the newly selected package/account.
+        try editorJournal().save(draft,replacing:revisionID)
+    }
+    func rebaseEditorDraft(_ draft: LocalEditorDraft) throws -> LocalEditorDraft {
+        guard draft.scope == (try editorDraftScope(draft.scope.entryID)),
+              let current = project.entries.first(where: { $0.id == draft.scope.entryID }) else {
+            throw ScrivError.conflict("Return to the original project and account to review this draft.")
+        }
+        var next = draft; next.rebase(on:current,revision:project.revision,epoch:editorDraftEpoch)
+        try persistEditorDraft(next,replacing:draft.revisionID)
+        return next
+    }
+    func discardEditorDraft(_ draft: LocalEditorDraft) throws {
+        guard try editorJournal().clear(draft) else { throw ScrivError.conflict("A newer draft exists. Reopen the line before discarding it.") }
+    }
+    func reacquireEditorDraftLease(_ draft: LocalEditorDraft) async throws {
+        guard draft.scope == (try editorDraftScope(draft.scope.entryID)) else { throw ScrivError.conflict("Return to the draft's project and account before retrying.") }
+        _ = try await cloud.acquireLease(draft.scope.entryID)
+        guard editingIntents.contains(draft.scope.entryID) else { await cloud.releaseLease(draft.scope.entryID); throw CancellationError() }
+    }
+    /// Invalid text is never installed in the canonical project or sent to cloud.
+    /// Recovery is cleared only after the valid canonical snapshot reaches disk.
+    func applyEditorDraft(_ draft: LocalEditorDraft, navigation: Int, lifecycle: Int) throws {
+        guard navigation == navigationGeneration, lifecycle == cloud.lifecycleContext else {
+            throw ScrivError.conflict("The editing context changed. Your draft remains saved; reopen the original line to recover it.")
+        }
+        guard cloud.hasCurrentEditingLease(draft.scope.entryID) else {
+            throw ScrivError.conflict("The editing lease expired. Your draft remains saved on this Mac. Retry to reacquire the line before applying it.")
+        }
+        let savedDraft = try editorJournal().load(draft.scope)
+        guard savedDraft?.revisionID == draft.revisionID || (savedDraft == nil && draft.text == draft.sourceEntry.text) else {
+            throw ScrivError.conflict("This draft was replaced or discarded in another editor. Reopen the line before applying it.")
+        }
+        let next = try draft.applying(to:project,scope:editorDraftScope(draft.scope.entryID),epoch:editorDraftEpoch)
+        let completed = { [weak self] in
+            guard let self else { return }
+            do { _ = try self.editorJournal().clear(draft) }
+            catch { self.errorMessage = "The line was saved, but its recovery draft could not be cleared: " + error.localizedDescription }
+        }
+        if next == project { queueSave(project,label:"Apply recovered script draft",onSuccess:completed); return }
+        guard change("Edit script",afterSave:completed,{ $0 = next }) else {
+            throw ScrivError.conflict(errorMessage ?? "The line could not be applied. Your local draft is retained.")
+        }
+    }
     func beginEdit(_ id: String) async -> Bool {
-        let context = navigationGeneration
+        let context = navigationGeneration, cloudContext = cloud.lifecycleContext
+        // The old editor's delayed save must see this new intent even while the
+        // lease request is suspended. Overlapping local editors share one lease.
+        editingIntents.begin(id)
         do {
             _ = try await cloud.acquireLease(id)
             guard navigationGeneration == context else { return false }
-            editingIDs.insert(id); cloud.presence(itemId:id); return true
-        } catch is CancellationError { return false }
-        catch { if navigationGeneration == context { errorMessage = error.localizedDescription }; return false }
+            guard cloud.lifecycleContext == cloudContext else { editingIntents.end(id); return false }
+            guard !Task.isCancelled else { endEdit(id, context: context); return false }
+            cloud.presence(itemId:id); return true
+        } catch {
+            if navigationGeneration == context {
+                if cloud.lifecycleContext == cloudContext { endEdit(id, context: context) }
+                else { editingIntents.end(id) }
+            }
+            if !(error is CancellationError), navigationGeneration == context, cloud.lifecycleContext == cloudContext { errorMessage = error.localizedDescription }
+            return false
+        }
     }
     func endEdit(_ id: String, context: Int? = nil) {
         guard context == nil || context == navigationGeneration else { return }
-        editingIDs.remove(id); let pending = commitTask, navigation = navigationGeneration
-        Task { [weak self] in await pending?.value; guard let self, self.navigationGeneration == navigation else { return }; await self.cloud.releaseLease(id) }
+        editingIntents.end(id)
+        let pending = commitTask, navigation = navigationGeneration, cloudContext = cloud.lifecycleContext
+        Task { [weak self] in
+            await pending?.value
+            guard let self, self.navigationGeneration == navigation, self.cloud.lifecycleContext == cloudContext,
+                  !self.editingIntents.contains(id) else { return }
+            await self.cloud.releaseLease(id)
+        }
     }
     func lockedByOther(_ itemId: String) -> String? { leases.first { $0.itemId == itemId && $0.sessionId != cloud.sessionId && $0.expiresAt > Int(Date().timeIntervalSince1970*1000) }.map { $0.name ?? "Another editor" } }
-    func commitText(_ id: String, text: String) { change("Edit script") { try TimingEngine.updateText(&$0,entryId:id,text:text) } }
     func setDuration(_ id: String, seconds: Double) { guard seconds.isFinite, seconds >= 0, seconds <= 3600 else { errorMessage = "Duration must be between zero and one hour."; return }; change("Change duration") { try TimingEngine.setOwnedDuration(&$0,entryId:id,durationMs:Int((seconds*1000).rounded())) } }
     func setCoverage(_ id: String, endMs: Int) { change("Extend direction") { try TimingEngine.setCoverage(&$0,entryId:id,endMs:endMs) } }
     func selectEntry(_ id: String) { if let entry = project.entries.first(where: { $0.id == id }) { selectedSceneID = entry.sceneId; seek(toMs:Double(project.startMs(of:id))); selectedEntryID = id; cloud.presence(itemId:id) } }
@@ -366,7 +449,15 @@ final class WorkspaceStore: ObservableObject {
     func setProjectTitle(_ title: String) { let clean = title.trimmingCharacters(in:.whitespacesAndNewlines); guard !clean.isEmpty else { return }; change("Rename project") { $0.title = clean }; if project.cloudProjectId != nil { perform { try await self.cloud.renameProject(clean) } } }
     func splitCue(_ id: String) { change("Split image") { try TimingEngine.splitCue(&$0,cueId:id,atMs:Int(playheadMs)) } }
     func moveBoundary(leftId: String, rightId: String, toMs: Int) { change("Move image cut") { try TimingEngine.moveBoundary(&$0,leftCueId:leftId,rightCueId:rightId,toMs:toMs) } }
-    func moveWords(_ wordIds: Set<String>, fromCueId: String, toCueId: String) { if change("Move words to image", { try TimingEngine.moveWords(&$0,wordIds:wordIds,fromCueId:fromCueId,toCueId:toCueId) }) { selectedWordIDs = []; selectedCueID = toCueId } }
+    func moveWords(_ wordIds: Set<String>, fromCueId: String, toCueId: String) { if change("Move image cut around words", { try TimingEngine.moveWords(&$0,wordIds:wordIds,fromCueId:fromCueId,toCueId:toCueId) }) { selectedWordIDs = []; selectedCueID = toCueId } }
+    @discardableResult
+    func setWordTiming(wordId: String, startMs: Int, endMs: Int) -> Bool { change("Retime spoken word") { try TimingEngine.setWordTiming(&$0, wordId: wordId, startMs: startMs, endMs: endMs) } }
+    @discardableResult
+    func shiftWords(wordIds: Set<String>, byMs: Int) -> Bool { change("Retime spoken phrase") { try TimingEngine.shiftWords(&$0, wordIds: wordIds, byMs: byMs) } }
+    @discardableResult
+    func setCueDuration(cueId: String, durationMs: Int) -> Bool { change("Change image coverage") { try TimingEngine.setCueDuration(&$0, cueId: cueId, durationMs: durationMs) } }
+    @discardableResult
+    func setCueAnchor(cueId: String, entryId: String, offsetMs: Int = 0) -> Bool { change("Choose image source") { try TimingEngine.setCueAnchor(&$0, cueId: cueId, entryId: entryId, offsetMs: offsetMs) } }
     func addCue(atMs: Int? = nil) {
         var created: String?
         if change("Add image cue", { created = try ProjectEditing.addCue(&$0,sceneId:selectedSceneID,atMs:atMs ?? Int(playheadMs)) }) { selectedCueID = created }
@@ -376,9 +467,48 @@ final class WorkspaceStore: ObservableObject {
     func setCueImage(_ id: String, imageId: String?) { change("Select image version") { try ProjectEditing.setCueImage(&$0,cueId:id,imageId:imageId) } }
     func setCharacterPortrait(_ id: String, imageId: String?) { change("Change portrait") { try ProjectEditing.setPortrait(&$0,characterId:id,imageId:imageId) } }
     func updateCuePrompt(_ id: String, prompt: String) { change("Edit image direction") { p in if let index = p.cues.firstIndex(where: { $0.id == id }) { p.cues[index].prompt = prompt } } }
-    func addCharacter() { let character = ScriptCharacter(name:"New character"); if change("Add character", { $0.characters.append(character) }) { selectedCharacterID = character.id } }
-    func updateCharacter(_ character: ScriptCharacter) { change("Edit character") { p in if let i = p.characters.firstIndex(where: { $0.id == character.id }) { p.characters[i] = character } } }
-    func deleteCharacter(_ id: String) { change("Delete character") { p in p.characters.removeAll { $0.id == id }; for i in p.entries.indices where p.entries[i].characterId == id { p.entries[i].characterId = nil }; for i in p.images.indices { p.images[i].characterIds.removeAll { $0 == id } } }; if selectedCharacterID == id { selectedCharacterID = project.characters.first?.id } }
+    func addCharacter() {
+        let character = ScriptCharacter(name: "New character")
+        if change("Add character", { CharacterMentions.bootstrap(&$0); $0.characters.append(character) }) { selectedCharacterID = character.id }
+    }
+    @discardableResult
+    func updateCharacter(_ character: ScriptCharacter) -> Bool {
+        if project.characters.first(where: { $0.id == character.id }) == character { return true }
+        return change("Edit character") { p in
+            if let i = p.characters.firstIndex(where: { $0.id == character.id }) {
+                if p.characters[i].name != character.name || p.characters[i].aliases != character.aliases { CharacterMentions.bootstrap(&p) }
+                p.characters[i] = character
+            }
+        }
+    }
+    func deleteCharacter(_ id: String) {
+        change("Delete character") { p in
+            CharacterMentions.bootstrap(&p)
+            p.characters.removeAll { $0.id == id }
+            for i in p.entries.indices {
+                if p.entries[i].characterId == id { p.entries[i].characterId = nil }
+                // Preserve an explicit unlink, not an invitation to match reused names.
+                for j in (p.entries[i].characterLinks ?? []).indices where p.entries[i].characterLinks?[j].characterId == id {
+                    p.entries[i].characterLinks?[j].characterId = nil
+                    p.entries[i].characterLinks?[j].isConfirmed = true
+                }
+            }
+            for i in p.images.indices { p.images[i].characterIds.removeAll { $0 == id } }
+        }
+        if selectedCharacterID == id { selectedCharacterID = project.characters.first?.id }
+    }
+    @discardableResult
+    func saveCharacterLinks(_ id: String, expectedText: String, links: [CharacterTextLink]) -> Bool {
+        guard let entry = project.entries.first(where: { $0.id == id }), entry.text.utf16.elementsEqual(expectedText.utf16) else {
+            errorMessage = "This line changed while its links were being reviewed. Reopen the review to use its current wording."; return false
+        }
+        let sorted = links.sorted { $0.location < $1.location }
+        if entry.characterLinks == sorted { return true }
+        return change("Review character links") { p in
+            guard let index = p.entries.firstIndex(where: { $0.id == id }) else { throw ScrivError.invalid("Line not found.") }
+            p.entries[index].characterLinks = sorted
+        }
+    }
     func setCharacterTags(imageId: String, characterIds: [String]) { change("Tag characters") { p in if let index = p.images.firstIndex(where: { $0.id == imageId }) { p.images[index].characterIds = Array(Set(characterIds)).sorted() } } }
     func assetURL(_ asset: ImageAsset) -> URL? {
         guard let url = rawAssetURL(asset), !invalidLocalAssetPaths.contains(url.path) else { return nil }; return url
@@ -470,21 +600,35 @@ final class WorkspaceStore: ObservableObject {
         }
         return asset.id
     }
+    /// The visible preview and submitted request use the same cue-scoped builder.
+    func imageGenerationContext(cueID: String) throws -> GenerationContext {
+        let draft = generationPromptDrafts[generationPromptKey(for:cueID)]
+        let context = try GenerationContext.build(project:project,cueID:cueID,userDirection:draft)
+        let available = Set(context.characters.compactMap { character -> String? in
+            guard let asset = project.asset(character.portraitImageId), assetURL(asset) != nil else { return nil }
+            return asset.id
+        })
+        return context.selectingPortraits(availableAssetIDs:available)
+    }
+    var selectedImageGenerationContext: GenerationContext? {
+        guard let cue = selectedCue ?? currentCue else { return nil }
+        return try? imageGenerationContext(cueID:cue.id)
+    }
     func generateImage(cueId: String? = nil) {
-        let target = project.cues.first { $0.id == (cueId ?? selectedCueID) } ?? currentCue
+        // An explicit stale menu target must not silently generate for another cue.
+        let target: ImageCue?
+        if let cueId { target = project.cues.first { $0.id == cueId } }
+        else { target = selectedCue ?? currentCue }
         guard let target else { errorMessage = "Add a timed image cue before generating."; return }
-        let draft = generationPromptDrafts[generationPromptKey(for:target.id)] ?? ""
-        let prompt = draft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty ? target.prompt : draft
         guard let package = projectURL else { errorMessage = "Save this project before generating."; return }
-        let context = GenerationJobContext(projectID:project.id,projectTitle:project.title,packagePath:package.path,targetCue:target,sourceRevision:project.revision,cloudProjectID:project.cloudProjectId,cloudServer:project.cloudProjectId == nil ? nil : cloud.baseURL.absoluteString,accountID:account?.id,deviceID:cloud.deviceId,sourceHeadSeq:cloud.headSeq,sourceItemVersion:cloud.items[target.id]?.version)
-        let relevantIDs = Set(project.asset(target.imageId)?.characterIds ?? [])
-        let orderedCharacters = project.characters.sorted { relevantIDs.contains($0.id) && !relevantIDs.contains($1.id) }
-        var referenceURLs: [URL] = [], referenceHashes: Set<String> = []
-        for character in orderedCharacters {
-            if let asset = project.asset(character.portraitImageId), let url = assetURL(asset), referenceHashes.insert(asset.sha256).inserted { referenceURLs.append(url) }
-            if referenceURLs.count == 5 { break }
-        }
-        perform { try await self.runGeneration(prompt:prompt,references:referenceURLs,context:context) }
+        do {
+            let source = try imageGenerationContext(cueID:target.id)
+            guard source.hasContent else { throw ScrivError.invalid("Add dialogue, an active direction, or a visual override for this cue before generating.") }
+            let referenceURLs = source.portraits.compactMap { portrait in project.asset(portrait.assetID).flatMap { assetURL($0) } }
+            guard referenceURLs.count == source.portraits.count else { throw ScrivError.unavailable("A reference portrait changed. Review the generation context and try again.") }
+            let context = GenerationJobContext(projectID:project.id,projectTitle:project.title,packagePath:package.path,targetCue:target,sourceRevision:project.revision,cloudProjectID:project.cloudProjectId,cloudServer:project.cloudProjectId == nil ? nil : cloud.baseURL.absoluteString,accountID:account?.id,deviceID:cloud.deviceId,sourceHeadSeq:cloud.headSeq,sourceItemVersion:cloud.items[target.id]?.version,userDirection:source.userDirection)
+            perform { try await self.runGeneration(prompt:source.prompt,references:referenceURLs,context:context) }
+        } catch { errorMessage = error.localizedDescription }
     }
     private func generationContextMatches(_ context: GenerationJobContext) -> Bool {
         project.id == context.projectID && projectURL?.standardizedFileURL.path == URL(fileURLWithPath:context.packagePath).standardizedFileURL.path &&
@@ -517,7 +661,7 @@ final class WorkspaceStore: ObservableObject {
         }
         generationAttachmentIDs.insert(jobID)
         defer { generationAttachmentIDs.remove(jobID) }
-        if let imageID = try await attachImage(url:result,cueId:context.targetCue.id,prompt:prompt,expectedCue:context.targetCue,expectedRevision:context.sourceRevision) { codex.markJobAttached(id:jobID,imageID:imageID) }
+        if let imageID = try await attachImage(url:result,cueId:context.targetCue.id,prompt:context.userDirection ?? prompt,expectedCue:context.targetCue,expectedRevision:context.sourceRevision) { codex.markJobAttached(id:jobID,imageID:imageID) }
     }
     private func heartbeatGenerationAttachment(_ job: LocalGenerationJob) {
         guard generationAttachmentIDs.contains(job.id), !generationCompletionIDs.contains(job.id), generationAttachmentHeartbeats[job.id] == nil, let context = job.context else { return }
@@ -563,7 +707,7 @@ final class WorkspaceStore: ObservableObject {
                 self.queueGenerationMirror(job)
                 await self.generationMirrorTask?.value
                 self.statusMessage = "Image is already attached. Shared completion is being reconciled; sync any local draft first."
-            } else if let result, let imageID = try await self.attachImage(url:result,cueId:context.targetCue.id,prompt:job.prompt,expectedCue:context.targetCue,expectedRevision:context.sourceRevision) {
+            } else if let result, let imageID = try await self.attachImage(url:result,cueId:context.targetCue.id,prompt:context.userDirection ?? job.prompt,expectedCue:context.targetCue,expectedRevision:context.sourceRevision) {
                 self.codex.markJobAttached(id:job.id,imageID:imageID)
             }
         }
@@ -731,7 +875,7 @@ final class WorkspaceStore: ObservableObject {
         guard navigationGeneration == navigation else { throw CancellationError() }
         cloud.disconnect(); canonicalCheckpoint = checkpoint; dirtyItems = [:]; hasConflicts = false; isProjectSynchronizing = false; isSyncing = false; pauseRemoteUpdates = false
         project = loaded; projectURL = url; selectedSceneID = loaded.scenes.first?.id ?? ""; selectedEntryID = loaded.entries(in:selectedSceneID).first?.id
-        selectedCueID = loaded.cues(in:selectedSceneID).first?.id; selectedCharacterID = loaded.characters.first?.id; selectedWordIDs = []; editingIDs = []
+        selectedCueID = loaded.cues(in:selectedSceneID).first?.id; selectedCharacterID = loaded.characters.first?.id; selectedWordIDs = []; editingIntents = LocalEditIntents()
         history = savedHistory; undoStack = []; redoStack = []; isPlaying = false; playheadMs = 0
         activeThread = nil; messages = []; discussionItemID = nil; cloudHistory = []; showDiscussion = false; discussionGeneration += 1; discussionLoading = false
         if !verificationMode { UserDefaults.standard.set(url.path,forKey:"lastProjectURL") }; refreshPeerAuthorization(); onProjectChanged?(project,projectURL)
@@ -742,7 +886,7 @@ final class WorkspaceStore: ObservableObject {
         cloud.disconnect(); canonicalCheckpoint = nil; dirtyItems = [:]; hasConflicts = false; isProjectSynchronizing = false; isSyncing = false; pauseRemoteUpdates = false
         project = value; projectURL = rootURL.appendingPathComponent(value.id).appendingPathExtension("scriv"); selectedSceneID = value.scenes.first?.id ?? ""
         selectedEntryID = value.entries(in:selectedSceneID).first?.id; selectedCueID = value.cues(in:selectedSceneID).first?.id; selectedCharacterID = value.characters.first?.id
-        history = []; undoStack = []; redoStack = []; isPlaying = false; playheadMs = 0; selectedWordIDs = []; editingIDs = []; activeThread = nil; messages = []; discussionItemID = nil; cloudHistory = []; showDiscussion = false; discussionGeneration += 1; discussionLoading = false
+        history = []; undoStack = []; redoStack = []; isPlaying = false; playheadMs = 0; selectedWordIDs = []; editingIntents = LocalEditIntents(); activeThread = nil; messages = []; discussionItemID = nil; cloudHistory = []; showDiscussion = false; discussionGeneration += 1; discussionLoading = false
         saveProject(); onProjectChanged?(project,projectURL)
     }
     func saveProject() { queueSave(project,label:"Save project") }
@@ -770,8 +914,14 @@ final class WorkspaceStore: ObservableObject {
     @discardableResult
     private func restoreContent(_ snapshot: ScrivProject, label: String) -> Bool {
         change(label) { p in
+            let previous = p
             let cloudId = p.cloudProjectId, id = p.id, rev = p.revision, createdAt = p.createdAt
             p = snapshot; p.id = id; p.cloudProjectId = cloudId; p.revision = rev; p.createdAt = createdAt
+            // A deliberate local undo/restore may predate annotations. Recreate
+            // reviewable suggestions from that historical catalog, never omit an
+            // established metadata field like an older incompatible client would.
+            CharacterMentions.bootstrap(&p)
+            try TimingEngine.prepareRestoredTiming(&p, replacing: previous)
         }
     }
     func restoreHistory(_ entry: HistoryEntry) { finishEditing(); restoreContent(entry.snapshot,label:"Restore revision \(entry.revision)") }
@@ -796,7 +946,21 @@ final class WorkspaceStore: ObservableObject {
             self.applyRemote(Array(self.cloud.items.values)); self.cloudHistory = try await self.cloud.history()
         }
     }
-    func signIn() { perform { try await self.cloud.signIn(); self.readCloudState() } }
+    func signIn() { guard account == nil else { return }; showAccountSignIn = true }
+    func requestEmailCode(_ email: String, ownerID: UUID) async {
+        let navigation = navigationGeneration
+        await cloud.requestEmailCode(email:email,ownerID:ownerID,isContextCurrent:{ [weak self] in self?.navigationGeneration == navigation })
+    }
+    func verifyEmailCode(_ code: String, ownerID: UUID) async {
+        let navigation = navigationGeneration
+        await cloud.verifyEmailCode(code,ownerID:ownerID,isContextCurrent:{ [weak self] in self?.navigationGeneration == navigation })
+        if account != nil { showAccountSignIn = false }
+    }
+    func signInWithGitHub(ownerID: UUID) async throws {
+        let navigation = navigationGeneration
+        try await cloud.signInWithGitHub(ownerID:ownerID,isContextCurrent:{ [weak self] in self?.navigationGeneration == navigation })
+        if account != nil { showAccountSignIn = false }
+    }
     func signOut() { perform { try await self.cloud.signOut(); self.readCloudState() } }
     func createTeam(name: String) { perform { _ = try await self.cloud.createTeam(name:name); self.readCloudState() } }
     func joinTeam(token: String) {
@@ -946,7 +1110,7 @@ final class WorkspaceStore: ObservableObject {
             try self.cloud.keepPendingAsLocalDrafts()
             self.dirtyItems = [:]; self.hasConflicts = false; self.canonicalCheckpoint = nil; self.project = loaded; self.projectURL = package
             self.selectedSceneID = loaded.scenes.first?.id ?? ""; self.selectedEntryID = loaded.entries(in:self.selectedSceneID).first?.id; self.selectedCueID = loaded.cues(in:self.selectedSceneID).first?.id; self.selectedCharacterID = loaded.characters.first?.id
-            self.playheadMs = 0; self.isPlaying = false; self.selectedWordIDs = []; self.editingIDs = []; self.undoStack = []; self.redoStack = []; self.activeThread = nil; self.messages = []; self.discussionItemID = nil; self.showDiscussion = false; self.discussionGeneration += 1; self.discussionLoading = false
+            self.playheadMs = 0; self.isPlaying = false; self.selectedWordIDs = []; self.editingIntents = LocalEditIntents(); self.undoStack = []; self.redoStack = []; self.activeThread = nil; self.messages = []; self.discussionItemID = nil; self.showDiscussion = false; self.discussionGeneration += 1; self.discussionLoading = false
             self.history = previousHistory; self.queueSave(loaded,label:"Open cloud project"); self.recordCheckpoint(); self.refreshPeerAuthorization()
             self.cloudHistory = try await self.cloud.history()
             guard self.navigationGeneration == navigation else { return }
