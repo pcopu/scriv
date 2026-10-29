@@ -1,11 +1,16 @@
 {
-  "name": "agent-storyboard",
+  "name": "scriv",
+  "version": "0.1.0",
   "private": true,
-  "version": "0.8.0",
-  "type": "module",
+  "description": "Native script-first Mac filmmaking workspace and Cloudflare collaboration service",
   "scripts": {
-    "test": "node --test tests/*.test.mjs",
-    "start": "node server.mjs --data-dir ./data",
-    "check": "node --check server.mjs && node --check public/app.js && node --check plugins/agent-storyboard/mcp/server.mjs && node --check plugins/agent-storyboard/app/server.mjs && node --check plugins/agent-storyboard/app/public/app.js"
-  }
+    "setup": "npm --prefix cloud ci",
+    "check": "npm --prefix cloud run check && node scripts/check-repo.mjs",
+    "test": "npm --prefix cloud test && node --test tests/*.test.mjs",
+    "dev:cloud": "npm --prefix cloud run dev",
+    "build:mac": "bash scripts/build-mac.sh",
+    "test:mac": "swift test --package-path apps/mac",
+    "verify": "bash scripts/verify.sh"
+  },
+  "engines": { "node": ">=22.0.0" }
 }

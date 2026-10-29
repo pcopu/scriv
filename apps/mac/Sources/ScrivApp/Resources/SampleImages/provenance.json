@@ -1,0 +1,27 @@
+{
+  "generated": true,
+  "purpose": "Built-in local sample project, not user project media",
+  "tool": "Built-in image generation",
+  "images": [
+    {
+      "file": "farm-wide.png",
+      "source": "exec-22106320-95c6-467e-9648-152d70d908a4.png",
+      "sha256": "4eabd5b2f94eb1e42cab254343fccb86f4c9c3e4c587811719fa1147d0eae415"
+    },
+    {
+      "file": "franklin.png",
+      "source": "exec-c8670b59-e95d-40df-b594-46c5b136bb37.png",
+      "sha256": "83e34a336c42734737c8416b66050a1e9253184acd36132995ca91dc2bf6e916"
+    },
+    {
+      "file": "miyazaki.png",
+      "source": "exec-97959e61-3b2a-4be1-b528-e8fbf3345fce.png",
+      "sha256": "6b0d80d2049ca7746066d91496298036e6857e8c7b47d279337b5cccff2c8f10"
+    }
+  ],
+  "prompts": {
+    "farm-wide": "Cinematic 16:9 film still in a rustic farm supply store: curly-haired Randy in olive jacket, Miyazaki in blue plaid holding an invoice, and bearded Farmer Franklin in cap and overalls. Warm afternoon light, natural textures, no UI or overlays.",
+    "franklin": "Cinematic 16:9 close-up of bearded Farmer Franklin in tan cap, navy plaid and denim overalls, skeptical behind a farm supply counter with invoice. Warm afternoon light, no UI or overlays.",
+    "miyazaki": "Cinematic 16:9 close-up of adult Miyazaki in blue plaid holding an invoice in a warm rustic farm supply store. Thoughtful expression, no UI or overlays."
+  }
+}

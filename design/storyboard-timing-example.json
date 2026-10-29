@@ -1,0 +1,706 @@
+{
+  "schema_version": 3,
+  "title": "YAM MAN — proposed forward-only direction coverage and owned sequence time",
+  "approval_status": "proposed_not_yet_approved",
+  "implementation_status": "illustrative_not_implemented",
+  "timing_status": "provisional_editorial",
+  "example_state": "after_preview_word_drag_with_forward_only_direction_coverage",
+  "time_unit": "milliseconds",
+  "text_fragment_joiner": " ",
+  "clock": "one_scene_clock",
+  "duration_semantics": "Owned speech and action slots determine sequence runtime. Direction coverage applies to existing following moments and never adds time by itself. Coverage spans and overlap intersections must not be added to runtime.",
+  "direction_association_semantics": "Each direction starts at its authored script position. Source and speech associations retain context only. Coverage begins at that fixed anchor and can extend forward through following entries; affecting earlier words requires moving the direction earlier in the script.",
+  "relationship_to_approved_main": "The earlier approved main remains the visual reference. The proposed main retains one script flow and one common text edge. Direction coverage shares a single vertical gutter track with distinct colors and interleaved overlap strokes. Fixed tops curve right into arrows pointing to their own direction lines; only the selected lower/end handle resizes forward coverage. Speech uses ordinary duration pills. The Storyboard retains spoken-word pills, marquee selection and direction coverage bands.",
+  "image_sequence_window": {
+    "start_ms": 25300,
+    "end_ms": 35500,
+    "duration_ms": 10200
+  },
+  "characters": [
+    {
+      "id": "character-randy",
+      "name": "Randy",
+      "aliases": []
+    },
+    {
+      "id": "character-franklin",
+      "name": "Farmer Franklin",
+      "aliases": [
+        "Franklin"
+      ]
+    },
+    {
+      "id": "character-miyazaki",
+      "name": "Miyazaki",
+      "aliases": []
+    }
+  ],
+  "source_entries": [
+    {
+      "id": "line-08",
+      "number": 8,
+      "kind": "dialogue",
+      "speaker_character_id": "character-randy",
+      "speaker_label": "Randy",
+      "source_text": "He gets a little gung ho with our flavor of capitalism.",
+      "source_direction_notes": [
+        "(To the farmer)"
+      ]
+    },
+    {
+      "id": "line-09",
+      "number": 9,
+      "kind": "standalone_direction",
+      "source_text": "Franklin looks between the boys and the invoice."
+    },
+    {
+      "id": "line-10",
+      "number": 10,
+      "kind": "dialogue",
+      "speaker_character_id": "character-franklin",
+      "speaker_label": "Farmer Franklin",
+      "source_text": "Can I trust this guy?",
+      "source_direction_notes": [
+        "(Re: Miyazaki)"
+      ]
+    }
+  ],
+  "direction_cues": [
+    {
+      "id": "direction-08-attached",
+      "source_entry_id": "line-08",
+      "source_kind": "parenthetical_note",
+      "associated_speech_cue_id": "speech-08",
+      "text": "(To the farmer)",
+      "spoken": false,
+      "mentioned_character_ids": [
+        "character-franklin"
+      ],
+      "authored_start_ms": 25300,
+      "owned_duration_ms": 0,
+      "owned_start_ms": 25300,
+      "owned_end_ms": 25300,
+      "coverage_start_ms": 25300,
+      "coverage_end_ms": 30700,
+      "coverage_duration_ms": 5400,
+      "coverage_mode": "forward_from_fixed_authored_position",
+      "coverage_handle": "lower_end_only"
+    },
+    {
+      "id": "direction-09",
+      "source_entry_id": "line-09",
+      "source_kind": "standalone_direction",
+      "associated_speech_cue_id": null,
+      "text": "Franklin looks between the boys and the invoice.",
+      "spoken": false,
+      "mentioned_character_ids": [
+        "character-franklin"
+      ],
+      "authored_start_ms": 30300,
+      "owned_duration_ms": 2400,
+      "owned_start_ms": 30300,
+      "owned_end_ms": 32700,
+      "coverage_start_ms": 30300,
+      "coverage_end_ms": 35500,
+      "coverage_duration_ms": 5200,
+      "coverage_mode": "forward_from_fixed_authored_position",
+      "coverage_handle": "lower_end_only"
+    },
+    {
+      "id": "direction-10-attached",
+      "source_entry_id": "line-10",
+      "source_kind": "parenthetical_note",
+      "associated_speech_cue_id": "speech-10",
+      "text": "(Re: Miyazaki)",
+      "spoken": false,
+      "mentioned_character_ids": [
+        "character-miyazaki"
+      ],
+      "authored_start_ms": 32700,
+      "owned_duration_ms": 0,
+      "owned_start_ms": 32700,
+      "owned_end_ms": 32700,
+      "coverage_start_ms": 32700,
+      "coverage_end_ms": 35900,
+      "coverage_duration_ms": 3200,
+      "coverage_mode": "forward_from_fixed_authored_position",
+      "coverage_handle": "lower_end_only"
+    }
+  ],
+  "speech_cues": [
+    {
+      "id": "speech-08",
+      "source_entry_id": "line-08",
+      "speaker_character_id": "character-randy",
+      "speaker_label": "Randy",
+      "text": "He gets a little gung ho with our flavor of capitalism.",
+      "start_ms": 25300,
+      "end_ms": 30300,
+      "duration_ms": 5000,
+      "word_ids": [
+        "word-08-01",
+        "word-08-02",
+        "word-08-03",
+        "word-08-04",
+        "word-08-05",
+        "word-08-06",
+        "word-08-07",
+        "word-08-08",
+        "word-08-09",
+        "word-08-10",
+        "word-08-11"
+      ]
+    },
+    {
+      "id": "speech-10",
+      "source_entry_id": "line-10",
+      "speaker_character_id": "character-franklin",
+      "speaker_label": "Farmer Franklin",
+      "text": "Can I trust this guy?",
+      "start_ms": 32700,
+      "end_ms": 35500,
+      "duration_ms": 2800,
+      "word_ids": [
+        "word-10-01",
+        "word-10-02",
+        "word-10-03",
+        "word-10-04",
+        "word-10-05"
+      ]
+    }
+  ],
+  "word_cues": [
+    {
+      "id": "word-08-01",
+      "speech_cue_id": "speech-08",
+      "text": "He",
+      "start_ms": 25300,
+      "end_ms": 25550,
+      "duration_ms": 250
+    },
+    {
+      "id": "word-08-02",
+      "speech_cue_id": "speech-08",
+      "text": "gets",
+      "start_ms": 25550,
+      "end_ms": 25900,
+      "duration_ms": 350
+    },
+    {
+      "id": "word-08-03",
+      "speech_cue_id": "speech-08",
+      "text": "a",
+      "start_ms": 25900,
+      "end_ms": 26050,
+      "duration_ms": 150
+    },
+    {
+      "id": "word-08-04",
+      "speech_cue_id": "speech-08",
+      "text": "little",
+      "start_ms": 26050,
+      "end_ms": 26700,
+      "duration_ms": 650
+    },
+    {
+      "id": "word-08-05",
+      "speech_cue_id": "speech-08",
+      "text": "gung",
+      "start_ms": 26700,
+      "end_ms": 27000,
+      "duration_ms": 300
+    },
+    {
+      "id": "word-08-06",
+      "speech_cue_id": "speech-08",
+      "text": "ho",
+      "start_ms": 27000,
+      "end_ms": 27300,
+      "duration_ms": 300
+    },
+    {
+      "id": "word-08-07",
+      "speech_cue_id": "speech-08",
+      "text": "with",
+      "start_ms": 27300,
+      "end_ms": 27650,
+      "duration_ms": 350
+    },
+    {
+      "id": "word-08-08",
+      "speech_cue_id": "speech-08",
+      "text": "our",
+      "start_ms": 27650,
+      "end_ms": 28000,
+      "duration_ms": 350
+    },
+    {
+      "id": "word-08-09",
+      "speech_cue_id": "speech-08",
+      "text": "flavor",
+      "start_ms": 28000,
+      "end_ms": 28750,
+      "duration_ms": 750
+    },
+    {
+      "id": "word-08-10",
+      "speech_cue_id": "speech-08",
+      "text": "of",
+      "start_ms": 28750,
+      "end_ms": 29100,
+      "duration_ms": 350
+    },
+    {
+      "id": "word-08-11",
+      "speech_cue_id": "speech-08",
+      "text": "capitalism.",
+      "start_ms": 29100,
+      "end_ms": 30300,
+      "duration_ms": 1200
+    },
+    {
+      "id": "word-10-01",
+      "speech_cue_id": "speech-10",
+      "text": "Can",
+      "start_ms": 32700,
+      "end_ms": 33100,
+      "duration_ms": 400
+    },
+    {
+      "id": "word-10-02",
+      "speech_cue_id": "speech-10",
+      "text": "I",
+      "start_ms": 33100,
+      "end_ms": 33400,
+      "duration_ms": 300
+    },
+    {
+      "id": "word-10-03",
+      "speech_cue_id": "speech-10",
+      "text": "trust",
+      "start_ms": 33400,
+      "end_ms": 34200,
+      "duration_ms": 800
+    },
+    {
+      "id": "word-10-04",
+      "speech_cue_id": "speech-10",
+      "text": "this",
+      "start_ms": 34200,
+      "end_ms": 34700,
+      "duration_ms": 500
+    },
+    {
+      "id": "word-10-05",
+      "speech_cue_id": "speech-10",
+      "text": "guy?",
+      "start_ms": 34700,
+      "end_ms": 35500,
+      "duration_ms": 800
+    }
+  ],
+  "image_cues": [
+    {
+      "id": "cue-08a",
+      "label": "08A",
+      "source_entry_ids": [
+        "line-08"
+      ],
+      "start_ms": 25300,
+      "end_ms": 26700,
+      "duration_ms": 1400,
+      "covered_word_ids": [
+        "word-08-01",
+        "word-08-02",
+        "word-08-03",
+        "word-08-04"
+      ],
+      "spoken_text_fragment": "He gets a little",
+      "image_asset_id": null
+    },
+    {
+      "id": "cue-08b",
+      "label": "08B",
+      "source_entry_ids": [
+        "line-08"
+      ],
+      "start_ms": 26700,
+      "end_ms": 29100,
+      "duration_ms": 2400,
+      "covered_word_ids": [
+        "word-08-05",
+        "word-08-06",
+        "word-08-07",
+        "word-08-08",
+        "word-08-09",
+        "word-08-10"
+      ],
+      "spoken_text_fragment": "gung ho with our flavor of",
+      "image_asset_id": null
+    },
+    {
+      "id": "cue-08c",
+      "label": "08C",
+      "source_entry_ids": [
+        "line-08"
+      ],
+      "start_ms": 29100,
+      "end_ms": 30300,
+      "duration_ms": 1200,
+      "covered_word_ids": [
+        "word-08-11"
+      ],
+      "spoken_text_fragment": "capitalism.",
+      "image_asset_id": null
+    },
+    {
+      "id": "cue-09a",
+      "label": "09A",
+      "source_entry_ids": [
+        "line-09"
+      ],
+      "start_ms": 30300,
+      "end_ms": 32700,
+      "duration_ms": 2400,
+      "covered_word_ids": [],
+      "spoken_text_fragment": "",
+      "image_asset_id": null
+    },
+    {
+      "id": "cue-10a",
+      "label": "10A",
+      "source_entry_ids": [
+        "line-10"
+      ],
+      "start_ms": 32700,
+      "end_ms": 34200,
+      "duration_ms": 1500,
+      "covered_word_ids": [
+        "word-10-01",
+        "word-10-02",
+        "word-10-03"
+      ],
+      "spoken_text_fragment": "Can I trust",
+      "image_asset_id": null
+    },
+    {
+      "id": "cue-10b",
+      "label": "10B",
+      "source_entry_ids": [
+        "line-10"
+      ],
+      "start_ms": 34200,
+      "end_ms": 35500,
+      "duration_ms": 1300,
+      "covered_word_ids": [
+        "word-10-04",
+        "word-10-05"
+      ],
+      "spoken_text_fragment": "this guy?",
+      "image_asset_id": null
+    }
+  ],
+  "overlap_intersections": {
+    "semantics": "Coverage intersections describe applicability and do not contribute additional sequence time. Owned-direction intersections describe an existing action slot.",
+    "direction_coverage_image": [
+      {
+        "direction_cue_id": "direction-08-attached",
+        "image_cue_id": "cue-08a",
+        "start_ms": 25300,
+        "end_ms": 26700,
+        "duration_ms": 1400
+      },
+      {
+        "direction_cue_id": "direction-08-attached",
+        "image_cue_id": "cue-08b",
+        "start_ms": 26700,
+        "end_ms": 29100,
+        "duration_ms": 2400
+      },
+      {
+        "direction_cue_id": "direction-08-attached",
+        "image_cue_id": "cue-08c",
+        "start_ms": 29100,
+        "end_ms": 30300,
+        "duration_ms": 1200
+      },
+      {
+        "direction_cue_id": "direction-08-attached",
+        "image_cue_id": "cue-09a",
+        "start_ms": 30300,
+        "end_ms": 30700,
+        "duration_ms": 400
+      },
+      {
+        "direction_cue_id": "direction-09",
+        "image_cue_id": "cue-09a",
+        "start_ms": 30300,
+        "end_ms": 32700,
+        "duration_ms": 2400
+      },
+      {
+        "direction_cue_id": "direction-09",
+        "image_cue_id": "cue-10a",
+        "start_ms": 32700,
+        "end_ms": 34200,
+        "duration_ms": 1500
+      },
+      {
+        "direction_cue_id": "direction-09",
+        "image_cue_id": "cue-10b",
+        "start_ms": 34200,
+        "end_ms": 35500,
+        "duration_ms": 1300
+      },
+      {
+        "direction_cue_id": "direction-10-attached",
+        "image_cue_id": "cue-10a",
+        "start_ms": 32700,
+        "end_ms": 34200,
+        "duration_ms": 1500
+      },
+      {
+        "direction_cue_id": "direction-10-attached",
+        "image_cue_id": "cue-10b",
+        "start_ms": 34200,
+        "end_ms": 35500,
+        "duration_ms": 1300
+      }
+    ],
+    "direction_coverage_speech": [
+      {
+        "direction_cue_id": "direction-08-attached",
+        "speech_cue_id": "speech-08",
+        "start_ms": 25300,
+        "end_ms": 30300,
+        "duration_ms": 5000
+      },
+      {
+        "direction_cue_id": "direction-09",
+        "speech_cue_id": "speech-10",
+        "start_ms": 32700,
+        "end_ms": 35500,
+        "duration_ms": 2800
+      },
+      {
+        "direction_cue_id": "direction-10-attached",
+        "speech_cue_id": "speech-10",
+        "start_ms": 32700,
+        "end_ms": 35500,
+        "duration_ms": 2800
+      }
+    ],
+    "direction_coverage_direction_coverage": [
+      {
+        "direction_cue_ids": [
+          "direction-08-attached",
+          "direction-09"
+        ],
+        "start_ms": 30300,
+        "end_ms": 30700,
+        "duration_ms": 400
+      },
+      {
+        "direction_cue_ids": [
+          "direction-09",
+          "direction-10-attached"
+        ],
+        "start_ms": 32700,
+        "end_ms": 35500,
+        "duration_ms": 2800
+      }
+    ],
+    "owned_direction_image": [
+      {
+        "direction_cue_id": "direction-09",
+        "image_cue_id": "cue-09a",
+        "start_ms": 30300,
+        "end_ms": 32700,
+        "duration_ms": 2400
+      }
+    ]
+  },
+  "boundary_edit_example": {
+    "id": "edit-boundary-08a-08b",
+    "kind": "adjacent_word_range_drag",
+    "selected_text": "gung ho",
+    "from_cue_id": "cue-08a",
+    "to_cue_id": "cue-08b",
+    "old_boundary_ms": 27300,
+    "new_boundary_ms": 26700,
+    "transferred_duration_ms": 600,
+    "before": [
+      {
+        "id": "cue-08a",
+        "start_ms": 25300,
+        "end_ms": 27300,
+        "duration_ms": 2000,
+        "script_text_fragment": "He gets a little gung ho"
+      },
+      {
+        "id": "cue-08b",
+        "start_ms": 27300,
+        "end_ms": 29100,
+        "duration_ms": 1800,
+        "script_text_fragment": "with our flavor of"
+      }
+    ],
+    "after": [
+      {
+        "id": "cue-08a",
+        "start_ms": 25300,
+        "end_ms": 26700,
+        "duration_ms": 1400,
+        "script_text_fragment": "He gets a little"
+      },
+      {
+        "id": "cue-08b",
+        "start_ms": 26700,
+        "end_ms": 29100,
+        "duration_ms": 2400,
+        "script_text_fragment": "gung ho with our flavor of"
+      }
+    ],
+    "preserves_scene_duration": true,
+    "preserves_script_wording_and_order": true,
+    "word_drag_rule": "Moving one word or a contiguous phrase to the previous or next image moves the image cut. Any intervening source words travel with the moved boundary so source order is preserved.",
+    "standalone_direction_rule": "Standalone direction is unspoken and may own a positive action slot. Its coverage starts at its authored position and can extend forward beyond its owned end. It has no spoken-word timestamps and is excluded from spoken-word dragging.",
+    "selected_word_ids": [
+      "word-08-05",
+      "word-08-06"
+    ],
+    "unchanged_speech_duration_ms": 5000,
+    "unchanged_image_sequence_duration_ms": 10200,
+    "direction_cues_unchanged_by_word_drag": true
+  },
+  "presentation": {
+    "status": "proposed_not_implemented",
+    "main_concept_file": "images/01-script-editor.png",
+    "main_layout": "single_script_flow",
+    "direction_placement": "inline_at_authored_position_before_affected_speech_or_standalone_action",
+    "timing_controls": {
+      "targets": "direction_cues_only",
+      "location": "existing_left_time_gutter",
+      "shape": "forward_direction_coverage_range",
+      "start_anchor": "fixed_at_authored_script_position",
+      "handles": [
+        "lower_end"
+      ],
+      "owned_duration_control": "ordinary_duration_pill",
+      "overlap_layout": "one_shared_vertical_gutter_track",
+      "cue_connection": "fixed_range_top_curves_right_into_small_arrow_to_own_direction_line",
+      "selection": "selecting_direction_or_range_highlights_both",
+      "drag_effect": "changes_only_coverage_end_without_changing_owned_duration_or_runtime",
+      "time_mapping": "shared_scene_time_ticks_independent_of_prose_wrapping",
+      "owned_segment_style": "solid",
+      "overlap_continuation_style": "lighter",
+      "zero_owned_style": "fixed_anchor_arrow_then_lighter_forward_coverage_only",
+      "range_top_geometry": "gentle_right_turn_into_arrow_at_fixed_authored_anchor",
+      "arrow_target": "own_direction_line_only",
+      "arrow_endpoint": "just_before_shared_script_text_left_edge",
+      "connector_routing": "gutter_only_no_prose_crossing",
+      "top_arrow_is_resize_handle": false,
+      "overlap_rendering": "interleaved_colored_dashes_on_same_centerline",
+      "selection_rendering": "selected_range_solid_foreground_other_ranges_retain_colored_anchor_arrows_and_end_caps",
+      "visible_resize_handles": "selected_direction_lower_end_only",
+      "direction_colors": {
+        "direction-08-attached": "purple",
+        "direction-09": "coral",
+        "direction-10-attached": "teal"
+      },
+      "hit_targets": {
+        "shared_rail": "generous_invisible_hit_area_without_visual_track_widening",
+        "overlapping_ranges": "compact_picker_identified_by_color_and_source_text",
+        "coincident_endpoints": "select_direction_with_same_compact_picker_then_expose_its_lower_handle",
+        "source_note": "selecting_note_selects_corresponding_range",
+        "keyboard": "each_direction_selectable_through_source_note_or_end_marker"
+      },
+      "color_semantics": "identifies_direction_coverage_not_owned_duration"
+    },
+    "speech_timing_controls": "ordinary_duration_pills_no_vertical_range_bars",
+    "storyboard_concept_file": "images/03-storyboard.png",
+    "storyboard_presentation": "individual_spoken_word_pills_marquee_selection_and_forward_direction_coverage_bands",
+    "script_text_alignment": {
+      "shared_left_edge_for": [
+        "speech_labels",
+        "dialogue",
+        "direction_labels",
+        "direction_text"
+      ],
+      "overlap_indentation": false,
+      "overlap_display": "one_shared_colored_gutter_track_no_text_indentation"
+    }
+  },
+  "sequence_window": {
+    "start_ms": 25300,
+    "end_ms": 35500,
+    "duration_ms": 10200
+  },
+  "coverage_display_window": {
+    "start_ms": 25300,
+    "end_ms": 35900,
+    "span_ms": 10600,
+    "affects_runtime": false
+  },
+  "authored_sequence": [
+    {
+      "id": "sequence-direction-08-attached",
+      "kind": "direction",
+      "cue_id": "direction-08-attached",
+      "start_ms": 25300,
+      "end_ms": 25300,
+      "owned_duration_ms": 0
+    },
+    {
+      "id": "sequence-speech-08",
+      "kind": "speech",
+      "cue_id": "speech-08",
+      "start_ms": 25300,
+      "end_ms": 30300,
+      "owned_duration_ms": 5000
+    },
+    {
+      "id": "sequence-direction-09",
+      "kind": "direction",
+      "cue_id": "direction-09",
+      "start_ms": 30300,
+      "end_ms": 32700,
+      "owned_duration_ms": 2400
+    },
+    {
+      "id": "sequence-direction-10-attached",
+      "kind": "direction",
+      "cue_id": "direction-10-attached",
+      "start_ms": 32700,
+      "end_ms": 32700,
+      "owned_duration_ms": 0
+    },
+    {
+      "id": "sequence-speech-10",
+      "kind": "speech",
+      "cue_id": "speech-10",
+      "start_ms": 32700,
+      "end_ms": 35500,
+      "owned_duration_ms": 2800
+    }
+  ],
+  "ownership_summary": {
+    "speech_owned_duration_ms": 7800,
+    "direction_owned_duration_ms": 2400,
+    "total_sequence_duration_ms": 10200,
+    "zero_owned_direction_ids": [
+      "direction-08-attached",
+      "direction-10-attached"
+    ]
+  },
+  "direction_edit_rules": {
+    "coverage_start": "fixed_at_authored_script_position",
+    "coverage_handle": "one_lower_end_handle_only",
+    "coverage_minimum_end": "owned_end_ms",
+    "coverage_drag_effect": "changes_coverage_end_only_no_sequence_time_or_speech_shift",
+    "owned_duration_control": "ordinary_duration_pill_accepting_zero_or_positive_time",
+    "owned_duration_edit_effect": "creates_or_resizes_action_slot_and_shifts_following_sequence_content",
+    "earlier_applicability": "move_direction_earlier_in_script_then_extend_lower_handle",
+    "speech_controls": "ordinary_duration_pills_no_vertical_range_bars"
+  }
+}

@@ -1,0 +1,5 @@
+import type { Env } from './types';
+interface AccessRefresh { refreshAccess(userId?:string,sessionId?:string):Promise<void> }
+export async function refreshProjectAccess(env:Env,projectId:string,userId?:string,sessionId?:string){const stub=env.PROJECTS.get(env.PROJECTS.idFromName(projectId)) as unknown as AccessRefresh;await stub.refreshAccess(userId,sessionId);}
+export async function refreshTeamAccess(env:Env,teamId:string,userId?:string){const rows=await env.DB.prepare('SELECT id FROM projects WHERE team_id=?').bind(teamId).all<{id:string}>();for(let i=0;i<rows.results.length;i+=20)await Promise.all(rows.results.slice(i,i+20).map(p=>refreshProjectAccess(env,p.id,userId)));}
+export async function refreshUserAccess(env:Env,userId:string,sessionId?:string){const rows=await env.DB.prepare(`SELECT DISTINCT p.id FROM projects p LEFT JOIN team_members m ON m.team_id=p.team_id WHERE p.owner_id=? OR m.user_id=?`).bind(userId,userId).all<{id:string}>();for(let i=0;i<rows.results.length;i+=20)await Promise.all(rows.results.slice(i,i+20).map(p=>refreshProjectAccess(env,p.id,userId,sessionId)));}
