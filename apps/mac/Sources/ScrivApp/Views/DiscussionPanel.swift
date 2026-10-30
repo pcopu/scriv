@@ -280,54 +280,67 @@ private struct DiscussionMentionPicker: View {
     }
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Mention a member").font(.system(size: 18, weight: .semibold))
-                Spacer()
-                Text("\(store.discussionMentionedUserIDs.count) / 20").font(.caption).foregroundStyle(.secondary)
-            }
-            Text("Choose who to include. They’ll see the mention in project activity; no email is sent.").font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
-            HStack(spacing: 9) {
-                Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                TextField("Search project members", text: $search).textFieldStyle(.plain)
-            }.padding(11).background(ScrivTheme.inset, in: RoundedRectangle(cornerRadius: 9))
-            if loading { ProgressView("Loading members…").controlSize(.small).padding(.vertical, 12) }
-            else if let error {
-                Text(error).font(.caption).foregroundStyle(.red)
-                Button("Retry") { Task { await reload() } }
-            } else if members.isEmpty {
-                Text(search.isEmpty ? "No members are available." : "No matching members.").font(.caption).foregroundStyle(.secondary).padding(.vertical, 12)
-            } else {
-                ScrollView {
-                    VStack(spacing: 4) {
-                        ForEach(members) { member in
-                            let selected = store.discussionMentionedUserIDs.contains(member.id)
-                            Button {
-                                if selected { store.removeDiscussionMention(member.id) }
-                                else { store.addDiscussionMention(member) }
-                            } label: {
-                                HStack(spacing: 8) {
-                                    InitialAvatar(name: member.name, size: 40)
-                                    VStack(alignment: .leading, spacing: 3) {
-                                        Text(member.name + (member.id == store.account?.id ? " (you)" : "")).font(.system(size: 14, weight: .medium))
-                                        Text(member.role.capitalized).font(.system(size: 12)).foregroundStyle(.secondary)
-                                    }
-                                    Spacer()
-                                    Image(systemName: selected ? "checkmark.circle.fill" : "circle").foregroundStyle(selected ? ScrivTheme.accent : ScrivTheme.secondary)
-                                }.padding(10).contentShape(Rectangle())
-                                    .background(selected ? ScrivTheme.accent.opacity(0.06) : .clear, in: RoundedRectangle(cornerRadius: 7))
-                            }.buttonStyle(.plain).disabled(!selected && store.discussionMentionedUserIDs.count >= 20)
-                                .accessibilityLabel((selected ? "Remove mention of " : "Mention ") + member.name + ", " + member.role)
-                        }
-                    }
-                }.frame(maxHeight: 320)
-            }
-            HStack {
-                if !store.discussionMentionedUserIDs.isEmpty { Button("Clear") { for id in store.discussionMentionedUserIDs { store.removeDiscussionMention(id) } } }
-                Spacer()
-                Button("Done") { dismiss() }.buttonStyle(ScrivPrimaryButtonStyle()).keyboardShortcut(.cancelAction)
-            }
+            pickerHeader
+            Text("Choose who to include. They’ll see the mention in project activity; no email is sent.")
+                .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+            searchField
+            memberResults
+            pickerFooter
         }.padding(20).frame(width: 360).background(ScrivTheme.panel)
             .task { await reload() }
+    }
+    private var pickerHeader: some View {
+        HStack {
+            Text("Mention a member").font(.system(size: 18, weight: .semibold))
+            Spacer()
+            Text("\(store.discussionMentionedUserIDs.count) / 20").font(.caption).foregroundStyle(.secondary)
+        }
+    }
+    private var searchField: some View {
+        HStack(spacing: 9) {
+            Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+            TextField("Search project members", text: $search).textFieldStyle(.plain)
+        }.padding(11).background(ScrivTheme.inset, in: RoundedRectangle(cornerRadius: 9))
+    }
+    @ViewBuilder private var memberResults: some View {
+        if loading {
+            ProgressView("Loading members…").controlSize(.small).padding(.vertical, 12)
+        } else if let error {
+            Text(error).font(.caption).foregroundStyle(.red)
+            Button("Retry") { Task { await reload() } }
+        } else if members.isEmpty {
+            Text(search.isEmpty ? "No members are available." : "No matching members.")
+                .font(.caption).foregroundStyle(.secondary).padding(.vertical, 12)
+        } else { memberList }
+    }
+    private var memberList: some View {
+        ScrollView {
+            VStack(spacing: 4) {
+                ForEach(members) { member in
+                    memberRow(member)
+                }
+            }
+        }.frame(maxHeight: 320)
+    }
+    private func memberRow(_ member: DiscussionMember) -> some View {
+        let selected: Bool = store.discussionMentionedUserIDs.contains(member.id)
+        let atLimit: Bool = store.discussionMentionedUserIDs.count >= 20
+        return DiscussionMentionMemberRow(member: member, selected: selected,
+                                          isCurrentUser: member.id == store.account?.id,
+                                          disabled: !selected && atLimit) {
+            if selected { store.removeDiscussionMention(member.id) }
+            else { store.addDiscussionMention(member) }
+        }
+    }
+    private var pickerFooter: some View {
+        HStack {
+            if !store.discussionMentionedUserIDs.isEmpty { Button("Clear", action: clearMentions) }
+            Spacer()
+            Button("Done") { dismiss() }.buttonStyle(ScrivPrimaryButtonStyle()).keyboardShortcut(.cancelAction)
+        }
+    }
+    private func clearMentions() {
+        for id in store.discussionMentionedUserIDs { store.removeDiscussionMention(id) }
     }
     @MainActor private func reload() async {
         guard !loading else { return }
@@ -336,6 +349,35 @@ private struct DiscussionMentionPicker: View {
         do { try await store.refreshDiscussionMembers() }
         catch is CancellationError { }
         catch { self.error = error.localizedDescription }
+    }
+}
+
+/// Keep the member-row generic view type separate from the picker's loading,
+/// search and list branches so native SwiftUI type-checking stays bounded.
+private struct DiscussionMentionMemberRow: View {
+    let member: DiscussionMember
+    let selected: Bool
+    let isCurrentUser: Bool
+    let disabled: Bool
+    let action: () -> Void
+    private var displayName: String { member.name + (isCurrentUser ? " (you)" : "") }
+    private var selectionSymbol: String { selected ? "checkmark.circle.fill" : "circle" }
+    private var selectionColor: Color { selected ? ScrivTheme.accent : ScrivTheme.secondary }
+    private var rowColor: Color { selected ? ScrivTheme.accent.opacity(0.06) : Color.clear }
+    private var accessibilityText: String { (selected ? "Remove mention of " : "Mention ") + member.name + ", " + member.role }
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                InitialAvatar(name: member.name, size: 40)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(displayName).font(.system(size: 14, weight: .medium))
+                    Text(member.role.capitalized).font(.system(size: 12)).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: selectionSymbol).foregroundStyle(selectionColor)
+            }.padding(10).contentShape(Rectangle())
+                .background(rowColor, in: RoundedRectangle(cornerRadius: 7))
+        }.buttonStyle(.plain).disabled(disabled).accessibilityLabel(accessibilityText)
     }
 }
 
