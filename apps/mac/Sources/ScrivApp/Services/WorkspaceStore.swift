@@ -115,6 +115,7 @@ final class WorkspaceStore: ObservableObject {
     private var mentionHistoryRequestGeneration = 0
     private var mentionScope = ""
     private var cancellables = Set<AnyCancellable>()
+    private let errorPresenter = WorkspaceErrorPresenter()
     var onProjectChanged: ((ScrivProject, URL?) -> Void)?
     var sceneEntries: [ScriptEntry] { project.entries(in: selectedSceneID) }
     var sceneCues: [ImageCue] { project.cues(in: selectedSceneID) }
@@ -136,6 +137,12 @@ final class WorkspaceStore: ObservableObject {
         } else { rootURL = FileManager.default.urls(for:.applicationSupportDirectory,in:.userDomainMask)[0].appendingPathComponent("Scriv/Projects") }
         do { repository = try ProjectRepository(root:rootURL) } catch { errorMessage = "Local project storage could not open: \(error.localizedDescription)" }
         projectURL = rootURL.appendingPathComponent(example.id).appendingPathExtension("scriv")
+        $errorMessage.compactMap { $0 }.receive(on: RunLoop.main).sink { [weak self] message in
+            self?.errorPresenter.enqueue(message) { [weak self] in
+                // An earlier alert must not clear a newer queued error.
+                if self?.errorMessage == message { self?.errorMessage = nil }
+            }
+        }.store(in: &cancellables)
         localAudio.onError = { [weak self] message in self?.audioStatus = message }
         cloud.onState = { [weak self] in self?.readCloudState() }
         cloud.onItems = { [weak self] items in self?.applyRemote(items) }
@@ -906,7 +913,13 @@ final class WorkspaceStore: ObservableObject {
     func flushPendingSaves() async { await saveTask?.value }
     func importScript() {
         finishEditing()
-        let panel = NSOpenPanel(); panel.allowedContentTypes = [.plainText,.json]; panel.allowsMultipleSelection = false
+        let panel = NSOpenPanel()
+        // Fountain is not a system-declared plain-text type on a clean Mac.
+        // Include its extension-derived type even if no screenwriting app has
+        // registered it with Launch Services. .spmd is Fountain's older suffix.
+        panel.allowedContentTypes = [.plainText, .json] + ["fountain", "spmd"].compactMap { UTType(filenameExtension: $0) }
+        panel.allowsMultipleSelection = false; panel.canChooseDirectories = false
+        panel.message = "Choose a Fountain (.fountain or .spmd), UTF-8 text, or Scriv JSON script."
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do { let data = try Data(contentsOf:url); guard data.count <= 16*1024*1024 else { throw ScrivError.invalid("Script imports are limited to 16 MiB.") }; var imported: ScrivProject; if url.pathExtension.lowercased() == "json" { imported = try ScrivJSON.decoder.decode(ScrivProject.self,from:data); try TimingEngine.validate(imported); imported.id = UUID().uuidString; imported.cloudProjectId = nil; imported.revision = 0; imported.createdAt = ScrivClock.now; imported.modifiedAt = imported.createdAt } else { guard let text = String(data:data,encoding:.utf8) else { throw ScrivError.invalid("Save the script as UTF-8 text or Fountain.") }; imported = Fountain.parse(text,title:url.deletingPathExtension().lastPathComponent) }; try TimingEngine.validate(imported); install(imported) } catch { errorMessage = error.localizedDescription }
     }

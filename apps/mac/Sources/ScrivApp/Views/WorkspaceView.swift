@@ -29,9 +29,6 @@ struct WorkspaceView: View {
             .sheet(isPresented: $teamOpen) { TeamSheet().environmentObject(store) }
             .sheet(isPresented: $historyOpen) { HistorySheet().environmentObject(store) }
             .sheet(isPresented: $store.showAccountSignIn) { ScrivSignInSheet().environmentObject(store) }
-            .alert("Scriv", isPresented: Binding(get: { store.errorMessage != nil }, set: { if !$0 { store.errorMessage = nil } })) {
-                Button("OK") { store.errorMessage = nil }
-            } message: { Text(store.errorMessage ?? "") }
             .alert("Rename project", isPresented: $renaming) {
                 TextField("Project title", text: $titleDraft)
                 Button("Cancel", role: .cancel) {}

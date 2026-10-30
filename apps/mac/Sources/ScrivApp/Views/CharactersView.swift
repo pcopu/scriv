@@ -2,13 +2,20 @@ import SwiftUI
 import AppKit
 import ScrivCore
 
+/// The item and its edit lease context must enter presentation atomically.
+/// A separate optional context can still be nil when SwiftUI first opens a sheet.
+private struct CharacterEditSelection: Identifiable {
+    let character: ScriptCharacter
+    let navigationContext: Int
+    var id: String { character.id }
+}
+
 struct CharactersView: View {
     @EnvironmentObject private var store: WorkspaceStore
     @State private var search = ""
-    @State private var editing: ScriptCharacter?
+    @State private var editing: CharacterEditSelection?
     @State private var deleting: ScriptCharacter?
     @State private var editRequestID: UUID?
-    @State private var editingContext: Int?
     private var characters: [ScriptCharacter] {
         store.project.characters.filter { search.isEmpty || ([$0.name] + $0.aliases).contains { $0.localizedCaseInsensitiveContains(search) } }
     }
@@ -60,11 +67,9 @@ struct CharactersView: View {
                 if let id, !characters.contains(where: { $0.id == id }) { search = "" }
             }
             .onDisappear { editRequestID = nil }
-            .sheet(item: $editing) { character in
-                if let editingContext {
-                    CharacterEditor(character: character, navigationContext: editingContext).environmentObject(store)
-                        .onDisappear { store.endEdit(character.id, context: editingContext) }
-                }
+            .sheet(item: $editing) { selection in
+                CharacterEditor(character: selection.character, navigationContext: selection.navigationContext).environmentObject(store)
+                    .onDisappear { store.endEdit(selection.character.id, context: selection.navigationContext) }
             }
             .confirmationDialog("Delete \(deleting?.name ?? "character")?", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }), titleVisibility: .visible) {
                 Button("Delete Character", role: .destructive) { if let deleting { store.deleteCharacter(deleting.id) }; deleting = nil }
@@ -116,7 +121,7 @@ struct CharactersView: View {
             guard editRequestID == request, store.project.id == projectID, store.navigationContext == context else { if allowed { store.endEdit(character.id, context: context) }; return }
             editRequestID = nil
             if allowed {
-                if let current = store.project.character(character.id) { editingContext = context; editing = current }
+                if let current = store.project.character(character.id) { editing = CharacterEditSelection(character: current, navigationContext: context) }
                 else { store.endEdit(character.id, context: context) }
             }
         }
