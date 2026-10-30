@@ -16,6 +16,11 @@ for f in files:
     text="\n".join(line.split("//",1)[0] for line in f.read_text().splitlines())
     assert not re.search(r'^\s*import\s+(SwiftUI|AppKit)\b',text,re.M), f
     assert not re.search(r'\b(UIHostingController|NSHostingView|NSViewRepresentable|UIViewRepresentable)\b',text),f
+codex = Path('apps/mac/Sources/ScrivApp/Services/CodexController.swift').read_text()
+locator = codex.split('private static func locateExecutable() -> String? {', 1)[1].split('    func start()', 1)[0]
+catalyst_locator = locator.split('#else', 1)[0]
+assert '#if targetEnvironment(macCatalyst)' in catalyst_locator and 'return nil' in catalyst_locator
+assert 'homeDirectoryForCurrentUser' not in catalyst_locator and 'isExecutableFile' not in catalyst_locator
 router = (source/'Shared/ScrivUIKitRouter.swift').read_text()
 assert '@MainActor\nenum ScrivUIKitFeatures {}' in router
 assert 'typealias Factory = @MainActor (' in router

@@ -150,8 +150,14 @@ final class CodexController: ObservableObject {
         #endif
     }
     private static func locateExecutable() -> String? {
+        #if targetEnvironment(macCatalyst)
+        // The sandboxed client cannot inspect host installations. The companion
+        // validates the configured absolute path when an explicit start is requested.
+        return nil
+        #else
         let candidates = ["/opt/homebrew/bin/codex","/usr/local/bin/codex",FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".npm-global/bin/codex").path]
         return candidates.first { FileManager.default.isExecutableFile(atPath: $0) }
+        #endif
     }
     func start() async throws {
         guard !isConnecting, !isConnected, !ownsTransport, socket == nil else { throw ScrivError.conflict("Disconnect the current runtime first.") }
