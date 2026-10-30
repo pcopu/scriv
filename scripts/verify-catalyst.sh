@@ -16,6 +16,9 @@ for f in files:
     text="\n".join(line.split("//",1)[0] for line in f.read_text().splitlines())
     assert not re.search(r'^\s*import\s+(SwiftUI|AppKit)\b',text,re.M), f
     assert not re.search(r'\b(UIHostingController|NSHostingView|NSViewRepresentable|UIViewRepresentable)\b',text),f
+router = (source/'Shared/ScrivUIKitRouter.swift').read_text()
+assert '@MainActor\nenum ScrivUIKitFeatures {}' in router
+assert 'typealias Factory = @MainActor (' in router
 transport = (source/'Audio/AudioTransportView.swift').read_text()
 assert 'nextButton = UIButton' in transport and 'next = UIButton' not in transport
 controls = (source/'Audio/AudioUIKitControls.swift').read_text()
