@@ -58,7 +58,7 @@ final class CodexGenerationTests: XCTestCase {
         let outside = root.appendingPathComponent("outside.png"); try Data([1]).write(to: outside)
         let link = directory.appendingPathComponent("link.png"); try FileManager.default.createSymbolicLink(at: link, withDestinationURL: valid)
         let candidates = try CodexImageArtifacts.candidates(in: directory, reported: [reference, empty, outside, oversized, link, valid])
-        XCTAssertEqual(candidates, [preferred, valid])
+        XCTAssertEqual(candidates, [preferred, valid].map { $0.resolvingSymlinksInPath() })
         for file in [reference, empty, outside, oversized, link] { XCTAssertFalse(CodexImageArtifacts.isEligible(file, in: directory)) }
     }
     func testInvalidPreferredArtifactDoesNotHideValidReportedOutput() throws {

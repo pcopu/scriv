@@ -1,3 +1,7 @@
+## Latest UIKit source increment (2026-10-30)
+
+The user-requested UIKit/Mac Catalyst rewrite is described in [UIKit migration and native gates](uikit-migration-20261030.md). The preserved SwiftUI checkpoint is `e14c64cc`; its native rebuild remains pending available Mac disk. The new target contains no SwiftUI hosting. Current portable evidence is 266 passing Core tests plus UIKit syntax/target checks, not native execution. Earlier historical statements below apply to their named snapshots; the later Mac audit and `/var` path-test correction are recorded in the new handoff.
+
 # Current Scriv source handoff — 2026-10-29
 
 **Later approved UI/source follow-up:** [2026-10-30 supporting views and durable manual-direction recovery](approved-ui-and-prompt-recovery-20261030.md). Its new verification boundary supersedes the portable counts below; fresh native rebuild and board comparison remain separate gates.
