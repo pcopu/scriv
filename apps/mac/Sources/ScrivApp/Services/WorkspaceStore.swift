@@ -1,4 +1,8 @@
+#if targetEnvironment(macCatalyst)
+import UIKit
+#else
 import AppKit
+#endif
 import Combine
 import Foundation
 import UniformTypeIdentifiers
@@ -18,6 +22,22 @@ final class WorkspaceStore: ObservableObject {
     @Published var playheadMs: Double = 0 { didSet { synchronizeAudio() } }
     @Published var isPlaying = false { didSet { synchronizeAudio() } }
     @Published var followPlayback = true
+    @Published private(set) var scriptZoom: Double = {
+        let saved = UserDefaults.standard.object(forKey:"ScrivScriptZoom.v1") as? NSNumber
+        let value = saved?.doubleValue ?? 1
+        return value.isFinite ? min(2,max(0.7,value)) : 1
+    }()
+    var scriptFontSize: CGFloat { CGFloat(14 * scriptZoom) }
+    func setScriptZoom(_ value: Double) {
+        guard value.isFinite else { return }
+        let next = (min(2,max(0.7,value)) * 100).rounded() / 100
+        guard next != scriptZoom else { return }
+        scriptZoom = next; UserDefaults.standard.set(next,forKey:"ScrivScriptZoom.v1")
+    }
+    func adjustScriptZoom(by delta: Double) { setScriptZoom(scriptZoom + delta) }
+#if targetEnvironment(macCatalyst)
+    @Published private(set) var isBootstrapping = true
+#endif
     @Published var statusMessage = "Saved on this Mac"
     @Published var errorMessage: String?
     @Published var history: [HistoryEntry] = []
@@ -194,6 +214,8 @@ final class WorkspaceStore: ObservableObject {
     private var generationCompletionIDs: Set<String> = []
     private var generationAttachmentHeartbeats: [String:Task<Void,Never>] = [:]
     private var sharedJobRefreshGeneration = 0
+    var prepareScriptPlayback: (() -> Bool)?
+    var didPauseScriptPlayback: (() -> Void)?
     private var playbackTask: Task<Void,Never>?
     private var playbackClock = PlaybackPositionClock()
     private var saveTask: Task<Void,Never>?
@@ -305,15 +327,105 @@ final class WorkspaceStore: ObservableObject {
     }
     private func repo() throws -> ProjectRepository { guard let repository else { throw ScrivError.unavailable("Local project storage is unavailable. Check folder permissions.") }; return repository }
     private func bootstrap() async {
+#if targetEnvironment(macCatalyst)
+        defer { isBootstrapping = false }
+        if verificationMode { return }
+        // Account identity is restored before replaying account-bound cloud drafts.
+        // Local-only pending packages do not require a network account.
+        await cloud.restoreSession()
+        do {
+            let journal = try pendingSaveJournal()
+            let pending = try journal.allPackages()
+            if let path = UserDefaults.standard.string(forKey:"lastProjectURL"),
+               FileManager.default.fileExists(atPath:path) || pending.contains(where: { $0.path == path }) {
+                try await open(URL(fileURLWithPath:path))
+            } else if let package = try pending.first(where: { url in
+                guard let record = try journal.load(package:url).first else { return false }
+                return pendingScopeIsAuthorized(record.scope)
+            }) {
+                try await open(package)
+            } else {
+                guard let package = projectURL else { throw ScrivError.invalid("The initial project has no package location.") }
+                try persistInitialProject(project,at:package)
+                queueSave(project,label:"Create project")
+            }
+        } catch {
+            errorMessage = "Project recovery needs attention. No pending changes were discarded: \(error.localizedDescription)"
+            statusMessage = "Recovery needs review — open the affected package after restoring its account or access"
+            return
+        }
+        isBootstrapping = false
+#else
         if verificationMode { return }
         if let path = UserDefaults.standard.string(forKey:"lastProjectURL"), FileManager.default.fileExists(atPath:path) {
             do { try await open(URL(fileURLWithPath:path)) } catch { errorMessage = "The last project could not open: \(error.localizedDescription)" }
         } else { saveProject() }
-        if project.images.isEmpty && project.scenes.contains(where: { $0.id == "scene-farm" }) { do { try await installSampleImages() } catch { errorMessage = error.localizedDescription } }
         await cloud.restoreSession()
+#endif
+        if project.images.isEmpty && project.scenes.contains(where: { $0.id == "scene-farm" }) {
+            do { try await installSampleImages() } catch { errorMessage = error.localizedDescription }
+        }
         if project.cloudProjectId != nil, account != nil { syncProject() }
         refreshLocalProjects()
     }
+#if targetEnvironment(macCatalyst)
+    private func pendingSaveJournal() throws -> PendingProjectSaveJournal {
+        try PendingProjectSaveJournal(root:rootURL.deletingLastPathComponent().appendingPathComponent("PendingProjectSaves",isDirectory:true))
+    }
+    private func pendingScope(_ snapshot: ScrivProject, at package: URL) throws -> PendingProjectSaveScope {
+        if snapshot.cloudProjectId != nil {
+            guard let accountID = cloud.account?.id else { throw ScrivError.conflict("Sign into this project’s Scriv account before accepting another cloud-linked change. Existing drafts remain on this Mac.") }
+            if projectURL?.standardizedFileURL == package.standardizedFileURL,
+               let checkpoint = canonicalCheckpoint, checkpoint.projectId == snapshot.cloudProjectId {
+                guard checkpoint.accountId == accountID, checkpoint.serverURL == cloud.baseURL.absoluteString else {
+                    throw ScrivError.permission("This package belongs to another Scriv account or server. Restore that context, or export a separate local copy before editing.")
+                }
+            }
+            return PendingProjectSaveScope(packagePath:package.standardizedFileURL.path,projectID:snapshot.id,cloudProjectID:snapshot.cloudProjectId,server:cloud.baseURL.absoluteString,accountID:accountID)
+        }
+        return PendingProjectSaveScope(packagePath:package.standardizedFileURL.path,projectID:snapshot.id)
+    }
+    private func pendingScopeIsAuthorized(_ scope: PendingProjectSaveScope) -> Bool {
+        if scope.cloudProjectID == nil { return scope.server == "local" && scope.accountID == nil }
+        return scope.server == cloud.baseURL.absoluteString && scope.accountID != nil && scope.accountID == cloud.account?.id
+    }
+    @discardableResult
+    private func persistInitialProject(_ value: ScrivProject, at package: URL) throws -> Bool {
+        guard !FileManager.default.fileExists(atPath:package.appendingPathComponent("project.json").path) else { return false }
+        let journal = try pendingSaveJournal()
+        if try journal.load(package:package).contains(where: { $0.after.revision == value.revision && $0.after == value }) { return false }
+        guard value.revision == 0 else { throw ScrivError.conflict("This unsaved project is missing its initial revision. Existing recovery records were retained.") }
+        try journal.persist(scope:pendingScope(value,at:package),before:nil,after:value,label:"Create project")
+        return true
+    }
+    private func persistAcceptedChange(before: ScrivProject, after: ScrivProject, label: String) throws {
+        guard let package = projectURL else { throw ScrivError.invalid("Choose a project location before editing.") }
+        if before.revision == 0, try persistInitialProject(before,at:package) { queueSave(before,label:"Create project") }
+        try pendingSaveJournal().persist(scope:pendingScope(after,at:package),before:before,after:after,label:label)
+    }
+    private func recoverPendingSaves(at package: URL, through revision: Int = .max) async throws {
+        let journal = try pendingSaveJournal(), records = try journal.load(package:package)
+        guard let first = records.first else { return }
+        guard pendingScopeIsAuthorized(first.scope) else {
+            throw ScrivError.conflict("This package has pending changes from another Scriv account or server. Sign into that account and reopen it. The saved package and recovery records were not overwritten.")
+        }
+        let canonical: ScrivProject?
+        if FileManager.default.fileExists(atPath:package.appendingPathComponent("project.json").path) { canonical = try await repo().load(at:package) }
+        else { canonical = nil }
+        let accepted = canonical == nil ? [] : try await repo().history(at:package).map(\.snapshot)
+        let plan = try journal.planRecovery(scope:first.scope,canonical:canonical,acceptedHistory:accepted)
+        for record in plan.replay where record.after.revision <= revision {
+            guard pendingScopeIsAuthorized(record.scope) else { throw ScrivError.conflict("The account changed during recovery. Remaining records were retained.") }
+            try await repo().saveRecovering(record,at:package)
+            guard try journal.acknowledge(record) else { throw ScrivError.conflict("A recovery record changed during saving. Its replacement was retained.") }
+        }
+        for record in plan.alreadySaved {
+            guard pendingScopeIsAuthorized(record.scope) else { throw ScrivError.conflict("The account changed during recovery. Remaining records were retained.") }
+            try await repo().saveRecovering(record,at:package)
+            guard try journal.acknowledge(record) else { throw ScrivError.conflict("An accepted recovery record changed. It was retained for review.") }
+        }
+    }
+#endif
     private func readCloudState() {
         if account?.id != cloud.account?.id {
             discussionGeneration += 1; activeThread = nil; messages = []; cloudHistory = []; discussionReplyToID = nil; discussionAttachments = []; discussionLoading = false
@@ -325,6 +437,9 @@ final class WorkspaceStore: ObservableObject {
     @discardableResult
     private func change(_ label: String, afterSave: (() -> Void)? = nil, _ mutate: (inout ScrivProject) throws -> Void) -> Bool {
         do {
+#if targetEnvironment(macCatalyst)
+            guard !isBootstrapping else { throw ScrivError.unavailable("Wait for project recovery to finish before editing.") }
+#endif
             let before = project
             var next = before
             try mutate(&next); try TimingEngine.validate(next)
@@ -333,7 +448,13 @@ final class WorkspaceStore: ObservableObject {
             let new = Dictionary(uniqueKeysWithValues:try CloudCodec.items(from:next).map { ($0.id,$0.data) })
             let ids = Set(old.keys).union(new.keys).filter { old[$0] != new[$0] }
             for id in ids { if let editor = lockedByOther(id) { throw ScrivError.conflict("\(editor) is editing this item. Wait for their lease to finish before changing it.") } }
+            guard before.revision < Int.max - 1 else { throw ScrivError.invalid("The project revision limit was reached.") }
             next.revision = before.revision + 1; next.modifiedAt = ScrivClock.now
+#if targetEnvironment(macCatalyst)
+            // Scene termination cannot wait for an asynchronous save. Accept no
+            // mutation until its exact source/target is durably journaled.
+            try persistAcceptedChange(before:before,after:next,label:label)
+#endif
             undoStack.append(before); redoStack = []
             project = next
             let event = HistoryEntry(label:label,snapshot:next); history.insert(event,at:0)
@@ -356,8 +477,22 @@ final class WorkspaceStore: ObservableObject {
         saveTask = Task { [weak self] in
             await previous?.value
             guard let self else { return }
-            do { try await self.repo().save(snapshot,at:package,label:label); onSuccess?(); if self.project.id == snapshot.id && self.project.revision == snapshot.revision { self.statusMessage = "Saved on this Mac" }; if !self.verificationMode { UserDefaults.standard.set(package.path,forKey:"lastProjectURL") } }
-            catch { self.errorMessage = "Could not save your project: \(error.localizedDescription)"; self.statusMessage = "Save failed" }
+            do {
+#if targetEnvironment(macCatalyst)
+                let journal = try self.pendingSaveJournal()
+                if let record = try journal.load(package:package).first(where: { $0.after.revision == snapshot.revision }) {
+                    guard record.after == snapshot else { throw ScrivError.conflict("A different pending snapshot owns this revision. Reopen the package to review recovery.") }
+                    // Retry also replays any failed predecessor; saving only this
+                    // snapshot would strand a chain after an earlier disk failure.
+                    try await self.recoverPendingSaves(at:package,through:snapshot.revision)
+                } else { try await self.repo().save(snapshot,at:package,label:label) }
+#else
+                try await self.repo().save(snapshot,at:package,label:label)
+#endif
+                onSuccess?()
+                if self.project.id == snapshot.id && self.project.revision == snapshot.revision { self.statusMessage = "Saved on this Mac" }
+                if !self.verificationMode { UserDefaults.standard.set(package.path,forKey:"lastProjectURL") }
+            } catch { self.errorMessage = "Could not save your project: \(error.localizedDescription)"; self.statusMessage = "Save failed — accepted changes remain in local recovery" }
         }
     }
     private func enqueueCommit(before: ScrivProject, after: ScrivProject, label: String, changed: Set<String>) {
@@ -386,7 +521,13 @@ final class WorkspaceStore: ObservableObject {
             if let checkpoint = validCheckpoint() { merged = try CloudReconciliation.merge(base:checkpoint.items,local:CloudCodec.items(from:project),remote:items) }
             else { guard dirtyItems.isEmpty else { throw ScrivError.conflict("A local draft needs reconciliation before applying live updates.") }; merged = items }
             let next = try CloudCodec.applying(merged,to:project)
-            if next != project { var revised = next; revised.revision = project.revision+1; revised.modifiedAt = ScrivClock.now; project = revised; queueSave(revised,label:"Live update"); reconcileSelection(); refreshPeerAuthorization(); onProjectChanged?(project,projectURL) }
+            if next != project {
+                var revised = next; revised.revision = project.revision+1; revised.modifiedAt = ScrivClock.now
+#if targetEnvironment(macCatalyst)
+                try persistAcceptedChange(before:project,after:revised,label:"Live update")
+#endif
+                project = revised; queueSave(revised,label:"Live update"); reconcileSelection(); refreshPeerAuthorization(); onProjectChanged?(project,projectURL)
+            }
             recordCheckpoint()
             fetchMissingImages()
         } catch { hasConflicts = true; errorMessage = "The incoming project could not be applied safely: \(error.localizedDescription)" }
@@ -522,7 +663,8 @@ final class WorkspaceStore: ObservableObject {
         if followPlayback, let entry = project.activeEntry(at:Int(playheadMs),sceneId:selectedSceneID) { selectedEntryID = entry.id }
     }
     func togglePlayback() {
-        if isPlaying { updatePlayhead(toMs:playbackClock.pause(nowMs:ProcessInfo.processInfo.systemUptime * 1000,durationMs:sceneDurationMs)); isPlaying = false; playbackTask?.cancel(); return }
+        if isPlaying { updatePlayhead(toMs:playbackClock.pause(nowMs:ProcessInfo.processInfo.systemUptime * 1000,durationMs:sceneDurationMs)); isPlaying = false; playbackTask?.cancel(); didPauseScriptPlayback?(); return }
+        guard prepareScriptPlayback?() ?? true else { return }
         if playheadMs >= Double(sceneDurationMs) { playheadMs = 0 }
         guard sceneDurationMs > 0 else { return }
         isPlaying = true
@@ -540,6 +682,29 @@ final class WorkspaceStore: ObservableObject {
         let entry = ScriptEntry(sceneId:selectedSceneID,order:0,kind:kind,text:kind == .direction ? "Direction" : "New line",characterId:kind == .dialogue ? project.characters.first?.id : nil,ownedDurationMs:kind == .direction ? 0 : 3000,coverageDurationMs:kind == .direction ? 3000 : 0)
         let after = sceneEntries.contains(where: { $0.id == selectedEntryID }) ? selectedEntryID : nil
         if change(kind == .direction ? "Add direction" : "Add dialogue", { try ProjectEditing.insertEntry(&$0,entry:entry,after:after) }) { selectedEntryID = entry.id; requestedEntryEditingID = entry.id }
+    }
+    func splitScriptEntry(entryID: String, atUTF16Offset offset: Int, expectedText: String) -> String? {
+        guard cloud.hasCurrentEditingLease(entryID) else { errorMessage = "Acquire this line’s editing lease before splitting it."; return nil }
+        var result: String?
+        if change("Split script line", { value in
+            result = try ScriptBoundaryEditing.split(project:&value,entryID:entryID,atUTF16Offset:offset,expectedText:expectedText)
+        }), let result { selectedEntryID = result; requestedEntryEditingID = result; return result }
+        return nil
+    }
+    func mergeScriptEntryIntoPrevious(entryID: String, expectedText: String) -> (entryID:String, caretUTF16Offset:Int)? {
+        guard let entry = project.entries.first(where: { $0.id == entryID }),
+              let index = project.entries(in:entry.sceneId).firstIndex(where: { $0.id == entryID }), index > 0 else {
+            errorMessage = "There is no previous line in this scene."; return nil
+        }
+        let previousID = project.entries(in:entry.sceneId)[index-1].id
+        guard cloud.hasCurrentEditingLease(entryID), cloud.hasCurrentEditingLease(previousID) else {
+            errorMessage = "Acquire both lines’ editing leases before merging them."; return nil
+        }
+        var result: (entryID:String, caretUTF16Offset:Int)?
+        if change("Merge script lines", { value in
+            result = try ScriptBoundaryEditing.mergeIntoPrevious(project:&value,entryID:entryID,expectedText:expectedText)
+        }), let result { selectedEntryID = result.entryID; requestedEntryEditingID = result.entryID; return result }
+        return nil
     }
     func deleteEntry(_ id: String) { change("Delete line") { try ProjectEditing.deleteEntry(&$0,entryId:id) } }
     func moveEntry(_ id: String, offset: Int) { change("Move line") { try ProjectEditing.moveEntry(&$0,entryId:id,offset:offset) } }
@@ -667,29 +832,45 @@ final class WorkspaceStore: ObservableObject {
         return url
     }
     func importAudio(entryId: String? = nil) {
-        guard let package = projectURL, project.scenes.contains(where: { $0.id == selectedSceneID }) else { errorMessage = "Create and save a scene before importing audio."; return }
-        guard sceneDurationMs > 0 else { errorMessage = "Add a timed line before attaching audio to this scene."; return }
-        if let entryId, !sceneEntries.contains(where: { $0.id == entryId }) { errorMessage = "Select a line in this scene before importing its audio."; return }
-        let intendedStart = entryId.map { project.startMs(of:$0) } ?? Int(playheadMs)
-        guard intendedStart < sceneDurationMs else { errorMessage = "Move the playhead before the scene end, or extend the scene, before importing audio."; return }
+#if targetEnvironment(macCatalyst)
+        let context = navigationGeneration
+        UIKitFileAccess.shared.choose(types: [.audio]) { [weak self] url in
+            guard let self, let url, self.navigationGeneration == context else { return }
+            Task { _ = await self.importAudio(from:url,entryId:entryId) }
+        }
+#else
         let panel = NSOpenPanel(); panel.allowedContentTypes = [.audio]; panel.allowsMultipleSelection = false; panel.canChooseDirectories = false
         guard panel.runModal() == .OK, let source = panel.url else { return }
+        Task { _ = await self.importAudio(from:source,entryId:entryId) }
+#endif
+    }
+    @discardableResult
+    func importAudio(from source: URL, entryId: String? = nil) async -> Bool {
+        guard let package = projectURL, project.scenes.contains(where: { $0.id == selectedSceneID }) else { errorMessage = "Create and save a scene before importing audio."; return false }
+        guard sceneDurationMs > 0 else { errorMessage = "Add a timed line before attaching audio to this scene."; return false }
+        if let entryId, !sceneEntries.contains(where: { $0.id == entryId }) { errorMessage = "Select a line in this scene before importing its audio."; return false }
+        let intendedStart = entryId.map { project.startMs(of:$0) } ?? Int(playheadMs)
+        guard intendedStart < sceneDurationMs else { errorMessage = "Move the playhead before the scene end, or extend the scene, before importing audio."; return false }
+        let scoped = source.startAccessingSecurityScopedResource()
+        defer { if scoped { source.stopAccessingSecurityScopedResource() } }
         let navigation = navigationGeneration, scene = selectedSceneID, position = Int(playheadMs)
         let target = entryId.flatMap { id in project.entries.first { $0.id == id && $0.sceneId == scene }?.id }
         audioStatus = "Importing and measuring audio…"
-        perform {
-            defer { if self.navigationGeneration == navigation, self.audioStatus == "Importing and measuring audio…" { self.audioStatus = "Audio import did not complete — existing project audio is unchanged" } }
-            let asset: AudioAsset
-            do { asset = try await LocalAudioImporter.importFile(at:source,into:package) }
-            catch { if self.navigationGeneration == navigation { self.audioStatus = "Audio import failed: " + error.localizedDescription }; throw error }
-            guard self.navigationGeneration == navigation, self.projectURL == package, self.project.scenes.contains(where: { $0.id == scene }) else { return }
-            if let target, !self.project.entries.contains(where: { $0.id == target && $0.sceneId == scene }) { throw ScrivError.conflict("The selected line was removed while importing audio. Import again into the current scene.") }
+        defer { if navigationGeneration == navigation, audioStatus == "Importing and measuring audio…" { audioStatus = "Audio import did not complete — existing project audio is unchanged" } }
+        do {
+            let asset = try await LocalAudioImporter.importFile(at:source,into:package)
+            guard navigationGeneration == navigation, projectURL == package, project.scenes.contains(where: { $0.id == scene }) else { return false }
+            if let target, !project.entries.contains(where: { $0.id == target && $0.sceneId == scene }) { throw ScrivError.conflict("The target line changed while importing. The audio has not been attached.") }
             let start = target == nil ? position : 0
-            let absoluteStart = target.map { self.project.startMs(of:$0) } ?? start
-            let available = self.project.durationMs(of:scene) - absoluteStart
+            let absoluteStart = target.map { project.startMs(of:$0) } ?? start
+            let available = project.durationMs(of:scene) - absoluteStart
             guard available > 0 else { throw ScrivError.conflict("The scene became shorter while importing. Extend it or choose an earlier position and import again.") }
             let clip = AudioClip(sceneId:scene,entryId:target,assetId:asset.id,startMs:start,durationMs:min(asset.durationMs,available))
-            if self.change("Import local audio", { p in p.audioAssets.append(asset); p.audioClips.append(clip) }) { self.audioStatus = "Audio saved in this project package — not uploaded to cloud" }
+            guard change("Import local audio", { p in p.audioAssets.append(asset); p.audioClips.append(clip) }) else { return false }
+            audioStatus = "Audio saved in this project package — not uploaded to cloud"; return true
+        } catch {
+            if navigationGeneration == navigation { audioStatus = "Audio import failed: " + error.localizedDescription; errorMessage = error.localizedDescription }
+            return false
         }
     }
     private var audioVolumeScope: String { project.id + "|" + (projectURL?.path ?? "") }
@@ -705,10 +886,25 @@ final class WorkspaceStore: ObservableObject {
     func updateAudioClip(_ clip: AudioClip) -> Bool { change("Edit local audio clip") { p in guard let index = p.audioClips.firstIndex(where: { $0.id == clip.id }) else { throw ScrivError.invalid("This audio clip no longer exists.") }; p.audioClips[index] = clip } }
     func deleteAudioClip(_ id: String) { change("Remove local audio clip") { $0.audioClips.removeAll { $0.id == id } } }
     func importImage(cueId: String? = nil) {
-        let panel = NSOpenPanel(); panel.allowedContentTypes = [.png,.jpeg,UTType(filenameExtension:"webp") ?? .image]; panel.allowsMultipleSelection = false; panel.canChooseDirectories = false
-        guard panel.runModal() == .OK, let url = panel.url else { return }
         let target = cueId ?? selectedCueID ?? currentCue?.id, context = navigationGeneration
-        perform { guard self.navigationGeneration == context else { return }; try await self.attachImage(url:url,cueId:target,prompt:"Imported image",expectedCue:nil) }
+#if targetEnvironment(macCatalyst)
+        UIKitFileAccess.shared.choose(types: [.png,.jpeg,UTType(filenameExtension:"webp") ?? .image]) { [weak self] url in
+            guard let self, let url, self.navigationGeneration == context else { return }
+            Task { _ = await self.importImage(from:url,cueId:target) }
+        }
+#else
+        let panel = NSOpenPanel(); panel.allowedContentTypes = [.png,.jpeg,UTType(filenameExtension:"webp") ?? .image]; panel.allowsMultipleSelection = false; panel.canChooseDirectories = false
+        guard panel.runModal() == .OK, let url = panel.url, navigationGeneration == context else { return }
+        Task { _ = await self.importImage(from:url,cueId:target) }
+#endif
+    }
+    @discardableResult
+    func importImage(from url: URL, cueId: String? = nil) async -> Bool {
+        if let cueId, !project.cues.contains(where: { $0.id == cueId }) { errorMessage = "The target image placement no longer exists."; return false }
+        let context = navigationGeneration, scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        do { return try await attachImage(url:url,cueId:cueId,prompt:"Imported image",expectedCue:nil) != nil }
+        catch { if navigationGeneration == context { errorMessage = error.localizedDescription }; return false }
     }
     @discardableResult
     private func attachImage(url: URL, cueId: String?, prompt: String, generationPrompt: String? = nil, expectedCue: ImageCue?, expectedRevision: Int? = nil) async throws -> String? {
@@ -716,7 +912,11 @@ final class WorkspaceStore: ObservableObject {
         let sourceProjectID = project.id, navigation = navigationGeneration
         let attributes = try url.resourceValues(forKeys:[.fileSizeKey]); guard (attributes.fileSize ?? 0) <= 25*1024*1024 else { throw ScrivError.invalid("Choose an image smaller than 25 MiB.") }
         let data = try Data(contentsOf:url)
+#if targetEnvironment(macCatalyst)
+        guard UIImage(data:data) != nil else { throw ScrivError.invalid("The image file could not be decoded.") }
+#else
         guard NSImage(data:data) != nil else { throw ScrivError.invalid("The image file could not be decoded.") }
+#endif
         let asset = try await repo().importAsset(data:data,at:package,prompt:prompt)
         guard project.id == sourceProjectID, navigationGeneration == navigation, projectURL == package else { return nil }
         var stale = false
@@ -1031,14 +1231,38 @@ final class WorkspaceStore: ObservableObject {
             automaticMediaAttempts.insert(asset.sha256); downloadImage(asset,silent:true)
         }
     }
-    private func finishEditing() { NotificationCenter.default.post(name:.scrivFinishEditing,object:nil); NSApp.keyWindow?.makeFirstResponder(nil) }
+    private func finishEditing() {
+#if targetEnvironment(macCatalyst)
+        UIKitPresentation.finishEditing()
+#else
+        NotificationCenter.default.post(name:.scrivFinishEditing,object:nil); NSApp.keyWindow?.makeFirstResponder(nil)
+#endif
+    }
     func newProject() { finishEditing(); install(.blank()) }
-    func openProject() { let panel = NSOpenPanel(); panel.canChooseDirectories = true; panel.canChooseFiles = true; panel.allowsMultipleSelection = false; panel.message = "Choose a .scriv project package"; guard panel.runModal() == .OK, let url = panel.url else { return }; perform { try await self.open(url) } }
-    private func open(_ url: URL) async throws {
+    func openProject() {
+#if targetEnvironment(macCatalyst)
+        UIKitFileAccess.shared.choose(types: [UIKitFileAccess.projectType,.folder]) { [weak self] url in
+            guard let self, let url else { return }
+            self.perform { try UIKitFileAccess.shared.rememberProject(url); try await self.open(url) }
+        }
+#else
+        let panel = NSOpenPanel(); panel.canChooseDirectories = true; panel.canChooseFiles = true; panel.allowsMultipleSelection = false; panel.message = "Choose a .scriv project package"
+        guard panel.runModal() == .OK, let url = panel.url else { return }; perform { try await self.open(url) }
+#endif
+    }
+    private func open(_ requestedURL: URL) async throws {
+#if targetEnvironment(macCatalyst)
+        let url = try UIKitFileAccess.shared.restoreProjectAccess(requestedURL)
+#else
+        let url = requestedURL
+#endif
         finishEditing()
         characterCreationRequest = nil; requestedEntryEditingID = nil
         navigationGeneration += 1; invalidLocalAssetPaths = []; checkedLocalAssets = [:]; pendingLocalAssetChecks = [:]; let navigation = navigationGeneration
         await flushPendingSaves()
+#if targetEnvironment(macCatalyst)
+        try await recoverPendingSaves(at:url)
+#endif
         let loaded = try await repo().load(at:url), checkpoint = try await repo().checkpoint(at:url)
         let savedHistory = try await repo().history(at:url,through:loaded.revision)
         guard navigationGeneration == navigation else { throw CancellationError() }
@@ -1051,13 +1275,21 @@ final class WorkspaceStore: ObservableObject {
         if loaded.cloudProjectId != nil, account != nil { syncProject() }
     }
     private func install(_ value: ScrivProject) {
+#if targetEnvironment(macCatalyst)
+        do { try persistInitialProject(value,at:rootURL.appendingPathComponent(value.id).appendingPathExtension("scriv")) }
+        catch { errorMessage = "The new project was not accepted: \(error.localizedDescription)"; return }
+#endif
         characterCreationRequest = nil; requestedEntryEditingID = nil
         navigationGeneration += 1; invalidLocalAssetPaths = []; checkedLocalAssets = [:]; pendingLocalAssetChecks = [:]
         cloud.disconnect(); canonicalCheckpoint = nil; dirtyItems = [:]; hasConflicts = false; isProjectSynchronizing = false; isSyncing = false; pauseRemoteUpdates = false
-        project = value; projectURL = rootURL.appendingPathComponent(value.id).appendingPathExtension("scriv"); selectedSceneID = value.scenes.first?.id ?? ""
+        project = value; projectURL = rootURL.appendingPathComponent(value.id).appendingPathExtension("scriv")
+#if targetEnvironment(macCatalyst)
+        if !verificationMode { UserDefaults.standard.set(projectURL?.path,forKey:"lastProjectURL") }
+#endif
+        selectedSceneID = value.scenes.first?.id ?? ""
         selectedEntryID = value.entries(in:selectedSceneID).first?.id; selectedCueID = value.cues(in:selectedSceneID).first?.id; selectedCharacterID = value.characters.first?.id
         history = []; undoStack = []; redoStack = []; isPlaying = false; playheadMs = 0; selectedWordIDs = []; editingIntents = LocalEditIntents(); activeThread = nil; messages = []; discussionItemID = nil; cloudHistory = []; showDiscussion = false; discussionGeneration += 1; discussionLoading = false
-        saveProject(); onProjectChanged?(project,projectURL)
+        queueSave(value,label:"Create project"); onProjectChanged?(project,projectURL)
     }
     func saveProject() {
         prepareGenerationPrompt()
@@ -1076,18 +1308,78 @@ final class WorkspaceStore: ObservableObject {
     }
     func importScript() {
         finishEditing()
-        let panel = NSOpenPanel()
-        // Fountain is not a system-declared plain-text type on a clean Mac.
-        // Include its extension-derived type even if no screenwriting app has
-        // registered it with Launch Services. .spmd is Fountain's older suffix.
-        panel.allowedContentTypes = [.plainText, .json] + ["fountain", "spmd"].compactMap { UTType(filenameExtension: $0) }
+        let types: [UTType] = [.plainText,.json] + ["fountain","spmd"].compactMap { UTType(filenameExtension:$0) }
+#if targetEnvironment(macCatalyst)
+        let context = navigationGeneration
+        UIKitFileAccess.shared.choose(types: types) { [weak self] url in
+            guard let self, let url, self.navigationGeneration == context else { return }
+            self.importScript(from:url)
+        }
+#else
+        let panel = NSOpenPanel(); panel.allowedContentTypes = types
         panel.allowsMultipleSelection = false; panel.canChooseDirectories = false
         panel.message = "Choose a Fountain (.fountain or .spmd), UTF-8 text, or Scriv JSON script."
-        guard panel.runModal() == .OK, let url = panel.url else { return }
-        do { let data = try Data(contentsOf:url); guard data.count <= 16*1024*1024 else { throw ScrivError.invalid("Script imports are limited to 16 MiB.") }; var imported: ScrivProject; if url.pathExtension.lowercased() == "json" { imported = try ScrivJSON.decoder.decode(ScrivProject.self,from:data); try TimingEngine.validate(imported); imported.id = UUID().uuidString; imported.cloudProjectId = nil; imported.revision = 0; imported.createdAt = ScrivClock.now; imported.modifiedAt = imported.createdAt } else { guard let text = String(data:data,encoding:.utf8) else { throw ScrivError.invalid("Save the script as UTF-8 text or Fountain.") }; imported = Fountain.parse(text,title:url.deletingPathExtension().lastPathComponent) }; try TimingEngine.validate(imported); install(imported) } catch { errorMessage = error.localizedDescription }
+        guard panel.runModal() == .OK, let url = panel.url else { return }; importScript(from:url)
+#endif
     }
-    func exportScript() { finishEditing(); let panel = NSSavePanel(); panel.nameFieldStringValue = project.title+".fountain"; guard panel.runModal() == .OK, let url = panel.url else { return }; do { try Fountain.export(project).write(to:url,atomically:true,encoding:.utf8) } catch { errorMessage = error.localizedDescription } }
-    func exportProject() { finishEditing(); let panel = NSSavePanel(); panel.nameFieldStringValue = project.title+".scriv"; panel.canCreateDirectories = true; guard panel.runModal() == .OK, let url = panel.url, let source = projectURL else { return }; perform { await self.flushPendingSaves(); try await self.repo().copyPackage(from:source,to:url); self.statusMessage = "Project exported with local images, audio and history" } }
+    func importScript(from url: URL) {
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        do {
+            let size = try url.resourceValues(forKeys:[.fileSizeKey]).fileSize ?? 0
+            guard size <= 16*1024*1024 else { throw ScrivError.invalid("Script imports are limited to 16 MiB.") }
+            let data = try Data(contentsOf:url)
+            guard data.count <= 16*1024*1024 else { throw ScrivError.invalid("Script imports are limited to 16 MiB.") }
+            var imported: ScrivProject
+            if url.pathExtension.lowercased() == "json" {
+                imported = try ScrivJSON.decoder.decode(ScrivProject.self,from:data); try TimingEngine.validate(imported)
+                imported.id = UUID().uuidString; imported.cloudProjectId = nil; imported.revision = 0
+                imported.createdAt = ScrivClock.now; imported.modifiedAt = imported.createdAt
+            } else {
+                guard let text = String(data:data,encoding:.utf8) else { throw ScrivError.invalid("Save the script as UTF-8 text or Fountain.") }
+                imported = Fountain.parse(text,title:url.deletingPathExtension().lastPathComponent)
+            }
+            try TimingEngine.validate(imported); install(imported)
+        } catch { errorMessage = error.localizedDescription }
+    }
+    func exportScript() {
+        finishEditing()
+#if targetEnvironment(macCatalyst)
+        do {
+            let directory = FileManager.default.temporaryDirectory.appendingPathComponent("ScrivExport-" + UUID().uuidString,isDirectory:true)
+            try FileManager.default.createDirectory(at:directory,withIntermediateDirectories:true)
+            let url = directory.appendingPathComponent("Script.fountain")
+            try Fountain.export(project).write(to:url,atomically:true,encoding:.utf8)
+            UIKitFileAccess.shared.export(url:url) { try? FileManager.default.removeItem(at:directory) }
+        } catch { errorMessage = error.localizedDescription }
+#else
+        let panel = NSSavePanel(); panel.nameFieldStringValue = project.title+".fountain"
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do { try Fountain.export(project).write(to:url,atomically:true,encoding:.utf8) } catch { errorMessage = error.localizedDescription }
+#endif
+    }
+    func exportProject() {
+        finishEditing()
+#if targetEnvironment(macCatalyst)
+        guard let source = projectURL else { return }
+        let context = navigationGeneration
+        perform {
+            await self.flushPendingSaves(); guard self.navigationGeneration == context else { return }
+            let directory = FileManager.default.temporaryDirectory.appendingPathComponent("ScrivExport-" + UUID().uuidString,isDirectory:true)
+            try FileManager.default.createDirectory(at:directory,withIntermediateDirectories:true)
+            let url = directory.appendingPathComponent("Project.scriv")
+            do {
+                try await self.repo().copyPackage(from:source,to:url)
+                guard self.navigationGeneration == context else { try? FileManager.default.removeItem(at:directory); return }
+                UIKitFileAccess.shared.export(url:url) { try? FileManager.default.removeItem(at:directory) }
+            } catch { try? FileManager.default.removeItem(at:directory); throw error }
+        }
+#else
+        let panel = NSSavePanel(); panel.nameFieldStringValue = project.title+".scriv"; panel.canCreateDirectories = true
+        guard panel.runModal() == .OK, let url = panel.url, let source = projectURL else { return }
+        perform { await self.flushPendingSaves(); try await self.repo().copyPackage(from:source,to:url); self.statusMessage = "Project exported with local images, audio and history" }
+#endif
+    }
     func undo() {
         finishEditing()
         guard let previous = undoStack.last else { return }
@@ -1156,9 +1448,24 @@ final class WorkspaceStore: ObservableObject {
         do { let clean = try TeamInvitation.token(from:token,serverURL:cloud.baseURL); perform { try await self.cloud.joinTeam(token:clean); self.readCloudState() } }
         catch { errorMessage = error.localizedDescription }
     }
-    func createJoinLink(teamId: String) { perform { let url = try await self.cloud.joinLink(teamId:teamId); self.lastJoinLink = url.absoluteString; NSPasteboard.general.clearContents(); NSPasteboard.general.setString(url.absoluteString,forType:.string); self.statusMessage = "Team invitation copied" } }
-    func checkout(teamId: String) { perform { NSWorkspace.shared.open(try await self.cloud.billing(teamId:teamId,portal:false)) } }
-    func billingPortal(teamId: String) { perform { NSWorkspace.shared.open(try await self.cloud.billing(teamId:teamId,portal:true)) } }
+    func createJoinLink(teamId: String) { perform {
+        let url = try await self.cloud.joinLink(teamId:teamId); self.lastJoinLink = url.absoluteString
+#if targetEnvironment(macCatalyst)
+        UIPasteboard.general.string = url.absoluteString
+#else
+        NSPasteboard.general.clearContents(); NSPasteboard.general.setString(url.absoluteString,forType:.string)
+#endif
+        self.statusMessage = "Team invitation copied"
+    } }
+    func checkout(teamId: String) { perform { self.openExternalURL(try await self.cloud.billing(teamId:teamId,portal:false)) } }
+    func billingPortal(teamId: String) { perform { self.openExternalURL(try await self.cloud.billing(teamId:teamId,portal:true)) } }
+    private func openExternalURL(_ url: URL) {
+#if targetEnvironment(macCatalyst)
+        UIKitPresentation.open(url)
+#else
+        NSWorkspace.shared.open(url)
+#endif
+    }
     func syncProject(teamId: String? = nil) {
         finishEditing()
         guard account != nil else { signIn(); return }
@@ -1167,7 +1474,13 @@ final class WorkspaceStore: ObservableObject {
         isProjectSynchronizing = true; isSyncing = true
         perform {
             await self.commitTask?.value
+            await self.flushPendingSaves()
             guard self.navigationGeneration == navigation, self.project.id == contextID else { return }
+#if targetEnvironment(macCatalyst)
+            if let package = self.projectURL, try !self.pendingSaveJournal().load(package:package).isEmpty {
+                throw ScrivError.conflict("Finish saving or recovering this package before changing its cloud connection. Pending changes remain on this Mac.")
+            }
+#endif
             self.isSyncing = true; self.pauseRemoteUpdates = true
             defer { if self.navigationGeneration == navigation, self.project.id == contextID { self.isProjectSynchronizing = false; self.isSyncing = false; self.pauseRemoteUpdates = false } }
             let draft = self.project
@@ -1201,6 +1514,9 @@ final class WorkspaceStore: ObservableObject {
                     guard self.navigationGeneration == navigation, self.project.id == contextID, self.project.revision == draft.revision else { throw ScrivError.conflict("New edits remain saved locally. Sync once more to send them.") }
                     if reconciled != self.project {
                         var next = reconciled; next.revision = self.project.revision+1; next.modifiedAt = ScrivClock.now
+#if targetEnvironment(macCatalyst)
+                        try self.persistAcceptedChange(before:self.project,after:next,label:"Reconcile cloud changes")
+#endif
                         self.project = next; self.queueSave(next,label:"Reconcile cloud changes"); self.onProjectChanged?(next,self.projectURL)
                     }
                     synchronizedRevision = self.project.revision
@@ -1209,7 +1525,12 @@ final class WorkspaceStore: ObservableObject {
                 let created = try await self.cloud.createProject(draft,teamId:teamId)
                 guard self.navigationGeneration == navigation, self.project.id == contextID else { return }
                 let sourceUnchanged = self.project.revision == draft.revision
-                self.project.cloudProjectId = created.id; self.project.revision += 1; self.project.modifiedAt = ScrivClock.now
+                var linked = self.project
+                linked.cloudProjectId = created.id; linked.revision += 1; linked.modifiedAt = ScrivClock.now
+#if targetEnvironment(macCatalyst)
+                try self.persistAcceptedChange(before:self.project,after:linked,label:"Enable cloud sync")
+#endif
+                self.project = linked
                 let linkedRevision = self.project.revision
                 synchronizedRevision = linkedRevision
                 self.history.insert(HistoryEntry(label:"Enable cloud sync",snapshot:self.project),at:0)
@@ -1288,16 +1609,37 @@ final class WorkspaceStore: ObservableObject {
             for candidate in candidates {
                 guard let existing = try? await self.repo().load(at:candidate), existing.cloudProjectId == remote.id,
                       let checkpoint = try? await self.repo().checkpoint(at:candidate), checkpoint.serverURL == self.cloud.baseURL.absoluteString, checkpoint.accountId == self.account?.id else { continue }
-                base = existing; package = candidate; break
+#if targetEnvironment(macCatalyst)
+                try await self.recoverPendingSaves(at:candidate)
+                base = try await self.repo().load(at:candidate)
+#else
+                base = existing
+#endif
+                package = candidate; break
             }
             guard self.navigationGeneration == navigation else { return }
             let snapshot = try await self.cloud.attach(projectId:remote.id,realtime:self.isPremiumProject(remote))
             guard self.navigationGeneration == navigation else { return }
+            let attachedLifecycle = self.cloud.lifecycleContext, attachedAccount = self.cloud.account?.id
             var loaded = try CloudCodec.applying(snapshot.allItems,to:base)
             loaded.title = remote.title; loaded.revision = base.revision+1; loaded.modifiedAt = ScrivClock.now
             let previousHistory = try await self.repo().history(at:package,through:base.revision)
-            guard self.navigationGeneration == navigation else { return }
+            guard self.navigationGeneration == navigation, self.cloud.lifecycleContext == attachedLifecycle,
+                  self.cloud.account?.id == attachedAccount, self.cloud.projectId == remote.id else { throw CancellationError() }
             try self.cloud.keepPendingAsLocalDrafts()
+#if targetEnvironment(macCatalyst)
+            let journal = try self.pendingSaveJournal()
+            if !FileManager.default.fileExists(atPath:package.appendingPathComponent("project.json").path) {
+                let initial = try journal.persist(scope:self.pendingScope(base,at:package),before:nil,after:base,label:"Open cloud project baseline")
+                try await self.repo().saveRecovering(initial,at:package)
+                guard try journal.acknowledge(initial) else { throw ScrivError.conflict("The initial cloud replica changed during saving. Recovery was retained.") }
+            }
+            guard self.navigationGeneration == navigation, self.cloud.lifecycleContext == attachedLifecycle,
+                  self.cloud.account?.id == attachedAccount, self.cloud.projectId == remote.id else { throw CancellationError() }
+            try journal.persist(scope:self.pendingScope(loaded,at:package),before:base,after:loaded,label:"Open cloud project")
+#endif
+            guard self.navigationGeneration == navigation, self.cloud.lifecycleContext == attachedLifecycle,
+                  self.cloud.account?.id == attachedAccount, self.cloud.projectId == remote.id else { throw CancellationError() }
             self.dirtyItems = [:]; self.hasConflicts = false; self.canonicalCheckpoint = nil; self.project = loaded; self.projectURL = package
             self.selectedSceneID = loaded.scenes.first?.id ?? ""; self.selectedEntryID = loaded.entries(in:self.selectedSceneID).first?.id; self.selectedCueID = loaded.cues(in:self.selectedSceneID).first?.id; self.selectedCharacterID = loaded.characters.first?.id
             self.playheadMs = 0; self.isPlaying = false; self.selectedWordIDs = []; self.editingIntents = LocalEditIntents(); self.undoStack = []; self.redoStack = []; self.activeThread = nil; self.messages = []; self.discussionItemID = nil; self.showDiscussion = false; self.discussionGeneration += 1; self.discussionLoading = false
@@ -1468,7 +1810,18 @@ final class WorkspaceStore: ObservableObject {
     }
     func retryCloudSync() { syncProject() }
     func refreshAccount() { perform { try await self.cloud.refreshAccount(); self.readCloudState() } }
-    func refreshLocalProjects() { perform { self.localProjects = try await self.repo().projects().sorted { $0.lastPathComponent < $1.lastPathComponent } } }
+    func refreshLocalProjects() { perform {
+        var packages = try await self.repo().projects()
+#if targetEnvironment(macCatalyst)
+        let journal = try self.pendingSaveJournal()
+        // Initial accepted projects remain discoverable even when project.json
+        // has never reached disk. Opening the row performs fenced recovery.
+        for package in try journal.allPackages() {
+            if let first = try journal.load(package:package).first, self.pendingScopeIsAuthorized(first.scope) { packages.append(package) }
+        }
+#endif
+        self.localProjects = Array(Set(packages)).sorted { $0.lastPathComponent < $1.lastPathComponent }
+    } }
     func openLocalProject(_ url: URL) { perform { try await self.open(url) } }
     func loadTeamDetails(teamId: String) { perform { self.teamDetails = try await self.cloud.teamDetails(teamId) } }
     func revokeJoinLink(teamId: String, linkId: String) { perform { try await self.cloud.revokeJoinLink(teamId:teamId,linkId:linkId); self.teamDetails = try await self.cloud.teamDetails(teamId) } }

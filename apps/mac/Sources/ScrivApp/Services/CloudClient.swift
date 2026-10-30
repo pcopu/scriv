@@ -1,5 +1,10 @@
 import Foundation
+import Combine
+#if targetEnvironment(macCatalyst)
+import UIKit
+#else
 import AppKit
+#endif
 import AuthenticationServices
 import Security
 import ScrivCore
@@ -82,7 +87,13 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         super.init()
         if !ProcessInfo.processInfo.arguments.contains("--screenshots"), !ProcessInfo.processInfo.arguments.contains("--peer-smoke") { token = try? KeychainToken.read(account:baseURL.absoluteString) }
     }
-    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor { NSApp.keyWindow ?? NSApp.windows.first ?? ASPresentationAnchor() }
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+#if targetEnvironment(macCatalyst)
+        UIKitPresentation.window ?? ASPresentationAnchor()
+#else
+        NSApp.keyWindow ?? NSApp.windows.first ?? ASPresentationAnchor()
+#endif
+    }
     private func notify() { onState?() }
     func request<T: Decodable>(_ path: String, method: String = "GET", body: JSONValue? = nil) async throws -> T {
         let data = try await requestData(path, method: method, body: body)

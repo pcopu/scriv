@@ -1,5 +1,10 @@
-import AppKit
 import Foundation
+import Combine
+#if targetEnvironment(macCatalyst)
+import UIKit
+#else
+import AppKit
+#endif
 import ScrivCore
 
 /// A local JSON-RPC client. ChatGPT credentials remain in the user's Codex runtime.
@@ -10,6 +15,7 @@ final class CodexController: ObservableObject {
     @Published private(set) var isRunning = false
     @Published private(set) var isGenerating = false
     @Published private(set) var accountLabel: String?
+    @Published private(set) var accountChecked = false
     @Published private(set) var lastError: String?
     @Published private(set) var log = ""
     @Published var executablePath: String { didSet { UserDefaults.standard.set(executablePath, forKey: "codexExecutable") } }
@@ -28,7 +34,58 @@ final class CodexController: ObservableObject {
     var onJobChange: ((LocalGenerationJob) -> Void)?
     var onRecoverJob: ((LocalGenerationJob) -> Void)?
     var onRetryJob: ((LocalGenerationJob) -> Void)?
+    #if targetEnvironment(macCatalyst)
+    private var bridge: MacRuntimeBridge?
+    private var scopedGenerationRoot: URL?
+    private var generationRootIssue: String?
+    private struct SavedGenerationLocation: Codable { let bookmark: Data; let installationID: String }
+    /// Explicit migration only. The original journal/artifacts remain in place;
+    /// their installation identity is retained rather than forging new owners.
+    func useExistingGenerationFolder(_ url: URL) throws {
+        guard !isConnected, !isConnecting, !isGenerating else { throw ScrivError.conflict("Disconnect Codex before choosing existing generation history.") }
+        let scoped = url.startAccessingSecurityScopedResource()
+        do {
+            let root = url.standardizedFileURL
+            var isDirectory: ObjCBool = false
+            guard root.lastPathComponent == "Generation", root.deletingLastPathComponent().lastPathComponent == "Scriv", root == root.resolvingSymlinksInPath(), FileManager.default.fileExists(atPath: root.appendingPathComponent("Journal").path, isDirectory: &isDirectory), isDirectory.boolValue else { throw ScrivError.invalid("Choose the original Scriv/Generation folder containing its Journal. No files were moved or replaced.") }
+            let candidate = try GenerationJournal(root: root.appendingPathComponent("Journal")), loaded = try candidate.load()
+            let owners = Set(loaded.jobs.map(\.ownerInstallationID))
+            guard owners.count <= 1 else { throw ScrivError.permission("This folder contains jobs from different installations. Keep it unchanged and recover each installation separately.") }
+            let owner = owners.first ?? installationID
+            guard UUID(uuidString: owner) != nil else { throw ScrivError.invalid("The original generation owner identity is invalid.") }
+            let bookmark = try url.bookmarkData(options: .minimalBookmark, includingResourceValuesForKeys: nil, relativeTo: nil)
+            let saved = try JSONEncoder().encode(SavedGenerationLocation(bookmark: bookmark, installationID: owner))
+            scopedGenerationRoot?.stopAccessingSecurityScopedResource(); scopedGenerationRoot = url
+            generationRootIssue = nil; installationID = owner; journal = candidate; jobs = loaded.jobs
+            UserDefaults.standard.set(saved, forKey: "ScrivUIKitGenerationLocation.v1")
+            UserDefaults.standard.set(owner, forKey: "generationInstallationID")
+            journalError = loaded.unreadable > 0 ? "\(loaded.unreadable) unreadable generation records were preserved on disk, not discarded." : nil
+            for var job in loaded.jobs where job.status == .running || job.status == .queued {
+                job.recoverAfterRestart()
+                do { try persist(job) } catch { journalError = "Existing records were retained, but recovery progress could not be saved: " + error.localizedDescription }
+            }
+            onChange?()
+        } catch { if scoped { url.stopAccessingSecurityScopedResource() }; throw error }
+    }
+    @Published private(set) var bridgePaired = MacRuntimeBridge.isPaired
+    func importRuntimePairing(from url: URL) throws {
+        guard !isConnected, !isConnecting else { throw ScrivError.conflict("Disconnect before changing local pairing.") }
+        try MacRuntimeBridge.importPairing(from: url); bridgePaired = true; onChange?()
+    }
+    func rotateRuntimePairing() async throws {
+        guard !isConnected, !isConnecting else { throw ScrivError.conflict("Disconnect before rotating local pairing.") }
+        try await MacRuntimeBridge().rotatePairing(); bridgePaired = false; onChange?()
+    }
+    func forgetRuntimePairing() {
+        guard !isConnected, !isConnecting else { return }
+        MacRuntimeBridge.forgetPairing(); bridgePaired = false; onChange?()
+    }
+    func openRuntimeCompanion() async throws { try await MacRuntimeBridge.openCompanion() }
+    private var ownsTransport: Bool { bridge != nil }
+    #else
     private var process: Process?
+    private var ownsTransport: Bool { process != nil }
+    #endif
     private var input: FileHandle?
     private var output: FileHandle?
     private var errors: FileHandle?
@@ -40,6 +97,8 @@ final class CodexController: ObservableObject {
     private var nextID = 1
     private var generationState = CodexGenerationState()
     private var generationJobID: String?
+    var activeGenerationJob: LocalGenerationJob? { generationJobID.flatMap { id in jobs.first(where: { $0.id == id }) } }
+    var isCancellingGeneration: Bool { isGenerating && generationState.cancellationRequested }
     @Published private(set) var pendingLoginID: String?
     private var loginStarting = false
     private var earlyLoginCompletions: [String: JSONValue] = [:]
@@ -56,6 +115,18 @@ final class CodexController: ObservableObject {
         installationID = verification ? UUID().uuidString : UserDefaults.standard.string(forKey: "generationInstallationID") ?? UUID().uuidString
         if UUID(uuidString: installationID) == nil { installationID = UUID().uuidString }
         if !verification { UserDefaults.standard.set(installationID, forKey: "generationInstallationID") }
+        #if targetEnvironment(macCatalyst)
+        if !verification, let data = UserDefaults.standard.data(forKey: "ScrivUIKitGenerationLocation.v1") {
+            do {
+                let saved = try JSONDecoder().decode(SavedGenerationLocation.self, from: data)
+                guard UUID(uuidString: saved.installationID) != nil else { throw ScrivError.invalid("The saved generation identity is invalid.") }
+                var stale = false
+                let url = try URL(resolvingBookmarkData: saved.bookmark, options: [], relativeTo: nil, bookmarkDataIsStale: &stale)
+                _ = url.startAccessingSecurityScopedResource(); scopedGenerationRoot = url; installationID = saved.installationID
+                if stale { let updated = try url.bookmarkData(options: .minimalBookmark, includingResourceValuesForKeys: nil, relativeTo: nil); UserDefaults.standard.set(try JSONEncoder().encode(SavedGenerationLocation(bookmark: updated, installationID: installationID)), forKey: "ScrivUIKitGenerationLocation.v1") }
+            } catch { generationRootIssue = "Existing generation history needs access again. Choose its original folder in Settings. " + error.localizedDescription }
+        }
+        #endif
         do {
             journal = try GenerationJournal(root: generationRoot().appendingPathComponent("Journal"))
             let loaded = try journal!.load()
@@ -65,16 +136,41 @@ final class CodexController: ObservableObject {
             }
             if loaded.unreadable > 0 { journalError = "\(loaded.unreadable) unreadable generation records were preserved on disk, not discarded." }
         } catch { journalError = "Generation recovery storage could not open: \(error.localizedDescription)" }
+        #if !targetEnvironment(macCatalyst)
         sleepObserver = NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.willSleepNotification, object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor in self?.recordProgress(.waiting, "Waiting for this Mac to wake; no generation will be resubmitted.") }
         }
+        #endif
+    }
+    private static func isReadableImage(_ url: URL) -> Bool {
+        #if targetEnvironment(macCatalyst)
+        return UIImage(contentsOfFile: url.path) != nil
+        #else
+        return NSImage(contentsOf: url) != nil
+        #endif
     }
     private static func locateExecutable() -> String? {
         let candidates = ["/opt/homebrew/bin/codex","/usr/local/bin/codex",FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".npm-global/bin/codex").path]
         return candidates.first { FileManager.default.isExecutableFile(atPath: $0) }
     }
     func start() async throws {
-        guard !isConnecting, !isConnected, process == nil, socket == nil else { throw ScrivError.conflict("Disconnect the current runtime first.") }
+        guard !isConnecting, !isConnected, !ownsTransport, socket == nil else { throw ScrivError.conflict("Disconnect the current runtime first.") }
+        #if targetEnvironment(macCatalyst)
+        guard executablePath.hasPrefix("/") else { throw ScrivError.unavailable("Choose the absolute path of Codex installed on this Mac.") }
+        disconnect(); isConnecting = true; defer { isConnecting = false }
+        let sessionGeneration = connectionGeneration
+        status = "Starting local companion connection…"; lastError = nil; onChange?()
+        let local: MacRuntimeBridge
+        do { local = try MacRuntimeBridge() } catch { status = "Stopped"; lastError = error.localizedDescription; onChange?(); throw error }
+        bridge = local
+        local.onMessage = { [weak self] data in guard let self, self.connectionGeneration == sessionGeneration else { return }; self.receiveMessage(data) }
+        local.onClose = { [weak self] message in self?.transportClosed(message, generation: sessionGeneration) }
+        do {
+            try await local.start(executable: executablePath, generationRoot: generationRoot())
+            guard connectionGeneration == sessionGeneration else { local.stop(); throw CancellationError() }
+            isRunning = true; try await initialize(generation: sessionGeneration)
+        } catch { if connectionGeneration == sessionGeneration { stop(); lastError = error.localizedDescription }; throw error }
+        #else
         guard executablePath.hasPrefix("/"), FileManager.default.isExecutableFile(atPath: executablePath) else { throw ScrivError.unavailable("Install Codex on this Mac, then select its executable in Settings.") }
         disconnect(); isConnecting = true; defer { isConnecting = false }
         let sessionGeneration = connectionGeneration
@@ -97,9 +193,11 @@ final class CodexController: ObservableObject {
         process = child
         do { try child.run(); isRunning = true; try await initialize(generation:sessionGeneration) }
         catch { if connectionGeneration == sessionGeneration { stop(); lastError = error.localizedDescription }; throw error }
+        #endif
     }
+
     func connect() async throws {
-        guard !isConnecting, !isConnected, process == nil, socket == nil else { throw ScrivError.invalid("Disconnect the current runtime first.") }
+        guard !isConnecting, !isConnected, !ownsTransport, socket == nil else { throw ScrivError.invalid("Disconnect the current runtime first.") }
         guard let url = URL(string: endpoint), ["ws","wss"].contains(url.scheme ?? ""), ["localhost","127.0.0.1","::1","[::1]"].contains(url.host ?? ""), url.user == nil, url.password == nil, url.fragment == nil else { throw ScrivError.permission("The Codex connection must stay on this Mac's loopback interface.") }
         disconnect(); isConnecting = true; defer { isConnecting = false }
         let sessionGeneration = connectionGeneration
@@ -154,7 +252,11 @@ final class CodexController: ObservableObject {
                   let address = result["authUrl"]?.string, let url = URL(string: address), url.scheme == "https" else { throw ScrivError.invalid("Codex did not return a valid sign-in URL.") }
             pendingLoginID = loginID
             if let completion = earlyLoginCompletions.removeValue(forKey: loginID) { completeLogin(completion); return }
+            #if targetEnvironment(macCatalyst)
+            guard await UIApplication.shared.open(url) else { throw ScrivError.unavailable("The sign-in browser could not be opened. Check your default browser and retry.") }
+            #else
             guard NSWorkspace.shared.open(url) else { throw ScrivError.unavailable("The sign-in browser could not be opened. Check your default browser and retry.") }
+            #endif
             status = "Waiting for ChatGPT sign-in…"; lastError = nil; onChange?()
         } catch {
             if generation == connectionGeneration { pendingLoginID = nil; earlyLoginCompletions.removeAll(); status = isConnected ? "Connected" : "Stopped" }
@@ -203,25 +305,36 @@ final class CodexController: ObservableObject {
         guard generation == connectionGeneration else { throw CancellationError() }
         if let account = result["account"], account != .null { accountLabel = account["email"]?.string ?? account["type"]?.string ?? "Signed in" }
         else { accountLabel = nil }
-        onChange?()
+        accountChecked = true; onChange?()
     }
     func stop() { disconnect() }
     func disconnect() {
         if isGenerating { recordProgress(.waiting, "Connection ended. Inspect the original turn before retrying.") }
         connectionGeneration += 1
         // Only terminate the child owned by this client, never an externally connected server.
+        #if targetEnvironment(macCatalyst)
+        let owned = bridge; bridge = nil; owned?.onMessage = nil; owned?.onClose = nil; owned?.stop()
+        #else
         let owned = process; process = nil; owned?.terminationHandler = nil
         if let owned, owned.isRunning { owned.terminate() }
+        #endif
         socketReceiver?.cancel(); socketReceiver = nil; socket?.cancel(with: .normalClosure, reason: nil); socket = nil
         output?.readabilityHandler = nil; errors?.readabilityHandler = nil
         try? input?.close(); try? output?.close(); try? errors?.close(); input = nil; output = nil; errors = nil
         pendingLoginID = nil; loginStarting = false; earlyLoginCompletions.removeAll()
-        buffer.removeAll(); isConnected = false; isRunning = false; accountLabel = nil; availableModels = []; status = "Stopped"
+        buffer.removeAll(); isConnected = false; isRunning = false; accountLabel = nil; accountChecked = false; availableModels = []; status = "Stopped"
         failPending(ScrivError.unavailable("Codex disconnected.")); onChange?()
     }
     private func transportClosed(_ message: String, generation: Int) { guard generation == connectionGeneration else { return }; disconnect(); status = "Disconnected"; lastError = message; onChange?() }
     private func failPending(_ error: Error) { let callbacks = pending; pending = [:]; for deadline in deadlines.values { deadline.cancel() }; deadlines = [:]; for callback in callbacks.values { callback.resume(throwing: error) } }
     private func generationRoot() throws -> URL {
+        #if targetEnvironment(macCatalyst)
+        if let generationRootIssue { throw ScrivError.unavailable(generationRootIssue) }
+        if let scopedGenerationRoot {
+            guard (try scopedGenerationRoot.resourceValues(forKeys: [.isDirectoryKey])).isDirectory == true else { throw ScrivError.unavailable("The original generation folder is unavailable. Choose it again in Settings; no new empty history was substituted.") }
+            return scopedGenerationRoot
+        }
+        #endif
         let directory: URL
         if ProcessInfo.processInfo.arguments.contains("--screenshots") || ProcessInfo.processInfo.arguments.contains("--peer-smoke") {
             let root = ProcessInfo.processInfo.environment["SCRIV_VERIFICATION_ROOT"].map { URL(fileURLWithPath: $0) } ?? FileManager.default.temporaryDirectory.appendingPathComponent("ScrivVerification-\(ProcessInfo.processInfo.processIdentifier)")
@@ -231,7 +344,7 @@ final class CodexController: ObservableObject {
     }
     func generate(prompt: String, submittedPrompt suppliedPrompt: String? = nil, references: [URL] = [], context: GenerationJobContext? = nil, jobID proposedID: String = UUID().uuidString, retryOf: String? = nil) async throws -> URL {
         let jobID = proposedID.lowercased()
-        guard isConnected else { throw ScrivError.unavailable("Start Codex and sign into ChatGPT to generate an image.") }
+        if let blocker = CodexConnectionReadiness(isConnected: isConnected, accountChecked: accountChecked, accountLabel: accountLabel).generationBlocker { throw ScrivError.unavailable(blocker) }
         guard !isGenerating else { throw ScrivError.conflict("An image is already being generated on this Mac.") }
         guard !loginStarting, pendingLoginID == nil else { throw ScrivError.conflict("Complete or cancel the pending ChatGPT sign-in before generating.") }
         guard !prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw ScrivError.invalid("Write an image direction first.") }
@@ -279,7 +392,7 @@ final class CodexController: ObservableObject {
         for (index, reference) in references.enumerated() {
             try Task.checkCancellation()
             guard reference.isFileURL, let values = try? reference.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey]), values.isRegularFile == true,
-                  let count = values.fileSize, count > 0, count <= CodexImageArtifacts.maximumBytes, NSImage(contentsOf: reference) != nil else { throw ScrivError.invalid("Each reference must be a readable image no larger than 25 MiB.") }
+                  let count = values.fileSize, count > 0, count <= CodexImageArtifacts.maximumBytes, Self.isReadableImage(reference) else { throw ScrivError.invalid("Each reference must be a readable image no larger than 25 MiB.") }
             let target = directory.appendingPathComponent("reference-\(index).\(reference.pathExtension)")
             try FileManager.default.copyItem(at: reference, to: target)
             try updateJob(jobID) { $0.references.append(.init(fileName: target.lastPathComponent, sha256: ScrivDigest.sha256(try Data(contentsOf: target)))) }
@@ -319,7 +432,7 @@ final class CodexController: ObservableObject {
         for item in final["items"]?.array ?? [] { recordImageArtifact(item) }
         let candidates = try CodexImageArtifacts.candidates(in: directory, reported: generatedArtifacts)
         // A malformed or incomplete preferred filename must not hide a valid tool artifact.
-        guard let file = candidates.first(where: { NSImage(contentsOf: $0) != nil }) else {
+        guard let file = candidates.first(where: { Self.isReadableImage($0) }) else {
             throw ScrivError.unavailable(imageGenerationError ?? "Codex completed without a valid generated image (maximum 25 MiB). The installed runtime or account may not offer image generation. Its response is available in the Codex panel.")
         }
         return file
@@ -353,6 +466,9 @@ final class CodexController: ObservableObject {
     }
     private func send(_ value: JSONValue) async throws {
         let data = try ScrivJSON.encoder.encode(value)
+        #if targetEnvironment(macCatalyst)
+        if let bridge { try await bridge.send(data); return }
+        #endif
         if let socket { try await socket.send(.string(String(decoding:data,as:UTF8.self))) }
         else if let input { try input.write(contentsOf:data+Data([10])) }
         else { throw ScrivError.unavailable("Codex is not connected.") }
@@ -438,7 +554,7 @@ final class CodexController: ObservableObject {
         if !generatedArtifacts.contains(file) { generatedArtifacts.append(file) }
     }
 
-    private var runtimeIdentity: String { process != nil ? "managed:" + executablePath : "external:" + endpoint }
+    private var runtimeIdentity: String { ownsTransport ? "managed:" + executablePath : "external:" + endpoint }
     private func persist(_ job: LocalGenerationJob) throws {
         guard let journal else { throw ScrivError.unavailable("Generation journal is unavailable. Repair local storage before starting a new image.") }
         try journal.save(job)
@@ -463,7 +579,7 @@ final class CodexController: ObservableObject {
     }
     private func completeJob(_ id: String, file: URL, confirmedComplete: Bool = true) throws {
         let directory = try jobDirectory(id)
-        guard CodexImageArtifacts.isEligible(file, in: directory), NSImage(contentsOf: file) != nil else { throw ScrivError.invalid("The recovered image is not a valid artifact of this generation.") }
+        guard CodexImageArtifacts.isEligible(file, in: directory), Self.isReadableImage(file) else { throw ScrivError.invalid("The recovered image is not a valid artifact of this generation.") }
         let relative = String(file.resolvingSymlinksInPath().path.dropFirst(directory.path.count + 1))
         let hash = ScrivDigest.sha256(try Data(contentsOf: file))
         try updateJob(id) {
@@ -482,7 +598,7 @@ final class CodexController: ObservableObject {
         guard let job = jobs.first(where: { $0.id == jobID }), job.ownerInstallationID == installationID,
               let path = job.artifactRelativePath, let hash = job.artifactSha256 else { throw ScrivError.unavailable("Inspect this generation to recover its image first.") }
         let directory = try jobDirectory(jobID), file = directory.appendingPathComponent(path)
-        guard CodexImageArtifacts.isEligible(file, in: directory), NSImage(contentsOf: file) != nil,
+        guard CodexImageArtifacts.isEligible(file, in: directory), Self.isReadableImage(file),
               ScrivDigest.sha256(try Data(contentsOf: file)) == hash else { throw ScrivError.invalid("The saved generation image is missing or has changed.") }
         return file
     }
@@ -494,7 +610,7 @@ final class CodexController: ObservableObject {
             let file = directory.appendingPathComponent(reference.fileName)
             guard file.resolvingSymlinksInPath().deletingLastPathComponent() == directory,
                   let size = try file.resourceValues(forKeys: [.fileSizeKey]).fileSize, size > 0, size <= CodexImageArtifacts.maximumBytes,
-                  NSImage(contentsOf: file) != nil, ScrivDigest.sha256(try Data(contentsOf: file)) == reference.sha256 else { throw ScrivError.invalid("An original reference image is missing or changed. Choose new references instead.") }
+                  Self.isReadableImage(file), ScrivDigest.sha256(try Data(contentsOf: file)) == reference.sha256 else { throw ScrivError.invalid("An original reference image is missing or changed. Choose new references instead.") }
             return file
         }
     }
@@ -513,7 +629,7 @@ final class CodexController: ObservableObject {
         if job.status == .completed { _ = try artifactURL(for: id); return }
         // A lost runtime/history response must not hide a valid file already on
         // this Mac. Expose it as a candidate, not proof the original turn ended.
-        if let candidate = (try? CodexImageArtifacts.candidates(in: directory, reported: []))?.first(where: { NSImage(contentsOf: $0) != nil }) {
+        if let candidate = (try? CodexImageArtifacts.candidates(in: directory, reported: []))?.first(where: { Self.isReadableImage($0) }) {
             try completeJob(id, file: candidate, confirmedComplete: false)
         }
         guard isConnected, runtimeIdentity == job.runtimeIdentity, let threadID = job.threadID else {
@@ -537,7 +653,7 @@ final class CodexController: ObservableObject {
                 guard item["type"]?.string == "imageGeneration", let path = item["savedPath"]?.string, path.hasPrefix("/") else { return nil }
                 return URL(fileURLWithPath: path)
             }
-            guard let file = try CodexImageArtifacts.candidates(in: directory, reported: reported).first(where: { NSImage(contentsOf: $0) != nil }) else {
+            guard let file = try CodexImageArtifacts.candidates(in: directory, reported: reported).first(where: { Self.isReadableImage($0) }) else {
                 try updateJob(id) { $0.status = .failed; $0.progressText = "The saved turn completed without a valid local image"; $0.errorCode = "artifact_missing" }
                 return
             }

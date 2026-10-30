@@ -5,6 +5,10 @@ extension Bundle {
     /// applications must resolve resources inside the signed application bundle.
     static var scrivResources: Bundle {
         if let url = Bundle.main.resourceURL?.appendingPathComponent("Scriv_ScrivApp.bundle"), let bundle = Bundle(url: url) { return bundle }
+#if SWIFT_PACKAGE
         return Bundle.module
+#else
+        return Bundle.main
+#endif
     }
 }

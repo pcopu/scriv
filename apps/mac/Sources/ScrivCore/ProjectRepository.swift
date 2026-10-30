@@ -1,10 +1,80 @@
 import Foundation
+#if os(Linux)
+import Glibc
+#else
+import Darwin
+#endif
 
 public actor ProjectRepository {
     public let root: URL
-    public init(root: URL) throws { self.root = root; try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true) }
+    public init(root: URL) throws { self.root = root; try DurableDirectory.create(at:root) }
     public func defaultURL(for project: ScrivProject) -> URL { root.appendingPathComponent(project.id).appendingPathExtension("scriv") }
     public func save(_ project: ScrivProject, at package: URL, label: String) throws {
+        try withPackageWriteLock(package) { try saveLocked(project,at:package,label:label) }
+    }
+    /// Compare and publish under the same all-writer package lock. Planning a
+    /// replay never authorizes overwriting a package changed since planning.
+    public func saveRecovering(_ record: PendingProjectSaveRecord, at package: URL) throws {
+        guard record.schemaVersion == 1, record.scope.packagePath == package.standardizedFileURL.path,
+              record.scope.projectID == record.after.id, record.scope.cloudProjectID == record.after.cloudProjectId,
+              record.afterHash == (try digest(record.after)),
+              record.beforeHash == (try record.before.map(digest)) else {
+            throw ScrivError.invalid("The pending save does not match its package or exact snapshots.")
+        }
+        try TimingEngine.validate(record.after)
+        if let before = record.before {
+            try TimingEngine.validate(before)
+            guard before.id == record.after.id, before.revision < Int.max - 1,
+                  record.after.revision == before.revision + 1 else { throw ScrivError.invalid("Pending recovery revisions are not contiguous.") }
+        } else { guard record.after.revision == 0 else { throw ScrivError.invalid("Initial recovery must start at revision zero.") } }
+        try withPackageWriteLock(package) {
+            let currentURL = try member("project.json",in:package)
+            let current = FileManager.default.fileExists(atPath:currentURL.path) ? try load(at:package) : nil
+            let currentHash = try current.map(digest)
+            if let current, current.id == record.after.id,
+               current.revision > record.after.revision || currentHash == record.afterHash {
+                let accepted = try history(at:package)
+                let acceptedHashes = try Set(accepted.map { try digest($0.snapshot) })
+                guard acceptedHashes.contains(try digest(current)), acceptedHashes.contains(record.afterHash),
+                      record.beforeHash.map({ acceptedHashes.contains($0) }) ?? true else {
+                    throw ScrivError.conflict("The accepted recovery snapshot lacks exact source/history evidence. Nothing was overwritten.")
+                }
+                // Matching readable bytes may follow a failed fsync. Establish
+                // durability again before allowing any old WAL acknowledgement.
+                try syncSavedFile(currentURL)
+                for revision in Set([current.revision,record.after.revision] + [record.before?.revision].compactMap({ $0 })) {
+                    try syncSavedFile(member("history/" + String(format:"%012lld",Int64(revision)) + ".json",in:package))
+                }
+                try DurableDirectory.flush(member("history",in:package)); try DurableDirectory.flush(package)
+                return
+            }
+            if let before = record.before {
+                guard let current, current.id == before.id, current.revision == before.revision,
+                      try digest(current) == record.beforeHash else {
+                    throw ScrivError.conflict("The project changed after recovery was planned. Pending changes were retained; the current package was not overwritten.")
+                }
+            } else { guard current == nil else { throw ScrivError.conflict("An initial pending project must not replace an existing package.") } }
+            try saveLocked(record.after,at:package,label:record.label)
+        }
+    }
+    private func digest(_ project: ScrivProject) throws -> String { ScrivDigest.sha256(try ScrivJSON.encoder.encode(project)) }
+    private func withPackageWriteLock<T>(_ package: URL, _ body: () throws -> T) throws -> T {
+        try DurableDirectory.create(at:package)
+        let root = package.resolvingSymlinksInPath().standardizedFileURL
+        let directory = open(root.path,O_RDONLY | O_DIRECTORY | O_NOFOLLOW)
+        guard directory >= 0 else { throw ScrivError.unavailable("The project package cannot be opened for an atomic save.") }
+        defer { close(directory) }
+        let descriptor = openat(directory,".scriv-write.lock",O_CREAT | O_RDWR | O_NOFOLLOW,mode_t(0o600))
+        guard descriptor >= 0 else { throw ScrivError.unavailable("The project write lock cannot be opened safely.") }
+        defer { close(descriptor) }
+        var attributes = stat()
+        guard fstat(descriptor,&attributes) == 0, attributes.st_mode & mode_t(S_IFMT) == mode_t(S_IFREG),
+              attributes.st_nlink == 1, attributes.st_uid == getuid() else { throw ScrivError.invalid("The project write lock is not a private regular file.") }
+        guard flock(descriptor,LOCK_EX | LOCK_NB) == 0 else { throw ScrivError.conflict("Another Scriv process is saving this package. Retry after its save completes.") }
+        defer { _ = flock(descriptor,LOCK_UN) }
+        return try body()
+    }
+    private func saveLocked(_ project: ScrivProject, at package: URL, label: String) throws {
         try TimingEngine.validate(project)
         let fm = FileManager.default
         try fm.createDirectory(at: package, withIntermediateDirectories: true)
@@ -32,6 +102,19 @@ public actor ProjectRepository {
         }
         if writeHistory { try ScrivJSON.encoder.encode(event).write(to:revisionURL,options:.atomic) }
         try data.write(to:currentURL,options:.atomic)
+        // The write-ahead record may be acknowledged only after these bytes and
+        // the atomic replacement directory entries have reached durable storage.
+        try syncSavedFile(revisionURL); try syncSavedFile(currentURL)
+        try syncSavedFile(history,directory:true); try syncSavedFile(package,directory:true)
+    }
+    private func syncSavedFile(_ url: URL, directory: Bool = false) throws {
+        let flags = O_RDONLY | O_NOFOLLOW | (directory ? O_DIRECTORY : 0)
+        let descriptor = open(url.resolvingSymlinksInPath().path,flags)
+        guard descriptor >= 0 else { throw ScrivError.unavailable("The saved project could not be opened for a durability check. Recovery was retained.") }
+        defer { close(descriptor) }
+        while fsync(descriptor) != 0 {
+            if errno != EINTR { throw ScrivError.unavailable("The saved project could not be flushed to disk. Recovery was retained.") }
+        }
     }
     public func load(at package: URL) throws -> ScrivProject {
         let source = try member("project.json", in:package)

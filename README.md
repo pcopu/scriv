@@ -2,9 +2,11 @@
 
 A native Mac workspace for writing a script, timing its words and directions, and playing it as a visual storyboard.
 
-Scriv is a new SwiftUI/AppKit application. The inherited Movie AI Workspace implementation has been removed; the Git history and all 25 Scriv design images remain available. The cloud service runs on Cloudflare Workers, D1, SQLite Durable Objects and private R2 storage.
+Scriv’s new application target is **UIKit with Mac Catalyst**, with no SwiftUI hosting or legacy SwiftUI views compiled into it. The prior SwiftUI/AppKit implementation is preserved at checkpoint `e14c64cc` and under `apps/mac`; shared domain/cloud services remain in use. The cloud service runs on Cloudflare Workers, D1, SQLite Durable Objects and private R2 storage. All original design assets and project data formats are retained.
 
-**Current source handoff:** the later workspace, audio, discussion, history, generation, source-owned timing, character-link, durable editor recovery, email sign-in and collaboration changes are described in the [current integration handoff](docs/verification/current-handoff.md). These changes have **not** been compiled or run as a native Mac app in the Linux workspace. The successful [historical CI run](https://github.com/pcopu/scriv/actions/runs/40921544866), universal development build and screenshots apply only to [runtime commit `0eb779b`](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01), not current `main`. [Verification](docs/verification.md) separates those results from current local evidence; the [deployment handoff](docs/deployment.md) retains production, signing and live-account acceptance gates.
+**UIKit migration:** [implementation and verification boundary](docs/verification/uikit-migration-20261030.md). The UIKit source and portable tests are implemented; the native SDK build, real interaction, companion launch/pairing and screenshot audit remain explicit gates, not implied by Linux checks.
+
+**Earlier source handoff:** the later workspace, audio, discussion, history, generation, source-owned timing, character-link, durable editor recovery, email sign-in and collaboration changes are described in the [current integration handoff](docs/verification/current-handoff.md). These changes have **not** been compiled or run as a native Mac app in the Linux workspace. The successful [historical CI run](https://github.com/pcopu/scriv/actions/runs/40921544866), universal development build and screenshots apply only to [runtime commit `0eb779b`](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01), not current `main`. [Verification](docs/verification.md) separates those results from current local evidence; the [deployment handoff](docs/deployment.md) retains production, signing and live-account acceptance gates.
 
 **Backend:** deployed at `https://scriv-api.muddy-recipe-a722.workers.dev`, with D1, private R2 and email-code login. [Deployment evidence](docs/verification/cloud-deployment-20261029.md) distinguishes service checks from delivery/session acceptance. Stripe and multiplayer acceptance are deferred; native release/signing remains unverified.
 
@@ -45,27 +47,28 @@ The subscription is **one recurring $9.99 USD payment per team, quantity one**. 
 
 Cloudflare's Workers Paid plan is the infrastructure starting point. Its $5 base fee is not a promise that all storage, requests, Durable Object work and optional TURN traffic will fit within $5. See [deployment and capacity notes](docs/deployment.md).
 
-## Run on a Mac
+## Build the UIKit Mac app
 
-Requirements: macOS 14+, Xcode 15.4+ or a compatible newer Swift toolchain. OpenAI Codex is optional for writing and playback; install it separately if you want image generation.
+Use macOS 14+ with **Xcode 26.2 or newer** for the current UIKit SDK APIs (availability guards retain the older deployment target). Codex is optional for writing and playback.
 
 ```sh
 git clone https://github.com/pcopu/scriv.git
 cd scriv
-swift test --package-path apps/mac
-bash scripts/build-mac.sh
-open build/Scriv.app
+bash scripts/build-catalyst.sh
+# Development product: build/catalyst/Build/Products/Debug-maccatalyst/ScrivUIKit.app
 ```
 
-The package script produces `build/Scriv.app` and `build/Scriv-macOS.zip`. Development builds are ad-hoc signed. A distributable release requires your Developer ID signing identity and Apple notarization; the scripts and exact commands are in the [handoff](docs/deployment.md).
+`apps/catalyst/ScrivUIKit.xcodeproj` contains the UIKit app and native test target. Its deterministic generator requires only Python 3, not XcodeGen. `scripts/verify-catalyst.sh` checks source/target integrity and syntax on Linux; it does **not** type-check UIKit. The current native build has not yet been verified because the available Mac lacks build disk space. The preserved legacy app can still be built with `scripts/build-mac.sh`; do not confuse its historical screenshots with the UIKit target.
 
-The app opens locally without signing in. Use **File → Open Project** for a `.scriv` package, **Import Script** for Fountain/plain-text scripts, or the sample project to explore the three views. The sample, local saves and local history do not require the cloud. Settings can select the deployed API URL; the development default is `http://127.0.0.1:8787`.
+Local writing, timing, playback and `.scriv` packages do not require sign-in. Use Projects → Open to explicitly grant access to an existing package; the Catalyst app does not assume access to the legacy app’s storage. Accepted mutations enter a private, account-scoped write-ahead journal before publication. Recovery refuses changed sources rather than overwriting them. Script and Characters share the smaller text baseline and one persisted Cmd+/Cmd− zoom preference. Space plays/pauses outside text editing; normal spaces and IME composition remain text input. Cmd+Enter toggles script editing.
+
+The separately built [Runtime Companion](apps/runtime-bridge/README.md) is required for UIKit **Start local Codex**, because Catalyst cannot launch `Process`. It is explicitly opened and paired by the user, never silently installed or autostarted. Build it with `bash apps/runtime-bridge/build-companion.sh`; building does not launch or install it. Both development products are ad-hoc signed by default; distributable releases require authorized Developer ID signing and notarization.
 
 ### Two independent accounts
 
 **Scriv account:** the account control sends a six-digit email code and verifies it in the app to access hosted scripts and teams. Codes are short-lived, single-use and bound to the requesting sign-in flow. Scriv session tokens are stored in Keychain and scoped to the API origin. Existing GitHub identities remain supported separately; matching contact emails do not silently merge accounts.
 
-**Codex on this Mac:** Start launches the installed `codex app-server` as a child process. Connect attaches to an explicitly configured loopback WebSocket endpoint. Sign in with ChatGPT is handled by Codex. Stop terminates only the child Scriv started; disconnecting an external server leaves that server running. No ChatGPT credential is sent to Scriv's cloud.
+**Codex on this Mac:** In UIKit, Start asks the explicitly paired, same-user Runtime Companion to launch the installed `codex app-server`; the preserved legacy macOS target launches its own child directly. Connect attaches to an explicitly configured loopback WebSocket endpoint. Sign in with ChatGPT is handled by Codex. Stop terminates only the child Scriv started; disconnecting an external server leaves that server running. No ChatGPT credential is sent to Scriv's cloud.
 
 Image generation requests a real image file in an isolated local generation directory. The installed Codex runtime, selected model and account must support image generation. Scriv reports an actual missing-capability or missing-file error instead of substituting an image. This integration still requires the live-account release smoke test described in the handoff.
 
