@@ -95,7 +95,7 @@ struct LayerTimelineView: View {
         let lanes = AudioLaneItem.sceneTracks(project: store.project, sceneID: store.selectedSceneID)
         return lanes.isEmpty ? 0 : CGFloat((lanes.map(\.lane).max() ?? 0) + 1) * 36
     }
-    private var directionHeight: CGFloat { CGFloat(max(1, laneCount)) * 35 + 3 }
+    private var directionHeight: CGFloat { CGFloat(max(1, laneCount)) * 51 + 3 }
     private var laneCount: Int {
         var ends: [Int] = []
         for entry in store.sceneEntries where entry.kind == .direction {
@@ -142,6 +142,9 @@ private struct TimelineCanvas: View {
     let directionHeight: CGFloat
     let audioHeight: CGFloat
     @State private var editingAudio: AudioClip?
+    @State private var inspectingImage: ImageInspectionSelection?
+    @State private var choosingImage: ImagePickerSelection?
+    @State private var anchorEditor: CueAnchorSelection?
     @State private var audioDrag: [String: CGFloat] = [:]
     private var width: CGFloat { max(400, CGFloat(store.sceneDurationMs) * scale) }
     private var height: CGFloat { 22 + imageHeight + 40 + directionHeight + 32 + 20 + audioHeight + (audioHeight > 0 ? 5 : 0) }
@@ -160,6 +163,9 @@ private struct TimelineCanvas: View {
                     .offset(x: CGFloat(store.playheadMs) * scale).allowsHitTesting(false)
             }
             .padding(.trailing, 8)
+            .sheet(item: $inspectingImage) { ImageDetailSheet(imageID: $0.imageID, cueID: $0.cueID).environmentObject(store) }
+            .sheet(item: $choosingImage) { ProjectImagePicker(cueID: $0.cueID, navigationContext: $0.navigationContext).environmentObject(store) }
+            .sheet(item: $anchorEditor) { CueAnchorEditor(selection: $0).environmentObject(store) }
             .sheet(item: $editingAudio) { clip in AudioClipEditor(clip: clip, navigationContext: store.navigationContext).environmentObject(store) }
     }
     private var ruler: some View {
@@ -195,6 +201,12 @@ private struct TimelineCanvas: View {
                     .offset(x: CGFloat(cue.startMs) * scale, y: CGFloat(row.lane) * 60).id(cue.id)
                     .help("\(cue.label) · \(ScrivFormat.duration(cue.authoredDurationMs ?? cue.durationMs)) authored; \(ScrivFormat.duration(cue.durationMs)) visible in scene. Overlapping placements stay on separate lanes.")
                     .contextMenu {
+                        if let asset { Button("Inspect image…") { inspectingImage = ImageInspectionSelection(imageID: asset.id, cueID: cue.id) } }
+                        Button("Choose existing image…") { choosingImage = ImagePickerSelection(cueID: cue.id, navigationContext: store.navigationContext) }
+                        Button("Picture source…") {
+                            if store.isPlaying { store.togglePlayback() }
+                            anchorEditor = CueAnchorSelection(cue: cue, navigationContext: store.navigationContext)
+                        }.disabled(store.lockedByOther(cue.id) != nil)
                         Button("Import image…") { store.importImage(cueId: cue.id) }
                         Button("Generate image") { store.generateImage(cueId: cue.id) }
                         Button("Split at playhead") { store.splitCue(cue.id) }
@@ -242,14 +254,14 @@ private struct TimelineCanvas: View {
                 let entry = placement.entry, start = store.project.startMs(of: entry.id)
                 let blockWidth = max(20, CGFloat(entry.coverageDurationMs) * scale - 2)
                 HStack(spacing: 3) {
-                    TimelineBlock(title: entry.text, subtitle: "\(ScrivFormat.time(start)) – \(ScrivFormat.time(start + entry.coverageDurationMs))", color: ScrivTheme.color(entry.color))
+                    TimelineBlock(title: entry.text, subtitle: "\(ScrivFormat.time(start)) – \(ScrivFormat.time(start + entry.coverageDurationMs))", color: ScrivTheme.color(entry.color), titleLines: 2)
                     if blockWidth > 115 {
-                        DurationPill(milliseconds: entry.ownedDurationMs, editable: store.lockedByOther(entry.id) == nil) { store.setDuration(entry.id, seconds: Double($0) / 1000) }
+                        DurationPill(milliseconds: entry.ownedDurationMs, editable: store.lockedByOther(entry.id) == nil, helpText: "Owned time adds space at this direction’s source. Forward coverage is separate and may continue over later dialogue. A zero-owned direction does not add scene time.") { store.setDuration(entry.id, seconds: Double($0) / 1000) }
                             .scaleEffect(0.75).frame(width: 38)
                     }
                 }.background(ScrivTheme.color(entry.color).opacity(0.08), in: RoundedRectangle(cornerRadius: 5))
-                    .frame(width: blockWidth, height: 32)
-                    .offset(x: CGFloat(start) * scale, y: CGFloat(placement.lane) * 35)
+                    .frame(width: blockWidth, height: 48)
+                    .offset(x: CGFloat(start) * scale, y: CGFloat(placement.lane) * 51)
                     .onTapGesture { store.selectEntry(entry.id) }
                     .help("\(entry.text) · owned \(ScrivFormat.duration(entry.ownedDurationMs)); coverage \(ScrivFormat.duration(entry.coverageDurationMs))")
             }
@@ -320,9 +332,10 @@ private struct TimelineBlock: View {
     let title: String
     let subtitle: String
     let color: Color
+    var titleLines = 1
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(title).font(.system(size: 10, weight: .medium)).lineLimit(1)
+            Text(title).font(.system(size: 10, weight: .medium)).lineLimit(titleLines)
             Text(subtitle).font(.system(size: 10)).lineLimit(1)
         }.foregroundStyle(color).padding(.horizontal, 5).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .background(color.opacity(0.12), in: RoundedRectangle(cornerRadius: 5))

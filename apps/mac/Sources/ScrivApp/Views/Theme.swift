@@ -16,6 +16,9 @@ enum ScrivTheme {
     static let inset = adaptive(light: NSColor(red: 0.935, green: 0.950, blue: 0.975, alpha: 1), dark: .controlBackgroundColor)
     static let chrome = adaptive(light: NSColor(red: 0.90, green: 0.95, blue: 0.985, alpha: 1), dark: .windowBackgroundColor)
     static let panelRadius: CGFloat = 18
+    static let cardRadius: CGFloat = 14
+    static let controlRadius: CGFloat = 9
+    static let sheetBackground = panel
     static let scriptBodySize: CGFloat = 20
     static let compactBodySize: CGFloat = 14
     static let scriptGutter: CGFloat = 158
@@ -32,6 +35,74 @@ enum ScrivTheme {
         let raw = (names[hex.lowercased()] ?? hex).trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         guard let value = UInt64(raw, radix: 16), raw.count == 6 else { return accent }
         return Color(red: Double((value >> 16) & 255) / 255, green: Double((value >> 8) & 255) / 255, blue: Double(value & 255) / 255)
+    }
+}
+
+/// Shared surfaces from the approved supporting-view boards. Native controls
+/// retain keyboard/focus behavior; colors continue adapting to macOS appearance.
+struct ScrivCard<Content: View>: View {
+    var padding: CGFloat
+    let content: Content
+    init(padding: CGFloat = 16, @ViewBuilder content: () -> Content) { self.padding = padding; self.content = content() }
+    var body: some View {
+        content.padding(padding).frame(maxWidth: .infinity, alignment: .leading)
+            .background(ScrivTheme.panel, in: RoundedRectangle(cornerRadius: ScrivTheme.cardRadius))
+            .overlay(RoundedRectangle(cornerRadius: ScrivTheme.cardRadius).strokeBorder(ScrivTheme.hairline.opacity(0.7)))
+    }
+}
+
+enum ScrivNoticeTone {
+    case information, warning, success, error
+    var color: Color {
+        switch self { case .information: return ScrivTheme.accent; case .warning: return .orange; case .success: return .green; case .error: return .red }
+    }
+    var symbol: String {
+        switch self { case .information: return "info.circle"; case .warning: return "exclamationmark.triangle.fill"; case .success: return "checkmark.circle.fill"; case .error: return "exclamationmark.circle.fill" }
+    }
+}
+
+struct ScrivNotice: View {
+    var tone: ScrivNoticeTone = .information
+    let title: String
+    let message: String
+    var body: some View {
+        HStack(alignment: .top, spacing: 11) {
+            Image(systemName: tone.symbol).font(.system(size: 19)).foregroundStyle(tone.color).padding(.top, 1)
+            VStack(alignment: .leading, spacing: 4) {
+                if !title.isEmpty { Text(title).font(.system(size: 13, weight: .semibold)) }
+                if !message.isEmpty { Text(message).font(.system(size: 12)).foregroundStyle(.secondary) }
+            }.lineLimit(nil).fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
+        }.padding(14).frame(maxWidth: .infinity, alignment: .leading)
+            .background(tone.color.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+            .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(tone.color.opacity(0.13)))
+    }
+}
+
+struct ScrivPrimaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var enabled
+    var fontSize: CGFloat = 13
+    init(fontSize: CGFloat = 13) { self.fontSize = fontSize }
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label.font(.system(size: fontSize, weight: .medium))
+            .padding(.horizontal, 17).padding(.vertical, 10)
+            .foregroundStyle(.white)
+            .background(ScrivTheme.accent.gradient, in: RoundedRectangle(cornerRadius: ScrivTheme.controlRadius))
+            .opacity(enabled ? (configuration.isPressed ? 0.78 : 1) : 0.42)
+    }
+}
+
+struct ScrivSecondaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var enabled
+    var fontSize: CGFloat = 13
+    init(fontSize: CGFloat = 13) { self.fontSize = fontSize }
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label.font(.system(size: fontSize, weight: .medium))
+            .padding(.horizontal, 15).padding(.vertical, 10)
+            .foregroundStyle(ScrivTheme.ink)
+            .background(ScrivTheme.inset.opacity(configuration.isPressed ? 0.8 : 0.28), in: RoundedRectangle(cornerRadius: ScrivTheme.controlRadius))
+            .overlay(RoundedRectangle(cornerRadius: ScrivTheme.controlRadius).strokeBorder(ScrivTheme.hairline))
+            .opacity(enabled ? 1 : 0.42)
     }
 }
 
@@ -143,6 +214,7 @@ struct DurationPill: View {
     var editable = true
     var minimumMilliseconds = 0
     var title = "Owned duration"
+    var helpText: String? = nil
     let onChange: (Int) -> Void
     @State private var editing = false
     @State private var seconds = ""
@@ -150,7 +222,7 @@ struct DurationPill: View {
     @FocusState private var durationFocused: Bool
     var body: some View {
         Button {
-            seconds = String(format: "%.2f", Double(milliseconds) / 1000)
+            seconds = String(format: milliseconds % 10 == 0 ? "%.2f" : "%.3f", Double(milliseconds) / 1000)
             validationMessage = nil
             editing = true
         } label: {
@@ -164,15 +236,19 @@ struct DurationPill: View {
             .accessibilityLabel("\(title), \(ScrivFormat.duration(milliseconds))")
             .popover(isPresented: $editing, arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text(title).font(.headline)
-                    HStack {
-                        TextField("Seconds", text: $seconds).textFieldStyle(.roundedBorder).frame(width: 100)
+                    Text(title).font(.system(size: 14, weight: .semibold))
+                    HStack(spacing: 7) {
+                        TextField("Seconds", text: $seconds).textFieldStyle(.roundedBorder).frame(width: 115)
+                            .font(.system(size: 14)).monospacedDigit()
                             .focused($durationFocused).onSubmit(commit)
-                        Text("seconds").foregroundStyle(.secondary)
+                        Text("seconds").font(.system(size: 12)).padding(.horizontal, 12).padding(.vertical, 7)
+                            .background(ScrivTheme.inset.opacity(0.6), in: RoundedRectangle(cornerRadius: 7))
                     }
-                    if let validationMessage { Text(validationMessage).font(.caption).foregroundStyle(.red).frame(maxWidth: 240, alignment: .leading) }
-                    HStack { Spacer(); Button("Cancel") { editing = false }.keyboardShortcut(.cancelAction); Button("Apply", action: commit).buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction) }
-                }.padding(18).onAppear { durationFocused = true }
+                    if let helpText { Text(helpText).font(.system(size: 11)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true) }
+                    if let validationMessage { Text(validationMessage).font(.caption).foregroundStyle(.red).fixedSize(horizontal: false, vertical: true) }
+                    Divider().opacity(0.5)
+                    HStack { Spacer(); Button("Cancel") { editing = false }.buttonStyle(ScrivSecondaryButtonStyle()).keyboardShortcut(.cancelAction); Button("Apply", action: commit).buttonStyle(ScrivPrimaryButtonStyle()).keyboardShortcut(.defaultAction) }
+                }.padding(18).frame(width: 320).background(ScrivTheme.sheetBackground).onAppear { durationFocused = true }
             }
     }
     private func commit() {

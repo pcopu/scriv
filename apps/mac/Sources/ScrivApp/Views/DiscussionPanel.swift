@@ -213,7 +213,10 @@ struct DiscussionPanel: View {
                     Button("Clear") { store.discussionAttachments = [] }.font(.system(size: 10)).buttonStyle(.borderless)
                 }
             }
-            HStack(alignment: .bottom, spacing: 9) {
+            VStack(alignment: .leading, spacing: 12) {
+                TextField("Reply to \(store.discussionItemID == nil ? "project" : "this item")…", text: draft, axis: .vertical)
+                    .textFieldStyle(.plain).font(.system(size: 13)).lineLimit(2...6).onSubmit(send)
+                HStack(alignment: .bottom, spacing: 12) {
                 Menu {
                     if let id = store.selectedEntryID { Button("Selected line or direction") { store.addDiscussionAttachment(itemId: id) } }
                     if let id = store.selectedCharacterID { Button("Selected character") { store.addDiscussionAttachment(itemId: id) } }
@@ -226,12 +229,15 @@ struct DiscussionPanel: View {
                     .buttonStyle(.plain).foregroundStyle(ScrivTheme.accent).help("Mention a project member")
                     .accessibilityLabel("Mention a project member")
                     .popover(isPresented: $mentionsOpen) { DiscussionMentionPicker().environmentObject(store) }
-                TextField("Reply to \(store.discussionItemID == nil ? "project" : "this item")…", text: draft, axis: .vertical)
-                    .textFieldStyle(.plain).font(.system(size: 12)).lineLimit(1...4).onSubmit(send)
+                Spacer()
                 Button(action: send) { Image(systemName: "arrow.up").font(.system(size: 12, weight: .bold)).foregroundStyle(.white).frame(width: 28, height: 28).background(ScrivTheme.accent, in: Circle()) }
                     .buttonStyle(.plain).disabled(store.isSendingDiscussion || store.discussionLoading || store.discussionDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || store.discussionDraft.utf16.count > 8000)
                     .accessibilityLabel("Send message")
-            }.padding(9).background(ScrivTheme.panel.opacity(0.8), in: RoundedRectangle(cornerRadius: 9))
+                }
+            }.padding(12).background(ScrivTheme.panel, in: RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(ScrivTheme.hairline))
+            if !store.discussionDraft.isEmpty { Text("Draft — not sent").font(.system(size: 10)).foregroundStyle(.secondary) }
+
             if store.discussionDraft.utf16.count > 7500 { Text("\(store.discussionDraft.utf16.count) / 8,000 characters").font(.system(size: 9)).foregroundStyle(store.discussionDraft.utf16.count > 8000 ? Color.red : .secondary) }
         }
     }
@@ -275,12 +281,15 @@ private struct DiscussionMentionPicker: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Mention a member").font(.headline)
+                Text("Mention a member").font(.system(size: 18, weight: .semibold))
                 Spacer()
                 Text("\(store.discussionMentionedUserIDs.count) / 20").font(.caption).foregroundStyle(.secondary)
             }
-            Text("Mentions are visible in this conversation. No email is sent.").font(.caption).foregroundStyle(.secondary)
-            TextField("Search project members", text: $search).textFieldStyle(.roundedBorder)
+            Text("Choose who to include. They’ll see the mention in project activity; no email is sent.").font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+            HStack(spacing: 9) {
+                Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                TextField("Search project members", text: $search).textFieldStyle(.plain)
+            }.padding(11).background(ScrivTheme.inset, in: RoundedRectangle(cornerRadius: 9))
             if loading { ProgressView("Loading members…").controlSize(.small).padding(.vertical, 12) }
             else if let error {
                 Text(error).font(.caption).foregroundStyle(.red)
@@ -297,27 +306,27 @@ private struct DiscussionMentionPicker: View {
                                 else { store.addDiscussionMention(member) }
                             } label: {
                                 HStack(spacing: 8) {
-                                    InitialAvatar(name: member.name, size: 26)
+                                    InitialAvatar(name: member.name, size: 40)
                                     VStack(alignment: .leading, spacing: 3) {
-                                        Text(member.name + (member.id == store.account?.id ? " (you)" : "")).font(.system(size: 12, weight: .medium))
-                                        Text(member.role.capitalized + " · …" + member.id.suffix(6)).font(.system(size: 10)).foregroundStyle(.secondary)
+                                        Text(member.name + (member.id == store.account?.id ? " (you)" : "")).font(.system(size: 14, weight: .medium))
+                                        Text(member.role.capitalized).font(.system(size: 12)).foregroundStyle(.secondary)
                                     }
                                     Spacer()
                                     Image(systemName: selected ? "checkmark.circle.fill" : "circle").foregroundStyle(selected ? ScrivTheme.accent : ScrivTheme.secondary)
-                                }.padding(7).contentShape(Rectangle())
+                                }.padding(10).contentShape(Rectangle())
                                     .background(selected ? ScrivTheme.accent.opacity(0.06) : .clear, in: RoundedRectangle(cornerRadius: 7))
                             }.buttonStyle(.plain).disabled(!selected && store.discussionMentionedUserIDs.count >= 20)
                                 .accessibilityLabel((selected ? "Remove mention of " : "Mention ") + member.name + ", " + member.role)
                         }
                     }
-                }.frame(maxHeight: 270)
+                }.frame(maxHeight: 320)
             }
             HStack {
                 if !store.discussionMentionedUserIDs.isEmpty { Button("Clear") { for id in store.discussionMentionedUserIDs { store.removeDiscussionMention(id) } } }
                 Spacer()
-                Button("Done") { dismiss() }.keyboardShortcut(.cancelAction)
+                Button("Done") { dismiss() }.buttonStyle(ScrivPrimaryButtonStyle()).keyboardShortcut(.cancelAction)
             }
-        }.padding(16).frame(width: 310)
+        }.padding(20).frame(width: 360).background(ScrivTheme.panel)
             .task { await reload() }
     }
     @MainActor private func reload() async {
@@ -338,7 +347,7 @@ private struct DiscussionActivityPopover: View {
     @State private var error: String?
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack { Text("Project activity").font(.headline); Spacer(); Button("Done") { dismiss() }.keyboardShortcut(.cancelAction) }
+            HStack { Text("Project activity").font(.system(size: 18, weight: .semibold)); Spacer(); Button("Done") { dismiss() }.keyboardShortcut(.cancelAction) }
             PillSegmentPicker(values: ["Mentions", "Conversations"], selection: $tab) { $0 }
             if loading { ProgressView("Refreshing activity…").controlSize(.small) }
             if let error { HStack { Text(error).font(.caption).foregroundStyle(.red); Button("Retry") { Task { await refresh() } } } }
@@ -349,14 +358,17 @@ private struct DiscussionActivityPopover: View {
                         ForEach(store.discussionMentions) { message in
                             Button { store.openDiscussionMention(message); dismiss() } label: {
                                 HStack(alignment: .top, spacing: 8) {
-                                    Circle().fill(store.isDiscussionMentionUnread(message) ? ScrivTheme.accent : .clear).frame(width: 7, height: 7).padding(.top, 5)
+                                    ZStack(alignment: .bottomTrailing) {
+                                        InitialAvatar(name: message.name ?? "Project member", size: 35)
+                                        if store.isDiscussionMentionUnread(message) { Circle().fill(ScrivTheme.accent).frame(width: 9, height: 9).overlay(Circle().stroke(ScrivTheme.panel, lineWidth: 2)) }
+                                    }
                                     VStack(alignment: .leading, spacing: 5) {
                                         HStack {
-                                            Text(message.name ?? "Project member").font(.system(size: 12, weight: .semibold))
+                                            Text(message.name ?? "Project member").font(.system(size: 13, weight: .semibold))
                                             Spacer()
                                             Text(message.timestamp, style: .relative).font(.system(size: 9)).foregroundStyle(.secondary)
                                         }
-                                        Text(message.body).font(.system(size: 12)).lineLimit(3).multilineTextAlignment(.leading)
+                                        Text(message.body).font(.system(size: 13)).lineLimit(4).multilineTextAlignment(.leading)
                                         if let thread = store.discussionThreads.first(where: { $0.id == message.threadId }) {
                                             Text(threadLabel(thread)).font(.system(size: 10)).foregroundStyle(.secondary).lineLimit(1)
                                         }
@@ -382,8 +394,18 @@ private struct DiscussionActivityPopover: View {
                     }
                 }.frame(maxWidth: .infinity, alignment: .leading)
             }.frame(height: 350)
+            if tab == "Mentions" {
+                Button { tab = "Conversations" } label: {
+                    HStack(spacing: 9) {
+                        Image(systemName: "bubble.left.and.bubble.right")
+                        Text("Looking for a conversation? View all project discussions.").font(.system(size: 12)).multilineTextAlignment(.leading).fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 0)
+                        Image(systemName: "chevron.right").font(.caption)
+                    }.padding(12).foregroundStyle(ScrivTheme.accent).background(ScrivTheme.accent.opacity(0.07), in: RoundedRectangle(cornerRadius: 10))
+                }.buttonStyle(.plain)
+            }
             Text("In-app activity only. No email or push notification is sent.").font(.system(size: 10)).foregroundStyle(.secondary)
-        }.padding(16).frame(width: 360).task { await refresh() }
+        }.padding(20).frame(width: 390).background(ScrivTheme.panel).task { await refresh() }
     }
     @MainActor private func refresh() async {
         guard !loading else { return }

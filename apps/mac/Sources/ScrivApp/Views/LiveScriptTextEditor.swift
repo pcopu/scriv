@@ -60,11 +60,7 @@ struct LiveScriptTextEditor: NSViewRepresentable {
         }
     }
     func sizeThatFits(_ proposal: ProposedViewSize, nsView: ScriptNativeTextView, context: Context) -> CGSize? {
-        let width = max(30, proposal.width ?? 400)
-        nsView.textContainer?.containerSize = NSSize(width: width, height: .greatestFiniteMagnitude)
-        if let container = nsView.textContainer { nsView.layoutManager?.ensureLayout(for: container) }
-        let used = nsView.textContainer.flatMap { nsView.layoutManager?.usedRect(for: $0).height } ?? pointSize + 5
-        return CGSize(width: width, height: max(pointSize + 5, ceil(used) + 2))
+        nsView.measuredSize(width: max(1, proposal.width ?? 400), minimumHeight: pointSize + 5)
     }
     private var font: NSFont {
         let base = NSFont.systemFont(ofSize: pointSize)
@@ -96,6 +92,34 @@ struct LiveScriptTextEditor: NSViewRepresentable {
 
 final class ScriptNativeTextView: NSTextView {
     var finish: (() -> Void)?
+    /// SwiftUI can probe several widths before choosing the actual frame. Never
+    /// apply a speculative width to the live text container: drawing, selection
+    /// and caret hit-testing must all use the final bounds, not the last probe.
+    func measuredSize(width: CGFloat, minimumHeight: CGFloat) -> CGSize {
+        let storage = NSTextStorage(attributedString: attributedString())
+        let manager = NSLayoutManager()
+        let container = NSTextContainer(size: NSSize(width: max(1, width - textContainerInset.width * 2), height: .greatestFiniteMagnitude))
+        container.lineFragmentPadding = textContainer?.lineFragmentPadding ?? 0
+        storage.addLayoutManager(manager); manager.addTextContainer(container)
+        manager.ensureLayout(for: container)
+        let height = max(manager.usedRect(for: container).maxY, manager.extraLineFragmentRect.maxY)
+        return CGSize(width: width, height: max(minimumHeight, ceil(height + textContainerInset.height * 2) + 2))
+    }
+    override func setFrameSize(_ newSize: NSSize) {
+        let oldWidth = bounds.width
+        super.setFrameSize(newSize)
+        fitTextContainerToBounds()
+        if oldWidth != bounds.width { invalidateIntrinsicContentSize() }
+    }
+    override func layout() {
+        super.layout()
+        fitTextContainerToBounds()
+    }
+    private func fitTextContainerToBounds() {
+        guard bounds.width > 0, let container = textContainer else { return }
+        let size = NSSize(width: max(1, bounds.width - textContainerInset.width * 2), height: CGFloat.greatestFiniteMagnitude)
+        if container.containerSize != size { container.containerSize = size }
+    }
     override func keyDown(with event: NSEvent) {
         if event.keyCode == 53 || (event.keyCode == 36 && !event.modifierFlags.contains(.shift) && !event.modifierFlags.contains(.option)) {
             finish?()

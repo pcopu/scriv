@@ -9,7 +9,9 @@ final class WorkspaceStore: ObservableObject {
     @Published var project: ScrivProject { didSet { synchronizeAudio() } }
     @Published var selectedSceneID: String { didSet { synchronizeAudio() } }
     @Published var selectedEntryID: String?
+    @Published var requestedEntryEditingID: String?
     @Published var selectedCharacterID: String?
+    @Published var characterCreationRequest: UUID?
     @Published var selectedCueID: String?
     @Published var selectedWordIDs: Set<String> = []
     @Published var tab: WorkspaceTab = .script
@@ -32,18 +34,128 @@ final class WorkspaceStore: ObservableObject {
     @Published var leases: [EditLease] = []
     @Published var isSyncing = false
     @Published var syncStatus = "Local only"
-    @Published private var generationPromptDrafts: [String:String] = [:]
+    @Published private var generationPromptDrafts: [String:LocalCuePromptDraft] = [:]
+    @Published private var generationPromptIssues: [String:String] = [:]
+    private var generationPromptTasks: [String:Task<Void,Never>] = [:]
     var generationPrompt: String {
         get {
-            let cue = selectedCue ?? currentCue
-            return generationPromptDrafts[generationPromptKey(for:cue?.id)] ?? cue?.prompt ?? ""
+            guard let cue = selectedCue ?? currentCue else { return "" }
+            return (try? promptDraft(for:cue))?.text ?? cue.prompt
         }
-        set { generationPromptDrafts[generationPromptKey(for:selectedCue?.id ?? currentCue?.id)] = newValue }
+        set { persistGenerationPrompt(newValue) }
     }
-    private func generationPromptKey(for cueID: String?) -> String {
-        let sceneID = project.cues.first { $0.id == cueID }?.sceneId ?? selectedSceneID
-        let scope: JSONValue = .array([.string(cloud.baseURL.absoluteString),(account?.id).map(JSONValue.string) ?? .null,.string(project.id),(projectURL?.path).map(JSONValue.string) ?? .null,.string(sceneID),cueID.map(JSONValue.string) ?? .null])
-        return ScrivDigest.sha256((try? ScrivJSON.encoder.encode(scope)) ?? Data())
+    var generationPromptScopeKey: String { (try? promptScope(for:selectedCue ?? currentCue).key) ?? "no-cue" }
+    var generationPromptIssue: String? { generationPromptIssues[generationPromptScopeKey] }
+    var generationPromptDraftStatus: String? {
+        guard let cue = selectedCue ?? currentCue, (try? promptDraft(for:cue)) != nil else { return nil }
+        return generationPromptNeedsReview ? "Recovered direction — review before replacing the current prompt." : "Direction saved in local recovery until the project save completes."
+    }
+    var generationPromptNeedsReview: Bool {
+        guard let cue = selectedCue ?? currentCue, let draft = try? promptDraft(for:cue) else { return false }
+        return !draft.text.utf16.elementsEqual(cue.prompt.utf16) && draft.needsRebase(sourcePrompt:cue.prompt,epoch:editorDraftEpoch)
+    }
+    private func promptScope(for cue: ImageCue?) throws -> CuePromptDraftScope {
+        guard let cue, let package = projectURL else { throw ScrivError.unavailable("Choose an image placement in a saved project before editing its direction.") }
+        return CuePromptDraftScope(packagePath:package.resolvingSymlinksInPath().path,projectID:project.id,cloudProjectID:project.cloudProjectId,
+                                   server:cloud.baseURL.absoluteString,accountID:cloud.account?.id,sceneID:cue.sceneId,cueID:cue.id)
+    }
+    private func promptJournal() throws -> CuePromptDraftJournal {
+        try CuePromptDraftJournal(root:rootURL.deletingLastPathComponent().appendingPathComponent("CuePromptDrafts",isDirectory:true))
+    }
+    private func promptDraft(for cue: ImageCue) throws -> LocalCuePromptDraft? {
+        let scope = try promptScope(for:cue)
+        return try generationPromptDrafts[scope.key] ?? promptJournal().load(scope)
+    }
+    func prepareGenerationPrompt() {
+        guard let cue = selectedCue ?? currentCue else { return }
+        do {
+            let scope = try promptScope(for:cue)
+            // Reopening must observe another window/process's accepted revision,
+            // not keep a cached record that already failed compare-and-swap.
+            if let draft = try promptJournal().load(scope) {
+                generationPromptDrafts[scope.key] = draft
+                if !draft.needsRebase(sourcePrompt:cue.prompt,epoch:editorDraftEpoch) || draft.text.utf16.elementsEqual(cue.prompt.utf16) { schedulePromptSave(draft,delay:false) }
+            } else { generationPromptDrafts.removeValue(forKey:scope.key); generationPromptIssues.removeValue(forKey:scope.key) }
+        } catch { generationPromptIssues[generationPromptScopeKey] = error.localizedDescription }
+    }
+    private func persistGenerationPrompt(_ text: String) {
+        guard let cue = selectedCue ?? currentCue else { return }
+        do {
+            let scope = try promptScope(for:cue), existing = try promptDraft(for:cue)
+            if existing == nil && text.utf16.elementsEqual(cue.prompt.utf16) { return }
+            var draft = existing ?? LocalCuePromptDraft(scope:scope,sourcePrompt:cue.prompt,sourceEpoch:editorDraftEpoch)
+            // A previous local revision may already be canonical while its disk
+            // callback is pending. This exact-text fence does not overwrite drift.
+            if draft.text.utf16.elementsEqual(cue.prompt.utf16) { draft.rebase(sourcePrompt:cue.prompt,epoch:editorDraftEpoch) }
+            draft.replaceText(text)
+            try promptJournal().save(draft,replacing:existing?.revisionID)
+            generationPromptDrafts[scope.key] = draft; generationPromptIssues.removeValue(forKey:scope.key)
+            schedulePromptSave(draft,delay:true)
+        } catch { generationPromptIssues[generationPromptScopeKey] = "The new direction was not accepted: " + error.localizedDescription }
+    }
+    func retryGenerationPrompt() {
+        guard let cue = selectedCue ?? currentCue else { return }
+        do {
+            let scope = try promptScope(for:cue)
+            if let draft = try promptJournal().load(scope) { generationPromptDrafts[scope.key] = draft; schedulePromptSave(draft,delay:false) }
+            else { generationPromptDrafts.removeValue(forKey:scope.key); generationPromptIssues.removeValue(forKey:scope.key) }
+        } catch { generationPromptIssues[generationPromptScopeKey] = error.localizedDescription }
+    }
+    func rebaseGenerationPrompt() {
+        guard let cue = selectedCue ?? currentCue else { return }
+        do {
+            guard var draft = try promptDraft(for:cue) else { return }
+            let revision = draft.revisionID
+            draft.rebase(sourcePrompt:cue.prompt,epoch:editorDraftEpoch)
+            try promptJournal().save(draft,replacing:revision)
+            generationPromptDrafts[draft.scope.key] = draft; generationPromptIssues.removeValue(forKey:draft.scope.key)
+            schedulePromptSave(draft,delay:false)
+        } catch { generationPromptIssues[generationPromptScopeKey] = error.localizedDescription }
+    }
+    func discardGenerationPrompt() {
+        guard let cue = selectedCue ?? currentCue else { return }
+        do {
+            guard let draft = try promptDraft(for:cue) else { return }
+            generationPromptTasks[draft.scope.key]?.cancel()
+            guard try promptJournal().clear(draft) else { throw ScrivError.conflict("A newer direction draft exists. Reopen this image placement before discarding it.") }
+            generationPromptDrafts.removeValue(forKey:draft.scope.key); generationPromptIssues.removeValue(forKey:draft.scope.key)
+        } catch { generationPromptIssues[generationPromptScopeKey] = error.localizedDescription }
+    }
+    private func schedulePromptSave(_ draft: LocalCuePromptDraft, delay: Bool) {
+        let key = draft.scope.key, navigation = navigationGeneration, lifecycle = cloud.lifecycleContext
+        generationPromptTasks[key]?.cancel()
+        generationPromptTasks[key] = Task { [weak self] in
+            if delay { try? await Task.sleep(for:.milliseconds(300)) }
+            guard let self, !Task.isCancelled, self.navigationGeneration == navigation, self.cloud.lifecycleContext == lifecycle else { return }
+            await self.applyGenerationPrompt(draft,navigation:navigation,lifecycle:lifecycle)
+        }
+    }
+    private func applyGenerationPrompt(_ draft: LocalCuePromptDraft, navigation: Int, lifecycle: Int) async {
+        let key = draft.scope.key, id = draft.scope.cueID
+        guard generationPromptDrafts[key]?.revisionID == draft.revisionID else { return }
+        guard await beginEdit(id) else { generationPromptIssues[key] = "The direction remains saved on this Mac. Retry when its editing lease is available."; return }
+        defer { endEdit(id,context:navigation) }
+        do {
+            guard !Task.isCancelled, navigationGeneration == navigation, cloud.lifecycleContext == lifecycle,
+                  generationPromptDrafts[key]?.revisionID == draft.revisionID,
+                  let cue = project.cues.first(where: { $0.id == id }), draft.scope == (try promptScope(for:cue)),
+                  cloud.hasCurrentEditingLease(id), try promptJournal().load(draft.scope)?.revisionID == draft.revisionID else { return }
+            let unchanged = draft.text.utf16.elementsEqual(cue.prompt.utf16)
+            let next = unchanged ? project : try draft.applying(to:project,scope:promptScope(for:cue),epoch:editorDraftEpoch)
+            let completed = { [weak self] in
+                guard let self else { return }
+                do {
+                    if try self.promptJournal().clear(draft), self.generationPromptDrafts[key]?.revisionID == draft.revisionID {
+                        self.generationPromptDrafts.removeValue(forKey:key); self.generationPromptIssues.removeValue(forKey:key)
+                    }
+                } catch { self.generationPromptIssues[key] = "The project was saved, but its recovery copy could not be cleared: " + error.localizedDescription }
+            }
+            generationPromptIssues.removeValue(forKey:key)
+            if unchanged { queueSave(project,label:"Save image direction",onSuccess:completed) }
+            else if !change("Edit image direction",afterSave:completed,{ $0 = next }) {
+                generationPromptIssues[key] = errorMessage ?? "The direction remains in local recovery. Retry saving it."
+            }
+        } catch { generationPromptIssues[key] = error.localizedDescription }
     }
     @Published var projectURL: URL? { didSet { synchronizeAudio() } }
     @Published var lastJoinLink: String?
@@ -427,7 +539,7 @@ final class WorkspaceStore: ObservableObject {
     func addEntry(kind: EntryKind) {
         let entry = ScriptEntry(sceneId:selectedSceneID,order:0,kind:kind,text:kind == .direction ? "Direction" : "New line",characterId:kind == .dialogue ? project.characters.first?.id : nil,ownedDurationMs:kind == .direction ? 0 : 3000,coverageDurationMs:kind == .direction ? 3000 : 0)
         let after = sceneEntries.contains(where: { $0.id == selectedEntryID }) ? selectedEntryID : nil
-        if change(kind == .direction ? "Add direction" : "Add dialogue", { try ProjectEditing.insertEntry(&$0,entry:entry,after:after) }) { selectedEntryID = entry.id }
+        if change(kind == .direction ? "Add direction" : "Add dialogue", { try ProjectEditing.insertEntry(&$0,entry:entry,after:after) }) { selectedEntryID = entry.id; requestedEntryEditingID = entry.id }
     }
     func deleteEntry(_ id: String) { change("Delete line") { try ProjectEditing.deleteEntry(&$0,entryId:id) } }
     func moveEntry(_ id: String, offset: Int) { change("Move line") { try ProjectEditing.moveEntry(&$0,entryId:id,offset:offset) } }
@@ -459,6 +571,12 @@ final class WorkspaceStore: ObservableObject {
     func moveWords(_ wordIds: Set<String>, fromCueId: String, toCueId: String) { if change("Move image cut around words", { try TimingEngine.moveWords(&$0,wordIds:wordIds,fromCueId:fromCueId,toCueId:toCueId) }) { selectedWordIDs = []; selectedCueID = toCueId } }
     @discardableResult
     func setWordTiming(wordId: String, startMs: Int, endMs: Int) -> Bool { change("Retime spoken word") { try TimingEngine.setWordTiming(&$0, wordId: wordId, startMs: startMs, endMs: endMs) } }
+    /// A timing sheet saves its complete reviewed draft once. Never commit
+    /// individual word changes before the user accepts the entire sequence.
+    @discardableResult
+    func setWordTimings(entryId: String, expectedWords: [TimedWord], expectedDurationMs: Int, updatedWords: [TimedWord]) -> Bool {
+        change("Retime spoken words") { try TimingEngine.setWordTimings(&$0, entryId: entryId, expectedWords: expectedWords, expectedDurationMs: expectedDurationMs, updatedWords: updatedWords) }
+    }
     @discardableResult
     func shiftWords(wordIds: Set<String>, byMs: Int) -> Bool { change("Retime spoken phrase") { try TimingEngine.shiftWords(&$0, wordIds: wordIds, byMs: byMs) } }
     @discardableResult
@@ -475,8 +593,23 @@ final class WorkspaceStore: ObservableObject {
     func setCharacterPortrait(_ id: String, imageId: String?) { change("Change portrait") { try ProjectEditing.setPortrait(&$0,characterId:id,imageId:imageId) } }
     func updateCuePrompt(_ id: String, prompt: String) { change("Edit image direction") { p in if let index = p.cues.firstIndex(where: { $0.id == id }) { p.cues[index].prompt = prompt } } }
     func addCharacter() {
-        let character = ScriptCharacter(name: "New character")
-        if change("Add character", { CharacterMentions.bootstrap(&$0); $0.characters.append(character) }) { selectedCharacterID = character.id }
+        tab = .characters
+        characterCreationRequest = UUID()
+    }
+    @discardableResult
+    func createCharacter(_ character: ScriptCharacter) -> Bool {
+        var character = character
+        character.name = character.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !character.name.isEmpty, character.name.utf16.count <= 200 else {
+            errorMessage = "Enter a character name of 1–200 characters."; return false
+        }
+        let accepted = change("Add character") { p in
+            guard !p.characters.contains(where: { $0.id == character.id }) else { throw ScrivError.conflict("This character is already in the project.") }
+            CharacterMentions.bootstrap(&p)
+            p.characters.append(character)
+        }
+        if accepted { selectedCharacterID = character.id }
+        return accepted
     }
     @discardableResult
     func updateCharacter(_ character: ScriptCharacter) -> Bool {
@@ -568,7 +701,8 @@ final class WorkspaceStore: ObservableObject {
         change("Change audio volume") { $0.audioVolume = volume }
     }
     func toggleAudioMute() { setAudioVolume(project.audioVolume > 0 ? 0 : lastAudioVolumes[audioVolumeScope] ?? 1) }
-    func updateAudioClip(_ clip: AudioClip) { change("Edit local audio clip") { p in guard let index = p.audioClips.firstIndex(where: { $0.id == clip.id }) else { throw ScrivError.invalid("This audio clip no longer exists.") }; p.audioClips[index] = clip } }
+    @discardableResult
+    func updateAudioClip(_ clip: AudioClip) -> Bool { change("Edit local audio clip") { p in guard let index = p.audioClips.firstIndex(where: { $0.id == clip.id }) else { throw ScrivError.invalid("This audio clip no longer exists.") }; p.audioClips[index] = clip } }
     func deleteAudioClip(_ id: String) { change("Remove local audio clip") { $0.audioClips.removeAll { $0.id == id } } }
     func importImage(cueId: String? = nil) {
         let panel = NSOpenPanel(); panel.allowedContentTypes = [.png,.jpeg,UTType(filenameExtension:"webp") ?? .image]; panel.allowsMultipleSelection = false; panel.canChooseDirectories = false
@@ -613,7 +747,7 @@ final class WorkspaceStore: ObservableObject {
     }
     /// The visible preview and submitted request use the same cue-scoped builder.
     func imageGenerationContext(cueID: String) throws -> GenerationContext {
-        let draft = generationPromptDrafts[generationPromptKey(for:cueID)]
+        let draft = try project.cues.first(where: { $0.id == cueID }).flatMap { try promptDraft(for:$0)?.text }
         let context = try GenerationContext.build(project:project,cueID:cueID,userDirection:draft)
         let available = Set(context.characters.compactMap { character -> String? in
             guard let asset = project.asset(character.portraitImageId), assetURL(asset) != nil else { return nil }
@@ -632,14 +766,28 @@ final class WorkspaceStore: ObservableObject {
         else { target = selectedCue ?? currentCue }
         guard let target else { errorMessage = "Add a timed image cue before generating."; return }
         guard let package = projectURL else { errorMessage = "Save this project before generating."; return }
-        do {
-            let source = try imageGenerationContext(cueID:target.id)
+        let targetID = target.id, navigation = navigationGeneration, lifecycle = cloud.lifecycleContext
+        perform {
+            // Canonical manual direction may be waiting on its debounce/lease.
+            // Capture the generation target only after those saves settle, so
+            // the image attachment is not invalidated by our own prompt save.
+            await self.flushPendingSaves()
+            guard navigation == self.navigationGeneration, lifecycle == self.cloud.lifecycleContext,
+                  package == self.projectURL, let target = self.project.cues.first(where: { $0.id == targetID }) else { return }
+            if let draft = try self.promptDraft(for:target), !draft.text.utf16.elementsEqual(target.prompt.utf16) {
+                // Typing during the await can replace the task captured by the
+                // flush. Never submit newer recovery text against an older cue.
+                throw ScrivError.conflict(draft.needsRebase(sourcePrompt:target.prompt,epoch:self.editorDraftEpoch)
+                    ? "Review the recovered visual override before generating an image from it."
+                    : "The visual override is still a local recovery draft. Finish typing and retry its save before generating.")
+            }
+            let source = try self.imageGenerationContext(cueID:target.id)
             guard source.hasContent else { throw ScrivError.invalid("Add dialogue, an active direction, or a visual override for this cue before generating.") }
-            let referenceURLs = source.portraits.compactMap { portrait in project.asset(portrait.assetID).flatMap { assetURL($0) } }
+            let referenceURLs = source.portraits.compactMap { portrait in self.project.asset(portrait.assetID).flatMap { self.assetURL($0) } }
             guard referenceURLs.count == source.portraits.count else { throw ScrivError.unavailable("A reference portrait changed. Review the generation context and try again.") }
-            let context = GenerationJobContext(projectID:project.id,projectTitle:project.title,packagePath:package.path,targetCue:target,sourceRevision:project.revision,cloudProjectID:project.cloudProjectId,cloudServer:project.cloudProjectId == nil ? nil : cloud.baseURL.absoluteString,accountID:account?.id,deviceID:cloud.deviceId,sourceHeadSeq:cloud.headSeq,sourceItemVersion:cloud.items[target.id]?.version,userDirection:source.userDirection)
-            perform { try await self.runGeneration(prompt:source.prompt,references:referenceURLs,context:context) }
-        } catch { errorMessage = error.localizedDescription }
+            let context = GenerationJobContext(projectID:self.project.id,projectTitle:self.project.title,packagePath:package.path,targetCue:target,sourceRevision:self.project.revision,cloudProjectID:self.project.cloudProjectId,cloudServer:self.project.cloudProjectId == nil ? nil : self.cloud.baseURL.absoluteString,accountID:self.account?.id,deviceID:self.cloud.deviceId,sourceHeadSeq:self.cloud.headSeq,sourceItemVersion:self.cloud.items[target.id]?.version,userDirection:source.userDirection)
+            try await self.runGeneration(prompt:source.prompt,references:referenceURLs,context:context)
+        }
     }
     private func generationContextMatches(_ context: GenerationJobContext) -> Bool {
         project.id == context.projectID && projectURL?.standardizedFileURL.path == URL(fileURLWithPath:context.packagePath).standardizedFileURL.path &&
@@ -888,6 +1036,7 @@ final class WorkspaceStore: ObservableObject {
     func openProject() { let panel = NSOpenPanel(); panel.canChooseDirectories = true; panel.canChooseFiles = true; panel.allowsMultipleSelection = false; panel.message = "Choose a .scriv project package"; guard panel.runModal() == .OK, let url = panel.url else { return }; perform { try await self.open(url) } }
     private func open(_ url: URL) async throws {
         finishEditing()
+        characterCreationRequest = nil; requestedEntryEditingID = nil
         navigationGeneration += 1; invalidLocalAssetPaths = []; checkedLocalAssets = [:]; pendingLocalAssetChecks = [:]; let navigation = navigationGeneration
         await flushPendingSaves()
         let loaded = try await repo().load(at:url), checkpoint = try await repo().checkpoint(at:url)
@@ -902,6 +1051,7 @@ final class WorkspaceStore: ObservableObject {
         if loaded.cloudProjectId != nil, account != nil { syncProject() }
     }
     private func install(_ value: ScrivProject) {
+        characterCreationRequest = nil; requestedEntryEditingID = nil
         navigationGeneration += 1; invalidLocalAssetPaths = []; checkedLocalAssets = [:]; pendingLocalAssetChecks = [:]
         cloud.disconnect(); canonicalCheckpoint = nil; dirtyItems = [:]; hasConflicts = false; isProjectSynchronizing = false; isSyncing = false; pauseRemoteUpdates = false
         project = value; projectURL = rootURL.appendingPathComponent(value.id).appendingPathExtension("scriv"); selectedSceneID = value.scenes.first?.id ?? ""
@@ -909,8 +1059,21 @@ final class WorkspaceStore: ObservableObject {
         history = []; undoStack = []; redoStack = []; isPlaying = false; playheadMs = 0; selectedWordIDs = []; editingIntents = LocalEditIntents(); activeThread = nil; messages = []; discussionItemID = nil; cloudHistory = []; showDiscussion = false; discussionGeneration += 1; discussionLoading = false
         saveProject(); onProjectChanged?(project,projectURL)
     }
-    func saveProject() { queueSave(project,label:"Save project") }
-    func flushPendingSaves() async { await saveTask?.value }
+    func saveProject() {
+        prepareGenerationPrompt()
+        let navigation = navigationGeneration
+        Task { [weak self] in
+            guard let self else { return }
+            await self.flushPendingSaves()
+            guard self.navigationGeneration == navigation else { return }
+            self.queueSave(self.project,label:"Save project")
+        }
+    }
+    func flushPendingSaves() async {
+        let pendingPrompts = Array(generationPromptTasks.values)
+        for task in pendingPrompts { await task.value }
+        await saveTask?.value
+    }
     func importScript() {
         finishEditing()
         let panel = NSOpenPanel()
@@ -1111,7 +1274,8 @@ final class WorkspaceStore: ObservableObject {
         }
     }
     func openCloudProject(_ remote: CloudProject) {
-        finishEditing(); navigationGeneration += 1; invalidLocalAssetPaths = []; checkedLocalAssets = [:]; pendingLocalAssetChecks = [:]; let navigation = navigationGeneration
+        finishEditing(); characterCreationRequest = nil; requestedEntryEditingID = nil
+        navigationGeneration += 1; invalidLocalAssetPaths = []; checkedLocalAssets = [:]; pendingLocalAssetChecks = [:]; let navigation = navigationGeneration
         perform {
             await self.flushPendingSaves(); await self.commitTask?.value
             guard self.navigationGeneration == navigation else { return }

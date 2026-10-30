@@ -23,7 +23,9 @@ struct TeamSheet: View {
     @State private var operationError: String?
     @State private var copiedInvitation: (teamID: String, url: String)?
     @State private var invitationRole = "member"
-    @State private var invitationDays = 30
+    @State private var invitationDays = 7
+    @State private var section = "Members"
+    @State private var inviting = false
 
     private struct Removal { let teamID: String; let userID: String; let name: String; let isSelf: Bool }
     private var team: CloudTeam? { store.teams.first { $0.id == selectedTeamID } }
@@ -33,42 +35,66 @@ struct TeamSheet: View {
     private var links: [JSONValue] { details?["joinLinks"]?.array ?? [] }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 17) {
+        VStack(spacing: 0) {
             HStack {
-                Text("Teams & sharing").font(.system(size: 25, weight: .semibold))
+                Text("Teams & sharing").font(.system(size: 19, weight: .semibold))
                 Spacer()
                 if isWorking { ProgressView().controlSize(.small).accessibilityLabel("Updating team") }
-                Button("Done") { dismiss() }.keyboardShortcut(.cancelAction)
-            }
-            if let operationError {
-                HStack(alignment: .top) {
-                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-                    Text(operationError).font(.callout).textSelection(.enabled)
-                    Spacer()
-                    Button("Dismiss", systemImage: "xmark") { self.operationError = nil }.labelStyle(.iconOnly).buttonStyle(.borderless)
-                }.padding(12).background(.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
-            }
-            if store.account == nil { signInPanel }
+                Button("Done") { dismiss() }.buttonStyle(ScrivPrimaryButtonStyle()).keyboardShortcut(.cancelAction)
+            }.padding(.horizontal, 24).padding(.vertical, 18)
+            Divider().opacity(0.5)
+            if store.account == nil { signInPanel.padding(24) }
             else {
-                teamPicker
-                if let team {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 20) {
-                            planCard(team)
-                            sharingCard(team)
-                            membersCard(team)
-                            if canManage { invitationCard(team) }
-                        }.padding(.bottom, 8)
+                VStack(spacing: 16) {
+                    teamPicker
+                    if team != nil { PillSegmentPicker(values: ["Overview", "Members", "Invitations"], selection: $section) { $0 } }
+                    if let operationError {
+                        ScrivNotice(tone: .warning, title: "This change needs attention", message: operationError)
                     }
-                } else {
-                    EmptyPanel(symbol: "person.2", title: "Make room for your collaborators", message: "Create a team, or join one with an invitation link. A Team subscription is $9.99/month for the whole team.")
+                    if let team {
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 16) {
+                                planCard(team)
+                                if section != "Invitations" { sharingCard(team) }
+                                if section == "Members" { membersCard(team) }
+                                if section == "Overview" {
+                                    ScrivNotice(title: "One plan for the whole team", message: "Members can edit. Viewers can read and discuss. Your scripts, timing and image prompts stay in the cloud; hosted image files require an active Team plan.")
+                                }
+                                if section == "Invitations" {
+                                    if canManage { invitationCard(team) }
+                                    else { ScrivNotice(title: "Invitations are managed by your team", message: "Ask an owner or administrator for an invitation link.") }
+                                }
+                            }.padding(.bottom, 4)
+                        }
+                    } else {
+                        EmptyPanel(symbol: "person.2", title: "Make room for your collaborators", message: "Create a team, or join one with an invitation link. A Team subscription is $9.99/month for the whole team.")
+                    }
+                }.padding(24)
+                Divider().opacity(0.5)
+                HStack {
+                    Text("Viewers can read and discuss. Members can edit.").font(.system(size: 12)).foregroundStyle(.secondary)
+                    Spacer()
+                    if canManage, let team {
+                        Button("Invite people") { inviting = true }.buttonStyle(ScrivPrimaryButtonStyle(fontSize: 14))
+                            .disabled(isWorking || !team.isPaid)
+                    }
+                }.padding(.horizontal, 24).padding(.vertical, 17)
+            }
+        }.frame(width: 840, height: 720).background(ScrivTheme.sheetBackground)
+            .sheet(isPresented: $inviting) {
+                if let team {
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack { Text("Invite to \(team.name)").font(.system(size: 20, weight: .semibold)); Spacer(); Button("Done") { inviting = false }.keyboardShortcut(.cancelAction) }
+                            .padding(24)
+                        Divider().opacity(0.5)
+                        ScrollView { invitationCard(team).padding(24) }
+                    }.frame(width: 520, height: 570).background(ScrivTheme.sheetBackground)
                 }
             }
-        }.padding(24).frame(width: 710, height: 680)
             .onAppear { isVisible = true; if selectedTeamID.isEmpty { selectedTeamID = store.teams.first?.id ?? "" } }
             .onDisappear { isVisible = false; loadID = UUID() }
             .task(id: selectedTeamID) {
-                copiedInvitation = nil; operationError = nil
+                copiedInvitation = nil; operationError = nil; inviting = false
                 if !selectedTeamID.isEmpty { await reload(selectedTeamID) }
                 else { teamDetails = nil; isLoading = false }
             }
@@ -131,145 +157,181 @@ struct TeamSheet: View {
             Picker("Team", selection: $selectedTeamID) {
                 if store.teams.isEmpty { Text("No teams yet").tag("") }
                 ForEach(store.teams) { Text($0.name).tag($0.id) }
-            }.frame(maxWidth: 330)
+            }.labelsHidden().frame(maxWidth: 330)
+            if canManage, let team {
+                Button { renameTeamID = team.id; teamName = team.name; renaming = true } label: { Image(systemName: "pencil") }
+                    .buttonStyle(.borderless).help("Rename team")
+            }
             Spacer()
-            Button("Join…") { joining = true }
-            Button("New team", systemImage: "plus") { teamName = ""; creating = true }.buttonStyle(.bordered)
+            Button("Join") { joining = true }.buttonStyle(ScrivSecondaryButtonStyle())
+            Button("New team") { teamName = ""; creating = true }.buttonStyle(ScrivSecondaryButtonStyle())
         }.disabled(isWorking)
     }
     private func planCard(_ team: CloudTeam) -> some View {
-        HStack(alignment: .center, spacing: 16) {
-            Image(systemName: "person.2.fill").font(.system(size: 26, weight: .light)).foregroundStyle(ScrivTheme.accent).frame(width: 54, height: 54).background(ScrivTheme.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 13))
-            VStack(alignment: .leading, spacing: 5) {
-                HStack {
-                    Text(team.name).font(.system(size: 18, weight: .semibold))
-                    if canManage {
-                        Button("Rename team", systemImage: "pencil") { renameTeamID = team.id; teamName = team.name; renaming = true }
-                            .labelStyle(.iconOnly).buttonStyle(.borderless).disabled(isWorking)
+        let needsAttention = !team.isPaid && !["free", "canceled", "incomplete_expired"].contains(team.status ?? "free")
+        return VStack(spacing: 12) {
+            ScrivCard {
+                HStack(spacing: 15) {
+                    Image(systemName: "creditcard").font(.system(size: 24)).foregroundStyle(.secondary)
+                        .frame(width: 54, height: 54).background(ScrivTheme.inset.opacity(0.4), in: RoundedRectangle(cornerRadius: 12))
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Team plan").font(.system(size: 16, weight: .semibold))
+                        Text("$9.99 / month").font(.system(size: 14))
+                        Text("For the whole team · no per-seat charge").font(.system(size: 12)).foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Label(team.isPaid ? "Active" : needsAttention ? "Needs attention" : "Not active", systemImage: "circle.fill")
+                        .font(.system(size: 12, weight: .medium)).foregroundStyle(team.isPaid ? Color.green : needsAttention ? .orange : .secondary)
+                        .padding(.horizontal, 11).padding(.vertical, 7)
+                        .background((team.isPaid ? Color.green : Color.orange).opacity(team.isPaid || needsAttention ? 0.10 : 0.04), in: Capsule())
+                    if team.role == "owner" {
+                        if !team.isPaid, ["free", "canceled", "incomplete_expired"].contains(team.status ?? "free") {
+                            Button("Subscribe…") { openBilling(team.id, portal: false) }.buttonStyle(ScrivPrimaryButtonStyle()).disabled(isWorking)
+                        }
+                        if team.isPaid || team.status != nil && team.status != "free" || details?["team"]?["billingCustomer"] == .bool(true) {
+                            Button("Manage billing") { openBilling(team.id, portal: true) }.buttonStyle(ScrivSecondaryButtonStyle()).disabled(isWorking)
+                        }
                     }
                 }
-                Text(team.isPaid ? "Team · $9.99/month · no per-seat charge" : "Activate Team to enable collaboration")
-                    .font(.system(size: 12)).foregroundStyle(.secondary)
-                Text("\(details == nil ? "Loading members" : "\(members.count) members") · \((team.status ?? "free").replacingOccurrences(of: "_", with: " ").capitalized)")
-                    .font(.system(size: 10)).foregroundStyle(.secondary)
-                if !team.isPaid, !["free", "canceled", "incomplete_expired"].contains(team.status ?? "free") {
-                    Text("Use Manage billing to resolve your existing subscription. You won't be charged for a second one.").font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
-                }
             }
-            Spacer()
-            if team.role == "owner" {
-                VStack(alignment: .trailing, spacing: 8) {
-                    if !team.isPaid, ["free", "canceled", "incomplete_expired"].contains(team.status ?? "free") {
-                        Button("Subscribe · $9.99/mo") { openBilling(team.id, portal: false) }.buttonStyle(.borderedProminent)
-                    }
-                    if team.isPaid || team.status != nil && team.status != "free" || details?["team"]?["billingCustomer"] == .bool(true) {
-                        Button("Manage billing") { openBilling(team.id, portal: true) }.buttonStyle(.bordered)
-                    }
-                }.disabled(isWorking)
+            if needsAttention {
+                ScrivNotice(tone: .warning, title: "Billing needs attention", message: "Manage the existing subscription — do not subscribe again. Your team’s access follows its current billing status.")
             }
-        }.padding(17).background(ScrivTheme.inset.opacity(0.5), in: RoundedRectangle(cornerRadius: 13))
+        }
     }
     private func sharingCard(_ team: CloudTeam) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Current project").font(.headline)
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(store.project.title).font(.system(size: 13, weight: .medium))
-                    Text(currentTeamID == team.id ? "Shared with everyone on this team" : "Create a shared team copy of this script and its image metadata")
-                        .font(.system(size: 11)).foregroundStyle(.secondary)
+        ScrivCard {
+            HStack(spacing: 18) {
+                AssetImageView(url: store.project.asset(store.project.cues.first?.imageId).flatMap { store.assetURL($0) }, title: store.project.title, cornerRadius: 9, unavailableText: "No preview")
+                    .frame(width: 154, height: 82)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(store.project.title).font(.system(size: 16, weight: .semibold))
+                    Text(currentTeamID == team.id ? "Shared with this team" : "This project is not shared with this team")
+                        .font(.system(size: 13)).foregroundStyle(.secondary)
+                    if !team.isPaid { Text("Activate Team to share projects and image files.").font(.system(size: 11)).foregroundStyle(.secondary) }
                 }
                 Spacer()
-                if currentTeamID == team.id { Label("Shared", systemImage: "checkmark.circle.fill").foregroundStyle(.green).font(.system(size: 12)) }
-                else {
-                    Button("Share team copy") { store.shareProjectWithTeam(team.id) }.buttonStyle(.bordered)
+                if currentTeamID == team.id {
+                    Button("Open project") { dismiss() }.buttonStyle(ScrivSecondaryButtonStyle())
+                } else {
+                    Button("Share team copy") { store.shareProjectWithTeam(team.id) }.buttonStyle(ScrivSecondaryButtonStyle())
                         .disabled(!team.isPaid || team.role == "viewer" || store.isSyncing || isWorking)
                 }
             }
-            if !team.isPaid { Text("The owner must activate Team before people can join or edit shared projects. After cancellation, members have 30 days to read and export; the owner retains access.").font(.caption).foregroundStyle(.secondary) }
-        }.padding(16).background(ScrivTheme.inset.opacity(0.28), in: RoundedRectangle(cornerRadius: 12))
+        }
     }
     private var currentTeamID: String? { store.cloudProjects.first { $0.id == store.project.cloudProjectId }?.teamId }
     private func membersCard(_ team: CloudTeam) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("Members").font(.headline); Spacer()
+                Text("Members (\(members.count))").font(.system(size: 13, weight: .semibold)); Spacer()
                 if isLoading { ProgressView().controlSize(.small) }
-                Button("Refresh") { run { try await store.cloud.refreshAccount(); await reload(team.id) } }.font(.caption).buttonStyle(.borderless).disabled(isWorking || isLoading)
+                Text("Role").font(.system(size: 12)).foregroundStyle(.secondary).frame(width: 132, alignment: .leading)
+                Button { run { try await store.cloud.refreshAccount(); await reload(team.id) } } label: { Image(systemName: "arrow.clockwise") }
+                    .buttonStyle(.borderless).help("Refresh members").disabled(isWorking || isLoading)
+            }.padding(.horizontal, 14).padding(.vertical, 13)
+            Divider().opacity(0.5)
+            ForEach(Array(members.enumerated()), id: \.offset) { _, member in
+                memberRow(member, team: team)
+                Divider().opacity(0.4)
             }
-            ForEach(Array(members.enumerated()), id: \.offset) { _, member in memberRow(member, team: team) }
+            if members.isEmpty, !isLoading { Text("No member details loaded yet.").font(.callout).foregroundStyle(.secondary).padding(18) }
             if team.role != "owner", let userID = store.account?.id {
-                Divider()
-                Button("Leave team…", role: .destructive) { requestRemoval(Removal(teamID: team.id, userID: userID, name: "you", isSelf: true)) }.disabled(isWorking)
+                Button("Leave team…", role: .destructive) { requestRemoval(Removal(teamID: team.id, userID: userID, name: "you", isSelf: true)) }
+                    .buttonStyle(.borderless).padding(14).disabled(isWorking)
             }
-        }.padding(16).background(ScrivTheme.inset.opacity(0.28), in: RoundedRectangle(cornerRadius: 12))
+        }
     }
     private func memberRow(_ member: JSONValue, team: CloudTeam) -> some View {
-        let id = member["id"]?.string ?? ""
-        let role = member["role"]?.string ?? "member"
-        let name = member["name"]?.string ?? "Team member"
+        let id = member["id"]?.string ?? "", role = member["role"]?.string ?? "member", name = member["name"]?.string ?? "Team member"
         let editable = (team.role == "owner" || team.role == "admin" && role != "admin") && role != "owner"
-        return HStack(spacing: 10) {
-            InitialAvatar(name: name, size: 29)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(name + (id == store.account?.id ? " (you)" : "")).font(.system(size: 12, weight: .medium))
-                if let email = member["email"]?.string { Text(email).font(.system(size: 10)).foregroundStyle(.secondary) }
+        return HStack(spacing: 14) {
+            InitialAvatar(name: name, color: role == "owner" ? ScrivTheme.accent : role == "viewer" ? .pink : .green, size: 42)
+            VStack(alignment: .leading, spacing: 5) {
+                Text(name + (id == store.account?.id ? " (you)" : "")).font(.system(size: 14, weight: .semibold))
+                Text(role == "owner" ? "Owner of this team" : role == "viewer" ? "Can read and discuss" : role == "admin" ? "Can edit and manage the team" : "Can edit project content")
+                    .font(.system(size: 12)).foregroundStyle(.secondary)
             }
             Spacer()
             if editable {
                 Menu {
-                    if team.role == "owner", role != "admin" { Button("Make admin") { setRole("admin", team: team.id, user: id) } }
-                    if role != "member" { Button("Make member") { setRole("member", team: team.id, user: id) } }
-                    if role != "viewer" { Button("Make viewer") { setRole("viewer", team: team.id, user: id) } }
-                    Divider()
-                    Button("Remove…", role: .destructive) { requestRemoval(Removal(teamID: team.id, userID: id, name: name, isSelf: id == store.account?.id)) }
-                } label: { HStack(spacing: 5) { Text(role.capitalized); Image(systemName: "chevron.down").font(.system(size: 8)) } }
-                    .menuStyle(.borderlessButton).fixedSize().font(.system(size: 11)).disabled(isWorking)
-            } else { Text(role.capitalized).font(.system(size: 11)).foregroundStyle(.secondary) }
-        }.padding(.vertical, 7)
+                    if team.role == "owner", role != "admin" { Button("Admin · can manage team") { setRole("admin", team: team.id, user: id) } }
+                    if role != "member" { Button("Member · can edit") { setRole("member", team: team.id, user: id) } }
+                    if role != "viewer" { Button("Viewer · can read and discuss") { setRole("viewer", team: team.id, user: id) } }
+                } label: { HStack { Text(role.capitalized); Spacer(); Image(systemName: "chevron.down").font(.system(size: 9)) }.frame(width: 117) }
+                    .menuStyle(.borderlessButton).padding(.horizontal, 11).padding(.vertical, 9)
+                    .background(ScrivTheme.inset.opacity(0.35), in: RoundedRectangle(cornerRadius: 8))
+                    .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(ScrivTheme.hairline)).disabled(isWorking)
+                Menu { Button("Remove member…", role: .destructive) { requestRemoval(Removal(teamID: team.id, userID: id, name: name, isSelf: id == store.account?.id)) } }
+                    label: { Image(systemName: "ellipsis").frame(width: 24, height: 28) }
+                    .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize().disabled(isWorking)
+            } else { Text(role.capitalized).font(.system(size: 13)).foregroundStyle(.secondary).frame(width: 170, alignment: .leading) }
+        }.padding(.horizontal, 14).padding(.vertical, 14)
     }
     private func invitationCard(_ team: CloudTeam) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 18) {
+            if inviting, let operationError { ScrivNotice(tone: .warning, title: "Invitation not ready", message: operationError) }
             HStack {
-                Text("Invitation links").font(.headline); Spacer()
-                Button("Create & copy link", systemImage: "link") { createInvitation(team.id) }.buttonStyle(.borderedProminent).disabled(!team.isPaid || isWorking)
-            }
-            HStack {
+                Text("Access").font(.system(size: 14, weight: .medium)).frame(width: 70, alignment: .leading)
                 Picker("Access", selection: $invitationRole) { Text("Member · can edit").tag("member"); Text("Viewer · read & discuss").tag("viewer") }
-                Picker("Expires", selection: $invitationDays) { Text("1 day").tag(1); Text("7 days").tag(7); Text("30 days").tag(30) }
-            }.disabled(isWorking)
-            Text("Anyone with an active link can sign in and join this team. Links are reusable with no seat limit. Revoking a link stops new joins but doesn't remove current members.")
-                .font(.system(size: 11)).foregroundStyle(.secondary)
-            if let copiedInvitation, copiedInvitation.teamID == team.id {
-                HStack(spacing: 8) {
-                    Text(copiedInvitation.url).font(.system(size: 10, design: .monospaced)).textSelection(.enabled).lineLimit(2)
-                    Spacer()
-                    Button("Copy") { copy(copiedInvitation.url) }.controlSize(.small)
-                }.padding(10).background(ScrivTheme.accent.opacity(0.06), in: RoundedRectangle(cornerRadius: 8))
+                    .labelsHidden().frame(maxWidth: .infinity)
             }
+            HStack {
+                Text("Expires").font(.system(size: 14, weight: .medium)).frame(width: 70, alignment: .leading)
+                Picker("Expires", selection: $invitationDays) { Text("1 day").tag(1); Text("7 days").tag(7); Text("30 days").tag(30) }
+                    .labelsHidden().frame(maxWidth: .infinity)
+            }
+            Text("Anyone with the link can sign in and join. Links are reusable.")
+                .font(.system(size: 13)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+            Button { createInvitation(team.id) } label: { Text("Create & copy link").frame(maxWidth: .infinity) }
+                .buttonStyle(ScrivPrimaryButtonStyle(fontSize: 14)).disabled(!canManage || !team.isPaid || isWorking)
+            if !team.isPaid { ScrivNotice(tone: .warning, title: "Activate Team first", message: "New invitation links are unavailable until Team is active.") }
+            Divider().padding(.vertical, 4).opacity(0.5)
+            Text("Invitation links").font(.system(size: 13)).foregroundStyle(.secondary)
+            if let copiedInvitation, copiedInvitation.teamID == team.id {
+                ScrivCard {
+                    HStack(spacing: 12) {
+                        Image(systemName: "checkmark.circle.fill").foregroundStyle(.green).font(.system(size: 23))
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Link created and copied").font(.system(size: 14, weight: .semibold))
+                            Text("Copy it again before closing this window.").font(.system(size: 11)).foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Button("Copy") { copy(copiedInvitation.url) }.buttonStyle(ScrivSecondaryButtonStyle())
+                    }
+                }
+            }
+            if links.isEmpty, !isLoading { Text("No invitation links yet.").font(.system(size: 13)).foregroundStyle(.secondary).padding(.vertical, 6) }
             ForEach(Array(links.enumerated()), id: \.offset) { _, link in
                 let revoked = link["revokedAt"] != nil && link["revokedAt"] != .null
                 let expiration = link["expiresAt"]?.int ?? 0
                 let expired = expiration <= Int(Date().timeIntervalSince1970 * 1000)
-                HStack {
-                    Image(systemName: "link").foregroundStyle(.secondary)
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("\((link["role"]?.string ?? "member").capitalized) invitation").font(.system(size: 11, weight: .medium))
-                        Text(revoked ? "Revoked" : expired ? "Expired" : "Expires \(Date(timeIntervalSince1970: Double(expiration) / 1000).formatted(date: .abbreviated, time: .omitted))")
-                            .font(.system(size: 10)).foregroundStyle(.secondary)
+                ScrivCard {
+                    HStack(spacing: 12) {
+                        Image(systemName: "link").font(.system(size: 21)).foregroundStyle(.secondary)
+                            .frame(width: 40, height: 40).background(ScrivTheme.inset.opacity(0.5), in: Circle())
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text("\((link["role"]?.string ?? "member").capitalized) invitation").font(.system(size: 14, weight: .semibold))
+                            Text(revoked ? "Revoked" : expired ? "Expired" : "Expires \(Date(timeIntervalSince1970: Double(expiration) / 1000).formatted(date: .abbreviated, time: .omitted))")
+                                .font(.system(size: 12)).foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        if !revoked && !expired, let id = link["id"]?.string {
+                            Button("Revoke", role: .destructive) {
+                                run {
+                                    try await store.cloud.revokeJoinLink(teamId: team.id, linkId: id)
+                                    if copiedInvitation?.teamID == team.id { copiedInvitation = nil }
+                                    await reload(team.id)
+                                }
+                            }.buttonStyle(.bordered).tint(.red).disabled(isWorking || !canManage)
+                        }
                     }
-                    Spacer()
-                    if !revoked && !expired, let id = link["id"]?.string {
-                        Button("Revoke", role: .destructive) {
-                            run {
-                                try await store.cloud.revokeJoinLink(teamId: team.id, linkId: id)
-                                if copiedInvitation?.teamID == team.id { copiedInvitation = nil }
-                                await reload(team.id)
-                            }
-                        }.controlSize(.small).disabled(isWorking)
-                    }
-                }.padding(.vertical, 4)
+                }
             }
-        }.padding(16).background(ScrivTheme.inset.opacity(0.28), in: RoundedRectangle(cornerRadius: 12))
+            ScrivNotice(title: "", message: "Revoking a link stops new joins. Existing members keep access.")
+            Text("For security, old link secrets cannot be retrieved. Create a new link when you no longer have its saved copy.")
+                .font(.system(size: 11)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+        }.disabled(isWorking)
     }
 
     private func run(_ operation: @escaping @MainActor () async throws -> Void) {

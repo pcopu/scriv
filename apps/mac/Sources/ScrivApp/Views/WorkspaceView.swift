@@ -58,7 +58,10 @@ struct WorkspaceView: View {
                 .buttonStyle(.plain).help("History").accessibilityLabel("History")
             Button { teamOpen = true } label: { Image(systemName: "square.and.arrow.up").font(.system(size: 15)) }
                 .buttonStyle(.plain).help("Team and sharing").accessibilityLabel("Team and sharing")
-            Button { accountOpen.toggle() } label: {
+            Button {
+                if store.account == nil { accountOpen = false; store.signIn() }
+                else { accountOpen.toggle() }
+            } label: {
                 HStack(spacing: 7) {
                     InitialAvatar(name: store.account?.name ?? "S", size: 24)
                     Text(store.account?.name ?? "Sign in").font(.system(size: 12, weight: .medium)).lineLimit(1)
@@ -100,9 +103,12 @@ struct WorkspaceView: View {
     @ViewBuilder private var workspace: some View {
         switch store.tab {
         case .script:
-            HSplitView {
-                ScriptEditorView().frame(minWidth: 440, idealWidth: 690)
-                PreviewPane().frame(minWidth: 470, idealWidth: 650)
+            if store.project.entries.isEmpty { emptyWorkspace }
+            else {
+                HSplitView {
+                    ScriptEditorView().frame(minWidth: 440, idealWidth: 690)
+                    PreviewPane().frame(minWidth: 470, idealWidth: 650)
+                }
             }
         case .characters:
             HSplitView {
@@ -112,5 +118,38 @@ struct WorkspaceView: View {
         case .storyboard:
             StoryboardView()
         }
+    }
+    private var emptyWorkspace: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                VStack(spacing: 0) {
+                    Spacer()
+                    Image(systemName: "doc.text").font(.system(size: 58, weight: .ultraLight))
+                        .foregroundStyle(ScrivTheme.secondary.opacity(0.6)).padding(.bottom, 24)
+                    Text("Your story starts here").font(.system(size: 27, weight: .semibold))
+                    Text("Write a first line, or bring in a script.").font(.system(size: 17)).foregroundStyle(.secondary).padding(.top, 10)
+                    HStack(spacing: 10) {
+                        Button("Add dialogue") { store.addEntry(kind: .dialogue) }.buttonStyle(ScrivPrimaryButtonStyle(fontSize: 14))
+                        Button("Add direction") { store.addEntry(kind: .direction) }.buttonStyle(ScrivSecondaryButtonStyle(fontSize: 14))
+                        Button("Import script…") { store.importScript() }.buttonStyle(ScrivSecondaryButtonStyle(fontSize: 14))
+                    }.padding(.top, 32)
+                    Divider().frame(maxWidth: 440).padding(.top, 35).opacity(0.5)
+                    Text("Fountain or plain text").font(.system(size: 12)).foregroundStyle(.secondary).padding(.top, 18)
+                    Spacer()
+                }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(24)
+                Rectangle().fill(ScrivTheme.hairline.opacity(0.4)).frame(width: 1)
+                VStack(spacing: 22) {
+                    Image(systemName: "photo").font(.system(size: 91, weight: .ultraLight)).foregroundStyle(ScrivTheme.secondary.opacity(0.28))
+                    Text("Images appear as you build\nthe scene").font(.system(size: 14)).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                }.frame(width: 280).frame(maxHeight: .infinity).background(ScrivTheme.inset.opacity(0.24))
+            }
+            Divider().opacity(0.5)
+            HStack {
+                Text("Local editing is free. Sign in only for cloud storage or teams.").font(.system(size: 11)).foregroundStyle(.secondary)
+                Spacer()
+                Text(store.statusMessage).font(.system(size: 11)).foregroundStyle(.secondary)
+                StatusDot(color: store.statusMessage == "Saved on this Mac" ? .green : .orange)
+            }.padding(.horizontal, 20).padding(.vertical, 15)
+        }.background(ScrivTheme.panel).clipShape(RoundedRectangle(cornerRadius: ScrivTheme.panelRadius))
     }
 }

@@ -1,6 +1,35 @@
 import Foundation
 
 extension TimingEngine {
+    /// Apply the complete reviewed timing draft atomically. Neighboring edits
+    /// are validated together, so making room never requires a partial save.
+    /// The review snapshot also prevents a stale sheet overwriting newer edits.
+    public static func setWordTimings(_ project: inout ScrivProject, entryId: String, expectedWords: [TimedWord], expectedDurationMs: Int, updatedWords: [TimedWord]) throws {
+        var next = project
+        guard let index = next.entries.firstIndex(where: { $0.id == entryId }),
+              next.entries[index].kind == .dialogue,
+              next.entries[index].words == expectedWords,
+              next.entries[index].ownedDurationMs == expectedDurationMs else {
+            throw ScrivError.conflict("This line changed while timing was being reviewed. Reopen word timing before applying your draft.")
+        }
+        guard updatedWords.count == expectedWords.count else {
+            throw ScrivError.invalid("Word timing cannot add or remove script words.")
+        }
+        for (before, after) in zip(expectedWords, updatedWords) {
+            guard before.id == after.id, before.text == after.text else {
+                throw ScrivError.invalid("Word timing must preserve every word and its identity.")
+            }
+            let moved = before.startMs != after.startMs || before.endMs != after.endMs
+            guard !moved || after.timingSource == .authored,
+                  before.timingSource != .authored || after.timingSource == .authored else {
+                throw ScrivError.invalid("Edited word timings must retain their authored timing markers.")
+            }
+        }
+        next.entries[index].words = updatedWords
+        try validate(next)
+        project = next
+    }
+
     /// A deliberate local history restore is a new authored edit, not an old-client metadata downgrade.
     public static func prepareRestoredTiming(_ project: inout ScrivProject, replacing current: ScrivProject) throws {
         var next = project

@@ -2,38 +2,65 @@ import SwiftUI
 import AppKit
 import ScrivCore
 
+enum AssetImageLoadPhase: Equatable { case empty, loading, loaded, failed }
+struct AssetImageLoadResult {
+    let url: URL
+    let image: NSImage?
+    static func phase(for url: URL?, result: AssetImageLoadResult?) -> AssetImageLoadPhase {
+        guard let url else { return .empty }
+        guard let result, result.url == url else { return .loading }
+        return result.image == nil ? .failed : .loaded
+    }
+}
+private struct AssetImageLoadRequest: Equatable {
+    let url: URL?
+    let retry: Int
+}
+
 struct AssetImageView: View {
     var url: URL?
     var title: String = "Storyboard image"
     var cornerRadius: CGFloat = 12
     var fill = true
     var unavailableText: String?
-    @State private var loaded: NSImage?
+    @State private var result: AssetImageLoadResult?
+    @State private var retry = 0
+    private var phase: AssetImageLoadPhase { AssetImageLoadResult.phase(for: url, result: result) }
     var body: some View {
         GeometryReader { proxy in
             ZStack {
                 LinearGradient(colors: [ScrivTheme.canvas, ScrivTheme.inset], startPoint: .topLeading, endPoint: .bottomTrailing)
-                if let loaded {
+                if phase == .loaded, let loaded = result?.image {
                     if fill {
                         Image(nsImage: loaded).resizable().scaledToFill().frame(width: proxy.size.width, height: proxy.size.height).clipped()
                     } else {
                         Image(nsImage: loaded).resizable().scaledToFit().frame(width: proxy.size.width, height: proxy.size.height)
                     }
+                } else if phase == .loading {
+                    VStack(spacing: 9) {
+                        ProgressView().controlSize(.small)
+                        Text("Loading image…").font(.system(size: 12, weight: .medium))
+                    }.foregroundStyle(.secondary)
                 } else {
                     VStack(spacing: 9) {
                         Image(systemName: "photo").font(.system(size: 29, weight: .ultraLight))
                         Text(unavailableText ?? (url == nil ? "Add an image" : "Image unavailable on this Mac")).font(.system(size: 12, weight: .medium))
+                        if phase == .failed {
+                            Button("Retry") { result = nil; retry += 1 }.buttonStyle(.borderless)
+                        }
                     }.foregroundStyle(.secondary)
                 }
             }
         }.clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             .accessibilityLabel(title)
-            .task(id: url) {
-                loaded = nil
-                guard let url, url.isFileURL else { return }
+            .task(id: AssetImageLoadRequest(url: url, retry: retry)) {
+                guard !Task.isCancelled else { return }
+                result = nil
+                guard let url else { return }
+                guard url.isFileURL else { result = AssetImageLoadResult(url: url, image: nil); return }
                 let data = await Task.detached(priority: .utility) { try? Data(contentsOf: url, options: .mappedIfSafe) }.value
-                guard !Task.isCancelled, let data else { return }
-                loaded = NSImage(data: data)
+                guard !Task.isCancelled else { return }
+                result = AssetImageLoadResult(url: url, image: data.flatMap { NSImage(data: $0) })
             }
     }
 }
@@ -51,6 +78,10 @@ struct LinkedScriptText: View {
     var body: some View {
         Text(attributedText).font(direction ? Font.system(size: size).italic() : Font.system(size: size))
             .lineSpacing(3)
+            .lineLimit(nil)
+            // Honor the column width, but never compress authored text to a
+            // truncated row. The measured full height also anchors the rails.
+            .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity, alignment: .leading)
             .environment(\.openURL, OpenURLAction { url in
                 guard url.scheme == "scriv-character" else { return .systemAction }
@@ -157,7 +188,7 @@ struct DirectionBand: View {
         Button(action: onSelect) {
             HStack(spacing: 8) {
                 Image(systemName: "line.3.horizontal.decrease").font(.system(size: 8, weight: .medium)).rotationEffect(.degrees(90))
-                Text(text).font(.system(size: 14)).italic().lineLimit(2).minimumScaleFactor(0.8).frame(maxWidth: .infinity)
+                Text(text).font(.system(size: 14)).italic().lineLimit(2).fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity)
                 Image(systemName: "line.3.horizontal.decrease").font(.system(size: 8, weight: .medium)).rotationEffect(.degrees(90))
             }.foregroundStyle(color).padding(.vertical, 7).padding(.horizontal, 8)
                 .background(color.opacity(selected ? 0.22 : 0.12), in: RoundedRectangle(cornerRadius: 8))
@@ -184,41 +215,43 @@ struct PillSegmentPicker<Value: Hashable>: View {
     }
 }
 
-/// Choosing a version changes only this placement. Historical image identities,
-/// character tags and discussions continue to reference their original assets.
+/// Choosing a version changes only this placement. Its image ID and existing
+/// discussion stay intact. Selection is staged until the explicit Use action.
 struct ImageVersionsPopover: View {
     @EnvironmentObject private var store: WorkspaceStore
     @Environment(\.dismiss) private var dismiss
     let cueID: String
     let imageID: String
+    @State private var selectedImageID: String?
+    @State private var navigationContext: Int?
     private var versions: [ImageAsset] { ProjectEditing.imageVersions(in: store.project, imageId: imageID) }
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Image versions").font(.headline)
-            Text("Use a version for this placement. Existing discussions keep their original image.").font(.caption).foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 15) {
+            Text("Image versions").font(.system(size: 21, weight: .semibold))
+            Text("Choose a version for this placement.").font(.system(size: 12)).foregroundStyle(.secondary)
             ScrollView {
-                VStack(spacing: 8) {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], alignment: .leading, spacing: 12) {
                     ForEach(versions) { image in
-                        Button {
-                            store.setCueImage(cueID, imageId: image.id)
-                            dismiss()
-                        } label: {
-                            HStack(spacing: 10) {
-                                AssetImageView(url: store.assetURL(image), title: "Version \(image.version)", cornerRadius: 6, unavailableText: "Not downloaded")
-                                    .frame(width: 94, height: 58)
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text("Version \(image.version)").font(.system(size: 13, weight: .semibold))
-                                    Text(image.createdAt, style: .date).font(.caption).foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                                if store.project.cues.first(where: { $0.id == cueID })?.imageId == image.id { Image(systemName: "checkmark.circle.fill").foregroundStyle(ScrivTheme.accent) }
-                            }.padding(7).background(ScrivTheme.inset, in: RoundedRectangle(cornerRadius: 8))
-                        }.buttonStyle(.plain).disabled(store.lockedByOther(cueID) != nil)
+                        Button { selectedImageID = image.id } label: { ImageChoiceTile(image: image, selected: selectedImageID == image.id) }.buttonStyle(.plain)
                     }
-                }
-            }.frame(maxHeight: 330)
-            Button("Done") { dismiss() }.keyboardShortcut(.cancelAction)
-        }.padding(16).frame(width: 340)
+                }.padding(2)
+            }.frame(maxHeight: 390)
+            Text("Other uses and discussions stay with their original image version.")
+                .font(.system(size: 11)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+            Divider()
+            HStack {
+                Spacer()
+                Button("Cancel") { dismiss() }.buttonStyle(ScrivSecondaryButtonStyle()).keyboardShortcut(.cancelAction)
+                Button("Use version") {
+                    guard navigationContext == store.navigationContext, let selectedImageID, versions.contains(where: { $0.id == selectedImageID }) else { return }
+                    store.setCueImage(cueID, imageId: selectedImageID)
+                    if store.project.cues.first(where: { $0.id == cueID })?.imageId == selectedImageID { dismiss() }
+                }.buttonStyle(ScrivPrimaryButtonStyle()).keyboardShortcut(.defaultAction)
+                    .disabled(selectedImageID == nil || store.lockedByOther(cueID) != nil || !store.project.cues.contains(where: { $0.id == cueID }))
+            }
+        }.padding(20).frame(width: 550).background(ScrivTheme.sheetBackground)
+            .onAppear { selectedImageID = store.project.cues.first(where: { $0.id == cueID })?.imageId; navigationContext = store.navigationContext }
+            .onChange(of: store.navigationContext) { _, context in if let navigationContext, context != navigationContext { dismiss() } }
     }
 }
 
@@ -231,60 +264,54 @@ struct ProjectImagePicker: View {
     @State private var search = ""
     @State private var selectedImageID: String?
     private var images: [ImageAsset] {
-        store.project.images.filter { image in
-            search.isEmpty || image.prompt.localizedCaseInsensitiveContains(search)
-                || store.project.characters.contains { image.characterIds.contains($0.id) && ([$0.name] + $0.aliases).contains { $0.localizedCaseInsensitiveContains(search) } }
+        let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        return store.project.images.filter { image in
+            query.isEmpty || image.prompt.localizedCaseInsensitiveContains(query)
+                || ImageInspectorContext.title(imageID: image.id, project: store.project).localizedCaseInsensitiveContains(query)
+                || store.project.characters.contains { image.characterIds.contains($0.id) && ([$0.name] + $0.aliases).contains { $0.localizedCaseInsensitiveContains(query) } }
         }.sorted { ($0.createdAt, $0.id) > ($1.createdAt, $1.id) }
     }
+    private var cue: ImageCue? { store.project.cues.first { $0.id == cueID } }
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Choose an image").font(.title2.weight(.semibold))
-                    Text("Reuse an existing asset for this placement. Other placements and image discussions stay unchanged.")
-                        .font(.caption).foregroundStyle(.secondary)
-                }
-                Spacer()
+        VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Choose an image").font(.system(size: 25, weight: .semibold))
+                Text("For " + (cue.map { $0.label.isEmpty ? "this picture placement" : $0.label } ?? "this picture placement"))
+                    .font(.system(size: 13)).foregroundStyle(.secondary)
             }
-            TextField("Find by image direction, character or alias", text: $search).textFieldStyle(.roundedBorder)
+            HStack(spacing: 9) {
+                Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                TextField("Character, alias or image direction", text: $search).textFieldStyle(.plain)
+                    .accessibilityLabel("Find an image by character, alias or image direction")
+            }.padding(11).background(ScrivTheme.panel, in: RoundedRectangle(cornerRadius: 9))
+                .overlay(RoundedRectangle(cornerRadius: 9).strokeBorder(ScrivTheme.hairline))
             if images.isEmpty {
                 EmptyPanel(symbol: "photo.on.rectangle", title: search.isEmpty ? "No project images yet" : "No matching images", message: search.isEmpty ? "Import or generate an image first, then reuse it in any placement." : "Try another character name or a word from the image direction.")
+                    .frame(maxHeight: .infinity)
             } else {
                 ScrollView {
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], alignment: .leading, spacing: 15) {
                         ForEach(images) { image in
-                            Button { selectedImageID = image.id } label: {
-                                VStack(alignment: .leading, spacing: 6) {
-                                    AssetImageView(url: store.assetURL(image), title: "Image version \(image.version)", cornerRadius: 9, unavailableText: "Not downloaded")
-                                        .aspectRatio(16 / 9, contentMode: .fit)
-                                        .overlay(alignment: .topTrailing) {
-                                            if selectedImageID == image.id { Image(systemName: "checkmark.circle.fill").foregroundStyle(.white, ScrivTheme.accent).font(.title3).padding(8) }
-                                        }
-                                        .overlay(RoundedRectangle(cornerRadius: 9).strokeBorder(selectedImageID == image.id ? ScrivTheme.accent : .clear, lineWidth: 3))
-                                    Text(image.prompt.isEmpty ? "Image" : image.prompt).font(.system(size: 11)).lineLimit(2).frame(maxWidth: .infinity, alignment: .leading)
-                                    HStack {
-                                        Text("Version \(image.version)")
-                                        Spacer()
-                                        if store.assetURL(image) == nil { Image(systemName: "icloud.and.arrow.down") }
-                                    }.font(.system(size: 10)).foregroundStyle(.secondary)
-                                }.padding(4).contentShape(Rectangle())
-                            }.buttonStyle(.plain).accessibilityAddTraits(selectedImageID == image.id ? .isSelected : [])
+                            Button { selectedImageID = image.id } label: { ImageChoiceTile(image: image, selected: selectedImageID == image.id) }.buttonStyle(.plain)
                         }
-                    }
+                    }.padding(2)
                 }
             }
-            HStack {
-                Text("Only this image placement changes.").font(.caption).foregroundStyle(.secondary)
-                Spacer()
-                Button("Cancel") { dismiss() }.keyboardShortcut(.cancelAction)
+            Divider()
+            HStack(alignment: .center, spacing: 14) {
+                Label("Only this placement changes. Other uses and discussions stay intact.", systemImage: "info.circle")
+                    .font(.system(size: 11)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+                Button("Cancel") { dismiss() }.buttonStyle(ScrivSecondaryButtonStyle()).keyboardShortcut(.cancelAction)
                 Button("Use image") {
-                    guard store.navigationContext == navigationContext, let selectedImageID else { dismiss(); return }
-                    store.setCueImage(cueID, imageId: selectedImageID); dismiss()
-                }.buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
-                    .disabled(selectedImageID == nil || store.lockedByOther(cueID) != nil || !store.project.cues.contains(where: { $0.id == cueID }))
+                    guard store.navigationContext == navigationContext, let selectedImageID, store.project.asset(selectedImageID) != nil else { return }
+                    store.setCueImage(cueID, imageId: selectedImageID)
+                    if store.project.cues.first(where: { $0.id == cueID })?.imageId == selectedImageID { dismiss() }
+                }.buttonStyle(ScrivPrimaryButtonStyle()).keyboardShortcut(.defaultAction)
+                    .disabled(selectedImageID == nil || store.lockedByOther(cueID) != nil || cue == nil)
             }
-        }.padding(22).frame(width: 820, height: 600)
-            .onAppear { selectedImageID = store.project.cues.first(where: { $0.id == cueID })?.imageId }
+        }.padding(24).frame(width: 710, height: 720).background(ScrivTheme.sheetBackground)
+            .onAppear { selectedImageID = cue?.imageId }
             .onChange(of: store.navigationContext) { _, context in if context != navigationContext { dismiss() } }
     }
 }

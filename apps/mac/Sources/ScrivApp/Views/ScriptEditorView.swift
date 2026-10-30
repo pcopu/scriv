@@ -177,10 +177,18 @@ private struct ScriptRow: View {
     @State private var draftIssue: String?
     @State private var recoveredDraft = false
     @State private var editLifecycle = 0
-    @State private var confirmingDiscard = false
     @State private var retryingDraft = false
-    @State private var characterLinksEntry: ScriptEntry?
-    @State private var characterLinksContext = 0
+    private struct CharacterLinksRequest: Identifiable {
+        let id = UUID()
+        let entry: ScriptEntry
+        let navigationContext: Int
+    }
+    private struct DraftReviewRequest: Identifiable {
+        let id = UUID()
+        let record: LocalEditorDraft
+    }
+    @State private var characterLinksRequest: CharacterLinksRequest?
+    @State private var draftReviewRequest: DraftReviewRequest?
     @FocusState private var isFocused: Bool
     private var isEditing: Bool { editingID == entry.id }
     private var start: Int { store.project.startMs(of: entry.id) }
@@ -192,7 +200,7 @@ private struct ScriptRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
             VStack(spacing: 5) {
-                DurationPill(milliseconds: entry.ownedDurationMs, editable: store.lockedByOther(entry.id) == nil, minimumMilliseconds: direction ? 0 : max(1, entry.words.count)) { store.setDuration(entry.id, seconds: Double($0) / 1000) }
+                DurationPill(milliseconds: entry.ownedDurationMs, editable: store.lockedByOther(entry.id) == nil, minimumMilliseconds: direction ? 0 : max(1, entry.words.count), helpText: direction ? "Adds time to this direction’s action slot." : "Sets this dialogue line’s owned time. Its words must fit within this duration.") { store.setDuration(entry.id, seconds: Double($0) / 1000) }
                 Text(ScrivFormat.time(start)).font(.system(size: compact ? 11 : 13, design: .rounded)).foregroundStyle(.secondary)
             }.frame(width: compact ? 65 : 80).padding(.top, 2)
             Color.clear.frame(width: compact ? 12 : ScrivTheme.scriptGutter - 80)
@@ -220,22 +228,22 @@ private struct ScriptRow: View {
                             }
                         }
                         .accessibilityLabel(direction ? "Direction text" : "Dialogue text")
-                    if let draftIssue {
-                        Text(draftIssue).font(.system(size: 11)).foregroundStyle(.red).textSelection(.enabled)
+                    if recoveredDraft {
+                        ScrivNotice(tone: .warning, title: draft == entry.text ? "Recovery copy saved on this Mac" : "Recovered local draft · Not uploaded", message: "Review the current saved line beside your draft before applying it. Keeping it for later leaves the saved script unchanged.")
+                    } else if let draftIssue {
+                        ScrivNotice(tone: .error, title: "Draft not applied", message: draftIssue)
                     }
-                    if recoveredDraft, let record = draftRecord {
-                        Text("Recovered local draft · source revision \(record.sourceRevision). Review before applying; this text has not been uploaded.")
-                            .font(.system(size: 11)).foregroundStyle(.orange)
+                    if draftNeedsRebase && !recoveredDraft {
+                        ScrivNotice(tone: .warning, title: "The saved line changed", message: "Review your draft against the current line before applying. Current timing will be kept.")
                     }
-                    if draftNeedsRebase {
-                        Text("Current saved line: \(entry.text)").font(.system(size: 11)).foregroundStyle(.secondary).textSelection(.enabled)
-                        Button("Use current line as base for this draft") { rebaseDraft() }.font(.system(size: 11))
-                        Text("Keeps current timing; character links in replaced text will need review.").font(.system(size: 10)).foregroundStyle(.secondary)
-                    }
-                    HStack {
-                        Button(recoveredDraft || draftIssue != nil ? "Retry / apply draft" : "Finish") { retryAndFinish() }
-                            .disabled(retryingDraft || draftNeedsRebase)
-                        Button("Discard local draft…", role: .destructive) { confirmingDiscard = true }
+                    HStack(spacing: 12) {
+                        if hasPendingDraft && (recoveredDraft || draftIssue != nil || draftNeedsRebase) {
+                            Button("Review local draft…") { presentDraftReview() }.buttonStyle(.borderedProminent)
+                            Button("Keep for later") { detachEditingSession() }
+                        } else {
+                            Button("Finish") { retryAndFinish() }.disabled(retryingDraft)
+                            if hasPendingDraft { Button("Review pending draft…") { presentDraftReview() } }
+                        }
                     }.font(.system(size: 11))
                 } else if !entry.text.isEmpty {
                     LinkedScriptText(text: entry.text, characters: store.project.characters, characterLinks: entry.characterLinks ?? CharacterMentions.suggestions(in: entry.text, characters: store.project.characters), size: compact ? ScrivTheme.compactBodySize : ScrivTheme.scriptBodySize, direction: direction, color: rowColor,
@@ -278,11 +286,21 @@ private struct ScriptRow: View {
             Button("Move down", systemImage: "arrow.down") { store.moveEntry(entry.id, offset: 1) }.disabled(store.lockedByOther(entry.id) != nil)
             Button("Delete entry", systemImage: "trash", role: .destructive) { store.deleteEntry(entry.id) }.disabled(store.lockedByOther(entry.id) != nil)
         }
+        .onAppear { consumeRequestedEditing() }
+        .onChange(of: store.requestedEntryEditingID) { _, _ in consumeRequestedEditing() }
         .onDisappear { cancelAcquisition(); detachEditingSession() }
-        .confirmationDialog("Discard this local draft? The saved script will not change.", isPresented: $confirmingDiscard, titleVisibility: .visible) {
-            Button("Discard local draft", role: .destructive) { discardDraft() }
+        .sheet(item: $characterLinksRequest) { request in
+            CharacterLinksEditor(entry: request.entry, navigationContext: request.navigationContext).environmentObject(store)
         }
-        .sheet(item: $characterLinksEntry) { CharacterLinksEditor(entry: $0, navigationContext: characterLinksContext).environmentObject(store) }
+        .sheet(item: $draftReviewRequest, onDismiss: {
+            // Dismissing a review is Keep for later, never an implicit apply.
+            if recoveredDraft && editingSessionActive { detachEditingSession() }
+        }) { request in
+            RecoveredDraftView(record: draftRecord ?? request.record, currentEntry: entry, lineLabel: draftLineLabel,
+                               recovered: recoveredDraft, needsRebase: draftNeedsRebase, issue: draftIssue, applying: retryingDraft,
+                               onKeep: { draftReviewRequest = nil; detachEditingSession() },
+                               onRebase: rebaseDraft, onApply: retryAndFinish, onDiscard: discardDraft)
+        }
         .onReceive(NotificationCenter.default.publisher(for: .scrivFinishEditing)) { _ in finishEdit() }
         .onChange(of: store.selectedEntryID) { _, id in
             if id != entry.id { cancelAcquisition(); if isEditing { finishEdit() } }
@@ -336,8 +354,13 @@ private struct ScriptRow: View {
     private func reviewCharacterLinks() {
         finishEdit()
         guard !editingSessionActive else { return }
-        characterLinksContext = store.navigationContext
-        characterLinksEntry = store.project.entries.first { $0.id == entry.id }
+        guard let current = store.project.entries.first(where: { $0.id == entry.id }) else { return }
+        characterLinksRequest = CharacterLinksRequest(entry: current, navigationContext: store.navigationContext)
+    }
+    private func consumeRequestedEditing() {
+        guard store.requestedEntryEditingID == entry.id else { return }
+        store.requestedEntryEditingID = nil
+        beginEdit()
     }
     private func beginEdit() {
         guard !acquiring, !isEditing, store.lockedByOther(entry.id) == nil else { return }
@@ -358,11 +381,24 @@ private struct ScriptRow: View {
                 draftRecord = recovered.draft; draft = recovered.draft.text; recoveredDraft = recovered.recovered
                 draftIssue = nil; editContext = context; editLifecycle = store.editorLifecycleContext
                 editingSessionActive = true; editingID = entry.id; isFocused = true
+                if recovered.recovered { draftReviewRequest = DraftReviewRequest(record: recovered.draft) }
             } catch { store.endEdit(entry.id,context:context); store.errorMessage = error.localizedDescription }
         }
     }
     private func cancelAcquisition() {
         acquisitionID = nil; editAcquisition?.cancel(); editAcquisition = nil; acquiring = false
+    }
+    private var hasPendingDraft: Bool { recoveredDraft || draftIssue != nil || draftRecord.map { $0.text != entry.text } == true }
+    private var draftLineLabel: String {
+        let index = (store.sceneEntries.firstIndex { $0.id == entry.id } ?? 0) + 1
+        return String(format: "Line %02d", index) + " · " + (direction ? "Direction" : store.project.character(entry.characterId)?.name ?? "Dialogue")
+    }
+    private func presentDraftReview() {
+        guard let record = draftRecord else { return }
+        editFlush?.cancel(); editFlush = nil
+        // While reviewing, native edit callbacks must not autosave behind the comparison.
+        recoveredDraft = true
+        draftReviewRequest = DraftReviewRequest(record: record)
     }
     private var draftNeedsRebase: Bool { draftRecord?.needsRebase(current:entry,epoch:store.editorDraftEpoch) ?? false }
     private func preserveNativeEdit(_ edit: CharacterTextEdit) -> Bool {
@@ -423,7 +459,7 @@ private struct ScriptRow: View {
     }
     private func detachEditingSession() {
         guard editingSessionActive else { return }
-        editingSessionActive = false; editFlush?.cancel(); editFlush = nil
+        editingSessionActive = false; editFlush?.cancel(); editFlush = nil; draftReviewRequest = nil
         if let editContext { store.endEdit(entry.id, context: editContext) }
         editContext = nil
         if editingID == entry.id { editingID = nil }; isFocused = false
@@ -431,7 +467,7 @@ private struct ScriptRow: View {
     private func finishEdit() {
         guard editingSessionActive else { return }
         editFlush?.cancel(); editFlush = nil
-        guard !recoveredDraft else { draftIssue = "Review the recovered draft, then choose Retry / apply draft. It remains saved locally."; return }
+        guard !recoveredDraft else { draftIssue = "Review the recovered draft, then choose Apply reviewed draft. It remains saved locally."; return }
         // Validation failure leaves both the editor and the exact local draft
         // open. Forced navigation may detach it, but never deletes its journal.
         guard applyDraft() else { return }

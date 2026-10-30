@@ -9,6 +9,7 @@ var targets: [Target] = [
 #if os(macOS)
 products.append(.executable(name: "Scriv", targets: ["ScrivApp"]))
 targets.append(.executableTarget(name: "ScrivApp", dependencies: ["ScrivCore"], resources: [.process("Resources")]))
+targets.append(.testTarget(name: "ScrivAppTests", dependencies: ["ScrivApp", "ScrivCore"]))
 #endif
 
 let package = Package(
