@@ -17,6 +17,13 @@ for f in files:
     assert not re.search(r'^\s*import\s+(SwiftUI|AppKit)\b',text,re.M), f
     assert not re.search(r'\b(UIHostingController|NSHostingView|NSViewRepresentable|UIViewRepresentable)\b',text),f
 project=(p/'ScrivUIKit.xcodeproj/project.pbxproj').read_text()
+# The local package must not fall back to SwiftPM's older iOS/Catalyst defaults.
+package = Path('apps/mac/Package.swift').read_text()
+assert '.macOS(.v14)' in package
+assert '.iOS(.v17)' in package
+assert '.macCatalyst(.v17)' in package
+assert set(re.findall(r'"IPHONEOS_DEPLOYMENT_TARGET" = "([^";]+)";', project)) == {'17.0'}
+assert set(re.findall(r'"MACOSX_DEPLOYMENT_TARGET" = "([^";]+)";', project)) == {'14.0'}
 assert 'PBXFileSystemSynchronizedRootGroup' in project
 assert '../mac/Sources/ScrivApp/App.swift' not in project
 assert 'Views/WorkspaceView.swift' not in project

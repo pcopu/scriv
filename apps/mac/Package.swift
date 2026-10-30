@@ -14,7 +14,7 @@ targets.append(.testTarget(name: "ScrivAppTests", dependencies: ["ScrivApp", "Sc
 
 let package = Package(
     name: "Scriv",
-    platforms: [.macOS(.v14)],
+    platforms: [.macOS(.v14), .iOS(.v17), .macCatalyst(.v17)],
     products: products,
     targets: targets,
     swiftLanguageVersions: [.v5]
