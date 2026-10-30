@@ -160,52 +160,113 @@ private struct ManualWordTimingStrip: View {
     private var selected: TimedWord? { words.first { $0.id == selectedID } }
     var body: some View {
         GeometryReader { proxy in
-            let width = proxy.size.width
-            ZStack(alignment: .topLeading) {
-                Canvas { context, size in
-                    var ticks = Path()
-                    ticks.move(to: CGPoint(x: 0, y: 45)); ticks.addLine(to: CGPoint(x: size.width, y: 45))
-                    for index in 0...10 {
-                        let x = CGFloat(index) / 10 * size.width
-                        ticks.move(to: CGPoint(x: x, y: 45)); ticks.addLine(to: CGPoint(x: x, y: index.isMultiple(of: 5) ? 54 : 51))
-                    }
-                    context.stroke(ticks, with: .color(ScrivTheme.secondary.opacity(0.35)), lineWidth: 0.7)
-                }.accessibilityHidden(true)
-                ForEach(words) { word in
-                    Button { select(word.id) } label: {
-                        RoundedRectangle(cornerRadius: 3)
-                            .fill(word.id == selectedID ? ScrivTheme.accent.opacity(0.23) : ScrivTheme.secondary.opacity(0.13))
-                            .frame(width: max(2, x(word.endMs, width: width) - x(word.startMs, width: width) - 2), height: 17)
-                    }.buttonStyle(.plain).offset(x: x(word.startMs, width: width), y: 19)
-                        .accessibilityLabel("Select “" + word.text + "”")
-                        .accessibilityValue(PreciseTimingInput.seconds(word.startMs) + " to " + PreciseTimingInput.seconds(word.endMs) + " seconds")
-                }
-                if let playheadMs { TimingPlayhead().frame(width: 8, height: 51).offset(x: x(playheadMs, width: width) - 4, y: 5) }
-                if let selected {
-                    handle(word: selected, isStart: true, width: width)
-                    handle(word: selected, isStart: false, width: width)
-                }
-                HStack {
-                    Text("0.0")
-                    Spacer()
-                    Text(String(format: "%.1f s", Double(durationMs) / 1000))
-                }.font(.system(size: 10)).monospacedDigit().foregroundStyle(.secondary).offset(y: 57)
-            }.coordinateSpace(name: coordinateSpace)
+            strip(width: proxy.size.width)
         }
     }
-    private func x(_ milliseconds: Int, width: CGFloat) -> CGFloat { width * CGFloat(milliseconds) / CGFloat(max(1, durationMs)) }
+
+    // Keep each SwiftUI expression small enough for native debug/release type
+    // checking. These helpers preserve the same overlay order and geometry.
+    private func strip(width: CGFloat) -> some View {
+        ZStack(alignment: .topLeading) {
+            ruler
+            wordBlocks(width: width)
+            playheadMarker(width: width)
+            selectedHandles(width: width)
+            endpointLabels
+        }.coordinateSpace(name: coordinateSpace)
+    }
+
+    private var ruler: some View {
+        Canvas { context, size in
+            var ticks = Path()
+            ticks.move(to: CGPoint(x: 0, y: 45))
+            ticks.addLine(to: CGPoint(x: size.width, y: 45))
+            for index in 0...10 {
+                let tickX: CGFloat = CGFloat(index) / CGFloat(10) * size.width
+                let bottom: CGFloat = index.isMultiple(of: 5) ? 54 : 51
+                ticks.move(to: CGPoint(x: tickX, y: 45))
+                ticks.addLine(to: CGPoint(x: tickX, y: bottom))
+            }
+            let tickColor: Color = ScrivTheme.secondary.opacity(0.35)
+            context.stroke(ticks, with: .color(tickColor), lineWidth: 0.7)
+        }.accessibilityHidden(true)
+    }
+
+    private func wordBlocks(width: CGFloat) -> some View {
+        ForEach(words) { word in
+            wordBlock(word, width: width)
+        }
+    }
+
+    private func wordBlock(_ word: TimedWord, width: CGFloat) -> some View {
+        let startX: CGFloat = x(word.startMs, width: width)
+        let endX: CGFloat = x(word.endMs, width: width)
+        let blockWidth: CGFloat = max(CGFloat(2), endX - startX - CGFloat(2))
+        let fill: Color = word.id == selectedID ? ScrivTheme.accent.opacity(0.23) : ScrivTheme.secondary.opacity(0.13)
+        let timing: String = PreciseTimingInput.seconds(word.startMs) + " to " + PreciseTimingInput.seconds(word.endMs) + " seconds"
+        return Button { select(word.id) } label: {
+            RoundedRectangle(cornerRadius: 3)
+                .fill(fill)
+                .frame(width: blockWidth, height: 17)
+        }
+        .buttonStyle(.plain)
+        .offset(x: startX, y: 19)
+        .accessibilityLabel("Select “" + word.text + "”")
+        .accessibilityValue(timing)
+    }
+
+    @ViewBuilder
+    private func playheadMarker(width: CGFloat) -> some View {
+        if let playheadMs {
+            TimingPlayhead().frame(width: 8, height: 51)
+                .offset(x: x(playheadMs, width: width) - CGFloat(4), y: 5)
+        }
+    }
+
+    @ViewBuilder
+    private func selectedHandles(width: CGFloat) -> some View {
+        if let selected {
+            handle(word: selected, isStart: true, width: width)
+            handle(word: selected, isStart: false, width: width)
+        }
+    }
+
+    private var endpointLabels: some View {
+        HStack {
+            Text("0.0")
+            Spacer()
+            Text(String(format: "%.1f s", Double(durationMs) / 1000))
+        }
+        .font(.system(size: 10))
+        .monospacedDigit()
+        .foregroundStyle(.secondary)
+        .offset(y: 57)
+    }
+
+    private func x(_ milliseconds: Int, width: CGFloat) -> CGFloat {
+        width * CGFloat(milliseconds) / CGFloat(max(1, durationMs))
+    }
+
     private func handle(word: TimedWord, isStart: Bool, width: CGFloat) -> some View {
-        Rectangle().fill(ScrivTheme.accent).frame(width: 3, height: 23)
-            .frame(width: 18, height: 35).contentShape(Rectangle())
-            .offset(x: x(isStart ? word.startMs : word.endMs, width: width) - 9, y: 10)
-            .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .named(coordinateSpace)).onChanged { value in
-                let time = Int((min(1, max(0, value.location.x / max(1, width))) * CGFloat(durationMs)).rounded())
+        let edgeMs: Int = isStart ? word.startMs : word.endMs
+        let horizontalPosition: CGFloat = x(edgeMs, width: width) - CGFloat(9)
+        let label: String = (isStart ? "Start of “" : "End of “") + word.text + "”"
+        let drag = DragGesture(minimumDistance: 0, coordinateSpace: .named(coordinateSpace))
+            .onChanged { value in
+                let fraction: CGFloat = value.location.x / max(CGFloat(1), width)
+                let boundedFraction: CGFloat = min(CGFloat(1), max(CGFloat(0), fraction))
+                let time: Int = Int((boundedFraction * CGFloat(durationMs)).rounded())
                 adjust(word: word, isStart: isStart, to: time)
-            })
-            .accessibilityLabel((isStart ? "Start of “" : "End of “") + word.text + "”")
-            .accessibilityValue(PreciseTimingInput.seconds(isStart ? word.startMs : word.endMs) + " seconds")
+            }
+        return Rectangle().fill(ScrivTheme.accent).frame(width: 3, height: 23)
+            .frame(width: 18, height: 35).contentShape(Rectangle())
+            .offset(x: horizontalPosition, y: 10)
+            .gesture(drag)
+            .accessibilityLabel(label)
+            .accessibilityValue(PreciseTimingInput.seconds(edgeMs) + " seconds")
             .accessibilityAdjustableAction { direction in
-                adjust(word: word, isStart: isStart, to: (isStart ? word.startMs : word.endMs) + (direction == .increment ? 100 : -100))
+                let delta: Int = direction == .increment ? 100 : -100
+                adjust(word: word, isStart: isStart, to: edgeMs + delta)
             }
     }
     private func adjust(word: TimedWord, isStart: Bool, to time: Int) {
