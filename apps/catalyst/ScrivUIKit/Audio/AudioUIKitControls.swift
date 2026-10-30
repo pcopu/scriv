@@ -104,7 +104,7 @@ final class AudioTimingNotice: UIView {
 
 /// Draws measured, decoded PCM peaks only. Zero samples remain a flat baseline.
 /// A trim selects source recording time, never scene placement time.
-final class MeasuredAudioWaveformView: UIView, UIGestureRecognizerDelegate {
+final class MeasuredAudioWaveformView: UIView {
     var peaks: [Float] = [] { didSet { setNeedsDisplay() } }
     var sourceDurationMs = 1 { didSet { setNeedsDisplay() } }
     var trim: ClosedRange<Int>? { didSet { updateAccessibility(); setNeedsDisplay() } }
@@ -118,7 +118,7 @@ final class MeasuredAudioWaveformView: UIView, UIGestureRecognizerDelegate {
     override init(frame: CGRect) {
         super.init(frame: frame); backgroundColor = .clear; isOpaque = false; isAccessibilityElement = true
         accessibilityLabel = "Measured audio waveform"
-        drag.delegate = self; drag.maximumNumberOfTouches = 1; addGestureRecognizer(drag)
+        drag.maximumNumberOfTouches = 1; addGestureRecognizer(drag)
     }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init") }
     override func layoutSubviews() { super.layoutSubviews(); setNeedsDisplay() }
@@ -157,7 +157,8 @@ final class MeasuredAudioWaveformView: UIView, UIGestureRecognizerDelegate {
         if let time = playheadMs, time >= 0, time <= sourceDurationMs { drawAudioPlayhead(context, x: x(time), top: 2, bottom: bounds.maxY - 1) }
     }
     private func x(_ time: Int) -> CGFloat { plot.minX + plot.width * CGFloat(time) / CGFloat(max(1, sourceDurationMs)) }
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard gestureRecognizer is UIPanGestureRecognizer else { return super.gestureRecognizerShouldBegin(gestureRecognizer) }
         guard let trim, onTrimChanged != nil else { return false }
         let location = gestureRecognizer.location(in: self).x
         draggingStart = abs(location - x(trim.lowerBound)) <= abs(location - x(trim.upperBound))
@@ -194,7 +195,7 @@ private func drawAudioPlayhead(_ context: CGContext, x: CGFloat, top: CGFloat, b
     context.move(to: CGPoint(x: x - 4, y: top)); context.addLine(to: CGPoint(x: x + 4, y: top)); context.addLine(to: CGPoint(x: x, y: top + 7)); context.closePath(); context.fillPath()
 }
 
-final class ManualWordTimelineView: UIView, UIGestureRecognizerDelegate {
+final class ManualWordTimelineView: UIView {
     var words: [TimedWord] = [] { didSet { setNeedsDisplay() } }
     var selectedID = "" { didSet { setNeedsDisplay() } }
     var durationMs = 1 { didSet { setNeedsDisplay() } }
@@ -207,7 +208,7 @@ final class ManualWordTimelineView: UIView, UIGestureRecognizerDelegate {
     override init(frame: CGRect) {
         super.init(frame: frame); isOpaque = false; backgroundColor = .clear
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped(_:))))
-        pan.delegate = self; pan.maximumNumberOfTouches = 1; addGestureRecognizer(pan)
+        pan.maximumNumberOfTouches = 1; addGestureRecognizer(pan)
         accessibilityLabel = "Manual word timing overview"; isAccessibilityElement = true
         accessibilityHint = "Choose a word in the word buttons, then edit its Start and End fields."
     }
@@ -245,7 +246,8 @@ final class ManualWordTimelineView: UIView, UIGestureRecognizerDelegate {
         guard (10...44).contains(location.y) else { return }
         if let word = words.first(where: { location.x >= x($0.startMs) && location.x <= x($0.endMs) }) { onSelect?(word.id) }
     }
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard gestureRecognizer is UIPanGestureRecognizer else { return super.gestureRecognizerShouldBegin(gestureRecognizer) }
         guard let word = selected else { return false }
         let location = gestureRecognizer.location(in: self).x
         draggingStart = abs(location - x(word.startMs)) <= abs(location - x(word.endMs))

@@ -11,6 +11,14 @@ import ScrivCore
 
 @MainActor
 final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresentationContextProviding {
+    private static var signInDeviceLabel: String {
+        #if targetEnvironment(macCatalyst)
+        // A generic session label avoids exporting a personal device name.
+        return "Mac"
+        #else
+        return String((Host.current().localizedName ?? "Mac").prefix(120))
+        #endif
+    }
     @Published private(set) var account: CloudUser?
     @Published private(set) var teams: [CloudTeam] = []
     @Published private(set) var projects: [CloudProject] = []
@@ -181,7 +189,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         guard let verifier = emailVerifier, let challengeID = emailSignIn.challengeID else { cancelEmailSignIn(); return }
         do {
             struct Response: Decodable { let token: String; let expiresAt: Int64; let user: CloudUser }
-            let result: Response = try await emailRequest("/auth/email/verify",body:.object(["challengeId":.string(challengeID),"code":.string(cleanCode),"codeVerifier":.string(verifier),"deviceName":.string(String((Host.current().localizedName ?? "Mac").prefix(120)))]))
+            let result: Response = try await emailRequest("/auth/email/verify",body:.object(["challengeId":.string(challengeID),"code":.string(cleanCode),"codeVerifier":.string(verifier),"deviceName":.string(Self.signInDeviceLabel)]))
             guard isContextCurrent() else { if emailSignIn.operationID == operation { cancelEmailSignIn() }; return }
             guard isCurrentEmailOperation(operation,server:server,lifecycle:lifecycle,previousToken:previousToken) else { return }
             guard !result.token.isEmpty, result.token.utf8.count <= 4096, !result.user.id.isEmpty, result.user.id.utf8.count <= 256,
@@ -226,7 +234,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         let values = URLComponents(url: callback, resolvingAgainstBaseURL: false)?.queryItems ?? []
         guard callback.scheme == "scriv", callback.host == "auth", callback.path == "/callback", values.first(where: { $0.name == "state" })?.value == state, let code = values.first(where: { $0.name == "code" })?.value else { throw ScrivError.permission("Sign-in callback did not match this Mac's request.") }
         struct Exchange: Decodable { var token: String; var user: CloudUser }
-        let result: Exchange = try await request("/auth/exchange", method: "POST", body: .object(["code":.string(code),"codeVerifier":.string(verifier),"deviceName":.string(Host.current().localizedName ?? "Mac")]))
+        let result: Exchange = try await request("/auth/exchange", method: "POST", body: .object(["code":.string(code),"codeVerifier":.string(verifier),"deviceName":.string(Self.signInDeviceLabel)]))
         guard baseURL == loginServer, generation == loginGeneration, authAttemptID == attempt, account == nil, isContextCurrent(), !Task.isCancelled else { throw CancellationError() }
         try KeychainToken.write(result.token, account: loginServer.absoluteString)
         disconnect(); token = result.token; account = result.user; status = "Signed in"; notify()

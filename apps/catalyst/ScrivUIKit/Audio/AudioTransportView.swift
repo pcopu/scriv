@@ -7,7 +7,7 @@ import ScrivCore
 final class AudioTransportView: UIView {
     private let store: WorkspaceStore
     private let compact: Bool
-    private let play = UIButton(type: .system), previous = UIButton(type: .system), next = UIButton(type: .system), mute = UIButton(type: .system)
+    private let play = UIButton(type: .system), previous = UIButton(type: .system), nextButton = UIButton(type: .system), mute = UIButton(type: .system)
     private let time = ScrivUIKitTheme.label("", size: 12, weight: .medium, lines: 1)
     private let seek = UISlider(), volume = UISlider()
     private var subscription: AnyCancellable?
@@ -16,7 +16,7 @@ final class AudioTransportView: UIView {
         self.store = store; self.compact = compact; super.init(frame: .zero)
         backgroundColor = ScrivUIKitTheme.inset.withAlphaComponent(0.5); layer.cornerRadius = 11; layer.borderWidth = 0.5
         configureButton(previous, symbol: "backward.end.fill", label: "Previous image") { [weak self] in self?.previousImage() }
-        configureButton(next, symbol: "forward.end.fill", label: "Next image") { [weak self] in self?.nextImage() }
+        configureButton(nextButton, symbol: "forward.end.fill", label: "Next image") { [weak self] in self?.nextImage() }
         configureButton(play, symbol: "play.fill", label: "Play scene") { [weak self] in self?.store.togglePlayback() }
         play.backgroundColor = ScrivUIKitTheme.accent; play.tintColor = .white; play.layer.cornerRadius = 20
         NSLayoutConstraint.activate([play.widthAnchor.constraint(equalToConstant: 40), play.heightAnchor.constraint(equalToConstant: 40)])
@@ -29,7 +29,7 @@ final class AudioTransportView: UIView {
         volume.widthAnchor.constraint(equalToConstant: compact ? 55 : 70).isActive = true
         time.font = .monospacedDigitSystemFont(ofSize: compact ? 11 : 12, weight: .medium)
         time.setContentHuggingPriority(.required, for: .horizontal)
-        var views: [UIView] = [previous, play, next]
+        var views: [UIView] = [previous, play, nextButton]
         if !compact { views.append(time) }
         views.append(seek); if compact { views.append(time) }; views += [mute, volume]
         let row = AudioUIKitLayout.row(views, spacing: compact ? 8 : 10)
@@ -53,7 +53,7 @@ final class AudioTransportView: UIView {
         let duration = store.sceneDurationMs
         play.setImage(UIImage(systemName: store.isPlaying ? "pause.fill" : "play.fill"), for: .normal)
         play.accessibilityLabel = store.isPlaying ? "Pause scene" : "Play scene"
-        play.isEnabled = duration > 0; previous.isEnabled = duration > 0; next.isEnabled = duration > 0
+        play.isEnabled = duration > 0; previous.isEnabled = duration > 0; nextButton.isEnabled = duration > 0
         seek.maximumValue = Float(max(1, duration)); seek.isEnabled = duration > 0
         if !seek.isTracking { seek.value = Float(min(Double(duration), max(0, store.playheadMs))) }
         let current = ScrivFormat.time(Int(store.playheadMs))
