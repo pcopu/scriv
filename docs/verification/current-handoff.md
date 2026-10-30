@@ -1,5 +1,7 @@
 # Current Scriv source handoff — 2026-10-29
 
+**Later approved UI/source follow-up:** [2026-10-30 supporting views and durable manual-direction recovery](approved-ui-and-prompt-recovery-20261030.md). Its new verification boundary supersedes the portable counts below; fresh native rebuild and board comparison remain separate gates.
+
 ## Included implementation
 
 The prior completed workspace integration is published at [6a846898](https://github.com/pcopu/scriv/commit/6a846898a13dddf8e2d7b75b48b1ef14a387c1ed): native editing and team controls, collaboration/access fencing, real package-local imported audio and measured waveform playback, project-member mentions, retained image conversations, historical preview/restore, and durable local generation journals with shared metadata. Audio remains local; cloud/P2P media transport remains image-specific.

@@ -8,66 +8,211 @@ struct WordTimingSelection: Identifiable {
     var id: String { word.id }
 }
 
-/// Editorial speech timing only. This never moves an image cut or modifies audio.
+/// Editorial speech timing only. Pending edits to all words are saved together;
+/// switching chips never applies a partial edit or moves image cuts or audio.
 struct WordTimingEditor: View {
     @EnvironmentObject private var store: WorkspaceStore
     @Environment(\.dismiss) private var dismiss
     let selection: WordTimingSelection
-    @State private var start: String
-    @State private var end: String
+    @State private var selectedWordID: String
+    @State private var drafts: [String: WordTimingDraft]
     @State private var ready = false
+    @State private var leaseResolved = false
     @State private var validation: String?
     init(selection: WordTimingSelection) {
         self.selection = selection
-        _start = State(initialValue: String(format: "%.3f", Double(selection.word.startMs) / 1000))
-        _end = State(initialValue: String(format: "%.3f", Double(selection.word.endMs) / 1000))
+        _selectedWordID = State(initialValue: selection.word.id)
+        _drafts = State(initialValue: Dictionary(uniqueKeysWithValues: selection.entry.words.map { ($0.id, WordTimingDraft(word: $0)) }))
     }
+    private var selectedWord: TimedWord? { selection.entry.words.first { $0.id == selectedWordID } }
+    private var playhead: Int? {
+        let relative = Int(store.playheadMs) - store.project.startMs(of: selection.entry.id)
+        return (0...selection.entry.ownedDurationMs).contains(relative) ? relative : nil
+    }
+    private var previews: [TimedWord] {
+        selection.entry.words.compactMap { word in
+            guard let draft = drafts[word.id], let range = draft.range(maximum: selection.entry.ownedDurationMs) else { return nil }
+            var preview = word; preview.startMs = range.lowerBound; preview.endMs = range.upperBound
+            return preview
+        }
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Word timing").font(.title2.weight(.semibold))
-            Text("“\(selection.word.text)”").font(.title3)
-            Text("Set when this word happens, relative to its dialogue entry. Image cuts and imported recordings stay unchanged.")
-                .font(.callout).foregroundStyle(.secondary)
-            Form {
-                TextField("Start (seconds)", text: $start)
-                TextField("End (seconds)", text: $end)
-            }.textFieldStyle(.roundedBorder)
-            Text("Entry length: \(ScrivFormat.duration(selection.entry.ownedDurationMs)). Trim this word or its neighbors to create room before dragging. Words stay in source order without overlapping.")
-                .font(.caption).foregroundStyle(.secondary)
-            Text("Manual editorial timing — not speech recognition or audio alignment.").font(.caption).foregroundStyle(.secondary)
-            if let validation { Text(validation).font(.caption).foregroundStyle(.red) }
-            HStack {
-                if !ready { ProgressView().controlSize(.small); Text("Acquiring edit lease…").font(.caption) }
-                Spacer()
-                Button("Cancel") { dismiss() }.keyboardShortcut(.cancelAction)
-                Button("Save timing", action: save).buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction).disabled(!ready)
+        VStack(alignment: .leading, spacing: 18) {
+            Text("Word timing").font(.system(size: 19, weight: .semibold))
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal) {
+                    HStack(spacing: 8) {
+                        ForEach(selection.entry.words) { word in
+                            Button { selectedWordID = word.id } label: {
+                                Text(word.text).font(.system(size: 13, weight: word.id == selectedWordID ? .medium : .regular))
+                                    .foregroundStyle(word.id == selectedWordID ? Color.white : ScrivTheme.ink)
+                                    .padding(.horizontal, 14).frame(height: 35)
+                                    .background(word.id == selectedWordID ? ScrivTheme.accent : ScrivTheme.inset, in: RoundedRectangle(cornerRadius: 7))
+                            }.buttonStyle(.plain).id(word.id)
+                                .accessibilityLabel("Edit timing for “" + word.text + "”")
+                                .accessibilityAddTraits(word.id == selectedWordID ? [.isSelected] : [])
+                                .accessibilityIdentifier("word-timing-chip-" + word.id)
+                        }
+                    }.padding(.vertical, 1)
+                }.scrollIndicators(.automatic)
+                    .onAppear { proxy.scrollTo(selectedWordID, anchor: .center) }
+                    .onChange(of: selectedWordID) { _, id in withAnimation(.easeInOut(duration: 0.15)) { proxy.scrollTo(id, anchor: .center) } }
+            }.frame(height: 50)
+            ManualWordTimingStrip(words: previews, selectedID: selectedWordID, durationMs: selection.entry.ownedDurationMs, playheadMs: playhead,
+                select: { selectedWordID = $0 }, change: changeSelectedRange)
+                .frame(height: 70)
+            if let word = selectedWord {
+                HStack(alignment: .top, spacing: 24) {
+                    PreciseSecondsField(title: "Start", accessibilityName: "Start of “" + word.text + "”", text: draftBinding(\.start), maximumMs: selection.entry.ownedDurationMs, identifier: "word-timing-start")
+                    Divider().frame(height: 56)
+                    PreciseSecondsField(title: "End", accessibilityName: "End of “" + word.text + "”", text: draftBinding(\.end), maximumMs: selection.entry.ownedDurationMs, minimumMs: 1, identifier: "word-timing-end")
+                }
             }
-        }.padding(24).frame(width: 470)
+            Text("Relative to this dialogue · \(PreciseTimingInput.seconds(selection.entry.ownedDurationMs)) s")
+                .font(.system(size: 11)).foregroundStyle(.secondary)
+            if let validation { TimingValidationNotice(message: validation) }
+            if !leaseResolved {
+                HStack(spacing: 8) { ProgressView().controlSize(.small); Text("Acquiring edit lease…").font(.system(size: 11)).foregroundStyle(.secondary) }
+            }
+            Divider()
+            HStack(alignment: .center, spacing: 10) {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Image cuts and audio stay unchanged.")
+                    Text("Manual timing, not automatic alignment.").foregroundStyle(.secondary)
+                }.font(.system(size: 11)).fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 5)
+                Button("Cancel") { dismiss() }.keyboardShortcut(.cancelAction).controlSize(.large)
+                Button("Save timing", action: save).buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction).controlSize(.large).disabled(!ready)
+                    .accessibilityIdentifier("word-timing-save")
+            }
+        }.padding(22).frame(width: 500).background(ScrivTheme.panel)
+            .accessibilityIdentifier("word-timing-editor")
             .task {
                 let allowed = await store.beginEdit(selection.entry.id)
                 guard !Task.isCancelled, store.navigationContext == selection.navigationContext, store.selectedSceneID == selection.entry.sceneId else {
                     if allowed { store.endEdit(selection.entry.id, context: selection.navigationContext) }; return
                 }
-                ready = allowed
+                ready = allowed; leaseResolved = true
                 if !allowed { validation = "This line cannot currently be edited. Close and retry when its edit lease is available." }
             }
             .onDisappear { if ready { store.endEdit(selection.entry.id, context: selection.navigationContext) } }
             .onChange(of: store.navigationContext) { _, value in if value != selection.navigationContext { dismiss() } }
             .onChange(of: store.selectedSceneID) { _, value in if value != selection.entry.sceneId { dismiss() } }
     }
+    private func draftBinding(_ path: WritableKeyPath<WordTimingDraft, String>) -> Binding<String> {
+        Binding(get: { drafts[selectedWordID]?[keyPath: path] ?? "" }, set: { value in
+            guard var draft = drafts[selectedWordID] else { return }
+            draft[keyPath: path] = value; drafts[selectedWordID] = draft
+        })
+    }
+    private func changeSelectedRange(_ start: Int, _ end: Int) {
+        drafts[selectedWordID] = WordTimingDraft(start: PreciseTimingInput.seconds(start), end: PreciseTimingInput.seconds(end))
+    }
     private func save() {
-        guard ready, store.navigationContext == selection.navigationContext, store.selectedSceneID == selection.entry.sceneId,
-              let entry = store.project.entries.first(where: { $0.id == selection.entry.id }),
-              let current = entry.words.first(where: { $0.id == selection.word.id }) else { dismiss(); return }
-        guard current == selection.word, entry.ownedDurationMs == selection.entry.ownedDurationMs else {
-            validation = "This word changed while the editor was open. Close and reopen it to review its current timing."; return
+        guard ready, store.navigationContext == selection.navigationContext, store.selectedSceneID == selection.entry.sceneId else { dismiss(); return }
+        guard let entry = store.project.entries.first(where: { $0.id == selection.entry.id }),
+              entry.words == selection.entry.words, entry.ownedDurationMs == selection.entry.ownedDurationMs else {
+            validation = "This dialogue changed while the editor was open. Cancel and reopen Word timing to review its current words and timing."; return
         }
-        guard let startSeconds = Double(start), let endSeconds = Double(end), startSeconds.isFinite, endSeconds.isFinite,
-              startSeconds >= 0, endSeconds > startSeconds, endSeconds <= Double(entry.ownedDurationMs) / 1000 else {
-            validation = "Enter a start and end within the dialogue entry, with end after start."; return
+        var updated: [TimedWord] = []
+        for word in entry.words {
+            guard let range = drafts[word.id]?.range(maximum: entry.ownedDurationMs) else {
+                selectedWordID = word.id
+                validation = "Enter a start and end for “\(word.text)” within this dialogue, with end after start. Times are in seconds."; return
+            }
+            if let previous = updated.last, previous.endMs > range.lowerBound {
+                selectedWordID = word.id
+                validation = "“\(word.text)” would overlap “\(previous.text)”. Shorten the previous word’s end time or move this word’s start later. Select either word above to adjust it; all changes save together."; return
+            }
+            var changed = word
+            changed.startMs = range.lowerBound; changed.endMs = range.upperBound
+            if changed.startMs != word.startMs || changed.endMs != word.endMs { changed.timingSource = .authored }
+            updated.append(changed)
         }
-        if store.setWordTiming(wordId: current.id, startMs: Int((startSeconds * 1000).rounded()), endMs: Int((endSeconds * 1000).rounded())) { dismiss() }
-        else { validation = store.errorMessage ?? "Timing could not be changed. Keep words in order without overlaps." }
+        if updated == entry.words { dismiss(); return }
+        if store.setWordTimings(entryId: entry.id, expectedWords: selection.entry.words, expectedDurationMs: selection.entry.ownedDurationMs, updatedWords: updated) { dismiss() }
+        else { validation = store.errorMessage ?? "Timing could not be changed. Keep words in source order without overlaps, then try again." }
+    }
+}
+
+private struct WordTimingDraft {
+    var start: String
+    var end: String
+    init(word: TimedWord) { start = PreciseTimingInput.seconds(word.startMs); end = PreciseTimingInput.seconds(word.endMs) }
+    init(start: String, end: String) { self.start = start; self.end = end }
+    func range(maximum: Int) -> ClosedRange<Int>? {
+        guard let startMs = PreciseTimingInput.milliseconds(start, maximum: maximum), let endMs = PreciseTimingInput.milliseconds(end, maximum: maximum), endMs > startMs else { return nil }
+        return startMs...endMs
+    }
+}
+
+/// The blocks and highlighted edges come from draft word times; the playhead is
+/// actual scene playback. Dragging adjusts only this word, never audio or images.
+private struct ManualWordTimingStrip: View {
+    let words: [TimedWord]
+    let selectedID: String
+    let durationMs: Int
+    let playheadMs: Int?
+    let select: (String) -> Void
+    let change: (Int, Int) -> Void
+    private let coordinateSpace = "manual-word-timing"
+    private var selected: TimedWord? { words.first { $0.id == selectedID } }
+    var body: some View {
+        GeometryReader { proxy in
+            let width = proxy.size.width
+            ZStack(alignment: .topLeading) {
+                Canvas { context, size in
+                    var ticks = Path()
+                    ticks.move(to: CGPoint(x: 0, y: 45)); ticks.addLine(to: CGPoint(x: size.width, y: 45))
+                    for index in 0...10 {
+                        let x = CGFloat(index) / 10 * size.width
+                        ticks.move(to: CGPoint(x: x, y: 45)); ticks.addLine(to: CGPoint(x: x, y: index.isMultiple(of: 5) ? 54 : 51))
+                    }
+                    context.stroke(ticks, with: .color(ScrivTheme.secondary.opacity(0.35)), lineWidth: 0.7)
+                }.accessibilityHidden(true)
+                ForEach(words) { word in
+                    Button { select(word.id) } label: {
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(word.id == selectedID ? ScrivTheme.accent.opacity(0.23) : ScrivTheme.secondary.opacity(0.13))
+                            .frame(width: max(2, x(word.endMs, width: width) - x(word.startMs, width: width) - 2), height: 17)
+                    }.buttonStyle(.plain).offset(x: x(word.startMs, width: width), y: 19)
+                        .accessibilityLabel("Select “" + word.text + "”")
+                        .accessibilityValue(PreciseTimingInput.seconds(word.startMs) + " to " + PreciseTimingInput.seconds(word.endMs) + " seconds")
+                }
+                if let playheadMs { TimingPlayhead().frame(width: 8, height: 51).offset(x: x(playheadMs, width: width) - 4, y: 5) }
+                if let selected {
+                    handle(word: selected, isStart: true, width: width)
+                    handle(word: selected, isStart: false, width: width)
+                }
+                HStack {
+                    Text("0.0")
+                    Spacer()
+                    Text(String(format: "%.1f s", Double(durationMs) / 1000))
+                }.font(.system(size: 10)).monospacedDigit().foregroundStyle(.secondary).offset(y: 57)
+            }.coordinateSpace(name: coordinateSpace)
+        }
+    }
+    private func x(_ milliseconds: Int, width: CGFloat) -> CGFloat { width * CGFloat(milliseconds) / CGFloat(max(1, durationMs)) }
+    private func handle(word: TimedWord, isStart: Bool, width: CGFloat) -> some View {
+        Rectangle().fill(ScrivTheme.accent).frame(width: 3, height: 23)
+            .frame(width: 18, height: 35).contentShape(Rectangle())
+            .offset(x: x(isStart ? word.startMs : word.endMs, width: width) - 9, y: 10)
+            .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .named(coordinateSpace)).onChanged { value in
+                let time = Int((min(1, max(0, value.location.x / max(1, width))) * CGFloat(durationMs)).rounded())
+                adjust(word: word, isStart: isStart, to: time)
+            })
+            .accessibilityLabel((isStart ? "Start of “" : "End of “") + word.text + "”")
+            .accessibilityValue(PreciseTimingInput.seconds(isStart ? word.startMs : word.endMs) + " seconds")
+            .accessibilityAdjustableAction { direction in
+                adjust(word: word, isStart: isStart, to: (isStart ? word.startMs : word.endMs) + (direction == .increment ? 100 : -100))
+            }
+    }
+    private func adjust(word: TimedWord, isStart: Bool, to time: Int) {
+        // Keep the selected span positive and inside its line. Neighbor conflicts
+        // remain visible and reviewable until the atomic Save timing validation.
+        if isStart { change(min(word.endMs - 1, max(0, time)), word.endMs) }
+        else { change(word.startMs, min(durationMs, max(word.startMs + 1, time))) }
     }
 }
 
@@ -112,7 +257,7 @@ struct WordTimelineBlock: View {
             })
             .contextMenu {
                 Button("Edit word timing…", systemImage: "clock", action: edit).disabled(store.lockedByOther(entry.id) != nil)
-                Button("Play word") { store.seek(toMs: Double(start + word.startMs)) }
+                Button("Play from word") { store.seek(toMs: Double(start + word.startMs)); if !store.isPlaying { store.togglePlayback() } }
             }
             .help("\(word.text) · \(ScrivFormat.time(word.startMs))–\(ScrivFormat.time(word.endMs)) within line. Drag within available gaps; double-click to edit start/end. Image cuts stay fixed.")
             .accessibilityLabel("Word timing: \(word.text)")

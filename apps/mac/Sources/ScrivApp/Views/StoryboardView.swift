@@ -30,7 +30,19 @@ struct StoryboardView: View {
                 Button { store.importImage() } label: { Label("Import image", systemImage: "photo.badge.plus") }.buttonStyle(.bordered)
             }.padding(.horizontal, 22).padding(.top, 14).padding(.bottom, 10)
             if store.sceneCues.isEmpty {
-                EmptyPanel(symbol: "rectangle.stack", title: "Build the scene, one image at a time", message: "Add dialogue or direction, then import or generate an image for the selected moment.")
+                VStack(spacing: 16) {
+                    Image(systemName: "rectangle.stack").font(.system(size: 36, weight: .light)).foregroundStyle(ScrivTheme.accent)
+                    Text("Build the scene, one image at a time").font(.system(size: 23, weight: .semibold))
+                    Text("Start with a script moment, then choose the image that belongs there.")
+                        .font(.system(size: 14)).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                    HStack(spacing: 12) {
+                        Button(store.sceneEntries.isEmpty ? "Write in Script" : "Show script") { store.tab = .script }.buttonStyle(ScrivPrimaryButtonStyle())
+                        Button("Import image…") { store.importImage() }.buttonStyle(ScrivSecondaryButtonStyle())
+                        if store.sceneDurationMs > 0 { Button("Add placement") { store.addCue() }.buttonStyle(ScrivSecondaryButtonStyle()) }
+                    }
+                    Text("Images follow their script sources. Dialogue, direction and imported audio stay intact.")
+                        .font(.system(size: 12)).foregroundStyle(.secondary)
+                }.padding(35).frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ZStack(alignment: .topLeading) {
                     ScrollViewReader { proxy in
@@ -121,10 +133,10 @@ private struct StoryboardRow: View {
                     let cardWidth = max(1, (proxy.size.width - CGFloat(columns - 1) * gap) / CGFloat(columns))
                     let bounds = coverageBounds(entry, cardWidth: cardWidth)
                     DirectionBand(text: entry.text, color: ScrivTheme.color(entry.color), selected: store.selectedEntryID == entry.id) { store.selectEntry(entry.id) }
-                        .frame(width: max(1, bounds.upperBound - bounds.lowerBound), height: 34)
+                        .frame(width: max(1, bounds.upperBound - bounds.lowerBound), height: 48)
                         .offset(x: bounds.lowerBound)
                         .help("\(entry.text) · \(ScrivFormat.time(store.project.startMs(of: entry.id)))–\(ScrivFormat.time(store.project.startMs(of: entry.id) + entry.coverageDurationMs))")
-                }.frame(height: 34)
+                }.frame(height: 48)
             }
         }
     }
@@ -163,6 +175,8 @@ private struct StoryboardCard: View {
     @State private var confirmingRemoval = false
     @State private var choosingImage = false
     @State private var timingEditor: WordTimingSelection?
+    @State private var inspectingImage: ImageInspectionSelection?
+    @State private var anchorEditor: CueAnchorSelection?
     @State private var cutContext: Int?
     private var asset: ImageAsset? { store.project.asset(cue.imageId) }
     private var words: [BoardWord] {
@@ -193,7 +207,7 @@ private struct StoryboardCard: View {
                                 .help("Drag this cut; the next image keeps the remaining time")
                         }
                     }
-                DurationPill(milliseconds: cue.authoredDurationMs ?? cue.durationMs, dark: true, editable: store.lockedByOther(cue.id) == nil, minimumMilliseconds: 1, title: "Authored image coverage") { duration in store.setCueDuration(cueId: cue.id, durationMs: duration) }
+                DurationPill(milliseconds: cue.authoredDurationMs ?? cue.durationMs, dark: true, editable: store.lockedByOther(cue.id) == nil, minimumMilliseconds: 1, title: "Authored image coverage", helpText: "This picture’s forward coverage follows its script source. Overlapping pictures and audio are preserved; playback uses the latest-starting active picture.") { duration in store.setCueDuration(cueId: cue.id, durationMs: duration) }
                     .padding(10)
                     .help("Edit this picture's source-owned forward coverage. Use the right-edge handle only to move a shared cut.")
                 if hovering {
@@ -205,6 +219,11 @@ private struct StoryboardCard: View {
             }
             .onHover { hovering = $0 }
             .contextMenu {
+                if let asset { Button("Inspect image…", systemImage: "arrow.up.left.and.arrow.down.right") { inspectingImage = ImageInspectionSelection(imageID: asset.id, cueID: cue.id) } }
+                Button("Picture source…", systemImage: "link") {
+                    if store.isPlaying { store.togglePlayback() }
+                    anchorEditor = CueAnchorSelection(cue: cue, navigationContext: store.navigationContext)
+                }.disabled(store.lockedByOther(cue.id) != nil)
                 if let asset, store.assetURL(asset) == nil { Button("Fetch image", systemImage: "arrow.down.circle") { store.downloadImage(asset) } }
                 Button("Choose existing image…", systemImage: "photo.on.rectangle") { choosingImage = true }
                 Button("Import image…", systemImage: "photo.badge.plus") { store.importImage(cueId: cue.id) }
@@ -253,6 +272,8 @@ private struct StoryboardCard: View {
         .sheet(isPresented: $choosingImage) {
             ProjectImagePicker(cueID: cue.id, navigationContext: store.navigationContext).environmentObject(store)
         }
+        .sheet(item: $inspectingImage) { ImageDetailSheet(imageID: $0.imageID, cueID: $0.cueID).environmentObject(store) }
+        .sheet(item: $anchorEditor) { CueAnchorEditor(selection: $0).environmentObject(store) }
         .sheet(item: $timingEditor) { WordTimingEditor(selection: $0).environmentObject(store) }
         .confirmationDialog("Remove this image placement?", isPresented: $confirmingRemoval, titleVisibility: .visible) {
             Button("Remove placement", role: .destructive) { store.deleteCue(cue.id) }

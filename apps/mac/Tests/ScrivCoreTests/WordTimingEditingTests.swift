@@ -20,6 +20,65 @@ final class WordTimingEditingTests: XCTestCase {
         XCTAssertEqual(project.audioAssets, original.audioAssets); XCTAssertEqual(project.audioClips, original.audioClips)
         XCTAssertEqual(project.durationMs(of: "s"), original.durationMs(of: "s"))
     }
+    func testReviewedNeighborChangesSaveAtomicallyWithoutChangingImagesOrAudio() throws {
+        var project = fixture()
+        let audioBytes = Data("local recording".utf8), hash = ScrivDigest.sha256(audioBytes)
+        project.audioAssets = [AudioAsset(id: "audio", fileName: hash + ".wav", sha256: hash, byteCount: audioBytes.count, durationMs: 3000, sampleRate: 48_000, channelCount: 1, waveform: [0, 0.4, 0.8, 0], originalName: "Voice.wav")]
+        project.audioClips = [AudioClip(id: "recording", sceneId: "s", entryId: "e", assetId: "audio", sourceStartMs: 100, durationMs: 2500)]
+        let original = project, expected = project.entries[0].words
+        var updated = expected
+        updated[0].endMs = 1200; updated[0].timingSource = .authored
+        updated[1].startMs = 1200; updated[1].timingSource = .authored
+        // Either a stale-neighbor first save or an invalid final batch is never applied.
+        XCTAssertThrowsError(try TimingEngine.setWordTiming(&project, wordId: "w1", startMs: 0, endMs: 1200))
+        XCTAssertEqual(project, original)
+        try TimingEngine.setWordTimings(&project, entryId: "e", expectedWords: expected, expectedDurationMs: 3000, updatedWords: updated)
+        XCTAssertEqual(project.entries[0].words, updated)
+        XCTAssertEqual(project.entries[0].text, original.entries[0].text)
+        XCTAssertEqual(project.cues, original.cues)
+        XCTAssertEqual(project.audioAssets, original.audioAssets)
+        XCTAssertEqual(project.audioClips, original.audioClips)
+        XCTAssertEqual(project.durationMs(of: "s"), original.durationMs(of: "s"))
+        XCTAssertNil(project.entries[0].words[2].timingSource)
+    }
+    func testReviewedTimingRejectsStaleWordsAndDurationWithoutMutation() throws {
+        let snapshot = fixture(); var project = snapshot
+        try TimingEngine.setWordTiming(&project, wordId: "w1", startMs: 100, endMs: 700)
+        let newer = project
+        XCTAssertThrowsError(try TimingEngine.setWordTimings(&project, entryId: "e", expectedWords: snapshot.entries[0].words, expectedDurationMs: 3000, updatedWords: snapshot.entries[0].words))
+        XCTAssertEqual(project, newer)
+        XCTAssertThrowsError(try TimingEngine.setWordTimings(&project, entryId: "e", expectedWords: newer.entries[0].words, expectedDurationMs: 2999, updatedWords: newer.entries[0].words))
+        XCTAssertEqual(project, newer)
+        XCTAssertThrowsError(try TimingEngine.setWordTimings(&project, entryId: "removed", expectedWords: newer.entries[0].words, expectedDurationMs: 3000, updatedWords: newer.entries[0].words))
+        XCTAssertEqual(project, newer)
+    }
+    func testReviewedTimingRejectsOverlapReorderingAndChangedIdentityTransactionally() throws {
+        var project = fixture(); let original = project, expected = project.entries[0].words
+        var overlap = expected; overlap[0].endMs = 1200; overlap[0].timingSource = .authored
+        var identity = expected; identity[1].id = "replacement"
+        var wording = expected; wording[1].text = "replaced"
+        var zeroLength = expected; zeroLength[1].endMs = zeroLength[1].startMs; zeroLength[1].timingSource = .authored
+        var outside = expected; outside[2].endMs = Int.max; outside[2].timingSource = .authored
+        var negative = expected; negative[0].startMs = -1; negative[0].timingSource = .authored
+        let attempts = [overlap, identity, wording, zeroLength, outside, negative, Array(expected.reversed()), Array(expected.dropLast())]
+        for updated in attempts {
+            XCTAssertThrowsError(try TimingEngine.setWordTimings(&project, entryId: "e", expectedWords: expected, expectedDurationMs: 3000, updatedWords: updated))
+            XCTAssertEqual(project, original)
+        }
+    }
+    func testReviewedTimingPreservesAuthoredMarkersAndNoOpSnapshot() throws {
+        var project = fixture()
+        try TimingEngine.setWordTiming(&project, wordId: "w1", startMs: 0, endMs: 600)
+        let original = project, expected = project.entries[0].words
+        var downgrade = expected; downgrade[0].timingSource = nil
+        var unmarkedEdit = expected; unmarkedEdit[1].startMs = 1100
+        for updated in [downgrade, unmarkedEdit] {
+            XCTAssertThrowsError(try TimingEngine.setWordTimings(&project, entryId: "e", expectedWords: expected, expectedDurationMs: 3000, updatedWords: updated))
+            XCTAssertEqual(project, original)
+        }
+        try TimingEngine.setWordTimings(&project, entryId: "e", expectedWords: expected, expectedDurationMs: 3000, updatedWords: expected)
+        XCTAssertEqual(project, original)
+    }
     func testShiftPhrasePreservesDurationsAndActualSourceOrder() throws {
         var project = fixture(); let cues = project.cues
         try TimingEngine.shiftWords(&project, wordIds: ["w1", "w2"], byMs: 500)

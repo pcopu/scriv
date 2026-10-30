@@ -4,9 +4,14 @@ import ScrivCore
 
 /// The item and its edit lease context must enter presentation atomically.
 /// A separate optional context can still be nil when SwiftUI first opens a sheet.
-private struct CharacterEditSelection: Identifiable {
+struct CharacterEditSelection: Identifiable {
     let character: ScriptCharacter
     let navigationContext: Int
+    let isNew: Bool
+
+    init(character: ScriptCharacter, navigationContext: Int, isNew: Bool = false) {
+        self.character = character; self.navigationContext = navigationContext; self.isNew = isNew
+    }
     var id: String { character.id }
 }
 
@@ -66,10 +71,12 @@ struct CharactersView: View {
                 editRequestID = nil
                 if let id, !characters.contains(where: { $0.id == id }) { search = "" }
             }
+            .onAppear { openRequestedCharacter() }
+            .onChange(of: store.characterCreationRequest) { _, _ in openRequestedCharacter() }
             .onDisappear { editRequestID = nil }
             .sheet(item: $editing) { selection in
-                CharacterEditor(character: selection.character, navigationContext: selection.navigationContext).environmentObject(store)
-                    .onDisappear { store.endEdit(selection.character.id, context: selection.navigationContext) }
+                CharacterEditor(character: selection.character, navigationContext: selection.navigationContext, isNew: selection.isNew).environmentObject(store)
+                    .onDisappear { if !selection.isNew { store.endEdit(selection.character.id, context: selection.navigationContext) } }
             }
             .confirmationDialog("Delete \(deleting?.name ?? "character")?", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }), titleVisibility: .visible) {
                 Button("Delete Character", role: .destructive) { if let deleting { store.deleteCharacter(deleting.id) }; deleting = nil }
@@ -112,6 +119,12 @@ struct CharactersView: View {
                 }.font(.system(size: 12)).foregroundStyle(.secondary)
             }
         }
+    }
+    private func openRequestedCharacter() {
+        guard store.characterCreationRequest != nil, editing == nil else { return }
+        editRequestID = nil
+        editing = CharacterEditSelection(character: ScriptCharacter(name: ""), navigationContext: store.navigationContext, isNew: true)
+        store.characterCreationRequest = nil
     }
     private func beginEditing(_ character: ScriptCharacter) {
         guard editRequestID == nil else { return }
@@ -197,58 +210,7 @@ private struct CharacterImageCard: View {
                     .popover(isPresented: $tagsOpen) { CharacterTagsPopover(image: image).environmentObject(store) }
             }
         }.sheet(isPresented: $previewing) {
-            VStack(spacing: 16) {
-                HStack {
-                    Text("\(cue?.label.isEmpty == false ? cue?.label ?? "Image" : "Image") · Version \(image.version)").font(.headline)
-                    Spacer()
-                    if store.assetURL(image) == nil { Button("Fetch image") { store.downloadImage(image) } }
-                    Button("Done") { previewing = false }.keyboardShortcut(.cancelAction)
-                }
-                AssetImageView(url: store.assetURL(image), title: "Character image", fill: false, unavailableText: "Image not on this Mac")
-                if !image.prompt.isEmpty { Text(image.prompt).font(.caption).foregroundStyle(.secondary).lineLimit(3).textSelection(.enabled) }
-            }.padding(20).frame(width: 860, height: 590)
+            ImageDetailSheet(imageID: image.id, cueID: cue?.id).environmentObject(store)
         }
-    }
-}
-
-private struct CharacterEditor: View {
-    @EnvironmentObject private var store: WorkspaceStore
-    @Environment(\.dismiss) private var dismiss
-    @State private var draft: ScriptCharacter
-    @State private var aliases: String
-    let navigationContext: Int
-    init(character: ScriptCharacter, navigationContext: Int) {
-        _draft = State(initialValue: character); _aliases = State(initialValue: character.aliases.joined(separator: ", "))
-        self.navigationContext = navigationContext
-    }
-    var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Edit character").font(.title2.weight(.semibold))
-            Form {
-                TextField("Name", text: $draft.name)
-                TextField("Aliases, separated by commas", text: $aliases)
-                Text("Renaming or removing an alias keeps confirmed script links and authored wording unchanged. New name matches remain suggestions until reviewed.")
-                    .font(.caption).foregroundStyle(.secondary)
-                Picker("Color", selection: $draft.color) {
-                    ForEach(["blue", "teal", "orange", "purple", "coral", "green", "pink"], id: \.self) { color in Text(color.capitalized).tag(color) }
-                }
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Biography").font(.caption).foregroundStyle(.secondary)
-                    TextEditor(text: $draft.biography).font(.body).frame(height: 100).border(ScrivTheme.hairline)
-                }
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Appearance and image direction").font(.caption).foregroundStyle(.secondary)
-                    TextEditor(text: $draft.appearance).font(.body).frame(height: 85).border(ScrivTheme.hairline)
-                }
-            }.formStyle(.grouped)
-            HStack { Spacer(); Button("Cancel") { dismiss() }.keyboardShortcut(.cancelAction); Button("Save") { save() }.buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction).disabled(draft.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) }
-        }.padding(24).frame(width: 540, height: 540)
-            .onChange(of: store.navigationContext) { _, context in if context != navigationContext { dismiss() } }
-    }
-    private func save() {
-        guard store.navigationContext == navigationContext else { dismiss(); return }
-        draft.name = draft.name.trimmingCharacters(in: .whitespacesAndNewlines)
-        draft.aliases = Array(Set(aliases.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty })).sorted()
-        if store.updateCharacter(draft) { dismiss() }
     }
 }
