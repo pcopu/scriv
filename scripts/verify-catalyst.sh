@@ -16,6 +16,15 @@ for f in files:
     text="\n".join(line.split("//",1)[0] for line in f.read_text().splitlines())
     assert not re.search(r'^\s*import\s+(SwiftUI|AppKit)\b',text,re.M), f
     assert not re.search(r'\b(UIHostingController|NSHostingView|NSViewRepresentable|UIViewRepresentable)\b',text),f
+transport = (source/'Audio/AudioTransportView.swift').read_text()
+assert 'nextButton = UIButton' in transport and 'next = UIButton' not in transport
+controls = (source/'Audio/AudioUIKitControls.swift').read_text()
+assert controls.count('override func gestureRecognizerShouldBegin') == 2
+assert controls.count('else { return super.gestureRecognizerShouldBegin(gestureRecognizer) }') == 2
+assert 'UIGestureRecognizerDelegate' not in controls
+cloud = Path('apps/mac/Sources/ScrivApp/Services/CloudClient.swift').read_text()
+assert cloud.count('Host.current()') == 1
+assert cloud.count('"deviceName":.string(Self.signInDeviceLabel)') == 2
 project=(p/'ScrivUIKit.xcodeproj/project.pbxproj').read_text()
 # The local package must not fall back to SwiftPM's older iOS/Catalyst defaults.
 package = Path('apps/mac/Package.swift').read_text()
