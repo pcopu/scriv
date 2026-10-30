@@ -13,6 +13,8 @@ def buildconfigs(name,settings):
  values=[]
  for mode in ['Debug','Release']:
   config=dict(settings);config['SWIFT_OPTIMIZATION_LEVEL']='-Onone' if mode=='Debug' else '-O';config['DEBUG_INFORMATION_FORMAT']='dwarf' if mode=='Debug' else 'dwarf-with-dsym'
+  # Match SwiftPM's Debug active-architecture build; Release stays universal.
+  config['ONLY_ACTIVE_ARCH']='YES' if mode=='Debug' else 'NO'
   if mode=='Debug':config['SWIFT_ACTIVE_COMPILATION_CONDITIONS']='DEBUG $(inherited)';config['ENABLE_TESTABILITY']='YES'
   values.append(add(name+mode,'XCBuildConfiguration',name=mode,buildSettings=config))
  return add(name+'Configs','XCConfigurationList',buildConfigurations=values,defaultConfigurationIsVisible=0,defaultConfigurationName='Release')

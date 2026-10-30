@@ -24,6 +24,13 @@ assert '.iOS(.v17)' in package
 assert '.macCatalyst(.v17)' in package
 assert set(re.findall(r'"IPHONEOS_DEPLOYMENT_TARGET" = "([^";]+)";', project)) == {'17.0'}
 assert set(re.findall(r'"MACOSX_DEPLOYMENT_TARGET" = "([^";]+)";', project)) == {'14.0'}
+# Project, app and tests must agree with SwiftPM's Debug architecture policy.
+configs = re.findall(r'"isa" = "XCBuildConfiguration";\s*"name" = "(Debug|Release)";\s*"buildSettings" = \{(.*?)\n\t\t\t\};', project, re.S)
+assert len(configs) == 6
+for mode, settings in configs:
+    expected = 'YES' if mode == 'Debug' else 'NO'
+    assert f'"ONLY_ACTIVE_ARCH" = "{expected}";' in settings
+assert not re.search(r'"(?:ARCHS|EXCLUDED_ARCHS)"\s*=', project)
 assert 'PBXFileSystemSynchronizedRootGroup' in project
 assert '../mac/Sources/ScrivApp/App.swift' not in project
 assert 'Views/WorkspaceView.swift' not in project
