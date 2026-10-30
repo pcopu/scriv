@@ -6,7 +6,9 @@ public enum Fountain {
         return ["INT.", "EXT.", "INT/EXT.", "I/E.", "EST."].contains { upper.hasPrefix($0) }
     }
     public static func export(_ project: ScrivProject) -> String {
-        var lines = ["Title: \(project.title)", "", ""]
+        let titleLines = project.title.replacingOccurrences(of: "\r\n", with: "\n").replacingOccurrences(of: "\r", with: "\n").components(separatedBy: "\n")
+        var lines = titleLines.count > 1 ? ["Title:"] + titleLines.map { "    " + $0 } : ["Title: \(project.title)"]
+        lines += ["", ""]
         for scene in project.orderedScenes {
             lines += [isSceneHeading(scene.title) ? scene.title : "." + scene.title, ""]
             for entry in project.entries(in: scene.id) {
@@ -22,11 +24,47 @@ public enum Fountain {
         }
         return lines.joined(separator: "\n")
     }
+    /// Title-page fields belong only to the opening metadata block, never to
+    /// timed directions. Once a known field identifies a title page, unknown
+    /// keys are ignored. This also imports plain text: an arbitrary opening
+    /// "NAME: dialogue" or "Warning: action" must not be silently discarded.
+    /// Stop at a blank line or the first non-field so body text is not swallowed.
+    private static func titlePage(_ lines: [String]) -> (title: String?, bodyStart: Int) {
+        var index = 0
+        while index < lines.count, lines[index].trimmingCharacters(in: .whitespaces).isEmpty { index += 1 }
+        var key: String?, titleLines: [String] = []
+        let knownKeys: Set<String> = ["title", "credit", "author", "authors", "source", "draft date", "date", "contact", "copyright", "notes"]
+        while index < lines.count {
+            let raw = lines[index], line = raw.trimmingCharacters(in: .whitespaces)
+            if key != nil, raw.hasPrefix("   ") || raw.hasPrefix("\t") {
+                if key == "title" { titleLines.append(line) }
+            } else {
+                guard !line.isEmpty else { break }
+                guard !isSceneHeading(line), let colon = line.firstIndex(of: ":") else { break }
+                let candidate = line[..<colon].trimmingCharacters(in: .whitespaces).lowercased()
+                guard candidate.first?.isLetter == true,
+                      candidate.allSatisfy({ $0.isLetter || $0.isNumber || $0 == " " || $0 == "-" || $0 == "_" }) else { break }
+                guard key != nil || knownKeys.contains(candidate) else { break }
+                guard knownKeys.contains(candidate) || !line.hasSuffix("TO:") else { break }
+                key = candidate
+                if key == "title" {
+                    let value = line[line.index(after: colon)...].trimmingCharacters(in: .whitespaces)
+                    titleLines = value.isEmpty ? [] : [value]
+                }
+            }
+            index += 1
+        }
+        let title = titleLines.joined(separator: "\n")
+        return (title.isEmpty ? nil : title, index)
+    }
     public static func parse(_ text: String, title: String = "Imported script") -> ScrivProject {
         var project = ScrivProject(title: title)
         var scene = ScriptScene(title: "INT. SCENE — DAY", order: 0), hasAuthoredScene = false
         project.scenes = [scene]
-        let lines = text.replacingOccurrences(of: "\r\n", with: "\n").replacingOccurrences(of: "\r", with: "\n").components(separatedBy: "\n")
+        let source = text.hasPrefix("\u{FEFF}") ? String(text.dropFirst()) : text
+        let lines = source.replacingOccurrences(of: "\r\n", with: "\n").replacingOccurrences(of: "\r", with: "\n").components(separatedBy: "\n")
+        let metadata = titlePage(lines)
+        if let title = metadata.title { project.title = title }
         var speaker: ScriptCharacter?, buffer: [String] = [], kind = EntryKind.direction
         func flush() {
             let body = buffer.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
@@ -35,12 +73,9 @@ public enum Fountain {
             project.entries.append(ScriptEntry(sceneId: scene.id, order: Double(project.entries.count), kind: kind, text: body, characterId: kind == .dialogue ? speaker?.id : nil, ownedDurationMs: body.hasPrefix("(") && kind == .direction ? 0 : estimated, coverageDurationMs: kind == .direction ? estimated : 0))
             buffer = []
         }
-        for (index, raw) in lines.enumerated() {
+        for index in metadata.bodyStart..<lines.count {
+            let raw = lines[index]
             let line = raw.trimmingCharacters(in: .whitespaces)
-            if line.hasPrefix("Title:"), project.entries.isEmpty, buffer.isEmpty, !hasAuthoredScene {
-                let value = String(line.dropFirst(6)).trimmingCharacters(in: .whitespaces)
-                if !value.isEmpty { project.title = value }; continue
-            }
             if line.hasPrefix("[[scriv "), line.hasSuffix("]]") {
                 flush()
                 guard !project.entries.isEmpty else { continue }

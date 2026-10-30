@@ -70,4 +70,121 @@ final class FountainTests: XCTestCase {
         try TimingEngine.validate(p)
     }
 
+    func testTitlePageAuthorDoesNotCreateATimedEntryOrExtraScene() throws {
+        let project = Fountain.parse("Title: Audit fixture\nAuthor: Test Writer\n\nINT. ROOM - DAY\n\n@JASON\nHello there.\n")
+        XCTAssertEqual(project.title, "Audit fixture")
+        XCTAssertEqual(project.scenes.map(\.title), ["INT. ROOM - DAY"])
+        XCTAssertEqual(project.entries.map(\.text), ["Hello there."])
+        XCTAssertEqual(project.characters.map(\.name), ["Jason"])
+        XCTAssertEqual(project.cues.count, 1)
+        try TimingEngine.validate(project)
+    }
+
+    func testTitlePageSupportsAllKeysAndIndentedValues() throws {
+        let source = """
+        title:
+            First line
+            Second line
+        Credit: Written by
+        Authors:
+            One Writer
+            Another Writer
+        Source: An original story
+        Draft date: 2026-10-30
+        Contact:
+            Production office
+            Address line
+        Copyright: 2026
+        Custom metadata: Preserved in the source, not a timed script element
+
+        EXT. ROAD - DAY
+
+        !The car arrives.
+        """
+        let project = Fountain.parse(source)
+        XCTAssertEqual(project.title, "First line\nSecond line")
+        XCTAssertEqual(project.scenes.count, 1)
+        XCTAssertEqual(project.entries.map(\.text), ["The car arrives."])
+        XCTAssertTrue(project.characters.isEmpty)
+        let roundTrip = Fountain.parse(Fountain.export(project))
+        XCTAssertEqual(roundTrip.title, project.title)
+        XCTAssertEqual(roundTrip.entries.map(\.text), project.entries.map(\.text))
+        try TimingEngine.validate(project)
+        try TimingEngine.validate(roundTrip)
+    }
+
+    func testTitlePageMayOmitTitleAndEndsBeforeTheBody() throws {
+        let project = Fountain.parse("Draft date: 2026-10-30\nAuthor: A Writer\n\nINT. OFFICE - DAY\n\nAuthor: This is an action in the screenplay.\n\n@WRITER\nTitle: These are spoken words.\n", title: "Filename fallback")
+        XCTAssertEqual(project.title, "Filename fallback")
+        XCTAssertEqual(project.scenes.count, 1)
+        XCTAssertEqual(project.entries.map(\.text), ["Author: This is an action in the screenplay.", "Title: These are spoken words."])
+        XCTAssertEqual(project.entries.map(\.kind), [.direction, .dialogue])
+        try TimingEngine.validate(project)
+    }
+
+    func testTitlePageToleratesUTF8BOMCRLFAndTabIndentedValues() throws {
+        let project = Fountain.parse("\u{FEFF}Title:\r\n\tBOM title\r\nAuthor:\r\n\tTest Writer\r\n\r\nINT. ROOM - DAY\r\n\r\n!Wait.\r\n")
+        XCTAssertEqual(project.title, "BOM title")
+        XCTAssertEqual(project.scenes.count, 1)
+        XCTAssertEqual(project.entries.map(\.text), ["Wait."])
+        try TimingEngine.validate(project)
+    }
+
+    func testTitlePageStopsAtNonMetadataEvenWithoutBlankSeparator() throws {
+        let project = Fountain.parse("Title: No separator\nAuthor: Test Writer\nINT. ROOM - DAY\n\n!Wait.")
+        XCTAssertEqual(project.title, "No separator")
+        XCTAssertEqual(project.scenes.map(\.title), ["INT. ROOM - DAY"])
+        XCTAssertEqual(project.entries.map(\.text), ["Wait."])
+        try TimingEngine.validate(project)
+    }
+
+    func testTitleLikeBodyAfterBlankAndForcedActionsAreNotMetadata() throws {
+        let project = Fountain.parse("Title: Actual title\n\nTitle: A card in the screenplay.\n\nINT. ROOM - DAY\n\n!Author: Not metadata.")
+        XCTAssertEqual(project.title, "Actual title")
+        XCTAssertEqual(project.entries.map(\.text), ["Title: A card in the screenplay.", "Author: Not metadata."])
+        let forced = Fountain.parse("!Author: A literal opening action.\n\nINT. ROOM - DAY")
+        XCTAssertEqual(forced.entries.map(\.text), ["Author: A literal opening action."])
+        let transition = Fountain.parse("CUT TO:\n\nINT. ROOM - DAY")
+        XCTAssertEqual(transition.entries.map(\.text), ["CUT TO:"])
+        try TimingEngine.validate(project)
+        try TimingEngine.validate(forced)
+        try TimingEngine.validate(transition)
+    }
+
+    func testPlainTextOpeningColonIsNotMistakenForTitleMetadata() throws {
+        for opening in ["JASON: Hello there.", "Warning: Do not enter.", "12:30 on the clock.", "https://example.test/script"] {
+            let project = Fountain.parse(opening + "\n\nThe door opens.", title: "Plain text")
+            XCTAssertEqual(project.title, "Plain text")
+            XCTAssertEqual(project.entries.map(\.text), [opening, "The door opens."])
+            try TimingEngine.validate(project)
+        }
+    }
+
+    func testEmptyAndMetadataOnlyInputsRemainValid() throws {
+        for source in ["", "\n\n", "Title: Metadata only\nAuthor: Writer", "Author:\n\tOne Writer"] {
+            let project = Fountain.parse(source)
+            XCTAssertEqual(project.scenes.count, 1)
+            XCTAssertTrue(project.entries.isEmpty)
+            XCTAssertTrue(project.cues.isEmpty)
+            try TimingEngine.validate(project)
+        }
+    }
+
+    func testTitleMayContainAColonOrTransitionText() throws {
+        let project = Fountain.parse("Title: CUT TO:\nAuthor: A Writer\nCUT TO:\n\nINT. ROOM - DAY\n\n!Wait.")
+        XCTAssertEqual(project.title, "CUT TO:")
+        XCTAssertEqual(project.entries.map(\.text), ["CUT TO:", "Wait."])
+        try TimingEngine.validate(project)
+    }
+
+    func testExportedMultilineTitleWithBlankLineDoesNotLeakIntoScript() throws {
+        var source = ScrivProject.example()
+        source.title = "First line\n\nThird line"
+        let project = Fountain.parse(Fountain.export(source))
+        XCTAssertEqual(project.title, source.title)
+        XCTAssertEqual(project.entries.map(\.text), source.entries.map(\.text))
+        XCTAssertEqual(project.scenes.map(\.title), source.scenes.map(\.title))
+        try TimingEngine.validate(project)
+    }
+
 }
