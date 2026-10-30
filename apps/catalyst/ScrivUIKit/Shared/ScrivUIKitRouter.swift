@@ -31,7 +31,7 @@ enum ScrivUIKitRoute: Hashable {
 @MainActor
 final class ScrivUIKitRouter {
     static let shared = ScrivUIKitRouter()
-    typealias Factory = (ScrivUIKitRoute, WorkspaceStore) -> UIViewController?
+    typealias Factory = @MainActor (ScrivUIKitRoute, WorkspaceStore) -> UIViewController?
     private var factories: [ScrivUIKitRoute.Kind:Factory] = [:]
     func register(_ kind: ScrivUIKitRoute.Kind, factory: @escaping Factory) { factories[kind] = factory }
     func controller(for route: ScrivUIKitRoute, store: WorkspaceStore) -> UIViewController? {
@@ -55,4 +55,5 @@ final class ScrivUIKitRouter {
 
 /// Separate extensions in feature-owned files register only their route kinds.
 /// Final App registration must invoke every feature before opening a workspace.
+@MainActor
 enum ScrivUIKitFeatures {}
