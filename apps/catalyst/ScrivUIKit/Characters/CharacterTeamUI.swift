@@ -75,7 +75,9 @@ enum CharacterTeamUI {
     /// missing state available without squeezing it into the portrait pixels.
     static func compactMissingPortrait() -> UIView {
         let view = UIView()
-        let icon = UIImageView(image: UIImage(systemName: "person.fill"))
+        // SF Symbols carry alignment-rect insets, so Auto Layout would size and
+        // center the alignment rect, leaving the visible glyph short and off-center.
+        let icon = UIImageView(image: UIImage(systemName: "person.fill")?.withAlignmentRectInsets(.zero))
         icon.contentMode = .scaleAspectFit; icon.tintColor = ScrivUIKitTheme.secondary
         icon.translatesAutoresizingMaskIntoConstraints = false; view.addSubview(icon)
         NSLayoutConstraint.activate([
