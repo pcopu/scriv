@@ -21,7 +21,10 @@ import ScrivCore
     override func viewDidLoad() {
         super.viewDidLoad(); title = "Preview"; content = ImageUI.scrollStack(in: self, spacing: 9, padding: 12); view.backgroundColor = ScrivUIKitTheme.panel
         let expand = PreviewChromeUI.inspect { [weak self] in guard let self, let imageID = self.cue?.imageId else { return }; self.show(.imageDetail(imageID: imageID, cueID: self.cue?.id)) }
-        content.addArrangedSubview(ImageUI.row([ImageUI.label("Preview", size: 30, weight: .semibold), ImageUI.spacer(), ImageUI.badge("16:9"), expand]))
+        // A one-word title must never wrap ("Previe / w") when the panel narrows.
+        let heading = ImageUI.label("Preview", size: 30, weight: .semibold)
+        heading.numberOfLines = 1; heading.setContentCompressionResistancePriority(.required, for: .horizontal)
+        content.addArrangedSubview(ImageUI.row([heading, ImageUI.spacer(), ImageUI.badge("16:9"), expand]))
         content.addArrangedSubview(subtitle); content.addArrangedSubview(media); content.addArrangedSubview(state); content.addArrangedSubview(metadata)
         layersDisclosure = PreviewLayersDisclosureView { [weak self] in guard let self else { return }; self.setLayersExpanded(!self.layersExpanded) }
         content.addArrangedSubview(layersDisclosure)
