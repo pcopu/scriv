@@ -1,7 +1,7 @@
 {
   "verifiedAt": "2026-10-29",
   "repository": "https://github.com/pcopu/scriv",
-  "runtimeCommit": "0eb779b8e07935235d4584b09abe05bd0504be01",
+  "runtimeCommit": "f39ceb827d78c5a2694cee489725969173c43ded",
   "workflow": {
     "id": 40921544866,
     "url": "https://github.com/pcopu/scriv/actions/runs/40921544866",
@@ -113,7 +113,7 @@
     ]
   },
   "localBrowserStress": {
-    "sourceCommit": "0eb779b8e07935235d4584b09abe05bd0504be01",
+    "sourceCommit": "f39ceb827d78c5a2694cee489725969173c43ded",
     "command": "PLAYWRIGHT_BROWSERS_PATH=<installed browsers> SCRIV_PEER_CPU=4 SCRIV_PEER_REPEATS=5 node --test tests/peer-transfer.browser.mjs",
     "playwrightVersion": "1.56.1",
     "cpuThrottlingRate": 4,

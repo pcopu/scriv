@@ -2,7 +2,7 @@
 
 ## Framework and preserved baseline
 
-The user explicitly requested finishing and committing the SwiftUI checkpoint, then rewriting the UI entirely in UIKit. The preserved checkpoint is `e14c64cc50ea231bd0f10ac42f9a6b0dc19b9ea9`. Its two expression-decomposition fixes were committed, but its native rebuild could not start with roughly 243 MiB free on the available Mac. The previous native Core retry was 221/222: its remaining failure compared `/var` with `/private/var` in an artifact-path test, **not** an outstanding disk-full fixture. This source increment canonicalizes that expected URL; all rejection assertions remain.
+The user explicitly requested finishing and committing the SwiftUI checkpoint, then rewriting the UI entirely in UIKit. The preserved checkpoint is `979388b4da4af6904c55c28c7b03797fe46a1703`. Its two expression-decomposition fixes were committed, but its native rebuild could not start with roughly 243 MiB free on the available Mac. The previous native Core retry was 221/222: its remaining failure compared `/var` with `/private/var` in an artifact-path test, **not** an outstanding disk-full fixture. This source increment canonicalizes that expected URL; all rejection assertions remain.
 
 The new target is `apps/catalyst/ScrivUIKit.xcodeproj`, app module `ScrivUIKit`, bundle ID `app.scriv.uikit`, built with UIKit and Mac Catalyst. No SwiftUI, hosting controller, legacy `App.swift` or legacy view enters this target. The previous app and history remain intact, side by side. Shared Core and cloud service code retain the existing data, authorization and image-version contracts.
 

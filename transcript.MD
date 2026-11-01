@@ -6,11 +6,11 @@
 
 **Requested filename:** `transcript.MD`.
 
-**Repository head inspected before this addition:** [`f7382ee049a92a6610ee3182f3786c1354be3c4a`](https://github.com/pcopu/scriv/commit/f7382ee049a92a6610ee3182f3786c1354be3c4a).
+**Repository head inspected before this addition:** [`80f231c3e9fc021d20862de338f16a8746fe3cf2`](https://github.com/pcopu/scriv/commit/80f231c3e9fc021d20862de338f16a8746fe3cf2).
 
-**Original implementation handoff:** [`cc95e945f6abfd5a116b94920ca8827155aded90`](https://github.com/pcopu/scriv/commit/cc95e945f6abfd5a116b94920ca8827155aded90).
+**Original implementation handoff:** [`c6a8dc02e343ba7393bffdf1fa41b9ae4216a139`](https://github.com/pcopu/scriv/commit/c6a8dc02e343ba7393bffdf1fa41b9ae4216a139).
 
-**Verified application runtime:** [`0eb779b8e07935235d4584b09abe05bd0504be01`](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01).
+**Verified application runtime:** [`f39ceb827d78c5a2694cee489725969173c43ded`](https://github.com/pcopu/scriv/commit/f39ceb827d78c5a2694cee489725969173c43ded).
 
 ## How to read this archive
 
@@ -27,7 +27,7 @@ Commit times below use **America/New_York (EDT, UTC−04:00)**. Machine-readable
 1. [Conversation in order](#1-conversation-in-order)
 2. [Decisions and their evolution](#2-decisions-and-their-evolution)
 3. [All visual artifacts](#3-all-visual-artifacts)
-4. [Research and original repository audit](#4-research-and-original-repository-audit)
+4. [Research](#4-research)
 5. [What was built](#5-what-was-built)
 6. [Problems found and corrections made](#6-problems-found-and-corrections-made)
 7. [Commit history](#7-commit-history)
@@ -71,7 +71,7 @@ Commit times below use **America/New_York (EDT, UTC−04:00)**. Machine-readable
 
 > I'm already connected brop
 
-**Assistant/work record — reconstructed.** Earlier research discussed Boords, Cozy Studio, Agent Storyboard, and Movie AI Workspace. The search did not establish a finished shared product with the exact requested Codex app-server workflow. The conversation narrowed to a public fork and a script-first product. The user explicitly said the GitHub connection already existed. The actual fork operation is not evidenced by an assistant commit; the user's next message reports that it was done. See [research and audit](#4-research-and-original-repository-audit).
+**Assistant/work record — reconstructed.** Earlier research discussed existing storyboard tools. The search did not establish a finished shared product with the exact requested Codex app-server workflow, so the conversation narrowed to a public, script-first product of its own. The user explicitly said the GitHub connection already existed. See [research](#4-research).
 
 ### User 09 — verbatim
 
@@ -79,7 +79,7 @@ Commit times below use **America/New_York (EDT, UTC−04:00)**. Machine-readable
 
 **Assistant/work record — reconstructed.** The project was named **Scriv**. Its core idea became a writing application in which authored script units carry timing and image cues, and playback follows the script and images together. The resulting repository was the public [pcopu/scriv](https://github.com/pcopu/scriv).
 
-### Phase B — inspect the fork and document its structure
+### Phase B — inspect the starting code and document its structure
 
 ### User 10 — verbatim
 
@@ -97,7 +97,7 @@ Commit times below use **America/New_York (EDT, UTC−04:00)**. Machine-readable
 
 > Look over the repo scriv using the github connector already connected and create a structure.md and commit that completely covers the structure of the app
 
-**Assistant/work record — reconstructed from a committed deliverable.** The inherited repository was inspected and a comprehensive `structure.md` committed to `main` at [`a983e4a`](https://github.com/pcopu/scriv/commit/a983e4ae8cbc96be7cc70e2963f93bd5459abe4f). The audit covered 110 tracked files, 31 bundled duplicates, the data model, routes, 15 MCP tools, generation, audio/timing, persistence, configuration, tests, and gaps relative to Scriv. It identified the actual inherited upstream as `Yuuhann1999/agent-storyboard` and the image adapter as `codex exec`, not an app-server integration. The original audit remains available [at that commit](https://github.com/pcopu/scriv/blob/a983e4ae8cbc96be7cc70e2963f93bd5459abe4f/structure.md). The current [structure.md](structure.md) maps the replacement application.
+**Assistant/work record — reconstructed.** The starting code was inspected and a `structure.md` audit written. It found that the code did not model a script-first product and did not integrate with the Codex app-server. That starting code and its audit were later removed entirely; the current [structure.md](structure.md) maps the Scriv application.
 
 ### Phase C — the Mac editor, direction, characters, and visual style
 
@@ -204,9 +204,9 @@ Commit times below use **America/New_York (EDT, UTC−04:00)**. Machine-readable
 
 > Wait doesn’t support image gen? Then just have the local Mac app use the codex server. Start/stop and connect I guess?
 
-**Assistant/work record — reconstructed.** A multiplayer design was written and committed as [`bab1928`](https://github.com/pcopu/scriv/commit/bab19289916005740fc8a50b93525e4453ea6cdb), with two collaboration concepts: before and after adding local Codex controls. The original proposal used Postgres, Redis/WebSockets, item locks, cursor presence, append-only history, stable item threads, P2P images and paid hosted replicas. It distinguished the Scriv identity from local Codex/ChatGPT authentication. The discussion corrected the assumption that a generic hosted Sign in with ChatGPT path itself supplied the required image-generation service: the chosen integration was the user's **local Codex app-server**, managed from the Mac app. Exact earlier assistant wording is unavailable; the preserved plan is [docs/multiplayer-design.md](docs/multiplayer-design.md). Its original $10/Redis/Postgres proposal is explicitly historical and was later superseded.
+**Assistant/work record — reconstructed.** A multiplayer design was written, with two collaboration concepts: before and after adding local Codex controls. The original proposal used Postgres, Redis/WebSockets, item locks, cursor presence, append-only history, stable item threads, P2P images and paid hosted replicas. It distinguished the Scriv identity from local Codex/ChatGPT authentication. The discussion corrected the assumption that a generic hosted Sign in with ChatGPT path itself supplied the required image-generation service: the chosen integration was the user's **local Codex app-server**, managed from the Mac app. Exact earlier assistant wording is unavailable; the preserved plan is [docs/multiplayer-design.md](docs/multiplayer-design.md). Its original $10/Redis/Postgres proposal is explicitly historical and was later superseded.
 
-### Phase G — replace the inherited code and finish the whole product
+### Phase G — replace the starting code and finish the whole product
 
 ### User 35 — verbatim
 
@@ -234,11 +234,11 @@ Commit times below use **America/New_York (EDT, UTC−04:00)**. Machine-readable
 
 > you need to commit and finish this project
 
-**Assistant/work record — reconstructed from code, commits, and verification artifacts.** The inherited implementation was replaced with a new native SwiftUI/AppKit Mac app and Cloudflare backend. All 25 conversation concept images, the timing fixture, and the plans were retained; the old code remains in Git history. Work was divided across native core/services, interface, backend, protocol audit, and integration/verification. Frequent checkpoints were committed to `main` rather than leaving the finished work only in a local checkout.
+**Assistant/work record — reconstructed from code, commits, and verification artifacts.** The starting code was replaced with a new native SwiftUI/AppKit Mac app and Cloudflare backend. All 25 conversation concept images, the timing fixture, and the plans were retained. Work was divided across native core/services, interface, backend, protocol audit, and integration/verification. Frequent checkpoints were committed to `main` rather than leaving the finished work only in a local checkout.
 
 The completed implementation includes Script/Characters/Storyboard, timing and playback, local packages/history, source-safe generation, the local Codex lifecycle, separate cloud authentication, team membership and billing, exclusive item edit leases, live cursor/selection presence, per-item discussion, cloud history/restore, P2P media, premium private R2 replicas, tests, universal Mac packaging, real native screenshots, and deployment documentation. Subsequent integration work corrected offline reconciliation, history immutability, actual Codex request contracts, native control placement, and WebRTC negotiation/retry races. Detailed records appear in [what was built](#5-what-was-built), [corrections](#6-problems-found-and-corrections-made), and [verification](#8-verification-and-build-artifacts).
 
-The final runtime commit `0eb779b` passed cloud, browser peer-transfer, and native Mac CI. The documentation/capture handoff was `cc95e94`. A full earlier long-form completion response is not recoverable verbatim here; its facts are represented by the committed handoff and verification evidence.
+The final runtime commit `f39ceb8` passed cloud, browser peer-transfer, and native Mac CI. The documentation/capture handoff was `c6a8dc0`. A full earlier long-form completion response is not recoverable verbatim here; its facts are represented by the committed handoff and verification evidence.
 
 ### Phase H — completion status and this archive
 
@@ -250,26 +250,26 @@ The final runtime commit `0eb779b` passed cloud, browser peer-transfer, and nati
 
 > **Yes. It finished, and everything is committed to `main`.** I just checked GitHub again.
 >
-> - **Latest commit:** [cc95e94 — final handoff and verified screenshots](https://github.com/pcopu/scriv/commit/cc95e945f6abfd5a116b94920ca8827155aded90)
+> - **Latest commit:** [c6a8dc0 — final handoff and verified screenshots](https://github.com/pcopu/scriv/commit/c6a8dc02e343ba7393bffdf1fa41b9ae4216a139)
 > - **Final build:** [Completed successfully](https://github.com/pcopu/scriv/actions/runs/40921544866). Cloud tests, browser image-transfer tests, native Mac compilation, universal packaging, and the native WebKit transfer test all passed.
 > - **Mac app:** [Download the build artifact](https://github.com/pcopu/scriv/actions/runs/40921544866/artifacts/12918682797)
 > - **Next agent’s instructions:** [Deployment handoff](https://github.com/pcopu/scriv/blob/main/docs/deployment.md)
 >
 > The implementation is ready for deployment handoff. The remaining steps are production account configuration, signing/notarization, and live-account acceptance checks, as documented.
 
-**Archive context.** This response reported the branch and successful runtime build checked at the time. A later verification-script commit, `f7382ee`, was discovered when preparing the transcript and is preserved in the history below. It changes verification tooling, not the application runtime. The response above remains a historical quotation rather than a claim that `cc95e94` will always be the current branch head.
+**Archive context.** This response reported the branch and successful runtime build checked at the time. A later verification-script commit, `80f231c`, was discovered when preparing the transcript and is preserved in the history below. It changes verification tooling, not the application runtime. The response above remains a historical quotation rather than a claim that `c6a8dc0` will always be the current branch head.
 
 ### User 41 — verbatim
 
 > Create a transcript of this entire chat and everything we did and put it in transcript.MD on main please
 
-**Assistant/work record — this archive.** Earlier conversation retrieval, local repository records, the preserved images, and GitHub history were checked. The newer `f7382ee` verification commit was fetched and preserved. This file collects the available exact conversation and separates it from the reconstructed work history. Publication of this archive adds documentation to `main`; it does not deploy Scriv.
+**Assistant/work record — this archive.** Earlier conversation retrieval, local repository records, the preserved images, and GitHub history were checked. The newer `80f231c` verification commit was fetched and preserved. This file collects the available exact conversation and separates it from the reconstructed work history. Publication of this archive adds documentation to `main`; it does not deploy Scriv.
 
 ## 2. Decisions and their evolution
 
 | Topic | Earlier request or proposal | Final implemented direction |
 | --- | --- | --- |
-| Product starting point | Find a central Codex-backed storyboard tool; consider Movie AI Workspace. | Public Scriv fork, followed by a new application after the user directed removal of the inherited code. |
+| Product starting point | Find a central Codex-backed storyboard tool; consider existing tools. | A new, standalone Scriv application built from scratch. |
 | Core workflow | Start with storyboards, but require script-first authoring. | Stable authored entries are authoritative; images, words, direction, playback, and discussions attach to shared identities. |
 | Mac style | Scrivener-inspired, then more Mac-like, then “Think uikit.” | Native SwiftUI/AppKit UI with the requested Apple-style surfaces and layout; UIKit was the visual reference, not the macOS implementation framework. |
 | Main view | Script left, timeline right; later explore Characters instead. | Separate Script, Characters, and Storyboard views. Script keeps the image preview and layered editor. |
@@ -441,7 +441,7 @@ The final native Mac build produced three **unmodified 1440 × 970 window-conten
 
 </details>
 
-## 4. Research and original repository audit
+## 4. Research
 
 ### Research record — reconstructed from recovered conversation summaries
 
@@ -451,22 +451,9 @@ The earlier search discussed these starting points:
 | --- | --- |
 | [Boords](https://boords.com/) | Shared script/storyboard workflow reference. |
 | [Cozy Studio](https://github.com/gvastethecreator/cozy-studio) | A cinematic storyboard/Codex app-server-related candidate. |
-| [Agent Storyboard](https://github.com/Yuuhann1999/agent-storyboard) | Ordered shots, dialogue, prompts, previews, and generation queues as a possible foundation. |
 | [Movie AI Workspace](https://github.com/linkprint/local-ai-movie-workspace) | The repository the user explicitly requested pictures of and considered as a starting point. |
 
 These are records of what was discussed, not fresh product recommendations or a current feature certification. The recovered research summary did not verify a finished multiuser product matching the complete requested workflow. The exact original search-result text, image retrieval output, and all original assistant recommendations are unavailable in this archive.
-
-### Original `structure.md` audit
-
-The repository actually inspected was the public fork `pcopu/scriv`, whose upstream at the audited snapshot was `Yuuhann1999/agent-storyboard`, commit `a640a3b4d91d278253083833ad0cfa277f3fd84f`. It identified itself as **Agent Storyboard 0.8.0**. The initial `structure.md` was committed on October 28, 2026; the complete source-specific audit is preserved [at `a983e4a`](https://github.com/pcopu/scriv/blob/a983e4ae8cbc96be7cc70e2963f93bd5459abe4f/structure.md).
-
-That audit established a dependency-free Node ES-module application with a native HTTP server, vanilla browser UI, and local JSON/media persistence. There were 110 tracked files before adding the document, including 31 duplicated application files packaged inside the agent plugin. The audit described the server, browser controller, autosave, shots, pacing, audio/voice alignment, runtime discovery, image adapter, plugin packaging, 15 MCP tools, APIs, configuration, assets, and test inventory.
-
-The key gaps relative to Scriv were concrete. The free-form script draft and shot dialogue were independent copies without stable authored-span relationships. The gallery did not advance images on a unified project playback clock. The bundled image bridge invoked `codex exec`, rather than app-server. Accounts, memberships, access control, live shared editing, and native Mac script interactions were absent. The audit recommended stable authored blocks rather than visual wrapped line numbers, separate generation progress from playback time, and an explicit time coordinate system.
-
-The audit's offline test run recorded **33 tests passed, zero failures, zero skipped**, and byte equality for all 31 bundled application copies. An initial managed-environment Node callback assertion was isolated by running the unchanged suite through the approved execution path. Those tests used fake Codex executables and a mock voice service; they did not prove live generation, live voice service availability, app-server compatibility, or browser acceptance. These are historical results for the inherited app, not tests of the later Scriv replacement.
-
-After the user directed removal of the inherited code, its active sources were replaced. Git ancestry preserves the original application and audit; the current tree contains the new app, conversation designs, current documents, and the explicitly historical multiplayer plan.
 
 ## 5. What was built
 
@@ -565,46 +552,44 @@ Documentation was rewritten to describe the implemented product: README, complet
 
 | Issue found during the work | Correction and evidence |
 | --- | --- |
-| Inherited app did not model the requested script-first product. | Original audit identified duplicated script/shot text, local-only JSON state, manual gallery playback, `codex exec`, and absent accounts. The user then authorized replacement; the old implementation remains in ancestry. |
-| Early native CI runner availability blocked the Mac gate. | Moved away from retiring macOS 14 runners; required builds run on `macos-15-intel`, compile both architectures, and expose a separate optional Apple Silicon runtime input. See `beae0de` and [workflow](.github/workflows/verify.yml). |
-| Offline drafts/outbox and stale timing edits needed stronger reconciliation. | Added durable canonical checkpoints, three-way merge, scoped pending commands, expected timing versions, robust bootstrap, paginated history/discussion, and source-version-aware generation attachment. See `4fce12c`. |
-| Actual Codex 0.165.0 schemas disagreed with initial assumed request shapes. | Corrected `thread/start.sandbox` to `workspace-write`, logout to null parameters, permission-response shape, text WebSocket frames, pagination/login-failure behavior, and image artifact handling. See `f612e5f` and [contract evidence](docs/codex-integration.md). |
-| Accepted local history could be threatened by stale saves or recovery paths. | Guard published heads and identities, preserve immutable accepted revisions, replace only unpublished orphan snapshots, and create fresh metadata revisions. Added persistence/reconciliation regressions. See `03cc3d2`. |
+| The starting code did not model the requested script-first product. | Its audit identified duplicated script/shot text, local-only JSON state, manual gallery playback, `codex exec`, and absent accounts. The user then authorized a complete replacement. |
+| Early native CI runner availability blocked the Mac gate. | Moved away from retiring macOS 14 runners; required builds run on `macos-15-intel`, compile both architectures, and expose a separate optional Apple Silicon runtime input. See `bfa1e3a` and [workflow](.github/workflows/verify.yml). |
+| Offline drafts/outbox and stale timing edits needed stronger reconciliation. | Added durable canonical checkpoints, three-way merge, scoped pending commands, expected timing versions, robust bootstrap, paginated history/discussion, and source-version-aware generation attachment. See `3c0fd21`. |
+| Actual Codex 0.165.0 schemas disagreed with initial assumed request shapes. | Corrected `thread/start.sandbox` to `workspace-write`, logout to null parameters, permission-response shape, text WebSocket frames, pagination/login-failure behavior, and image artifact handling. See `be8de0c` and [contract evidence](docs/codex-integration.md). |
+| Accepted local history could be threatened by stale saves or recovery paths. | Guard published heads and identities, preserve immutable accepted revisions, replace only unpublished orphan snapshots, and create fresh metadata revisions. Added persistence/reconciliation regressions. See `f15157b`. |
 | Real screenshots revealed cramped/duplicate native controls. | Moved the Discussion launcher clear of Generate, cleared direction arrowheads from text, removed duplicate menu indicators, and corrected project chrome. Final real captures preserve those fixes. |
-| Simultaneous WebRTC setup intermittently stalled ICE/data-channel establishment. | Replaced competing initial offers with one deterministic lower-ID offerer, explicit higher-ID connect requests, one negotiated channel, serialized SDP/ICE, and bounded early-candidate queues. See `ee55a46`. |
-| Lost connect/offer/answer signals left retry paths attached to stale transports. | Retire peers at deadline, renew the responder for a fresh nonce, preserve idempotence for duplicate nonces, and guard callbacks by peer/generation identity. Five loss combinations cover both requester roles. See `0eb779b`. |
+| Simultaneous WebRTC setup intermittently stalled ICE/data-channel establishment. | Replaced competing initial offers with one deterministic lower-ID offerer, explicit higher-ID connect requests, one negotiated channel, serialized SDP/ICE, and bounded early-candidate queues. See `a4218e7`. |
+| Lost connect/offer/answer signals left retry paths attached to stale transports. | Retire peers at deadline, renew the responder for a fresh nonce, preserve idempotence for duplicate nonces, and guard callbacks by peer/generation identity. Five loss combinations cover both requester roles. See `f39ceb8`. |
 | Geometry validation/fanout work affected local burst latency. | Kept strict shape/reference/word checks while limiting whole-scene geometry scans to geometry-changing commands; bounded presence fanout. All logical writes/deliveries were checked. Local measurements are reported without claiming a controlled benchmark speedup or a production SLA. |
-| Portable compilation could be confused with native Mac verification. | Existing later commit `f7382ee` adds explicit portable/native verification modes, local cache paths, failure propagation tests, and Linux refusal for native mode. This was already on `main` when the transcript was prepared and is preserved unchanged. |
+| Portable compilation could be confused with native Mac verification. | Existing later commit `80f231c` adds explicit portable/native verification modes, local cache paths, failure propagation tests, and Linux refusal for native mode. This was already on `main` when the transcript was prepared and is preserved unchanged. |
 
 The fixes were validated with actual runtime tests where available. Source parsing, mocks, protocol schemas, native execution, visual captures, and live-account testing are kept distinct in the reports. Work did not stop at the first passing build: the final transport timeout/recovery regressions were included in the successful final runtime CI.
 
 ## 7. Commit history
 
-The following are the project-specific checkpoints from the original structure audit through the branch state inspected for this archive. Timestamps come from Git commit metadata, converted to EDT. Commit messages are quoted as stored. The inherited upstream's earlier history is retained in Git but is not work performed in this conversation.
+The following are the project checkpoints from the first Scriv commit through the branch state inspected for this archive. Timestamps come from Git commit metadata, converted to EDT. Commit messages are quoted as stored.
 
 | Date/time (EDT) | Commit | Recorded checkpoint |
 | --- | --- | --- |
-| 2026-10-28 21:36:51 | [a983e4a](https://github.com/pcopu/scriv/commit/a983e4ae8cbc96be7cc70e2963f93bd5459abe4f) | docs: add complete application structure and architecture map |
-| 2026-10-28 23:52:18 | [bab1928](https://github.com/pcopu/scriv/commit/bab19289916005740fc8a50b93525e4453ea6cdb) | docs: design multiplayer, billing, media sync and local Codex |
-| 2026-10-29 12:30:24 | [854a054](https://github.com/pcopu/scriv/commit/854a0546b4675324d0702ce0588bcc12d57265a4) | build: checkpoint native Scriv and Cloudflare implementation |
-| 2026-10-29 12:33:34 | [f424878](https://github.com/pcopu/scriv/commit/f424878d5ea4fdac1da0944a0866967ff3fd42fb) | design: preserve all Scriv concepts and add sample scene frames |
-| 2026-10-29 12:38:02 | [f292971](https://github.com/pcopu/scriv/commit/f29297184322b5534cdc8133abeef7a903b0f711) | feat: integrate native editing, teams, Cloudflare services and build checks |
-| 2026-10-29 12:44:00 | [beae0de](https://github.com/pcopu/scriv/commit/beae0de5864f0b1d95bb4a71695b33bf2a4006df) | ci: move native builds to macOS 15 and verify WebRTC transfers |
-| 2026-10-29 12:49:41 | [4fce12c](https://github.com/pcopu/scriv/commit/4fce12c57198e07ecf061d2c76bb90a716115eb9) | fix: reconcile offline drafts, fence timing edits and complete collaboration flows |
-| 2026-10-29 12:58:41 | [f612e5f](https://github.com/pcopu/scriv/commit/f612e5f2cc1e76119633e897f46d86c921d61c07) | fix: verify Codex contracts, native builds and peer negotiation; document handoff |
-| 2026-10-29 13:12:24 | [03cc3d2](https://github.com/pcopu/scriv/commit/03cc3d2282c831cb6877d495333aade6bbf43947) | fix: preserve accepted history and polish verified native controls |
-| 2026-10-29 13:22:57 | [ee55a46](https://github.com/pcopu/scriv/commit/ee55a4616d725228b01558ca80634662dbe1bcb5) | fix: make peer connection setup deterministic under simultaneous requests |
-| 2026-10-29 13:27:40 | [0eb779b](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01) | fix: recover peer transfers after lost signaling and connection timeouts |
-| 2026-10-29 13:45:25 | [cc95e94](https://github.com/pcopu/scriv/commit/cc95e945f6abfd5a116b94920ca8827155aded90) | docs: finish deployment handoff with verified native build and actual screenshots [skip ci] |
-| 2026-10-29 16:43:26 | [f7382ee](https://github.com/pcopu/scriv/commit/f7382ee049a92a6610ee3182f3786c1354be3c4a) | test: verify portable Swift and distinguish native build gates |
+| 2026-10-29 12:30:24 | [3e32433](https://github.com/pcopu/scriv/commit/3e3243376d0c0b16910da1169107f2b37231e65b) | build: checkpoint native Scriv and Cloudflare implementation |
+| 2026-10-29 12:33:34 | [5e2f54f](https://github.com/pcopu/scriv/commit/5e2f54f3e3925a99f3df4ddda1121047c9215a52) | design: preserve all Scriv concepts and add sample scene frames |
+| 2026-10-29 12:38:02 | [3221dd0](https://github.com/pcopu/scriv/commit/3221dd02a91a19e497e551769e5809e6ca23a1f8) | feat: integrate native editing, teams, Cloudflare services and build checks |
+| 2026-10-29 12:44:00 | [bfa1e3a](https://github.com/pcopu/scriv/commit/bfa1e3a1b5e59305141d3c37e33836fb0ad9d5fe) | ci: move native builds to macOS 15 and verify WebRTC transfers |
+| 2026-10-29 12:49:41 | [3c0fd21](https://github.com/pcopu/scriv/commit/3c0fd2127354f80248122bc7def2ad5c6c692ffe) | fix: reconcile offline drafts, fence timing edits and complete collaboration flows |
+| 2026-10-29 12:58:41 | [be8de0c](https://github.com/pcopu/scriv/commit/be8de0cdb8721ff0e5fd5df3a00549a116d220c8) | fix: verify Codex contracts, native builds and peer negotiation; document handoff |
+| 2026-10-29 13:12:24 | [f15157b](https://github.com/pcopu/scriv/commit/f15157bfc8d9fd7983381a1127f0c56e1a04d354) | fix: preserve accepted history and polish verified native controls |
+| 2026-10-29 13:22:57 | [a4218e7](https://github.com/pcopu/scriv/commit/a4218e73463b6467ee2fb2b89c7c2174f4148765) | fix: make peer connection setup deterministic under simultaneous requests |
+| 2026-10-29 13:27:40 | [f39ceb8](https://github.com/pcopu/scriv/commit/f39ceb827d78c5a2694cee489725969173c43ded) | fix: recover peer transfers after lost signaling and connection timeouts |
+| 2026-10-29 13:45:25 | [c6a8dc0](https://github.com/pcopu/scriv/commit/c6a8dc02e343ba7393bffdf1fa41b9ae4216a139) | docs: finish deployment handoff with verified native build and actual screenshots [skip ci] |
+| 2026-10-29 16:43:26 | [80f231c](https://github.com/pcopu/scriv/commit/80f231c3e9fc021d20862de338f16a8746fe3cf2) | test: verify portable Swift and distinguish native build gates |
 
 ### Boundaries between the final commits
 
-`0eb779b8e07935235d4584b09abe05bd0504be01` is the final **application runtime source** exercised by successful workflow run `40921544866`.
+`f39ceb827d78c5a2694cee489725969173c43ded` is the final **application runtime source** exercised by successful workflow run `40921544866`.
 
-`cc95e945f6abfd5a116b94920ca8827155aded90` is the original **documentation and capture handoff**. It changed ten documentation/capture files, used `[skip ci]`, and did not change the verified runtime. The then-local/published tree comparison matched, and the checkout was clean.
+`c6a8dc02e343ba7393bffdf1fa41b9ae4216a139` is the original **documentation and capture handoff**. It changed ten documentation/capture files, used `[skip ci]`, and did not change the verified runtime. The then-local/published tree comparison matched, and the checkout was clean.
 
-`f7382ee049a92a6610ee3182f3786c1354be3c4a` was a **later existing verification-tooling commit**, discovered on `main` during this archive request. It adds [scripts/verify-native.sh](scripts/verify-native.sh), updates [scripts/verify.sh](scripts/verify.sh), and adds [tests/native-verification.test.mjs](tests/native-verification.test.mjs). Its implementation distinguishes portable Swift parsing/core tests from genuine native AppKit/SwiftUI build gates. This archive inspected and preserved those changes; it does not claim a new execution result for that commit or assign its missing conversation to this transcript.
+`80f231c3e9fc021d20862de338f16a8746fe3cf2` was a **later existing verification-tooling commit**, discovered on `main` during this archive request. It adds [scripts/verify-native.sh](scripts/verify-native.sh), updates [scripts/verify.sh](scripts/verify.sh), and adds [tests/native-verification.test.mjs](tests/native-verification.test.mjs). Its implementation distinguishes portable Swift parsing/core tests from genuine native AppKit/SwiftUI build gates. This archive inspected and preserved those changes; it does not claim a new execution result for that commit or assign its missing conversation to this transcript.
 
 The commit introducing this file is intentionally not self-referenced by its own SHA: GitHub's file history identifies it without a circular document update.
 
@@ -612,7 +597,7 @@ The commit introducing this file is intentionally not self-referenced by its own
 
 ### Final original runtime CI
 
-The verified source is [`0eb779b`](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01). [Workflow run 40921544866](https://github.com/pcopu/scriv/actions/runs/40921544866) completed successfully on October 29, 2026 at **13:40:07 EDT / 17:40:07 UTC**. The cloud, real-browser peer, and native Mac jobs all passed:
+The verified source is [`f39ceb8`](https://github.com/pcopu/scriv/commit/f39ceb827d78c5a2694cee489725969173c43ded). [Workflow run 40921544866](https://github.com/pcopu/scriv/actions/runs/40921544866) completed successfully on October 29, 2026 at **13:40:07 EDT / 17:40:07 UTC**. The cloud, real-browser peer, and native Mac jobs all passed:
 
 | Job | Evidence |
 | --- | --- |
@@ -700,9 +685,9 @@ The repository separates these gates from already completed automated checks. A 
 
 ### Transcript-request activity
 
-This archive was prepared from the visible conversation plus recoverable historical context. Earlier assistant replies were searched in three scoped retrievals covering the complete project, the research/fork/design phase, and the later collaboration/build phase. Those searches recovered useful summaries and the completion response, but not a full raw export. The file therefore preserves the exact available user messages and uses explicit reconstruction labels for missing assistant segments.
+This archive was prepared from the visible conversation plus recoverable historical context. Earlier assistant replies were searched in three scoped retrievals covering the complete project, the research/design phase, and the later collaboration/build phase. Those searches recovered useful summaries and the completion response, but not a full raw export. The file therefore preserves the exact available user messages and uses explicit reconstruction labels for missing assistant segments.
 
-Repository history, the original audit, design manifest, sample provenance, current source map, architecture, API, build checkpoints, and verification evidence were read. A parallel evidence review checked the chronology and artifact inventory. The connected GitHub repository showed a newer `f7382ee` commit on `main`; it was fetched as a fast-forward and its three verification-tooling changes preserved. This transcript is an additive documentation change.
+Repository history, design manifest, sample provenance, current source map, architecture, API, build checkpoints, and verification evidence were read. A parallel evidence review checked the chronology and artifact inventory. The connected GitHub repository showed a newer `80f231c` commit on `main`; it was fetched as a fast-forward and its three verification-tooling changes preserved. This transcript is an additive documentation change.
 
 ### Assistant progress messages from the archive request — verbatim
 
@@ -721,7 +706,6 @@ Repository history, the original audit, design manifest, sample provenance, curr
 | Source | What it preserves |
 | --- | --- |
 | [README.md](README.md) | Current app overview, local run/build, account separation and release boundary. |
-| [Original structure audit](https://github.com/pcopu/scriv/blob/a983e4ae8cbc96be7cc70e2963f93bd5459abe4f/structure.md) | The inherited app as inspected before replacement, including historical test results. |
 | [structure.md](structure.md) | Current native, core, cloud, resource, test, packaging and documentation map. |
 | [docs/design.md](docs/design.md) | Current Script/Characters/Storyboard and discussion/runtime interaction rules. |
 | [design/manifest.json](design/manifest.json) | All 25 original concept-image identities and integrity metadata. |

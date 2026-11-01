@@ -1,6 +1,6 @@
 ## Latest UIKit source increment (2026-10-30)
 
-The user-requested UIKit/Mac Catalyst rewrite is described in [UIKit migration and native gates](uikit-migration-20261030.md). The preserved SwiftUI checkpoint is `e14c64cc`; its native rebuild remains pending available Mac disk. The new target contains no SwiftUI hosting. Current portable evidence is 266 passing Core tests plus UIKit syntax/target checks, not native execution. Earlier historical statements below apply to their named snapshots; the later Mac audit and `/var` path-test correction are recorded in the new handoff.
+The user-requested UIKit/Mac Catalyst rewrite is described in [UIKit migration and native gates](uikit-migration-20261030.md). The preserved SwiftUI checkpoint is `979388b4`; its native rebuild remains pending available Mac disk. The new target contains no SwiftUI hosting. Current portable evidence is 266 passing Core tests plus UIKit syntax/target checks, not native execution. Earlier historical statements below apply to their named snapshots; the later Mac audit and `/var` path-test correction are recorded in the new handoff.
 
 # Current Scriv source handoff — 2026-10-29
 
@@ -8,9 +8,9 @@ The user-requested UIKit/Mac Catalyst rewrite is described in [UIKit migration a
 
 ## Included implementation
 
-The prior completed workspace integration is published at [6a846898](https://github.com/pcopu/scriv/commit/6a846898a13dddf8e2d7b75b48b1ef14a387c1ed): native editing and team controls, collaboration/access fencing, real package-local imported audio and measured waveform playback, project-member mentions, retained image conversations, historical preview/restore, and durable local generation journals with shared metadata. Audio remains local; cloud/P2P media transport remains image-specific.
+The prior completed workspace integration is published at [1dc9b1d1](https://github.com/pcopu/scriv/commit/1dc9b1d19cfff95a471ddfd51e5dbd3c6e842db4): native editing and team controls, collaboration/access fencing, real package-local imported audio and measured waveform playback, project-member mentions, retained image conversations, historical preview/restore, and durable local generation journals with shared metadata. Audio remains local; cloud/P2P media transport remains image-specific.
 
-The subsequent user-approved intent corrections were published at [eabdc538](https://github.com/pcopu/scriv/commit/eabdc5383a68cf2d6dea98589579c3aecba5c465). The narrowly scoped image-prompt storage follow-up below implements the owner's later clarification:
+The subsequent user-approved intent corrections were published at [7ecdcb85](https://github.com/pcopu/scriv/commit/7ecdcb857e8c19682acf6b91ff6fb5a7593ae41b). The narrowly scoped image-prompt storage follow-up below implements the owner's later clarification:
 
 - **Source-owned pictures:** a stable script-entry anchor and authored forward extent move with their source rather than becoming fragments owned by covered entries. Overlap, scene-tail clipping, zero-owned sources and historical restoration are explicit. See [source-owned timing](source-owned-timing-20261029.md).
 - **Authored word timing:** exact word endpoints and contiguous-phrase shifts change speech timing independently from image-cut drags. Authored pins survive compatible text edits; impossible changes fail without mutation. Imported audio is not silently aligned or stretched.
@@ -32,6 +32,6 @@ The real Chromium peer run passed one of nine tests; eight timed out with ICE/ch
 
 The backend is deployed with D1, private R2, SQLite Durable Objects and the restricted login-email sender. The [deployment verification](cloud-deployment-20261029.md) distinguishes service checks, code-send acceptance, actual delivery and completed user-code/session acceptance. Stripe remains explicitly deferred; existing paid-access gates are unchanged.
 
-Historical native CI, universal app binaries and committed screenshots belong to runtime `0eb779b`; they do not certify this newer source. Native AppKit/SwiftUI compilation, actual app interaction/rendering, live Codex generation, multi-Mac recovery, signing/notarization and current screenshot parity remain unrun. No hosted workflow was edited or dispatched and no user Mac was used. Publication commits use `[skip ci]`.
+Historical native CI, universal app binaries and committed screenshots belong to runtime `f39ceb8`; they do not certify this newer source. Native AppKit/SwiftUI compilation, actual app interaction/rendering, live Codex generation, multi-Mac recovery, signing/notarization and current screenshot parity remain unrun. No hosted workflow was edited or dispatched and no user Mac was used. Publication commits use `[skip ci]`.
 
 All 25 original concepts, three sample frames, historical evidence and the exact root `transcript.MD` are retained. The [deployment handoff](../deployment.md) records the actual configured service and remaining acceptance gates rather than claiming a fully accepted native release.

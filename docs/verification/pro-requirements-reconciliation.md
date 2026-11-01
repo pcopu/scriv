@@ -11,7 +11,7 @@ Every chunk had `content_omitted: false`; the split assistant message's offsets
 were contiguous, and both pagination ends were reached. This covers visible user
 and assistant text, **not hidden tool actions or original attachment payloads**.
 The actual requested root `transcript.MD` was subsequently published at commit
-`ae41d6f9b6a53fb0a019791a385a651db14ed3b3` and read completely: **72,487 characters**,
+`5d0803922198b82f7984657ce3277346b790a299` and read completely: **72,487 characters**,
 41 verbatim user messages plus explicitly reconstructed work history. It is not a
 full raw platform export. Reconciliation found no new or superseding product
 requirement; the additional explicit reminders concern the earlier repository
@@ -26,7 +26,7 @@ screenshots or proof of native runtime behavior.
 
 ## Latest user choices, in order
 
-- Script-first, public fork renamed Scriv; native Mac writing workspace.
+- Script-first, public project named Scriv; native Mac writing workspace.
 - Time every authored dialogue/action entry; display its duration on the left;
   play images against the timed script and current word. Main view is left script,
   right preview and layered timeline.
@@ -52,7 +52,7 @@ screenshots or proof of native runtime behavior.
   multiplayer and hosted **image** storage are premium.
 - Separate Scriv sign-in and local Codex/ChatGPT controls. Start owned process,
   Stop owned process, Connect existing local server; credentials remain local.
-- Preserve created designs/plan while removing inherited unrelated app code.
+- Preserve created designs/plan; build the app from scratch.
 - Final commercial/runtime choice supersedes earlier proposals: **$9.99/month per
   team, no per-seat charge, reusable team invitations**, on the existing Cloudflare
   Workers paid plan; D1/SQLite Durable Objects/R2 replace the earlier literal

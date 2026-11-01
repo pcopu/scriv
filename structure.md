@@ -1,6 +1,6 @@
 # Scriv application structure
 
-This is the source map of the new Scriv application, not the inherited Movie AI Workspace. Paths are relative to the repository root. Product behavior is specified in [docs/design.md](docs/design.md); the implementation protocol is [docs/cloud-api.md](docs/cloud-api.md). Actual verification is recorded separately in [docs/verification.md](docs/verification.md).
+This is the source map of the Scriv application. Paths are relative to the repository root. Product behavior is specified in [docs/design.md](docs/design.md); the implementation protocol is [docs/cloud-api.md](docs/cloud-api.md). Actual verification is recorded separately in [docs/verification.md](docs/verification.md).
 
 ## 1. Runtime boundaries
 

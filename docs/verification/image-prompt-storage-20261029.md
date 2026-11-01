@@ -4,7 +4,7 @@
 
 The owner confirmed that only hosted image **binary bytes** are paid-only. Scripts,
 authored timing and image prompts are cloud data for all accounts. The prior
-published implementation (`eabdc538`) already synced scripts, timing and image
+published implementation (`7ecdcb85`) already synced scripts, timing and image
 metadata for free personal projects, but attached only the manual direction to
 generated images. The full assembled source/profile brief stayed in the local
 job journal. That was a concrete gap, not evidence of effective-prompt storage.

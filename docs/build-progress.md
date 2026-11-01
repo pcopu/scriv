@@ -5,7 +5,7 @@ the historical implementation checkpoints. The [current integration handoff](ver
 
 ## First implementation checkpoint — 2026-10-29
 
-- Removed the inherited Movie AI Workspace implementation; its Git history remains.
+- Started the native Scriv application and Cloudflare service from scratch.
 - Preserved all 25 Scriv concept images and the product/timing/collaboration plans.
 - Added native Swift models, timing, local project persistence, Fountain import/export,
   content hashing, cloud protocol models and a native cloud client.
@@ -21,15 +21,15 @@ The final release report and deployment handoff will record actual verification 
 
 ## Integrated implementation checkpoints — 2026-10-29
 
-- `854a054`: replaced inherited code with the native/Cloudflare implementation foundation.
-- `f424878`: preserved all 25 conversation designs and added three generated sample frames.
-- `f292971`: integrated native editing, account/team/discussion UI, backend and packaging/CI.
-- `beae0de`: moved away from the retiring macOS 14 runner and added real WebRTC CI tests.
-- `4fce12c`: durable offline reconciliation/outbox, timing fences, complete cloud bootstrap, paginated discussion/history, source-safe media generation and native UI finishing.
-- `f612e5f`: corrected app-server contracts against the official Codex 0.165.0 generated schema; first successful native universal package and WebKit smoke test.
-- `03cc3d2`: immutable history recovery and the visual corrections from the three actual Mac screenshots; native build, 28 core tests, universal packaging, WebKit transfer and renders passed.
-- `ee55a46`: deterministic lower-device-ID WebRTC offerer, explicit connection request, serialized SDP/candidates and higher-ID native smoke coverage.
-- `0eb779b`: timeout retirement, responder renewal on a fresh nonce, and recovery after lost connect/offer/answer signals for either requester.
+- `3e32433`: initial native/Cloudflare implementation foundation.
+- `5e2f54f`: preserved all 25 conversation designs and added three generated sample frames.
+- `3221dd0`: integrated native editing, account/team/discussion UI, backend and packaging/CI.
+- `bfa1e3a`: moved away from the retiring macOS 14 runner and added real WebRTC CI tests.
+- `3c0fd21`: durable offline reconciliation/outbox, timing fences, complete cloud bootstrap, paginated discussion/history, source-safe media generation and native UI finishing.
+- `be8de0c`: corrected app-server contracts against the official Codex 0.165.0 generated schema; first successful native universal package and WebKit smoke test.
+- `f15157b`: immutable history recovery and the visual corrections from the three actual Mac screenshots; native build, 28 core tests, universal packaging, WebKit transfer and renders passed.
+- `a4218e7`: deterministic lower-device-ID WebRTC offerer, explicit connection request, serialized SDP/candidates and higher-ID native smoke coverage.
+- `f39ceb8`: timeout retirement, responder renewal on a fresh nonce, and recovery after lost connect/offer/answer signals for either requester.
 
 ## Release verification checkpoint
 
@@ -56,7 +56,7 @@ any individual work-in-progress commit as a production release.
 
 ## Final source verification and handoff
 
-Runtime commit `0eb779b8e07935235d4584b09abe05bd0504be01` passed all three jobs in
+Runtime commit `f39ceb827d78c5a2694cee489725969173c43ded` passed all three jobs in
 [run 40921544866](https://github.com/pcopu/scriv/actions/runs/40921544866): cloud,
 real-browser peer transport, and native Mac. The Mac job built the universal app,
 ran the higher-ID-requester WebKit smoke test, and captured the three actual

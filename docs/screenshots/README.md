@@ -3,7 +3,7 @@
 These images were captured from the actual packaged SwiftUI/AppKit application,
 using its native window content at **1440 × 970**. They are unmodified PNGs from
 [successful CI run 40921544866](https://github.com/pcopu/scriv/actions/runs/40921544866),
-built from runtime commit [`0eb779b`](https://github.com/pcopu/scriv/commit/0eb779b8e07935235d4584b09abe05bd0504be01).
+built from runtime commit [`f39ceb8`](https://github.com/pcopu/scriv/commit/f39ceb827d78c5a2694cee489725969173c43ded).
 
 The final captures are byte-identical to the three captures already visually
 reviewed after the last interface corrections. Their SHA-256 digests, artifact

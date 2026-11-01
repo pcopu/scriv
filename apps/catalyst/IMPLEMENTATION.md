@@ -1,6 +1,6 @@
 # UIKit migration contract
 
-The preserved SwiftUI checkpoint is `e14c64cc50ea231bd0f10ac42f9a6b0dc19b9ea9`. Its native rebuild remains pending on available Mac disk space; do not label it native-passed.
+The preserved SwiftUI checkpoint is `979388b4da4af6904c55c28c7b03797fe46a1703`. Its native rebuild remains pending on available Mac disk space; do not label it native-passed.
 
 The new application target is **UIKit + Mac Catalyst only**. Do not compile SwiftUI views, hosting controllers, NSViewRepresentable, or the legacy `App.swift` into this target. Existing domain models, cloud authorization, private recovery and immutable image-version behavior must remain intact.
 
