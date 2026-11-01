@@ -13,9 +13,10 @@ final class ScriptDurationScrubDriver: NSObject {
     private var task: Task<Void, Never>?
     private var leaseReady = false
     private var released = false
+    private var feedback: DurationHoldFeedback!
     init(button: UIButton, store: WorkspaceStore, entryID: String, finishEditing: @escaping () -> Bool) {
         self.button = button; self.store = store; self.entryID = entryID; self.finishEditing = finishEditing
-        super.init()
+        super.init(); feedback = DurationHoldFeedback(button: button)
         let gesture = UILongPressGestureRecognizer(target: self, action: #selector(scrub(_:)))
         gesture.minimumPressDuration = 0.18; gesture.allowableMovement = 20; gesture.cancelsTouchesInView = true; button.addGestureRecognizer(gesture)
         button.accessibilityHint = "Click for precise owned duration. Hold and drag up to add time or down to remove time; release to apply once."
@@ -28,7 +29,7 @@ final class ScriptDurationScrubDriver: NSObject {
             if store.isPlaying { store.togglePlayback() }
             let navigation = store.navigationContext, current = UUID()
             draft = ScriptDurationScrubDraft(entry: entry, navigation: navigation); origin = gesture.location(in: button?.window)
-            token = current; released = false; leaseReady = false; refreshPreview()
+            token = current; released = false; leaseReady = false; feedback.lockIn(); refreshPreview()
             task = Task { [weak self] in
                 guard let self else { return }; let allowed = await store.beginEdit(entryID)
                 guard !Task.isCancelled, token == current, draft?.navigation == store.navigationContext else { if allowed { store.endEdit(entryID, context: navigation) }; return }
@@ -48,7 +49,7 @@ final class ScriptDurationScrubDriver: NSObject {
     }
     func refreshPreview() {
         guard let draft else { return }
-        button?.setTitle(ScrivFormat.duration(draft.proposedMilliseconds) + (released && !leaseReady ? "…" : ""), for: .normal)
+        DurationHoldFeedback.tick(button, title: ScrivFormat.duration(draft.proposedMilliseconds) + (released && !leaseReady ? "…" : ""))
         button?.backgroundColor = ScrivUIKitTheme.accent.withAlphaComponent(0.22)
         button?.accessibilityValue = ScrivFormat.duration(draft.proposedMilliseconds) + ", preview; release to apply"
     }
@@ -62,11 +63,11 @@ final class ScriptDurationScrubDriver: NSObject {
         }
         finish(navigation: draft.navigation)
     }
-    func cancel() { task?.cancel(); draft?.cancel(); if let navigation = draft?.navigation { finish(navigation: navigation) } }
+    func cancel() { feedback.reset(); task?.cancel(); draft?.cancel(); if let navigation = draft?.navigation { finish(navigation: navigation) } }
     private func finish(navigation: Int) {
         if leaseReady { store.endEdit(entryID, context: navigation) }
-        token = nil; draft = nil; leaseReady = false; released = false
-        if let entry = store.project.entries.first(where: { $0.id == entryID }) { button?.setTitle(ScrivFormat.duration(entry.ownedDurationMs), for: .normal) }
+        feedback.reset(); token = nil; draft = nil; leaseReady = false; released = false
+        if let entry = store.project.entries.first(where: { $0.id == entryID }) { DurationHoldFeedback.tick(button, title: ScrivFormat.duration(entry.ownedDurationMs)) }
         button?.backgroundColor = ScrivUIKitTheme.inset; button?.accessibilityValue = nil
     }
 }

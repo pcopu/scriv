@@ -14,12 +14,13 @@ import ScrivCore
     private var leaseTask: Task<Void, Never>?
     private var leaseReady = false
     private var released = false
+    private var feedback: DurationHoldFeedback!
     private var originalTitle = ""
     private var originalConfiguration: UIButton.Configuration?
     let recognizer: UILongPressGestureRecognizer
     init(button: UIButton, store: WorkspaceStore, cueID: String) {
         self.button = button; self.store = store; self.cueID = cueID
-        recognizer = UILongPressGestureRecognizer(); super.init(); recognizer.delegate = self
+        recognizer = UILongPressGestureRecognizer(); super.init(); recognizer.delegate = self; feedback = DurationHoldFeedback(button: button)
         recognizer.minimumPressDuration = 0.18; recognizer.allowableMovement = 20; recognizer.cancelsTouchesInView = true
         recognizer.addTarget(self, action: #selector(scrub(_:))); button.addGestureRecognizer(recognizer)
         button.accessibilityHint = "Click for a precise duration. Hold and drag up to add time or down to remove time; release to apply."
@@ -35,7 +36,7 @@ import ScrivCore
             originalConfiguration = button?.configuration
             originalTitle = button?.configuration?.title ?? ScrivFormat.duration(cue.authoredDurationMs ?? cue.durationMs)
             released = false; leaseReady = false; let current = UUID(); token = current
-            preview()
+            feedback.lockIn(); preview()
             leaseTask = Task { [weak self] in
                 guard let self else { return }; let context = self.draft?.navigationContext ?? self.store.navigationContext
                 let allowed = await self.store.beginEdit(self.cueID)
@@ -48,16 +49,18 @@ import ScrivCore
             guard draft != nil else { return }; draft?.update(translationY: Double(gesture.location(in: button?.window).y - origin.y)); preview()
         case .ended:
             guard draft != nil else { return }; draft?.update(translationY: Double(gesture.location(in: button?.window).y - origin.y)); released = true
-            if leaseReady { commit() } else { button?.configuration?.title = ScrivFormat.duration(draft!.proposedDurationMs) + "…" }
+            if leaseReady { commit() } else { DurationHoldFeedback.tick(button, title: ScrivFormat.duration(draft!.proposedDurationMs) + "…") }
         case .cancelled, .failed: cancel()
         default: break
         }
     }
     private func preview() {
         guard let draft else { return }
-        button?.configuration?.title = ScrivFormat.duration(draft.proposedDurationMs)
-        button?.configuration?.baseBackgroundColor = ImageUI.accent
-        button?.configuration?.baseForegroundColor = .white
+        DurationHoldFeedback.tick(button, title: ScrivFormat.duration(draft.proposedDurationMs)) { button in
+            button.configuration?.baseBackgroundColor = ImageUI.accent
+            button.configuration?.background.backgroundColor = ImageUI.accent
+            button.configuration?.baseForegroundColor = .white
+        }
         button?.accessibilityValue = ScrivFormat.duration(draft.proposedDurationMs) + ", preview; release to apply"
     }
     private func commit() {
@@ -72,15 +75,17 @@ import ScrivCore
         finish(context: draft.navigationContext)
     }
     func cancel() {
+        feedback.reset()
         let context = draft?.navigationContext; draft?.cancel(); leaseTask?.cancel()
         if let context { finish(context: context) }
     }
     private func finish(context: Int) {
+        feedback.reset()
         if leaseReady { store.endEdit(cueID, context: context) }; leaseReady = false; released = false; token = nil; draft = nil
         let duration = store.project.cues.first { $0.id == cueID }.map { $0.authoredDurationMs ?? $0.durationMs }
         var configuration = originalConfiguration ?? button?.configuration
         configuration?.title = duration.map(ScrivFormat.duration) ?? originalTitle
-        button?.configuration = configuration; button?.accessibilityValue = nil
+        UIView.performWithoutAnimation { button?.configuration = configuration; button?.layoutIfNeeded(); button?.titleLabel?.layer.removeAllAnimations() }; button?.accessibilityValue = nil
     }
 }
 

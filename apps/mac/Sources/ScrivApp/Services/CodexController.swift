@@ -1,11 +1,21 @@
 import Foundation
 import Combine
+import ImageIO
 #if targetEnvironment(macCatalyst)
 import UIKit
 #else
 import AppKit
 #endif
 import ScrivCore
+
+/// A local listener cannot redirect this client to another host or borrow an
+/// ambient HTTP credential. Normal TLS trust still applies to wss loopback.
+private final class CodexLoopbackSessionDelegate: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+    func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) { completionHandler(nil) }
+    func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        completionHandler(challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust ? .performDefaultHandling : .cancelAuthenticationChallenge, nil)
+    }
+}
 
 /// A local JSON-RPC client. ChatGPT credentials remain in the user's Codex runtime.
 @MainActor
@@ -14,13 +24,21 @@ final class CodexController: ObservableObject {
     @Published private(set) var isConnected = false
     @Published private(set) var isRunning = false
     @Published private(set) var isGenerating = false
+    @Published private(set) var isAnalyzingCharacters = false
+    private var characterAnalysisToken: UUID?
+    private var characterTurn = CodexCharacterTurnState()
     @Published private(set) var accountLabel: String?
     @Published private(set) var accountChecked = false
+    @Published private(set) var requiresAccountAuthentication = true
+    @Published private(set) var connectionCheck = CodexConnectionCheck()
+    @Published private(set) var modelCapabilities: [CodexModelCapabilities] = []
+    var selectedModelSupportsImageInput: Bool { modelCapabilities.first { $0.model == selectedModel }?.supportsImageInput == true }
+    private var receivedProtocolReply = false
     @Published private(set) var lastError: String?
     @Published private(set) var log = ""
     @Published var executablePath: String { didSet { UserDefaults.standard.set(executablePath, forKey: "codexExecutable") } }
     @Published var endpoint: String { didSet { UserDefaults.standard.set(endpoint, forKey: "codexEndpoint") } }
-    @Published var selectedModel = ""
+    @Published var selectedModel = "" { didSet { if selectedModel != oldValue { onChange?() } } }
     @Published private(set) var availableModels: [String] = []
     @Published private(set) var jobs: [LocalGenerationJob] = []
     @Published private(set) var journalError: String?
@@ -67,7 +85,9 @@ final class CodexController: ObservableObject {
             onChange?()
         } catch { if scoped { url.stopAccessingSecurityScopedResource() }; throw error }
     }
-    @Published private(set) var bridgePaired = MacRuntimeBridge.isPaired
+    @Published private(set) var bridgePaired = false
+    // Owned per explicit guided connection; never initialized at launch.
+    var releaseBundledRuntime: (() -> Void)?
     func importRuntimePairing(from url: URL) throws {
         guard !isConnected, !isConnecting else { throw ScrivError.conflict("Disconnect before changing local pairing.") }
         try MacRuntimeBridge.importPairing(from: url); bridgePaired = true; onChange?()
@@ -91,6 +111,7 @@ final class CodexController: ObservableObject {
     private var errors: FileHandle?
     private var buffer = Data()
     private var socket: URLSessionWebSocketTask?
+    private var socketSession: URLSession?
     private var socketReceiver: Task<Void,Never>?
     private var pending: [Int: CheckedContinuation<JSONValue,Error>] = [:]
     private var deadlines: [Int: Task<Void,Never>] = [:]
@@ -109,9 +130,14 @@ final class CodexController: ObservableObject {
     private var imageGenerationError: String?
     var onChange: (() -> Void)?
     init() {
-        executablePath = UserDefaults.standard.string(forKey: "codexExecutable") ?? Self.locateExecutable() ?? "/opt/homebrew/bin/codex"
-        endpoint = UserDefaults.standard.string(forKey: "codexEndpoint") ?? "ws://127.0.0.1:4500"
+        executablePath = UserDefaults.standard.string(forKey: "codexExecutable") ?? Self.locateExecutable() ?? CodexLocalSetup.automaticExecutable
+        endpoint = UserDefaults.standard.string(forKey: "codexEndpoint") ?? CodexLocalSetup.defaultEndpoint
         let verification = ProcessInfo.processInfo.arguments.contains("--screenshots") || ProcessInfo.processInfo.arguments.contains("--peer-smoke")
+        #if targetEnvironment(macCatalyst)
+        // Native synthetic verification must not query an existing pairing
+        // capability in Keychain. Production retains the same explicit pairing.
+        if !verification { bridgePaired = MacRuntimeBridge.isPaired }
+        #endif
         installationID = verification ? UUID().uuidString : UserDefaults.standard.string(forKey: "generationInstallationID") ?? UUID().uuidString
         if UUID(uuidString: installationID) == nil { installationID = UUID().uuidString }
         if !verification { UserDefaults.standard.set(installationID, forKey: "generationInstallationID") }
@@ -155,16 +181,78 @@ final class CodexController: ObservableObject {
         // validates the configured absolute path when an explicit start is requested.
         return nil
         #else
-        let candidates = ["/opt/homebrew/bin/codex","/usr/local/bin/codex",FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".npm-global/bin/codex").path]
-        return candidates.first { FileManager.default.isExecutableFile(atPath: $0) }
+        return CodexLocalSetup.resolveExecutable()
         #endif
     }
-    func start() async throws {
+    /// Explicit user action. No scanning, installation, sign-in, or model turn.
+    /// Only the saved loopback endpoint and an already-authorized paired helper
+    /// are eligible. A responding incompatible server is never silently replaced.
+    func checkAndConnect(prepareLocalRuntime: (@MainActor () async throws -> Void)? = nil) async {
+        guard !isGenerating, !isAnalyzingCharacters, !isConnecting, let attempt = connectionCheck.begin() else { return }
+        lastError = nil; onChange?()
+        if !isConnected {
+            do { _ = try CodexLocalSetup.endpointURL(endpoint) }
+            catch { connectionCheck.finish(.incompatible, attempt: attempt); lastError = error.localizedDescription; onChange?(); return }
+        }
+        do {
+            if isConnected {
+                try await readAccount(); try await readModels()
+            } else {
+                do { try await connect(timeout: .seconds(6)) }
+                catch {
+                    guard connectionCheck.accepts(attempt), !Task.isCancelled else { return }
+                    #if targetEnvironment(macCatalyst)
+                    if !receivedProtocolReply, let prepareLocalRuntime {
+                        // The user-confirmed native adapter already owns the
+                        // bundled service; never open the standalone app here.
+                        try await prepareLocalRuntime()
+                        try Task.checkCancellation()
+                        guard connectionCheck.accepts(attempt) else { return }
+                        bridgePaired = try MacRuntimeBridge.savedPairing() != nil
+                        try await start(preservingBundledRuntime: true)
+                    } else if bridgePaired && !receivedProtocolReply {
+                        // The click explicitly requests use of this previously
+                        // paired runtime. Opening never installs or re-pairs it.
+                        try await openRuntimeCompanion()
+                        try Task.checkCancellation()
+                        guard connectionCheck.accepts(attempt) else { return }
+                        try await Task.sleep(for: .milliseconds(400))
+                        guard connectionCheck.accepts(attempt) else { return }
+                        try await start()
+                    } else { throw error }
+                    #else
+                    if !receivedProtocolReply, CodexLocalSetup.resolveExecutable(preferredPath: executablePath) != nil { try await start() }
+                    else { throw error }
+                    #endif
+                }
+            }
+            guard connectionCheck.accepts(attempt), !Task.isCancelled else { return }
+            connectionCheck.finish(accountLabel != nil || !requiresAccountAuthentication ? .ready : .signInRequired, attempt: attempt)
+            lastError = nil; onChange?()
+        } catch is CancellationError {
+            if connectionCheck.accepts(attempt) { cancelConnectionCheck() }
+        } catch {
+            guard connectionCheck.accepts(attempt) else { return }
+            // A failed refresh must not leave an old green readiness badge.
+            disconnect(cancelCheck: false)
+            connectionCheck.finish(receivedProtocolReply ? .incompatible : .notFound, attempt: attempt)
+            lastError = error.localizedDescription; onChange?()
+        }
+    }
+    func cancelConnectionCheck() {
+        guard connectionCheck.attempt != nil || isConnecting else { return }
+        connectionCheck.cancel(); disconnect(cancelCheck: false); isConnecting = false
+        lastError = nil; onChange?()
+    }
+
+    func start(preservingBundledRuntime: Bool = false) async throws {
         guard !isConnecting, !isConnected, !ownsTransport, socket == nil else { throw ScrivError.conflict("Disconnect the current runtime first.") }
+        receivedProtocolReply = false
         #if targetEnvironment(macCatalyst)
-        guard executablePath.hasPrefix("/") else { throw ScrivError.unavailable("Choose the absolute path of Codex installed on this Mac.") }
-        disconnect(); isConnecting = true; defer { isConnecting = false }
+        guard executablePath == CodexLocalSetup.automaticExecutable || executablePath.hasPrefix("/") else { throw ScrivError.unavailable("Use automatic discovery or choose the absolute path of Codex installed on this Mac.") }
+        disconnect(cancelCheck: false, releaseBundledRuntime: !preservingBundledRuntime); isConnecting = true
         let sessionGeneration = connectionGeneration
+        defer { if connectionGeneration == sessionGeneration { isConnecting = false }; onChange?() }
         status = "Starting local companion connection…"; lastError = nil; onChange?()
         let local: MacRuntimeBridge
         do { local = try MacRuntimeBridge() } catch { status = "Stopped"; lastError = error.localizedDescription; onChange?(); throw error }
@@ -175,14 +263,15 @@ final class CodexController: ObservableObject {
             try await local.start(executable: executablePath, generationRoot: generationRoot())
             guard connectionGeneration == sessionGeneration else { local.stop(); throw CancellationError() }
             isRunning = true; try await initialize(generation: sessionGeneration)
-        } catch { if connectionGeneration == sessionGeneration { stop(); lastError = error.localizedDescription }; throw error }
+        } catch { if connectionGeneration == sessionGeneration { disconnect(cancelCheck: false); isConnecting = false; lastError = error.localizedDescription }; throw error }
         #else
-        guard executablePath.hasPrefix("/"), FileManager.default.isExecutableFile(atPath: executablePath) else { throw ScrivError.unavailable("Install Codex on this Mac, then select its executable in Settings.") }
-        disconnect(); isConnecting = true; defer { isConnecting = false }
+        guard let resolvedExecutable = CodexLocalSetup.resolveExecutable(preferredPath: executablePath) else { throw ScrivError.unavailable("Install ChatGPT or Codex on this Mac, or select its executable in Settings.") }
+        disconnect(cancelCheck: false); isConnecting = true
         let sessionGeneration = connectionGeneration
+        defer { if connectionGeneration == sessionGeneration { isConnecting = false }; onChange?() }
         status = "Starting…"; lastError = nil; onChange?()
         let child = Process(), stdin = Pipe(), stdout = Pipe(), stderr = Pipe()
-        child.executableURL = URL(fileURLWithPath: executablePath); child.arguments = ["app-server"]
+        child.executableURL = URL(fileURLWithPath: resolvedExecutable); child.arguments = ["app-server"]
         child.standardInput = stdin; child.standardOutput = stdout; child.standardError = stderr
         let directory = try generationRoot(); child.currentDirectoryURL = directory
         var environment = ProcessInfo.processInfo.environment
@@ -198,17 +287,23 @@ final class CodexController: ObservableObject {
         child.terminationHandler = { [weak self] _ in Task { @MainActor in self?.transportClosed("Codex stopped.",generation:sessionGeneration) } }
         process = child
         do { try child.run(); isRunning = true; try await initialize(generation:sessionGeneration) }
-        catch { if connectionGeneration == sessionGeneration { stop(); lastError = error.localizedDescription }; throw error }
+        catch { if connectionGeneration == sessionGeneration { disconnect(cancelCheck: false); isConnecting = false; lastError = error.localizedDescription }; throw error }
         #endif
     }
 
-    func connect() async throws {
+    func connect(timeout: Duration = .seconds(10)) async throws {
         guard !isConnecting, !isConnected, !ownsTransport, socket == nil else { throw ScrivError.invalid("Disconnect the current runtime first.") }
-        guard let url = URL(string: endpoint), ["ws","wss"].contains(url.scheme ?? ""), ["localhost","127.0.0.1","::1","[::1]"].contains(url.host ?? ""), url.user == nil, url.password == nil, url.fragment == nil else { throw ScrivError.permission("The Codex connection must stay on this Mac's loopback interface.") }
-        disconnect(); isConnecting = true; defer { isConnecting = false }
+        let url = try CodexLocalSetup.endpointURL(endpoint)
+        disconnect(cancelCheck: false); isConnecting = true
         let sessionGeneration = connectionGeneration
+        defer { if connectionGeneration == sessionGeneration { isConnecting = false }; onChange?() }
         status = "Connecting…"; lastError = nil; onChange?()
-        let ws = URLSession.shared.webSocketTask(with: url); ws.maximumMessageSize = 32*1024*1024; socket = ws; ws.resume()
+        receivedProtocolReply = false
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.httpCookieStorage = nil; configuration.urlCredentialStorage = nil
+        configuration.connectionProxyDictionary = [:]
+        let session = URLSession(configuration: configuration, delegate: CodexLoopbackSessionDelegate(), delegateQueue: nil); socketSession = session
+        let ws = session.webSocketTask(with: url); ws.maximumMessageSize = 32*1024*1024; socket = ws; ws.resume()
         socketReceiver = Task { [weak self] in
             do {
                 while !Task.isCancelled {
@@ -218,36 +313,44 @@ final class CodexController: ObservableObject {
                 }
             } catch { self?.transportClosed("Codex connection closed.",generation:sessionGeneration) }
         }
-        do { try await initialize(generation:sessionGeneration) } catch { if connectionGeneration == sessionGeneration { disconnect(); lastError = error.localizedDescription }; throw error }
+        do { try await initialize(generation:sessionGeneration, timeout: timeout) }
+        catch { if connectionGeneration == sessionGeneration { disconnect(cancelCheck: false); isConnecting = false; lastError = error.localizedDescription }; throw error }
     }
-    private func initialize(generation: Int) async throws {
-        _ = try await rpc("initialize", .object(["clientInfo":.object(["name":.string("scriv_mac"),"title":.string("Scriv"),"version":.string("1.0.0")])]))
+    private func initialize(generation: Int, timeout: Duration = .seconds(10)) async throws {
+        let hello = try await rpc("initialize", .object(["clientInfo":.object(["name":.string("scriv_mac"),"title":.string("Scriv"),"version":.string("1.0.0")])]), timeout: timeout)
+        try CodexAccountReadiness.validateInitialize(hello)
         try await send(.object(["method":.string("initialized")]))
         guard generation == connectionGeneration else { throw CancellationError() }
         isConnected = true; status = "Connected"; onChange?()
-        try await readAccount()
-        try await readModels()
+        try await readAccount(timeout: timeout)
+        try await readModels(timeout: timeout)
     }
-    private func readModels() async throws {
+    private func readModels(timeout: Duration = .seconds(10)) async throws {
         let generation = connectionGeneration
         var models: [JSONValue] = [], cursor: String?, seenCursors: Set<String> = []
         repeat {
             var parameters: [String:JSONValue] = ["limit":.number(100),"includeHidden":.bool(false)]
             if let cursor { parameters["cursor"] = .string(cursor) }
-            let result = try await rpc("model/list",.object(parameters))
+            let result = try await rpc("model/list",.object(parameters), timeout: timeout)
             guard generation == connectionGeneration else { throw CancellationError() }
-            models += result["data"]?.array ?? []; cursor = result["nextCursor"]?.string
+            guard let page = result["data"]?.array else { throw ScrivError.invalid("This runtime did not return a compatible model catalog.") }
+            models += page; cursor = result["nextCursor"]?.string
+            guard models.count <= 5_000, seenCursors.count < 50 else { throw ScrivError.invalid("The model catalog exceeded the local connection-check limit.") }
             if let cursor { guard !seenCursors.contains(cursor) else { throw ScrivError.invalid("Codex model pagination did not advance.") }; seenCursors.insert(cursor) }
         } while cursor != nil
         var seenModels: Set<String> = []
         availableModels = models.compactMap { $0["model"]?.string ?? $0["id"]?.string }.filter { !$0.isEmpty && seenModels.insert($0).inserted }
+        modelCapabilities = models.compactMap { value in
+            guard let name = value["model"]?.string ?? value["id"]?.string else { return nil }
+            return CodexModelCapabilities(model: name, inputModalities: value["inputModalities"]?.array.map { Set($0.compactMap(\.string)) })
+        }
         if !availableModels.contains(selectedModel) { selectedModel = models.first(where: { $0["isDefault"] == .bool(true) })?["model"]?.string ?? availableModels.first ?? "" }
         onChange?()
     }
     func signIn() async throws {
         guard isConnected else { throw ScrivError.unavailable("Start or connect Codex first.") }
         guard !loginStarting, pendingLoginID == nil else { throw ScrivError.conflict("A ChatGPT sign-in is already open. Complete it in your browser, or cancel sign-in before retrying.") }
-        guard !isGenerating else { throw ScrivError.conflict("Wait for image generation to finish before changing the Codex account.") }
+        guard !isGenerating, !isAnalyzingCharacters else { throw ScrivError.conflict("Wait for the active image operation to finish before changing the Codex account.") }
         let generation = connectionGeneration
         loginStarting = true
         defer { if generation == connectionGeneration { loginStarting = false } }
@@ -280,7 +383,7 @@ final class CodexController: ObservableObject {
     }
     func signOut() async throws {
         guard isConnected else { throw ScrivError.unavailable("Start or connect Codex first.") }
-        guard !isGenerating else { throw ScrivError.conflict("Wait for image generation to finish before changing the Codex account.") }
+        guard !isGenerating, !isAnalyzingCharacters else { throw ScrivError.conflict("Wait for the active image operation to finish before changing the Codex account.") }
         let generation = connectionGeneration
         _ = try await rpc("account/logout", .null)
         guard generation == connectionGeneration else { throw CancellationError() }
@@ -305,33 +408,39 @@ final class CodexController: ObservableObject {
             onChange?()
         }
     }
-    func readAccount() async throws {
+    func readAccount(timeout: Duration = .seconds(10)) async throws {
         let generation = connectionGeneration
-        let result = try await rpc("account/read", .object(["refreshToken":.bool(false)]))
+        let result = try await rpc("account/read", .object(["refreshToken":.bool(false)]), timeout: timeout)
         guard generation == connectionGeneration else { throw CancellationError() }
-        if let account = result["account"], account != .null { accountLabel = account["email"]?.string ?? account["type"]?.string ?? "Signed in" }
-        else { accountLabel = nil }
+        let readiness = try CodexAccountReadiness(response: result)
+        requiresAccountAuthentication = readiness.requiresAuthentication; accountLabel = readiness.label
         accountChecked = true; onChange?()
     }
     func stop() { disconnect() }
-    func disconnect() {
+    func disconnect(cancelCheck: Bool = true, releaseBundledRuntime: Bool = true) {
+        if cancelCheck { connectionCheck.reset() }
+        if isAnalyzingCharacters { characterTurn.reject("The Codex connection ended during character analysis. Review the original turn before retrying.") }
         if isGenerating { recordProgress(.waiting, "Connection ended. Inspect the original turn before retrying.") }
         connectionGeneration += 1
         // Only terminate the child owned by this client, never an externally connected server.
         #if targetEnvironment(macCatalyst)
-        let owned = bridge; bridge = nil; owned?.onMessage = nil; owned?.onClose = nil; owned?.stop()
+        let release = releaseBundledRuntime ? self.releaseBundledRuntime : nil
+        if releaseBundledRuntime { self.releaseBundledRuntime = nil }
+        let owned = bridge; bridge = nil; owned?.onMessage = nil; owned?.onClose = nil
+        if let owned { owned.stop(completion: release) } else { release?() }
         #else
         let owned = process; process = nil; owned?.terminationHandler = nil
         if let owned, owned.isRunning { owned.terminate() }
         #endif
         socketReceiver?.cancel(); socketReceiver = nil; socket?.cancel(with: .normalClosure, reason: nil); socket = nil
+        socketSession?.invalidateAndCancel(); socketSession = nil
         output?.readabilityHandler = nil; errors?.readabilityHandler = nil
         try? input?.close(); try? output?.close(); try? errors?.close(); input = nil; output = nil; errors = nil
         pendingLoginID = nil; loginStarting = false; earlyLoginCompletions.removeAll()
-        buffer.removeAll(); isConnected = false; isRunning = false; accountLabel = nil; accountChecked = false; availableModels = []; status = "Stopped"
+        buffer.removeAll(); isConnected = false; isRunning = false; accountLabel = nil; accountChecked = false; availableModels = []; modelCapabilities = []; requiresAccountAuthentication = true; status = "Stopped"
         failPending(ScrivError.unavailable("Codex disconnected.")); onChange?()
     }
-    private func transportClosed(_ message: String, generation: Int) { guard generation == connectionGeneration else { return }; disconnect(); status = "Disconnected"; lastError = message; onChange?() }
+    private func transportClosed(_ message: String, generation: Int) { guard generation == connectionGeneration else { return }; disconnect(cancelCheck: false); isConnecting = false; status = "Disconnected"; lastError = message; onChange?() }
     private func failPending(_ error: Error) { let callbacks = pending; pending = [:]; for deadline in deadlines.values { deadline.cancel() }; deadlines = [:]; for callback in callbacks.values { callback.resume(throwing: error) } }
     private func generationRoot() throws -> URL {
         #if targetEnvironment(macCatalyst)
@@ -350,8 +459,8 @@ final class CodexController: ObservableObject {
     }
     func generate(prompt: String, submittedPrompt suppliedPrompt: String? = nil, references: [URL] = [], context: GenerationJobContext? = nil, jobID proposedID: String = UUID().uuidString, retryOf: String? = nil) async throws -> URL {
         let jobID = proposedID.lowercased()
-        if let blocker = CodexConnectionReadiness(isConnected: isConnected, accountChecked: accountChecked, accountLabel: accountLabel).generationBlocker { throw ScrivError.unavailable(blocker) }
-        guard !isGenerating else { throw ScrivError.conflict("An image is already being generated on this Mac.") }
+        if let blocker = CodexConnectionReadiness(isConnected: isConnected, accountChecked: accountChecked, accountLabel: accountLabel ?? (requiresAccountAuthentication ? nil : "Account not required")).generationBlocker { throw ScrivError.unavailable(blocker) }
+        guard !isGenerating, !isAnalyzingCharacters else { throw ScrivError.conflict("An image operation is already running on this Mac.") }
         guard !loginStarting, pendingLoginID == nil else { throw ScrivError.conflict("Complete or cancel the pending ChatGPT sign-in before generating.") }
         guard !prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw ScrivError.invalid("Write an image direction first.") }
         let submittedPrompt = suppliedPrompt ?? GenerationPrompt.submitted(brief:prompt)
@@ -485,10 +594,15 @@ final class CodexController: ObservableObject {
         while let newline = buffer.firstIndex(of:10) { let line = buffer.prefix(upTo:newline); buffer.removeSubrange(...newline); if !line.isEmpty { receiveMessage(Data(line)) } }
     }
     private func receiveMessage(_ data: Data) {
+        if !data.isEmpty { receivedProtocolReply = true } // A response is not proof of a compatible handshake.
         guard data.count <= 32*1024*1024 else { transportClosed("Codex sent an oversized message.",generation:connectionGeneration); return }
         guard let message = try? ScrivJSON.decoder.decode(JSONValue.self,from:data) else { return }
         if let id = message["id"], let method = message["method"]?.string {
             let generation = connectionGeneration
+            let analysisToken = characterAnalysisToken
+            let requestedThread = message["params"]?["threadId"]?.string
+            let affectsAnalysis = analysisToken != nil && (requestedThread == nil || requestedThread == characterTurn.lifecycle.threadID)
+            if affectsAnalysis { characterTurn.reject("Codex requested a tool or additional access during character analysis. The scan was stopped; review it in Codex before retrying.") }
             // Respect sandbox/approval restrictions. This integration does not grant new tool permissions automatically.
             Task {
                 let response: JSONValue
@@ -509,17 +623,29 @@ final class CodexController: ObservableObject {
                 default: response = .object(["id":id,"error":.object(["code":.number(-32601),"message":.string("This client does not implement \(method).")])])
                 }
                 try? await send(response); onChange?()
+                if affectsAnalysis, let analysisToken { await cancelCharacterAnalysis(analysisToken, generation: generation) }
                 if method == "item/tool/requestUserInput" { await cancelGeneration() }
             }
             return
         }
         if let id = message["id"]?.int, let continuation = pending.removeValue(forKey:id) {
+            receivedProtocolReply = true
             deadlines.removeValue(forKey:id)?.cancel()
             if let error = message["error"] { continuation.resume(throwing:ScrivError.unavailable(error["message"]?.string ?? "Codex returned an error.")) }
             else { continuation.resume(returning:message["result"] ?? .null) }
             return
         }
         let params = message["params"] ?? .null
+        if let token = characterAnalysisToken, params["threadId"]?.string == characterTurn.lifecycle.threadID {
+            let method = message["method"]?.string ?? ""
+            characterTurn.receive(method: method, params: params)
+            if method == "error" { characterTurn.reject("Codex reported an analysis error. Review the original turn before retrying.") }
+            if characterTurn.failure != nil {
+                let generation = connectionGeneration
+                Task { [weak self] in await self?.cancelCharacterAnalysis(token, generation: generation) }
+            }
+            return // Analysis text never enters the generation response log.
+        }
         switch message["method"]?.string {
         case "item/started":
             if isGenerating, params["threadId"]?.string == generationState.threadID, let item = params["item"] {
@@ -629,7 +755,7 @@ final class CodexController: ObservableObject {
     /// Reads an already-recorded thread; does not resume a turn or invoke a model.
     func inspectJob(_ id: String) async throws {
         let id = id.lowercased()
-        guard !isGenerating, inspectingJobID == nil, let job = jobs.first(where: { $0.id == id }), job.ownerInstallationID == installationID else { throw ScrivError.conflict("Finish the active operation before inspecting recovery.") }
+        guard !isGenerating, !isAnalyzingCharacters, inspectingJobID == nil, let job = jobs.first(where: { $0.id == id }), job.ownerInstallationID == installationID else { throw ScrivError.conflict("Finish the active operation before inspecting recovery.") }
         inspectingJobID = id; defer { inspectingJobID = nil }
         let directory = try jobDirectory(id)
         if job.status == .completed { _ = try artifactURL(for: id); return }
@@ -669,5 +795,131 @@ final class CodexController: ObservableObject {
         default:
             try updateJob(id) { $0.status = .waiting; $0.progressText = "Original turn is still in progress. Inspect again later; do not submit a duplicate." }
         }
+    }
+}
+
+/// Standard app-server vision turns under the user's existing Codex permissions.
+/// Read-only/no-subprocess-network is requested and checked; configured external
+/// tools remain the runtime's responsibility. Monitoring is not tool isolation.
+extension CodexController: CharacterImageAnalysisProvider {
+    var providerID: String { "codex-app-server" }
+    var availability: String? {
+        guard isConnected else { return "Connect an image-capable AI to check characters." }
+        guard !isConnecting, connectionCheck.phase != .checking else { return "Checking the Codex connection…" }
+        guard accountChecked else { return "Checking the connected Codex account…" }
+        guard !requiresAccountAuthentication || accountLabel != nil else { return "Sign in to Codex to check characters." }
+        guard !loginStarting, pendingLoginID == nil else { return "Finish Codex sign-in before checking characters." }
+        guard !isGenerating else { return "Character scanning will resume after image generation." }
+        guard !selectedModel.isEmpty else { return "Choose an available image-capable model." }
+        guard selectedModelSupportsImageInput else { return "This model has not reported image-input support. Choose an image-capable model." }
+        return nil
+    }
+    func analyze(_ request: CharacterImageAnalysisRequest) async throws -> CharacterImageAnalysisResult {
+        try Task.checkCancellation()
+        if let availability { throw ScrivError.unavailable(availability) }
+        guard !isAnalyzingCharacters else { throw ScrivError.conflict("A character image is already being checked.") }
+        let token = UUID(), generation = connectionGeneration, model = selectedModel
+        let directory = try jobDirectory(UUID().uuidString.lowercased())
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+        characterAnalysisToken = token; characterTurn = CodexCharacterTurnState(); isAnalyzingCharacters = true
+        status = "Checking image characters…"; onChange?()
+        defer {
+            // This empty working folder was created by this request, not a
+            // project asset or generation job. The model gets only inline bytes.
+            if (try? FileManager.default.contentsOfDirectory(atPath: directory.path).isEmpty) == true { try? FileManager.default.removeItem(at: directory) }
+            if characterAnalysisToken == token {
+                characterAnalysisToken = nil; characterTurn = CodexCharacterTurnState(); isAnalyzingCharacters = false
+                status = isConnected ? "Connected" : "Stopped"; onChange?()
+            }
+        }
+        return try await withTaskCancellationHandler {
+            var submittedTurn = false
+            do {
+                let image = try await Task.detached(priority: .utility) { try Self.characterAnalysisImage(request) }.value
+                try Task.checkCancellation()
+                guard generation == connectionGeneration, characterAnalysisToken == token else { throw CancellationError() }
+                let thread: JSONValue
+                do { thread = try await rpc("thread/start", .object([
+                    "cwd": .string(directory.path), "model": .string(model), "ephemeral": .bool(true),
+                    "approvalPolicy": .string("never"), "sandbox": .string("read-only"),
+                    "developerInstructions": .string(CodexCharacterAnalysisProtocol.developerInstructions)
+                ]), timeout: .seconds(15)) }
+                catch { throw CharacterAnalysisInterruption(reason: "Codex could not open the requested read-only analysis thread. No analysis image was sent; the scan is paused. " + error.localizedDescription) }
+                guard generation == connectionGeneration, characterAnalysisToken == token else { throw CancellationError() }
+                let threadID = try CodexCharacterAnalysisProtocol.validateThread(thread, model: model, cwd: directory)
+                characterTurn.startThread(threadID)
+                try Task.checkCancellation()
+                let input: JSONValue = .array([
+                    .object(["type": .string("text"), "text": .string(CodexCharacterAnalysisProtocol.prompt(request))]),
+                    .object(["type": .string("image"), "url": .string("data:image/jpeg;base64," + image.bytes.base64EncodedString())])
+                ])
+                submittedTurn = true
+                let response = try await rpc("turn/start", .object([
+                    "threadId": .string(threadID), "input": input, "cwd": .string(directory.path),
+                    "approvalPolicy": .string("never"), "sandboxPolicy": .object(["type": .string("readOnly"), "networkAccess": .bool(false)]),
+                    "outputSchema": CodexCharacterAnalysisProtocol.outputSchema
+                ]), timeout: .seconds(15))
+                guard generation == connectionGeneration, characterAnalysisToken == token else { throw CharacterAnalysisInterruption(reason: "Connection changed after the analysis was submitted. Review the original turn before retrying.") }
+                guard let turnID = response["turn"]?["id"]?.string, !turnID.isEmpty, turnID.utf8.count <= 256 else { throw CharacterAnalysisInterruption(reason: "Codex did not identify the submitted analysis turn. Review Codex before retrying.") }
+                if let interrupt = characterTurn.startTurn(turnID) { await interruptCharacterTurn(interrupt, generation: generation) }
+                if characterTurn.failure != nil { await cancelCharacterAnalysis(token, generation: generation) }
+                let deadline = ContinuousClock.now.advanced(by: .seconds(90))
+                while characterTurn.lifecycle.completion == nil {
+                    if let failure = characterTurn.failure { throw CharacterAnalysisInterruption(reason: failure) }
+                    try Task.checkCancellation()
+                    guard generation == connectionGeneration, characterAnalysisToken == token else { throw CharacterAnalysisInterruption(reason: "The analysis connection ended. Review the original turn before retrying.") }
+                    guard ContinuousClock.now < deadline else { throw CharacterAnalysisInterruption(reason: "Character analysis timed out. Cancellation was requested; review Codex before retrying.") }
+                    try await Task.sleep(for: .milliseconds(100))
+                }
+                if let failure = characterTurn.failure { throw CharacterAnalysisInterruption(reason: failure) }
+                try Task.checkCancellation()
+                guard characterTurn.lifecycle.completion?["status"]?.string == "completed", let text = characterTurn.finalText else { throw CharacterAnalysisInterruption(reason: "Codex did not complete a structured character analysis. The scan is paused; review the original turn before retrying.") }
+                let decoded = try CodexCharacterAnalysisProtocol.decode(text)
+                let verified = try await Task.detached(priority: .utility) { try Self.verifiedCharacterImageBytes(request) }.value
+                try Task.checkCancellation()
+                guard verified.url == image.url, generation == connectionGeneration, characterAnalysisToken == token else { throw CancellationError() }
+                return decoded
+            } catch {
+                if generation == connectionGeneration { await cancelCharacterAnalysis(token, generation: generation) }
+                if let interruption = error as? CharacterAnalysisInterruption { throw interruption }
+                if submittedTurn && characterTurn.lifecycle.completion == nil {
+                    throw CharacterAnalysisInterruption(reason: "Character analysis ended without a confirmed result. Review the original Codex turn before retrying. " + error.localizedDescription)
+                }
+                if error is CancellationError { throw error }
+                throw error
+            }
+        } onCancel: {
+            Task { @MainActor [weak self] in await self?.cancelCharacterAnalysis(token, generation: generation) }
+        }
+    }
+    private func cancelCharacterAnalysis(_ token: UUID, generation: Int) async {
+        guard characterAnalysisToken == token, connectionGeneration == generation else { return }
+        if let turn = characterTurn.cancel() { await interruptCharacterTurn(turn, generation: generation) }
+    }
+    private func interruptCharacterTurn(_ turn: CodexGenerationState.Turn, generation: Int) async {
+        guard generation == connectionGeneration else { return }
+        do { _ = try await rpc("turn/interrupt", .object(["threadId": .string(turn.threadID), "turnId": .string(turn.turnID)]), timeout: .seconds(5)) }
+        catch { characterTurn.reject("Codex cancellation could not be confirmed. Review the original analysis turn before retrying.") }
+    }
+    nonisolated private static func verifiedCharacterImageBytes(_ request: CharacterImageAnalysisRequest) throws -> (url: URL, bytes: Data) {
+        let source = request.imageURL
+        guard source.isFileURL else { throw ScrivError.invalid("Character analysis requires a local project image.") }
+        let properties = try source.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
+        guard properties.isRegularFile == true, properties.isSymbolicLink != true, let size = properties.fileSize, size > 0, size <= CodexImageArtifacts.maximumBytes else { throw ScrivError.invalid("This project image is missing, linked, empty, or too large to analyze.") }
+        let canonical = source.resolvingSymlinksInPath().standardizedFileURL
+        let bytes = try Data(contentsOf: canonical, options: .mappedIfSafe)
+        guard bytes.count <= CodexImageArtifacts.maximumBytes, ScrivDigest.sha256(bytes) == request.imageSHA256,
+              source.resolvingSymlinksInPath().standardizedFileURL == canonical else { throw ScrivError.conflict("The project image changed during analysis. No tags were changed.") }
+        return (canonical, bytes)
+    }
+    nonisolated private static func characterAnalysisImage(_ request: CharacterImageAnalysisRequest) throws -> (url: URL, bytes: Data) {
+        let original = try verifiedCharacterImageBytes(request)
+        guard let source = CGImageSourceCreateWithData(original.bytes as CFData, nil),
+              let image = CGImageSourceCreateThumbnailAtIndex(source, 0, [kCGImageSourceCreateThumbnailFromImageAlways: true, kCGImageSourceCreateThumbnailWithTransform: true, kCGImageSourceThumbnailMaxPixelSize: 1536] as CFDictionary) else { throw ScrivError.invalid("This project image could not be decoded for character analysis.") }
+        let output = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(output, "public.jpeg" as CFString, 1, nil) else { throw ScrivError.unavailable("A local analysis preview could not be prepared.") }
+        CGImageDestinationAddImage(destination, image, [kCGImageDestinationLossyCompressionQuality: 0.88] as CFDictionary)
+        guard CGImageDestinationFinalize(destination), output.length <= 4 * 1024 * 1024 else { throw ScrivError.invalid("The analysis preview exceeded its size limit.") }
+        return (original.url, output as Data)
     }
 }

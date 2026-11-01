@@ -201,6 +201,7 @@ struct GenerationBar: View {
     @State private var cancelling = false
     @State private var showingContext = false
     @State private var confirmingPromptDiscard = false
+    @State private var preparedPromptScope = ""
     @FocusState private var promptFocused: Bool
     @ViewBuilder private var promptRecovery: some View {
         if store.generationPromptNeedsReview || store.generationPromptIssue != nil {
@@ -219,11 +220,11 @@ struct GenerationBar: View {
             }
             HStack(spacing: 9) {
                 if store.generationPromptNeedsReview {
-                    Button("Use this draft") { store.rebaseGenerationPrompt() }.buttonStyle(ScrivPrimaryButtonStyle(fontSize: 11))
+                    Button("Use this draft") { guard store.generationPromptRecoveryIsReady else { return }; store.rebaseGenerationPrompt() }.buttonStyle(ScrivPrimaryButtonStyle(fontSize: 11)).disabled(!store.generationPromptRecoveryIsReady)
                 } else {
-                    Button("Retry save") { store.retryGenerationPrompt() }.buttonStyle(ScrivSecondaryButtonStyle(fontSize: 11))
+                    Button("Retry save") { store.prepareGenerationPromptForPresentation(force:true) }.buttonStyle(ScrivSecondaryButtonStyle(fontSize: 11))
                 }
-                Button("Discard draft…") { confirmingPromptDiscard = true }.buttonStyle(ScrivSecondaryButtonStyle(fontSize: 11))
+                Button("Discard draft…") { confirmingPromptDiscard = true }.buttonStyle(ScrivSecondaryButtonStyle(fontSize: 11)).disabled(!store.generationPromptRecoveryIsReady)
                 Spacer()
             }
         }
@@ -248,16 +249,17 @@ struct GenerationBar: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .focused($promptFocused)
                 .onChange(of: promptFocused) { _, focused in if focused && store.isPlaying { store.togglePlayback() } }
+                .disabled(!store.generationPromptRecoveryIsReady)
                 .accessibilityLabel("Visual override for this image cue")
                 .help("Dialogue, active forward directions and relevant identities are included automatically. This cue's override changes visual choices without rewriting the script. Clear it to follow only the source.")
 
-            Button { store.generateImage(cueId: context?.cueID) } label: {
+            Button { guard store.generationPromptPresentationIsCurrent else { return }; store.generateImage(cueId: context?.cueID) } label: {
                 HStack(spacing: 6) {
                     if controller.isGenerating { ProgressView().controlSize(.mini).tint(.white) }
                     else { Image(systemName: "sparkles") }
                     Text(controller.isGenerating ? "Generating" : "Generate image")
                 }.font(.system(size: 12, weight: .semibold)).padding(.vertical, 5)
-            }.buttonStyle(.borderedProminent).disabled(controller.isGenerating || context?.hasContent != true || store.generationPromptNeedsReview)
+            }.buttonStyle(.borderedProminent).disabled(!store.generationPromptPresentationIsCurrent || controller.isGenerating || context?.hasContent != true || store.generationPromptNeedsReview)
                 .help(controller.isConnected ? "Generate with Codex on this Mac" : "Connect Codex on this Mac to generate")
             if controller.isGenerating {
                 Button {
@@ -285,10 +287,16 @@ struct GenerationBar: View {
         }
         if controller.isGenerating { Text(controller.status).font(.system(size: 10)).foregroundStyle(.secondary) }
         }.padding(10).background(ScrivTheme.inset.opacity(0.4), in: RoundedRectangle(cornerRadius: 10))
-            .task(id: store.generationPromptScopeKey) { store.prepareGenerationPrompt() }
+            .task(id: store.generationPromptPreparationID) {
+                let scope = store.generationPromptScopeKey
+                let force = preparedPromptScope != scope
+                preparedPromptScope = scope
+                await store.prepareGenerationPromptForPresentation(force:force)?.value
+            }
+            .onDisappear { preparedPromptScope = "" }
             .onChange(of: store.generationPromptScopeKey) { _, _ in confirmingPromptDiscard = false }
             .confirmationDialog("Discard this Mac’s visual direction draft?", isPresented: $confirmingPromptDiscard, titleVisibility: .visible) {
-                Button("Discard local draft", role: .destructive) { store.discardGenerationPrompt() }
+                Button("Discard local draft", role: .destructive) { guard store.generationPromptRecoveryIsReady else { return }; store.discardGenerationPrompt() }
                 Button("Keep draft", role: .cancel) {}
             } message: { Text("The saved picture direction stays unchanged. Only this picture’s retained local draft is removed.") }
     }

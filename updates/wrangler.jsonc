@@ -1,0 +1,12 @@
+{
+  "$schema": "../cloud/node_modules/wrangler/config-schema.json",
+  "name": "scriv-updates",
+  "main": "src/worker.mjs",
+  "account_id": "607b7c9e36c45e8c51e003923d1d0913",
+  "compatibility_date": "2026-10-30",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "scriv-updates.why-not.work", "custom_domain": true }],
+  "r2_buckets": [{ "binding": "RELEASES", "bucket_name": "scriv-updates" }],
+  "observability": { "enabled": false }
+}

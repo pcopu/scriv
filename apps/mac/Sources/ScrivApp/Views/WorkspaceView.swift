@@ -147,8 +147,8 @@ struct WorkspaceView: View {
             HStack {
                 Text("Local editing is free. Sign in only for cloud storage or teams.").font(.system(size: 11)).foregroundStyle(.secondary)
                 Spacer()
-                Text(store.statusMessage).font(.system(size: 11)).foregroundStyle(.secondary)
-                StatusDot(color: store.statusMessage == "Saved on this Mac" ? .green : .orange)
+                Text(store.localSaveStatusMessage).font(.system(size: 11)).foregroundStyle(.secondary)
+                StatusDot(color: store.localSaveNeedsAttention ? .red : store.localSaveStatusMessage == "Saved on this Mac" ? .green : .orange)
             }.padding(.horizontal, 20).padding(.vertical, 15)
         }.background(ScrivTheme.panel).clipShape(RoundedRectangle(cornerRadius: ScrivTheme.panelRadius))
     }

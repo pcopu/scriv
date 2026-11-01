@@ -16,13 +16,14 @@ import ScrivCore
     init(store: WorkspaceStore, entry: ScriptEntry) { cue = nil; self.entry = entry; super.init(store: store) }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use a source initializer") }
     override func viewDidLoad() {
-        super.viewDidLoad(); title = cue == nil ? "Owned duration" : "Authored image coverage"; isModalInPresentation = true
+        super.viewDidLoad(); title = cue == nil ? "Owned duration" : "Authored image coverage"; isModalInPresentation = true; navigationController?.setNavigationBarHidden(true, animated: false); view.backgroundColor = ScrivUIKitTheme.panel
         let duration = cue.map { $0.authoredDurationMs ?? $0.durationMs } ?? entry!.ownedDurationMs
         seconds.text = String(format: "%.3f", Double(duration) / 1000); seconds.keyboardType = .decimalPad; seconds.accessibilityLabel = "Duration, seconds"
         let help = cue == nil ? "Owned time adds space at this entry’s source. A direction’s forward coverage is separate and may continue over later dialogue. Zero owned time adds no scene time." : "This picture’s forward coverage follows its script source. Overlapping pictures and audio are preserved. Playback uses the latest-starting active picture."
         issue.textColor = .systemRed
         applyButton = ImageUI.button("Apply", primary: true) { [weak self] in self?.apply() }; applyButton.isEnabled = false
-        let stack = ImageUI.scrollStack(in: self); [ImageUI.row([seconds, ImageUI.label("seconds", size: 12, secondary: true)]), ImageUI.label(help, size: 12, secondary: true), issue, ImageUI.divider(), ImageUI.row([ImageUI.spacer(), ImageUI.button("Cancel") { [weak self] in self?.dismiss(animated: true) }, applyButton])].forEach(stack.addArrangedSubview)
+        seconds.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        let stack = ImageUI.scrollStack(in: self, spacing: 12, padding: 20); [ImageUI.label(title ?? "Duration", size: 19, weight: .semibold), ImageUI.row([seconds, ImageUI.badge("seconds"), ImageUI.spacer()]), ImageUI.label(help, size: 12, secondary: true), issue, ImageUI.divider(), ImageUI.row([ImageUI.spacer(), ImageUI.button("Cancel") { [weak self] in self?.dismiss(animated: true) }, applyButton])].forEach(stack.addArrangedSubview)
         leaseTask = Task { [weak self] in guard let self else { return }; let allowed = await self.store.beginEdit(self.itemID); guard !Task.isCancelled, self.contextIsCurrent else { if allowed { self.store.endEdit(self.itemID, context: self.initialNavigationContext) }; return }; self.ready = allowed; self.applyButton.isEnabled = allowed; if !allowed { self.issue.text = "This item’s editing lease is unavailable. Close and retry." } }
     }
     override func viewDidDisappear(_ animated: Bool) { super.viewDidDisappear(animated); if isBeingDismissed || navigationController?.isBeingDismissed == true { leaseTask?.cancel(); if ready { store.endEdit(itemID, context: initialNavigationContext); ready = false } } }

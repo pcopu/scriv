@@ -1,0 +1,3 @@
+# Release operator tooling only; not shipped in Scriv or deployed to Workers.
+boto3>=1.40,<2
+cryptography>=45,<47

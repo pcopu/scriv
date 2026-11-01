@@ -52,7 +52,7 @@ final class CharacterLinksController: ScrivScreenController, UIAdaptivePresentat
         otherBody.addArrangedSubview(CharacterTeamUI.labeled("Exact words from this line", phrase)); otherBody.addArrangedSubview(occurrenceRows)
         retry = CharacterTeamUI.button("Try opening again") { [weak self] in self?.openReview() }; retry.isHidden = true
         [source, rows, CharacterTeamUI.separator(), toggle, otherBody,
-         ScrivUIKitTheme.notice("", message: "Suggestions are guesses. Confirm only the right character."), pending, issue, retry].forEach(layout.content.addArrangedSubview)
+         CharacterTeamUI.characterNotice("Suggestions are guesses. Confirm only the right character."), pending, issue, retry].forEach(layout.content.addArrangedSubview)
         issue.isHidden = true; pending.isHidden = true
         layout.footer.addArrangedSubview(CharacterTeamUI.button("Cancel") { [weak self] in self?.close() })
         saveButton = CharacterTeamUI.button("Save links", primary: true, size: 16) { [weak self] in self?.save() }

@@ -82,6 +82,16 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "4DECD3D18F7635AC40D41B39";
 		};
+		"AB9BF960AE8F3C6C0DFC9DF9" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivApp/Services/CharacterAnalysisController.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"E021E8F41F090C1D8C97C928" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "AB9BF960AE8F3C6C0DFC9DF9";
+		};
 		"9B71C0725B0707B9336083DF" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -130,6 +140,7 @@
 				"E0A4BD67FA442C6C1BCEE753",
 				"3B38C0988C17F7664A86A3CB",
 				"4DECD3D18F7635AC40D41B39",
+				"AB9BF960AE8F3C6C0DFC9DF9",
 				"9B71C0725B0707B9336083DF",
 				"5AE5238373251E5B2CBC101B",
 				"A375E104D4BE8A8A9F568A75",
@@ -170,7 +181,7 @@
 			"isa" = "PBXFileReference";
 			"explicitFileType" = "wrapper.application";
 			"includeInIndex" = 0;
-			"path" = "ScrivUIKit.app";
+			"path" = "Scriv.app";
 			"sourceTree" = "BUILT_PRODUCTS_DIR";
 		};
 		"E675E32A51E7F83551FFE1EA" = {
@@ -186,6 +197,8 @@
 			"children" = (
 				"7CB289F23BA4971DFFB39B5F",
 				"E675E32A51E7F83551FFE1EA",
+				"1ADF23CF70B14077E5346B1C",
+				"E2787FDACC03DDF5BFAC3E2C",
 			);
 			"sourceTree" = "<group>";
 		};
@@ -198,6 +211,12 @@
 				"99EB2565B25CDBFBAAA9B2B5",
 				"0865960FFB59039A99EC2318",
 				"0A0B46C7A66A8752BED6CB7F",
+				"C7F6186C89EDC93B13492A78",
+				"BF7C677674410FDAD0DC0442",
+				"864606976F85B0E185C302B2",
+				"F5432917B22F3683E6B6EFE3",
+				"6E6139CC7AC0BEB5E710DBDC",
+				"8CB4973B0837F14C9C217637",
 			);
 			"sourceTree" = "<group>";
 		};
@@ -209,6 +228,7 @@
 				"A00AC4D0BD30B81DA557A6B4",
 				"5C6E6E5E377CE9E4A03FF614",
 				"1C9C0F9957CABB98FC7EB17E",
+				"E021E8F41F090C1D8C97C928",
 				"AFDF2BADC37D6CBD7E19E13A",
 				"F9F0DE805245B41DBA0B76C2",
 				"BA0D9CC63AA0976ED1657B08",
@@ -249,8 +269,15 @@
 				"ENABLE_APP_SANDBOX" = "YES";
 				"ENABLE_HARDENED_RUNTIME" = "YES";
 				"GENERATE_INFOPLIST_FILE" = "NO";
-				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				"PRODUCT_NAME" = "Scriv";
 				"DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER" = "NO";
+				"PRODUCT_MODULE_NAME" = "ScrivUIKit";
+				"MARKETING_VERSION" = "1.0";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"SCRIV_UPDATE_CHANNEL" = "stable";
+				"SCRIV_UPDATE_FEED_URL" = "https://scriv-updates.why-not.work/appcast.xml";
+				"SWIFT_OBJC_BRIDGING_HEADER" = "UpdateBridge/ScrivUpdateBridge.h";
+				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
 				"PRODUCT_BUNDLE_IDENTIFIER" = "app.scriv.uikit";
 				"INFOPLIST_FILE" = "Info.plist";
 				"CODE_SIGN_ENTITLEMENTS" = "ScrivUIKit.entitlements";
@@ -282,8 +309,15 @@
 				"ENABLE_APP_SANDBOX" = "YES";
 				"ENABLE_HARDENED_RUNTIME" = "YES";
 				"GENERATE_INFOPLIST_FILE" = "NO";
-				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				"PRODUCT_NAME" = "Scriv";
 				"DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER" = "NO";
+				"PRODUCT_MODULE_NAME" = "ScrivUIKit";
+				"MARKETING_VERSION" = "1.0";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"SCRIV_UPDATE_CHANNEL" = "stable";
+				"SCRIV_UPDATE_FEED_URL" = "https://scriv-updates.why-not.work/appcast.xml";
+				"SWIFT_OBJC_BRIDGING_HEADER" = "UpdateBridge/ScrivUpdateBridge.h";
+				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
 				"PRODUCT_BUNDLE_IDENTIFIER" = "app.scriv.uikit";
 				"INFOPLIST_FILE" = "Info.plist";
 				"CODE_SIGN_ENTITLEMENTS" = "ScrivUIKit.entitlements";
@@ -313,10 +347,14 @@
 				"122624C80E0F2707D63ED288",
 				"B0EE46A3500D2343EFB40C37",
 				"EDF968EC6B691ECF8C9A6F54",
+				"80C111264D7247782310DE4D",
+				"318C21E22CA2D9EF1C156853",
 			);
 			"buildRules" = (
 			);
 			"dependencies" = (
+				"80DAECB46E6C6D242D0F6FDD",
+				"05032F39500FAEBD8C318F50",
 			);
 			"fileSystemSynchronizedGroups" = (
 				"F324F9493DAF354259C64D24",
@@ -363,8 +401,8 @@
 				"PRODUCT_BUNDLE_IDENTIFIER" = "app.scriv.uikit.tests";
 				"BUNDLE_LOADER" = "$(TEST_HOST)";
 				"TEST_TARGET_NAME" = "ScrivUIKit";
-				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/ScrivUIKit.app/ScrivUIKit";
-				"TEST_HOST[sdk=macosx*]" = "$(BUILT_PRODUCTS_DIR)/ScrivUIKit.app/Contents/MacOS/ScrivUIKit";
+				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/Scriv.app/Scriv";
+				"TEST_HOST[sdk=macosx*]" = "$(BUILT_PRODUCTS_DIR)/Scriv.app/Contents/MacOS/Scriv";
 				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
 				"DEBUG_INFORMATION_FORMAT" = "dwarf";
 				"ONLY_ACTIVE_ARCH" = "YES";
@@ -393,8 +431,8 @@
 				"PRODUCT_BUNDLE_IDENTIFIER" = "app.scriv.uikit.tests";
 				"BUNDLE_LOADER" = "$(TEST_HOST)";
 				"TEST_TARGET_NAME" = "ScrivUIKit";
-				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/ScrivUIKit.app/ScrivUIKit";
-				"TEST_HOST[sdk=macosx*]" = "$(BUILT_PRODUCTS_DIR)/ScrivUIKit.app/Contents/MacOS/ScrivUIKit";
+				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/Scriv.app/Scriv";
+				"TEST_HOST[sdk=macosx*]" = "$(BUILT_PRODUCTS_DIR)/Scriv.app/Contents/MacOS/Scriv";
 				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
 				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
 				"ONLY_ACTIVE_ARCH" = "NO";
@@ -455,6 +493,1094 @@
 			"productReference" = "E675E32A51E7F83551FFE1EA";
 			"productType" = "com.apple.product-type.bundle.unit-test";
 		};
+		"5CB6177A2C82296D5DDF62DF" = {
+			"isa" = "XCRemoteSwiftPackageReference";
+			"repositoryURL" = "https://github.com/sparkle-project/Sparkle";
+			"requirement" = {
+				"kind" = "exactVersion";
+				"version" = "2.10.1";
+			};
+		};
+		"0A071BF2AC107E23679F1824" = {
+			"isa" = "XCSwiftPackageProductDependency";
+			"package" = "5CB6177A2C82296D5DDF62DF";
+			"productName" = "Sparkle";
+		};
+		"1ADF23CF70B14077E5346B1C" = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.cfbundle";
+			"includeInIndex" = 0;
+			"path" = "ScrivUpdatePlugin.bundle";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		"C7F6186C89EDC93B13492A78" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.c.objc";
+			"path" = "UpdatePlugin/ScrivSparklePlugin.m";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"77A0C528B87FCD09E322DF8A" = {
+			"isa" = "PBXBuildFile";
+			"productRef" = "0A071BF2AC107E23679F1824";
+		};
+		"EB05368D29CA22B324553526" = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = (
+				"77A0C528B87FCD09E322DF8A",
+			);
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"9D8754586AA29C24B9636637" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"SDKROOT" = "macosx";
+				"SUPPORTED_PLATFORMS" = "macosx";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"MACOSX_DEPLOYMENT_TARGET" = "14.0";
+				"PRODUCT_NAME" = "ScrivUpdatePlugin";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "app.scriv.uikit.updates";
+				"INFOPLIST_FILE" = "UpdatePlugin/Info.plist";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CLANG_ENABLE_OBJC_ARC" = "YES";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"ENABLE_HARDENED_RUNTIME" = "YES";
+				"LD_RUNPATH_SEARCH_PATHS" = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+					"@loader_path/../../../Frameworks",
+				);
+				"SKIP_INSTALL" = "YES";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf";
+				"ONLY_ACTIVE_ARCH" = "YES";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "DEBUG $(inherited) SCRIV_EMBEDDED_NATIVE_CORE";
+				"ENABLE_TESTABILITY" = "YES";
+				"SWIFT_VERSION" = "5.0";
+				"SWIFT_OBJC_BRIDGING_HEADER" = "UpdateBridge/ScrivUpdateBridge.h";
+				"PRODUCT_MODULE_NAME" = "ScrivNativeAdapter";
+				"DEFINES_MODULE" = "YES";
+			};
+		};
+		"388DD6AB164CBED3041CF1F6" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"SDKROOT" = "macosx";
+				"SUPPORTED_PLATFORMS" = "macosx";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"MACOSX_DEPLOYMENT_TARGET" = "14.0";
+				"PRODUCT_NAME" = "ScrivUpdatePlugin";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "app.scriv.uikit.updates";
+				"INFOPLIST_FILE" = "UpdatePlugin/Info.plist";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CLANG_ENABLE_OBJC_ARC" = "YES";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"ENABLE_HARDENED_RUNTIME" = "YES";
+				"LD_RUNPATH_SEARCH_PATHS" = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+					"@loader_path/../../../Frameworks",
+				);
+				"SKIP_INSTALL" = "YES";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
+				"ONLY_ACTIVE_ARCH" = "NO";
+				"SWIFT_VERSION" = "5.0";
+				"SWIFT_OBJC_BRIDGING_HEADER" = "UpdateBridge/ScrivUpdateBridge.h";
+				"PRODUCT_MODULE_NAME" = "ScrivNativeAdapter";
+				"DEFINES_MODULE" = "YES";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "$(inherited) SCRIV_EMBEDDED_NATIVE_CORE";
+			};
+		};
+		"743279DCB67A3038DB76A505" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = (
+				"9D8754586AA29C24B9636637",
+				"388DD6AB164CBED3041CF1F6",
+			);
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		"DC54D1A603C3139FEA8E8CAE" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "C7F6186C89EDC93B13492A78";
+		};
+		"CF5A8E7DD89D821EB0F0FC43" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = (
+				"DC54D1A603C3139FEA8E8CAE",
+				"E23DECE1D4B137A02778D56C",
+				"93050A78497BA0E80801710F",
+				"87CC3CD7C6B246191C799585",
+				"2FD6A4FE312FFE4EDFE82B10",
+				"AEFF4993ED7907964426B59C",
+				"A537C5FD560DA556E6A03951",
+				"D5FF75AF2C484C21383791EC",
+				"147B09E5E153BE3820933780",
+				"A4ED0E60472A98E28CDE04EF",
+				"4C5A69C7AE639F7C2D06B555",
+				"A4F9682BBB0DF4935A1E4394",
+				"6BAE9C3AACEE49434D867992",
+				"2EDE2B3D608CEB3DBCC7E78F",
+				"1AC4D1E6726CB09E3212A468",
+				"360EE94BAD303A44AA0B5866",
+				"7183DD5E1335C6CD149B3599",
+				"08E955F311BA9B990C48E4A7",
+				"E82D7C2BACCF4896EB347D60",
+				"9A8B2ED0273A288D340168E2",
+				"71B17229C4B8F8FFABFA30DB",
+				"EDD68E16EAD949A4264CB52E",
+				"790FEC8284840B164FDB1FC1",
+				"880B1146BF946C723E62C899",
+				"37AC9338F9EDC443E2E3CD68",
+				"B798BD0F3FC1EFC3B9E68C8B",
+				"9DBEFBB9067BC17E01E6A190",
+				"1CA3C4E2C2C2DDD0287DC7C5",
+				"7CA458379F66568002E66C26",
+				"9B454F5CF0D3742F13612FA7",
+				"005A8B40EC3DCD621DC8AD54",
+				"583E673C641F876ED472B2B5",
+				"58CA8A20EEF5B6E3158957AC",
+				"F0B1002F711BCE486F875A79",
+				"EDD11BFD1F8865436D4FDF57",
+				"D2081706EA0DFCC21BB53289",
+				"F95ABAFE582BE21666CB6676",
+				"4C490E4B7F73B57A66EF2D68",
+				"962FFE06598324C7BF2B289F",
+				"C4F34852C6A93B47346C3697",
+				"C104EEAC16EEA1C0DACF7FB1",
+				"104158410037951C699DA1B8",
+				"FF5A6958643346A9F6BAF885",
+				"0424E993C145053BBD919A0B",
+				"3768E235D7F453CD8492D31F",
+				"A2189CB2742F584E884A4DDF",
+			);
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"7603CEFB99D4C7AA5CD18741" = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = "743279DCB67A3038DB76A505";
+			"buildPhases" = (
+				"CF5A8E7DD89D821EB0F0FC43",
+				"EB05368D29CA22B324553526",
+			);
+			"buildRules" = (
+			);
+			"dependencies" = (
+			);
+			"name" = "ScrivUpdatePlugin";
+			"packageProductDependencies" = (
+				"0A071BF2AC107E23679F1824",
+			);
+			"productName" = "ScrivUpdatePlugin";
+			"productReference" = "1ADF23CF70B14077E5346B1C";
+			"productType" = "com.apple.product-type.bundle";
+		};
+		"845F10995B084AC35FA58A97" = {
+			"isa" = "PBXContainerItemProxy";
+			"containerPortal" = "FC63FB878121111E0B03416E";
+			"proxyType" = 1;
+			"remoteGlobalIDString" = "7603CEFB99D4C7AA5CD18741";
+			"remoteInfo" = "ScrivUpdatePlugin";
+		};
+		"80DAECB46E6C6D242D0F6FDD" = {
+			"isa" = "PBXTargetDependency";
+			"target" = "7603CEFB99D4C7AA5CD18741";
+			"targetProxy" = "845F10995B084AC35FA58A97";
+		};
+		"029A41DFDF84B002B20614DA" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "1ADF23CF70B14077E5346B1C";
+			"settings" = {
+				"ATTRIBUTES" = (
+					"CodeSignOnCopy",
+					"RemoveHeadersOnCopy",
+				);
+			};
+		};
+		"80C111264D7247782310DE4D" = {
+			"isa" = "PBXCopyFilesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"dstPath" = "";
+			"dstSubfolderSpec" = 13;
+			"files" = (
+				"029A41DFDF84B002B20614DA",
+			);
+			"name" = "Embed native update plug-in";
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"B493D58FD8FECBFC80F69E2B" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/AudioFileStore.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"763942FD8F220C006B7EB0F4" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/AudioTrack.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"55BEC7975A210AB5A2973562" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CharacterImageAnalysis.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"20DF33D7D7251A375C10C16A" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CharacterMentions.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"DC4803007C83DB33A8DD3CFC" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CloudAtomicBatch.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"6BCD08E0C43BF60A6009B7D4" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CloudCommitBarrier.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"D6DF1929C8C05D2F370D341E" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CloudEndpoint.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"F30207D6FEBE996C51173B0D" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CloudModels.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"2136698502929945CC99E520" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CloudReconciliation.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"B7D393C2C5979A99B923CE7E" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CloudSnapshotFence.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"414E27A0A268F83B9EC0CCD6" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CodexCharacterAnalysisProtocol.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"1D5BA1F6A7456ED350BC46A3" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CodexCharacterTurnState.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"2F1ED84D405D88B0C968E448" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CodexConnectionCheck.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"484A22FD304B847C15E8346F" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CodexConnectionReadiness.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"CBF21CFA1CD57265502832A7" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CodexGenerationState.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"98935FB33F606D4102D3DF13" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CueAnchoring.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"B6376371F694C914FAA6EF6B" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/CuePromptDraftJournal.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"16FAEC1CBFAE2FC8682CC898" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/Digest.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"D910DB06A3606DE84D040D64" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/DiscussionState.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"415B4CFFEE23E7395A2FED27" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/DurableDirectory.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"D30ECACCC41B14D1CDEC05B5" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/EditorDraftJournal.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"2A85BF88F2727643546CA484" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/EmailSignInFlow.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"0BB42EBA60B5DB81F6A9780C" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/Fountain.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"BC14223CB655B3A4071C709C" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/GenerationContext.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"2C0374D7BB3C81E3FC7EBD74" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/GenerationJournal.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"ED63F75D231B86678C59F9D9" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/GenerationPrompt.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"02C1C3647C5057B066BC1714" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/ImageImportPlacement.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"03A6EF305A3323196919962C" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/LeaseLifecycle.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"4F8A344AB3AF2E34735AC5CB" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/LocalEditIntents.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"3EFA729BAE9727D1B0D97E05" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/Models.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"20C407EEEA6F47F1B056AF73" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/PeerAssetDiscovery.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"5C7341F3DB6121E76A065EC5" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/PendingProjectSaveJournal.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"A9742B3315C0765CBA9AC7C9" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/PlaybackPositionClock.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"5708B145689049FEB55E0972" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/PresentationGeometry.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"F221670DD4A4F2CC94FEE6FF" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/ProjectEditing.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"56679455E96A67EAFBC40A6A" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/ProjectRepository.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"AEF06519524C81B300DAE153" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/RuntimeBridgeBootstrap.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"9C21E96F98B140379D0F790A" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/RuntimeBridgeEnvelope.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"B9D32D783AD5BCF0114C16CB" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/SampleProject.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"1E7F960C5BF7328B2C261DB8" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/ScriptBoundaryEditing.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"3EA710AE354DD64784162268" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/TeamInvitation.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"01D6024D37FB76B97D87EB43" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/TimingEngine.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"68005AE194A067AC75DFD7D3" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/WordTimingEditing.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"BF7C677674410FDAD0DC0442" = {
+			"isa" = "PBXGroup";
+			"name" = "Canonical Core sources (native target membership)";
+			"children" = (
+				"B493D58FD8FECBFC80F69E2B",
+				"763942FD8F220C006B7EB0F4",
+				"55BEC7975A210AB5A2973562",
+				"20DF33D7D7251A375C10C16A",
+				"DC4803007C83DB33A8DD3CFC",
+				"6BCD08E0C43BF60A6009B7D4",
+				"D6DF1929C8C05D2F370D341E",
+				"F30207D6FEBE996C51173B0D",
+				"2136698502929945CC99E520",
+				"B7D393C2C5979A99B923CE7E",
+				"414E27A0A268F83B9EC0CCD6",
+				"1D5BA1F6A7456ED350BC46A3",
+				"2F1ED84D405D88B0C968E448",
+				"484A22FD304B847C15E8346F",
+				"CBF21CFA1CD57265502832A7",
+				"98935FB33F606D4102D3DF13",
+				"B6376371F694C914FAA6EF6B",
+				"16FAEC1CBFAE2FC8682CC898",
+				"D910DB06A3606DE84D040D64",
+				"415B4CFFEE23E7395A2FED27",
+				"D30ECACCC41B14D1CDEC05B5",
+				"2A85BF88F2727643546CA484",
+				"0BB42EBA60B5DB81F6A9780C",
+				"BC14223CB655B3A4071C709C",
+				"2C0374D7BB3C81E3FC7EBD74",
+				"ED63F75D231B86678C59F9D9",
+				"02C1C3647C5057B066BC1714",
+				"03A6EF305A3323196919962C",
+				"4F8A344AB3AF2E34735AC5CB",
+				"3EFA729BAE9727D1B0D97E05",
+				"20C407EEEA6F47F1B056AF73",
+				"5C7341F3DB6121E76A065EC5",
+				"A9742B3315C0765CBA9AC7C9",
+				"5708B145689049FEB55E0972",
+				"F221670DD4A4F2CC94FEE6FF",
+				"56679455E96A67EAFBC40A6A",
+				"AEF06519524C81B300DAE153",
+				"9C21E96F98B140379D0F790A",
+				"B9D32D783AD5BCF0114C16CB",
+				"1E7F960C5BF7328B2C261DB8",
+				"3EA710AE354DD64784162268",
+				"01D6024D37FB76B97D87EB43",
+				"68005AE194A067AC75DFD7D3",
+			);
+			"sourceTree" = "<group>";
+		};
+		"E23DECE1D4B137A02778D56C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B493D58FD8FECBFC80F69E2B";
+		};
+		"93050A78497BA0E80801710F" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "763942FD8F220C006B7EB0F4";
+		};
+		"87CC3CD7C6B246191C799585" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "55BEC7975A210AB5A2973562";
+		};
+		"2FD6A4FE312FFE4EDFE82B10" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "20DF33D7D7251A375C10C16A";
+		};
+		"AEFF4993ED7907964426B59C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "DC4803007C83DB33A8DD3CFC";
+		};
+		"A537C5FD560DA556E6A03951" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "6BCD08E0C43BF60A6009B7D4";
+		};
+		"D5FF75AF2C484C21383791EC" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "D6DF1929C8C05D2F370D341E";
+		};
+		"147B09E5E153BE3820933780" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F30207D6FEBE996C51173B0D";
+		};
+		"A4ED0E60472A98E28CDE04EF" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "2136698502929945CC99E520";
+		};
+		"4C5A69C7AE639F7C2D06B555" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B7D393C2C5979A99B923CE7E";
+		};
+		"A4F9682BBB0DF4935A1E4394" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "414E27A0A268F83B9EC0CCD6";
+		};
+		"6BAE9C3AACEE49434D867992" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "1D5BA1F6A7456ED350BC46A3";
+		};
+		"2EDE2B3D608CEB3DBCC7E78F" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "2F1ED84D405D88B0C968E448";
+		};
+		"1AC4D1E6726CB09E3212A468" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "484A22FD304B847C15E8346F";
+		};
+		"360EE94BAD303A44AA0B5866" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "CBF21CFA1CD57265502832A7";
+		};
+		"7183DD5E1335C6CD149B3599" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "98935FB33F606D4102D3DF13";
+		};
+		"08E955F311BA9B990C48E4A7" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B6376371F694C914FAA6EF6B";
+		};
+		"E82D7C2BACCF4896EB347D60" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "16FAEC1CBFAE2FC8682CC898";
+		};
+		"9A8B2ED0273A288D340168E2" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "D910DB06A3606DE84D040D64";
+		};
+		"71B17229C4B8F8FFABFA30DB" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "415B4CFFEE23E7395A2FED27";
+		};
+		"EDD68E16EAD949A4264CB52E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "D30ECACCC41B14D1CDEC05B5";
+		};
+		"790FEC8284840B164FDB1FC1" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "2A85BF88F2727643546CA484";
+		};
+		"880B1146BF946C723E62C899" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "0BB42EBA60B5DB81F6A9780C";
+		};
+		"37AC9338F9EDC443E2E3CD68" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "BC14223CB655B3A4071C709C";
+		};
+		"B798BD0F3FC1EFC3B9E68C8B" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "2C0374D7BB3C81E3FC7EBD74";
+		};
+		"9DBEFBB9067BC17E01E6A190" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "ED63F75D231B86678C59F9D9";
+		};
+		"1CA3C4E2C2C2DDD0287DC7C5" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "02C1C3647C5057B066BC1714";
+		};
+		"7CA458379F66568002E66C26" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "03A6EF305A3323196919962C";
+		};
+		"9B454F5CF0D3742F13612FA7" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "4F8A344AB3AF2E34735AC5CB";
+		};
+		"005A8B40EC3DCD621DC8AD54" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "3EFA729BAE9727D1B0D97E05";
+		};
+		"583E673C641F876ED472B2B5" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "20C407EEEA6F47F1B056AF73";
+		};
+		"58CA8A20EEF5B6E3158957AC" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "5C7341F3DB6121E76A065EC5";
+		};
+		"F0B1002F711BCE486F875A79" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A9742B3315C0765CBA9AC7C9";
+		};
+		"EDD11BFD1F8865436D4FDF57" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "5708B145689049FEB55E0972";
+		};
+		"D2081706EA0DFCC21BB53289" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F221670DD4A4F2CC94FEE6FF";
+		};
+		"F95ABAFE582BE21666CB6676" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "56679455E96A67EAFBC40A6A";
+		};
+		"4C490E4B7F73B57A66EF2D68" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "AEF06519524C81B300DAE153";
+		};
+		"962FFE06598324C7BF2B289F" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "9C21E96F98B140379D0F790A";
+		};
+		"C4F34852C6A93B47346C3697" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B9D32D783AD5BCF0114C16CB";
+		};
+		"C104EEAC16EEA1C0DACF7FB1" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "1E7F960C5BF7328B2C261DB8";
+		};
+		"104158410037951C699DA1B8" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "3EA710AE354DD64784162268";
+		};
+		"FF5A6958643346A9F6BAF885" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "01D6024D37FB76B97D87EB43";
+		};
+		"0424E993C145053BBD919A0B" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "68005AE194A067AC75DFD7D3";
+		};
+		"864606976F85B0E185C302B2" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../runtime-bridge/Integration/ScrivRuntimeBootstrapClient.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"3768E235D7F453CD8492D31F" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "864606976F85B0E185C302B2";
+		};
+		"F5432917B22F3683E6B6EFE3" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "RuntimeAdapter/ScrivRuntimeBootstrapAdapter.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"A2189CB2742F584E884A4DDF" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F5432917B22F3683E6B6EFE3";
+		};
+		"E2787FDACC03DDF5BFAC3E2C" = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.xpc-service";
+			"includeInIndex" = 0;
+			"path" = "com.scriv.runtime-companion.bootstrap.xpc";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		"AFC7CB3CC5926BB3783EE79D" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B493D58FD8FECBFC80F69E2B";
+		};
+		"8D12A8DC1BF5BCD7DA358DCD" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "763942FD8F220C006B7EB0F4";
+		};
+		"2B4B3A2A2DD204D07E5E05CD" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "55BEC7975A210AB5A2973562";
+		};
+		"917343491303D52C0AAA22B8" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "20DF33D7D7251A375C10C16A";
+		};
+		"8169F3F0400795D94DBCB63E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "DC4803007C83DB33A8DD3CFC";
+		};
+		"BAEEFD9D7C9C7B041BB495B2" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "6BCD08E0C43BF60A6009B7D4";
+		};
+		"9BFF9B5775FC72EDB4716F71" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "D6DF1929C8C05D2F370D341E";
+		};
+		"56ECFF7C8A4E0D54B0911A0C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F30207D6FEBE996C51173B0D";
+		};
+		"8DD3474CB9540FBE6BE61832" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "2136698502929945CC99E520";
+		};
+		"569BF82D46D6EBD66CB15DD2" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B7D393C2C5979A99B923CE7E";
+		};
+		"2C0EF6546D7A927431B54D5F" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "414E27A0A268F83B9EC0CCD6";
+		};
+		"97FC62E8605AFAC97AFC0CAD" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "1D5BA1F6A7456ED350BC46A3";
+		};
+		"3D850A7D2BEA12B14311DE4C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "2F1ED84D405D88B0C968E448";
+		};
+		"5D41D7101087B00C82D4BC3E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "484A22FD304B847C15E8346F";
+		};
+		"7F73B448AF694B93751181FF" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "CBF21CFA1CD57265502832A7";
+		};
+		"6224C1346890530EE147E762" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "98935FB33F606D4102D3DF13";
+		};
+		"F058C3000E4A9544BC556641" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B6376371F694C914FAA6EF6B";
+		};
+		"8A3DD268CB3EFDA1ADFFD29F" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "16FAEC1CBFAE2FC8682CC898";
+		};
+		"E447DB90CC0565D487167E7C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "D910DB06A3606DE84D040D64";
+		};
+		"06A25E60914D2BC9A9A0171E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "415B4CFFEE23E7395A2FED27";
+		};
+		"44D7E733385D1732052C875D" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "D30ECACCC41B14D1CDEC05B5";
+		};
+		"FD5DE10F3B1D7AAC54EFFB8C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "2A85BF88F2727643546CA484";
+		};
+		"2235C4DA4BF924FC555AB6F4" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "0BB42EBA60B5DB81F6A9780C";
+		};
+		"A2AECC09E9DC7E338EFFCC36" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "BC14223CB655B3A4071C709C";
+		};
+		"2534E6DD7BE6ED8B5CDBD9D4" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "2C0374D7BB3C81E3FC7EBD74";
+		};
+		"318DCCAA50AD507873AB531C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "ED63F75D231B86678C59F9D9";
+		};
+		"906F14CBE13425B7149DA883" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "02C1C3647C5057B066BC1714";
+		};
+		"5F0F7739B92D0D2EFEF2C9BE" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "03A6EF305A3323196919962C";
+		};
+		"88A004C9A2046986F18C921D" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "4F8A344AB3AF2E34735AC5CB";
+		};
+		"6A43EBD3C07A9434A902E335" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "3EFA729BAE9727D1B0D97E05";
+		};
+		"BD0EFBBC641CAA9B3CCAEF92" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "20C407EEEA6F47F1B056AF73";
+		};
+		"4C50BE4DAB5389CB5CC513A9" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "5C7341F3DB6121E76A065EC5";
+		};
+		"44E449C53BACE4E3822483D8" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A9742B3315C0765CBA9AC7C9";
+		};
+		"705F4E2DB666A8A9C7473F32" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "5708B145689049FEB55E0972";
+		};
+		"CCE7106774E93D3B7CD6B87C" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F221670DD4A4F2CC94FEE6FF";
+		};
+		"B1EB25BE251FEE6562DAF0C2" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "56679455E96A67EAFBC40A6A";
+		};
+		"48BB003EFB0F57E2D1346650" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "AEF06519524C81B300DAE153";
+		};
+		"FD3372AE412518A15C911F9F" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "9C21E96F98B140379D0F790A";
+		};
+		"2D2151F3CE82CD7928A0628D" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B9D32D783AD5BCF0114C16CB";
+		};
+		"274F3AA6D0A04006BA5D6157" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "1E7F960C5BF7328B2C261DB8";
+		};
+		"7823EC33D8BA46AA594E115E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "3EA710AE354DD64784162268";
+		};
+		"A4D790BC7D444E8E1FB07697" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "01D6024D37FB76B97D87EB43";
+		};
+		"2D59B6B5FFF6AC00D61AEFCA" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "68005AE194A067AC75DFD7D3";
+		};
+		"6E6139CC7AC0BEB5E710DBDC" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../runtime-bridge/Sources/ScrivRuntimeCompanion/main.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"3C312E60AB32CE162B1C6BF1" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "6E6139CC7AC0BEB5E710DBDC";
+		};
+		"8CB4973B0837F14C9C217637" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../runtime-bridge/Sources/ScrivRuntimeCompanion/RuntimeBootstrapXPC.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"3D1ED082817550D21BF515EE" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "8CB4973B0837F14C9C217637";
+		};
+		"FD0340F4BCDAD9502162E631" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"SDKROOT" = "macosx";
+				"SUPPORTED_PLATFORMS" = "macosx";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"MACOSX_DEPLOYMENT_TARGET" = "14.0";
+				"PRODUCT_NAME" = "com.scriv.runtime-companion.bootstrap";
+				"EXECUTABLE_NAME" = "ScrivRuntimeCompanion";
+				"PRODUCT_MODULE_NAME" = "ScrivRuntimeCompanion";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "DEBUG $(inherited) SCRIV_EMBEDDED_NATIVE_CORE";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.scriv.runtime-companion.bootstrap";
+				"INFOPLIST_FILE" = "../runtime-bridge/Bootstrap-Info.plist";
+				"SWIFT_VERSION" = "5.0";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"ENABLE_HARDENED_RUNTIME" = "YES";
+				"ENABLE_APP_SANDBOX" = "NO";
+				"SKIP_INSTALL" = "YES";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf";
+				"ONLY_ACTIVE_ARCH" = "YES";
+				"ENABLE_TESTABILITY" = "YES";
+			};
+		};
+		"CDE50086E3B13C1A6157624B" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"SDKROOT" = "macosx";
+				"SUPPORTED_PLATFORMS" = "macosx";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"MACOSX_DEPLOYMENT_TARGET" = "14.0";
+				"PRODUCT_NAME" = "com.scriv.runtime-companion.bootstrap";
+				"EXECUTABLE_NAME" = "ScrivRuntimeCompanion";
+				"PRODUCT_MODULE_NAME" = "ScrivRuntimeCompanion";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "$(inherited) SCRIV_EMBEDDED_NATIVE_CORE";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.scriv.runtime-companion.bootstrap";
+				"INFOPLIST_FILE" = "../runtime-bridge/Bootstrap-Info.plist";
+				"SWIFT_VERSION" = "5.0";
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"ENABLE_HARDENED_RUNTIME" = "YES";
+				"ENABLE_APP_SANDBOX" = "NO";
+				"SKIP_INSTALL" = "YES";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
+				"ONLY_ACTIVE_ARCH" = "NO";
+			};
+		};
+		"B9C1C700CF5AD09E652616E1" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = (
+				"FD0340F4BCDAD9502162E631",
+				"CDE50086E3B13C1A6157624B",
+			);
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		"5262F55AEF0B486C94BD4154" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = (
+				"AFC7CB3CC5926BB3783EE79D",
+				"8D12A8DC1BF5BCD7DA358DCD",
+				"2B4B3A2A2DD204D07E5E05CD",
+				"917343491303D52C0AAA22B8",
+				"8169F3F0400795D94DBCB63E",
+				"BAEEFD9D7C9C7B041BB495B2",
+				"9BFF9B5775FC72EDB4716F71",
+				"56ECFF7C8A4E0D54B0911A0C",
+				"8DD3474CB9540FBE6BE61832",
+				"569BF82D46D6EBD66CB15DD2",
+				"2C0EF6546D7A927431B54D5F",
+				"97FC62E8605AFAC97AFC0CAD",
+				"3D850A7D2BEA12B14311DE4C",
+				"5D41D7101087B00C82D4BC3E",
+				"7F73B448AF694B93751181FF",
+				"6224C1346890530EE147E762",
+				"F058C3000E4A9544BC556641",
+				"8A3DD268CB3EFDA1ADFFD29F",
+				"E447DB90CC0565D487167E7C",
+				"06A25E60914D2BC9A9A0171E",
+				"44D7E733385D1732052C875D",
+				"FD5DE10F3B1D7AAC54EFFB8C",
+				"2235C4DA4BF924FC555AB6F4",
+				"A2AECC09E9DC7E338EFFCC36",
+				"2534E6DD7BE6ED8B5CDBD9D4",
+				"318DCCAA50AD507873AB531C",
+				"906F14CBE13425B7149DA883",
+				"5F0F7739B92D0D2EFEF2C9BE",
+				"88A004C9A2046986F18C921D",
+				"6A43EBD3C07A9434A902E335",
+				"BD0EFBBC641CAA9B3CCAEF92",
+				"4C50BE4DAB5389CB5CC513A9",
+				"44E449C53BACE4E3822483D8",
+				"705F4E2DB666A8A9C7473F32",
+				"CCE7106774E93D3B7CD6B87C",
+				"B1EB25BE251FEE6562DAF0C2",
+				"48BB003EFB0F57E2D1346650",
+				"FD3372AE412518A15C911F9F",
+				"2D2151F3CE82CD7928A0628D",
+				"274F3AA6D0A04006BA5D6157",
+				"7823EC33D8BA46AA594E115E",
+				"A4D790BC7D444E8E1FB07697",
+				"2D59B6B5FFF6AC00D61AEFCA",
+				"3C312E60AB32CE162B1C6BF1",
+				"3D1ED082817550D21BF515EE",
+			);
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"6B92FC7C3186DF3B4EDA6975" = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = (
+			);
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"7FC8B2E1FD0CC433A5B74317" = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = "B9C1C700CF5AD09E652616E1";
+			"buildPhases" = (
+				"5262F55AEF0B486C94BD4154",
+				"6B92FC7C3186DF3B4EDA6975",
+			);
+			"buildRules" = (
+			);
+			"dependencies" = (
+			);
+			"name" = "ScrivRuntimeBootstrap";
+			"packageProductDependencies" = (
+			);
+			"productName" = "com.scriv.runtime-companion.bootstrap";
+			"productReference" = "E2787FDACC03DDF5BFAC3E2C";
+			"productType" = "com.apple.product-type.xpc-service";
+		};
+		"1C88BC33623502BB833C116A" = {
+			"isa" = "PBXContainerItemProxy";
+			"containerPortal" = "FC63FB878121111E0B03416E";
+			"proxyType" = 1;
+			"remoteGlobalIDString" = "7FC8B2E1FD0CC433A5B74317";
+			"remoteInfo" = "ScrivRuntimeBootstrap";
+		};
+		"05032F39500FAEBD8C318F50" = {
+			"isa" = "PBXTargetDependency";
+			"target" = "7FC8B2E1FD0CC433A5B74317";
+			"targetProxy" = "1C88BC33623502BB833C116A";
+		};
+		"5727BE457520AC574E99D834" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "E2787FDACC03DDF5BFAC3E2C";
+			"settings" = {
+				"ATTRIBUTES" = (
+					"CodeSignOnCopy",
+					"RemoveHeadersOnCopy",
+				);
+			};
+		};
+		"318C21E22CA2D9EF1C156853" = {
+			"isa" = "PBXCopyFilesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"dstPath" = "$(CONTENTS_FOLDER_PATH)/XPCServices";
+			"dstSubfolderSpec" = 16;
+			"files" = (
+				"5727BE457520AC574E99D834",
+			);
+			"name" = "Embed user-authorized local runtime service";
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
 		"AE4E0B64E41153BEB7BA43B9" = {
 			"isa" = "XCBuildConfiguration";
 			"name" = "Debug";
@@ -514,6 +1640,7 @@
 			"mainGroup" = "F224C5B4AA1D19892165D7A2";
 			"packageReferences" = (
 				"C62CB260058B61585C496365",
+				"5CB6177A2C82296D5DDF62DF",
 			);
 			"preferredProjectObjectVersion" = 77;
 			"productRefGroup" = "0A0B46C7A66A8752BED6CB7F";
@@ -522,6 +1649,8 @@
 			"targets" = (
 				"54670338D523D7E28DA448ED",
 				"DDF721F7A9FBE9FC438573D9",
+				"7603CEFB99D4C7AA5CD18741",
+				"7FC8B2E1FD0CC433A5B74317",
 			);
 		};
 	};

@@ -26,31 +26,56 @@ final class HistoryController: ScrivScreenController, UITableViewDataSource, UIT
     private var previewTask: Task<Void, Never>?
     private var technicalExpanded: Set<String> = []
     private var characterExpanded: Set<String> = []
+    private weak var accessibilityPresenterView: UIView?
+    private var presenterAccessibilityWasHidden = false
 
     init(store: WorkspaceStore) { super.init(store: store); preferredContentSize = CGSize(width: 1040, height: 740) }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError() }
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.accessibilityViewIsModal = true
         source.selectedSegmentIndex = 0; source.addTarget(self, action: #selector(sourceChanged), for: .valueChanged); source.widthAnchor.constraint(equalToConstant: 260).isActive = true
         refreshButton = ScrivUIKitTheme.button("Refresh", symbol: "arrow.clockwise") { [weak self] in self?.refresh() }
         let title = ScrivUIKitTheme.stack([ScrivUIKitTheme.label("History", size: 23, weight: .semibold), ScrivUIKitTheme.label(store.project.title, size: 14, color: ScrivUIKitTheme.secondary, lines: 1)], spacing: 5)
         let header = ScrivUIKitTheme.stack([title, UIView(), progress, refreshButton, source], axis: .horizontal, spacing: 16); header.alignment = .center
         table.dataSource = self; table.delegate = self; table.separatorStyle = .none; table.backgroundColor = ScrivUIKitTheme.chrome.withAlphaComponent(0.18); table.rowHeight = UITableView.automaticDimension; table.estimatedRowHeight = 110
-        table.register(HistoryEventCell.self, forCellReuseIdentifier: "history"); table.widthAnchor.constraint(equalToConstant: 330).isActive = true
+        table.register(HistoryEventCell.self, forCellReuseIdentifier: "history")
+        table.contentInset = UIEdgeInsets(top: 8, left: 10, bottom: 12, right: 10)
         detailTabs.selectedSegmentIndex = 0; detailTabs.addTarget(self, action: #selector(detailChanged), for: .valueChanged)
-        let tabRow = ScrivUIKitTheme.stack([detailTabs, UIView()], axis: .horizontal); detailTabs.widthAnchor.constraint(equalToConstant: 320).isActive = true
+        let tabRow = ScrivUIKitTheme.stack([detailTabs, UIView(), ScrivUIKitTheme.label("Read-only preview", size: 11, color: ScrivUIKitTheme.secondary)], axis: .horizontal)
+        let tabsWidth = detailTabs.widthAnchor.constraint(equalToConstant: 320); tabsWidth.priority = .defaultHigh; tabsWidth.isActive = true
         let scroll = UIScrollView(); scroll.addSubview(detail); detail.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([detail.leadingAnchor.constraint(equalTo: scroll.contentLayoutGuide.leadingAnchor), detail.trailingAnchor.constraint(equalTo: scroll.contentLayoutGuide.trailingAnchor), detail.topAnchor.constraint(equalTo: scroll.contentLayoutGuide.topAnchor), detail.bottomAnchor.constraint(equalTo: scroll.contentLayoutGuide.bottomAnchor, constant: -12), detail.widthAnchor.constraint(equalTo: scroll.frameLayoutGuide.widthAnchor)])
         let right = ScrivUIKitTheme.stack([detailTitle, detailSubtitle, tabRow, scroll], spacing: 16)
         let body = ScrivUIKitTheme.stack([table, verticalLine(), padded(right, amount: 26)], axis: .horizontal, spacing: 0)
         restoreButton = ScrivUIKitTheme.button("Restore revision…", primary: true) { [weak self] in self?.confirmRestore() }
         let note = ScrivUIKitTheme.stack([ScrivUIKitTheme.label("Restore creates a new revision. Current work stays in history.", size: 12, weight: .medium), ScrivUIKitTheme.label("Restoring does not rewind discussion, membership or billing.", size: 11, color: ScrivUIKitTheme.secondary)], spacing: 5)
-        let footer = ScrivUIKitTheme.stack([note, UIView(), ScrivUIKitTheme.button("Close") { [weak self] in self?.dismiss(animated: true) }, restoreButton], axis: .horizontal, spacing: 16); footer.alignment = .center
+        let close = ScrivUIKitTheme.button("Close") { [weak self] in self?.dismiss(animated: true) }
+        close.widthAnchor.constraint(greaterThanOrEqualToConstant: 96).isActive = true
+        restoreButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 178).isActive = true
+        let footerActions = ScrivUIKitTheme.stack([UIView(), close, restoreButton], axis: .horizontal, spacing: 16)
+        let footer = ScrivSecondaryAdaptiveRow([note, footerActions], minimumHorizontalWidth: 850, spacing: 16)
         let root = ScrivUIKitTheme.stack([padded(header, amount: 24), line(), body, line(), padded(footer, amount: 22)], spacing: 0)
         view.addSubview(root); root.scrivPinEdges(to: view)
+        // Activate cross-view sizing only after both views share an ancestor.
+        table.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.36).isActive = true
         reloadEvents(); choose(events.dropFirst().first ?? events.first)
     }
-    override func viewDidDisappear(_ animated: Bool) { super.viewDidDisappear(animated); if isBeingDismissed { previewTask?.cancel() } }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Catalyst responder discovery otherwise walks the obscured script's
+        // text views for every accessibility query against this form sheet.
+        guard accessibilityPresenterView == nil, let presenter = presentingViewController?.viewIfLoaded else { return }
+        accessibilityPresenterView = presenter
+        presenterAccessibilityWasHidden = presenter.accessibilityElementsHidden
+        presenter.accessibilityElementsHidden = true
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        accessibilityPresenterView?.accessibilityElementsHidden = presenterAccessibilityWasHidden
+        accessibilityPresenterView = nil
+        if isBeingDismissed { previewTask?.cancel() }
+    }
     override func storeDidChange() {
         guard isViewLoaded else { return }; guard contextIsCurrent else { previewTask?.cancel(); dismiss(animated: true); return }
         reloadEvents()
@@ -144,16 +169,40 @@ final class HistoryController: ScrivScreenController, UITableViewDataSource, UIT
     }
     private func updateRestoreState() { restoreButton?.isEnabled = canRestore }
     private func changeCard(_ change: CloudChange) -> UIView {
-        let fields = HistoryPresentation.fields(for: change, beforeProject: before, afterProject: preview)
+        let allFields = HistoryPresentation.fields(for: change, beforeProject: before, afterProject: preview)
+        let fields = allFields.filter { $0.label != "Word timing" }
+        let wordTiming = allFields.filter { $0.label == "Word timing" }
         let content = ScrivUIKitTheme.stack([], spacing: 16)
         content.addArrangedSubview(ScrivUIKitTheme.stack([ScrivUIKitTheme.label(HistoryPresentation.title(for: change), size: 18, weight: .semibold), UIView(), ScrivUIKitTheme.label(HistoryPresentation.operation(for: change), size: 11, weight: .medium, color: ScrivUIKitTheme.secondary)], axis: .horizontal, spacing: 10))
-        if let text = (change.after ?? change.before)?.data["text"]?.string, !fields.contains(where: { $0.label == "Text" }) { content.addArrangedSubview(selectable("“\(text)”", size: 15)) }
-        if fields.isEmpty { content.addArrangedSubview(ScrivUIKitTheme.label("Item details changed. Expand Technical details to inspect every stored value.", size: 13, color: ScrivUIKitTheme.secondary)) }
-        else {
+        let timingOnly = !fields.isEmpty && fields.allSatisfy { ["Owned time", "Coverage"].contains($0.label) }
+        let unchangedText = !fields.contains(where: { $0.label == "Text" }) ? (change.after ?? change.before)?.data["text"]?.string : nil
+        if let text = unchangedText, !timingOnly {
+            content.addArrangedSubview(ScrivUIKitTheme.stack([ScrivUIKitTheme.label("Script · unchanged", size: 11, weight: .medium, color: ScrivUIKitTheme.secondary), selectable("“\(text)”", size: 15)], spacing: 5))
+        }
+        if fields.isEmpty && wordTiming.isEmpty { content.addArrangedSubview(ScrivUIKitTheme.label("Item details changed. Expand Technical details to inspect every stored value.", size: 13, color: ScrivUIKitTheme.secondary)) }
+        else if timingOnly {
+            let summary = ScrivUIKitTheme.stack([], spacing: 12)
+            for field in fields {
+                summary.addArrangedSubview(ScrivUIKitTheme.label(field.label, size: 12, weight: .medium, color: ScrivUIKitTheme.secondary))
+                summary.addArrangedSubview(ScrivUIKitTheme.stack([ScrivUIKitTheme.label(field.before, size: 22, weight: .semibold), ScrivUIKitTheme.label("→", size: 20, color: ScrivUIKitTheme.secondary), ScrivUIKitTheme.label(field.after, size: 22, weight: .semibold)], axis: .horizontal, spacing: 10))
+            }
+            let summaryCard = ScrivUIKitTheme.card(summary, padding: 16)
+            if let text = unchangedText {
+                let script = ScrivUIKitTheme.card(ScrivUIKitTheme.stack([ScrivUIKitTheme.label("Script · unchanged", size: 12, weight: .medium, color: ScrivUIKitTheme.secondary), selectable(text, size: 14)], spacing: 8), padding: 16)
+                let comparison = ScrivSecondaryAdaptiveRow([summaryCard, script], minimumHorizontalWidth: 420, spacing: 12)
+                content.addArrangedSubview(comparison)
+            } else { content.addArrangedSubview(summaryCard) }
+        }
+        else if !fields.isEmpty {
             let old = column("Before", fields: fields, after: false), new = column("After", fields: fields, after: true)
             let arrow = ScrivUIKitTheme.label("→", size: 25, color: ScrivUIKitTheme.secondary); arrow.widthAnchor.constraint(equalToConstant: 24).isActive = true
             let comparison = ScrivUIKitTheme.stack([old, arrow, new], axis: .horizontal, spacing: 13); comparison.alignment = .top
             old.widthAnchor.constraint(equalTo: new.widthAnchor).isActive = true; content.addArrangedSubview(comparison)
+        }
+        if !wordTiming.isEmpty {
+            let key = "words:" + change.id, expanded = technicalExpanded.contains("words:" + change.id)
+            content.addArrangedSubview(ScrivUIKitTheme.button("Word timing details", symbol: expanded ? "chevron.down" : "chevron.right") { [weak self] in self?.toggleTechnical(key) })
+            if expanded { content.addArrangedSubview(column("Before", fields: wordTiming, after: false)); content.addArrangedSubview(column("After", fields: wordTiming, after: true)) }
         }
         if let before, let preview, let entry = preview.entries.first(where: { $0.id == change.id }),
            let cue = preview.activeCue(at: preview.startMs(of: entry.id), sceneId: entry.sceneId), let oldCue = before.cues.first(where: { $0.id == cue.id }),
@@ -229,17 +278,21 @@ final class HistoryController: ScrivScreenController, UITableViewDataSource, UIT
 
 private final class HistoryEventCell: UITableViewCell {
     private let dot = UIImageView(image: UIImage(systemName: "circle.fill"))
-    private let heading = ScrivUIKitTheme.label("", size: 16, weight: .semibold)
-    private let subtitle = ScrivUIKitTheme.label("", size: 12, color: ScrivUIKitTheme.secondary)
-    private let detail = ScrivUIKitTheme.label("", size: 12, color: ScrivUIKitTheme.secondary)
+    private let heading = ScrivUIKitTheme.label("", size: 17, weight: .semibold)
+    private let subtitle = ScrivUIKitTheme.label("", size: 14, color: ScrivUIKitTheme.secondary)
+    private let detail = ScrivUIKitTheme.label("", size: 13, color: ScrivUIKitTheme.secondary)
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier); backgroundColor = .clear
-        dot.contentMode = .scaleAspectFit; dot.widthAnchor.constraint(equalToConstant: 14).isActive = true; dot.heightAnchor.constraint(equalToConstant: 22).isActive = true
+        let rail = UIView(); rail.backgroundColor = ScrivUIKitTheme.secondary.withAlphaComponent(0.18); rail.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(rail)
+        NSLayoutConstraint.activate([rail.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30.5), rail.widthAnchor.constraint(equalToConstant: 1), rail.topAnchor.constraint(equalTo: contentView.topAnchor), rail.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)])
+        dot.contentMode = .scaleAspectFit; dot.backgroundColor = ScrivUIKitTheme.panel
+        dot.widthAnchor.constraint(equalToConstant: 14).isActive = true; dot.heightAnchor.constraint(equalToConstant: 22).isActive = true
         let row = ScrivUIKitTheme.stack([dot, ScrivUIKitTheme.stack([heading, subtitle, detail], spacing: 6)], axis: .horizontal, spacing: 18); row.alignment = .top
         contentView.addSubview(row); row.scrivPinEdges(to: contentView, insets: NSDirectionalEdgeInsets(top: 18, leading: 24, bottom: 18, trailing: 24))
         let selected = UIView(); selected.backgroundColor = ScrivUIKitTheme.accent.withAlphaComponent(0.1); selected.layer.cornerRadius = 12; selectedBackgroundView = selected
     }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError() }
     func configure(title: String, subtitle: String, detail: String) { heading.text = title; self.subtitle.text = subtitle; self.detail.text = detail; dot.tintColor = isSelected ? ScrivUIKitTheme.accent : ScrivUIKitTheme.secondary.withAlphaComponent(0.4) }
-    override func setSelected(_ selected: Bool, animated: Bool) { super.setSelected(selected, animated: animated); dot.tintColor = selected ? ScrivUIKitTheme.accent : ScrivUIKitTheme.secondary.withAlphaComponent(0.4) }
+    override func setSelected(_ selected: Bool, animated: Bool) { super.setSelected(selected, animated: animated); dot.image = UIImage(systemName: selected ? "record.circle.fill" : "circle.fill"); dot.tintColor = selected ? ScrivUIKitTheme.accent : ScrivUIKitTheme.secondary.withAlphaComponent(0.4) }
 }

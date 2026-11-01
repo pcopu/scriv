@@ -17,7 +17,7 @@ for f in files:
     assert not re.search(r'^\s*import\s+(SwiftUI|AppKit)\b',text,re.M), f
     assert not re.search(r'\b(UIHostingController|NSHostingView|NSViewRepresentable|UIViewRepresentable)\b',text),f
 codex = Path('apps/mac/Sources/ScrivApp/Services/CodexController.swift').read_text()
-locator = codex.split('private static func locateExecutable() -> String? {', 1)[1].split('    func start()', 1)[0]
+locator = codex.split('private static func locateExecutable() -> String? {', 1)[1].split('    func start(', 1)[0]
 catalyst_locator = locator.split('#else', 1)[0]
 assert '#if targetEnvironment(macCatalyst)' in catalyst_locator and 'return nil' in catalyst_locator
 assert 'homeDirectoryForCurrentUser' not in catalyst_locator and 'isExecutableFile' not in catalyst_locator
@@ -43,7 +43,7 @@ assert set(re.findall(r'"IPHONEOS_DEPLOYMENT_TARGET" = "([^";]+)";', project)) =
 assert set(re.findall(r'"MACOSX_DEPLOYMENT_TARGET" = "([^";]+)";', project)) == {'14.0'}
 # Project, app and tests must agree with SwiftPM's Debug architecture policy.
 configs = re.findall(r'"isa" = "XCBuildConfiguration";\s*"name" = "(Debug|Release)";\s*"buildSettings" = \{(.*?)\n\t\t\t\};', project, re.S)
-assert len(configs) == 6
+assert len(configs) == 10  # app, tests, native adapter, bundled XPC, project
 for mode, settings in configs:
     expected = 'YES' if mode == 'Debug' else 'NO'
     assert f'"ONLY_ACTIVE_ARCH" = "{expected}";' in settings

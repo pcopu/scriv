@@ -3,17 +3,17 @@ import ScrivCore
 
 @MainActor
 final class ScrivWorkspaceController: ScrivScreenController {
-    private let chrome = UIStackView()
+    private let chrome = ScrivWorkspaceHeader(frame: .zero)
     private let content = UIStackView()
     private let contentContainer = UIView()
     private let workspaceBody = UIStackView()
+    private let footer = UIStackView()
     private var discussionDock: UIView?
-    private var discussionHeight: NSLayoutConstraint?
-    private let tabs = UISegmentedControl(items: WorkspaceTab.allCases.map(\.rawValue))
-    private var titleButton: UIButton!
-    private var accountButton: UIButton!
-    private var discussionButton: UIButton!
-    private var statusLabel = ScrivUIKitTheme.label("", size: 11, color: .secondaryLabel)
+    private var tabs: UISegmentedControl { chrome.tabs }
+    private lazy var transport = AudioTransportView(store: store, compact: false)
+    private let statusLabel = ScrivUIKitTheme.label("", size: 12, color: ScrivUIKitTheme.secondary)
+    private var splitConstraint: NSLayoutConstraint?
+    private var menuState = ""
     private var cached: [ScrivUIKitRoute.Kind:UIViewController] = [:]
     private var installedTab: WorkspaceTab?
     private var discussion: ScrivDiscussionController?
@@ -25,34 +25,36 @@ final class ScrivWorkspaceController: ScrivScreenController {
     override func viewDidLoad() {
         super.viewDidLoad(); view.backgroundColor = ScrivUIKitTheme.canvas
         configureChrome()
-        content.axis = .horizontal; content.spacing = 12; content.alignment = .fill
+        content.axis = .horizontal; content.spacing = ScrivWorkspaceLayout.panelGap; content.alignment = .fill
         content.scrivPinEdges(to: contentContainer)
-        let transport = AudioTransportView(store: store, compact: false)
-        let footer = ScrivUIKitTheme.stack([transport, statusLabel], spacing: 5)
-        workspaceBody.axis = .horizontal; workspaceBody.spacing = 12; workspaceBody.alignment = .fill
+        footer.axis = .vertical; footer.spacing = 5; footer.addArrangedSubview(statusLabel)
+        workspaceBody.axis = .horizontal; workspaceBody.spacing = ScrivWorkspaceLayout.panelGap; workspaceBody.alignment = .fill
         workspaceBody.addArrangedSubview(contentContainer)
         let column = ScrivUIKitTheme.stack([chrome, workspaceBody, footer], spacing: 12)
+        column.setCustomSpacing(6, after: workspaceBody)
         column.translatesAutoresizingMaskIntoConstraints = false; view.addSubview(column)
         NSLayoutConstraint.activate([
-            column.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            column.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            column.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            column.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: ScrivWorkspaceLayout.outerInset),
+            column.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -ScrivWorkspaceLayout.outerInset),
+            column.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 4),
             column.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -12),
-            chrome.heightAnchor.constraint(equalToConstant: 48),
-            transport.heightAnchor.constraint(greaterThanOrEqualToConstant: 42)
+            chrome.heightAnchor.constraint(equalToConstant: 64)
         ])
         footer.setContentHuggingPriority(.required, for: .vertical)
         storeDidChange()
     }
     override func storeDidChange() {
         guard isViewLoaded else { return }
-        titleButton.configuration?.title = store.project.title
-        accountButton.configuration?.title = store.account?.name ?? "Sign in"
+        chrome.configure(title: store.project.title, accountName: store.account?.name)
         chrome.isUserInteractionEnabled = !store.isBootstrapping
         workspaceBody.isUserInteractionEnabled = !store.isBootstrapping
         tabs.selectedSegmentIndex = WorkspaceTab.allCases.firstIndex(of: store.tab) ?? 0
         statusLabel.text = store.statusMessage + " · " + store.syncStatus
-        discussionButton.accessibilityValue = "\(store.unreadDiscussionMentionCount) unread mentions"
+        chrome.moreButton.accessibilityValue = "\(store.unreadDiscussionMentionCount) unread discussion mentions"
+        updateTransport()
+        // Rebuild only when menu-visible state changes, not on every playhead tick.
+        let nextMenuState = "\(store.account?.id ?? "")|\(store.showDiscussion)|\(store.unreadDiscussionMentionCount)"
+        if nextMenuState != menuState { menuState = nextMenuState; chrome.moreButton.menu = workspaceMenu() }
         if installedTab != store.tab { installContent() }
         updateDiscussion()
         if store.showAccountSignIn, !(presentedViewController is ScrivSignInController) {
@@ -60,42 +62,66 @@ final class ScrivWorkspaceController: ScrivScreenController {
             show(.signIn)
         }
     }
-    private func configureChrome() {
-        chrome.axis = .horizontal; chrome.spacing = 10; chrome.alignment = .center
-        titleButton = ScrivUIKitTheme.button(store.project.title, symbol: "doc.text.fill") { [weak self] in self?.show(.projects) }
-        titleButton.titleLabel?.lineBreakMode = .byTruncatingTail
-        titleButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 150).isActive = true
-        titleButton.widthAnchor.constraint(lessThanOrEqualToConstant: 250).isActive = true
-        let more = icon("chevron.down", label: "Project actions") {}
-        more.menu = projectMenu(); more.showsMenuAsPrimaryAction = true
-        chrome.addArrangedSubview(titleButton); chrome.addArrangedSubview(more)
-        let leftSpace = UIView(); leftSpace.setContentHuggingPriority(.defaultLow, for: .horizontal); chrome.addArrangedSubview(leftSpace)
-        tabs.addTarget(self, action: #selector(changeTab), for: .valueChanged)
-        tabs.widthAnchor.constraint(greaterThanOrEqualToConstant: 270).isActive = true; chrome.addArrangedSubview(tabs)
-        let rightSpace = UIView(); rightSpace.setContentHuggingPriority(.defaultLow, for: .horizontal); chrome.addArrangedSubview(rightSpace)
-        chrome.addArrangedSubview(icon("waveform", label: "Audio library") { [weak self] in self?.show(.audio) })
-        discussionButton = icon("bubble.left.and.bubble.right", label: "Discussion") { [weak self] in
-            guard let self else { return }
-            if self.store.showDiscussion { self.store.showDiscussion = false }
-            else { self.store.loadDiscussion(itemId: self.store.discussionItemID) }
-        }
-        chrome.addArrangedSubview(discussionButton)
-        chrome.addArrangedSubview(icon("clock.arrow.circlepath", label: "History") { [weak self] in self?.show(.history) })
-        chrome.addArrangedSubview(icon("square.and.arrow.up", label: "Teams and sharing") { [weak self] in self?.show(.teams) })
-        accountButton = ScrivUIKitTheme.button("Sign in", symbol: "person.crop.circle") { [weak self] in
-            guard let self else { return }; self.show(self.store.account == nil ? .signIn : .account)
-        }
-        chrome.addArrangedSubview(accountButton)
-        chrome.addArrangedSubview(ScrivUIKitTheme.button("Codex", symbol: "sparkles") { [weak self] in self?.show(.codex) })
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updatePanelLayout()
     }
-    private func icon(_ symbol: String, label: String, action: @escaping () -> Void) -> UIButton {
-        let button = ScrivUIKitTheme.button("", symbol: symbol, action: action)
-        button.accessibilityLabel = label; button.addInteraction(UIToolTipInteraction(defaultToolTip: label))
-        button.configuration?.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 7, bottom: 8, trailing: 7)
-        return button
+    private func updateTransport() {
+        let shouldShow = ScrivWorkspaceLayout.usesFooterTransport(for: store.tab)
+        transport.accessibilityIdentifier = "workspace-playback-transport"
+        // Remove rather than collapse a transport with fixed-height internal
+        // controls: UIStackView's zero-height hiding constraint would conflict.
+        if !shouldShow, transport.superview != nil {
+            footer.removeArrangedSubview(transport); transport.removeFromSuperview()
+        }
+        transport.isHidden = !ScrivWorkspaceLayout.usesFooterTransport(for: store.tab)
+        if shouldShow, transport.superview == nil { footer.insertArrangedSubview(transport, at: 0) }
+    }
+    private func configureChrome() {
+        chrome.titleButton.addAction(UIAction { [weak self] _ in self?.show(.projects) }, for: .primaryActionTriggered)
+        tabs.addTarget(self, action: #selector(changeTab), for: .valueChanged)
+        chrome.searchButton.addAction(UIAction { [weak self] _ in self?.findInScript() }, for: .primaryActionTriggered)
+        chrome.shareButton.addAction(UIAction { [weak self] _ in self?.show(.teams) }, for: .primaryActionTriggered)
+        chrome.accountButton.addAction(UIAction { [weak self] _ in
+            guard let self else { return }; self.show(self.store.account == nil ? .signIn : .account)
+        }, for: .primaryActionTriggered)
+        chrome.codexButton.addAction(UIAction { [weak self] _ in self?.show(.codex) }, for: .primaryActionTriggered)
+        chrome.moreButton.menu = workspaceMenu(); chrome.moreButton.showsMenuAsPrimaryAction = true
+    }
+    @objc func findInScript() {
+        guard presentedViewController == nil else { return }
+        UIKitPresentation.finishEditing()
+        if store.tab != .script { store.tab = .script; installContent() }
+        (child(.script) as? ScriptScreenController)?.focusSearch()
+    }
+    private func toggleDiscussion() {
+        if store.showDiscussion { store.showDiscussion = false }
+        else { store.loadDiscussion(itemId: store.discussionItemID) }
+    }
+    private func workspaceMenu() -> UIMenu {
+        let mentions = store.unreadDiscussionMentionCount
+        let discussionTitle = (store.showDiscussion ? "Hide discussion" : "Discussion") + (mentions > 0 ? " (\(mentions) unread)" : "")
+        return UIMenu(children: [
+            projectMenu(),
+            UIMenu(options: .displayInline, children: [
+                UIAction(title: "Find in script…", image: UIImage(systemName: "magnifyingglass")) { [weak self] _ in self?.findInScript() },
+                UIAction(title: "Audio library…", image: UIImage(systemName: "waveform")) { [weak self] _ in self?.show(.audio) },
+                UIAction(title: "History…", image: UIImage(systemName: "clock.arrow.circlepath")) { [weak self] _ in self?.show(.history) },
+                UIAction(title: discussionTitle, image: UIImage(systemName: "bubble.left.and.bubble.right")) { [weak self] _ in self?.toggleDiscussion() },
+                UIAction(title: "Teams and sharing…", image: UIImage(systemName: "square.and.arrow.up")) { [weak self] _ in self?.show(.teams) }
+            ]),
+            UIMenu(options: .displayInline, children: [
+                UIAction(title: store.account == nil ? "Sign in…" : "Scriv account…", image: UIImage(systemName: "person.crop.circle")) { [weak self] _ in
+                    guard let self else { return }; self.show(self.store.account == nil ? .signIn : .account)
+                },
+                UIAction(title: "Codex on this Mac…", image: UIImage(systemName: "sparkles")) { [weak self] _ in self?.show(.codex) },
+                UIAction(title: "Generation history…", image: UIImage(systemName: "photo.on.rectangle")) { [weak self] _ in self?.show(.generationJobs) },
+                UIAction(title: "Settings…", image: UIImage(systemName: "gearshape")) { [weak self] _ in self?.show(.settings) }
+            ])
+        ])
     }
     private func projectMenu() -> UIMenu {
-        UIMenu(children: [
+        UIMenu(title: "Project", children: [
             UIAction(title: "Projects…", image: UIImage(systemName: "folder")) { [weak self] _ in self?.show(.projects) },
             UIAction(title: "New project", image: UIImage(systemName: "plus")) { [weak self] _ in self?.store.newProject() },
             UIAction(title: "Open…", image: UIImage(systemName: "folder.badge.plus")) { [weak self] _ in self?.store.openProject() },
@@ -130,6 +156,10 @@ final class ScrivWorkspaceController: ScrivScreenController {
         cached[route.kind] = controller; return controller
     }
     private func installContent() {
+        // Cached controllers return on every tab switch. Deactivate the old pair
+        // before reparenting so a Script/Characters constraint cannot survive
+        // into Script/Preview or accumulate on repeated navigation.
+        splitConstraint?.isActive = false; splitConstraint = nil
         for controller in children where controller !== discussion {
             controller.willMove(toParent: nil); content.removeArrangedSubview(controller.view)
             controller.view.removeFromSuperview(); controller.removeFromParent()
@@ -144,39 +174,60 @@ final class ScrivWorkspaceController: ScrivScreenController {
             addChild(controller); content.addArrangedSubview(controller.view); controller.didMove(toParent: self)
             controller.view.layer.cornerRadius = 16; controller.view.clipsToBounds = true
         }
-        if controllers.count == 2 {
-            controllers[0].view.widthAnchor.constraint(equalTo: controllers[1].view.widthAnchor, multiplier: store.tab == .script ? 1.55 : 1.1).isActive = true
-        }
         installedTab = store.tab
+        updatePanelLayout()
+    }
+    private func updatePanelLayout() {
+        let panels = content.arrangedSubviews
+        let axis: NSLayoutConstraint.Axis = ScrivWorkspaceLayout.stacksWorkPanels(
+            availableWidth: contentContainer.bounds.width, discussionVisible: store.showDiscussion, tab: store.tab
+        ) ? .vertical : .horizontal
+        guard panels.count == 2 else {
+            splitConstraint?.isActive = false; splitConstraint = nil; content.axis = .horizontal
+            return
+        }
+        guard content.axis != axis || splitConstraint == nil else { return }
+        splitConstraint?.isActive = false
+        content.axis = axis
+        // At the supported minimum width an open discussion leaves too little
+        // room for two side-by-side editors. Stack the same live controllers in
+        // the work column, retaining both scroll views and every action.
+        if axis == .horizontal {
+            splitConstraint = panels[0].widthAnchor.constraint(equalTo: panels[1].widthAnchor, multiplier: ScrivWorkspaceLayout.scriptPanelRatio)
+        } else {
+            splitConstraint = panels[0].heightAnchor.constraint(equalTo: panels[1].heightAnchor, multiplier: ScrivWorkspaceLayout.scriptPanelRatio)
+        }
+        splitConstraint?.isActive = true
     }
     private func updateDiscussion() {
         if store.showDiscussion, discussion == nil {
             let panel = ScrivDiscussionController(store: store); discussion = panel
             let dock = UIView(); discussionDock = dock
-            dock.widthAnchor.constraint(equalToConstant: 368).isActive = true
             workspaceBody.addArrangedSubview(dock)
+            let preferredWidth = dock.widthAnchor.constraint(equalTo: workspaceBody.widthAnchor, multiplier: 0.28)
+            preferredWidth.priority = .defaultHigh
+            NSLayoutConstraint.activate([
+                dock.widthAnchor.constraint(greaterThanOrEqualToConstant: 400),
+                dock.widthAnchor.constraint(lessThanOrEqualToConstant: 500), preferredWidth
+            ])
             addChild(panel); dock.addSubview(panel.view); panel.didMove(toParent: self)
             panel.view.translatesAutoresizingMaskIntoConstraints = false
             panel.view.backgroundColor = ScrivUIKitTheme.panel
             panel.view.layer.cornerRadius = 16; panel.view.clipsToBounds = true
-            let height = panel.view.heightAnchor.constraint(equalToConstant: panel.preferredContentSize.height > 0 ? panel.preferredContentSize.height : 515)
-            height.priority = .defaultHigh; discussionHeight = height
+            // The dock fills the work area; preferredContentSize belongs to a
+            // standalone presentation and must not make the dock jump in height
+            // when a conversation becomes empty or receives its first message.
             NSLayoutConstraint.activate([
                 panel.view.leadingAnchor.constraint(equalTo: dock.leadingAnchor),
                 panel.view.trailingAnchor.constraint(equalTo: dock.trailingAnchor),
                 panel.view.topAnchor.constraint(equalTo: dock.topAnchor),
-                panel.view.bottomAnchor.constraint(lessThanOrEqualTo: dock.bottomAnchor), height
+                panel.view.bottomAnchor.constraint(equalTo: dock.bottomAnchor)
             ])
         } else if !store.showDiscussion, let panel = discussion {
             panel.willMove(toParent: nil); panel.view.removeFromSuperview(); panel.removeFromParent(); discussion = nil
             if let dock = discussionDock { workspaceBody.removeArrangedSubview(dock); dock.removeFromSuperview() }
-            discussionDock = nil; discussionHeight = nil
+            discussionDock = nil
         }
-        if let panel = discussion, panel.preferredContentSize.height > 0 { discussionHeight?.constant = panel.preferredContentSize.height }
-    }
-    override func preferredContentSizeDidChange(forChildContentContainer container: any UIContentContainer) {
-        super.preferredContentSizeDidChange(forChildContentContainer: container)
-        if let panel = discussion, container === panel { discussionHeight?.constant = max(200,panel.preferredContentSize.height) }
     }
     override var keyCommands: [UIKeyCommand]? {
         [UIKeyCommand(title: "Save", action: #selector(saveProject), input: "s", modifierFlags: .command),
@@ -186,6 +237,12 @@ final class ScrivWorkspaceController: ScrivScreenController {
          UIKeyCommand(title: "Redo", action: #selector(redoProject), input: "z", modifierFlags: [.command,.shift])]
     }
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(findInScript) {
+            let responder = ScrivKeyboardTextContext.firstResponder()
+            let context = ScrivKeyboardTextContext.state(for: responder)
+            // Do not steal find/composition from editable fields or modal editors.
+            return presentedViewController == nil && !context.editingText && !context.markedText
+        }
         if action == #selector(undoProject) || action == #selector(redoProject) {
             guard !ScrivKeyboardTextContext.state(for:ScrivKeyboardTextContext.firstResponder()).editingText else { return false }
             return action == #selector(undoProject) ? store.canUndo : store.canRedo

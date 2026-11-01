@@ -19,14 +19,18 @@ import ScrivCore
         zoom.minimumValue = 0.3; zoom.maximumValue = 2.5; zoom.value = 1; zoom.accessibilityLabel = "Timeline zoom"; zoom.widthAnchor.constraint(equalToConstant: 85).isActive = true
         zoom.addAction(UIAction { [weak self] _ in self?.signature = ""; self?.storeDidChange() }, for: .valueChanged)
         snap.isOn = true; snap.accessibilityLabel = "Snap to words"; snap.transform = CGAffineTransform(scaleX: 0.7, y: 0.7)
-        let audio = ImageUI.button("Audio", symbol: "waveform") { [weak self] in self?.show(.audio) }
+        let audio = ImageUI.button("Audio", symbol: "waveform") { [weak self] in self?.show(.audio) }; ImageUI.compact(audio)
         let titleRow = ImageUI.row([ImageUI.label("Layers", size: 17, weight: .semibold), audio, ImageUI.spacer(), ImageUI.label("Snap", size: 10), snap, zoom], spacing: 4)
-        if !expanded { titleRow.addArrangedSubview(ImageUI.button("Expand", symbol: "arrow.up.left.and.arrow.down.right") { [weak self] in guard let self else { return }; let controller = LayerTimelineViewController(store: self.store, expanded: true); ImageUI.closeButton(controller); ImageUI.present(controller, from: self, size: CGSize(width: 1100, height: 570)) }) }
+        if !expanded {
+            let expand = ImageUI.button("", symbol: "arrow.up.left.and.arrow.down.right") { [weak self] in guard let self else { return }; let controller = LayerTimelineViewController(store: self.store, expanded: true); ImageUI.closeButton(controller); ImageUI.present(controller, from: self, size: CGSize(width: 1100, height: 570)) }
+            expand.accessibilityLabel = "Expand Layers"; ImageUI.compact(expand); titleRow.addArrangedSubview(expand)
+        }
         scroll.delegate = self; scroll.alwaysBounceHorizontal = true; scroll.alwaysBounceVertical = true; scroll.backgroundColor = ScrivUIKitTheme.inset.withAlphaComponent(0.5); scroll.layer.cornerRadius = 10
         scroll.addSubview(canvas); playhead.backgroundColor = ImageUI.accent; playhead.isUserInteractionEnabled = false
         overview.minimumValue = 0; overview.maximumValue = 1; overview.accessibilityLabel = "Scene overview position"
         overview.addAction(UIAction { [weak self] _ in guard let self else { return }; self.store.seek(toMs: Double(self.overview.value) * Double(self.store.sceneDurationMs)) }, for: .valueChanged)
         let help = ImageUI.label("Drag a picture to offset within its source. Lower right edge: coverage. Upper cut grip: shared cut. Shift: no snap. Change source: picture menu.", size: 10, secondary: true)
+        help.isHidden = !expanded; scroll.accessibilityHint = help.text
         let stack = ImageUI.stack([titleRow, scroll, overview, help], spacing: 7); ImageUI.pinToSafeArea(stack, in: self)
         scroll.heightAnchor.constraint(greaterThanOrEqualToConstant: 180).isActive = true
         let seek = UITapGestureRecognizer(target: self, action: #selector(seekCanvas(_:))); seek.cancelsTouchesInView = false; canvas.addGestureRecognizer(seek)

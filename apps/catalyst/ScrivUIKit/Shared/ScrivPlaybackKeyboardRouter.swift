@@ -14,11 +14,11 @@ struct ScrivKeyboardModifiers: OptionSet, Sendable {
     static let other = Self(rawValue: 1 << 6)
 }
 
-enum ScrivKeyboardAction: Equatable, Sendable { case togglePlayback, zoomIn, zoomOut, toggleScriptEditing }
+enum ScrivKeyboardAction: Equatable, Sendable { case togglePlayback, zoomIn, zoomOut, toggleScriptEditing, findInScript }
 
 enum ScrivKeyboardPolicy {
     static func action(characters: String, ignoringModifiers: String, modifiers: ScrivKeyboardModifiers,
-                       editingText: Bool, markedText: Bool = false, canToggleScriptEditing: Bool = false) -> ScrivKeyboardAction? {
+                       editingText: Bool, markedText: Bool = false, canToggleScriptEditing: Bool = false, canFindScript: Bool = true) -> ScrivKeyboardAction? {
         // Composition belongs to the input method, including its modifier keys.
         guard !markedText else { return nil }
         if characters == " " || ignoringModifiers == " " {
@@ -28,6 +28,7 @@ enum ScrivKeyboardPolicy {
             if characters == "+" || ignoringModifiers == "+" || ignoringModifiers == "=" || characters == "=" { return .zoomIn }
         }
         if modifiers == .command {
+            if ignoringModifiers.lowercased() == "f", !editingText, canFindScript { return .findInScript }
             if characters == "-" || ignoringModifiers == "-" { return .zoomOut }
             if ["\r", "\n", "\u{3}"].contains(characters) || ["\r", "\n", "\u{3}"].contains(ignoringModifiers) {
                 return canToggleScriptEditing && !markedText ? .toggleScriptEditing : nil
@@ -130,6 +131,9 @@ final class ScrivUIKitApplication: UIApplication {
             command("Decrease script text size", input: "-", modifiers: .command, action: #selector(decreaseScriptZoom(_:)))
         ]
         if !context.editingText && !context.markedText {
+            if UIKitPresentation.window?.rootViewController?.presentedViewController == nil {
+                commands.append(command("Find in script", input: "f", modifiers: .command, action: #selector(findScriptFromKeyboard(_:))))
+            }
             commands.append(command("Play or pause", input: " ", modifiers: [], action: #selector(togglePlaybackFromKeyboard(_:))))
         }
         if scriptEditingTarget(responder: responder, context: context) != nil {
@@ -138,6 +142,10 @@ final class ScrivUIKitApplication: UIApplication {
         return commands + (super.keyCommands ?? [])
     }
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(findScriptFromKeyboard(_:)) {
+            let context = ScrivKeyboardTextContext.state(for: ScrivKeyboardTextContext.firstResponder(application: self))
+            return currentStore != nil && !context.editingText && !context.markedText && UIKitPresentation.window?.rootViewController?.presentedViewController == nil
+        }
         if action == #selector(togglePlaybackFromKeyboard(_:)) {
             let context = ScrivKeyboardTextContext.state(for: ScrivKeyboardTextContext.firstResponder(application: self))
             return currentStore != nil && !context.editingText && !context.markedText
@@ -158,10 +166,13 @@ final class ScrivUIKitApplication: UIApplication {
             let responder = ScrivKeyboardTextContext.firstResponder(application: self)
             let context = ScrivKeyboardTextContext.state(for: responder)
             let mayToggleEditing = scriptEditingTarget(responder: responder, context: context) != nil
+            // Record a declined physical down too. Closing a modal while F is
+            // held must not turn that same press into a new search command.
+            let mayFindScript = UIKitPresentation.window?.rootViewController?.presentedViewController == nil
             for press in presses {
                 guard let key = press.key, press.phase == .began else { continue }
                 let action = currentStore == nil ? nil : ScrivKeyboardPolicy.action(characters: key.characters, ignoringModifiers: key.charactersIgnoringModifiers,
-                    modifiers: Self.modifiers(key.modifierFlags), editingText: context.editingText, markedText: context.markedText, canToggleScriptEditing: mayToggleEditing)
+                    modifiers: Self.modifiers(key.modifierFlags), editingText: context.editingText, markedText: context.markedText, canToggleScriptEditing: mayToggleEditing, canFindScript: mayFindScript)
                 pressGate.began(keyCode: Int(key.keyCode.rawValue), action: action)
             }
         }
@@ -188,6 +199,10 @@ final class ScrivUIKitApplication: UIApplication {
         let responder = ScrivKeyboardTextContext.firstResponder(application: self)
         guard let target = scriptEditingTarget(responder: responder, context: ScrivKeyboardTextContext.state(for: responder)), pressGate.consume(.toggleScriptEditing) else { return }
         sendAction(toggleEditingSelector, to: target, from: command, for: nil)
+    }
+    @objc private func findScriptFromKeyboard(_ command: UIKeyCommand) {
+        guard canPerformAction(#selector(findScriptFromKeyboard(_:)), withSender: command), pressGate.consume(.findInScript) else { return }
+        (UIKitPresentation.window?.rootViewController as? ScrivWorkspaceController)?.findInScript()
     }
     @objc private func resetKeyboardFence() { pressGate.reset() }
     private func command(_ title: String, input: String, modifiers: UIKeyModifierFlags, action: Selector) -> UIKeyCommand {

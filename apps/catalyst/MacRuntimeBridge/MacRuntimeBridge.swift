@@ -37,6 +37,36 @@ final class MacRuntimeBridge {
         }
         guard result == errSecSuccess else { throw ScrivError.unavailable("The local runtime pairing could not be saved to this Mac's Keychain. The previous pairing was kept.") }
     }
+    /// The signed bundled service may create a new grant or reuse the same one.
+    /// It must never overwrite a different, unreadable, or concurrently added grant.
+    static func importBootstrappedPairing(_ data: Data) throws {
+        guard data.count <= 4096 else { throw ScrivError.invalid("Invalid local connection response.") }
+        let incoming = try JSONDecoder().decode(RuntimeBridgePairing.self, from: data)
+        let existing = try savedPairing()
+        try RuntimeBridgeBootstrapSigning.validateImport(existing: existing, incoming: incoming, ownerUID: geteuid())
+        if existing != nil { return }
+        var item = pairingQuery
+        item[kSecValueData as String] = try JSONEncoder().encode(incoming)
+        item[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        let status = SecItemAdd(item as CFDictionary, nil)
+        if status == errSecDuplicateItem {
+            guard let raced = try savedPairing() else { throw ScrivError.conflict("Local pairing changed. Try again.") }
+            try RuntimeBridgeBootstrapSigning.validateImport(existing: raced, incoming: incoming, ownerUID: geteuid())
+        } else if status != errSecSuccess { throw ScrivError.unavailable("The local connection could not be saved to this Mac's private Keychain.") }
+    }
+    private static var pairingQuery: [String: Any] {
+        [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: "Scriv.LocalRuntimeBridge", kSecAttrAccount as String: "same-user-pairing"]
+    }
+    /// nil means only errSecItemNotFound; damaged or inaccessible grants fail closed.
+    static func savedPairing() throws -> RuntimeBridgePairing? {
+        var query = pairingQuery
+        query[kSecReturnData as String] = true; query[kSecMatchLimit as String] = kSecMatchLimitOne
+        var raw: CFTypeRef?; let status = SecItemCopyMatching(query as CFDictionary, &raw)
+        if status == errSecItemNotFound { return nil }
+        guard status == errSecSuccess, let data = raw as? Data, data.count <= 4096 else { throw ScrivError.permission("The existing local pairing was preserved. Unlock this Mac's Keychain or use the explicit pairing-reset controls.") }
+        let pairing = try JSONDecoder().decode(RuntimeBridgePairing.self, from: data)
+        try pairing.validate(ownerUID: geteuid()); return pairing
+    }
     static func forgetPairing() {
         SecItemDelete([kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: "Scriv.LocalRuntimeBridge", kSecAttrAccount as String: "same-user-pairing"] as CFDictionary)
     }
@@ -79,10 +109,14 @@ final class MacRuntimeBridge {
     }
     /// Captures the ownership capability before returning. Stop is never sent to
     /// an external WebSocket server; the helper also checks the exact session.
-    func stop() {
+    func stop(completion: (() -> Void)? = nil) {
         polling?.cancel(); polling = nil; let wasRunning = running; running = false
-        guard wasRunning else { return }
-        Task { _ = try? await request(.init(.stop, sessionID: sessionID)) }
+        guard wasRunning else { completion?(); return }
+        Task {
+            _ = try? await request(.init(.stop, sessionID: sessionID))
+            // Release XPC only after the bounded, session-owned stop attempt.
+            completion?()
+        }
     }
     func rotatePairing() async throws {
         guard !running else { throw ScrivError.conflict("Stop Codex before rotating local pairing.") }

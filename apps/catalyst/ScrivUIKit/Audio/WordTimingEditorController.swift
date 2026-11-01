@@ -57,6 +57,8 @@ final class WordTimingEditorController: ScrivScreenController {
         saveButton = ScrivUIKitTheme.button("Save timing", primary: true) { [weak self] in self?.saveTiming() }
         saveButton.isEnabled = false; saveButton.accessibilityIdentifier = "word-timing-save"
         cancel.setContentHuggingPriority(.required, for: .horizontal); saveButton.setContentHuggingPriority(.required, for: .horizontal)
+        cancel.widthAnchor.constraint(greaterThanOrEqualToConstant: 86).isActive = true; saveButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 112).isActive = true
+        cancel.setContentCompressionResistancePriority(.required, for: .horizontal); saveButton.setContentCompressionResistancePriority(.required, for: .horizontal)
         let footerCopy = ScrivUIKitTheme.stack([
             ScrivUIKitTheme.label("Image cuts and audio stay unchanged.", size: 11),
             ScrivUIKitTheme.label("Manual timing, not automatic alignment.", size: 11, color: ScrivUIKitTheme.secondary)
@@ -65,7 +67,7 @@ final class WordTimingEditorController: ScrivScreenController {
         let content = ScrivUIKitTheme.stack([
             ScrivUIKitTheme.label("Word timing", size: 19, weight: .semibold), chipScroll, timeline, fields,
             ScrivUIKitTheme.label("Relative to this dialogue · \(AudioTimingInput.seconds(draft.original.ownedDurationMs)) s", size: 11, color: ScrivUIKitTheme.secondary),
-            notice, leaseRow, AudioUIKitLayout.separator(), AudioUIKitLayout.row([footerCopy, cancel, saveButton], spacing: 10)
+            notice, leaseRow, AudioUIKitLayout.separator(), ScrivSecondaryAdaptiveRow([footerCopy, AudioUIKitLayout.row([UIView(), cancel, saveButton], spacing: 10)], minimumHorizontalWidth: 500, spacing: 12)
         ], spacing: 18)
         _ = AudioUIKitLayout.scrollContent(content, in: view)
         refreshFields(); refreshButtons(); refreshTimeline(); acquireLease()

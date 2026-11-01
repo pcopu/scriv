@@ -55,20 +55,24 @@ Use macOS 14+ with **Xcode 26.2 or newer** for the current UIKit SDK APIs (avail
 git clone https://github.com/pcopu/scriv.git
 cd scriv
 bash scripts/build-catalyst.sh
-# Development product: build/catalyst/Build/Products/Debug-maccatalyst/ScrivUIKit.app
+# Development product: build/catalyst/Build/Products/Debug-maccatalyst/Scriv.app
 ```
 
-`apps/catalyst/ScrivUIKit.xcodeproj` contains the UIKit app and native test target. Its deterministic generator requires only Python 3, not XcodeGen. `scripts/verify-catalyst.sh` checks source/target integrity and syntax on Linux; it does **not** type-check UIKit. The current native build has not yet been verified because the available Mac lacks build disk space. The preserved legacy app can still be built with `scripts/build-mac.sh`; do not confuse its historical screenshots with the UIKit target.
+`apps/catalyst/ScrivUIKit.xcodeproj` contains the UIKit app/test targets, native adapter and bundled on-demand runtime XPC service. Its deterministic generator requires only Python 3, not XcodeGen. `scripts/verify-catalyst.sh` checks source/target integrity and, with a Swift toolchain installed, syntax on Linux; it does **not** type-check UIKit. Compilation, actual native interaction and signed installation/relaunch are separate verification gates. The preserved legacy app can still be built with `scripts/build-mac.sh`; do not confuse its historical screenshots with the UIKit target.
 
 Local writing, timing, playback and `.scriv` packages do not require sign-in. Use Projects → Open to explicitly grant access to an existing package; the Catalyst app does not assume access to the legacy app’s storage. Accepted mutations enter a private, account-scoped write-ahead journal before publication. Recovery refuses changed sources rather than overwriting them. Script and Characters share the smaller text baseline and one persisted Cmd+/Cmd− zoom preference. Space plays/pauses outside text editing; normal spaces and IME composition remain text input. Cmd+Enter toggles script editing.
 
-The separately built [Runtime Companion](apps/runtime-bridge/README.md) is required for UIKit **Start local Codex**, because Catalyst cannot launch `Process`. It is explicitly opened and paired by the user, never silently installed or autostarted. Build it with `bash apps/runtime-bridge/build-companion.sh`; building does not launch or install it. Both development products are ad-hoc signed by default; distributable releases require authorized Developer ID signing and notarization.
+UIKit **Check & connect** can prepare the bundled, on-demand local runtime helper after explicit first-use consent. The helper can access Codex and generation files as the current Mac account; credentials stay local. Cancellation does not create a pairing grant, and an inaccessible existing grant is not treated as missing consent. The separately built [Runtime Companion](apps/runtime-bridge/README.md) remains available for explicit pairing. Building either product does not launch a runtime. Distributable releases require authorized Developer ID signing and notarization.
+
+### In-app updates
+
+Settings → **Check for Scriv updates…** uses a UIKit sheet and native Sparkle plug-in, with durable-save fences and signed feed/archive checks. Development/ad-hoc builds cannot install updates. [Update policy and build instructions](docs/app-updates.md), [service setup](updates/README.md), and [native acceptance procedure](docs/signed-update-acceptance.md) describe separate release and installation gates.
 
 ### Two independent accounts
 
 **Scriv account:** the account control sends a six-digit email code and verifies it in the app to access hosted scripts and teams. Codes are short-lived, single-use and bound to the requesting sign-in flow. Scriv session tokens are stored in Keychain and scoped to the API origin. Existing GitHub identities remain supported separately; matching contact emails do not silently merge accounts.
 
-**Codex on this Mac:** In UIKit, Start asks the explicitly paired, same-user Runtime Companion to launch the installed `codex app-server`; the preserved legacy macOS target launches its own child directly. Connect attaches to an explicitly configured loopback WebSocket endpoint. Sign in with ChatGPT is handled by Codex. Stop terminates only the child Scriv started; disconnecting an external server leaves that server running. No ChatGPT credential is sent to Scriv's cloud.
+**Codex on this Mac:** In UIKit, a user-authorized bundled helper or explicitly paired, same-user Runtime Companion launches the installed `codex app-server`; the preserved legacy macOS target launches its own child directly. Connect attaches to an explicitly configured loopback WebSocket endpoint. Sign in with ChatGPT is handled by Codex. Stop terminates only the child Scriv started; disconnecting an external server leaves that server running. No ChatGPT credential is sent to Scriv's cloud.
 
 Image generation requests a real image file in an isolated local generation directory. The installed Codex runtime, selected model and account must support image generation. Scriv reports an actual missing-capability or missing-file error instead of substituting an image. This integration still requires the live-account release smoke test described in the handoff.
 

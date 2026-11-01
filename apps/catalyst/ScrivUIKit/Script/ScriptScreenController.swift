@@ -11,6 +11,12 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     private let searchRow = ScrivUIKitTheme.stack([], axis: .horizontal, spacing: 7)
     private let matchLabel = ScrivUIKitTheme.label("", size: 11, color: ScrivUIKitTheme.secondary, lines: 1)
     private let sceneButton = UIButton(type: .system)
+    private let heading = ScrivUIKitTheme.label("Script", size: 25, weight: .semibold)
+    private var addBarLeading: NSLayoutConstraint?
+    private let headingSpacer = UIView()
+    private var headingSpacerWidth: NSLayoutConstraint?
+    private var presentation: ScriptPresentationMetrics { ScriptPresentationMetrics(isCompact: store.tab == .characters, paneWidth: isViewLoaded ? max(715, view.bounds.width) : 715) }
+    private var renderedPresentation: ScriptPresentationMetrics?
     private let presence = ScrivUIKitTheme.stack([], axis: .horizontal, spacing: -5)
     private let footerLabel = ScrivUIKitTheme.label("", size: 11, color: ScrivUIKitTheme.secondary, lines: 1)
     private let statusDot = UIImageView(image: UIImage(systemName: "checkmark.circle.fill"))
@@ -147,12 +153,15 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         view.layer.cornerRadius = 17; view.clipsToBounds = true
         let icon = UIImageView(image: UIImage(systemName: "doc.text")); icon.tintColor = ScrivUIKitTheme.accent; icon.contentMode = .scaleAspectFit
         icon.widthAnchor.constraint(equalToConstant: 34).isActive = true; icon.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        sceneButton.titleLabel?.font = .systemFont(ofSize: 12); sceneButton.contentHorizontalAlignment = .leading; sceneButton.showsMenuAsPrimaryAction = true
-        let titleLine = ScrivUIKitTheme.stack([ScrivUIKitTheme.label("Script", size: 23, weight: .semibold), presence], axis: .horizontal, spacing: 10); titleLine.alignment = .center
+        sceneButton.titleLabel?.font = .systemFont(ofSize: 17); sceneButton.contentHorizontalAlignment = .leading; sceneButton.showsMenuAsPrimaryAction = true
+        let titleLine = ScrivUIKitTheme.stack([heading, presence], axis: .horizontal, spacing: 10); titleLine.alignment = .center
         let titleStack = ScrivUIKitTheme.stack([titleLine, sceneButton], spacing: 3)
-        let search = ScrivUIKitTheme.button("Find", symbol: "magnifyingglass") { [weak self] in self?.toggleSearch() }
-        let history = ScrivUIKitTheme.button("History", symbol: "clock.arrow.circlepath") { [weak self] in self?.show(.history) }
-        let header = ScrivUIKitTheme.stack([icon, titleStack, UIView(), search, history], axis: .horizontal, spacing: 12); header.alignment = .top
+        let search = ScrivUIKitTheme.button("", symbol: "magnifyingglass") { [weak self] in self?.toggleSearch() }
+        let history = ScrivUIKitTheme.button("", symbol: "clock.arrow.circlepath") { [weak self] in self?.show(.history) }
+        search.accessibilityLabel = "Find in script"; history.accessibilityLabel = "Script history"
+        search.addInteraction(UIToolTipInteraction(defaultToolTip: "Find in script · ⌘F")); history.addInteraction(UIToolTipInteraction(defaultToolTip: "History"))
+        headingSpacerWidth = headingSpacer.widthAnchor.constraint(equalToConstant: 100); headingSpacerWidth?.isActive = true
+        let header = ScrivUIKitTheme.stack([icon, headingSpacer, titleStack, UIView(), search, history], axis: .horizontal, spacing: 12); header.alignment = .center
         searchField.placeholder = "Find in script"; searchField.delegate = self; searchField.addTarget(self, action: #selector(searchChanged), for: .editingChanged)
         searchRow.addArrangedSubview(searchField); searchRow.addArrangedSubview(matchLabel)
         searchRow.addArrangedSubview(ScrivUIKitTheme.button("Previous", symbol: "chevron.up") { [weak self] in self?.advanceSearch(-1) })
@@ -162,7 +171,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         let top = ScrivUIKitTheme.stack([header, searchRow], spacing: 12)
         let topContainer = UIView(); topContainer.addSubview(top); top.scrivPinEdges(to: topContainer, insets: NSDirectionalEdgeInsets(top: 17, leading: 18, bottom: 12, trailing: 18))
         let footer = makeFooter()
-        let root = ScrivUIKitTheme.stack([topContainer, separator(), scroll, footer], spacing: 0)
+        let root = ScrivUIKitTheme.stack([topContainer, scroll, footer], spacing: 0)
         view.addSubview(root); root.scrivPinEdges(to: view)
         scroll.addSubview(content); content.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -170,9 +179,9 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
             content.topAnchor.constraint(equalTo: scroll.contentLayoutGuide.topAnchor), content.bottomAnchor.constraint(equalTo: scroll.contentLayoutGuide.bottomAnchor),
             content.widthAnchor.constraint(equalTo: scroll.frameLayoutGuide.widthAnchor)
         ])
-        content.addSubview(rowsStack); rowsStack.scrivPinEdges(to: content, insets: NSDirectionalEdgeInsets(top: 20, leading: 14, bottom: 20, trailing: 14))
+        content.addSubview(rowsStack); rowsStack.scrivPinEdges(to: content, insets: NSDirectionalEdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
         content.addSubview(rails); rails.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([rails.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 14), rails.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -14), rails.topAnchor.constraint(equalTo: content.topAnchor), rails.bottomAnchor.constraint(equalTo: content.bottomAnchor)])
+        NSLayoutConstraint.activate([rails.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20), rails.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20), rails.topAnchor.constraint(equalTo: content.topAnchor), rails.bottomAnchor.constraint(equalTo: content.bottomAnchor)])
         scroll.keyboardDismissMode = .interactive; scroll.delaysContentTouches = false
         addBar = makeAddBar(); emptyState = makeEmptyState()
         store.prepareScriptPlayback = { [weak self] in self?.preparePlayback() ?? true }
@@ -185,8 +194,9 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        if renderedPresentation != presentation { renderedPresentation = presentation; storeDidChange() }
         var frames: [String: CGRect] = [:]
-        for (id, row) in rows { var frame = row.convert(row.bounds, to: content); frame.origin.x -= 14; frames[id] = frame }
+        for (id, row) in rows { var frame = row.convert(row.bounds, to: content); frame.origin.x -= 20; frames[id] = frame }
         rails.update(entries: store.sceneEntries, frames: frames)
     }
     override func viewWillDisappear(_ animated: Bool) {
@@ -196,6 +206,17 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     override func storeDidChange() {
         guard isViewLoaded else { return }
         session.contextDidChange()
+        rowsStack.spacing = presentation.rowSpacing
+        // UIStackView gives hidden arranged views a required zero width. Release
+        // the expanded gutter before hiding it, then restore only when visible.
+        if presentation.isCompact { headingSpacerWidth?.isActive = false }
+        headingSpacer.isHidden = presentation.isCompact
+        headingSpacerWidth?.constant = 100 * presentation.opticalScale
+        headingSpacerWidth?.isActive = !presentation.isCompact
+        heading.font = .systemFont(ofSize: presentation.titleSize, weight: .semibold)
+        sceneButton.titleLabel?.font = .systemFont(ofSize: presentation.subtitleSize)
+        footerLabel.font = .systemFont(ofSize: (presentation.isCompact ? 12 : 15) * presentation.opticalScale)
+        rails.presentation = presentation; addBarLeading?.constant = presentation.textInset
         let entries = store.sceneEntries, ids = entries.map(\.id)
         if ids != renderedIDs {
             for id in Array(rows.keys) where !ids.contains(id) { rows.removeValue(forKey: id)?.removeFromSuperview(); scrubbers.removeValue(forKey: id)?.cancel() }
@@ -206,12 +227,15 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
             renderedIDs = ids
         } else if rowsStack.arrangedSubviews.isEmpty { rowsStack.addArrangedSubview(emptyState) }
         let search = searchField.text ?? ""
+        // This derived value walks the complete scene word track. Every row in
+        // this synchronous MainActor refresh sees the same playhead snapshot.
+        let currentWordID = store.currentWordID
         for entry in entries {
             guard let row = rows[entry.id] else { continue }
             let selected = store.selectedEntryID == entry.id
             let start = store.project.startMs(of: entry.id)
             let active = store.isPlaying && Int(store.playheadMs) >= start && Int(store.playheadMs) < start + entry.ownedDurationMs
-            row.configure(entry: entry, project: store.project, selected: selected, active: active, search: search, currentWordID: store.currentWordID, peers: store.peers.filter { $0.itemId == entry.id }, locked: store.lockedByOther(entry.id) != nil, speakerMenu: speakerMenu(entry), fontSize: store.scriptFontSize)
+            row.configure(entry: entry, project: store.project, selected: selected, active: active, search: search, currentWordID: currentWordID, peers: store.peers.filter { $0.itemId == entry.id }, locked: store.lockedByOther(entry.id) != nil, speakerMenu: speakerMenu(entry), fontSize: presentation.fontSize(zoom: store.scriptZoom), presentation: presentation)
             let request = pendingCaret.flatMap { $0.entryID == entry.id && $0.navigation == store.navigationContext && session.entryID == entry.id ? $0 : nil }
             let caret = request.flatMap { request -> Int? in
                 if let wordID = request.afterWordID { return ScriptBoundaryEditing.utf16Range(ofWordID: wordID, in: entry).map(NSMaxRange) }
@@ -238,8 +262,9 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         zoomButton.menu = UIMenu(title: "Script text size · shared across views", children: [0.7, 0.85, 1.0, 1.15, 1.3, 1.5, 2.0].map { zoom in
             UIAction(title: "\(Int((zoom * 100).rounded()))%" + (zoom == 1 ? " · Default" : ""), state: abs(store.scriptZoom - zoom) < 0.001 ? .on : .off) { [weak self] _ in self?.store.setScriptZoom(zoom) }
         })
-        statusDot.tintColor = store.statusMessage == "Save failed" ? .systemRed : store.hasConflicts ? .systemOrange : .systemGreen
-        statusDot.accessibilityLabel = store.statusMessage + (store.hasConflicts ? " · Cloud changes need review" : "")
+        statusDot.image = UIImage(systemName: store.localSaveNeedsAttention ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
+        statusDot.tintColor = store.localSaveNeedsAttention ? .systemRed : store.hasConflicts ? .systemOrange : .systemGreen
+        statusDot.accessibilityLabel = store.localSaveStatusMessage + (store.hasConflicts ? " · Cloud changes need review" : "")
         updateMatchLabel()
         view.setNeedsLayout()
         if previousScene != store.selectedSceneID {
@@ -269,6 +294,10 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         row.editor.mergeAtStart = { [weak self] in self?.mergeEntry(id) }
         scrubbers[id] = ScriptDurationScrubDriver(button: row.durationButton, store: store, entryID: id, finishEditing: { [weak self] in guard let self else { return false }; playbackContext = nil; return session.finish() })
         row.onDuration = { [weak self] in self?.editDuration(id) }
+        row.onSplitPicture = { [weak self, weak row] in
+            guard let self, let row, session.finish(), let cue = store.selectedCue ?? store.currentCue else { return }
+            ImageSplitPreviewController.present(store: store, cue: cue, from: self, anchor: row.splitPictureButton)
+        }
         row.onCharacter = { [weak self] id in self?.store.selectCharacter(id) }
         row.onTextEdit = { [weak self] edit in guard let self, session.entryID == id else { return false }; return session.accept(edit) }
         row.onTextChange = { [weak self] text in guard let self, session.entryID == id else { return false }; return session.nativeTextDidChange(text) }
@@ -386,7 +415,10 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     }
     private func makeAddBar() -> UIView {
         let bar = ScrivUIKitTheme.stack([ScrivUIKitTheme.button("Dialogue", symbol: "plus") { [weak self] in self?.store.addEntry(kind: .dialogue) }, ScrivUIKitTheme.button("Direction", symbol: "arrow.turn.down.right") { [weak self] in self?.store.addEntry(kind: .direction) }, UIView()], axis: .horizontal, spacing: 12)
-        let container = UIView(); container.addSubview(bar); bar.scrivPinEdges(to: container, insets: NSDirectionalEdgeInsets(top: 8, leading: 158, bottom: 0, trailing: 0)); return container
+        let container = UIView(); container.addSubview(bar); bar.translatesAutoresizingMaskIntoConstraints = false
+        let leading = bar.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: presentation.textInset); addBarLeading = leading
+        NSLayoutConstraint.activate([leading, bar.trailingAnchor.constraint(equalTo: container.trailingAnchor), bar.topAnchor.constraint(equalTo: container.topAnchor, constant: 8), bar.bottomAnchor.constraint(equalTo: container.bottomAnchor)])
+        return container
     }
     private func makeEmptyState() -> UIView {
         let title = ScrivUIKitTheme.label("Your story starts here", size: 27, weight: .semibold); title.textAlignment = .center
@@ -398,6 +430,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         let container = UIView(); container.addSubview(stack); stack.scrivPinEdges(to: container, insets: NSDirectionalEdgeInsets(top: 90, leading: 26, bottom: 90, trailing: 26)); return container
     }
     private func makeFooter() -> UIView {
+        statusDot.isAccessibilityElement = true
         statusDot.contentMode = .scaleAspectFit; statusDot.widthAnchor.constraint(equalToConstant: 13).isActive = true
         followSwitch.transform = CGAffineTransform(scaleX: 0.7, y: 0.7); followSwitch.addTarget(self, action: #selector(followChanged), for: .valueChanged)
         zoomButton.titleLabel?.font = .systemFont(ofSize: 11); zoomButton.showsMenuAsPrimaryAction = true
@@ -417,7 +450,8 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool { advanceSearch(1); return false }
     private func scrollTo(_ id: String, animated: Bool) { guard let row = rows[id] else { return }; view.layoutIfNeeded(); scroll.scrollRectToVisible(row.convert(row.bounds, to: content).insetBy(dx: 0, dy: -35), animated: animated) }
     override var keyCommands: [UIKeyCommand]? { [UIKeyCommand(input: "f", modifierFlags: .command, action: #selector(findCommand)), UIKeyCommand(input: "g", modifierFlags: .command, action: #selector(nextCommand)), UIKeyCommand(input: "g", modifierFlags: [.command, .shift], action: #selector(previousCommand))] }
-    @objc private func findCommand() { if searchRow.isHidden { toggleSearch() } else { searchField.becomeFirstResponder() } }
+    func focusSearch() { if searchRow.isHidden { toggleSearch() } else { searchField.becomeFirstResponder() } }
+    @objc private func findCommand() { focusSearch() }
     @objc private func nextCommand() { advanceSearch(1) }
     @objc private func previousCommand() { advanceSearch(-1) }
 }

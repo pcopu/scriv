@@ -57,4 +57,50 @@ final class RuntimeBridgeEnvelopeTests: XCTestCase {
         XCTAssertThrowsError(try RuntimeBridgePolicy.validateCodexMessage(ScrivJSON.encoder.encode(JSONValue.object(["method": .string("turn/start"), "params": .object(["threadId": .string("existing-thread"), "input": .array([.object(["type": .string("localImage"), "path": .string("/etc/passwd")])])])])), generationRoot: root))
     }
 
+    func testCharacterAnalysisThreadAndInlineTurnAreNarrowlyWhitelisted() throws {
+        let fixture = FileManager.default.temporaryDirectory.appendingPathComponent("ScrivBridgePolicy-" + UUID().uuidString, isDirectory: true)
+        let generation = fixture.appendingPathComponent("Generation", isDirectory: true)
+        try FileManager.default.createDirectory(at: generation, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: fixture) }
+        // The adapter creates both directories before sending the thread. Real
+        // directory URLs also preserve Foundation's trailing-slash identity.
+        let root = generation.resolvingSymlinksInPath().standardizedFileURL
+        let directory = root.appendingPathComponent(UUID().uuidString.lowercased(), isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+        func validate(_ method: String, _ params: [String: JSONValue]) throws {
+            try RuntimeBridgePolicy.validateCodexMessage(ScrivJSON.encoder.encode(JSONValue.object(["method": .string(method), "params": .object(params)])), generationRoot: root)
+        }
+        let thread: [String: JSONValue] = ["cwd": .string(directory.path), "model": .string("vision"), "approvalPolicy": .string("never"), "sandbox": .string("read-only"), "ephemeral": .bool(true), "developerInstructions": .string(CodexCharacterAnalysisProtocol.developerInstructions)]
+        try validate("thread/start", thread)
+        for (key, value) in ["ephemeral": JSONValue.bool(false), "sandbox": .string("danger-full-access"), "config": .object([:]), "developerInstructions": .string("different"), "cwd": .string("/")] {
+            var changed = thread; changed[key] = value; XCTAssertThrowsError(try validate("thread/start", changed), key)
+        }
+        let prompt: JSONValue = .object(["type": .string("text"), "text": .string("Explicit captured character context")])
+        let image: JSONValue = .object(["type": .string("image"), "url": .string("data:image/jpeg;base64," + Data([0xff, 0xd8, 0xff]).base64EncodedString())])
+        let turn: [String: JSONValue] = ["threadId": .string("owned"), "input": .array([prompt, image]), "cwd": .string(directory.path), "approvalPolicy": .string("never"), "sandboxPolicy": .object(["type": .string("readOnly"), "networkAccess": .bool(false)]), "outputSchema": CodexCharacterAnalysisProtocol.outputSchema]
+        try validate("turn/start", turn)
+        for (key, value) in ["sandboxPolicy": JSONValue.object(["type": .string("readOnly"), "networkAccess": .bool(true)]), "approvalPolicy": .string("on-request"), "cwd": .string("/"), "outputSchema": .object([:]), "tools": .array([])] {
+            var changed = turn; changed[key] = value; XCTAssertThrowsError(try validate("turn/start", changed), key)
+        }
+        let invalidImages: [JSONValue] = [
+            .object(["type": .string("image"), "url": .string("https://example.invalid/image.png")]),
+            .object(["type": .string("localImage"), "path": .string("/etc/passwd")]),
+            .object(["type": .string("image"), "url": .string("data:image/jpeg;base64,invalid!")])
+        ]
+        for invalidImage in invalidImages {
+            var changed = turn; changed["input"] = .array([prompt, invalidImage]); XCTAssertThrowsError(try validate("turn/start", changed))
+        }
+        let outside = fixture.appendingPathComponent(UUID().uuidString.lowercased(), isDirectory: true)
+        try FileManager.default.createDirectory(at: outside, withIntermediateDirectories: false)
+        let escapingLink = root.appendingPathComponent(UUID().uuidString.lowercased(), isDirectory: true)
+        try FileManager.default.createSymbolicLink(at: escapingLink, withDestinationURL: outside)
+        for invalidDirectory in [outside, escapingLink] {
+            var changedThread = thread; changedThread["cwd"] = .string(invalidDirectory.path)
+            XCTAssertThrowsError(try validate("thread/start", changedThread))
+            var changedTurn = turn; changedTurn["cwd"] = .string(invalidDirectory.path)
+            XCTAssertThrowsError(try validate("turn/start", changedTurn))
+        }
+        for method in ["config/value/write", "mcpServer/reload", "command/exec", "fs/readFile"] { XCTAssertThrowsError(try validate(method, [:])) }
+    }
+
 }

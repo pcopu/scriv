@@ -1,3 +1,4 @@
+import { validateCharacterImageAnalysis, validateCharacterPortrait } from './character-image-validation';
 import type { Item, ItemKind } from './types';
 import { assert, id, int, record, str } from './http';
 export const itemKinds: ItemKind[] = ['scene','entry','character','image','cue'];
@@ -34,8 +35,9 @@ export function validateItem(item: Pick<Item,'id'|'kind'|'data'>): void {
       d.words.forEach((raw,i)=>{const w=record(raw,'word');assert(w.timingSource===undefined||w.timingSource===null||w.timingSource==='authored',400,'invalid_word_timing_source','Word timingSource must be authored when present.');const wordId=id(w.id,'word.id');assert(!ids.has(wordId),400,'duplicate_word','Word IDs must be unique in a line.');ids.add(wordId);assert(str(w.text,'word.text',10000)===source[i],400,'word_order','Words must preserve script order and wording.');const start=int(w.startMs,'word.startMs',previous,duration);const end=int(w.endMs,'word.endMs',start+1,duration);previous=end;});
     }
   }
-  if(item.kind==='character'){str(d.name,'character.name',200);strings(d.aliases,'aliases');str(d.biography,'biography',20000,0);str(d.appearance,'appearance',20000,0);str(d.color,'color',50,0);if(d.portraitImageId!==undefined&&d.portraitImageId!==null)id(d.portraitImageId,'portraitImageId');}
+  if(item.kind==='character'){validateCharacterPortrait(d);str(d.name,'character.name',200);strings(d.aliases,'aliases');str(d.biography,'biography',20000,0);str(d.appearance,'appearance',20000,0);str(d.color,'color',50,0);if(d.portraitImageId!==undefined&&d.portraitImageId!==null)id(d.portraitImageId,'portraitImageId');}
   if(item.kind==='image'){
+    validateCharacterImageAnalysis(d);
     int(d.version,'image.version',1);const name=str(d.fileName,'fileName',255);assert(!name.includes('/')&&!name.includes('\\')&&!name.includes('..'),400,'invalid_filename','Image fileName must be a local filename.');
     assert(typeof d.sha256==='string'&&/^[a-fA-F0-9]{64}$/.test(d.sha256),400,'invalid_hash','Images require a SHA-256 digest.');
     assert(['image/png','image/jpeg','image/webp'].includes(String(d.mimeType)),400,'invalid_media','Supported image types are PNG, JPEG and WebP.');int(d.byteCount,'byteCount',1,26214400);const characterIds=strings(d.characterIds,'characterIds',100);assert(new Set(characterIds).size===characterIds.length,400,'duplicate_character','Image character tags must be distinct.');str(d.prompt,'prompt',30000,0);assert(typeof d.createdAt==='number'&&Number.isFinite(d.createdAt)&&d.createdAt>=0,400,'invalid_timestamp','createdAt must be milliseconds since the Unix epoch.');

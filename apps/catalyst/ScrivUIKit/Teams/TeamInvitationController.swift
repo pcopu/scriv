@@ -33,6 +33,7 @@ final class TeamInvitationController: ScrivScreenController, UIAdaptivePresentat
         super.viewDidLoad()
         layout = CharacterTeamSheetLayout(title: "Invite to \(team?.name ?? "team")") { [weak self] in self?.close() }
         view.addSubview(layout); layout.scrivPinEdges(to: view)
+        layout.heading.font = .systemFont(ofSize: 20, weight: .semibold); layout.content.spacing = 18
         issue.isHidden = true; layout.content.addArrangedSubview(issue); layout.content.addArrangedSubview(panel)
         layout.footer.addArrangedSubview(CharacterTeamUI.button("Done", primary: true) { [weak self] in self?.close() })
         render()

@@ -41,10 +41,13 @@ final class RecoveredDraftController: ScrivScreenController, UIAdaptivePresentat
         currentText.accessibilityLabel = "Current saved line"; draftText.accessibilityLabel = "Your local draft"
         applyButton = ScrivUIKitTheme.button("Apply reviewed draft", primary: true) { [weak self] in guard let self, sessionMatches else { return }; session.applyReviewed() }
         keepButton = ScrivUIKitTheme.button("Keep for later") { [weak self] in self?.keep() }
-        discardButton = ScrivUIKitTheme.button("Discard draft…") { [weak self] in self?.confirmDiscard() }; discardButton.tintColor = .systemRed
-        let footer = ScrivUIKitTheme.stack([keepButton, UIView(), applyButton], axis: .horizontal, spacing: 14)
-        let bottom = ScrivUIKitTheme.stack([padded(footer, insets: NSDirectionalEdgeInsets(top: 18, leading: 26, bottom: 18, trailing: 26)), padded(ScrivUIKitTheme.stack([discardButton, UIView()], axis: .horizontal), insets: NSDirectionalEdgeInsets(top: 8, leading: 26, bottom: 8, trailing: 26))], spacing: 0)
-        let root = ScrivUIKitTheme.stack([header, scroll, bottom], spacing: 0); view.addSubview(root); root.scrivPinEdges(to: view)
+        discardButton = ScrivUIKitTheme.button("Discard draft…") { [weak self] in self?.confirmDiscard() }
+        discardButton.configuration?.baseForegroundColor = .systemRed; discardButton.configuration?.baseBackgroundColor = .clear; discardButton.configuration?.background.strokeWidth = 0
+        for button in [keepButton!, applyButton!] { button.setContentCompressionResistancePriority(.required, for: .horizontal) }
+        let footer = ScrivSecondaryAdaptiveRow([keepButton, applyButton], minimumHorizontalWidth: 420, spacing: 14)
+        footer.distribution = .fillEqually
+        let bottom = ScrivUIKitTheme.stack([AudioUIKitLayout.separator(), padded(footer, insets: NSDirectionalEdgeInsets(top: 18, leading: 26, bottom: 18, trailing: 26)), AudioUIKitLayout.separator(), padded(ScrivUIKitTheme.stack([discardButton, UIView()], axis: .horizontal), insets: NSDirectionalEdgeInsets(top: 8, leading: 26, bottom: 8, trailing: 26))], spacing: 0)
+        let root = ScrivUIKitTheme.stack([header, AudioUIKitLayout.separator(), scroll, bottom], spacing: 0); view.addSubview(root); root.scrivPinEdges(to: view)
         session.changes.sink { [weak self] in DispatchQueue.main.async { self?.storeDidChange() } }.store(in: &subscriptions)
         storeDidChange()
     }
@@ -56,7 +59,7 @@ final class RecoveredDraftController: ScrivScreenController, UIAdaptivePresentat
         let line = (store.project.entries(in: entry.sceneId).firstIndex { $0.id == entry.id } ?? 0) + 1
         lineLabel.text = String(format: "Line %02d", line) + " · " + (entry.kind == .direction ? "Direction" : store.project.character(entry.characterId)?.name ?? "Dialogue")
         let matches = record.text.utf16.elementsEqual(entry.text.utf16)
-        content.addArrangedSubview(ScrivUIKitTheme.notice(matches ? "Recovery copy saved on this Mac" : "Saved on this Mac · Not uploaded", message: matches ? "This recovery copy matches the current saved line. It does not undo an autosaved edit." : "This draft copy is only on your Mac until you apply it.", warning: true))
+        content.addArrangedSubview(recoveryNotice(matches ? "Recovery copy saved on this Mac" : "Saved on this Mac · Not uploaded", message: matches ? "This recovery copy matches the current saved line. It does not undo an autosaved edit." : "This draft copy is only on your Mac until you apply it."))
         if !currentText.text.utf16.elementsEqual(entry.text.utf16) { currentText.text = entry.text.isEmpty ? "Empty line" : entry.text; currentText.invalidateIntrinsicContentSize() }
         let value = NSMutableAttributedString(string: record.text.isEmpty ? "Empty line" : record.text, attributes: [.font: UIFont.systemFont(ofSize: 18), .foregroundColor: ScrivUIKitTheme.ink])
         if let range = RecoveredDraftComparison.changedRange(in: record.text, comparedTo: entry.text) { value.addAttribute(.backgroundColor, value: ScrivUIKitTheme.accent.withAlphaComponent(0.17), range: range) }
@@ -69,10 +72,19 @@ final class RecoveredDraftController: ScrivScreenController, UIAdaptivePresentat
         }
         if let issue = session.issue { content.addArrangedSubview(ScrivUIKitTheme.notice("Draft not applied", message: issue, warning: true)) }
         let why = ScrivUIKitTheme.button("Why am I seeing this?", symbol: explanationExpanded ? "chevron.down" : "chevron.right") { [weak self] in self?.explanationExpanded.toggle(); self?.storeDidChange() }
+        why.configuration?.baseBackgroundColor = .clear; why.configuration?.background.strokeWidth = 0; why.contentHorizontalAlignment = .leading
         content.addArrangedSubview(why)
         if explanationExpanded { content.addArrangedSubview(ScrivUIKitTheme.label("Scriv keeps a separate local recovery copy when editing is interrupted or a change cannot be applied. This draft began at revision \(record.sourceRevision). Keeping it for later does not apply it; reopen this line to review it again.", size: 13, color: ScrivUIKitTheme.secondary)) }
         applyButton.isEnabled = !session.applying && !session.needsRebase
         keepButton.isEnabled = !session.applying; discardButton.isEnabled = !session.applying; isModalInPresentation = session.applying
+    }
+    private func recoveryNotice(_ title: String, message: String) -> UIView {
+        let icon = UIImageView(image: UIImage(systemName: "doc.text")); icon.tintColor = .systemOrange; icon.contentMode = .scaleAspectFit
+        icon.widthAnchor.constraint(equalToConstant: 28).isActive = true; icon.heightAnchor.constraint(equalToConstant: 32).isActive = true
+        let text = ScrivUIKitTheme.stack([ScrivUIKitTheme.label(title, size: 14, weight: .semibold, color: .systemBrown), ScrivUIKitTheme.label(message, size: 12, color: ScrivUIKitTheme.secondary)], spacing: 5)
+        let row = ScrivUIKitTheme.stack([icon, text], axis: .horizontal, spacing: 14); row.alignment = .center
+        let card = ScrivUIKitTheme.card(row, padding: 14); card.backgroundColor = UIColor.systemOrange.withAlphaComponent(0.09); card.layer.borderColor = UIColor.systemOrange.withAlphaComponent(0.35).cgColor
+        return card
     }
     private func keep() { if sessionMatches { session.keepForLater() }; dismiss(animated: true) }
     private func confirmDiscard() {

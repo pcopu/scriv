@@ -110,11 +110,20 @@ public enum RuntimeBridgePolicy {
         let allowed: Set<String> = ["initialize", "initialized", "model/list", "account/read", "account/login/start", "account/login/cancel", "account/logout", "thread/start", "thread/read", "turn/start", "turn/interrupt"]
         guard allowed.contains(method) else { throw ScrivError.permission("This companion accepts only Scriv's local image workflow, not arbitrary runtime commands.") }
         if method == "thread/start" {
-            guard case .object(let params) = value["params"], Set(params.keys).isSubset(of: ["cwd", "approvalPolicy", "sandbox", "model"]), params["approvalPolicy"] == .string("never"), params["sandbox"] == .string("workspace-write"), let path = params["cwd"]?.string else { throw ScrivError.permission("The image thread must use the restricted Scriv workspace.") }
+            guard case .object(let params) = value["params"], params["approvalPolicy"] == .string("never"), let path = params["cwd"]?.string else { throw ScrivError.permission("The image thread must use the restricted Scriv workspace.") }
+            if params["sandbox"] == .string("read-only") {
+                guard Set(params.keys) == ["cwd", "approvalPolicy", "sandbox", "model", "ephemeral", "developerInstructions"], params["ephemeral"] == .bool(true), params["developerInstructions"] == .string(CodexCharacterAnalysisProtocol.developerInstructions), params["model"]?.string?.isEmpty == false else { throw ScrivError.permission("Character analysis requires its exact read-only thread settings.") }
+            } else {
+                guard Set(params.keys).isSubset(of: ["cwd", "approvalPolicy", "sandbox", "model"]), params["sandbox"] == .string("workspace-write") else { throw ScrivError.permission("The image thread cannot change its approved settings.") }
+            }
             let directory = URL(fileURLWithPath: path).standardizedFileURL
             guard directory.deletingLastPathComponent() == generationRoot.standardizedFileURL, UUID(uuidString: directory.lastPathComponent) != nil, directory == directory.resolvingSymlinksInPath() else { throw ScrivError.permission("The image thread cannot leave its original generation folder.") }
         }
         if method == "turn/start" {
+            if value["params"]?["outputSchema"] != nil {
+                try validateCharacterAnalysisTurn(value["params"] ?? .null, generationRoot: generationRoot)
+                return
+            }
             guard case .object(let params) = value["params"], Set(params.keys) == ["threadId", "input"], let threadID = params["threadId"]?.string, !threadID.isEmpty, threadID.utf8.count <= 256, let items = params["input"]?.array, !items.isEmpty, items.count <= 6 else { throw ScrivError.permission("The image turn cannot override its workspace or approval policy.") }
             var textCount = 0
             for item in items {
@@ -129,5 +138,24 @@ public enum RuntimeBridgePolicy {
             }
             guard textCount == 1 else { throw ScrivError.invalid("An image turn requires one exact captured prompt.") }
         }
+    }
+    private static func validateCharacterAnalysisTurn(_ value: JSONValue, generationRoot: URL) throws {
+        guard case .object(let params) = value,
+              Set(params.keys) == ["threadId", "input", "cwd", "approvalPolicy", "sandboxPolicy", "outputSchema"],
+              let thread = params["threadId"]?.string, !thread.isEmpty, thread.utf8.count <= 256,
+              params["approvalPolicy"] == .string("never"),
+              params["sandboxPolicy"] == .object(["type": .string("readOnly"), "networkAccess": .bool(false)]),
+              params["outputSchema"] == CodexCharacterAnalysisProtocol.outputSchema,
+              let path = params["cwd"]?.string, let items = params["input"]?.array, items.count == 2 else { throw ScrivError.permission("Character analysis cannot change its read-only policy or structured output contract.") }
+        let directory = URL(fileURLWithPath: path).standardizedFileURL
+        guard directory.deletingLastPathComponent() == generationRoot.standardizedFileURL,
+              UUID(uuidString: directory.lastPathComponent) != nil,
+              directory == directory.resolvingSymlinksInPath() else { throw ScrivError.permission("Character analysis must use its own local working directory.") }
+        guard case .object(let prompt) = items[0], Set(prompt.keys) == ["type", "text"], prompt["type"] == .string("text"),
+              let text = prompt["text"]?.string, !text.isEmpty, text.utf8.count <= 64 * 1024,
+              case .object(let image) = items[1], Set(image.keys) == ["type", "url"], image["type"] == .string("image"),
+              let url = image["url"]?.string, url.hasPrefix("data:image/jpeg;base64,"),
+              let bytes = Data(base64Encoded: String(url.dropFirst("data:image/jpeg;base64,".count))),
+              !bytes.isEmpty, bytes.count <= 4 * 1024 * 1024 else { throw ScrivError.permission("Character analysis accepts only its captured text and one bounded inline image, never remote URLs or file commands.") }
     }
 }

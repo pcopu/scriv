@@ -27,10 +27,12 @@ final class AudioLibraryController: ScrivScreenController, UIDocumentPickerDeleg
         var configuration = UIButton.Configuration.filled(); configuration.title = "Import audio"
         configuration.image = UIImage(systemName: "chevron.down"); configuration.imagePlacement = .trailing; configuration.imagePadding = 10
         configuration.baseBackgroundColor = ScrivUIKitTheme.accent; configuration.cornerStyle = .medium
+        configuration.titleLineBreakMode = .byTruncatingTail
         configuration.contentInsets = .init(top: 11, leading: 16, bottom: 11, trailing: 16)
         importButton.configuration = configuration; importButton.showsMenuAsPrimaryAction = true
         importButton.accessibilityIdentifier = "audio-import-menu"
         importButton.setContentHuggingPriority(.required, for: .horizontal)
+        importButton.setContentCompressionResistancePriority(.required, for: .horizontal)
         let close = AudioUIKitLayout.symbolButton("xmark", label: "Close local audio") { [weak self] in self?.dismiss(animated: true) }
         let title = ScrivUIKitTheme.stack([ScrivUIKitTheme.label("Local audio", size: 22, weight: .semibold), sceneLabel], spacing: 7)
         content.addArrangedSubview(AudioUIKitLayout.row([title, importButton, close], spacing: 16))
@@ -42,7 +44,25 @@ final class AudioLibraryController: ScrivScreenController, UIDocumentPickerDeleg
         content.addArrangedSubview(local); content.addArrangedSubview(empty); content.addArrangedSubview(cards)
         content.addArrangedSubview(statusLabel); content.addArrangedSubview(AudioUIKitLayout.separator())
         content.addArrangedSubview(ScrivUIKitTheme.label("ⓘ  Dialogue audio follows its line. Scene audio stays at its scene time.", size: 12, color: ScrivUIKitTheme.secondary))
-        _ = AudioUIKitLayout.scrollContent(content, in: view)
+        // Header and local-only explanation stay visible while recordings scroll.
+        let header = content.arrangedSubviews[0]
+        let headerRule = content.arrangedSubviews[1]
+        let footerRule = content.arrangedSubviews[content.arrangedSubviews.count - 2]
+        let footerCopy = content.arrangedSubviews[content.arrangedSubviews.count - 1]
+        for child in [header, headerRule, footerRule, footerCopy] { content.removeArrangedSubview(child); child.removeFromSuperview() }
+        let top = ScrivUIKitTheme.stack([header, headerRule], spacing: 18)
+        let bottom = ScrivUIKitTheme.stack([footerRule, footerCopy], spacing: 16)
+        let scrolling = UIView()
+        _ = AudioUIKitLayout.scrollContent(content, in: scrolling, padding: 20)
+        [top, scrolling, bottom].forEach { $0.translatesAutoresizingMaskIntoConstraints = false; view.addSubview($0) }
+        NSLayoutConstraint.activate([
+            top.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 22), top.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -22),
+            top.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            scrolling.leadingAnchor.constraint(equalTo: view.leadingAnchor), scrolling.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrolling.topAnchor.constraint(equalTo: top.bottomAnchor), scrolling.bottomAnchor.constraint(equalTo: bottom.topAnchor, constant: -16),
+            bottom.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 22), bottom.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -22),
+            bottom.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -22)
+        ])
         storeDidChange()
     }
     override func storeDidChange() {
@@ -147,7 +167,7 @@ final class AudioLibraryController: ScrivScreenController, UIDocumentPickerDeleg
 private final class AudioClipCardView: UIView {
     var onSelect: (() -> Void)?; var onPlay: (() -> Void)?; var onTrim: (() -> Void)?
     var onVolume: ((Double) -> Void)?; var onMute: (() -> Void)?; var onRemove: (() -> Void)?
-    private let nameLabel = ScrivUIKitTheme.label("", size: 17, weight: .semibold, lines: 2)
+    private let nameLabel = ScrivUIKitTheme.label("", size: 18, weight: .semibold, lines: 1)
     private let badge = ScrivUIKitTheme.label("", size: 11, lines: 2)
     private let badgeContainer = UIView()
     private let waveform = MeasuredAudioWaveformView()
@@ -169,12 +189,17 @@ private final class AudioClipCardView: UIView {
         badgeContainer.setContentHuggingPriority(.required, for: .horizontal)
         more.setImage(UIImage(systemName: "ellipsis"), for: .normal); more.showsMenuAsPrimaryAction = true
         NSLayoutConstraint.activate([more.widthAnchor.constraint(equalToConstant: 32), more.heightAnchor.constraint(equalToConstant: 32)])
-        let titleRow = AudioUIKitLayout.row([nameLabel, badgeContainer, more], spacing: 10)
+        nameLabel.lineBreakMode = .byTruncatingTail
+        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        let identity = ScrivSecondaryAdaptiveRow([nameLabel, badgeContainer], minimumHorizontalWidth: 400, spacing: 10)
+        let titleRow = AudioUIKitLayout.row([identity, more], spacing: 10)
         play.backgroundColor = ScrivUIKitTheme.accent; play.tintColor = .white; play.layer.cornerRadius = 22
         play.addAction(UIAction { [weak self] _ in self?.onPlay?() }, for: .primaryActionTriggered)
         NSLayoutConstraint.activate([play.widthAnchor.constraint(equalToConstant: 44), play.heightAnchor.constraint(equalToConstant: 44), waveform.heightAnchor.constraint(equalToConstant: 42)])
         timeLabel.font = .monospacedDigitSystemFont(ofSize: 13, weight: .regular)
         timeLabel.setContentHuggingPriority(.required, for: .horizontal)
+        timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        waveform.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         let playback = AudioUIKitLayout.row([play, waveform, timeLabel], spacing: 16)
         volume.minimumValue = 0; volume.maximumValue = 1; volume.tintColor = ScrivUIKitTheme.accent
         volume.addTarget(self, action: #selector(volumeChanged), for: .valueChanged)
@@ -187,7 +212,11 @@ private final class AudioClipCardView: UIView {
         mute.widthAnchor.constraint(equalToConstant: 30).isActive = true
         trimButton = ScrivUIKitTheme.button("Trim & timing") { [weak self] in self?.onTrim?() }
         trimButton.setContentHuggingPriority(.required, for: .horizontal)
-        let volumeRow = AudioUIKitLayout.row([speaker, volume, mute, UIView(), trimButton], spacing: 12)
+        trimButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+        trimButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 132).isActive = true
+        let volumeControls = AudioUIKitLayout.row([speaker, volume, mute], spacing: 12)
+        let trimActions = AudioUIKitLayout.row([UIView(), trimButton], spacing: 0)
+        let volumeRow = ScrivSecondaryAdaptiveRow([volumeControls, trimActions], minimumHorizontalWidth: 450, spacing: 18)
         let details = ScrivUIKitTheme.stack([titleRow, playback, volumeRow, warning], spacing: 16)
         let row = AudioUIKitLayout.row([iconBox, details], spacing: 16); row.alignment = .top
         addSubview(row); row.scrivPinEdges(to: self, insets: .init(top: 18, leading: 18, bottom: 18, trailing: 18))

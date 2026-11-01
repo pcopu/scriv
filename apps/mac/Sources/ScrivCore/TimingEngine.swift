@@ -61,6 +61,7 @@ public enum TimingEngine {
         }
         for image in project.images {
             try GenerationPrompt.validateStorage(image)
+            try CharacterImageAnalysis.validate(image:image,characterIDs:characterIds)
             guard image.version >= 1, image.byteCount > 0, image.byteCount <= 25*1024*1024, ["image/png", "image/jpeg", "image/webp"].contains(image.mimeType), !image.fileName.isEmpty, image.createdAt.timeIntervalSince1970.isFinite, Set(image.characterIds).count == image.characterIds.count, image.sha256.count == 64, image.sha256.allSatisfy({ $0.isHexDigit }), image.fileName == URL(fileURLWithPath: image.fileName).lastPathComponent, !image.fileName.contains(".."), !image.fileName.contains("\\"), image.characterIds.allSatisfy(characterIds.contains) else { throw ScrivError.invalid("Invalid image metadata or character tags.") }
         }
         let assets = Dictionary(uniqueKeysWithValues: project.images.map { ($0.id, $0) })
@@ -72,6 +73,9 @@ public enum TimingEngine {
         guard project.cues.allSatisfy({ sceneIds.contains($0.sceneId) }) else { throw ScrivError.invalid("An image cue refers to a missing scene.") }
         for character in project.characters {
             if let portrait = character.portraitImageId, !imageIds.contains(portrait) { throw ScrivError.invalid("A character portrait refers to a missing image.") }
+            if let crop = character.portraitRegion {
+                guard crop.imageID == character.portraitImageId, assets[crop.imageID]?.sha256 == crop.imageSHA256, crop.region.isValid else { throw ScrivError.invalid("A character portrait crop refers to a different image version.") }
+            }
         }
         let entriesByID = Dictionary(uniqueKeysWithValues: project.entries.map { ($0.id, $0) })
         for scene in project.scenes {

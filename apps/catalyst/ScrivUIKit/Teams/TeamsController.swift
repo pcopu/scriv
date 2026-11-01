@@ -39,8 +39,11 @@ final class TeamsController: ScrivScreenController, UIAdaptivePresentationContro
         layout = CharacterTeamSheetLayout(title: "Teams & sharing") { [weak self] in self?.close() }
         view.addSubview(layout); layout.scrivPinEdges(to: view)
         layout.close.configuration?.title = "Done"; layout.close.configuration?.image = nil
+        layout.heading.font = .systemFont(ofSize: 20, weight: .semibold); layout.content.spacing = 16
         segments.selectedSegmentIndex = 1; segments.addAction(UIAction { [weak self] _ in self?.renderBody() }, for: .valueChanged)
-        segments.heightAnchor.constraint(equalToConstant: 42).isActive = true
+        segments.heightAnchor.constraint(equalToConstant: 38).isActive = true
+        segments.selectedSegmentTintColor = ScrivUIKitTheme.accent.withAlphaComponent(0.12)
+        segments.setTitleTextAttributes([.foregroundColor: ScrivUIKitTheme.accent, .font: UIFont.systemFont(ofSize: 14, weight: .semibold)], for: .selected)
         errorLabel.isHidden = true
         [teamBar, segments, errorLabel, body].forEach(layout.content.addArrangedSubview)
         CharacterTeamUI.clear(layout.footer); layout.footer.addArrangedSubview(footerInfo); layout.footer.addArrangedSubview(CharacterTeamUI.spacer())
@@ -114,8 +117,12 @@ final class TeamsController: ScrivScreenController, UIAdaptivePresentationContro
     private func planCard(_ team: CloudTeam) -> UIView {
         let attention = UIKitTeamPolicy.billingNeedsAttention(team)
         let status = ScrivUIKitTheme.label(team.isPaid ? "● Active" : attention ? "● Needs attention" : "Not active", size: 13, weight: .medium, color: team.isPaid ? .systemGreen : attention ? .systemOrange : ScrivUIKitTheme.secondary)
+        status.setContentCompressionResistancePriority(.required, for: .horizontal)
         let title = ScrivUIKitTheme.stack([ScrivUIKitTheme.label("Team plan", size: 17, weight: .semibold), ScrivUIKitTheme.label("$9.99 / month", size: 15), ScrivUIKitTheme.label("For the whole team · no per-seat charge", size: 13, color: ScrivUIKitTheme.secondary)], spacing: 5)
-        let row = CharacterTeamUI.row([CharacterTeamUI.symbol("creditcard", size: 30), title, CharacterTeamUI.spacer(), status], spacing: 18)
+        let statusPill = ScrivUIKitTheme.card(status, padding: 7); statusPill.layer.cornerRadius = 15
+        statusPill.backgroundColor = (team.isPaid ? UIColor.systemGreen : attention ? UIColor.systemOrange : ScrivUIKitTheme.secondary).withAlphaComponent(0.10)
+        let planIcon = ScrivUIKitTheme.card(CharacterTeamUI.symbol("creditcard", size: 26), padding: 13); planIcon.backgroundColor = ScrivUIKitTheme.inset.withAlphaComponent(0.4)
+        let row = CharacterTeamUI.row([planIcon, title, CharacterTeamUI.spacer(), statusPill], spacing: 18)
         if UIKitTeamPolicy.canStartCheckout(team) { let subscribe = CharacterTeamUI.button("Subscribe…", primary: true) { [weak self] in self?.confirmCheckout(team) }; subscribe.isEnabled = !working; row.addArrangedSubview(subscribe) }
         if team.role == "owner", team.isPaid || team.status != nil && team.status != "free" || currentDetails?["team"]?["billingCustomer"] == .bool(true) {
             let billing = CharacterTeamUI.button("Manage billing") { [weak self] in self?.openBilling(team, portal: true) }; billing.isEnabled = !working; row.addArrangedSubview(billing)
@@ -127,7 +134,7 @@ final class TeamsController: ScrivScreenController, UIAdaptivePresentationContro
     private func sharingCard(_ team: CloudTeam) -> UIView {
         let currentTeamID = store.cloudProjects.first { $0.id == store.project.cloudProjectId }?.teamId
         let picture = UIKitAssetImageView(); picture.configure(url: store.project.asset(store.project.cues.first?.imageId).flatMap { store.assetURL($0) }, title: store.project.title, fill: true, missingText: "No preview")
-        picture.widthAnchor.constraint(equalToConstant: 154).isActive = true; picture.heightAnchor.constraint(equalToConstant: 84).isActive = true
+        picture.widthAnchor.constraint(equalToConstant: 230).isActive = true; picture.heightAnchor.constraint(equalToConstant: 82).isActive = true
         let text = ScrivUIKitTheme.stack([ScrivUIKitTheme.label(store.project.title, size: 17, weight: .semibold), ScrivUIKitTheme.label(currentTeamID == team.id ? "Shared with this team" : "This project is not shared with this team", size: 13, color: ScrivUIKitTheme.secondary)], spacing: 6)
         let action = CharacterTeamUI.button(currentTeamID == team.id ? "Open project" : "Share team copy") { [weak self] in
             guard let self else { return }; if currentTeamID == team.id { self.close() } else { self.confirmShare(team) }

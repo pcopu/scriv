@@ -76,6 +76,16 @@ public struct LocalCuePromptDraft: Codable, Equatable, Sendable {
 /// newer draft or resurrect an explicitly cleared one. Bounds never evict data.
 /// The private advisory lock serializes the check and replace across instances
 /// and processes; atomic rename keeps readers from seeing a partial JSON file.
+public enum CuePromptDraftRead: Equatable, Sendable {
+    case ready(LocalCuePromptDraft?)
+    case busy
+}
+
+public enum CuePromptDraftClear: Equatable, Sendable {
+    case finished(Bool)
+    case busy
+}
+
 public struct CuePromptDraftJournal {
     public let root: URL
     public let maximumRecordBytes: Int
@@ -100,6 +110,13 @@ public struct CuePromptDraftJournal {
     public func load(_ scope: CuePromptDraftScope) throws -> LocalCuePromptDraft? {
         try validateLocation(scope)
         return try locked { try loadUnlocked(scope) }
+    }
+    /// Background presentation reads must not strand a thread waiting for a
+    /// different process. Busy is not missing: callers keep recovery unresolved
+    /// and retry off-main with cancellation. Writer/CAS lock semantics are intact.
+    public func loadIfAvailable(_ scope: CuePromptDraftScope) throws -> CuePromptDraftRead {
+        try validateLocation(scope)
+        return try locked(nonBlocking: true, onBusy: { .busy }) { .ready(try loadUnlocked(scope)) }
     }
     public func save(_ draft: LocalCuePromptDraft, replacing revisionID: String?) throws {
         try validateLocation(draft.scope)
@@ -140,12 +157,17 @@ public struct CuePromptDraftJournal {
     @discardableResult
     public func clear(_ draft: LocalCuePromptDraft) throws -> Bool {
         try validateLocation(draft.scope)
-        return try locked {
-            guard let current = try loadUnlocked(draft.scope) else { return true }
-            guard current.revisionID == draft.revisionID else { return false }
-            try FileManager.default.removeItem(at: file(draft.scope))
-            return true
-        }
+        return try locked { try clearUnlocked(draft) }
+    }
+    public func clearIfAvailable(_ draft: LocalCuePromptDraft) throws -> CuePromptDraftClear {
+        try validateLocation(draft.scope)
+        return try locked(nonBlocking:true,onBusy:{ .busy }) { .finished(try clearUnlocked(draft)) }
+    }
+    private func clearUnlocked(_ draft: LocalCuePromptDraft) throws -> Bool {
+        guard let current = try loadUnlocked(draft.scope) else { return true }
+        guard current.revisionID == draft.revisionID else { return false }
+        try FileManager.default.removeItem(at: file(draft.scope))
+        return true
     }
     private func loadUnlocked(_ scope: CuePromptDraftScope) throws -> LocalCuePromptDraft? {
         let url = try file(scope)
@@ -191,7 +213,7 @@ public struct CuePromptDraftJournal {
     private func storageFull() -> ScrivError {
         .invalid("Local image-direction recovery storage is full. Apply or explicitly discard another draft first; no drafts were evicted.")
     }
-    private func locked<T>(_ action: () throws -> T) throws -> T {
+    private func locked<T>(nonBlocking: Bool = false, onBusy: (() -> T)? = nil, _ action: () throws -> T) throws -> T {
         let attributes = try FileManager.default.attributesOfItem(atPath: root.path)
         guard attributes[.type] as? FileAttributeType == .typeDirectory else {
             throw ScrivError.invalid("Image-direction draft storage was replaced by an unsafe path.")
@@ -204,7 +226,9 @@ public struct CuePromptDraftJournal {
             throw ScrivError.invalid("Image-direction draft lock must be a regular private file.")
         }
         guard fchmod(descriptor, mode_t(0o600)) == 0 else { throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
-        while flock(descriptor, LOCK_EX) != 0 {
+        let operation = LOCK_EX | (nonBlocking ? LOCK_NB : 0)
+        while flock(descriptor, operation) != 0 {
+            if nonBlocking, errno == EWOULDBLOCK || errno == EAGAIN, let onBusy { return onBusy() }
             if errno != EINTR { throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
         }
         defer { _ = flock(descriptor, LOCK_UN) }

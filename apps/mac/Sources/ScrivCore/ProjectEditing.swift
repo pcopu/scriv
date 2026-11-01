@@ -130,6 +130,9 @@ public enum ProjectEditing {
         try edit(&project) { next in
             guard let index = next.characters.firstIndex(where: { $0.id == characterId }) else { throw ScrivError.invalid("Character not found.") }
             next.characters[index].portraitImageId = imageId
+            let image = next.asset(imageId)
+            let annotation = image?.characterAnalysis?.annotations.first { $0.characterID == characterId && ($0.decision == .automatic || $0.decision == .confirmed) }
+            next.characters[index].portraitRegion = image.flatMap { source in annotation.map { CharacterPortraitRegion(imageID:source.id,imageSHA256:source.sha256,region:$0.portraitRegion,isAutomatic:false) } }
             if let imageId, let image = next.images.firstIndex(where: { $0.id == imageId }), !next.images[image].characterIds.contains(characterId) { next.images[image].characterIds.append(characterId) }
         }
     }

@@ -12,6 +12,12 @@ enum CharacterTeamUI {
         }
         return button
     }
+    static func characterNotice(_ message: String) -> UIView {
+        let row = self.row([symbol("info.circle.fill", color: ScrivUIKitTheme.accent, size: 20), ScrivUIKitTheme.label(message, size: 15, color: ScrivUIKitTheme.secondary)], spacing: 12)
+        let view = UIView(); view.backgroundColor = ScrivUIKitTheme.inset; view.layer.cornerRadius = 8
+        view.addSubview(row); row.scrivPinEdges(to: view, insets: .init(top: 12, leading: 16, bottom: 12, trailing: 16))
+        return view
+    }
     static func field(_ placeholder: String, value: String = "") -> UITextField {
         let field = UITextField(); field.placeholder = placeholder; field.text = value
         field.font = .systemFont(ofSize: 18); field.textColor = ScrivUIKitTheme.ink
@@ -65,10 +71,36 @@ enum CharacterTeamUI {
         child.preferredContentSize = CGSize(width: width, height: height); child.modalPresentationStyle = .formSheet
         controller.present(child, animated: true)
     }
+    /// A sentence cannot fit in the 56×58 review avatar. Keep the complete
+    /// missing state available without squeezing it into the portrait pixels.
+    static func compactMissingPortrait() -> UIView {
+        let view = UIView()
+        let icon = UIImageView(image: UIImage(systemName: "person.fill"))
+        icon.contentMode = .scaleAspectFit; icon.tintColor = ScrivUIKitTheme.secondary
+        icon.translatesAutoresizingMaskIntoConstraints = false; view.addSubview(icon)
+        NSLayoutConstraint.activate([
+            icon.centerXAnchor.constraint(equalTo: view.centerXAnchor), icon.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            icon.widthAnchor.constraint(equalToConstant: 26), icon.heightAnchor.constraint(equalToConstant: 26)
+        ])
+        view.isAccessibilityElement = true; view.accessibilityTraits = .image
+        view.accessibilityValue = "No portrait on this device"
+        view.accessibilityIdentifier = "character-portrait-placeholder"
+        view.addInteraction(UIToolTipInteraction(defaultToolTip: "No portrait on this device"))
+        return view
+    }
     static func portrait(_ character: ScriptCharacter, store: WorkspaceStore, size: CGSize, circular: Bool = false) -> UIView {
         let asset = store.project.asset(character.portraitImageId) ?? store.project.images.first { $0.characterIds.contains(character.id) }
-        let view = UIKitAssetImageView()
-        view.configure(url: asset.flatMap { store.assetURL($0) }, title: character.name, fill: true, missingText: "No portrait on this device")
+        let imageURL = asset.flatMap { store.assetURL($0) }
+        let view: UIView
+        if imageURL == nil, min(size.width, size.height) < 96 {
+            view = compactMissingPortrait()
+        } else if let asset, let crop = character.portraitRegion, crop.imageID == asset.id, crop.imageSHA256 == asset.sha256 {
+            view = CharacterCropImageView(source:store.assetURL(asset),sha256:asset.sha256,region:crop.region,title:"Portrait of " + character.name)
+        } else {
+            let image = UIKitAssetImageView()
+            image.configure(url:asset.flatMap { store.assetURL($0) },title:character.name,fill:true,missingText:"No portrait on this device")
+            view = image
+        }
         view.backgroundColor = ScrivUIKitTheme.color(character.color).withAlphaComponent(0.12)
         view.layer.cornerRadius = circular ? size.width / 2 : 10; view.clipsToBounds = true
         view.widthAnchor.constraint(equalToConstant: size.width).isActive = true
@@ -119,12 +151,13 @@ final class CharacterTeamSheetLayout: UIView {
 @MainActor
 final class CharacterChipWrapView: UIView {
     var chips: [UIView] = [] { didSet { oldValue.forEach { $0.removeFromSuperview() }; chips.forEach(addSubview); invalidateIntrinsicContentSize(); setNeedsLayout() } }
+    var minimumChipHeight: CGFloat = 30 { didSet { invalidateIntrinsicContentSize(); setNeedsLayout() } }
     private var lastWidth: CGFloat = 0
     private func arranged(width: CGFloat, apply: Bool) -> CGFloat {
         let width = max(1, width); var x: CGFloat = 0, y: CGFloat = 0, rowHeight: CGFloat = 0
         for chip in chips {
             let measured = chip.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
-            let size = CGSize(width: min(width, max(28, measured.width)), height: max(30, measured.height))
+            let size = CGSize(width: min(width, max(28, measured.width)), height: max(minimumChipHeight, measured.height))
             if x > 0, x + size.width > width { x = 0; y += rowHeight + 8; rowHeight = 0 }
             if apply { chip.frame = CGRect(origin: CGPoint(x: x, y: y), size: size) }
             x += size.width + 8; rowHeight = max(rowHeight, size.height)

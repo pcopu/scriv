@@ -58,8 +58,28 @@ final class CodexGenerationTests: XCTestCase {
         let outside = root.appendingPathComponent("outside.png"); try Data([1]).write(to: outside)
         let link = directory.appendingPathComponent("link.png"); try FileManager.default.createSymbolicLink(at: link, withDestinationURL: valid)
         let candidates = try CodexImageArtifacts.candidates(in: directory, reported: [reference, empty, outside, oversized, link, valid])
-        XCTAssertEqual(candidates, [preferred, valid].map { $0.resolvingSymlinksInPath() })
+        // Foundation can enumerate /private/var while temporaryDirectory uses
+        // /var. Compare canonical identities on both sides; eligibility still
+        // separately rejects symlink files, outside paths and invalid bytes.
+        XCTAssertEqual(candidates.map { $0.resolvingSymlinksInPath().standardizedFileURL },
+                       [preferred, valid].map { $0.resolvingSymlinksInPath().standardizedFileURL })
         for file in [reference, empty, outside, oversized, link] { XCTAssertFalse(CodexImageArtifacts.isEligible(file, in: directory)) }
+    }
+    func testParentDirectoryAliasDoesNotRelaxArtifactContainment() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("ScrivCodexAliasTests-" + UUID().uuidString)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let real = root.appendingPathComponent("real"), alias = root.appendingPathComponent("alias")
+        try FileManager.default.createDirectory(at: real, withIntermediateDirectories: true)
+        try FileManager.default.createSymbolicLink(at: alias, withDestinationURL: real)
+        let valid = real.appendingPathComponent("image.png"), outside = root.appendingPathComponent("outside.png")
+        try Data([1]).write(to: valid); try Data([1]).write(to: outside)
+        XCTAssertTrue(CodexImageArtifacts.isEligible(valid, in: alias), "A parent-directory alias names the same allowed directory.")
+        XCTAssertEqual(valid.resolvingSymlinksInPath(), alias.appendingPathComponent("image.png").resolvingSymlinksInPath())
+        XCTAssertFalse(CodexImageArtifacts.isEligible(outside, in: alias))
+        let escape = real.appendingPathComponent("escape.png")
+        try FileManager.default.createSymbolicLink(at: escape, withDestinationURL: outside)
+        XCTAssertFalse(CodexImageArtifacts.isEligible(escape, in: alias), "An artifact symlink is not a permitted directory alias.")
     }
     func testInvalidPreferredArtifactDoesNotHideValidReportedOutput() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("ScrivCodexTests-" + UUID().uuidString)

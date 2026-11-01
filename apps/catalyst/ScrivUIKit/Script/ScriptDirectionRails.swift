@@ -16,7 +16,8 @@ final class ScriptDirectionRails: UIView {
     private var frames: [String: CGRect] = [:]
     private var handles: [String: (UIButton, DirectionHandleButton)] = [:]
     private var drag: (id: String, originalY: CGFloat, currentY: CGFloat, navigation: Int, entry: ScriptEntry)?
-    private let railX: CGFloat = 112
+    var presentation: ScriptPresentationMetrics = .expanded { didSet { if oldValue != presentation { setNeedsLayout(); setNeedsDisplay() } } }
+    private var railX: CGFloat { presentation.railX }
     init(store: WorkspaceStore) { self.store = store; super.init(frame: .zero); backgroundColor = .clear; isOpaque = false }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError() }
     func update(entries: [ScriptEntry], frames: [String: CGRect]) {
@@ -42,19 +43,26 @@ final class ScriptDirectionRails: UIView {
     private var geometry: [ScriptRailRow] {
         entries.compactMap { entry in
             guard let frame = frames[entry.id] else { return nil }
-            return ScriptRailRow(startMs: store.project.startMs(of: entry.id), durationMs: entry.ownedDurationMs, anchorY: Double(frame.minY + 26), bottomY: Double(frame.maxY + 23))
+            return ScriptRailRow(startMs: store.project.startMs(of: entry.id), durationMs: entry.ownedDurationMs, anchorY: Double(frame.minY + presentation.anchorOffset), bottomY: Double(frame.maxY + presentation.rowSpacing))
         }
     }
-    private func y(_ time: Int) -> CGFloat { CGFloat(PresentationGeometry.railPosition(at: time, rows: geometry)) }
-    private func endpoint(_ entry: ScriptEntry) -> CGFloat {
-        max((frames[entry.id]?.minY ?? 0) + 38, drag?.id == entry.id ? drag!.currentY : y(store.project.startMs(of: entry.id) + entry.coverageDurationMs))
+    private func y(_ time: Int, rows: [ScriptRailRow]? = nil) -> CGFloat { CGFloat(PresentationGeometry.railPosition(at: time, rows: rows ?? geometry)) }
+    private func endpoint(_ entry: ScriptEntry, rows: [ScriptRailRow]? = nil) -> CGFloat {
+        max((frames[entry.id]?.minY ?? 0) + presentation.anchorOffset + 12, drag?.id == entry.id ? drag!.currentY : y(store.project.startMs(of: entry.id) + entry.coverageDurationMs, rows: rows))
     }
     override func layoutSubviews() {
         super.layoutSubviews()
-        for entry in entries where entry.kind == .direction {
-            guard let row = frames[entry.id], let pair = handles[entry.id] else { continue }
-            pair.0.frame = CGRect(x: railX - 12, y: row.minY + 14, width: 24, height: 24)
-            pair.1.frame = CGRect(x: railX - 15, y: endpoint(entry) - 15, width: 30, height: 30)
+        let directions = entries.filter { $0.kind == .direction }
+        guard !directions.isEmpty else { return }
+        // Geometry depends on authored timing and measured frames, not each
+        // direction pair. Snapshot once per pass, including the active drag.
+        // Do not cache across passes: edits, width changes and drags stay live.
+        let rows = geometry
+        let endpoints = Dictionary(uniqueKeysWithValues: directions.map { ($0.id, endpoint($0, rows: rows)) })
+        for entry in directions {
+            guard let row = frames[entry.id], let pair = handles[entry.id], let end = endpoints[entry.id] else { continue }
+            pair.0.frame = CGRect(x: railX - 12, y: row.minY + presentation.anchorOffset - 12, width: 24, height: 24)
+            pair.1.frame = CGRect(x: railX - 15, y: end - 15, width: 30, height: 30)
             let color = ScrivUIKitTheme.color(entry.color)
             for button in [pair.0, pair.1] {
                 button.setImage(UIImage(systemName: "circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: store.selectedEntryID == entry.id ? 13 : 10)), for: .normal)
@@ -64,9 +72,9 @@ final class ScriptDirectionRails: UIView {
             pair.1.accessibilityLabel = "Coverage end for " + entry.text
             pair.1.accessibilityValue = ScrivFormat.time(store.project.startMs(of: entry.id) + entry.coverageDurationMs)
             pair.1.isEnabled = store.lockedByOther(entry.id) == nil
-            let overlap = entries.filter { candidate in
-                guard candidate.kind == .direction, let frame = frames[candidate.id] else { return false }
-                return endpoint(entry) >= frame.minY + 12 && endpoint(entry) <= endpoint(candidate) + 14
+            let overlap = directions.filter { candidate in
+                guard let frame = frames[candidate.id], let candidateEnd = endpoints[candidate.id] else { return false }
+                return end >= frame.minY + 12 && end <= candidateEnd + 14
             }
             pair.1.menu = UIMenu(title: "Overlapping directions", children: overlap.map { candidate in
                 UIAction(title: candidate.text, state: candidate.id == store.selectedEntryID ? .on : .off) { [weak self] _ in self?.store.selectEntry(candidate.id) }
@@ -76,15 +84,19 @@ final class ScriptDirectionRails: UIView {
     }
     override func draw(_ rect: CGRect) {
         guard let context = UIGraphicsGetCurrentContext() else { return }
+        context.setStrokeColor(ScrivUIKitTheme.hairline.cgColor); context.setLineWidth(0.5)
+        context.move(to: CGPoint(x: railX, y: 0)); context.addLine(to: CGPoint(x: railX, y: bounds.height)); context.strokePath()
         let directions = entries.filter { $0.kind == .direction }
+        guard !directions.isEmpty else { return }
+        let rows = geometry
         for (index, entry) in directions.enumerated() {
             guard let frame = frames[entry.id] else { continue }
-            let top = frame.minY + 26, bottom = endpoint(entry), color = ScrivUIKitTheme.color(entry.color)
+            let top = frame.minY + presentation.anchorOffset, bottom = endpoint(entry, rows: rows), color = ScrivUIKitTheme.color(entry.color)
             context.saveGState(); context.setStrokeColor(color.cgColor); context.setLineWidth(store.selectedEntryID == entry.id ? 4 : 3)
             context.setLineDash(phase: CGFloat(index * 7), lengths: [7, CGFloat(max(1, directions.count - 1) * 7)])
             context.move(to: CGPoint(x: railX, y: top + 9)); context.addLine(to: CGPoint(x: railX, y: bottom)); context.strokePath(); context.setLineDash(phase: 0, lengths: [])
-            context.setLineWidth(2.5); context.move(to: CGPoint(x: railX, y: top + 9)); context.addQuadCurve(to: CGPoint(x: railX + 18, y: top), control: CGPoint(x: railX, y: top)); context.addLine(to: CGPoint(x: 164, y: top)); context.strokePath()
-            context.setFillColor(color.cgColor); context.move(to: CGPoint(x: 168, y: top)); context.addLine(to: CGPoint(x: 159, y: top - 5)); context.addLine(to: CGPoint(x: 159, y: top + 5)); context.closePath(); context.fillPath(); context.restoreGState()
+            context.setLineWidth(2.5); context.move(to: CGPoint(x: railX, y: top + 9)); context.addQuadCurve(to: CGPoint(x: railX + 18, y: top), control: CGPoint(x: railX, y: top)); context.addLine(to: CGPoint(x: presentation.textInset - 10, y: top)); context.strokePath()
+            context.setFillColor(color.cgColor); context.move(to: CGPoint(x: presentation.textInset - 6, y: top)); context.addLine(to: CGPoint(x: presentation.textInset - 15, y: top - 5)); context.addLine(to: CGPoint(x: presentation.textInset - 15, y: top + 5)); context.closePath(); context.fillPath(); context.restoreGState()
         }
     }
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool { subviews.contains { !$0.isHidden && $0.frame.insetBy(dx: -3, dy: -3).contains(point) } }
@@ -95,7 +107,7 @@ final class ScriptDirectionRails: UIView {
             store.selectEntry(id); drag = (id, endpoint(entry), endpoint(entry), store.navigationContext, entry)
         case .changed:
             guard let old = drag else { return }
-            let minimum = max((frames[id]?.minY ?? 0) + 38, y(store.project.startMs(of: id) + entry.ownedDurationMs))
+            let minimum = max((frames[id]?.minY ?? 0) + presentation.anchorOffset + 12, y(store.project.startMs(of: id) + entry.ownedDurationMs))
             drag?.currentY = max(minimum, old.originalY + gesture.translation(in: self).y); setNeedsLayout(); setNeedsDisplay()
         case .ended:
             guard let old = drag else { return }; drag = nil

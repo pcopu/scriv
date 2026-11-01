@@ -38,10 +38,12 @@ final class AudioClipEditorController: ScrivScreenController {
         var config = UIButton.Configuration.plain(); config.image = UIImage(systemName: "chevron.down")
         config.imagePlacement = .trailing; config.imagePadding = 10; config.baseForegroundColor = ScrivUIKitTheme.ink
         config.contentInsets = .init(top: 8, leading: 10, bottom: 8, trailing: 10)
+        config.titleLineBreakMode = .byTruncatingTail
         config.background.strokeColor = ScrivUIKitTheme.hairline; config.background.strokeWidth = 0.8; config.background.cornerRadius = 7
         attachment.configuration = config; attachment.showsMenuAsPrimaryAction = true; attachment.contentHorizontalAlignment = .leading
         attachment.accessibilityIdentifier = "audio-anchor"
-        attachment.titleLabel?.lineBreakMode = .byTruncatingTail
+        attachment.titleLabel?.lineBreakMode = .byTruncatingTail; attachment.titleLabel?.numberOfLines = 1
+        attachment.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         let attachLabel = ScrivUIKitTheme.label("Attach to", size: 13)
         attachLabel.widthAnchor.constraint(equalToConstant: 140).isActive = true
         offsetLabel.widthAnchor.constraint(equalToConstant: 140).isActive = true
@@ -53,9 +55,13 @@ final class AudioClipEditorController: ScrivScreenController {
         let apply = ScrivUIKitTheme.button("Apply", primary: true) { [weak self] in self?.applyDraft() }
         apply.accessibilityIdentifier = "audio-apply"
         cancel.setContentHuggingPriority(.required, for: .horizontal); apply.setContentHuggingPriority(.required, for: .horizontal)
-        let footer = AudioUIKitLayout.row([
-            ScrivUIKitTheme.label("Trimming changes this clip, not the recording.", size: 11, color: ScrivUIKitTheme.secondary), cancel, apply
-        ], spacing: 10)
+        cancel.widthAnchor.constraint(greaterThanOrEqualToConstant: 86).isActive = true; apply.widthAnchor.constraint(greaterThanOrEqualToConstant: 80).isActive = true
+        cancel.setContentCompressionResistancePriority(.required, for: .horizontal); apply.setContentCompressionResistancePriority(.required, for: .horizontal)
+        let actions = AudioUIKitLayout.row([UIView(), cancel, apply], spacing: 10)
+        let footer = ScrivSecondaryAdaptiveRow([
+            ScrivUIKitTheme.label("Trimming changes this clip, not the recording.", size: 11, color: ScrivUIKitTheme.secondary), actions
+        ], minimumHorizontalWidth: 460, spacing: 12)
+        footer.accessibilityIdentifier = "audio-trim-footer"
         let content = ScrivUIKitTheme.stack([
             ScrivUIKitTheme.label("Trim & timing", size: 19, weight: .semibold), filename, waveform, trimHint, fields,
             AudioUIKitLayout.separator(), attachRow, offsetRow, anchorHint, placementHint, notice, footer

@@ -2,8 +2,13 @@ import Foundation
 import Network
 import Security
 import CoreServices
+import ApplicationServices
 import Darwin
+// Bundled native targets compile the canonical Core sources in this module.
+// Standalone SwiftPM builds retain their normal package dependency.
+#if !SCRIV_EMBEDDED_NATIVE_CORE
 import ScrivCore
+#endif
 
 /// Deliberately headless macOS companion: no AppKit/SwiftUI/hosting UI and no
 /// daemon registration. The user launches its signed app explicitly. Launching
@@ -33,7 +38,16 @@ final class RuntimeCompanion {
     private var failure: String?
     private let instanceID = UUID()
     private let launchEvents = CompanionLaunchEvents()
-    func start() throws {
+    func endBootstrapSession() { queue.sync { self.shutdown() } }
+    func bootstrapPairing(completion: @escaping (Result<RuntimeBridgePairing, Error>) -> Void) {
+        queue.async {
+            if let pair = self.pairing { completion(.success(pair)); return }
+            guard self.listener == nil else { completion(.failure(ScrivError.conflict("The local companion is still preparing. Confirm again after it finishes."))); return }
+            do { try self.start(onReady: completion) }
+            catch { self.shutdown(); completion(.failure(error)) }
+        }
+    }
+    func start(onReady: ((Result<RuntimeBridgePairing, Error>) -> Void)? = nil) throws {
         // A user-owned, non-symlink private folder; never follow someone else's
         // pairing symlink or overwrite a running instance's capability.
         let folder = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/ScrivRuntimeCompanion", isDirectory: true)
@@ -61,9 +75,9 @@ final class RuntimeCompanion {
                     let pair = existing ?? RuntimeBridgePairing(ownerUID: geteuid(), port: port.rawValue, secret: secret)
                     guard pair.port == port.rawValue else { throw ScrivError.permission("The paired local port changed unexpectedly.") }
                     if existing == nil { try self.writePairing(pair) }
-                    self.pairing = pair
-                } catch { self.shutdown(); exit(EXIT_FAILURE) }
-            case .failed: self.shutdown(); exit(EXIT_FAILURE)
+                    self.pairing = pair; onReady?(.success(pair))
+                } catch { self.shutdown(); onReady?(.failure(error)); if onReady == nil { exit(EXIT_FAILURE) } }
+            case .failed(let error): self.shutdown(); onReady?(.failure(error)); if onReady == nil { exit(EXIT_FAILURE) }
             default: break
             }
         }
@@ -137,7 +151,9 @@ final class RuntimeCompanion {
         }
         if command.operation == .start {
             guard process == nil else { throw ScrivError.conflict("This companion already owns a runtime. Stop it from its owning Scriv window first.") }
-            guard let path = command.executable, path.hasPrefix("/"), FileManager.default.isExecutableFile(atPath: path), let rootPath = command.generationRoot else { throw ScrivError.invalid("Choose the installed Codex executable and a local generation directory.") }
+            guard let choice = command.executable,
+                  let path = CodexLocalSetup.resolveExecutable(preferredPath: choice),
+                  let rootPath = command.generationRoot else { throw ScrivError.invalid("Install ChatGPT or Codex on this Mac, or choose its installed executable and a local generation directory.") }
             let chosen = URL(fileURLWithPath: path)
             let executable = chosen.resolvingSymlinksInPath()
             let codexNames: Set<String> = ["codex", "codex.js", "codex-aarch64-apple-darwin", "codex-arm64-apple-darwin", "codex-x86_64-apple-darwin"]
@@ -214,7 +230,7 @@ final class RuntimeCompanion {
     }
     private func shutdown() {
         let owned = process
-        stopOwned(); listener?.cancel(); leaseTimer?.cancel()
+        stopOwned(); listener?.cancel(); listener = nil; pairing = nil; leaseTimer?.cancel()
         // The headless process may exit immediately after this returns, so do
         // not rely solely on an asynchronous termination escalation here.
         if let owned {
@@ -274,5 +290,10 @@ private final class CompanionLaunchEvents: NSObject {
 }
 
 let companion = RuntimeCompanion()
-do { try companion.start(); RunLoop.main.run() }
-catch { fputs("Scriv Runtime Companion could not start. Check its installation and private pairing directory.\n", stderr); exit(EXIT_FAILURE) }
+do {
+    if Bundle.main.bundleIdentifier == RuntimeBridgeBootstrapSigning.serviceIdentifier {
+        // Bundled XPC mode does not create pairing or start a listener at launch.
+        // A same-team Scriv peer must submit explicit current user consent first.
+        try RuntimeBootstrapService(runtime: companion).run()
+    } else { try companion.start(); RunLoop.main.run() }
+} catch { fputs("Scriv Runtime Companion could not start. Check its signed release and local setup.\n", stderr); exit(EXIT_FAILURE) }

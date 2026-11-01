@@ -4,10 +4,10 @@ import ScrivCore
 /// UIKit-only surfaces shared by account, settings and local generation recovery.
 @MainActor
 enum AccountUI {
-    static let accent = UIColor(red: 0.02, green: 0.36, blue: 0.98, alpha: 1)
-    static let panel = UIColor { $0.userInterfaceStyle == .dark ? UIColor(red: 0.12, green: 0.15, blue: 0.19, alpha: 1) : .white }
-    static let inset = UIColor { $0.userInterfaceStyle == .dark ? UIColor(red: 0.18, green: 0.22, blue: 0.28, alpha: 1) : UIColor(red: 0.94, green: 0.96, blue: 0.985, alpha: 1) }
-    static func label(_ text: String, size: CGFloat = 14, weight: UIFont.Weight = .regular, color: UIColor = .label, centered: Bool = false) -> UILabel {
+    static let accent = ScrivUIKitTheme.accent
+    static let panel = ScrivUIKitTheme.panel
+    static let inset = ScrivUIKitTheme.inset
+    static func label(_ text: String, size: CGFloat = 14, weight: UIFont.Weight = .regular, color: UIColor = ScrivUIKitTheme.ink, centered: Bool = false) -> UILabel {
         let label = UILabel(); label.text = text; label.font = .systemFont(ofSize: size, weight: weight)
         label.textColor = color; label.numberOfLines = 0; label.textAlignment = centered ? .center : .left
         label.setContentCompressionResistancePriority(.required, for: .vertical); return label
@@ -19,15 +19,22 @@ enum AccountUI {
     static func button(_ title: String, symbol: String? = nil, primary: Bool = false, destructive: Bool = false, action: @escaping () -> Void) -> UIButton {
         var configuration = primary ? UIButton.Configuration.filled() : UIButton.Configuration.tinted()
         configuration.title = title; configuration.baseBackgroundColor = primary ? accent : inset
-        configuration.baseForegroundColor = primary ? .white : destructive ? .systemRed : accent
-        configuration.cornerStyle = .medium; configuration.contentInsets = .init(top: 10, leading: 14, bottom: 10, trailing: 14)
-        configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in var result = attributes; result.font = UIFont.systemFont(ofSize: 14, weight: .medium); return result }
+        configuration.baseForegroundColor = primary ? .white : destructive ? .systemRed : ScrivUIKitTheme.ink
+        configuration.cornerStyle = .fixed; configuration.background.cornerRadius = 8
+        configuration.contentInsets = .init(top: 8, leading: 14, bottom: 8, trailing: 14)
+        configuration.titleLineBreakMode = .byTruncatingTail
+        if !primary { configuration.background.strokeColor = ScrivUIKitTheme.hairline; configuration.background.strokeWidth = 0.5 }
+        configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in var result = attributes; result.font = UIFont.systemFont(ofSize: 13, weight: .medium); return result }
         if let symbol { configuration.image = UIImage(systemName: symbol); configuration.imagePadding = 8 }
         let button = UIButton(configuration: configuration, primaryAction: UIAction { _ in action() })
-        button.accessibilityLabel = title; button.titleLabel?.numberOfLines = 0; return button
+        button.accessibilityLabel = title; button.titleLabel?.numberOfLines = 1
+        button.setContentCompressionResistancePriority(.required, for: .horizontal)
+        button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        return button
     }
     static func link(_ title: String, symbol: String? = nil, action: @escaping () -> Void) -> UIButton {
         let button = self.button(title, symbol: symbol, action: action); button.configuration?.baseBackgroundColor = .clear
+        button.configuration?.background.strokeWidth = 0; button.configuration?.baseForegroundColor = accent
         button.contentHorizontalAlignment = .leading; return button
     }
     static func divider() -> UIView { let line = UIView(); line.backgroundColor = .separator; line.heightAnchor.constraint(equalToConstant: 0.5).isActive = true; return line }
@@ -40,12 +47,12 @@ enum AccountUI {
     static func notice(_ text: String, warning: Bool = true) -> UIView {
         card(stack([label(warning ? "Needs attention" : "On this Mac", size: 13, weight: .semibold, color: warning ? .systemOrange : accent), label(text, size: 13)]), tint: (warning ? UIColor.systemOrange : accent).withAlphaComponent(0.09))
     }
-    static func field(_ placeholder: String) -> UITextField {
-        let field = UITextField(); field.placeholder = placeholder; field.font = .systemFont(ofSize: 16); field.borderStyle = .none
+    static func field(_ placeholder: String, height: CGFloat = 48) -> UITextField {
+        let field = UITextField(); field.placeholder = placeholder; field.font = .systemFont(ofSize: 16); field.textColor = ScrivUIKitTheme.ink; field.borderStyle = .none
         field.backgroundColor = inset.withAlphaComponent(0.65); field.layer.cornerRadius = 9; field.layer.borderWidth = 1; field.layer.borderColor = UIColor.separator.cgColor
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 13, height: 1)); field.leftViewMode = .always
         field.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 13, height: 1)); field.rightViewMode = .always
-        field.heightAnchor.constraint(equalToConstant: 48).isActive = true; field.autocorrectionType = .no; field.spellCheckingType = .no; return field
+        field.heightAnchor.constraint(equalToConstant: height).isActive = true; field.autocorrectionType = .no; field.spellCheckingType = .no; return field
     }
     static func avatar(_ name: String, size: CGFloat = 48) -> UIView {
         let label = self.label(String(name.prefix(1)).uppercased(), size: size * 0.42, weight: .medium, color: .white, centered: true)
@@ -54,7 +61,7 @@ enum AccountUI {
     }
     static func symbol(_ name: String, size: CGFloat = 64) -> UIView {
         let icon = UIImageView(image: UIImage(systemName: name, withConfiguration: UIImage.SymbolConfiguration(pointSize: 28, weight: .regular)))
-        icon.contentMode = .center; icon.tintColor = .secondaryLabel; icon.backgroundColor = inset; icon.layer.cornerRadius = size / 2
+        icon.contentMode = .center; icon.tintColor = ScrivUIKitTheme.secondary; icon.backgroundColor = inset; icon.layer.cornerRadius = size / 2
         NSLayoutConstraint.activate([icon.widthAnchor.constraint(equalToConstant: size), icon.heightAnchor.constraint(equalToConstant: size)]); return icon
     }
     static func installScroll(in controller: UIViewController, content: UIStackView, padding: CGFloat = 24) -> UIScrollView {
@@ -67,5 +74,33 @@ enum AccountUI {
     static func present(_ screen: UIViewController, from parent: UIViewController, size: CGSize) {
         let navigation = UINavigationController(rootViewController: screen); navigation.modalPresentationStyle = .formSheet; navigation.preferredContentSize = size; screen.preferredContentSize = size
         parent.present(navigation, animated: true)
+    }
+}
+
+/// A form row changes structure before captions can squeeze actions into
+/// letter-per-line buttons. No control is hidden, replaced or re-created.
+@MainActor
+final class ScrivSecondaryAdaptiveRow: UIStackView {
+    let minimumHorizontalWidth: CGFloat
+    let horizontalAlignment: UIStackView.Alignment
+    init(_ views: [UIView], minimumHorizontalWidth: CGFloat, spacing: CGFloat = 12,
+         alignment: UIStackView.Alignment = .center) {
+        self.minimumHorizontalWidth = minimumHorizontalWidth
+        horizontalAlignment = alignment
+        super.init(frame: .zero)
+        axis = .horizontal; self.spacing = spacing; self.alignment = alignment
+        views.forEach(addArrangedSubview)
+    }
+    @available(*, unavailable) required init(coder: NSCoder) { fatalError("Use init(views:)") }
+    func updateLayout(for width: CGFloat) {
+        guard width > 0 else { return }
+        let next: NSLayoutConstraint.Axis = width < minimumHorizontalWidth ? .vertical : .horizontal
+        guard axis != next else { return }
+        axis = next; alignment = next == .vertical ? .fill : horizontalAlignment
+        invalidateIntrinsicContentSize()
+    }
+    override func layoutSubviews() {
+        updateLayout(for: bounds.width)
+        super.layoutSubviews()
     }
 }

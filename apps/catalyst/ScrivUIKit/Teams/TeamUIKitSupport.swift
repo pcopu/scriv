@@ -68,7 +68,9 @@ enum TeamUIKitUI {
             }
             content.addArrangedSubview(ScrivUIKitTheme.card(row))
         }
-        content.addArrangedSubview(ScrivUIKitTheme.notice("", message: "Revoking a link stops new joins. Existing members keep access."))
+        let safety = CharacterTeamUI.row([CharacterTeamUI.symbol("info.circle.fill", color: ScrivUIKitTheme.accent), ScrivUIKitTheme.label("Revoking a link stops new joins. Existing members keep access.", size: 12, color: ScrivUIKitTheme.secondary)], spacing: 10)
+        let safetyBanner = ScrivUIKitTheme.card(safety, padding: 12); safetyBanner.backgroundColor = ScrivUIKitTheme.accent.withAlphaComponent(0.07)
+        content.addArrangedSubview(safetyBanner)
         content.addArrangedSubview(ScrivUIKitTheme.label("For security, old link secrets cannot be retrieved. Create a new link if you no longer have its saved copy.", size: 12, color: ScrivUIKitTheme.secondary))
         roleMenu.isEnabled = !working; daysMenu.isEnabled = !working
         return content

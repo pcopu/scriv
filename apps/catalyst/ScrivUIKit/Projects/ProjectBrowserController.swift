@@ -45,8 +45,10 @@ final class ProjectBrowserController: ScrivScreenController, UITableViewDataSour
         super.viewDidLoad()
         let sidebar = makeSidebar()
         search.placeholder = "Find a project"; search.delegate = self; search.addTarget(self, action: #selector(searchChanged), for: .editingChanged)
-        search.widthAnchor.constraint(equalToConstant: 235).isActive = true
-        let header = ScrivUIKitTheme.stack([ScrivUIKitTheme.label("Projects", size: 18, weight: .semibold), UIView(), search, ScrivUIKitTheme.button("New project", primary: true) { [weak self] in self?.store.newProject() }, ScrivUIKitTheme.button("Close", symbol: "xmark") { [weak self] in self?.dismiss(animated: true) }], axis: .horizontal, spacing: 12); header.alignment = .center
+        let searchWidth = search.widthAnchor.constraint(equalToConstant: 235); searchWidth.priority = .defaultHigh; searchWidth.isActive = true
+        search.widthAnchor.constraint(greaterThanOrEqualToConstant: 150).isActive = true
+        let close = ScrivUIKitTheme.button("", symbol: "xmark") { [weak self] in self?.dismiss(animated: true) }; close.accessibilityLabel = "Close Projects"
+        let header = ScrivUIKitTheme.stack([ScrivUIKitTheme.label("Projects", size: 18, weight: .semibold), UIView(), search, ScrivUIKitTheme.button("New project", primary: true) { [weak self] in self?.store.newProject() }, close], axis: .horizontal, spacing: 12); header.alignment = .center
         refreshButton = ScrivUIKitTheme.button("Refresh", symbol: "arrow.clockwise") { [weak self] in self?.store.refreshAccount() }
         let section = ScrivUIKitTheme.stack([heading, UIView(), refreshButton], axis: .horizontal, spacing: 12); section.alignment = .center
         table.dataSource = self; table.delegate = self; table.rowHeight = UITableView.automaticDimension; table.estimatedRowHeight = 100
@@ -59,7 +61,8 @@ final class ProjectBrowserController: ScrivScreenController, UITableViewDataSour
         let right = ScrivUIKitTheme.stack([padded(header, top: 18, bottom: 18), line(), padded(section, top: 18, bottom: 12), listContainer], spacing: 0)
         let body = ScrivUIKitTheme.stack([sidebar, verticalLine(), right], axis: .horizontal, spacing: 0)
         let bottom = makeFooter()
-        let local = ScrivUIKitTheme.stack([ScrivUIKitTheme.label("⌨  Local editing is always available. No sign-in required.", size: 12, color: ScrivUIKitTheme.secondary), UIView(), ScrivUIKitTheme.button("Sign in to Scriv…") { [weak self] in self?.show(.signIn) }], axis: .horizontal, spacing: 12)
+        let laptop = UIImageView(image: UIImage(systemName: "laptopcomputer")); laptop.tintColor = ScrivUIKitTheme.secondary; laptop.contentMode = .scaleAspectFit; laptop.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let local = ScrivUIKitTheme.stack([laptop, ScrivUIKitTheme.label("Local editing is always available. No sign-in required.", size: 12, color: ScrivUIKitTheme.secondary), UIView(), ScrivUIKitTheme.button("Sign in to Scriv…") { [weak self] in self?.show(.signIn) }], axis: .horizontal, spacing: 12)
         let root = ScrivUIKitTheme.stack([body, line(), bottom, line(), padded(local, top: 6, bottom: 6)], spacing: 0)
         view.addSubview(root); root.scrivPinEdges(to: view)
         store.refreshLocalProjects(); if store.account != nil { store.refreshAccount() }; reload()
@@ -75,7 +78,8 @@ final class ProjectBrowserController: ScrivScreenController, UITableViewDataSour
     }
     private func makeSidebar() -> UIView {
         let content = ScrivUIKitTheme.stack([], spacing: 6)
-        content.addArrangedSubview(padded(ScrivUIKitTheme.label("Library", size: 12, weight: .medium, color: ScrivUIKitTheme.secondary), top: 26, bottom: 22))
+        let titlebarSpace = UIView(); titlebarSpace.heightAnchor.constraint(equalToConstant: 74).isActive = true
+        content.addArrangedSubview(titlebarSpace)
         for item in UIKitProjectSource.allCases {
             let button = ScrivUIKitTheme.button(item.rawValue, symbol: item.symbol) { [weak self] in self?.source = item; self?.reload() }
             button.contentHorizontalAlignment = .leading; sourceButtons[item] = button; content.addArrangedSubview(button)
@@ -127,7 +131,7 @@ final class ProjectBrowserController: ScrivScreenController, UITableViewDataSour
     }
     private func updateFooter() {
         if let project = visible.first(where: { $0.id == selectedID }) {
-            footerTitle.text = project.title; footerSubtitle.text = project.detail; footerSource.text = project.source; footerImage.setURL(project.summary?.thumbnailURL); footerImage.isHidden = false; openButton.isEnabled = true
+            footerTitle.text = project.title + " · " + project.detail; footerSubtitle.text = project.source + (project.modified.map { " · Edited \($0.formatted(.relative(presentation: .named)))" } ?? ""); footerSource.text = nil; footerSource.isHidden = true; footerImage.setURL(project.summary?.thumbnailURL); footerImage.isHidden = false; openButton.isEnabled = true
         } else {
             footerTitle.text = "Your next script starts here"; footerSubtitle.text = "Create a project, open a .scriv package, or import a script."; footerSource.text = nil; footerImage.isHidden = true; openButton.isEnabled = false
         }
@@ -186,19 +190,24 @@ private final class ProjectBrowserCell: UITableViewCell {
     private let title = ScrivUIKitTheme.label("", size: 18, weight: .semibold, lines: 1)
     private let detail = ScrivUIKitTheme.label("", size: 13, color: ScrivUIKitTheme.secondary, lines: 2)
     private let source = ScrivUIKitTheme.label("", size: 13, color: ScrivUIKitTheme.secondary, lines: 2)
+    private let sourceIcon = UIImageView()
     private let date = ScrivUIKitTheme.label("", size: 12, color: ScrivUIKitTheme.secondary, lines: 2)
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear; contentView.backgroundColor = .clear
         cover.widthAnchor.constraint(equalToConstant: 112).isActive = true; cover.heightAnchor.constraint(equalToConstant: 76).isActive = true
-        source.widthAnchor.constraint(equalToConstant: 110).isActive = true; date.widthAnchor.constraint(equalToConstant: 112).isActive = true; date.textAlignment = .right
-        let row = ScrivUIKitTheme.stack([cover, ScrivUIKitTheme.stack([title, detail], spacing: 7), source, date], axis: .horizontal, spacing: 20); row.alignment = .center
+        sourceIcon.tintColor = ScrivUIKitTheme.secondary; sourceIcon.contentMode = .scaleAspectFit
+        sourceIcon.widthAnchor.constraint(equalToConstant: 22).isActive = true; sourceIcon.heightAnchor.constraint(equalToConstant: 22).isActive = true
+        let sourceRow = ScrivUIKitTheme.stack([sourceIcon, source], axis: .horizontal, spacing: 10); sourceRow.alignment = .center
+        sourceRow.widthAnchor.constraint(equalToConstant: 130).isActive = true; date.widthAnchor.constraint(equalToConstant: 112).isActive = true; date.textAlignment = .right
+        title.lineBreakMode = .byTruncatingTail
+        let row = ScrivUIKitTheme.stack([cover, ScrivUIKitTheme.stack([title, detail], spacing: 7), sourceRow, date], axis: .horizontal, spacing: 18); row.alignment = .center
         contentView.addSubview(row); row.scrivPinEdges(to: contentView, insets: NSDirectionalEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12))
         let selected = UIView(); selected.backgroundColor = ScrivUIKitTheme.accent.withAlphaComponent(0.09); selected.layer.cornerRadius = 12; selectedBackgroundView = selected
     }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError() }
     func configure(_ project: UIKitBrowserProject) {
-        title.text = project.title; detail.text = project.detail; source.text = project.source
+        title.text = project.title; detail.text = project.detail; source.text = project.source; sourceIcon.image = UIImage(systemName: project.symbol)
         date.text = project.modified.map { "Edited \($0.formatted(.relative(presentation: .named)))" } ?? (project.remote == nil ? "" : "Open to view")
         cover.setURL(project.summary?.thumbnailURL)
         accessibilityLabel = "\(project.title), \(project.source), \(project.detail)"

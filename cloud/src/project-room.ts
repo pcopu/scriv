@@ -177,12 +177,16 @@ export class ProjectRoom extends DurableObject<Env> {
         if(item.kind==='cue'){reference(d.sceneId,'scene','sceneId');reference(d.imageId,'image','imageId');}
         if(item.kind==='image'){
           for(const ref of d.characterIds as string[])reference(ref,'character','characterIds');reference(d.previousVersionId,'image','previousVersionId');
+          if(d.characterAnalysis){const analysis=record(d.characterAnalysis,'characterAnalysis');for(const ref of analysis.manualCharacterIDs as string[])reference(ref,'character','characterAnalysis.manualCharacterIDs');for(const raw of analysis.annotations as unknown[])reference(record(raw,'annotation').characterID,'character','characterAnalysis.characterID');}
           if(d.previousVersionId){const previous=this.getItem(String(d.previousVersionId))!;assert(previous.id!==item.id&&Number(d.version)>Number(previous.data.version),400,'image_version','An image revision must follow its previous version without cycles.');}
         }
-        if(item.kind==='character')reference(d.portraitImageId,'image','portraitImageId');
+        if(item.kind==='character'){
+          reference(d.portraitImageId,'image','portraitImageId');
+          if(d.portraitRegion){const crop=record(d.portraitRegion,'portraitRegion'),source=this.getItem(String(crop.imageID));assert(source?.data.sha256===crop.imageSHA256,400,'stale_character_portrait','Portrait crop must match its immutable image digest.');}
+        }
       } else {
         if(item.kind==='scene')assert(!this.one('SELECT id FROM items WHERE scene_id=? AND deleted=0 LIMIT 1',item.id),409,'item_in_use','Delete the scene contents in the same command before deleting the scene.');
-        if(item.kind==='character')assert(!this.one(`SELECT id FROM items WHERE deleted=0 AND ((kind='entry' AND (json_extract(data,'$.characterId')=? OR EXISTS(SELECT 1 FROM json_each(items.data,'$.characterLinks') WHERE json_extract(value,'$.characterId')=?))) OR (kind='image' AND EXISTS(SELECT 1 FROM json_each(items.data,'$.characterIds') WHERE value=?))) LIMIT 1`,item.id,item.id,item.id),409,'item_in_use','Remove character links and image tags in the same command before deleting this character.');
+        if(item.kind==='character')assert(!this.one(`SELECT id FROM items WHERE deleted=0 AND ((kind='entry' AND (json_extract(data,'$.characterId')=? OR EXISTS(SELECT 1 FROM json_each(items.data,'$.characterLinks') WHERE json_extract(value,'$.characterId')=?))) OR (kind='image' AND (EXISTS(SELECT 1 FROM json_each(items.data,'$.characterIds') WHERE value=?) OR EXISTS(SELECT 1 FROM json_each(items.data,'$.characterAnalysis.manualCharacterIDs') WHERE value=?) OR EXISTS(SELECT 1 FROM json_each(items.data,'$.characterAnalysis.annotations') WHERE json_extract(value,'$.characterID')=?)))) LIMIT 1`,item.id,item.id,item.id,item.id,item.id),409,'item_in_use','Remove character links and image tags in the same command before deleting this character.');
         if(item.kind==='image')assert(!this.one(`SELECT id FROM items WHERE deleted=0 AND ((kind='cue' AND json_extract(data,'$.imageId')=?) OR (kind='character' AND json_extract(data,'$.portraitImageId')=?) OR (kind='image' AND json_extract(data,'$.previousVersionId')=?)) LIMIT 1`,item.id,item.id,item.id),409,'item_in_use','This image version is still referenced. Remove its references first.');
       }
     }

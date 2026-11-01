@@ -65,10 +65,15 @@ final class ScriptTextView: UITextView {
 @MainActor
 final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteractionDelegate {
     let entryID: String
-    let durationButton = UIButton(type: .system)
+    // This pill owns a hold-and-drag gesture as well as a normal click.
+    // Mac-style system buttons can bypass UIKit gesture tracking; retain
+    // UIKit tracking in either Catalyst idiom with this already-styled button.
+    let durationButton = UIButton(type: .custom)
+    let splitPictureButton = UIButton(type: .system)
     let timestamp = ScrivUIKitTheme.label("", size: 12, color: ScrivUIKitTheme.secondary, lines: 1)
     let speakerButton = UIButton(type: .system)
     let speakerMenuButton = UIButton(type: .system)
+    let continuationLabel = ScrivUIKitTheme.label("(CONT’D)", size: 18, color: ScrivUIKitTheme.ink, lines: 1)
     let display = ScriptTextView()
     let editor = ScriptTextView()
     let details = ScrivUIKitTheme.stack([], spacing: 8)
@@ -78,6 +83,7 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
     var onEdit: ((Int) -> Void)?
     var onSplit: ((Int) -> Void)?
     var onDuration: (() -> Void)?
+    var onSplitPicture: (() -> Void)?
     var onCharacter: ((String) -> Void)?
     var onTextEdit: ((CharacterTextEdit) -> Bool)?
     var onTextChange: ((String) -> Bool)?
@@ -86,17 +92,24 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
     private var settingText = false
     private var editing = false
     private var lastEntry: ScriptEntry?
+    private var gutterWidth: NSLayoutConstraint!
+    private var railWidth: NSLayoutConstraint!
+    private var topInset: NSLayoutConstraint!
+    private var bottomInset: NSLayoutConstraint!
 
     init(entryID: String) {
         self.entryID = entryID
-        let gutter = ScrivUIKitTheme.stack([durationButton, timestamp], spacing: 5)
+        let gutter = ScrivUIKitTheme.stack([durationButton, timestamp, splitPictureButton], spacing: 5)
         gutter.alignment = .center
         root = ScrivUIKitTheme.stack([gutter, UIView(), textStack], axis: .horizontal, spacing: 0)
         super.init(frame: .zero)
         root.alignment = .top
-        gutter.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        root.arrangedSubviews[1].widthAnchor.constraint(equalToConstant: 78).isActive = true
-        let speaker = ScrivUIKitTheme.stack([speakerButton, speakerMenuButton, UIView()], axis: .horizontal, spacing: 6)
+        gutterWidth = gutter.widthAnchor.constraint(equalToConstant: ScriptPresentationMetrics.expanded.gutterWidth)
+        railWidth = root.arrangedSubviews[1].widthAnchor.constraint(equalToConstant: ScriptPresentationMetrics.expanded.railGap)
+        NSLayoutConstraint.activate([gutterWidth, railWidth, durationButton.widthAnchor.constraint(equalTo: gutter.widthAnchor, multiplier: 0.95)])
+        durationButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        durationButton.titleLabel?.minimumScaleFactor = 0.7
+        let speaker = ScrivUIKitTheme.stack([speakerButton, continuationLabel, speakerMenuButton, UIView()], axis: .horizontal, spacing: 6)
         speaker.alignment = .center
         speakerMenuButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
         speakerMenuButton.accessibilityLabel = "Change speaker"
@@ -107,17 +120,27 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
         speakerButton.layer.cornerRadius = 5
         textStack.addArrangedSubview(speaker); textStack.addArrangedSubview(display); textStack.addArrangedSubview(editor); textStack.addArrangedSubview(details)
         addSubview(root)
-        root.scrivPinEdges(to: self, insets: NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 10))
+        root.translatesAutoresizingMaskIntoConstraints = false
+        topInset = root.topAnchor.constraint(equalTo: topAnchor, constant: 10)
+        bottomInset = root.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10)
+        NSLayoutConstraint.activate([topInset, bottomInset, root.leadingAnchor.constraint(equalTo: leadingAnchor), root.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10)])
         display.delegate = self; editor.delegate = self
         display.isEditable = false; display.isSelectable = true; display.dataDetectorTypes = []
         editor.isHidden = true; editor.isEditable = true
         editor.accessibilityIdentifier = "script-editor-" + entryID
         display.accessibilityIdentifier = "script-line-" + entryID
         durationButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
-        durationButton.backgroundColor = ScrivUIKitTheme.inset; durationButton.layer.cornerRadius = 13
+        durationButton.backgroundColor = ScrivUIKitTheme.inset; durationButton.layer.cornerRadius = 10
+        durationButton.setTitleColor(ScrivUIKitTheme.ink, for: .normal)
         durationButton.contentEdgeInsets = UIEdgeInsets(top: 5, left: 11, bottom: 5, right: 11)
         durationButton.addAction(UIAction { [weak self] _ in self?.onDuration?() }, for: .touchUpInside)
         durationButton.accessibilityLabel = "Edit owned duration"
+        splitPictureButton.setImage(UIImage(systemName: "scissors"), for: .normal)
+        splitPictureButton.accessibilityLabel = "Preview picture split"
+        splitPictureButton.accessibilityIdentifier = "script-picture-split"
+        splitPictureButton.addInteraction(UIToolTipInteraction(defaultToolTip: "Split picture · script stays unchanged"))
+        splitPictureButton.addAction(UIAction { [weak self] _ in self?.onSplitPicture?() }, for: .touchUpInside)
+        splitPictureButton.isHidden = true
         timestamp.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         let tap = UITapGestureRecognizer(target: self, action: #selector(editRequested(_:)))
         tap.cancelsTouchesInView = true
@@ -131,29 +154,40 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
         let raw = display.closestPosition(to: point).map { display.offset(from: display.beginningOfDocument, to: $0) } ?? 0
         onEdit?(min(lastEntry?.text.utf16.count ?? 0, max(0, raw)))
     }
-    func configure(entry: ScriptEntry, project: ScrivProject, selected: Bool, active: Bool, search: String, currentWordID: String?, peers: [PresencePeer], locked: Bool, speakerMenu: UIMenu, fontSize: CGFloat) {
+    func configure(entry: ScriptEntry, project: ScrivProject, selected: Bool, active: Bool, search: String, currentWordID: String?, peers: [PresencePeer], locked: Bool, speakerMenu: UIMenu, fontSize: CGFloat, presentation: ScriptPresentationMetrics = .expanded) {
         lastEntry = entry
-        durationButton.setTitle(ScrivFormat.duration(entry.ownedDurationMs), for: .normal); durationButton.isEnabled = !locked
+        gutterWidth.constant = presentation.gutterWidth; railWidth.constant = presentation.railGap
+        topInset.constant = presentation.rowPadding; bottomInset.constant = -presentation.rowPadding
+        textStack.spacing = presentation.textSpacing
+        DurationHoldFeedback.tick(durationButton, title: ScrivFormat.duration(entry.ownedDurationMs)); durationButton.isEnabled = !locked
         timestamp.text = ScrivFormat.time(project.startMs(of: entry.id))
+        splitPictureButton.isHidden = !selected || !project.cues.contains { $0.sceneId == entry.sceneId && $0.durationMs > 1 && $0.startMs < project.startMs(of: entry.id) + max(entry.ownedDurationMs, entry.coverageDurationMs) && $0.endMs > project.startMs(of: entry.id) }
+        splitPictureButton.isEnabled = !locked
         let direction = entry.kind == .direction
         let color = direction ? ScrivUIKitTheme.color(entry.color) : ScrivUIKitTheme.ink
         let character = project.character(entry.characterId)
         let ordered = project.entries(in: entry.sceneId)
         let previous = ordered.firstIndex(where: { $0.id == entry.id }).flatMap { index in ordered[..<index].last { $0.ownedDurationMs > 0 } }
         let continued = entry.characterId != nil && previous?.kind == .dialogue && previous?.characterId == entry.characterId
-        let name = (character?.name.uppercased() ?? "DIALOGUE") + (continued ? " (CONT’D)" : "")
+        let name = character?.name.uppercased() ?? "DIALOGUE"
+        continuationLabel.isHidden = !continued
+        continuationLabel.font = .systemFont(ofSize: max(12, fontSize * 0.86))
         speakerButton.setTitle(name, for: .normal)
         let speakerColor = character.map { ScrivUIKitTheme.color($0.color) } ?? ScrivUIKitTheme.secondary
-        speakerButton.setTitleColor(speakerColor, for: .normal); speakerButton.backgroundColor = speakerColor.withAlphaComponent(0.12)
+        speakerButton.setTitleColor(ScrivUIKitTheme.ink, for: .normal); speakerButton.backgroundColor = speakerColor.withAlphaComponent(0.20)
         speakerButton.removeAction(identifiedBy: UIAction.Identifier("speaker"), for: .touchUpInside)
         speakerButton.addAction(UIAction(identifier: UIAction.Identifier("speaker")) { [weak self] _ in if let id = character?.id { self?.onCharacter?(id) } }, for: .touchUpInside)
         textStack.arrangedSubviews[0].isHidden = direction
         speakerMenuButton.isHidden = !selected; speakerMenuButton.menu = speakerMenu; speakerMenuButton.isEnabled = !locked
         display.setScriptStyle(size: fontSize, direction: direction); editor.setScriptStyle(size: fontSize, direction: direction)
-        speakerButton.titleLabel?.font = .systemFont(ofSize: max(11, fontSize * 0.8), weight: .semibold)
-        durationButton.titleLabel?.font = .systemFont(ofSize: max(11, fontSize * 0.7), weight: .semibold)
-        timestamp.font = .monospacedDigitSystemFont(ofSize: max(10, fontSize * 0.6), weight: .regular)
-        editor.textColor = color; display.linkTextAttributes = [.foregroundColor: ScrivUIKitTheme.accent]
+        speakerButton.titleLabel?.font = .systemFont(ofSize: max(12, fontSize * 0.86), weight: .medium)
+        durationButton.titleLabel?.font = .monospacedDigitSystemFont(ofSize: max(13, fontSize * 0.82), weight: .semibold)
+        timestamp.font = .monospacedDigitSystemFont(ofSize: max(11, fontSize * 0.73), weight: .regular)
+        editor.textColor = color
+        // Foreground belongs to each attributed run: idle links are blue, but
+        // the active playback word is white on blue. A global link foreground
+        // overrides that white and makes linked playback words disappear.
+        display.linkTextAttributes = [.underlineStyle: 0]
         let value = ScriptAttributedText.make(entry: entry, project: project, font: display.font ?? .systemFont(ofSize: fontSize), color: color, currentWordID: currentWordID, peers: peers)
         if display.attributedText != value { display.attributedText = value; display.invalidateIntrinsicContentSize() }
         display.presencePeers = peers

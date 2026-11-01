@@ -9,7 +9,7 @@ final class ScrivSignInController: ScrivScreenController, UITextFieldDelegate {
     private let ownerID = UUID()
     private let content = AccountUI.stack(spacing: 22)
     private let email = AccountUI.field("you@example.com")
-    private let code = AccountUI.field("—  —  —  —  —  —")
+    private let code = AccountUI.field("—  —  —  —  —  —", height: 62)
     private let errorLabel = AccountUI.label("", size: 13, color: .systemRed)
     private var actionButton: UIButton?
     private var resendButton: UIButton?
@@ -29,10 +29,10 @@ final class ScrivSignInController: ScrivScreenController, UITextFieldDelegate {
     private var busy: Bool { store.cloud.emailSignIn.isBusy || operationID != nil }
     private var ownedElsewhere: Bool { store.cloud.signInOwnerID != nil && store.cloud.signInOwnerID != ownerID }
 
-    init(store: WorkspaceStore) { super.init(store: store, scopeToProject: false); preferredContentSize = CGSize(width: 540, height: 660) }
+    init(store: WorkspaceStore) { super.init(store: store, scopeToProject: false); preferredContentSize = CGSize(width: 580, height: 650) }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(store:)") }
     override func viewDidLoad() {
-        super.viewDidLoad(); view.backgroundColor = AccountUI.panel; preferredContentSize = CGSize(width: 540, height: 660)
+        super.viewDidLoad(); overrideUserInterfaceStyle = .dark; view.backgroundColor = AccountUI.panel; preferredContentSize = CGSize(width: 580, height: 650)
         navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .close, primaryAction: UIAction { [weak self] _ in self?.close() })
         _ = AccountUI.installScroll(in: self, content: content, padding: 34)
         email.textContentType = .emailAddress; email.keyboardType = .emailAddress; email.autocapitalizationType = .none; email.returnKeyType = .continue
@@ -42,6 +42,12 @@ final class ScrivSignInController: ScrivScreenController, UITextFieldDelegate {
         store.cloud.objectWillChange.receive(on: RunLoop.main).sink { [weak self] _ in self?.storeDidChange() }.store(in: &subscriptions)
         email.text = store.cloud.emailSignIn.email; originalServer = store.cloudBaseURL; originalNavigation = store.navigationContext
         render()
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        for field in [email, code] {
+            field.layer.borderColor = (field.isFirstResponder ? AccountUI.accent : ScrivUIKitTheme.hairline).resolvedColor(with: traitCollection).cgColor
+        }
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated); visible = true
@@ -80,26 +86,30 @@ final class ScrivSignInController: ScrivScreenController, UITextFieldDelegate {
                 content.addArrangedSubview(AccountUI.button("Start sign-in here", primary: true) { [weak self] in
                     guard let self else { return }; self.store.cloud.cancelSignIn(); self.email.text = ""; self.code.text = ""; self.render()
                 })
-                content.addArrangedSubview(AccountUI.link("Keep writing locally") { [weak self] in self?.close() })
+                content.addArrangedSubview(centeredLink("Keep writing locally") { [weak self] in self?.close() })
             } else if challenge != nil {
                 content.addArrangedSubview(AccountUI.link("Change email", symbol: "chevron.left") { [weak self] in self?.cancel(); self?.email.text = ""; self?.render() })
                 heading("envelope", "Check your email", "Enter the 6-digit code sent to \(store.cloud.emailSignIn.email)")
                 content.addArrangedSubview(code)
-                let button = AccountUI.button("Sign in with code", primary: true) { [weak self] in self?.verify() }; actionButton = button; content.addArrangedSubview(button)
-                let expiry = AccountUI.label("", size: 13, color: .secondaryLabel, centered: true); expiryLabel = expiry; content.addArrangedSubview(expiry)
-                let resend = AccountUI.button("Resend code") { [weak self] in self?.request() }; resendButton = resend; content.addArrangedSubview(resend)
-                content.addArrangedSubview(AccountUI.link("Cancel sign-in") { [weak self] in self?.close() })
+                let button = signInAction("Sign in with code") { [weak self] in self?.verify() }; actionButton = button; content.addArrangedSubview(button)
+                let expiry = AccountUI.label("", size: 13, color: ScrivUIKitTheme.secondary, centered: true); expiryLabel = expiry
+                let resend = AccountUI.link("Resend code") { [weak self] in self?.request() }; resendButton = resend
+                resend.contentHorizontalAlignment = .center
+                let expiration = AccountUI.stack([expiry, resend], spacing: 12, horizontal: true)
+                let expirationRow = AccountUI.stack([expiration], spacing: 0); expirationRow.alignment = .center
+                content.addArrangedSubview(expirationRow)
+                content.addArrangedSubview(centeredLink("Cancel sign-in") { [weak self] in self?.close() })
                 footer("You can keep editing locally while signing in.")
             } else {
                 heading("person.fill", "Sign in to Scriv", "Save scripts to the cloud and join your team.")
-                content.addArrangedSubview(AccountUI.stack([AccountUI.label("Email address", size: 14, weight: .medium, color: .secondaryLabel), email], spacing: 9))
-                let button = AccountUI.button("Continue with email", primary: true) { [weak self] in self?.request() }; actionButton = button; content.addArrangedSubview(button)
-                content.addArrangedSubview(AccountUI.label("We'll email a one-time code. No password needed.", size: 13, color: .secondaryLabel, centered: true))
-                content.addArrangedSubview(AccountUI.link("Keep writing locally") { [weak self] in self?.close() })
+                content.addArrangedSubview(AccountUI.stack([AccountUI.label("Email address", size: 14, weight: .medium, color: ScrivUIKitTheme.secondary), email], spacing: 9))
+                let button = signInAction("Continue with email") { [weak self] in self?.request() }; actionButton = button; content.addArrangedSubview(button)
+                content.addArrangedSubview(AccountUI.label("We'll email a one-time code. No password needed.", size: 13, color: ScrivUIKitTheme.secondary, centered: true))
+                content.addArrangedSubview(centeredLink("Keep writing locally") { [weak self] in self?.close() })
                 content.addArrangedSubview(AccountUI.divider())
                 content.addArrangedSubview(AccountUI.link("Already used GitHub?", symbol: githubExpanded ? "chevron.down" : "chevron.right") { [weak self] in guard let self else { return }; self.githubExpanded.toggle(); self.render() })
                 if githubExpanded {
-                    content.addArrangedSubview(AccountUI.label("Use your existing GitHub-linked Scriv account.", size: 13, color: .secondaryLabel))
+                    content.addArrangedSubview(AccountUI.label("Use your existing GitHub-linked Scriv account.", size: 13, color: ScrivUIKitTheme.secondary))
                     let button = AccountUI.button("Continue with GitHub…") { [weak self] in self?.github() }; button.isEnabled = !busy; githubButton = button; content.addArrangedSubview(button)
                 }
                 footer("ChatGPT sign-in is separate in Codex on this Mac.")
@@ -109,11 +119,27 @@ final class ScrivSignInController: ScrivScreenController, UITextFieldDelegate {
         }
         updateControls()
     }
+    private func centeredLink(_ title: String, action: @escaping () -> Void) -> UIButton {
+        let button = AccountUI.link(title, action: action); button.contentHorizontalAlignment = .center; return button
+    }
+    private func signInAction(_ title: String, action: @escaping () -> Void) -> UIButton {
+        let button = AccountUI.button(title, primary: true, action: action)
+        button.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        button.configuration?.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in
+            var result = attributes; result.font = .systemFont(ofSize: 17, weight: .semibold); return result
+        }
+        return button
+    }
     private func heading(_ symbol: String, _ title: String, _ subtitle: String) {
         let iconRow = AccountUI.stack([AccountUI.symbol(symbol)], spacing: 0); iconRow.alignment = .center
-        content.addArrangedSubview(AccountUI.stack([iconRow, AccountUI.label(title, size: 29, weight: .semibold, centered: true), AccountUI.label(subtitle, size: 16, color: .secondaryLabel, centered: true)], spacing: 16))
+        content.addArrangedSubview(AccountUI.stack([iconRow, AccountUI.label(title, size: 32, weight: .semibold, centered: true), AccountUI.label(subtitle, size: 17, color: ScrivUIKitTheme.secondary, centered: true)], spacing: 16))
     }
-    private func footer(_ text: String) { content.addArrangedSubview(AccountUI.divider()); content.addArrangedSubview(AccountUI.label(text, size: 13, color: .secondaryLabel)) }
+    private func footer(_ text: String) {
+        content.addArrangedSubview(AccountUI.divider())
+        let icon = UIImageView(image: UIImage(systemName: "laptopcomputer")); icon.tintColor = ScrivUIKitTheme.secondary; icon.contentMode = .scaleAspectFit
+        icon.widthAnchor.constraint(equalToConstant: 28).isActive = true; icon.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        content.addArrangedSubview(AccountUI.stack([icon, AccountUI.label(text, size: 13, color: ScrivUIKitTheme.secondary)], spacing: 14, horizontal: true))
+    }
     @objc private func changed() {
         code.text = String((code.text ?? "").filter { $0.isASCII && $0.isNumber }.prefix(6)); updateControls()
     }
@@ -174,7 +200,12 @@ extension ScrivUIKitFeatures {
                 default: return nil
                 }
                 let navigation = UINavigationController(rootViewController: controller)
+                // Codex supplies its own fixed header. Hide the system bar
+                // before the form sheet measures preferred content; doing this
+                // only in viewWillAppear can leave Catalyst chrome-height space.
+                if case .codex = route { navigation.setNavigationBarHidden(true, animated: false) }
                 navigation.preferredContentSize = controller.preferredContentSize; navigation.modalPresentationStyle = .formSheet
+                if case .signIn = route { navigation.setNavigationBarHidden(true, animated: false) }
                 return navigation
             }
         }

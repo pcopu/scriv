@@ -25,7 +25,11 @@ final class ScrivUIKitSceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let scene = scene as? UIWindowScene else { return }
         let workspace = WorkspaceStore(); store = workspace
+        ScrivUpdateCoordinator.shared.register(workspace)
         let window = UIWindow(windowScene: scene)
+        // Match the approved light workspace even when macOS is dark. Individual
+        // explicitly designed dark sheets may override this on their controller.
+        window.overrideUserInterfaceStyle = .light
         window.rootViewController = ScrivWorkspaceController(store: workspace)
         window.tintColor = ScrivUIKitTheme.accent
         self.window = window; window.makeKeyAndVisible()

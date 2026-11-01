@@ -30,8 +30,8 @@ import ScrivCore
     func testLongSourceTextWrapsWithoutTruncatingOrChangingUTF16() {
         let source = String(repeating: "We can move these words without moving the picture. 🙂 cafe\u{301}\n", count: 12)
         let text = ImageUI.text(source, size: 16); text.frame = CGRect(x: 0, y: 0, width: 260, height: 50); text.layoutIfNeeded()
-        let narrow = text.sizeThatFits(CGSize(width: 260, height: .greatestFiniteMagnitude))
-        let wide = text.sizeThatFits(CGSize(width: 700, height: .greatestFiniteMagnitude))
+        let narrow = text.sizeThatFits(CGSize(width: 260, height: CGFloat.greatestFiniteMagnitude))
+        let wide = text.sizeThatFits(CGSize(width: 700, height: CGFloat.greatestFiniteMagnitude))
         XCTAssertGreaterThan(narrow.height, wide.height); XCTAssertFalse(text.isScrollEnabled); XCTAssertEqual(text.textContainer.maximumNumberOfLines, 0)
         XCTAssertTrue(text.text.utf16.elementsEqual(source.utf16)); XCTAssertFalse(text.isEditable); XCTAssertTrue(text.isSelectable)
     }

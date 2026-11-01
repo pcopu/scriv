@@ -46,7 +46,7 @@ final class CharacterEditorController: ScrivScreenController, UITextViewDelegate
         identity.addArrangedSubview(CharacterTeamUI.portrait(draft, store: store, size: CGSize(width: 205, height: 226)))
         identity.addArrangedSubview(fields)
         layout.content.addArrangedSubview(identity)
-        layout.content.addArrangedSubview(ScrivUIKitTheme.notice("", message: "Confirmed links stay attached. Script wording never changes."))
+        layout.content.addArrangedSubview(CharacterTeamUI.characterNotice("Confirmed links stay attached. Script wording never changes."))
         layout.content.addArrangedSubview(CharacterTeamUI.labeled("Biography", biography))
         layout.content.addArrangedSubview(CharacterTeamUI.labeled("Appearance & image direction", appearance))
         layout.content.addArrangedSubview(issue); issue.isHidden = true
@@ -124,13 +124,14 @@ final class CharacterEditorController: ScrivScreenController, UITextViewDelegate
         }); present(alert, animated: true)
     }
     private func renderColors() {
-        var colors = ["orange", "green", "teal", "blue", "purple", "coral", "pink"]
+        var colors = ["FF7E21", "FFD04D", "69C581", "45CDD1", "4E87EE", "B072DB", "F272AC", "98A6BC"]
+        let names = ["FF7E21": "Orange", "FFD04D": "Yellow", "69C581": "Green", "45CDD1": "Teal", "4E87EE": "Blue", "B072DB": "Purple", "F272AC": "Pink", "98A6BC": "Slate"]
         if !colors.contains(draft.color) { colors.insert(draft.color, at: 0) }
         palette.chips = colors.map { color in
             let button = UIButton(type: .custom); let selected = draft.color == color
             button.setImage(UIImage(systemName: selected ? "circle.inset.filled" : "circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
             button.tintColor = ScrivUIKitTheme.color(color); button.contentEdgeInsets = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3)
-            button.accessibilityLabel = "\(color.capitalized) character colour"; button.accessibilityTraits = selected ? [.button, .selected] : [.button]
+            button.accessibilityLabel = "\(names[color] ?? color.capitalized) character colour"; button.accessibilityTraits = selected ? [.button, .selected] : [.button]
             button.addAction(UIAction { [weak self] _ in self?.draft.color = color; self?.colorDot.backgroundColor = ScrivUIKitTheme.color(color); self?.renderColors() }, for: .touchUpInside)
             return button
         }

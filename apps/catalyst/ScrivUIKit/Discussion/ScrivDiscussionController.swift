@@ -9,15 +9,16 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
     private let scope = UISegmentedControl(items: ["Project", "This item"])
     private let contextButton = UIButton(type: .system)
     private let contextThumbnail = UIKitAssetImageView()
-    private let contextSubtitle = ScrivUIKitTheme.label("", size: 11, color: ScrivUIKitTheme.secondary)
-    private let placeholder = ScrivUIKitTheme.label("Add a comment…", size: 13, color: ScrivUIKitTheme.secondary)
+    private let contextSubtitle = ScrivUIKitTheme.label("", size: 12, color: ScrivUIKitTheme.secondary)
+    private let placeholder = ScrivUIKitTheme.label("Add a comment…", size: 16, color: ScrivUIKitTheme.secondary)
     private let composer = DiscussionComposerTextView()
     private let composerMetadata = ScrivUIKitTheme.stack([], spacing: 5)
-    private let countLabel = ScrivUIKitTheme.label("", size: 10, color: ScrivUIKitTheme.secondary)
-    private let draftLabel = ScrivUIKitTheme.label("In-app only · Drafts are not sent", size: 10, color: ScrivUIKitTheme.secondary)
+    private let countLabel = ScrivUIKitTheme.label("", size: 11, color: ScrivUIKitTheme.secondary)
+    private let draftLabel = ScrivUIKitTheme.label("In-app only · Drafts are not sent.", size: 11, color: ScrivUIKitTheme.secondary)
     private let unavailable = ScrivUIKitTheme.stack([], spacing: 12)
     private let resolvedRow = ScrivUIKitTheme.stack([], axis: .horizontal, spacing: 10)
     private var composerContainer: UIView!
+    private var layoutStack: UIStackView!
     private var sendButton: UIButton!, attachButton: UIButton!, mentionsButton: UIButton!, activityButton: UIButton!, filterButton: UIButton!
     private var composerHeight: NSLayoutConstraint!
     private var onlyMentions = false
@@ -31,34 +32,46 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
     private var refreshTask: Task<Void, Never>?
     private var scrollAfterReload = false
 
-    init(store: WorkspaceStore) { super.init(store: store, scopeToProject: false); preferredContentSize = CGSize(width: 368, height: 515) }
+    init(store: WorkspaceStore) { super.init(store: store, scopeToProject: false); preferredContentSize = CGSize(width: 400, height: 560) }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError() }
     private var ready: Bool { store.account != nil && store.project.cloudProjectId != nil }
     private var mentionsOfMe: [DiscussionMessage] { guard let id = store.account?.id else { return [] }; return store.messages.filter { $0.mentionedUserIds.contains(id) } }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = ScrivUIKitTheme.panel; view.layer.cornerRadius = 18; view.layer.borderWidth = 0.5; view.layer.borderColor = ScrivUIKitTheme.hairline.cgColor
+        view.backgroundColor = ScrivUIKitTheme.panel; view.layer.cornerRadius = ScrivUIKitTheme.cardRadius; view.layer.borderWidth = 0.5; view.layer.borderColor = ScrivUIKitTheme.hairline.cgColor
         view.layer.shadowOpacity = 0
         activityButton = iconButton("Project activity", "bell") { [weak self] in self?.openActivity() }
         filterButton = iconButton("Show mentions of you", "at") { [weak self] in self?.onlyMentions.toggle(); self?.renderMessages() }
         let close = iconButton("Close discussion", "xmark") { [weak self] in self?.view.endEditing(true); self?.store.showDiscussion = false }
-        let header = ScrivUIKitTheme.stack([ScrivUIKitTheme.label("Discussion", size: 15, weight: .semibold, color: ScrivUIKitTheme.accent), UIView(), activityButton, filterButton, close], axis: .horizontal, spacing: 7); header.alignment = .center
+        let discussionIcon = UIImageView(image: UIImage(systemName: "bubble.left"))
+        discussionIcon.tintColor = ScrivUIKitTheme.accent; discussionIcon.contentMode = .scaleAspectFit
+        discussionIcon.widthAnchor.constraint(equalToConstant: 24).isActive = true
+        discussionIcon.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        let heading = ScrivUIKitTheme.label("Discussion", size: 22, weight: .semibold, color: ScrivUIKitTheme.ink, lines: 1)
+        heading.setContentCompressionResistancePriority(.required, for: .horizontal)
+        let header = ScrivUIKitTheme.stack([discussionIcon, heading, UIView(), activityButton, filterButton, close], axis: .horizontal, spacing: 9); header.alignment = .center
+        scope.heightAnchor.constraint(equalToConstant: 34).isActive = true
+        scope.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 13, weight: .medium)], for: .normal)
         scope.selectedSegmentIndex = store.discussionItemID == nil ? 0 : 1; scope.addTarget(self, action: #selector(scopeChanged), for: .valueChanged)
-        contextButton.titleLabel?.font = .systemFont(ofSize: 11, weight: .medium); contextButton.titleLabel?.lineBreakMode = .byTruncatingTail; contextButton.contentHorizontalAlignment = .leading; contextButton.showsMenuAsPrimaryAction = true
-        contextButton.backgroundColor = ScrivUIKitTheme.inset.withAlphaComponent(0.6); contextButton.layer.cornerRadius = 7; contextButton.contentEdgeInsets = UIEdgeInsets(top: 7, left: 9, bottom: 7, right: 9)
+        contextButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium); contextButton.setTitleColor(ScrivUIKitTheme.ink, for: .normal); contextButton.titleLabel?.lineBreakMode = .byTruncatingTail; contextButton.contentHorizontalAlignment = .leading; contextButton.showsMenuAsPrimaryAction = true
+        contextButton.contentEdgeInsets = .zero; contextButton.titleLabel?.numberOfLines = 1
         table.dataSource = self; table.delegate = self; table.separatorStyle = .none; table.backgroundColor = .clear; table.estimatedRowHeight = 110; table.rowHeight = UITableView.automaticDimension
-        table.register(DiscussionMessageCell.self, forCellReuseIdentifier: "message"); table.layer.cornerRadius = 11
+        table.register(DiscussionMessageCell.self, forCellReuseIdentifier: "message"); table.contentInset = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0); table.keyboardDismissMode = .interactive
         let messagesContainer = UIView(); messagesContainer.addSubview(table); table.scrivPinEdges(to: messagesContainer)
         messagesContainer.addSubview(unavailable); unavailable.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([unavailable.leadingAnchor.constraint(equalTo: messagesContainer.leadingAnchor, constant: 12), unavailable.trailingAnchor.constraint(equalTo: messagesContainer.trailingAnchor, constant: -12), unavailable.centerYAnchor.constraint(equalTo: messagesContainer.centerYAnchor)])
         composerContainer = makeComposer()
-        contextThumbnail.widthAnchor.constraint(equalToConstant: 65).isActive = true; contextThumbnail.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        contextThumbnail.clipsToBounds = true
+        let thumbnailWidth = contextThumbnail.widthAnchor.constraint(equalToConstant: 84)
+        // The image thumbnail is hidden for project/line contexts. Its preferred
+        // size must yield to UIStackView's zero-width hiding constraint.
+        thumbnailWidth.priority = .defaultHigh; thumbnailWidth.isActive = true
+        contextThumbnail.heightAnchor.constraint(equalToConstant: 56).isActive = true
+        contextThumbnail.clipsToBounds = true; contextThumbnail.layer.cornerRadius = 7
         let contextRow = ScrivUIKitTheme.stack([contextThumbnail, ScrivUIKitTheme.stack([contextButton, contextSubtitle], spacing: 3)], axis: .horizontal, spacing: 9); contextRow.alignment = .center
-        let contextCard = ScrivUIKitTheme.card(contextRow, padding: 10)
-        let root = ScrivUIKitTheme.stack([header, scope, contextCard, messagesContainer, resolvedRow, composerContainer], spacing: 10)
-        view.addSubview(root); root.scrivPinEdges(to: view, insets: NSDirectionalEdgeInsets(top: 18, leading: 16, bottom: 16, trailing: 16))
+        let contextCard = ScrivUIKitTheme.card(contextRow, padding: 11); contextCard.backgroundColor = ScrivUIKitTheme.inset.withAlphaComponent(0.55)
+        let root = ScrivUIKitTheme.stack([header, scope, contextCard, messagesContainer, resolvedRow, composerContainer], spacing: 14); layoutStack = root
+        view.addSubview(root); root.scrivPinEdges(to: view, insets: NSDirectionalEdgeInsets(top: 18, leading: 18, bottom: 16, trailing: 18))
         storeDidChange()
     }
     override func storeDidChange() {
@@ -79,12 +92,18 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
         contextSubtitle.text = "Comments stay with this " + (store.discussionItemID == nil ? "project." : itemKind + ".")
         contextThumbnail.isHidden = image == nil
         if let image { contextThumbnail.configure(url: store.assetURL(image), title: UIKitDiscussionPresentation.imageLabel(image, project: store.project), missingText: "Image unavailable") }
-        preferredContentSize = CGSize(width: 368, height: ready && store.messages.isEmpty ? 410 : 515)
+        preferredContentSize = CGSize(width: 400, height: ready && store.messages.isEmpty ? 440 : 560)
         activityButton.isEnabled = ready; activityButton.setImage(UIImage(systemName: store.unreadDiscussionMentionCount > 0 ? "bell.badge.fill" : "bell"), for: .normal)
         activityButton.accessibilityLabel = "Project activity, \(store.unreadDiscussionMentionCount) unread mentions"
         filterButton.isHidden = mentionsOfMe.isEmpty; filterButton.tintColor = onlyMentions ? ScrivUIKitTheme.accent : ScrivUIKitTheme.secondary
         filterButton.accessibilityLabel = "\(mentionsOfMe.count) messages mention you. " + (onlyMentions ? "Show all messages" : "Filter to your mentions")
-        unavailable.isHidden = ready; table.isHidden = !ready; composerContainer.isHidden = !ready; resolvedRow.isHidden = !ready || store.activeThread == nil || store.messages.isEmpty
+        unavailable.isHidden = ready; table.isHidden = !ready
+        // A hidden arranged composer would impose zero height while its editor
+        // and tool buttons retain fixed heights. Detach only presentation; the
+        // same text view and draft survive account/cloud availability changes.
+        if ready, composerContainer.superview == nil { layoutStack.addArrangedSubview(composerContainer) }
+        else if !ready, composerContainer.superview != nil { layoutStack.removeArrangedSubview(composerContainer); composerContainer.removeFromSuperview() }
+        resolvedRow.isHidden = !ready || store.activeThread == nil || store.messages.isEmpty
         if !ready { renderUnavailable() }
         renderMessages(); renderComposer(); renderResolution()
         let currentMemberScope = "\(store.navigationContext):\(store.account?.id ?? ""):\(store.project.cloudProjectId ?? "")"
@@ -112,23 +131,37 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
         for child in resolvedRow.arrangedSubviews { resolvedRow.removeArrangedSubview(child); child.removeFromSuperview() }
         guard ready, !store.messages.isEmpty, let thread = store.activeThread else { return }
         let key = store.discussionDraftKey, navigation = store.navigationContext
-        resolvedRow.addArrangedSubview(ScrivUIKitTheme.button(thread.resolved ? "Reopen conversation" : "Mark resolved", symbol: thread.resolved ? "arrow.uturn.backward" : "checkmark") { [weak self] in
+        let resolutionButton = ScrivUIKitTheme.button(thread.resolved ? "Reopen conversation" : "Mark resolved", symbol: thread.resolved ? "arrow.uturn.backward" : "circle") { [weak self] in
             guard let self, store.navigationContext == navigation, store.discussionDraftKey == key, store.activeThread?.id == thread.id else { return }; store.resolveThread()
-        }); resolvedRow.addArrangedSubview(UIView())
-        if thread.resolved { resolvedRow.addArrangedSubview(ScrivUIKitTheme.label("Resolved", size: 10, color: .systemGreen)) }
+        }
+        resolutionButton.configuration?.baseBackgroundColor = .clear
+        resolutionButton.configuration?.baseForegroundColor = thread.resolved ? ScrivUIKitTheme.accent : ScrivUIKitTheme.secondary
+        resolutionButton.configuration?.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 0, bottom: 6, trailing: 0)
+        resolutionButton.configuration?.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in
+            var attributes = attributes; attributes.font = UIFont.systemFont(ofSize: 15); return attributes
+        }
+        resolutionButton.titleLabel?.numberOfLines = 1
+        resolutionButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+        resolvedRow.addArrangedSubview(resolutionButton); resolvedRow.addArrangedSubview(UIView())
+        if thread.resolved { resolvedRow.addArrangedSubview(ScrivUIKitTheme.label("Resolved", size: 12, color: .systemGreen)) }
     }
     private func makeComposer() -> UIView {
-        composer.delegate = self; composer.font = .systemFont(ofSize: 13); composer.backgroundColor = .clear; composer.textContainerInset = .zero; composer.textContainer.lineFragmentPadding = 0
+        composer.delegate = self; composer.font = .systemFont(ofSize: 16); composer.textColor = ScrivUIKitTheme.ink; composer.backgroundColor = .clear; composer.textContainerInset = .zero; composer.textContainer.lineFragmentPadding = 0
         composer.addSubview(placeholder); placeholder.translatesAutoresizingMaskIntoConstraints = false; placeholder.isUserInteractionEnabled = false; placeholder.isAccessibilityElement = false
         NSLayoutConstraint.activate([placeholder.leadingAnchor.constraint(equalTo: composer.leadingAnchor), placeholder.topAnchor.constraint(equalTo: composer.topAnchor), placeholder.trailingAnchor.constraint(lessThanOrEqualTo: composer.trailingAnchor)])
         composer.accessibilityLabel = "Discussion draft, not sent"; composer.sendMessage = { [weak self] in self?.send() }
         composerHeight = composer.heightAnchor.constraint(equalToConstant: 42); composerHeight.isActive = true
         attachButton = iconButton("Attach a project item", "paperclip") {}; attachButton.showsMenuAsPrimaryAction = true
         mentionsButton = iconButton("Mention a project member", "at") { [weak self] in self?.openMentions() }
-        sendButton = iconButton("Send message", "arrow.up") { [weak self] in self?.send() }; sendButton.tintColor = .white; sendButton.backgroundColor = ScrivUIKitTheme.accent; sendButton.layer.cornerRadius = 14
-        let tools = ScrivUIKitTheme.stack([attachButton, mentionsButton, UIView(), sendButton], axis: .horizontal, spacing: 12)
-        let card = ScrivUIKitTheme.card(ScrivUIKitTheme.stack([composer, tools], spacing: 8), padding: 12)
-        return ScrivUIKitTheme.stack([composerMetadata, card, ScrivUIKitTheme.stack([draftLabel, UIView(), countLabel], axis: .horizontal, spacing: 8)], spacing: 7)
+        sendButton = iconButton("Send message", "arrow.up") { [weak self] in self?.send() }; sendButton.tintColor = .white; sendButton.backgroundColor = ScrivUIKitTheme.accent; sendButton.layer.cornerRadius = 18
+        let separator = UIView(); separator.backgroundColor = ScrivUIKitTheme.hairline
+        separator.widthAnchor.constraint(equalToConstant: 1).isActive = true; separator.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        let tools = ScrivUIKitTheme.stack([attachButton, separator, mentionsButton, UIView(), sendButton], axis: .horizontal, spacing: 10); tools.alignment = .center
+        let card = ScrivUIKitTheme.card(ScrivUIKitTheme.stack([composerMetadata, composer, tools], spacing: 8), padding: 12)
+        card.backgroundColor = ScrivUIKitTheme.inset.withAlphaComponent(0.35)
+        draftLabel.textAlignment = .right
+        let footer = ScrivUIKitTheme.stack([UIView(), draftLabel, countLabel], axis: .horizontal, spacing: 8)
+        return ScrivUIKitTheme.stack([card, footer], spacing: 8)
     }
     private func renderComposer() {
         if !composer.text.utf16.elementsEqual(store.discussionDraft.utf16), composer.markedTextRange == nil {
@@ -140,24 +173,26 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
         let key = store.discussionDraftKey, navigation = store.navigationContext
         if let replyID = store.discussionReplyToID, let message = store.messages.first(where: { $0.id == replyID }) {
             let remove = iconButton("Cancel reply", "xmark") { [weak self] in guard let self, store.discussionDraftKey == key, store.navigationContext == navigation else { return }; store.discussionReplyToID = nil }
-            composerMetadata.addArrangedSubview(ScrivUIKitTheme.stack([ScrivUIKitTheme.label("Replying to \(message.name ?? "editor")", size: 10, color: ScrivUIKitTheme.secondary), UIView(), remove], axis: .horizontal, spacing: 8))
+            composerMetadata.addArrangedSubview(ScrivUIKitTheme.stack([ScrivUIKitTheme.label("Replying to \(message.name ?? "editor")", size: 11, color: ScrivUIKitTheme.secondary), UIView(), remove], axis: .horizontal, spacing: 8))
         }
         if !store.discussionMentionedUserIDs.isEmpty {
             let chips = DiscussionFlowView()
             for id in store.discussionMentionedUserIDs {
                 let chip = ScrivUIKitTheme.button("@" + mentionName(id), symbol: "xmark") { [weak self] in guard let self, store.discussionDraftKey == key, store.navigationContext == navigation else { return }; store.removeDiscussionMention(id) }
-                chip.configuration?.contentInsets = NSDirectionalEdgeInsets(top: 3, leading: 7, bottom: 3, trailing: 7); chip.titleLabel?.font = .systemFont(ofSize: 10); chip.accessibilityLabel = "Remove mention of " + mentionName(id); chips.addChip(chip)
+                chip.configuration?.contentInsets = NSDirectionalEdgeInsets(top: 3, leading: 7, bottom: 3, trailing: 7); chip.configuration?.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in
+                    var attributes = attributes; attributes.font = UIFont.systemFont(ofSize: 13, weight: .medium); return attributes
+                }; chip.accessibilityLabel = "Remove mention of " + mentionName(id); chips.addChip(chip)
             }
             composerMetadata.addArrangedSubview(chips)
         }
         if !store.discussionAttachments.isEmpty {
             let clear = ScrivUIKitTheme.button("Clear") { [weak self] in guard let self, store.discussionDraftKey == key, store.navigationContext == navigation else { return }; store.discussionAttachments = [] }
-            composerMetadata.addArrangedSubview(ScrivUIKitTheme.stack([ScrivUIKitTheme.label("\(store.discussionAttachments.count) attached item\(store.discussionAttachments.count == 1 ? "" : "s")", size: 10, color: ScrivUIKitTheme.secondary), UIView(), clear], axis: .horizontal, spacing: 8))
+            composerMetadata.addArrangedSubview(ScrivUIKitTheme.stack([ScrivUIKitTheme.label("\(store.discussionAttachments.count) attached item\(store.discussionAttachments.count == 1 ? "" : "s")", size: 11, color: ScrivUIKitTheme.secondary), UIView(), clear], axis: .horizontal, spacing: 8))
         }
         composerMetadata.isHidden = composerMetadata.arrangedSubviews.isEmpty
         attachButton.menu = attachmentMenu(); attachButton.isEnabled = store.discussionAttachments.count < 8
         placeholder.isHidden = !composer.text.isEmpty
-        draftLabel.text = store.discussionDraft.isEmpty ? "In-app only · Drafts are not sent" : "Draft — not sent"
+        draftLabel.text = store.discussionDraft.isEmpty ? "In-app only · Drafts are not sent." : "Draft — not sent"
         let length = store.discussionDraft.utf16.count
         countLabel.text = length > 7500 ? "\(length) / 8,000" : ""; countLabel.textColor = length > 8000 ? .systemRed : ScrivUIKitTheme.secondary
         sendButton.isEnabled = ready && !store.isSendingDiscussion && !store.discussionLoading && !store.discussionDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && length <= 8000
@@ -242,12 +277,13 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
     }
     private func iconButton(_ title: String, _ symbol: String, action: @escaping () -> Void) -> UIButton {
         let button = UIButton(type: .system); button.setImage(UIImage(systemName: symbol), for: .normal); button.tintColor = ScrivUIKitTheme.accent; button.accessibilityLabel = title
-        button.widthAnchor.constraint(equalToConstant: 28).isActive = true; button.heightAnchor.constraint(equalToConstant: 28).isActive = true; button.addAction(UIAction { _ in action() }, for: .touchUpInside); return button
+        let width = button.widthAnchor.constraint(equalToConstant: 36); width.priority = .defaultHigh; width.isActive = true
+        button.heightAnchor.constraint(equalToConstant: 36).isActive = true; button.addAction(UIAction { _ in action() }, for: .touchUpInside); return button
     }
     private func emptyConversation() -> UIView {
-        let icon = UIImageView(image: UIImage(systemName: "bubble.left")); icon.tintColor = ScrivUIKitTheme.secondary; icon.contentMode = .scaleAspectFit; icon.heightAnchor.constraint(equalToConstant: 28).isActive = true
-        let title = ScrivUIKitTheme.label(onlyMentions ? "No mentions here" : "No comments yet", size: 13, weight: .semibold); title.textAlignment = .center
-        let detail = ScrivUIKitTheme.label(onlyMentions ? "Messages mentioning you will appear here." : "Start a conversation about this " + (store.discussionItemID == nil ? "project." : "item."), size: 11, color: ScrivUIKitTheme.secondary); detail.textAlignment = .center
+        let icon = UIImageView(image: UIImage(systemName: "bubble.left")); icon.tintColor = ScrivUIKitTheme.secondary; icon.contentMode = .scaleAspectFit; icon.heightAnchor.constraint(equalToConstant: 32).isActive = true
+        let title = ScrivUIKitTheme.label(onlyMentions ? "No mentions here" : "No comments yet", size: 15, weight: .semibold); title.textAlignment = .center
+        let detail = ScrivUIKitTheme.label(onlyMentions ? "Messages mentioning you will appear here." : "Start a conversation about this " + (store.discussionItemID == nil ? "project." : "item."), size: 12, color: ScrivUIKitTheme.secondary); detail.textAlignment = .center
         let stack = ScrivUIKitTheme.stack([icon, title, detail], spacing: 7), container = UIView(); container.addSubview(stack); stack.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([stack.centerYAnchor.constraint(equalTo: container.centerYAnchor), stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 12), stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -12)])
         return container

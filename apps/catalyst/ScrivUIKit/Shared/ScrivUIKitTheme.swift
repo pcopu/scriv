@@ -4,17 +4,19 @@ import UIKit
 /// Domain state and actions live in WorkspaceStore, never in these factories.
 enum ScrivUIKitTheme {
     static let accent = UIColor(red: 0.02, green: 0.36, blue: 0.98, alpha: 1)
-    static let ink = UIColor.label
-    static let secondary = UIColor.secondaryLabel
-    static let hairline = UIColor.separator.withAlphaComponent(0.45)
-    static let canvas = UIColor { traits in
-        traits.userInterfaceStyle == .dark
-            ? UIColor(red: 0.10, green: 0.13, blue: 0.18, alpha: 1)
-            : UIColor(red: 0.91, green: 0.95, blue: 0.98, alpha: 1)
+    // The approved workspace is light, with navy type rather than UIKit's black
+    // defaults. Explicit dark surfaces (the refined sign-in sheet) retain their
+    // own readable palette; the workspace window chooses light at launch.
+    static let ink = adaptive(light: "111A3F", dark: "F2F5FC")
+    static let secondary = adaptive(light: "566887", dark: "B6C2D7")
+    static let hairline = adaptive(light: "D7E2EE", dark: "3A4658")
+    static let canvas = adaptive(light: "E6F0F9", dark: "151B25")
+    static let panel = adaptive(light: "FFFFFF", dark: "222A37")
+    static let inset = adaptive(light: "EDF2F9", dark: "303A4B")
+    static let chrome = adaptive(light: "EAF3FB", dark: "1A2230")
+    private static func adaptive(light: String, dark: String) -> UIColor {
+        UIColor { traits in color(traits.userInterfaceStyle == .dark ? dark : light) }
     }
-    static let panel = UIColor { $0.userInterfaceStyle == .dark ? .secondarySystemBackground : UIColor(white: 0.998, alpha: 1) }
-    static let inset = UIColor { $0.userInterfaceStyle == .dark ? .tertiarySystemBackground : UIColor(red: 0.935, green: 0.950, blue: 0.975, alpha: 1) }
-    static let chrome = UIColor { $0.userInterfaceStyle == .dark ? .systemBackground : UIColor(red: 0.90, green: 0.95, blue: 0.985, alpha: 1) }
     static func color(_ hex: String) -> UIColor {
         let names = ["blue": "1768E8", "purple": "A350EA", "coral": "F47A63", "teal": "16B9B7", "orange": "E6A33A", "green": "24A878", "pink": "DD6DB3"]
         let raw = (names[hex.lowercased()] ?? hex).trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -25,7 +27,7 @@ enum ScrivUIKitTheme {
     static let controlRadius: CGFloat = 9
 
     static func label(_ text: String, size: CGFloat = 13, weight: UIFont.Weight = .regular,
-                      color: UIColor = .label, lines: Int = 0) -> UILabel {
+                      color: UIColor = ScrivUIKitTheme.ink, lines: Int = 0) -> UILabel {
         let view = UILabel()
         view.text = text; view.font = .systemFont(ofSize: size, weight: weight)
         view.textColor = color; view.numberOfLines = lines; view.lineBreakMode = .byWordWrapping
@@ -47,9 +49,16 @@ enum ScrivUIKitTheme {
         configuration.baseForegroundColor = primary ? .white : ink
         configuration.cornerStyle = .fixed
         configuration.background.cornerRadius = controlRadius
+        configuration.titleLineBreakMode = .byTruncatingTail
+        configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = .systemFont(ofSize: 13, weight: .medium)
+            return outgoing
+        }
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 15, bottom: 10, trailing: 15)
         let button = UIButton(configuration: configuration, primaryAction: UIAction { _ in action() })
-        button.titleLabel?.font = .systemFont(ofSize: 13, weight: .medium)
+        button.titleLabel?.numberOfLines = 1
+        button.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         button.accessibilityLabel = title
         return button
     }
