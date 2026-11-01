@@ -26,6 +26,23 @@ final class WorkspaceDurabilityTests: XCTestCase {
         let canonical = try await repository.load(at:package)
         XCTAssertEqual(canonical,store.project)
     }
+    func testConsecutiveEditsSaveWithoutReplayingHistory() async throws {
+        let store = try await isolatedStore()
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at:package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let start = store.project.revision
+        for index in 1...12 { store.setProjectTitle("Edit \(index)") }
+        await store.flushPendingSaves()
+        let journal = try PendingProjectSaveJournal(root:package.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("PendingProjectSaves"))
+        XCTAssertTrue(try journal.load(package:package).isEmpty)
+        let repository = try ProjectRepository(root:package.deletingLastPathComponent())
+        let canonical = try await repository.load(at:package)
+        XCTAssertEqual(canonical,store.project)
+        let revisions = Set(try await repository.history(at:package).map(\.revision))
+        XCTAssertTrue(((start + 1)...store.project.revision).allSatisfy(revisions.contains), "Every accepted edit keeps its history snapshot")
+        XCTAssertEqual(store.project.revision,start + 12)
+        XCTAssertNil(store.errorMessage)
+    }
     func testStorageFailureDoesNotAcceptMutationOrUndoEntry() async throws {
         let store = try await isolatedStore(), before = store.project
         let package = try XCTUnwrap(store.projectURL), root = package.deletingLastPathComponent().deletingLastPathComponent()

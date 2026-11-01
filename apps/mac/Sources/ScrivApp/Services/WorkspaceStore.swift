@@ -744,7 +744,11 @@ final class WorkspaceStore: ObservableObject {
         let canonical: ScrivProject?
         if FileManager.default.fileExists(atPath:package.appendingPathComponent("project.json").path) { canonical = try await repo().load(at:package) }
         else { canonical = nil }
-        let accepted = canonical == nil ? [] : try await repo().history(at:package).map(\.snapshot)
+        // History only proves records the package already contains (revision at
+        // or below the saved one). An ordinary save continues from the saved
+        // revision and needs none; loading every snapshot made each save O(history).
+        let needsHistory = canonical.map { saved in records.contains { $0.after.revision <= saved.revision } } ?? false
+        let accepted = needsHistory ? try await repo().history(at:package).map(\.snapshot) : []
         let plan = try journal.planRecovery(scope:first.scope,canonical:canonical,acceptedHistory:accepted)
         for record in plan.replay where record.after.revision <= revision {
             guard pendingScopeIsAuthorized(record.scope) else { throw ScrivError.conflict("The account changed during recovery. Remaining records were retained.") }
