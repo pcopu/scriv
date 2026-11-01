@@ -164,4 +164,76 @@ final class WorkspaceEndToEndTests: XCTestCase {
         await store.flushPendingSaves()
         XCTAssertNil(store.errorMessage)
     }
+
+    /// Presents real sheets from the workspace the way the app does and operates
+    /// their controls, then checks the store and saved package.
+    func testSheetsAreOperableThroughTheirControls() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 1448, height: 900); window.overrideUserInterfaceStyle = .light
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { if workspace.presentedViewController != nil { workspace.dismiss(animated: false) }; window.isHidden = true }
+        let attached = await until { workspace.view.window != nil }
+        XCTAssertTrue(attached)
+        func present(_ route: ScrivUIKitRoute) async throws -> UIViewController {
+            ScrivUIKitRouter.shared.present(route, from: workspace, store: store)
+            let shown = await until { workspace.presentedViewController?.viewIfLoaded?.window != nil && workspace.presentedViewController?.isBeingPresented == false }
+            XCTAssertTrue(shown, "\(route) sheet appears")
+            return try XCTUnwrap(workspace.presentedViewController)
+        }
+        func dismiss() async {
+            workspace.dismiss(animated: false)
+            _ = await until { workspace.presentedViewController == nil }
+        }
+
+        // Settings: the follow-playback switch drives the store.
+        let settings = try await present(.settings)
+        let follow = try XCTUnwrap(views(UISwitch.self, in: settings.view).first { $0.window != nil })
+        let wasFollowing = store.followPlayback
+        follow.setOn(!wasFollowing, animated: false); follow.sendActions(for: .valueChanged)
+        XCTAssertEqual(store.followPlayback, !wasFollowing)
+        await dismiss()
+
+        // Character editor: type a name and save a new character.
+        let editor = try await present(.characterEditor(characterID: nil))
+        let field = try XCTUnwrap(views(UITextField.self, in: editor.view).first { $0.placeholder == "Name" })
+        field.text = "Zelda Quinn"; field.sendActions(for: .editingChanged)
+        let save = try button(labelled: "Save character", in: editor.view)
+        let enabled = await until { save.isEnabled }
+        XCTAssertTrue(enabled, "Save enables once a name is typed")
+        save.sendActions(for: .primaryActionTriggered)
+        let created = await until { store.project.characters.contains { $0.name == "Zelda Quinn" } }
+        XCTAssertTrue(created, "Saving adds the character")
+        _ = await until { workspace.presentedViewController == nil }
+        if workspace.presentedViewController != nil { await dismiss() }
+
+        // Word timing: edit the selected word's end time and save.
+        let entry = try XCTUnwrap(store.sceneEntries.first { $0.kind == .dialogue && $0.words.count > 1 })
+        let first = entry.words[0]
+        let timing = try await present(.wordTiming(entryID: entry.id, wordIDs: [first.id]))
+        let saveTiming = try XCTUnwrap(views(UIButton.self, in: timing.view).first { $0.accessibilityIdentifier == "word-timing-save" })
+        let fields = views(UITextField.self, in: timing.view).filter { $0.window != nil }.sorted { $0.convert($0.bounds, to: nil).minX < $1.convert($1.bounds, to: nil).minX }
+        XCTAssertEqual(fields.count, 2, "Start and end fields")
+        let newEnd = max(first.startMs + 50, first.endMs - 100)
+        fields[1].text = String(format: "%.3f", Double(newEnd) / 1000); fields[1].sendActions(for: .editingChanged)
+        let ready = await until { saveTiming.isEnabled }
+        XCTAssertTrue(ready, "Save timing enables after an edit once the line is leased")
+        saveTiming.sendActions(for: .primaryActionTriggered)
+        let retimed = await until { store.project.entries.first { $0.id == entry.id }?.words.first?.endMs == newEnd }
+        XCTAssertTrue(retimed, "Saving applies the new word end time")
+        if workspace.presentedViewController != nil { await dismiss() }
+
+        await store.flushPendingSaves()
+        let repository = try ProjectRepository(root: package.deletingLastPathComponent())
+        let saved = try await repository.load(at: package)
+        XCTAssertTrue(saved.characters.contains { $0.name == "Zelda Quinn" })
+        XCTAssertEqual(saved.entries.first { $0.id == entry.id }?.words.first?.endMs, newEnd)
+        XCTAssertNil(store.errorMessage)
+    }
 }
