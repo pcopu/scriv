@@ -97,4 +97,71 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertTrue(try journal.load(package: package).isEmpty)
         XCTAssertNil(store.errorMessage)
     }
+
+    func testAddUndoRedoCharactersAndStoryboardThroughRealControls() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 1448, height: 900); window.overrideUserInterfaceStyle = .light
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        let ready = await until { !self.views(ScriptEntryRow.self, in: workspace.view).isEmpty }
+        XCTAssertTrue(ready)
+
+        // Add a dialogue line from the add bar; it opens ready for typing.
+        let before = store.sceneEntries.count
+        try button(labelled: "Dialogue", in: workspace.view).sendActions(for: .primaryActionTriggered)
+        XCTAssertEqual(store.sceneEntries.count, before + 1)
+        let addedID = try XCTUnwrap(store.selectedEntryID)
+        let opened = await until { self.views(ScriptEntryRow.self, in: workspace.view).first { $0.entryID == addedID }.map { !$0.editor.isHidden && $0.editor.isFirstResponder } ?? false }
+        XCTAssertTrue(opened, "A new line opens in its editor")
+        let row = try XCTUnwrap(views(ScriptEntryRow.self, in: workspace.view).first { $0.entryID == addedID })
+        row.editor.selectedRange = NSRange(location: 0, length: (row.editor.text as NSString).length)
+        row.editor.insertText("Hello there")
+        row.editor.finishEditing?()
+        let typed = await until { store.project.entries.first { $0.id == addedID }?.text == "Hello there" }
+        XCTAssertTrue(typed)
+
+        // Undo/redo through the workspace's own key commands (Cmd-Z / Shift-Cmd-Z).
+        let commands = try XCTUnwrap(workspace.keyCommands)
+        let undo = try XCTUnwrap(commands.first { $0.input == "z" && $0.modifierFlags == .command }?.action)
+        let redo = try XCTUnwrap(commands.first { $0.input == "z" && $0.modifierFlags == [.command, .shift] }?.action)
+        let idle = await until { !ScrivKeyboardTextContext.state(for: ScrivKeyboardTextContext.firstResponder()).editingText }
+        XCTAssertTrue(idle)
+        XCTAssertTrue(workspace.canPerformAction(undo, withSender: nil))
+        _ = workspace.perform(undo)
+        XCTAssertNotEqual(store.project.entries.first { $0.id == addedID }?.text, "Hello there", "Undo reverts the typed text")
+        _ = workspace.perform(redo)
+        XCTAssertEqual(store.project.entries.first { $0.id == addedID }?.text, "Hello there", "Redo restores it")
+
+        // Characters tab: choosing a character in the ribbon selects it.
+        let tabs = try XCTUnwrap(views(UISegmentedControl.self, in: workspace.view).first { $0.accessibilityIdentifier == "workspace-tabs" })
+        tabs.selectedSegmentIndex = try XCTUnwrap(WorkspaceTab.allCases.firstIndex(of: .characters)); tabs.sendActions(for: .valueChanged)
+        let target = try XCTUnwrap(store.project.characters.last)
+        let ribbonReady = await until { self.views(UIButton.self, in: workspace.view).contains { $0.accessibilityLabel == target.name && $0.window != nil } }
+        XCTAssertTrue(ribbonReady)
+        try button(labelled: target.name, in: workspace.view).sendActions(for: .touchUpInside)
+        XCTAssertEqual(store.selectedCharacterID, target.id)
+
+        // Storyboard: clicking a picture card selects that placement.
+        tabs.selectedSegmentIndex = try XCTUnwrap(WorkspaceTab.allCases.firstIndex(of: .storyboard)); tabs.sendActions(for: .valueChanged)
+        let cue = try XCTUnwrap(store.sceneCues.dropFirst().first)
+        let label = cue.label.isEmpty ? "Picture at " + ScrivFormat.time(cue.startMs) : cue.label
+        let cardReady = await until { self.views(UIView.self, in: workspace.view).contains { $0.accessibilityLabel == label && $0.window != nil } }
+        XCTAssertTrue(cardReady)
+        let picture = try XCTUnwrap(views(UIView.self, in: workspace.view).first { $0.accessibilityLabel == label && $0.window != nil })
+        let tap = try XCTUnwrap(picture.gestureRecognizers?.first { $0 is UITapGestureRecognizer })
+        let card = try XCTUnwrap(sequence(first: picture as UIView, next: { $0.superview }).first { $0.responds(to: Selector(("selectPicture"))) })
+        XCTAssertTrue(tap.isEnabled)
+        _ = card.perform(Selector(("selectPicture")))
+        XCTAssertEqual(store.selectedCueID, cue.id)
+
+        await store.flushPendingSaves()
+        XCTAssertNil(store.errorMessage)
+    }
 }
