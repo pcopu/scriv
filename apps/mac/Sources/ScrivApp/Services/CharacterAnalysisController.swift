@@ -199,7 +199,9 @@ enum CharacterPortraitCache {
     static func thumbnail(source: URL, sha256: String, region: NormalizedCharacterRegion) async throws -> URL {
         guard region.isValid else { throw ScrivError.invalid("The portrait crop is outside this image.") }
         return try await Task.detached(priority:.utility) {
-            let key = ScrivDigest.sha256(try JSONEncoder().encode(CharacterPortraitRegion(imageID:"",imageSHA256:sha256,region:region)))
+            // A cache key must be deterministic: JSONEncoder's key order is not
+            // guaranteed without .sortedKeys, so identical crops missed the cache.
+            let key = ScrivDigest.sha256(try ScrivJSON.encoder.encode(CharacterPortraitRegion(imageID:"",imageSHA256:sha256,region:region)))
             let root = FileManager.default.urls(for:.cachesDirectory,in:.userDomainMask)[0].appendingPathComponent("Scriv/CharacterPortraits",isDirectory:true)
             try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
             let output = root.appendingPathComponent(key).appendingPathExtension("png")
