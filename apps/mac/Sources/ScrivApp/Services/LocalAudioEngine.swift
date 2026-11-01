@@ -82,10 +82,13 @@ final class LocalAudioEngine {
     private var loadIDs: [String: UUID] = [:]
     private var pendingKeys: [String: String] = [:]
     private var failed: Set<String> = []
+    private var standardizedPackage: (url: URL, path: String)?
 
     func synchronize(project: ScrivProject, sceneId: String, playheadMs: Int, isPlaying: Bool, package: URL?) {
         guard let package else { stop(); return }
-        let nextContext = project.id + "|" + sceneId + "|" + package.standardizedFileURL.path
+        // Runs every playback tick; standardize the package path only when it changes.
+        if package != standardizedPackage?.url { standardizedPackage = (package, package.standardizedFileURL.path) }
+        let nextContext = project.id + "|" + sceneId + "|" + (standardizedPackage?.path ?? "")
         if context != nextContext { stop(); context = nextContext }
         // An explicit new play attempt may retry a previously missing/repaired file.
         if isPlaying && request?.isPlaying != true { failed.removeAll() }

@@ -270,13 +270,24 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
     }
 }
 
+@MainActor
 enum ScriptAttributedText {
+    /// Scanning a line for every character name is the costliest part of
+    /// rebuilding it, and playback rebuilds the line holding the current word
+    /// each time that word moves. Remember the last result per line text.
+    private static var suggestionCache: [String: (characters: [ScriptCharacter], links: [CharacterTextLink])] = [:]
+    private static func suggestions(_ text: String, _ characters: [ScriptCharacter]) -> [CharacterTextLink] {
+        if let hit = suggestionCache[text], hit.characters == characters { return hit.links }
+        let links = CharacterMentions.suggestions(in: text, characters: characters)
+        if suggestionCache.count > 2048 { suggestionCache.removeAll(keepingCapacity: true) }
+        suggestionCache[text] = (characters, links); return links
+    }
     static func make(entry: ScriptEntry, project: ScrivProject, font: UIFont, color: UIColor, currentWordID: String?, peers: [PresencePeer]) -> NSAttributedString {
         let paragraph = NSMutableParagraphStyle(); paragraph.lineSpacing = 3; paragraph.lineBreakMode = .byWordWrapping
         let value = NSMutableAttributedString(string: entry.text.isEmpty ? (entry.kind == .direction ? "Describe the action…" : "Write dialogue…") : entry.text,
                                               attributes: [.font: font, .foregroundColor: entry.text.isEmpty ? ScrivUIKitTheme.secondary : color, .paragraphStyle: paragraph])
         guard !entry.text.isEmpty else { return value }
-        let links = entry.characterLinks ?? CharacterMentions.suggestions(in: entry.text, characters: project.characters)
+        let links = entry.characterLinks ?? suggestions(entry.text, project.characters)
         for link in links where !link.isConfirmed && CharacterMentions.matchesSource(link, in: entry.text) {
             value.addAttribute(.backgroundColor, value: UIColor.systemOrange.withAlphaComponent(0.09), range: link.range)
         }
