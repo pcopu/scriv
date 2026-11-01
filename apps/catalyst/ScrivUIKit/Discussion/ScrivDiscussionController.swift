@@ -116,12 +116,17 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
         super.viewDidLayoutSubviews(); updateComposerHeight()
         if scrollAfterReload { scrollAfterReload = false; scrollToCurrentMessage() }
     }
+    private var renderedCellInputs: [AnyHashable]?
     private func renderMessages() {
         visibleMessages = onlyMentions ? mentionsOfMe : store.messages
         let ids = visibleMessages.map(\.id)
         scrollAfterReload = ids != lastMessageIDs || store.discussionFocusedMessageID != lastFocusedID
         lastMessageIDs = ids; lastFocusedID = store.discussionFocusedMessageID
-        table.reloadData()
+        // Reloading rebuilds every message cell; skip it when nothing the cells
+        // show has changed (e.g. on playback ticks while the panel is open).
+        let cellInputs: [AnyHashable] = [visibleMessages, store.discussionFocusedMessageID, store.account?.id, store.discussionMembers, store.discussionDraftKey, store.navigationContext,
+                                         store.project.images, store.project.cues, store.project.characters, store.project.entries, store.peerTransferStatus]
+        if cellInputs != renderedCellInputs { renderedCellInputs = cellInputs; table.reloadData() }
         if store.discussionLoading { table.backgroundView = centeredMessage("Loading conversation…") }
         else if visibleMessages.isEmpty { table.backgroundView = emptyConversation() }
         else { table.backgroundView = nil }
