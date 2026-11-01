@@ -522,7 +522,8 @@ final class WorkspaceStore: ObservableObject {
     var unreadDiscussionMentionCount: Int { mentionMessages.filter { !readMentionIDs.contains($0.id) }.count }
     var discussionThreads: [DiscussionThread] { cloud.threads.values.sorted { ($0.createdAt ?? 0,$0.id) > ($1.createdAt ?? 0,$1.id) } }
     @Published var peerTransferStatus = "Peer transfer stopped"
-    @Published var audioStatus = "Local audio — import speech or sound to hear playback"
+    static let idleAudioStatus = "Local audio — import speech or sound to hear playback"
+    @Published var audioStatus = WorkspaceStore.idleAudioStatus
     private let localAudio = LocalAudioEngine()
     private var lastAudioVolumes: [String:Double] = [:]
     let peerMedia = PeerMediaBridge()

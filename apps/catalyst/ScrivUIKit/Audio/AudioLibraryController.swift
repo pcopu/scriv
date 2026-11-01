@@ -28,6 +28,12 @@ final class AudioLibraryController: ScrivScreenController, UIDocumentPickerDeleg
         configuration.image = UIImage(systemName: "chevron.down"); configuration.imagePlacement = .trailing; configuration.imagePadding = 10
         configuration.baseBackgroundColor = ScrivUIKitTheme.accent; configuration.cornerStyle = .medium
         configuration.titleLineBreakMode = .byTruncatingTail
+        // Match every other app button; without this the title used the large
+        // system default and dwarfed the rest of the sheet.
+        configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming; outgoing.font = .systemFont(ofSize: 13, weight: .semibold); return outgoing
+        }
+        configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 11, weight: .semibold)
         configuration.contentInsets = .init(top: 11, leading: 16, bottom: 11, trailing: 16)
         importButton.configuration = configuration; importButton.showsMenuAsPrimaryAction = true
         importButton.accessibilityIdentifier = "audio-import-menu"
@@ -90,7 +96,9 @@ final class AudioLibraryController: ScrivScreenController, UIDocumentPickerDeleg
                 playheadMs: store.playheadMs, isPlaying: store.isPlaying)
         }
         empty.isHidden = !clips.isEmpty; cards.isHidden = clips.isEmpty
-        statusLabel.text = store.audioStatus; statusLabel.isHidden = store.audioStatus.isEmpty
+        // The idle status only repeats the empty-state notice above it.
+        let idle = clips.isEmpty && store.audioStatus == WorkspaceStore.idleAudioStatus
+        statusLabel.text = store.audioStatus; statusLabel.isHidden = store.audioStatus.isEmpty || idle
         importButton.isEnabled = !isImporting
         var actions: [UIAction] = [UIAction(title: "Import scene audio…", image: UIImage(systemName: "waveform")) { [weak self] _ in self?.chooseAudio(entryID: nil) }]
         if let entry = store.selectedEntry, entry.sceneId == sceneID, entry.kind == .dialogue {
