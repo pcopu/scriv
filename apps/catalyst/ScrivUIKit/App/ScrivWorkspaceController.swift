@@ -5,7 +5,14 @@ import ScrivCore
 final class ScrivWorkspaceController: ScrivScreenController {
     private let chrome = ScrivWorkspaceHeader(frame: .zero)
     private let content = UIStackView()
-    private let contentContainer = UIView()
+    /// Reports its own layout so the stack/side-by-side decision uses this
+    /// view's final width; the controller's viewDidLayoutSubviews can run before
+    /// it is resized, leaving two crushed panels after the window narrows.
+    private final class LayoutReportingView: UIView {
+        var onLayout: (() -> Void)?
+        override func layoutSubviews() { super.layoutSubviews(); onLayout?() }
+    }
+    private let contentContainer = LayoutReportingView()
     private let workspaceBody = UIStackView()
     private let footer = UIStackView()
     private var discussionDock: UIView?
@@ -27,6 +34,7 @@ final class ScrivWorkspaceController: ScrivScreenController {
         configureChrome()
         content.axis = .horizontal; content.spacing = ScrivWorkspaceLayout.panelGap; content.alignment = .fill
         content.scrivPinEdges(to: contentContainer)
+        contentContainer.onLayout = { [weak self] in self?.updatePanelLayout() }
         footer.axis = .vertical; footer.spacing = 5; footer.addArrangedSubview(statusLabel)
         workspaceBody.axis = .horizontal; workspaceBody.spacing = ScrivWorkspaceLayout.panelGap; workspaceBody.alignment = .fill
         workspaceBody.addArrangedSubview(contentContainer)
