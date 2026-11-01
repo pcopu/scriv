@@ -48,7 +48,9 @@ class ScrivScreenController: UIViewController {
         guard !refreshQueued else { return }; refreshQueued = true
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }; self.refreshQueued = false
-            if self.isViewLoaded { self.storeDidChange() }
+            // Screens on another tab are cached but off screen; they refresh in
+            // viewWillAppear when shown, so don't render them on every change.
+            if self.isViewLoaded, self.view.window != nil { self.storeDidChange() }
         }
     }
 }
