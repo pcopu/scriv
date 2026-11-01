@@ -66,6 +66,15 @@ final class LocalAudioEngine {
         let package: URL
     }
     private var request: Request?
+    /// Placements depend only on clips, assets, entry timing and scene; playback
+    /// ticks reuse them instead of recomputing (and re-sorting) every 16 ms.
+    private var placementCache: (sceneId: String, clips: [AudioClip], assets: [AudioAsset], entries: [ScriptEntry], value: [AudioPlacement])?
+    private func placements(_ project: ScrivProject, sceneId: String) -> [AudioPlacement] {
+        if let cache = placementCache, cache.sceneId == sceneId, cache.clips == project.audioClips, cache.assets == project.audioAssets, cache.entries == project.entries { return cache.value }
+        let value = AudioTimeline.placements(project: project, sceneId: sceneId)
+        placementCache = (sceneId, project.audioClips, project.audioAssets, project.entries, value)
+        return value
+    }
     private var context = ""
     private var generation = UUID()
     private var players: [String: PlayerSlot] = [:]
@@ -102,7 +111,7 @@ final class LocalAudioEngine {
             pending.removeAll(); loadIDs.removeAll(); pendingKeys.removeAll()
             return
         }
-        let placements = AudioTimeline.placements(project: request.project, sceneId: request.sceneId)
+        let placements = self.placements(request.project, sceneId: request.sceneId)
         let active = placements.filter { $0.sourcePosition(at: request.playheadMs) != nil }
         let activeIDs = Set(active.map(\.clipId))
         for id in Array(players.keys) where !activeIDs.contains(id) { players.removeValue(forKey: id)?.player.stop() }
