@@ -71,7 +71,8 @@ public struct PendingProjectSaveJournal {
     @discardableResult
     public func persist(scope: PendingProjectSaveScope, before: ScrivProject?, after: ScrivProject, label: String) throws -> PendingProjectSaveRecord {
         let record = try PendingProjectSaveRecord(scope: scope, before: before, after: after, label: label)
-        try validate(record)
+        // Its hashes were just computed from these exact snapshots.
+        try validate(record, verifyHashes: false)
         let data = try ScrivJSON.encoder.encode(record)
         guard data.count <= maximumRecordBytes else { throw ScrivError.invalid("This project change exceeds the private pending-save record limit. Existing recovery data was retained; the new change was not accepted.") }
         return try locked { directory in
@@ -174,7 +175,7 @@ public struct PendingProjectSaveJournal {
         }
     }
 
-    private func validate(_ record: PendingProjectSaveRecord) throws {
+    private func validate(_ record: PendingProjectSaveRecord, verifyHashes: Bool = true) throws {
         try validateScope(record.scope)
         guard record.schemaVersion == 1, record.label.utf8.count <= 4096,
               record.after.id == record.scope.projectID, record.after.cloudProjectId == record.scope.cloudProjectID else {
@@ -184,13 +185,13 @@ public struct PendingProjectSaveJournal {
         if let before = record.before {
             try TimingEngine.validate(before)
             guard before.id == record.after.id, before.revision < Int.max - 1,
-                  record.after.revision == before.revision + 1, record.beforeHash == (try hash(before)) else {
+                  record.after.revision == before.revision + 1, try (!verifyHashes || record.beforeHash == hash(before)) else {
                 throw conflict("Pending project revisions must be an exact, contiguous source-to-target change.")
             }
         } else {
             guard record.after.revision == 0, record.beforeHash == nil else { throw conflict("A project without a saved source must begin at revision zero.") }
         }
-        guard record.afterHash == (try hash(record.after)) else { throw ScrivError.invalid("A pending project snapshot failed its content check. It was retained for review.") }
+        guard try (!verifyHashes || record.afterHash == hash(record.after)) else { throw ScrivError.invalid("A pending project snapshot failed its content check. It was retained for review.") }
     }
     private func validateScope(_ scope: PendingProjectSaveScope) throws {
         guard scope.packagePath.hasPrefix("/"), scope.packagePath.utf8.count <= 4096, !scope.packagePath.contains("\0"),
@@ -220,11 +221,48 @@ public struct PendingProjectSaveJournal {
     private func conflict(_ message: String) -> ScrivError { .conflict(message + " Pending data was retained; no recovery change was applied.") }
     private func posixError() -> NSError { NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
 
+    /// Installed records are immutable: exclusive link creation never replaces
+    /// a file and records are only ever removed. Each save re-scans the journal
+    /// several times, and decoding plus validating a record (two full project
+    /// snapshots) dominated every edit, growing with each queued save. Reuse a
+    /// record decoded and validated from the same file (device, inode, size and
+    /// modification time, taken from the opened descriptor).
+    private struct FileIdentity: Equatable { let device: UInt64, inode: UInt64, size: Int64, seconds: Int, nanoseconds: Int }
+    private final class DecodedRecords: @unchecked Sendable {
+        private let lock = NSLock(); private var values: [String: (FileIdentity, PendingProjectSaveRecord)] = [:]
+        func get(_ key: String, _ identity: FileIdentity) -> PendingProjectSaveRecord? {
+            lock.lock(); defer { lock.unlock() }
+            guard let hit = values[key], hit.0 == identity else { return nil }; return hit.1
+        }
+        func set(_ key: String, _ value: (FileIdentity, PendingProjectSaveRecord)?) {
+            lock.lock(); if values.count > 1024 { values.removeAll(keepingCapacity: true) }; values[key] = value; lock.unlock()
+        }
+    }
+    private static let decodedRecords = DecodedRecords()
+    private func identity(_ info: stat) -> FileIdentity {
+#if os(Linux)
+        FileIdentity(device: UInt64(info.st_dev), inode: UInt64(info.st_ino), size: Int64(info.st_size), seconds: Int(info.st_mtim.tv_sec), nanoseconds: Int(info.st_mtim.tv_nsec))
+#else
+        FileIdentity(device: UInt64(info.st_dev), inode: UInt64(info.st_ino), size: Int64(info.st_size), seconds: Int(info.st_mtimespec.tv_sec), nanoseconds: Int(info.st_mtimespec.tv_nsec))
+#endif
+    }
+    private func loadRecord(name: String, directory: Int32) throws -> PendingProjectSaveRecord {
+        let descriptor = openat(directory, name, O_RDONLY | O_NOFOLLOW)
+        guard descriptor >= 0 else { throw posixError() }
+        var info = stat()
+        let opened = fstat(descriptor, &info) == 0
+        close(descriptor)
+        let key = root.path + "/" + name
+        if opened, let cached = Self.decodedRecords.get(key, identity(info)) { return cached }
+        guard let data = try read(name: name, directory: directory, missingAllowed: false) else { throw posixError() }
+        let record = try decode(data, name: name)
+        if opened { Self.decodedRecords.set(key, (identity(info), record)) }
+        return record
+    }
     private func loadAll(directory: Int32) throws -> [PendingProjectSaveRecord] {
         var records: [PendingProjectSaveRecord] = []
         for name in try inventory(directory: directory) where name.hasSuffix(".json") {
-            guard let data = try read(name: name, directory: directory, missingAllowed: false) else { continue }
-            records.append(try decode(data, name: name))
+            records.append(try loadRecord(name: name, directory: directory))
         }
         guard Set(records.map(\.id)).count == records.count else { throw ScrivError.invalid("Duplicate pending package revisions require review. All records were retained.") }
         return records
