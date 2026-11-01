@@ -25,6 +25,11 @@ enum StoryboardSelectionPresentation {
     private var coverageRails: [StoryboardCoverageRail] = []
     private let playbackLabel = ImageUI.label(size: 12, weight: .medium)
     private var sharedMenuCueID: String?
+    /// What the shared word strip renders from; playback ticks that don't move
+    /// the current word, selection or font leave every word button untouched.
+    private struct SharedScriptInput: Equatable { let currentWordID: String?, selectedWords: Set<String>, selectedCue: ImageCue?, fontSize: CGFloat }
+    private var renderedSharedScript: SharedScriptInput?
+    private var bandFontSize: CGFloat?
     private let marquee = UIView()
     private var marqueeOrigin: CGPoint?
     private var marqueeBase: Set<String> = []
@@ -59,10 +64,10 @@ enum StoryboardSelectionPresentation {
         selectionLabel.text = StoryboardSelectionPresentation.summary(wordCount: store.selectedWordIDs.count)
         let next: [AnyHashable] = [store.navigationContext, store.selectedSceneID, store.project.revision, store.sceneCues, store.sceneEntries, store.project.images, columns, store.peerTransferStatus]
         if signature != next, marqueeOrigin == nil { signature = next; rebuild() }
-        cards.values.forEach { $0.updateSelection() }; directionBands.forEach { $0.updateFont(store.scriptFontSize * 1.35) }; updateSharedScript()
+        cards.values.forEach { $0.updateSelection() }; if bandFontSize != store.scriptFontSize * 1.35 { bandFontSize = store.scriptFontSize * 1.35; directionBands.forEach { $0.updateFont(store.scriptFontSize * 1.35) } }; updateSharedScript()
     }
     private func rebuild() {
-        ImageUI.clear(rows); cards.removeAll(); directionBands.removeAll(); sharedWordButtons.removeAll(); sharedDragDelegates.removeAll(); coverageRails.removeAll(); sharedMenuCueID = nil
+        ImageUI.clear(rows); cards.removeAll(); directionBands.removeAll(); sharedWordButtons.removeAll(); sharedDragDelegates.removeAll(); coverageRails.removeAll(); sharedMenuCueID = nil; renderedSharedScript = nil; bandFontSize = nil
         if store.sceneCues.isEmpty {
             rows.addArrangedSubview(ImageUI.card(ImageUI.stack([ImageUI.label("Build the scene, one image at a time", size: 25, weight: .semibold), ImageUI.label("Start with a script moment, then choose the image that belongs there.", secondary: true), ImageUI.row([ImageUI.button("Write in Script", primary: true) { [weak self] in self?.store.tab = .script }, ImageUI.button("Import image…") { [weak self] in self?.store.importImage() }]), ImageUI.label("Images follow their script sources. Dialogue, direction and imported audio stay intact.", size: 12, secondary: true)]), padding: 32)); return
         }
@@ -121,18 +126,24 @@ enum StoryboardSelectionPresentation {
     }
     private func updateSharedScript() {
         playbackLabel.text = (store.isPlaying ? "Playing " : "Playhead ") + ScrivFormat.time(Int(store.playheadMs))
+        let sceneCues = store.sceneCues
+        for rail in coverageRails { rail.update(selected: rail.cue.id == store.selectedCueID, playheadMs: Int(store.playheadMs), overlaps: sceneCues.filter { $0.id != rail.cue.id && $0.startMs < rail.cue.endMs && $0.endMs > rail.cue.startMs }) }
+        // Derived once per refresh: currentWordID walks the whole scene's words.
+        let input = SharedScriptInput(currentWordID: store.currentWordID, selectedWords: store.selectedWordIDs, selectedCue: store.selectedCue, fontSize: store.scriptFontSize * 1.35)
+        guard input != renderedSharedScript || sharedMenuCueID != store.selectedCueID else { return }
+        renderedSharedScript = input
         let changedMenu = sharedMenuCueID != store.selectedCueID; sharedMenuCueID = store.selectedCueID
+        let font = UIFont.systemFont(ofSize: input.fontSize)
         for item in sharedWords {
             guard let button = sharedWordButtons[item.word.id] else { continue }
-            let selected = store.selectedWordIDs.contains(item.word.id), playing = store.currentWordID == item.word.id
-            let covered = store.selectedCue.map { $0.startMs <= item.absoluteStart && item.absoluteStart < $0.endMs } ?? false
+            let selected = input.selectedWords.contains(item.word.id), playing = input.currentWordID == item.word.id
+            let covered = input.selectedCue.map { $0.startMs <= item.absoluteStart && item.absoluteStart < $0.endMs } ?? false
             button.setPlaybackWord(playing)
             button.backgroundColor = selected ? ImageUI.accent : covered ? ImageUI.accent.withAlphaComponent(0.08) : ScrivUIKitTheme.inset
             button.setTitleColor(selected ? .white : ScrivUIKitTheme.ink, for: .normal)
             button.layer.borderWidth = covered ? 1 : 0.5; button.layer.borderColor = (covered ? ImageUI.accent.withAlphaComponent(0.35) : ScrivUIKitTheme.hairline).cgColor
             button.accessibilityValue = playing ? "Playhead word" : covered ? "Covered by selected picture" : nil
             button.accessibilityTraits = selected ? [.button, .selected] : .button
-            let font = UIFont.systemFont(ofSize: store.scriptFontSize * 1.35)
             if button.titleLabel?.font != font { button.titleLabel?.font = font; button.invalidateIntrinsicContentSize(); button.superview?.invalidateIntrinsicContentSize() }
             if changedMenu || button.menu == nil {
                 if let cue = wordCue(item), let card = cards[cue.id] { button.menu = UIMenu(children: card.wordActions(item)) }
@@ -142,7 +153,6 @@ enum StoryboardSelectionPresentation {
                 }
             }
         }
-        for rail in coverageRails { rail.update(selected: rail.cue.id == store.selectedCueID, playheadMs: Int(store.playheadMs), overlaps: store.sceneCues.filter { $0.id != rail.cue.id && $0.startMs < rail.cue.endMs && $0.endMs > rail.cue.startMs }) }
     }
     fileprivate func selectWord(_ word: TimedWord, cue: ImageCue?, words: [TimedWord], modifiers: UIKeyModifierFlags) {
         if modifiers.contains(.shift), let wordAnchor, let first = words.firstIndex(where: { $0.id == wordAnchor }), let last = words.firstIndex(where: { $0.id == word.id }) {
