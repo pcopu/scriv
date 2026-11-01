@@ -20,6 +20,22 @@ final class CharacterImageReviewTests: XCTestCase {
         }
         var response: CharacterImageAnalysisResult { .init(detections:[.init(region:.init(x:0.1,y:0.1,width:0.3,height:0.4),characterID:"mara",confidence:0.99)]) }
     }
+    /// These synthetic stores mutate `project` directly (bypassing the accepted
+    /// revision chain), so a later save is correctly refused and its error alert
+    /// lands on the host app's frontmost window, where it would block every later
+    /// test's sheet. Let saves settle, then remove the packages and any such alert.
+    private var fixtures: [(WorkspaceStore,URL)] = []
+    override func tearDown() async throws {
+        for (store,root) in fixtures { await store.flushPendingSaves(); try? FileManager.default.removeItem(at:root) }
+        fixtures = []
+        try await Task.sleep(for:.milliseconds(300))
+        for window in UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).flatMap(\.windows) {
+            var top = window.rootViewController
+            while let next = top?.presentedViewController { top = next }
+            if let alert = top as? UIAlertController, alert.title == "Scriv" { alert.dismiss(animated: false) }
+        }
+        try await super.tearDown()
+    }
     private func storeFixture() async throws -> (WorkspaceStore,URL) {
         guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated --screenshots storage, never a real-user store.") }
         let store = WorkspaceStore(); await Task.yield()
@@ -30,6 +46,7 @@ final class CharacterImageReviewTests: XCTestCase {
         try data.write(to:assets.appendingPathComponent("synthetic.png"))
         let image = ImageAsset(id:"image",fileName:"synthetic.png",sha256:ScrivDigest.sha256(data),byteCount:data.count)
         store.projectURL = root; store.project = ScrivProject(id:UUID().uuidString,characters:[ScriptCharacter(id:"mara",name:"Mara")],images:[image])
+        fixtures.append((store,root))
         return (store,root)
     }
     private func settle(_ condition: @escaping () -> Bool) async throws {
@@ -38,14 +55,14 @@ final class CharacterImageReviewTests: XCTestCase {
         XCTAssertTrue(condition())
     }
     func testUnavailableProviderNeverReceivesProjectImages() async throws {
-        let (store,root) = try await storeFixture(); defer { try? FileManager.default.removeItem(at:root) }
+        let (store,root) = try await storeFixture()
         let provider = Provider(); provider.availability = "Image analysis transport is unavailable."
         let controller = CharacterAnalysisController(store:store,provider:provider,pendingDirectory:root.appendingPathComponent("pending"))
         controller.refresh(); try await Task.sleep(for:.milliseconds(50))
         XCTAssertTrue(provider.requests.isEmpty); XCTAssertEqual(controller.status,provider.availability)
     }
     func testConnectedSyntheticProviderScansOnceAndResumesAfterNewVersion() async throws {
-        let (store,root) = try await storeFixture(); defer { try? FileManager.default.removeItem(at:root) }
+        let (store,root) = try await storeFixture()
         let provider = Provider(), controller = CharacterAnalysisController(store:store,provider:provider,pendingDirectory:root.appendingPathComponent("pending"))
         controller.refresh(); try await settle { store.project.images[0].characterAnalysis != nil }
         controller.refresh(); try await Task.sleep(for:.milliseconds(50))
@@ -55,7 +72,7 @@ final class CharacterImageReviewTests: XCTestCase {
         XCTAssertEqual(provider.requests.count,2); XCTAssertEqual(provider.requests[1].imageID,"version-two")
     }
     func testUnexpectedActivityPausesWholeQueueAcrossReconnectAndReopenUntilExplicitRetry() async throws {
-        let (store,root) = try await storeFixture(); defer { try? FileManager.default.removeItem(at:root) }
+        let (store,root) = try await storeFixture()
         let key = "ScrivCharacterAnalysisInterruption.v1." + store.project.id
         defer { UserDefaults.standard.removeObject(forKey:key) }
         var second = store.project.images[0]; second.id = "second"; store.project.images.append(second)
@@ -72,7 +89,7 @@ final class CharacterImageReviewTests: XCTestCase {
         XCTAssertEqual(provider.requests.count,3); XCTAssertNil(UserDefaults.standard.string(forKey:key))
     }
     func testPendingMarkerPrecedesProviderAndBlocksReopenUntilExplicitRetry() async throws {
-        let (store,root) = try await storeFixture(); defer { try? FileManager.default.removeItem(at:root) }
+        let (store,root) = try await storeFixture()
         let pending = root.appendingPathComponent("pending")
         let key = "ScrivCharacterAnalysisInterruption.v1." + store.project.id
         defer { UserDefaults.standard.removeObject(forKey:key) }
@@ -91,7 +108,7 @@ final class CharacterImageReviewTests: XCTestCase {
         XCTAssertEqual(provider.requests.count,2); XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath:pending.path).isEmpty)
     }
     func testPendingMarkerWriteFailureNeverCallsProvider() async throws {
-        let (store,root) = try await storeFixture(); defer { try? FileManager.default.removeItem(at:root) }
+        let (store,root) = try await storeFixture()
         let invalidDirectory = root.appendingPathComponent("not-a-directory")
         try Data([1]).write(to:invalidDirectory)
         let key = "ScrivCharacterAnalysisInterruption.v1." + store.project.id
@@ -101,7 +118,7 @@ final class CharacterImageReviewTests: XCTestCase {
         XCTAssertTrue(provider.requests.isEmpty); XCTAssertTrue(controller.status.contains("No analysis was submitted"))
     }
     func testLateCancelledResultCannotTagAnotherProject() async throws {
-        let (store,root) = try await storeFixture(); defer { try? FileManager.default.removeItem(at:root) }
+        let (store,root) = try await storeFixture()
         let provider = Provider(); provider.delayed = true
         let controller = CharacterAnalysisController(store:store,provider:provider,pendingDirectory:root.appendingPathComponent("pending"))
         controller.refresh(); try await settle { provider.continuation != nil }
@@ -110,7 +127,7 @@ final class CharacterImageReviewTests: XCTestCase {
         try await Task.sleep(for:.milliseconds(50)); XCTAssertTrue(store.project.images.isEmpty); XCTAssertTrue(store.project.characters.isEmpty)
     }
     func testReviewControllerHasRealAssignIgnoreSkipActionsWithoutMutationOnOpen() async throws {
-        let (store,root) = try await storeFixture(); defer { try? FileManager.default.removeItem(at:root) }
+        let (store,root) = try await storeFixture()
         let image = store.project.images[0]
         try CharacterImageAnalysis.apply(.init(detections:[.init(region:.init(x:0.1,y:0.1,width:0.3,height:0.4),kind:.obscured,confidence:0.4,reason:"Face obscured · needs your help")]),to:&store.project,imageID:image.id,version:image.version,sha256:image.sha256,providerID:"synthetic")
         let before = store.project, controller = CharacterImageReviewController(store:store)
@@ -125,7 +142,7 @@ final class CharacterImageReviewTests: XCTestCase {
         XCTAssertEqual(store.project,before,"Opening, resizing and dismissing review are not edits")
     }
     func testDerivedCropLeavesOriginalBytesUntouchedAndCachesByRegion() async throws {
-        let (store,root) = try await storeFixture(); defer { try? FileManager.default.removeItem(at:root) }
+        let (store,root) = try await storeFixture()
         let image = store.project.images[0], source = try XCTUnwrap(store.assetURL(image)), before = try Data(contentsOf:source)
         let region = NormalizedCharacterRegion(x:0.1,y:0.2,width:0.3,height:0.4)
         let crop = try await CharacterPortraitCache.thumbnail(source:source,sha256:image.sha256,region:region)
