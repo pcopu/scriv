@@ -132,7 +132,12 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
         else { table.backgroundView = nil }
         view.setNeedsLayout()
     }
+    private var renderedComposerMetadata: [AnyHashable]?
+    private var renderedResolution: [AnyHashable]?
     private func renderResolution() {
+        let inputs: [AnyHashable] = [ready, store.messages.isEmpty, store.activeThread, store.discussionDraftKey, store.navigationContext]
+        guard inputs != renderedResolution else { return }
+        renderedResolution = inputs
         for child in resolvedRow.arrangedSubviews { resolvedRow.removeArrangedSubview(child); child.removeFromSuperview() }
         guard ready, !store.messages.isEmpty, let thread = store.activeThread else { return }
         let key = store.discussionDraftKey, navigation = store.navigationContext
@@ -174,6 +179,13 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
             composer.selectedRange = NSRange(location: min(range.location, composer.text.utf16.count), length: 0)
         }
         composer.accessibilityHint = "Reply to \(store.discussionItemID == nil ? "project" : "this item"). Command–Return sends."
+        // Rebuild reply/mention/attachment chips and the attach menu only when
+        // their inputs change, not on every refresh.
+        let metadataInputs: [AnyHashable] = [store.discussionDraftKey, store.navigationContext, store.discussionReplyToID, store.messages, store.discussionMentionedUserIDs,
+                                             store.discussionMembers, store.account, store.discussionAttachments, store.discussionItemID,
+                                             store.project.images, store.project.cues, store.project.characters, store.project.entries]
+        if metadataInputs != renderedComposerMetadata {
+        renderedComposerMetadata = metadataInputs
         for child in composerMetadata.arrangedSubviews { composerMetadata.removeArrangedSubview(child); child.removeFromSuperview() }
         let key = store.discussionDraftKey, navigation = store.navigationContext
         if let replyID = store.discussionReplyToID, let message = store.messages.first(where: { $0.id == replyID }) {
@@ -196,6 +208,7 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
         }
         composerMetadata.isHidden = composerMetadata.arrangedSubviews.isEmpty
         attachButton.menu = attachmentMenu(); attachButton.isEnabled = store.discussionAttachments.count < 8
+        }
         placeholder.isHidden = !composer.text.isEmpty
         draftLabel.text = store.discussionDraft.isEmpty ? "In-app only · Drafts are not sent." : "Draft — not sent"
         let length = store.discussionDraft.utf16.count
