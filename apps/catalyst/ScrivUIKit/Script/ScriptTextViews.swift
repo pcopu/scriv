@@ -164,7 +164,9 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
     }
     /// `startMs` and `continued` may be precomputed for the whole scene in one
     /// pass; otherwise they are derived from `project` for this row alone.
-    func configure(entry: ScriptEntry, project: ScrivProject, selected: Bool, active: Bool, search: String, currentWordID: String?, peers: [PresencePeer], locked: Bool, speakerMenu: @autoclosure () -> UIMenu, fontSize: CGFloat, presentation: ScriptPresentationMetrics = .expanded, startMs: Int? = nil, continued: Bool? = nil, menuContext: Int = 0) {
+    /// Returns whether anything was re-rendered.
+    @discardableResult
+    func configure(entry: ScriptEntry, project: ScrivProject, selected: Bool, active: Bool, search: String, currentWordID: String?, peers: [PresencePeer], locked: Bool, speakerMenu: @autoclosure () -> UIMenu, fontSize: CGFloat, presentation: ScriptPresentationMetrics = .expanded, startMs: Int? = nil, continued: Bool? = nil, menuContext: Int = 0) -> Bool {
         let start = startMs ?? project.startMs(of: entry.id)
         let continued = continued ?? {
             let ordered = project.entries(in: entry.sceneId)
@@ -174,7 +176,7 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
         // Only this row's own word affects its rendering.
         let wordID = currentWordID.flatMap { id in entry.words.contains { $0.id == id } ? id : nil }
         let input = RenderInput(entry: entry, characters: project.characters, cues: project.cues, selected: selected, active: active, search: search, currentWordID: wordID, peers: peers, locked: locked, fontSize: fontSize, presentation: presentation, startMs: start, continued: continued, menuContext: menuContext)
-        if input == renderedInput { return }
+        if input == renderedInput { return false }
         renderedInput = input
         lastEntry = entry
         gutterWidth.constant = presentation.gutterWidth; railWidth.constant = presentation.railGap
@@ -211,11 +213,19 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
         display.presencePeers = peers
         let matched = !search.isEmpty && (entry.text.localizedCaseInsensitiveContains(search) || character.map { ([$0.name] + $0.aliases).contains { $0.localizedCaseInsensitiveContains(search) } } == true)
         backgroundColor = active ? ScrivUIKitTheme.accent.withAlphaComponent(0.08) : selected ? ScrivUIKitTheme.accent.withAlphaComponent(0.055) : matched ? UIColor.systemYellow.withAlphaComponent(0.12) : .clear
+        return true
     }
-    func setEditing(_ value: Bool, text: String, focus: Bool, caret: Int? = nil) {
+    /// Returns whether the visible editor/display or its text changed.
+    @discardableResult
+    func setEditing(_ value: Bool, text: String, focus: Bool, caret: Int? = nil) -> Bool {
         let changed = editing != value; editing = value
-        display.isHidden = value; editor.isHidden = !value
+        var updated = changed
+        // Re-assigning isHidden on stack-view children invalidates layout even
+        // when unchanged; this runs for every row on every refresh.
+        if display.isHidden != value { display.isHidden = value; updated = true }
+        if editor.isHidden == value { editor.isHidden = !value; updated = true }
         if value && !editor.text.utf16.elementsEqual(text.utf16), editor.markedTextRange == nil {
+            updated = true
             let selected = editor.selectedRange
             settingText = true
             let paragraph = NSMutableParagraphStyle(); paragraph.lineSpacing = 3; paragraph.lineBreakMode = .byWordWrapping
@@ -232,6 +242,7 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
                 if Range(NSRange(location: offset, length: 0), in: self.editor.text) != nil { self.editor.selectedRange = NSRange(location: offset, length: 0) }
             }
         } else if !value && editor.isFirstResponder { editor.resignFirstResponder() }
+        return updated
     }
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         guard textView === editor, !settingText else { return true }
