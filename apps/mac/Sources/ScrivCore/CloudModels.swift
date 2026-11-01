@@ -43,7 +43,7 @@ public struct CloudSnapshot: Codable, Sendable { public var projectId: String; p
 public struct CloudChange: Codable, Sendable { public var id: String; public var before: CloudItem?; public var after: CloudItem?; public init(id: String, before: CloudItem?, after: CloudItem?) { self.id = id; self.before = before; self.after = after } }
 public struct CloudEvent: Codable, Identifiable, Sendable { public var seq: Int; public var epoch: Int; public var commandId: String; public var actorId: String; public var kind: String; public var at: Int; public var changes: [CloudChange]; public var data: JSONValue?; public var id: Int { seq }; public var label: String { data?["label"]?.string ?? kind } }
 public struct EditLease: Codable, Identifiable, Sendable { public var itemId: String; public var sessionId: String; public var token: String?; public var fence: Int; public var expiresAt: Int; public var epoch: Int?; public var userId: String; public var name: String?; public var id: String { itemId } }
-public struct PresencePeer: Codable, Identifiable, Sendable {
+public struct PresencePeer: Codable, Identifiable, Hashable, Sendable {
     public var connectionId: String?; public var deviceId: String?; public var userId: String; public var name: String; public var itemId: String?; public var cursor: JSONValue?; public var selection: JSONValue?; public var updatedAt: Int?
     public var id: String { connectionId ?? deviceId ?? userId }
 }

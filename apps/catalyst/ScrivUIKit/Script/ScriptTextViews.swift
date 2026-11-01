@@ -92,6 +92,14 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
     private var settingText = false
     private var editing = false
     private var lastEntry: ScriptEntry?
+    /// Everything `configure` renders from. Playback refreshes the script many
+    /// times per second; rows whose inputs did not change skip all work.
+    private struct RenderInput: Equatable {
+        let entry: ScriptEntry, characters: [ScriptCharacter], cues: [ImageCue]
+        let selected: Bool, active: Bool, search: String, currentWordID: String?, peers: [PresencePeer], locked: Bool
+        let fontSize: CGFloat, presentation: ScriptPresentationMetrics, startMs: Int, continued: Bool, menuContext: Int
+    }
+    private var renderedInput: RenderInput?
     private var gutterWidth: NSLayoutConstraint!
     private var railWidth: NSLayoutConstraint!
     private var topInset: NSLayoutConstraint!
@@ -154,21 +162,31 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
         let raw = display.closestPosition(to: point).map { display.offset(from: display.beginningOfDocument, to: $0) } ?? 0
         onEdit?(min(lastEntry?.text.utf16.count ?? 0, max(0, raw)))
     }
-    func configure(entry: ScriptEntry, project: ScrivProject, selected: Bool, active: Bool, search: String, currentWordID: String?, peers: [PresencePeer], locked: Bool, speakerMenu: UIMenu, fontSize: CGFloat, presentation: ScriptPresentationMetrics = .expanded) {
+    /// `startMs` and `continued` may be precomputed for the whole scene in one
+    /// pass; otherwise they are derived from `project` for this row alone.
+    func configure(entry: ScriptEntry, project: ScrivProject, selected: Bool, active: Bool, search: String, currentWordID: String?, peers: [PresencePeer], locked: Bool, speakerMenu: @autoclosure () -> UIMenu, fontSize: CGFloat, presentation: ScriptPresentationMetrics = .expanded, startMs: Int? = nil, continued: Bool? = nil, menuContext: Int = 0) {
+        let start = startMs ?? project.startMs(of: entry.id)
+        let continued = continued ?? {
+            let ordered = project.entries(in: entry.sceneId)
+            let previous = ordered.firstIndex(where: { $0.id == entry.id }).flatMap { index in ordered[..<index].last { $0.ownedDurationMs > 0 } }
+            return entry.characterId != nil && previous?.kind == .dialogue && previous?.characterId == entry.characterId
+        }()
+        // Only this row's own word affects its rendering.
+        let wordID = currentWordID.flatMap { id in entry.words.contains { $0.id == id } ? id : nil }
+        let input = RenderInput(entry: entry, characters: project.characters, cues: project.cues, selected: selected, active: active, search: search, currentWordID: wordID, peers: peers, locked: locked, fontSize: fontSize, presentation: presentation, startMs: start, continued: continued, menuContext: menuContext)
+        if input == renderedInput { return }
+        renderedInput = input
         lastEntry = entry
         gutterWidth.constant = presentation.gutterWidth; railWidth.constant = presentation.railGap
         topInset.constant = presentation.rowPadding; bottomInset.constant = -presentation.rowPadding
         textStack.spacing = presentation.textSpacing
         DurationHoldFeedback.tick(durationButton, title: ScrivFormat.duration(entry.ownedDurationMs)); durationButton.isEnabled = !locked
-        timestamp.text = ScrivFormat.time(project.startMs(of: entry.id))
-        splitPictureButton.isHidden = !selected || !project.cues.contains { $0.sceneId == entry.sceneId && $0.durationMs > 1 && $0.startMs < project.startMs(of: entry.id) + max(entry.ownedDurationMs, entry.coverageDurationMs) && $0.endMs > project.startMs(of: entry.id) }
+        timestamp.text = ScrivFormat.time(start)
+        splitPictureButton.isHidden = !selected || !project.cues.contains { $0.sceneId == entry.sceneId && $0.durationMs > 1 && $0.startMs < start + max(entry.ownedDurationMs, entry.coverageDurationMs) && $0.endMs > start }
         splitPictureButton.isEnabled = !locked
         let direction = entry.kind == .direction
         let color = direction ? ScrivUIKitTheme.color(entry.color) : ScrivUIKitTheme.ink
         let character = project.character(entry.characterId)
-        let ordered = project.entries(in: entry.sceneId)
-        let previous = ordered.firstIndex(where: { $0.id == entry.id }).flatMap { index in ordered[..<index].last { $0.ownedDurationMs > 0 } }
-        let continued = entry.characterId != nil && previous?.kind == .dialogue && previous?.characterId == entry.characterId
         let name = character?.name.uppercased() ?? "DIALOGUE"
         continuationLabel.isHidden = !continued
         continuationLabel.font = .systemFont(ofSize: max(12, fontSize * 0.86))
@@ -178,7 +196,7 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
         speakerButton.removeAction(identifiedBy: UIAction.Identifier("speaker"), for: .touchUpInside)
         speakerButton.addAction(UIAction(identifier: UIAction.Identifier("speaker")) { [weak self] _ in if let id = character?.id { self?.onCharacter?(id) } }, for: .touchUpInside)
         textStack.arrangedSubviews[0].isHidden = direction
-        speakerMenuButton.isHidden = !selected; speakerMenuButton.menu = speakerMenu; speakerMenuButton.isEnabled = !locked
+        speakerMenuButton.isHidden = !selected; speakerMenuButton.menu = selected ? speakerMenu() : nil; speakerMenuButton.isEnabled = !locked
         display.setScriptStyle(size: fontSize, direction: direction); editor.setScriptStyle(size: fontSize, direction: direction)
         speakerButton.titleLabel?.font = .systemFont(ofSize: max(12, fontSize * 0.86), weight: .medium)
         durationButton.titleLabel?.font = .monospacedDigitSystemFont(ofSize: max(13, fontSize * 0.82), weight: .semibold)
@@ -188,7 +206,7 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
         // the active playback word is white on blue. A global link foreground
         // overrides that white and makes linked playback words disappear.
         display.linkTextAttributes = [.underlineStyle: 0]
-        let value = ScriptAttributedText.make(entry: entry, project: project, font: display.font ?? .systemFont(ofSize: fontSize), color: color, currentWordID: currentWordID, peers: peers)
+        let value = ScriptAttributedText.make(entry: entry, project: project, font: display.font ?? .systemFont(ofSize: fontSize), color: color, currentWordID: wordID, peers: peers)
         if display.attributedText != value { display.attributedText = value; display.invalidateIntrinsicContentSize() }
         display.presencePeers = peers
         let matched = !search.isEmpty && (entry.text.localizedCaseInsensitiveContains(search) || character.map { ([$0.name] + $0.aliases).contains { $0.localizedCaseInsensitiveContains(search) } } == true)

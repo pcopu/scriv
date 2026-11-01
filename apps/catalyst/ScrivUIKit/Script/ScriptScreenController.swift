@@ -42,6 +42,14 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     private var boundaryPending: String?
     private var boundaryTask: Task<Void, Never>?
     private var scrubbers: [String: ScriptDurationScrubDriver] = [:]
+    /// Inputs of each row's detail controls; unchanged rows keep their views.
+    private struct DetailsInput: Equatable {
+        let entry: ScriptEntry, characters: [ScriptCharacter], selected: Bool, start: Int, boundary: Bool, lock: String?, context: Int
+        let editing: Bool, issue: String?, requiresReview: Bool, pending: Bool, draftMatches: Bool, sessionID: UUID?
+    }
+    private var renderedDetails: [String: DetailsInput] = [:]
+    private struct HeaderInput: Equatable { let scenes: [ScriptScene], selectedScene: String, context: Int, peers: [PresencePeer], zoom: Double }
+    private var renderedHeader: HeaderInput?
     override var canBecomeFirstResponder: Bool { true }
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(scrivToggleScriptEditing(_:)) { return viewIfLoaded?.window != nil && presentedViewController == nil && (session.active || store.selectedEntryID != nil) }
@@ -219,7 +227,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         rails.presentation = presentation; addBarLeading?.constant = presentation.textInset
         let entries = store.sceneEntries, ids = entries.map(\.id)
         if ids != renderedIDs {
-            for id in Array(rows.keys) where !ids.contains(id) { rows.removeValue(forKey: id)?.removeFromSuperview(); scrubbers.removeValue(forKey: id)?.cancel() }
+            for id in Array(rows.keys) where !ids.contains(id) { rows.removeValue(forKey: id)?.removeFromSuperview(); scrubbers.removeValue(forKey: id)?.cancel(); renderedDetails.removeValue(forKey: id) }
             for entry in entries where rows[entry.id] == nil { rows[entry.id] = makeRow(entry.id) }
             for child in rowsStack.arrangedSubviews { rowsStack.removeArrangedSubview(child); child.removeFromSuperview() }
             if entries.isEmpty { rowsStack.addArrangedSubview(emptyState) }
@@ -230,12 +238,22 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         // This derived value walks the complete scene word track. Every row in
         // this synchronous MainActor refresh sees the same playhead snapshot.
         let currentWordID = store.currentWordID
+        // One ordered pass for start times and speaker continuation instead of
+        // re-sorting the scene for every row on every refresh.
+        let project = store.project, playhead = Int(store.playheadMs), fontSize = presentation.fontSize(zoom: store.scriptZoom)
+        var starts: [String: Int] = [:], continued: Set<String> = [], clock = 0, previousTimed: ScriptEntry?
+        for entry in entries {
+            starts[entry.id] = clock; clock += entry.ownedDurationMs
+            if entry.characterId != nil, previousTimed?.kind == .dialogue, previousTimed?.characterId == entry.characterId { continued.insert(entry.id) }
+            if entry.ownedDurationMs > 0 { previousTimed = entry }
+        }
+        let peersByItem = Dictionary(grouping: store.peers.filter { $0.itemId != nil }, by: { $0.itemId! })
         for entry in entries {
             guard let row = rows[entry.id] else { continue }
             let selected = store.selectedEntryID == entry.id
-            let start = store.project.startMs(of: entry.id)
-            let active = store.isPlaying && Int(store.playheadMs) >= start && Int(store.playheadMs) < start + entry.ownedDurationMs
-            row.configure(entry: entry, project: store.project, selected: selected, active: active, search: search, currentWordID: currentWordID, peers: store.peers.filter { $0.itemId == entry.id }, locked: store.lockedByOther(entry.id) != nil, speakerMenu: speakerMenu(entry), fontSize: presentation.fontSize(zoom: store.scriptZoom), presentation: presentation)
+            let start = starts[entry.id] ?? 0
+            let active = store.isPlaying && playhead >= start && playhead < start + entry.ownedDurationMs
+            row.configure(entry: entry, project: project, selected: selected, active: active, search: search, currentWordID: currentWordID, peers: peersByItem[entry.id] ?? [], locked: store.lockedByOther(entry.id) != nil, speakerMenu: speakerMenu(entry), fontSize: fontSize, presentation: presentation, startMs: start, continued: continued.contains(entry.id), menuContext: store.navigationContext)
             let request = pendingCaret.flatMap { $0.entryID == entry.id && $0.navigation == store.navigationContext && session.entryID == entry.id ? $0 : nil }
             let caret = request.flatMap { request -> Int? in
                 if let wordID = request.afterWordID { return ScriptBoundaryEditing.utf16Range(ofWordID: wordID, in: entry).map(NSMaxRange) }
@@ -244,24 +262,28 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
             row.setEditing(session.entryID == entry.id, text: session.text, focus: !session.requiresReview && scriptPlaybackSurfaceIsVisible && (request?.afterWordID == nil || caret != nil), caret: caret)
             if request != nil { pendingCaret = nil }
             scrubbers[entry.id]?.refreshPreview()
-            configureDetails(row, entry: entry, selected: selected)
+            configureDetails(row, entry: entry, selected: selected, start: start)
         }
-        sceneButton.setTitle((store.project.scenes.first { $0.id == store.selectedSceneID }?.title ?? "No scene") + " ⌄", for: .normal)
-        sceneButton.menu = sceneMenu()
-        for child in presence.arrangedSubviews { presence.removeArrangedSubview(child); child.removeFromSuperview() }
-        for (index, peer) in store.peers.prefix(4).enumerated() {
-            let avatar = ScrivUIKitTheme.label(String(peer.name.prefix(1)).uppercased(), size: 10, weight: .semibold, color: .white, lines: 1)
-            avatar.textAlignment = .center; avatar.backgroundColor = [UIColor.systemBlue, .systemGreen, .systemPurple, .systemOrange][index % 4]; avatar.layer.cornerRadius = 11; avatar.clipsToBounds = true
-            avatar.widthAnchor.constraint(equalToConstant: 22).isActive = true; avatar.heightAnchor.constraint(equalToConstant: 22).isActive = true; avatar.accessibilityLabel = peer.name; presence.addArrangedSubview(avatar)
+        let header = HeaderInput(scenes: project.scenes, selectedScene: store.selectedSceneID, context: store.navigationContext, peers: Array(store.peers.prefix(4)), zoom: store.scriptZoom)
+        if header != renderedHeader {
+            renderedHeader = header
+            sceneButton.setTitle((project.scenes.first { $0.id == store.selectedSceneID }?.title ?? "No scene") + " ⌄", for: .normal)
+            sceneButton.menu = sceneMenu()
+            for child in presence.arrangedSubviews { presence.removeArrangedSubview(child); child.removeFromSuperview() }
+            for (index, peer) in header.peers.enumerated() {
+                let avatar = ScrivUIKitTheme.label(String(peer.name.prefix(1)).uppercased(), size: 10, weight: .semibold, color: .white, lines: 1)
+                avatar.textAlignment = .center; avatar.backgroundColor = [UIColor.systemBlue, .systemGreen, .systemPurple, .systemOrange][index % 4]; avatar.layer.cornerRadius = 11; avatar.clipsToBounds = true
+                avatar.widthAnchor.constraint(equalToConstant: 22).isActive = true; avatar.heightAnchor.constraint(equalToConstant: 22).isActive = true; avatar.accessibilityLabel = peer.name; presence.addArrangedSubview(avatar)
+            }
+            presence.isHidden = header.peers.isEmpty
+            zoomButton.setTitle("\(Int((store.scriptZoom * 100).rounded()))% ⌄", for: .normal)
+            zoomButton.accessibilityLabel = "Shared script zoom, \(Int((store.scriptZoom * 100).rounded())) percent"
+            zoomButton.menu = UIMenu(title: "Script text size · shared across views", children: [0.7, 0.85, 1.0, 1.15, 1.3, 1.5, 2.0].map { zoom in
+                UIAction(title: "\(Int((zoom * 100).rounded()))%" + (zoom == 1 ? " · Default" : ""), state: abs(store.scriptZoom - zoom) < 0.001 ? .on : .off) { [weak self] _ in self?.store.setScriptZoom(zoom) }
+            })
         }
-        presence.isHidden = store.peers.isEmpty
-        footerLabel.text = "\(store.project.authoredEntryCount(in: store.selectedSceneID)) entries · \(ScrivFormat.duration(store.sceneDurationMs))"
-        followSwitch.isOn = store.followPlayback
-        zoomButton.setTitle("\(Int((store.scriptZoom * 100).rounded()))% ⌄", for: .normal)
-        zoomButton.accessibilityLabel = "Shared script zoom, \(Int((store.scriptZoom * 100).rounded())) percent"
-        zoomButton.menu = UIMenu(title: "Script text size · shared across views", children: [0.7, 0.85, 1.0, 1.15, 1.3, 1.5, 2.0].map { zoom in
-            UIAction(title: "\(Int((zoom * 100).rounded()))%" + (zoom == 1 ? " · Default" : ""), state: abs(store.scriptZoom - zoom) < 0.001 ? .on : .off) { [weak self] _ in self?.store.setScriptZoom(zoom) }
-        })
+        footerLabel.text = "\(project.authoredEntryCount(in: store.selectedSceneID)) entries · \(ScrivFormat.duration(clock))"
+        if followSwitch.isOn != store.followPlayback { followSwitch.isOn = store.followPlayback }
         statusDot.image = UIImage(systemName: store.localSaveNeedsAttention ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
         statusDot.tintColor = store.localSaveNeedsAttention ? .systemRed : store.hasConflicts ? .systemOrange : .systemGreen
         statusDot.accessibilityLabel = store.localSaveStatusMessage + (store.hasConflicts ? " · Cloud changes need review" : "")
@@ -310,7 +332,14 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         row.menuProvider = { [weak self] in self?.entryMenu(id) ?? UIMenu(children: []) }
         return row
     }
-    private func configureDetails(_ row: ScriptEntryRow, entry: ScriptEntry, selected: Bool) {
+    private func configureDetails(_ row: ScriptEntryRow, entry: ScriptEntry, selected: Bool, start: Int) {
+        let editing = session.entryID == entry.id
+        let lock = store.lockedByOther(entry.id)
+        let input = DetailsInput(entry: entry, characters: store.project.characters, selected: selected, start: start, boundary: boundaryPending == entry.id, lock: lock, context: store.navigationContext,
+                                 editing: editing, issue: editing ? session.issue : nil, requiresReview: editing && session.requiresReview, pending: editing && session.pending,
+                                 draftMatches: editing && session.text.utf16.elementsEqual(entry.text.utf16), sessionID: editing ? session.sessionID : nil)
+        if renderedDetails[entry.id] == input { return }
+        renderedDetails[entry.id] = input
         for view in row.details.arrangedSubviews { row.details.removeArrangedSubview(view); view.removeFromSuperview() }
         if boundaryPending == entry.id { row.details.addArrangedSubview(ScrivUIKitTheme.label("Changing line boundary…", size: 11, color: ScrivUIKitTheme.secondary)) }
         if session.entryID == entry.id {
@@ -330,8 +359,8 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
                 row.details.addArrangedSubview(ScrivUIKitTheme.button("Review \(suggestions) character suggestion\(suggestions == 1 ? "" : "s")") { [weak self] in self?.reviewLinks(entry.id) })
             }
         }
-        if selected && entry.kind == .direction { row.details.addArrangedSubview(ScrivUIKitTheme.label("Applies through \(ScrivFormat.time(store.project.startMs(of: entry.id) + entry.coverageDurationMs))", size: 11, color: ScrivUIKitTheme.color(entry.color))) }
-        if let lock = store.lockedByOther(entry.id) { row.details.addArrangedSubview(ScrivUIKitTheme.label("\(lock) is editing", size: 11, color: ScrivUIKitTheme.accent)) }
+        if selected && entry.kind == .direction { row.details.addArrangedSubview(ScrivUIKitTheme.label("Applies through \(ScrivFormat.time(start + entry.coverageDurationMs))", size: 11, color: ScrivUIKitTheme.color(entry.color))) }
+        if let lock { row.details.addArrangedSubview(ScrivUIKitTheme.label("\(lock) is editing", size: 11, color: ScrivUIKitTheme.accent)) }
         row.details.isHidden = row.details.arrangedSubviews.isEmpty
     }
     private func entryMenu(_ id: String) -> UIMenu {
