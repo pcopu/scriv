@@ -10,7 +10,12 @@ enum ScrivUpdatePresentationHandoff {
         func failure() -> NSError {
             NSError(domain: "app.scriv.updates", code: 2, userInfo: [NSLocalizedDescriptionKey: "Scriv could not close the update windows safely. Close other dialogs and check for updates again."])
         }
-        guard let root = update.viewIfLoaded?.window?.rootViewController, root !== update else { throw failure() }
+        // On Mac Catalyst a sheet lives in its own bridged window whose root is
+        // the sheet itself, so find the chain's root through its presenters.
+        guard update.viewIfLoaded?.window != nil else { throw failure() }
+        var root = update
+        while let presenter = root.presentingViewController { root = presenter }
+        guard root !== update else { throw failure() }
         var top = root
         while let next = top.presentedViewController { top = next }
         guard top === update, !update.isBeingDismissed, !update.isBeingPresented else { throw failure() }
