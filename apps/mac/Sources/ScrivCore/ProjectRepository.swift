@@ -15,17 +15,18 @@ public actor ProjectRepository {
     /// Compare and publish under the same all-writer package lock. Planning a
     /// replay never authorizes overwriting a package changed since planning.
     public func saveRecovering(_ record: PendingProjectSaveRecord, at package: URL) throws {
-        guard record.schemaVersion == 1, record.scope.packagePath == package.standardizedFileURL.path,
+        guard record.schemaVersion == 1 || (record.schemaVersion == 2 && record.before == nil),
+              record.scope.packagePath == package.standardizedFileURL.path,
               record.scope.projectID == record.after.id, record.scope.cloudProjectID == record.after.cloudProjectId,
               record.afterHash == (try digest(record.after)),
-              record.beforeHash == (try record.before.map(digest)) else {
+              try (record.before == nil || record.beforeHash == record.before.map(digest)),
+              (record.sourceRevision == nil) == (record.beforeHash == nil) else {
             throw ScrivError.invalid("The pending save does not match its package or exact snapshots.")
         }
         try TimingEngine.validate(record.after)
-        if let before = record.before {
-            try TimingEngine.validate(before)
-            guard before.id == record.after.id, before.revision < Int.max - 1,
-                  record.after.revision == before.revision + 1 else { throw ScrivError.invalid("Pending recovery revisions are not contiguous.") }
+        if let before = record.before { try TimingEngine.validate(before); guard before.id == record.after.id else { throw ScrivError.invalid("Pending recovery revisions are not contiguous.") } }
+        if let source = record.sourceRevision {
+            guard source < Int.max - 1, record.after.revision == source + 1 else { throw ScrivError.invalid("Pending recovery revisions are not contiguous.") }
         } else { guard record.after.revision == 0 else { throw ScrivError.invalid("Initial recovery must start at revision zero.") } }
         try withPackageWriteLock(package) {
             let currentURL = try member("project.json",in:package)
@@ -42,14 +43,14 @@ public actor ProjectRepository {
                 // Matching readable bytes may follow a failed fsync. Establish
                 // durability again before allowing any old WAL acknowledgement.
                 try syncSavedFile(currentURL)
-                for revision in Set([current.revision,record.after.revision] + [record.before?.revision].compactMap({ $0 })) {
+                for revision in Set([current.revision,record.after.revision] + [record.sourceRevision].compactMap({ $0 })) {
                     try syncSavedFile(member("history/" + String(format:"%012lld",Int64(revision)) + ".json",in:package))
                 }
                 try DurableDirectory.flush(member("history",in:package)); try DurableDirectory.flush(package)
                 return
             }
-            if let before = record.before {
-                guard let current, current.id == before.id, current.revision == before.revision,
+            if let source = record.sourceRevision {
+                guard let current, current.id == record.after.id, current.revision == source,
                       try digest(current) == record.beforeHash else {
                     throw ScrivError.conflict("The project changed after recovery was planned. Pending changes were retained; the current package was not overwritten.")
                 }

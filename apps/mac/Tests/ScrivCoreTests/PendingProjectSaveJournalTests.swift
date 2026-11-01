@@ -20,6 +20,28 @@ final class PendingProjectSaveJournalTests: XCTestCase {
     private func journal(_ root: URL) throws -> PendingProjectSaveJournal {
         try PendingProjectSaveJournal(root: root.appendingPathComponent("Pending"))
     }
+    func testSchemaOneRecordWithFullSourceSnapshotStillLoadsAndReplays() async throws {
+        let root = try workspace(), package = root.appendingPathComponent("legacy.scriv"), base = fixture(), journal = try journal(root)
+        let one = next(base, title: "One")
+        // Write a record exactly as schema 1 did: the complete source snapshot, no beforeRevision.
+        let current = try journal.persist(scope: scope(package, project: base), before: base, after: one, label: "Legacy edit")
+        var legacy = try XCTUnwrap(JSONSerialization.jsonObject(with: ScrivJSON.encoder.encode(current)) as? [String: Any])
+        legacy["schemaVersion"] = 1; legacy["beforeRevision"] = nil
+        legacy["before"] = try JSONSerialization.jsonObject(with: ScrivJSON.encoder.encode(base))
+        let file = journal.root.appendingPathComponent(current.id + ".json")
+        try FileManager.default.removeItem(at: file)
+        try JSONSerialization.data(withJSONObject: legacy, options: [.sortedKeys]).write(to: file)
+        let loaded = try XCTUnwrap(try journal.load(package: package).first)
+        XCTAssertEqual(loaded.schemaVersion, 1); XCTAssertEqual(loaded.before, base); XCTAssertEqual(loaded.sourceRevision, base.revision)
+        let plan = try journal.planRecovery(scope: loaded.scope, canonical: base, acceptedHistory: [base])
+        XCTAssertEqual(plan.replay, [loaded])
+        let repo = try ProjectRepository(root: root.appendingPathComponent("Projects"))
+        try await repo.save(base, at: package, label: "Base")
+        try await repo.saveRecovering(loaded, at: package)
+        XCTAssertTrue(try journal.acknowledge(loaded))
+        let saved = try await repo.load(at: package)
+        XCTAssertEqual(saved, one)
+    }
     func testInitialProjectIsDurableBeforePackageExistsAndReplayDoesNotMutateAnything() throws {
         let root = try workspace(), package = root.appendingPathComponent("new.scriv"), project = fixture(), journal = try journal(root)
         let record = try journal.persist(scope: scope(package, project: project), before: nil, after: project, label: "New project")
@@ -43,7 +65,9 @@ final class PendingProjectSaveJournalTests: XCTestCase {
         try await repo.save(base, at: package, label: "Base")
         for record in plan.replay {
             let current = try await repo.load(at: package)
-            XCTAssertEqual(current, record.before)
+            XCTAssertEqual(current.revision, record.sourceRevision)
+            XCTAssertEqual(ScrivDigest.sha256(try ScrivJSON.encoder.encode(current)), record.beforeHash)
+            XCTAssertNil(record.before, "Schema 2 records keep only the source revision and hash")
             try await repo.save(record.after, at: package, label: record.label)
             XCTAssertTrue(try journal.acknowledge(record))
         }

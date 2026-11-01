@@ -23,14 +23,21 @@ public struct PendingProjectSaveScope: Codable, Hashable, Sendable {
 public struct PendingProjectSaveRecord: Codable, Equatable, Identifiable, Sendable {
     public let schemaVersion: Int
     public let scope: PendingProjectSaveScope
+    /// Schema 1 stored the complete source snapshot. Recovery only ever replays
+    /// `after`; the source is checked by revision and hash alone, so schema 2
+    /// records keep just `beforeRevision` and `beforeHash` (half the bytes to
+    /// encode, write and decode on every edit). Schema 1 records still load.
     public let before: ScrivProject?
+    public let beforeRevision: Int?
     public let after: ScrivProject
     public let label: String
     public let beforeHash: String?
     public let afterHash: String
     public var id: String { ScrivDigest.sha256(Data(scope.packagePath.utf8)) + "-" + String(after.revision) }
+    /// Revision this change continues from; nil for a project's initial save.
+    public var sourceRevision: Int? { before?.revision ?? beforeRevision }
     fileprivate init(scope: PendingProjectSaveScope, before: ScrivProject?, after: ScrivProject, label: String) throws {
-        schemaVersion = 1; self.scope = scope; self.before = before; self.after = after; self.label = label
+        schemaVersion = 2; self.scope = scope; self.before = nil; beforeRevision = before?.revision; self.after = after; self.label = label
         beforeHash = try before.map { try ScrivProjectDigest.sha256($0) }
         afterHash = try ScrivProjectDigest.sha256(after)
     }
@@ -157,14 +164,14 @@ public struct PendingProjectSaveJournal {
                     guard accepted[record.after.revision] == record.afterHash else {
                         throw conflict("An older pending revision is not an exact accepted history snapshot. The current package will not be overwritten.")
                     }
-                    if let before = record.before {
-                        guard accepted[before.revision] == record.beforeHash else { throw conflict("The source of an accepted pending revision is missing or diverged in history.") }
+                    if let source = record.sourceRevision {
+                        guard accepted[source] == record.beforeHash else { throw conflict("The source of an accepted pending revision is missing or diverged in history.") }
                     }
                     alreadySaved.append(record)
                     continue
                 }
-                if let before = record.before {
-                    guard let cursor, cursor.id == before.id, cursor.revision == before.revision,
+                if let source = record.sourceRevision {
+                    guard let cursor, cursor.id == record.after.id, cursor.revision == source,
                           try hash(cursor) == record.beforeHash else { throw conflict("Pending changes do not continue from the current accepted project. A missing or diverged revision needs review.") }
                 } else {
                     guard cursor == nil, record.after.revision == 0 else { throw conflict("An initial pending project must not overwrite an existing package.") }
@@ -177,15 +184,20 @@ public struct PendingProjectSaveJournal {
 
     private func validate(_ record: PendingProjectSaveRecord, verifyHashes: Bool = true) throws {
         try validateScope(record.scope)
-        guard record.schemaVersion == 1, record.label.utf8.count <= 4096,
+        guard record.schemaVersion == 1 || (record.schemaVersion == 2 && record.before == nil), record.label.utf8.count <= 4096,
               record.after.id == record.scope.projectID, record.after.cloudProjectId == record.scope.cloudProjectID else {
             throw ScrivError.invalid("Invalid pending project-save identity. Existing records were retained.")
         }
         try TimingEngine.validate(record.after)
         if let before = record.before {
             try TimingEngine.validate(before)
-            guard before.id == record.after.id, before.revision < Int.max - 1,
+            guard record.beforeRevision == nil, before.id == record.after.id, before.revision < Int.max - 1,
                   record.after.revision == before.revision + 1, try (!verifyHashes || record.beforeHash == hash(before)) else {
+                throw conflict("Pending project revisions must be an exact, contiguous source-to-target change.")
+            }
+        } else if let source = record.beforeRevision {
+            guard source >= 0, source < Int.max - 1, record.after.revision == source + 1,
+                  let beforeHash = record.beforeHash, beforeHash.count == 64, beforeHash.allSatisfy(\.isHexDigit) else {
                 throw conflict("Pending project revisions must be an exact, contiguous source-to-target change.")
             }
         } else {
