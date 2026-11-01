@@ -23,7 +23,7 @@ Update code does not delete or upload project packages, recovery journals or use
 
 ```sh
 bash scripts/build-catalyst.sh
-# build/catalyst/Build/Products/Debug-maccatalyst/Scriv.app
+# build/catalyst/Build/Products/Release-maccatalyst/Scriv.app
 node --test tests/*.test.mjs
 npm --prefix updates test
 ```

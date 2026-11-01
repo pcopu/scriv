@@ -55,7 +55,8 @@ Use macOS 14+ with **Xcode 26.2 or newer** for the current UIKit SDK APIs (avail
 git clone https://github.com/pcopu/scriv.git
 cd scriv
 bash scripts/build-catalyst.sh
-# Development product: build/catalyst/Build/Products/Debug-maccatalyst/Scriv.app
+# Optimized product: build/catalyst/Build/Products/Release-maccatalyst/Scriv.app
+# Debugger build: SCRIV_CONFIGURATION=Debug bash scripts/build-catalyst.sh
 ```
 
 `apps/catalyst/ScrivUIKit.xcodeproj` contains the UIKit app/test targets, native adapter and bundled on-demand runtime XPC service. Its deterministic generator requires only Python 3, not XcodeGen. `scripts/verify-catalyst.sh` checks source/target integrity and, with a Swift toolchain installed, syntax on Linux; it does **not** type-check UIKit. Compilation, actual native interaction and signed installation/relaunch are separate verification gates. The preserved legacy app can still be built with `scripts/build-mac.sh`; do not confuse its historical screenshots with the UIKit target.

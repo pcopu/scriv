@@ -7,13 +7,17 @@ if [[ "$(uname -s)" != Darwin ]]; then
 fi
 command -v xcodebuild >/dev/null
 python3 "$root/scripts/generate-catalyst-project.py"
-configuration="${SCRIV_CONFIGURATION:-Debug}"
+# Optimized by default: an unoptimized (-Onone) Debug build is several times
+# slower at runtime. Use SCRIV_CONFIGURATION=Debug only when attaching a debugger.
+configuration="${SCRIV_CONFIGURATION:-Release}"
+# Local builds target this Mac's architecture; set SCRIV_UNIVERSAL=1 for both.
+arch_args=(); [[ "${SCRIV_UNIVERSAL:-0}" == 1 ]] || arch_args=(ONLY_ACTIVE_ARCH=YES)
 derived="${SCRIV_CATALYST_BUILD_DIR:-$root/build/catalyst}"
 # No global cache cleanup, simulator installation, account mutation or deployment.
 xcodebuild -project "$root/apps/catalyst/ScrivUIKit.xcodeproj" -scheme ScrivUIKit \
   -configuration "$configuration" -destination 'platform=macOS,variant=Mac Catalyst' \
   -derivedDataPath "$derived" -clonedSourcePackagesDirPath "$derived/SourcePackages" \
-  CODE_SIGNING_ALLOWED=NO build
+  CODE_SIGNING_ALLOWED=NO "${arch_args[@]}" build
 app="$derived/Build/Products/$configuration-maccatalyst/Scriv.app"
 if [[ ! -d "$app" ]]; then echo "Expected Catalyst app is missing: $app" >&2; exit 1; fi
 # The checked-in approved mark is compiled by Xcode, including direct IDE builds.
