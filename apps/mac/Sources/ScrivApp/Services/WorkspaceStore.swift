@@ -10,8 +10,8 @@ import ScrivCore
 
 @MainActor
 final class WorkspaceStore: ObservableObject {
-    @Published var project: ScrivProject { didSet { synchronizeAudio(); invalidatePromptPresentationContextIfNeeded() } }
-    @Published var selectedSceneID: String { didSet { synchronizeAudio(); invalidatePromptPresentationContextIfNeeded() } }
+    @Published var project: ScrivProject { didSet { invalidateSceneCache(); synchronizeAudio(); invalidatePromptPresentationContextIfNeeded() } }
+    @Published var selectedSceneID: String { didSet { invalidateSceneCache(); synchronizeAudio(); invalidatePromptPresentationContextIfNeeded() } }
     @Published var selectedEntryID: String?
     @Published var requestedEntryEditingID: String?
     @Published var selectedCharacterID: String?
@@ -557,14 +557,33 @@ final class WorkspaceStore: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let errorPresenter = WorkspaceErrorPresenter()
     var onProjectChanged: ((ScrivProject, URL?) -> Void)?
-    var sceneEntries: [ScriptEntry] { project.entries(in: selectedSceneID) }
-    var sceneCues: [ImageCue] { project.cues(in: selectedSceneID) }
-    var sceneDurationMs: Int { project.durationMs(of: selectedSceneID) }
+    // Scene-derived values are read many times per refresh (and per playback
+    // tick); filter and sort once, then reuse until the project or scene changes.
+    private var cachedSceneEntries: [ScriptEntry]?
+    private var cachedSceneCues: [ImageCue]?
+    private func invalidateSceneCache() { cachedSceneEntries = nil; cachedSceneCues = nil }
+    var sceneEntries: [ScriptEntry] {
+        if let cachedSceneEntries { return cachedSceneEntries }
+        let value = project.entries(in: selectedSceneID); cachedSceneEntries = value; return value
+    }
+    var sceneCues: [ImageCue] {
+        if let cachedSceneCues { return cachedSceneCues }
+        let value = project.cues(in: selectedSceneID); cachedSceneCues = value; return value
+    }
+    var sceneDurationMs: Int { sceneEntries.reduce(0) { $0 + $1.ownedDurationMs } }
     var selectedEntry: ScriptEntry? { project.entries.first { $0.id == selectedEntryID } }
     var selectedCue: ImageCue? { project.cues.first { $0.id == selectedCueID } }
     var selectedCharacter: ScriptCharacter? { project.characters.first { $0.id == selectedCharacterID } }
-    var currentCue: ImageCue? { project.activeCue(at: Int(playheadMs), sceneId: selectedSceneID) }
-    var currentWordID: String? { TimingEngine.absoluteWords(project,sceneId:selectedSceneID).first { Int(playheadMs) >= $0.startMs && Int(playheadMs) < $0.endMs }?.id }
+    var currentCue: ImageCue? { let ms = Int(playheadMs); return sceneCues.last { ms >= $0.startMs && ms < $0.endMs } }
+    /// Same result as scanning `TimingEngine.absoluteWords`, without building that array.
+    var currentWordID: String? {
+        let ms = Int(playheadMs); var clock = 0
+        for entry in sceneEntries {
+            if let word = entry.words.first(where: { ms >= clock + $0.startMs && ms < clock + $0.endMs }) { return word.id }
+            clock += entry.ownedDurationMs
+        }
+        return nil
+    }
     var cloudBaseURL: String { get { cloud.baseURL.absoluteString } set { if let url = URL(string:newValue), CloudClient.validEndpoint(url) { cloud.baseURL = url; objectWillChange.send() } else { errorMessage = "Use HTTPS for the Scriv server, or localhost for development." } } }
     var canUndo: Bool { !undoStack.isEmpty }
     var canRedo: Bool { !redoStack.isEmpty }
