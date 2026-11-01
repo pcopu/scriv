@@ -133,21 +133,35 @@ public actor ProjectRepository {
         // future revision as an accepted restore point after an interrupted save.
         let current = try load(at:package), ceiling = min(revision,current.revision)
         let files = try FileManager.default.contentsOfDirectory(at:directory,includingPropertiesForKeys:[.fileSizeKey])
-        var result: [HistoryEntry] = []
+        var sources: [(number: Int, url: URL)] = []
         for file in files where file.pathExtension == "json" {
             guard let number = Int(file.deletingPathExtension().lastPathComponent), number >= 0, number <= ceiling else { continue }
-            let source = try member("history/" + file.lastPathComponent,in:package)
-            let size = try source.resourceValues(forKeys:[.fileSizeKey]).fileSize ?? 0
-            guard size <= 64*1024*1024 else { throw ScrivError.invalid("A history snapshot exceeds the metadata limit.") }
-            let data = try Data(contentsOf:source)
-            guard data.count <= 64*1024*1024 else { throw ScrivError.invalid("A history snapshot exceeds the metadata limit.") }
-            let event = try ScrivJSON.decoder.decode(HistoryEntry.self,from:data)
-            guard event.revision == number, event.snapshot.revision == number, event.snapshot.id == current.id, event.date.timeIntervalSince1970.isFinite else { throw ScrivError.invalid("A history snapshot has a different project identity or revision.") }
-            try TimingEngine.validate(event.snapshot)
-            result.append(event)
+            sources.append((number, try member("history/" + file.lastPathComponent,in:package)))
         }
+        // Each snapshot is read, decoded and validated independently; on a long
+        // history this dominated opening a project, so use every core.
+        let result = try Self.decodeHistory(sources, current: current)
         guard Set(result.map(\.revision)).count == result.count else { throw ScrivError.invalid("History contains duplicate revision numbers.") }
         return result.sorted { $0.revision > $1.revision }
+    }
+    private nonisolated static func decodeHistory(_ sources: [(number: Int, url: URL)], current: ScrivProject) throws -> [HistoryEntry] {
+        let lock = NSLock()
+        var results = [HistoryEntry?](repeating: nil, count: sources.count), failure: Error?
+        DispatchQueue.concurrentPerform(iterations: sources.count) { index in
+            do {
+                let (number, source) = sources[index]
+                let size = try source.resourceValues(forKeys:[.fileSizeKey]).fileSize ?? 0
+                guard size <= 64*1024*1024 else { throw ScrivError.invalid("A history snapshot exceeds the metadata limit.") }
+                let data = try Data(contentsOf:source)
+                guard data.count <= 64*1024*1024 else { throw ScrivError.invalid("A history snapshot exceeds the metadata limit.") }
+                let event = try ScrivJSON.decoder.decode(HistoryEntry.self,from:data)
+                guard event.revision == number, event.snapshot.revision == number, event.snapshot.id == current.id, event.date.timeIntervalSince1970.isFinite else { throw ScrivError.invalid("A history snapshot has a different project identity or revision.") }
+                try TimingEngine.validate(event.snapshot)
+                lock.lock(); results[index] = event; lock.unlock()
+            } catch { lock.lock(); if failure == nil { failure = error }; lock.unlock() }
+        }
+        if let failure { throw failure }
+        return results.compactMap { $0 }
     }
     public func importAsset(data: Data, at package: URL, prompt: String = "", characterIds: [String] = []) throws -> ImageAsset {
         guard !data.isEmpty, data.count <= 25*1024*1024 else { throw ScrivError.invalid("Choose an image smaller than 25 MiB.") }
