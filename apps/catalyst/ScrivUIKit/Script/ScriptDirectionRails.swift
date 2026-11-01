@@ -14,14 +14,26 @@ final class ScriptDirectionRails: UIView {
     private let store: WorkspaceStore
     private var entries: [ScriptEntry] = []
     private var frames: [String: CGRect] = [:]
+    /// Scene start time of each entry, from one ordered pass over `entries`.
+    private var starts: [String: Int] = [:]
+    private struct RenderInput: Equatable { let entries: [ScriptEntry], frames: [String: CGRect], selected: String?, locked: Set<String> }
+    private var renderedInput: RenderInput?
     private var handles: [String: (UIButton, DirectionHandleButton)] = [:]
     private var drag: (id: String, originalY: CGFloat, currentY: CGFloat, navigation: Int, entry: ScriptEntry)?
     var presentation: ScriptPresentationMetrics = .expanded { didSet { if oldValue != presentation { setNeedsLayout(); setNeedsDisplay() } } }
     private var railX: CGFloat { presentation.railX }
-    init(store: WorkspaceStore) { self.store = store; super.init(frame: .zero); backgroundColor = .clear; isOpaque = false }
+    init(store: WorkspaceStore) { self.store = store; super.init(frame: .zero); backgroundColor = .clear; isOpaque = false; contentMode = .redraw }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError() }
     func update(entries: [ScriptEntry], frames: [String: CGRect]) {
+        // This view spans the whole script; redrawing it is costly. Skip
+        // relayout/redraw when nothing it renders changed (e.g. playback ticks).
+        let locked = Set(entries.filter { $0.kind == .direction && store.lockedByOther($0.id) != nil }.map(\.id))
+        let input = RenderInput(entries: entries, frames: frames, selected: store.selectedEntryID, locked: locked)
+        if input == renderedInput { return }
+        renderedInput = input
         self.entries = entries; self.frames = frames
+        var clock = 0; starts = [:]
+        for entry in entries { starts[entry.id] = clock; clock += entry.ownedDurationMs }
         let ids = Set(entries.filter { $0.kind == .direction }.map(\.id))
         for id in Array(handles.keys) where !ids.contains(id) { let pair = handles.removeValue(forKey: id); pair?.0.removeFromSuperview(); pair?.1.removeFromSuperview() }
         for entry in entries where entry.kind == .direction {
@@ -40,15 +52,16 @@ final class ScriptDirectionRails: UIView {
         }
         setNeedsLayout(); setNeedsDisplay()
     }
+    private func startMs(_ entry: ScriptEntry) -> Int { starts[entry.id] ?? store.project.startMs(of: entry.id) }
     private var geometry: [ScriptRailRow] {
         entries.compactMap { entry in
             guard let frame = frames[entry.id] else { return nil }
-            return ScriptRailRow(startMs: store.project.startMs(of: entry.id), durationMs: entry.ownedDurationMs, anchorY: Double(frame.minY + presentation.anchorOffset), bottomY: Double(frame.maxY + presentation.rowSpacing))
+            return ScriptRailRow(startMs: startMs(entry), durationMs: entry.ownedDurationMs, anchorY: Double(frame.minY + presentation.anchorOffset), bottomY: Double(frame.maxY + presentation.rowSpacing))
         }
     }
     private func y(_ time: Int, rows: [ScriptRailRow]? = nil) -> CGFloat { CGFloat(PresentationGeometry.railPosition(at: time, rows: rows ?? geometry)) }
     private func endpoint(_ entry: ScriptEntry, rows: [ScriptRailRow]? = nil) -> CGFloat {
-        max((frames[entry.id]?.minY ?? 0) + presentation.anchorOffset + 12, drag?.id == entry.id ? drag!.currentY : y(store.project.startMs(of: entry.id) + entry.coverageDurationMs, rows: rows))
+        max((frames[entry.id]?.minY ?? 0) + presentation.anchorOffset + 12, drag?.id == entry.id ? drag!.currentY : y(startMs(entry) + entry.coverageDurationMs, rows: rows))
     }
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -70,7 +83,7 @@ final class ScriptDirectionRails: UIView {
             }
             pair.0.accessibilityLabel = "Select direction: " + entry.text
             pair.1.accessibilityLabel = "Coverage end for " + entry.text
-            pair.1.accessibilityValue = ScrivFormat.time(store.project.startMs(of: entry.id) + entry.coverageDurationMs)
+            pair.1.accessibilityValue = ScrivFormat.time(startMs(entry) + entry.coverageDurationMs)
             pair.1.isEnabled = store.lockedByOther(entry.id) == nil
             let overlap = directions.filter { candidate in
                 guard let frame = frames[candidate.id], let candidateEnd = endpoints[candidate.id] else { return false }
