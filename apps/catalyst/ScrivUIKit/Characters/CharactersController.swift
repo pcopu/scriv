@@ -72,6 +72,8 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
         render()
     }
     override func viewDidAppear(_ animated: Bool) { super.viewDidAppear(animated); consumeCreationRequest() }
+    private var availability: [String: String] = [:]
+    private var availabilityCheckedAt: TimeInterval = 0
     override func storeDidChange() {
         guard isViewLoaded else { return }
         if renderedProject?.id != store.project.id {
@@ -80,7 +82,14 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
                   store.project.characters.contains(where: { $0.id == selectedID }), !characters.contains(where: { $0.id == selectedID }) {
             searchText = ""; search.text = ""
         }
-        let availability = Dictionary(uniqueKeysWithValues: store.project.images.map { ($0.id, store.assetURL($0)?.path ?? "") })
+        // Checking every image file costs several file-system calls each. During
+        // playback the store refreshes many times a second, so re-check at most
+        // once a second while playing; otherwise check on every refresh.
+        let now = ProcessInfo.processInfo.systemUptime
+        if !store.isPlaying || now - availabilityCheckedAt >= 1 || renderedProject?.images != store.project.images {
+            availabilityCheckedAt = now
+            availability = Dictionary(uniqueKeysWithValues: store.project.images.map { ($0.id, store.assetURL($0)?.path ?? "") })
+        }
         if renderedProject != store.project || renderedSelection != store.selectedCharacterID || renderedAssets != availability {
             renderedAssets = availability; render()
         }
@@ -211,9 +220,15 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
         (tags.chips.last as? UIButton)?.configuration?.contentInsets = .init(top: 4, leading: 6, bottom: 4, trailing: 6)
         return ScrivUIKitTheme.stack([open, caption, tags], spacing: 6)
     }
+    private var renderedAnalysis: [AnyHashable]?
     private func renderAnalysis() {
         let analysis = store.characterAnalysis
-        autoTagToggle.setOn(analysis.autoTagEnabled,animated:false)
+        // Runs on every refresh; rebuild the banner only when its inputs change.
+        // Always re-sync the switch, so a refused toggle snaps back.
+        if autoTagToggle.isOn != analysis.autoTagEnabled { autoTagToggle.setOn(analysis.autoTagEnabled,animated:false) }
+        let key: [AnyHashable] = [analysis.availability, analysis.isScanning, analysis.status, analysis.reviewImageCount]
+        guard key != renderedAnalysis else { return }
+        renderedAnalysis = key
         analysisDot.tintColor = analysis.availability == nil ? .systemGreen : .systemOrange
         analysisStatus.text = analysis.availability ?? (analysis.isScanning ? "Checking image characters…" : "Image analysis ready")
         scanStatus.text = analysis.status
