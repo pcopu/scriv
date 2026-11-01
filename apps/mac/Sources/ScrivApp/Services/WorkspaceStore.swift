@@ -779,9 +779,7 @@ final class WorkspaceStore: ObservableObject {
             var next = before
             try mutate(&next); try TimingEngine.validate(next)
             guard next != before else { return false }
-            let old = Dictionary(uniqueKeysWithValues:try CloudCodec.items(from:before).map { ($0.id,$0.data) })
-            let new = Dictionary(uniqueKeysWithValues:try CloudCodec.items(from:next).map { ($0.id,$0.data) })
-            let ids = Set(old.keys).union(new.keys).filter { old[$0] != new[$0] }
+            let ids = CloudCodec.changedItemIDs(from:before,to:next)
             for id in ids { if let editor = lockedByOther(id) { throw ScrivError.conflict("\(editor) is editing this item. Wait for their lease to finish before changing it.") } }
             guard before.revision < Int.max - 1 else { throw ScrivError.invalid("The project revision limit was reached.") }
             next.revision = before.revision + 1; next.modifiedAt = ScrivClock.now

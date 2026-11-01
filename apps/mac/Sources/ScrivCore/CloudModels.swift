@@ -77,6 +77,21 @@ public enum CloudCodec {
         items += try project.cues.map { CloudItem(id: $0.id, kind: "cue", data: try .encoded($0)) }
         return items
     }
+    /// Identities of cloud items that differ between two projects, by value
+    /// comparison. Matches diffing `items(from:)` output (every item field is
+    /// encoded) without JSON-encoding the whole project twice per edit.
+    public static func changedItemIDs(from before: ScrivProject, to after: ScrivProject) -> Set<String> {
+        var ids = Set<String>()
+        func diff<T: Identifiable & Equatable>(_ old: [T], _ new: [T]) where T.ID == String {
+            guard old != new else { return }
+            let lhs = Dictionary(old.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+            let rhs = Dictionary(new.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+            for id in Set(lhs.keys).union(rhs.keys) where lhs[id] != rhs[id] { ids.insert(id) }
+        }
+        diff(before.scenes, after.scenes); diff(before.entries, after.entries); diff(before.characters, after.characters)
+        diff(before.images, after.images); diff(before.cues, after.cues)
+        return ids
+    }
     public static func applying(_ items: [CloudItem], to project: ScrivProject) throws -> ScrivProject {
         guard Set(items.map(\.id)).count == items.count else { throw ScrivError.invalid("The server returned duplicate item identities.") }
         var result = project
