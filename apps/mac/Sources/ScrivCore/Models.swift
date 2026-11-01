@@ -143,6 +143,13 @@ public struct ScrivProject: Identifiable, Codable, Hashable, Sendable {
         for item in entries(in: entry.sceneId) { if item.id == entryId { return clock }; clock += item.ownedDurationMs }
         return clock
     }
+    /// Start time of every entry in a scene, computed in one ordered pass.
+    /// Prefer this over calling `startMs(of:)` per entry, which re-sorts the scene each time.
+    public func entryStartTimes(in sceneId: String) -> [String: Int] {
+        var clock = 0, result: [String: Int] = [:]
+        for entry in entries(in: sceneId) { result[entry.id] = clock; clock += entry.ownedDurationMs }
+        return result
+    }
     public func activeEntry(at ms: Int, sceneId: String) -> ScriptEntry? {
         let sequence = entries(in: sceneId)
         var clock = 0

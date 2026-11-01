@@ -986,12 +986,15 @@ final class WorkspaceStore: ObservableObject {
         let target = min(max(0,toMs),Double(sceneDurationMs))
         playbackClock.seek(toMs:target,nowMs:ProcessInfo.processInfo.systemUptime * 1000)
         updatePlayhead(toMs:target)
-        selectedCueID = currentCue?.id ?? (Int(playheadMs) == sceneDurationMs ? sceneCues.last?.id : nil)
+        let cueID = currentCue?.id ?? (Int(playheadMs) == sceneDurationMs ? sceneCues.last?.id : nil)
+        if selectedCueID != cueID { selectedCueID = cueID }
     }
     private func updatePlayhead(toMs: Double) {
         guard toMs.isFinite else { return }; playheadMs = min(max(0,toMs),Double(sceneDurationMs))
         // Playback follows time without changing the explicitly inspected shot.
-        if followPlayback, let entry = project.activeEntry(at:Int(playheadMs),sceneId:selectedSceneID) { selectedEntryID = entry.id }
+        // @Published fires on every assignment; only publish a real change so each
+        // playback tick does not trigger a second store-wide refresh.
+        if followPlayback, let entry = project.activeEntry(at:Int(playheadMs),sceneId:selectedSceneID), selectedEntryID != entry.id { selectedEntryID = entry.id }
     }
     func togglePlayback() {
         if isPlaying { updatePlayhead(toMs:playbackClock.pause(nowMs:ProcessInfo.processInfo.systemUptime * 1000,durationMs:sceneDurationMs)); isPlaying = false; playbackTask?.cancel(); didPauseScriptPlayback?(); return }
