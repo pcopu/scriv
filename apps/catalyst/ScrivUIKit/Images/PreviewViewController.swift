@@ -234,14 +234,15 @@ import ScrivCore
             prompt.resignFirstResponder(); editingScope = nil; scope = store.generationPromptScopeKey; store.prepareGenerationPromptForPresentation(force:true); prompt.text = store.generationPrompt
         } else {
             store.prepareGenerationPromptForPresentation()
-            if !prompt.isFirstResponder && unacceptedText == nil { prompt.text = store.generationPrompt }
+            if !prompt.isFirstResponder && unacceptedText == nil { let text = store.generationPrompt; if prompt.text != text { prompt.text = text } }
         }
         let context = store.selectedImageGenerationContext; displayedCueID = context?.cueID
         target.text = context.map { GenerationBriefSnapshot(context: $0, localPortraitURLs: [:]).composerTarget(isPlaying: store.isPlaying, playingCue: store.currentCue) } ?? "Select a picture placement in Script or Storyboard."
         generate.accessibilityLabel = context.map { "Generate image for " + ($0.cueLabel.isEmpty ? "selected picture" : $0.cueLabel) } ?? "Generate image"
         review.isEnabled = context != nil && store.generationPromptPresentationIsCurrent
         prompt.isEditable = context != nil && store.generationPromptRecoveryIsReady; generate.isEnabled = store.generationPromptPresentationIsCurrent && context?.hasContent == true && !store.codex.isGenerating && !store.generationPromptNeedsReview && unacceptedText == nil
-        generate.configuration?.title = store.codex.isGenerating ? "Generating…" : "Generate image"; progress.isHidden = !store.codex.isGenerating
+        let title = store.codex.isGenerating ? "Generating…" : "Generate image"
+        if generate.configuration?.title != title { generate.configuration?.title = title }; progress.isHidden = !store.codex.isGenerating
         status.text = store.generationPromptDraftStatus; status.isHidden = status.text == nil
         recovery.isHidden = store.generationPromptIssue == nil && !store.generationPromptNeedsReview && unacceptedText == nil
         prompt.updatePlaceholder(); resizePrompt()
@@ -282,5 +283,13 @@ import ScrivCore
         resizePrompt(); storeDidChange()
     }
     func textViewDidEndEditing(_ textView: UITextView) { editingScope = nil }
-    private func resizePrompt() { guard promptHeight != nil else { return }; let height = prompt.sizeThatFits(CGSize(width: max(100, prompt.bounds.width), height: CGFloat.greatestFiniteMagnitude)).height; let limit: CGFloat = prompt.isFirstResponder ? 96 : 62; promptHeight.constant = min(limit, max(62, height)); prompt.isScrollEnabled = height > limit; prompt.updatePlaceholder() }
+    private var promptSizeInput: (text: String, width: CGFloat, editing: Bool)?
+    private func resizePrompt() {
+        guard promptHeight != nil else { return }
+        // Measuring a text view is costly and this runs on every refresh.
+        let input = (text: prompt.text ?? "", width: prompt.bounds.width, editing: prompt.isFirstResponder)
+        if let promptSizeInput, promptSizeInput.text == input.text, promptSizeInput.width == input.width, promptSizeInput.editing == input.editing { return }
+        promptSizeInput = input
+        let height = prompt.sizeThatFits(CGSize(width: max(100, prompt.bounds.width), height: CGFloat.greatestFiniteMagnitude)).height; let limit: CGFloat = prompt.isFirstResponder ? 96 : 62; promptHeight.constant = min(limit, max(62, height)); prompt.isScrollEnabled = height > limit; prompt.updatePlaceholder()
+    }
 }

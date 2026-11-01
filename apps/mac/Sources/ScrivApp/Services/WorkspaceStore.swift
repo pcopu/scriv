@@ -1353,11 +1353,17 @@ final class WorkspaceStore: ObservableObject {
         })
         return context.selectingPortraits(availableAssetIDs:available)
     }
+    /// The generation panel reads this on every refresh, including playback
+    /// ticks; rebuild only when the project, cue, draft or portraits change.
+    private var generationContextCache: (project: ScrivProject, cueID: String, draft: String?, assets: Set<String>, value: GenerationContext?)?
     var selectedImageGenerationContext: GenerationContext? {
         guard let cue = selectedCue ?? currentCue else { return nil }
         let draft = cachedPromptDraft(for:cue)?.text
-        guard let context = try? GenerationContext.build(project:project,cueID:cue.id,userDirection:draft) else { return nil }
-        return context.selectingPortraits(availableAssetIDs:promptAvailableAssets[generationPromptScopeKey] ?? [])
+        let assets = promptAvailableAssets[generationPromptScopeKey] ?? []
+        if let cache = generationContextCache, cache.cueID == cue.id, cache.draft == draft, cache.assets == assets, cache.project == project { return cache.value }
+        let value = (try? GenerationContext.build(project:project,cueID:cue.id,userDirection:draft))?.selectingPortraits(availableAssetIDs:assets)
+        generationContextCache = (project, cue.id, draft, assets, value)
+        return value
     }
     func generateImage(cueId: String? = nil) {
         // An explicit stale menu target must not silently generate for another cue.
