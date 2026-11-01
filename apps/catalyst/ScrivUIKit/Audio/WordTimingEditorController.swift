@@ -69,8 +69,24 @@ final class WordTimingEditorController: ScrivScreenController {
             ScrivUIKitTheme.label("Relative to this dialogue · \(AudioTimingInput.seconds(draft.original.ownedDurationMs)) s", size: 11, color: ScrivUIKitTheme.secondary),
             notice, leaseRow, AudioUIKitLayout.separator(), ScrivSecondaryAdaptiveRow([footerCopy, AudioUIKitLayout.row([UIView(), cancel, saveButton], spacing: 10)], minimumHorizontalWidth: 500, spacing: 12)
         ], spacing: 18)
-        _ = AudioUIKitLayout.scrollContent(content, in: view)
+        contentScroll = AudioUIKitLayout.scrollContent(content, in: view)
         refreshFields(); refreshButtons(); refreshTimeline(); acquireLease()
+    }
+    private var contentScroll: UIScrollView?
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // At the sheet's 500-point width the footer stacks vertically, which
+        // pushed Save/Cancel below a fixed 410-point sheet. Fit the measured
+        // content (notice and lease rows come and go), within sensible bounds.
+        guard let scroll = contentScroll else { return }
+        scroll.layoutIfNeeded() // contentSize is only current after the scroll view's own layout
+        guard scroll.contentSize.height > 0 else { return }
+        let needed = ceil(scroll.contentSize.height + scroll.adjustedContentInset.top + scroll.adjustedContentInset.bottom)
+        let height = min(max(410, needed), 720)
+        if abs(preferredContentSize.height - height) > 1 {
+            preferredContentSize = CGSize(width: preferredContentSize.width, height: height)
+            navigationController?.preferredContentSize = preferredContentSize
+        }
     }
     override func viewDidAppear(_ animated: Bool) { super.viewDidAppear(animated); revealSelectedWord() }
     override func viewDidDisappear(_ animated: Bool) {
