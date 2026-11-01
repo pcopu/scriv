@@ -56,11 +56,8 @@ final class TextPresentationTests: XCTestCase {
         }
     }
 
-    @MainActor func testLinkedScriptTextRetainsFullHeightUnderCompressedProposal() async {
+    @MainActor func testLinkedScriptTextRetainsFullHeightUnderCompressedProposal() {
         _ = NSApplication.shared
-        let measured = expectation(description: "Native SwiftUI text measured")
-        var observed = CGSize.zero
-        var fulfilled = false
         let source = "We can move these words without moving the picture. Mara opens the gate slowly."
         let character = ScriptCharacter(id: "mara", name: "Mara")
         let range = (source as NSString).range(of: "Mara")
@@ -68,20 +65,14 @@ final class TextPresentationTests: XCTestCase {
         // A vertically constrained row previously caused Text to use an
         // ellipsis. Width remains constrained, while authored text reports
         // its complete wrapped height to the surrounding row/rail layout.
+        // Measure the view's answer to that compressed proposal directly: a
+        // windowless test process never commits SwiftUI preference callbacks.
         let content = LinkedScriptText(text: source, characters: [character], characterLinks: [link], size: 20) { _ in }
-        let host = NSHostingView(rootView: content.background {
-            GeometryReader { proxy in Color.clear.preference(key: TextSizePreference.self, value: proxy.size) }
-        }.onPreferenceChange(TextSizePreference.self) { size in
-            observed = size
-            if size.height > 0, !fulfilled { fulfilled = true; measured.fulfill() }
-        }.frame(width: 240, height: 24))
-        host.setFrameSize(NSSize(width: 240, height: 24))
-        host.layoutSubtreeIfNeeded()
-        await fulfillment(of: [measured], timeout: 3)
+        let observed = NSHostingController(rootView: content).sizeThatFits(in: CGSize(width: 240, height: 24))
         XCTAssertGreaterThan(observed.height, 60)
-        XCTAssertEqual(observed.width, 240, accuracy: 1)
+        XCTAssertLessThanOrEqual(observed.width, 240.5)
+        XCTAssertGreaterThan(observed.width, 200)
         XCTAssertEqual(CharacterMentions.resolved(in: source, links: [link]).first?.range, range)
-        withExtendedLifetime(host) {}
     }
 
     func testImageAvailabilityIsNotReportedBeforeTheCurrentLoadFinishes() async {
