@@ -57,7 +57,7 @@ public actor ProjectRepository {
             try saveLocked(record.after,at:package,label:record.label)
         }
     }
-    private func digest(_ project: ScrivProject) throws -> String { ScrivDigest.sha256(try ScrivJSON.encoder.encode(project)) }
+    private func digest(_ project: ScrivProject) throws -> String { try ScrivProjectDigest.sha256(project) }
     private func withPackageWriteLock<T>(_ package: URL, _ body: () throws -> T) throws -> T {
         try DurableDirectory.create(at:package)
         let root = package.resolvingSymlinksInPath().standardizedFileURL

@@ -41,3 +41,26 @@ public enum ScrivDigest {
         return h.flatMap { v in [UInt8(truncatingIfNeeded: v >> 24), UInt8(truncatingIfNeeded: v >> 16), UInt8(truncatingIfNeeded: v >> 8), UInt8(truncatingIfNeeded: v)] }
     }
 }
+
+/// Content hash of a project's canonical JSON. Each edit hashes its source and
+/// target snapshots, and a save re-hashes the same snapshots several times; the
+/// source of one edit is the target of the previous. Remember a few recent
+/// results, matched by value (cheap when the snapshots share storage).
+public enum ScrivProjectDigest {
+    private final class Recent: @unchecked Sendable {
+        private let lock = NSLock(); private var entries: [(ScrivProject, String)] = []
+        func lookup(_ project: ScrivProject) -> String? {
+            lock.lock(); defer { lock.unlock() }
+            return entries.first(where: { $0.0 == project })?.1
+        }
+        func remember(_ project: ScrivProject, _ hash: String) {
+            lock.lock(); entries.insert((project, hash), at: 0); if entries.count > 4 { entries.removeLast() }; lock.unlock()
+        }
+    }
+    private static let recent = Recent()
+    public static func sha256(_ project: ScrivProject) throws -> String {
+        if let hash = recent.lookup(project) { return hash }
+        let hash = ScrivDigest.sha256(try ScrivJSON.encoder.encode(project))
+        recent.remember(project, hash); return hash
+    }
+}

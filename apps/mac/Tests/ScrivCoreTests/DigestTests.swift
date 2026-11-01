@@ -15,4 +15,14 @@ final class DigestTests: XCTestCase {
             XCTAssertEqual(ScrivDigest.bytes(data), ScrivDigest.portableBytes(data), "length \(length)")
         }
     }
+    func testProjectDigestMatchesDirectHashAcrossEdits() throws {
+        var project = ScrivProject.example()
+        for index in 0..<6 {
+            let direct = ScrivDigest.sha256(try ScrivJSON.encoder.encode(project))
+            XCTAssertEqual(try ScrivProjectDigest.sha256(project), direct)
+            XCTAssertEqual(try ScrivProjectDigest.sha256(project), direct, "cached result")
+            project.title = "Title \(index)"; project.revision += 1
+            XCTAssertNotEqual(try ScrivProjectDigest.sha256(project), direct, "an edited project never reuses a stale hash")
+        }
+    }
 }

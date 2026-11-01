@@ -31,8 +31,8 @@ public struct PendingProjectSaveRecord: Codable, Equatable, Identifiable, Sendab
     public var id: String { ScrivDigest.sha256(Data(scope.packagePath.utf8)) + "-" + String(after.revision) }
     fileprivate init(scope: PendingProjectSaveScope, before: ScrivProject?, after: ScrivProject, label: String) throws {
         schemaVersion = 1; self.scope = scope; self.before = before; self.after = after; self.label = label
-        beforeHash = try before.map { ScrivDigest.sha256(try ScrivJSON.encoder.encode($0)) }
-        afterHash = ScrivDigest.sha256(try ScrivJSON.encoder.encode(after))
+        beforeHash = try before.map { try ScrivProjectDigest.sha256($0) }
+        afterHash = try ScrivProjectDigest.sha256(after)
     }
 }
 
@@ -217,7 +217,7 @@ public struct PendingProjectSaveJournal {
             throw ScrivError.invalid("Private pending project saves must be stored outside the project package.")
         }
     }
-    private func hash(_ project: ScrivProject) throws -> String { ScrivDigest.sha256(try ScrivJSON.encoder.encode(project)) }
+    private func hash(_ project: ScrivProject) throws -> String { try ScrivProjectDigest.sha256(project) }
     private func conflict(_ message: String) -> ScrivError { .conflict(message + " Pending data was retained; no recovery change was applied.") }
     private func posixError() -> NSError { NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
 
