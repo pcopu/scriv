@@ -49,7 +49,8 @@ final class ScrivWorkspaceController: ScrivScreenController {
         chrome.isUserInteractionEnabled = !store.isBootstrapping
         workspaceBody.isUserInteractionEnabled = !store.isBootstrapping
         tabs.selectedSegmentIndex = WorkspaceTab.allCases.firstIndex(of: store.tab) ?? 0
-        statusLabel.text = store.statusMessage + " · " + store.syncStatus
+        let status = store.statusMessage + " · " + store.syncStatus
+        if statusLabel.text != status { statusLabel.text = status }
         chrome.moreButton.accessibilityValue = "\(store.unreadDiscussionMentionCount) unread discussion mentions"
         updateTransport()
         // Rebuild only when menu-visible state changes, not on every playhead tick.

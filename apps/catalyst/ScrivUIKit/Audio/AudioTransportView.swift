@@ -49,17 +49,25 @@ final class AudioTransportView: UIView {
         guard !refreshQueued else { return }; refreshQueued = true
         DispatchQueue.main.async { [weak self] in guard let self else { return }; self.refreshQueued = false; self.refresh() }
     }
+    private struct ControlsInput: Equatable { let isPlaying: Bool, durationMs: Int, hasAudio: Bool, volume: Double }
+    private var renderedControls: ControlsInput?
     func refresh() {
         let duration = store.sceneDurationMs
+        // Playback ticks only move the time and seek bar.
+        if !seek.isTracking { seek.value = Float(min(Double(duration), max(0, store.playheadMs))) }
+        let current = ScrivFormat.time(Int(store.playheadMs))
+        let timeText = compact ? current : current + " / " + ScrivFormat.time(duration)
+        if time.text != timeText { time.text = timeText; seek.accessibilityValue = current + " of " + ScrivFormat.time(duration) }
+        let hasAudio = !store.project.audioClips.isEmpty
+        let controls = ControlsInput(isPlaying: store.isPlaying, durationMs: duration, hasAudio: hasAudio, volume: store.project.audioVolume)
+        guard controls != renderedControls else { return }
+        renderedControls = controls
         play.setImage(UIImage(systemName: store.isPlaying ? "pause.fill" : "play.fill"), for: .normal)
         play.accessibilityLabel = store.isPlaying ? "Pause scene" : "Play scene"
         play.isEnabled = duration > 0; previous.isEnabled = duration > 0; nextButton.isEnabled = duration > 0
         seek.maximumValue = Float(max(1, duration)); seek.isEnabled = duration > 0
         if !seek.isTracking { seek.value = Float(min(Double(duration), max(0, store.playheadMs))) }
-        let current = ScrivFormat.time(Int(store.playheadMs))
-        time.text = compact ? current : current + " / " + ScrivFormat.time(duration)
         seek.accessibilityValue = current + " of " + ScrivFormat.time(duration)
-        let hasAudio = !store.project.audioClips.isEmpty
         mute.isEnabled = hasAudio; volume.isEnabled = hasAudio
         let muted = store.project.audioVolume == 0
         mute.setImage(UIImage(systemName: muted ? "speaker.slash.fill" : "speaker.wave.2.fill"), for: .normal)

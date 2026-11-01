@@ -93,7 +93,12 @@ final class ScrivWorkspaceHeader: UIView {
     }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(frame:)") }
 
+    private var configured: (title: String, accountName: String?)?
     func configure(title: String, accountName: String?) {
+        // Called on every workspace refresh; reassigning a button configuration
+        // re-renders and relays out the button even when nothing changed.
+        if let configured, configured.title == title, configured.accountName == accountName { return }
+        configured = (title, accountName)
         titleButton.configuration?.title = title
         titleButton.accessibilityLabel = title + ", Projects"
         hasAccount = accountName != nil
