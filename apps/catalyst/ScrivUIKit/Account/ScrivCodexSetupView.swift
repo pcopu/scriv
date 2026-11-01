@@ -338,19 +338,29 @@ final class ScrivCodexSetupView: UIView {
         }
         setNeedsLayout()
     }
+    private var revealAttempts = 0
     private func revealAfterLayout(_ target: UIView?) {
-        pendingScrollToTop = false; pendingRevealTarget = target; setNeedsLayout()
+        pendingScrollToTop = false; pendingRevealTarget = target; revealAttempts = 0; setNeedsLayout()
     }
     override func layoutSubviews() {
         super.layoutSubviews()
         guard scroll.bounds.height > 0 else { return }
-        scroll.layoutIfNeeded(); body.layoutIfNeeded()
+        // The body's new height reaches contentSize only on the scroll view's
+        // next layout; lay it out again so reveals are not clamped to the old size.
+        scroll.layoutIfNeeded(); body.layoutIfNeeded(); scroll.setNeedsLayout(); scroll.layoutIfNeeded()
         if pendingScrollToTop {
             pendingScrollToTop = false
             scroll.setContentOffset(CGPoint(x: 0, y: -scroll.adjustedContentInset.top), animated: false)
         } else if let target = pendingRevealTarget, target.isDescendant(of: scroll) {
-            pendingRevealTarget = nil
-            let rect = target.convert(target.bounds, to: scroll).insetBy(dx: 0, dy: -12)
+            let frame = target.convert(target.bounds, to: scroll)
+            // A just-mounted control may not be measured on this pass, and
+            // scrollRectToVisible ignores an empty rect. Retry a few passes.
+            if frame.height <= 0 || frame.maxY > scroll.contentSize.height {
+                if revealAttempts < 4 { revealAttempts += 1; setNeedsLayout() } else { pendingRevealTarget = nil; revealAttempts = 0 }
+                return
+            }
+            pendingRevealTarget = nil; revealAttempts = 0
+            let rect = CGRect(x: 0, y: frame.minY - 12, width: max(1, scroll.bounds.width), height: frame.height + 24)
             scroll.scrollRectToVisible(rect, animated: false)
         }
     }
