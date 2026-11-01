@@ -160,13 +160,28 @@ import ScrivCore
         // The source link names a particular identity. Finish the new tab's
         // layout before revealing its header, not the bottom of a long profile.
         // Repeated links, tab changes and invalidation retire the old view.
+        reveal(target, person: id, attempts: 4)
+    }
+    private func reveal(_ target: UIView, person id: String, attempts: Int) {
         DispatchQueue.main.async { [weak self, weak target] in
             guard let self, let target, self.isValid, self.selectedTab == .people,
                   self.peopleHeaders[id] === target else { return }
-            self.layoutIfNeeded(); self.scroll.layoutIfNeeded()
-            let header = target.convert(target.bounds, to: self.scroll)
-            guard header.height > 0, self.scroll.bounds.height > 0 else { return }
-            let destination = CGRect(x: header.minX, y: max(0, header.minY - 12), width: header.width,
+            // Adaptive rows in the rebuilt tab change axis over several layout
+            // passes, moving the header after a single pass; and the new height
+            // reaches contentSize only on the scroll view's next layout. Lay out
+            // until the geometry is stable, then reveal (retrying briefly).
+            var header = CGRect.null, content = CGSize.zero
+            for _ in 0..<8 {
+                self.setNeedsLayout(); self.layoutIfNeeded(); self.scroll.setNeedsLayout(); self.scroll.layoutIfNeeded()
+                let next = target.convert(target.bounds, to: self.scroll)
+                if next == header && self.scroll.contentSize == content { break }
+                header = next; content = self.scroll.contentSize
+            }
+            guard header.height > 0, self.scroll.bounds.height > 0, header.maxY <= self.scroll.contentSize.height else {
+                if attempts > 0 { self.reveal(target, person: id, attempts: attempts - 1) }
+                return
+            }
+            let destination = CGRect(x: header.minX, y: max(0, header.minY - 12), width: max(1, header.width),
                                      height: min(header.height + 24, self.scroll.bounds.height))
             self.scroll.scrollRectToVisible(destination, animated: false)
         }
