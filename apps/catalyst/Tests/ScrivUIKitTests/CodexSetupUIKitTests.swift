@@ -242,6 +242,8 @@ final class CodexSetupUIKitTests: XCTestCase {
             host.presentedViewController === navigation &&
             navigation.presentingViewController === host &&
             navigation.viewIfLoaded?.window != nil &&
+            // The wrapper can reach its window before it installs its child's view.
+            navigation.topViewController?.viewIfLoaded?.window != nil &&
             navigation.view.bounds.width > 0 && navigation.view.bounds.height > 0 &&
             !navigation.isBeingPresented && navigation.transitionCoordinator == nil
         }
