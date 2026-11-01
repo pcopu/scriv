@@ -84,6 +84,7 @@ import ScrivCore
     private let unavailable = ImageUI.label("The source or project changed while this review was open. Close it and choose Review brief again.", size: 17, secondary: true)
     private let onCopy: (String) -> Void
     private var expandedPeople = Set<String>()
+    private var peopleHeaders: [String: UIButton] = [:]
     private(set) var selectedTab: Tab = .source
     private(set) var isValid = true
 
@@ -141,6 +142,7 @@ import ScrivCore
         guard isValid else { return }
         selectedTab = tab; tabs.selectedSegmentIndex = tab.rawValue
         exactContainer.isHidden = tab != .exactRequest; scroll.isHidden = tab == .exactRequest
+        peopleHeaders.removeAll()
         ImageUI.clear(body)
         switch tab {
         case .source: buildSource()
@@ -149,15 +151,37 @@ import ScrivCore
         }
         scroll.setContentOffset(.zero, animated: false)
     }
+    func showPerson(_ id: String) {
+        guard isValid, snapshot.context.characters.contains(where: { $0.id == id }) else { return }
+        let alreadyExpanded = expandedPeople.contains(id)
+        expandedPeople.insert(id)
+        if selectedTab != .people || !alreadyExpanded { select(.people) }
+        guard let target = peopleHeaders[id] else { return }
+        // The source link names a particular identity. Finish the new tab's
+        // layout before revealing its header, not the bottom of a long profile.
+        // Repeated links, tab changes and invalidation retire the old view.
+        DispatchQueue.main.async { [weak self, weak target] in
+            guard let self, let target, self.isValid, self.selectedTab == .people,
+                  self.peopleHeaders[id] === target else { return }
+            self.layoutIfNeeded(); self.scroll.layoutIfNeeded()
+            let header = target.convert(target.bounds, to: self.scroll)
+            guard header.height > 0, self.scroll.bounds.height > 0 else { return }
+            let destination = CGRect(x: header.minX, y: max(0, header.minY - 12), width: header.width,
+                                     height: min(header.height + 24, self.scroll.bounds.height))
+            self.scroll.scrollRectToVisible(destination, animated: false)
+        }
+    }
     func togglePerson(_ id: String) {
         guard isValid, selectedTab == .people, snapshot.context.characters.contains(where: { $0.id == id }) else { return }
         if !expandedPeople.insert(id).inserted { expandedPeople.remove(id) }
         let offset = scroll.contentOffset
+        peopleHeaders.removeAll()
         ImageUI.clear(body); buildPeople(); layoutIfNeeded()
         scroll.setContentOffset(CGPoint(x: 0, y: min(offset.y, max(0, scroll.contentSize.height - scroll.bounds.height))), animated: false)
     }
     func invalidate() {
         guard isValid else { return }; isValid = false
+        peopleHeaders.removeAll()
         ImageUI.clear(body); exactText.text = nil
         pictureLabel.text = "Review unavailable"; sceneLabel.text = nil
         scroll.isHidden = true; exactContainer.isHidden = true; unavailable.isHidden = false; tabs.isEnabled = false
@@ -184,8 +208,9 @@ import ScrivCore
         if snapshot.context.characters.isEmpty { body.addArrangedSubview(GenerationReviewUI.caption("No character identities are resolved for this picture.")) }
         for person in snapshot.context.characters {
             let button = GenerationReviewUI.personHeader(person, snapshot: snapshot, symbol: "chevron.right") { [weak self] in
-                guard let self else { return }; self.expandedPeople.insert(person.id); self.select(.people)
+                self?.showPerson(person.id)
             }
+            button.accessibilityIdentifier = "generation-source-person-" + person.id
             let info = ImageUI.stack([button], spacing: 3)
             if snapshot.referenceNumber(for: person.id) == nil { info.addArrangedSubview(GenerationReviewUI.caption(snapshot.portraitAvailability(for: person))) }
             body.addArrangedSubview(ImageUI.card(ImageUI.row([GenerationReviewUI.avatar(person, snapshot: snapshot, size: 52), info]), padding: 12))
@@ -207,6 +232,7 @@ import ScrivCore
             let toggle = GenerationReviewUI.personHeader(person, snapshot: snapshot, symbol: expanded ? "chevron.up" : "chevron.down") { [weak self] in self?.togglePerson(person.id) }
             toggle.accessibilityIdentifier = "generation-person-" + person.id
             toggle.accessibilityValue = expanded ? "Expanded" : "Collapsed"
+            peopleHeaders[person.id] = toggle
             toggle.contentHorizontalAlignment = .leading
             let details = ImageUI.stack([toggle], spacing: 5)
             if expanded {

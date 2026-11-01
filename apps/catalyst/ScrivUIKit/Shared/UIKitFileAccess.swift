@@ -30,6 +30,8 @@ final class UIKitFileAccess: NSObject, UIDocumentPickerDelegate {
     private var exportCompletion: (() -> Void)?
     private var retainedScopes: [String:URL] = [:]
     private let bookmarksKey = "ScrivUIKitProjectBookmarks.v1"
+    private let defaults: UserDefaults
+    init(defaults: UserDefaults = .standard) { self.defaults = defaults; super.init() }
     static let projectType = UTType(exportedAs: "app.scriv.project", conformingTo: .package)
 
     func choose(types: [UTType], directory: URL? = nil, from: UIViewController? = nil, completion: @escaping (URL?) -> Void) {
@@ -61,15 +63,15 @@ final class UIKitFileAccess: NSObject, UIDocumentPickerDelegate {
         let scoped = url.startAccessingSecurityScopedResource()
         do {
             let data = try url.bookmarkData(options: .minimalBookmark, includingResourceValuesForKeys: nil, relativeTo: nil)
-            var saved = UserDefaults.standard.dictionary(forKey: bookmarksKey) as? [String:Data] ?? [:]
-            saved[key] = data; UserDefaults.standard.set(saved, forKey: bookmarksKey)
+            var saved = defaults.dictionary(forKey: bookmarksKey) as? [String:Data] ?? [:]
+            saved[key] = data; defaults.set(saved, forKey: bookmarksKey)
             if scoped { retainedScopes[key] = url }
         } catch { if scoped { url.stopAccessingSecurityScopedResource() }; throw error }
     }
     func restoreProjectAccess(_ url: URL) throws -> URL {
         let key = url.standardizedFileURL.path
         if let retained = retainedScopes[key] { return retained }
-        let saved = UserDefaults.standard.dictionary(forKey: bookmarksKey) as? [String:Data] ?? [:]
+        let saved = defaults.dictionary(forKey: bookmarksKey) as? [String:Data] ?? [:]
         guard let data = saved[key] else { return url } // App-container URLs need no bookmark; normal I/O still enforces access.
         var stale = false
         let resolved = try URL(resolvingBookmarkData: data, options: [], relativeTo: nil, bookmarkDataIsStale: &stale)
@@ -78,7 +80,7 @@ final class UIKitFileAccess: NSObject, UIDocumentPickerDelegate {
             do {
                 let refreshed = try resolved.bookmarkData(options:.minimalBookmark,includingResourceValuesForKeys:nil,relativeTo:nil)
                 var bookmarks = saved; bookmarks[key] = refreshed
-                UserDefaults.standard.set(bookmarks,forKey:bookmarksKey)
+                defaults.set(bookmarks,forKey:bookmarksKey)
             } catch { if scoped { resolved.stopAccessingSecurityScopedResource() }; throw error }
         }
         if scoped { retainedScopes[key] = resolved }

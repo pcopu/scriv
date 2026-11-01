@@ -1621,16 +1621,30 @@ final class WorkspaceStore: ObservableObject {
 #if targetEnvironment(macCatalyst)
         UIKitFileAccess.shared.choose(types: [UIKitFileAccess.projectType,.folder]) { [weak self] url in
             guard let self, let url else { return }
-            self.perform { try UIKitFileAccess.shared.rememberProject(url); try await self.open(url) }
+            self.openUserSelectedProject(url)
         }
 #else
         let panel = NSOpenPanel(); panel.canChooseDirectories = true; panel.canChooseFiles = true; panel.allowsMultipleSelection = false; panel.message = "Choose a .scriv project package"
         guard panel.runModal() == .OK, let url = panel.url else { return }; perform { try await self.open(url) }
 #endif
     }
+#if targetEnvironment(macCatalyst)
+    /// Picker and scene-delivered file URLs are user-authorized entry points.
+    /// Retain their grant before scheduling any package I/O; do not substitute a
+    /// path-only URL, skip a failed bookmark, or weaken repository validation.
+    private func openUserSelectedProject(_ url: URL) {
+        perform {
+            do { try UIKitFileAccess.shared.rememberProject(url) }
+            catch { throw ProjectOpeningFailure.annotating(error, stage: .rememberAccess) }
+            try await self.open(url)
+        }
+    }
+#endif
     private func open(_ requestedURL: URL) async throws {
 #if targetEnvironment(macCatalyst)
-        let url = try UIKitFileAccess.shared.restoreProjectAccess(requestedURL)
+        let url: URL
+        do { url = try UIKitFileAccess.shared.restoreProjectAccess(requestedURL) }
+        catch { throw ProjectOpeningFailure.annotating(error, stage: .restoreAccess) }
 #else
         let url = requestedURL
 #endif
@@ -1639,10 +1653,21 @@ final class WorkspaceStore: ObservableObject {
         navigationGeneration += 1; invalidLocalAssetPaths = []; checkedLocalAssets = [:]; pendingLocalAssetChecks = [:]; let navigation = navigationGeneration
         await flushPendingSaves()
 #if targetEnvironment(macCatalyst)
-        try await recoverPendingSaves(at:url)
-#endif
+        do { try await recoverPendingSaves(at:url) }
+        catch { throw ProjectOpeningFailure.annotating(error, stage: .recoverChanges) }
+        let loaded: ScrivProject
+        let checkpoint: CloudCheckpoint?
+        let savedHistory: [HistoryEntry]
+        do { loaded = try await repo().load(at:url) }
+        catch { throw ProjectOpeningFailure.annotating(error, stage: .readProject) }
+        do { checkpoint = try await repo().checkpoint(at:url) }
+        catch { throw ProjectOpeningFailure.annotating(error, stage: .readCheckpoint) }
+        do { savedHistory = try await repo().history(at:url,through:loaded.revision) }
+        catch { throw ProjectOpeningFailure.annotating(error, stage: .readHistory) }
+#else
         let loaded = try await repo().load(at:url), checkpoint = try await repo().checkpoint(at:url)
         let savedHistory = try await repo().history(at:url,through:loaded.revision)
+#endif
         guard navigationGeneration == navigation else { throw CancellationError() }
         cloud.disconnect(); canonicalCheckpoint = checkpoint; dirtyItems = [:]; hasConflicts = false; isProjectSynchronizing = false; isSyncing = false; pauseRemoteUpdates = false
         project = loaded; projectURL = url; selectedSceneID = loaded.scenes.first?.id ?? ""; selectedEntryID = loaded.entries(in:selectedSceneID).first?.id
@@ -2216,7 +2241,14 @@ final class WorkspaceStore: ObservableObject {
     }
     func resolveThread() { guard let thread = activeThread else { return }; let contextID = project.id; perform { let updated = try await self.cloud.resolve(threadId:thread.id,resolved:!thread.resolved); if self.project.id == contextID, self.activeThread?.id == thread.id { self.activeThread = updated } } }
     func handleOpenURL(_ url: URL) {
-        if url.isFileURL && url.pathExtension == "scriv" { perform { try await self.open(url) }; return }
+        if url.isFileURL && url.pathExtension.lowercased() == "scriv" {
+#if targetEnvironment(macCatalyst)
+            openUserSelectedProject(url)
+#else
+            perform { try await self.open(url) }
+#endif
+            return
+        }
         if url.scheme == "scriv", url.host == "join" { joinTeam(token:url.absoluteString) }
         if url.scheme == "scriv", url.host == "billing", url.user == nil, url.password == nil, url.query == nil, url.fragment == nil,
            teams.contains(where: { "/" + $0.id == url.path }) { refreshAccount() }

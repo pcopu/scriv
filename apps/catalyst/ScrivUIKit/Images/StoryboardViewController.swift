@@ -2,6 +2,13 @@ import UIKit
 import UniformTypeIdentifiers
 import ScrivCore
 
+enum StoryboardSelectionPresentation {
+    static func summary(wordCount: Int) -> String {
+        guard wordCount > 0 else { return "" }
+        return "\(wordCount) \(wordCount == 1 ? "word" : "words") selected"
+    }
+}
+
 @MainActor final class StoryboardViewController: ScrivScreenController, UIGestureRecognizerDelegate {
     private let scroll = UIScrollView()
     private let rows = ImageUI.stack(spacing: 26)
@@ -49,7 +56,7 @@ import ScrivCore
     override func storeDidChange() {
         guard isViewLoaded else { return }
         countLabel.text = "\(store.sceneCues.count) images · \(ScrivFormat.duration(store.sceneDurationMs))"
-        selectionLabel.text = store.selectedWordIDs.isEmpty ? "" : "\(store.selectedWordIDs.count) words selected"
+        selectionLabel.text = StoryboardSelectionPresentation.summary(wordCount: store.selectedWordIDs.count)
         let next = "\(store.navigationContext)|\(store.selectedSceneID)|\(store.project.revision)|\(store.sceneCues)|\(store.sceneEntries)|\(store.project.images)|\(columns)|\(store.peerTransferStatus)"
         if signature != next, marqueeOrigin == nil { signature = next; rebuild() }
         cards.values.forEach { $0.updateSelection() }; directionBands.forEach { $0.updateFont(store.scriptFontSize * 1.35) }; updateSharedScript()
