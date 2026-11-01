@@ -236,4 +236,83 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertEqual(saved.entries.first { $0.id == entry.id }?.words.first?.endMs, newEnd)
         XCTAssertNil(store.errorMessage)
     }
+
+    /// History restore, the projects browser and teams, through their controls.
+    func testHistoryRestoreProjectsAndTeamsThroughTheirControls() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 1448, height: 900); window.overrideUserInterfaceStyle = .light
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { if workspace.presentedViewController != nil { workspace.dismiss(animated: false) }; window.isHidden = true }
+        let attached = await until { workspace.view.window != nil }
+        XCTAssertTrue(attached)
+        func topmost() -> UIViewController? { var top = workspace.presentedViewController; while let next = top?.presentedViewController { top = next }; return top }
+        func present(_ route: ScrivUIKitRoute) async throws -> UIViewController {
+            ScrivUIKitRouter.shared.present(route, from: workspace, store: store)
+            let shown = await until { workspace.presentedViewController?.viewIfLoaded?.window != nil && workspace.presentedViewController?.isBeingPresented == false }
+            XCTAssertTrue(shown, "\(route) sheet appears")
+            return try XCTUnwrap(workspace.presentedViewController)
+        }
+        func dismissAll() async { workspace.dismiss(animated: false); _ = await until { workspace.presentedViewController == nil } }
+        func controller<T: UIViewController>(_ type: T.Type, in root: UIViewController) -> T? {
+            var pending = [root]
+            while let next = pending.popLast() { if let match = next as? T { return match }; pending.append(contentsOf: next.children) }
+            return nil
+        }
+
+        // History: two titled revisions, restore the first through the sheet.
+        store.setProjectTitle("Revision A"); store.setProjectTitle("Revision B")
+        await store.flushPendingSaves()
+        let sheet = try await present(.history)
+        let history = try XCTUnwrap(controller(HistoryController.self, in: sheet))
+        let table = try XCTUnwrap(views(UITableView.self, in: history.view).first)
+        let rows = table.numberOfRows(inSection: 0)
+        XCTAssertGreaterThanOrEqual(rows, 3, "Working copy plus saved revisions")
+        let targetRow = try XCTUnwrap((0..<rows).first { row in
+            (table.cellForRow(at: IndexPath(row: row, section: 0)) ?? table.dataSource?.tableView(table, cellForRowAt: IndexPath(row: row, section: 0))).map { cell in
+                views(UILabel.self, in: cell.contentView).contains { $0.text?.contains("Revision \(store.project.revision - 1)") == true }
+            } ?? false
+        }, "Row for the previous revision")
+        table.selectRow(at: IndexPath(row: targetRow, section: 0), animated: false, scrollPosition: .none)
+        history.tableView(table, didSelectRowAt: IndexPath(row: targetRow, section: 0))
+        let restore = try button(labelled: "Restore revision…", in: history.view)
+        let previewed = await until { restore.isEnabled }
+        XCTAssertTrue(previewed, "Restore enables once the revision preview loads")
+        restore.sendActions(for: .primaryActionTriggered)
+        let asked = await until { topmost() is UIAlertController }
+        XCTAssertTrue(asked, "Restoring asks for confirmation")
+        let alert = try XCTUnwrap(topmost() as? UIAlertController)
+        let confirm = try XCTUnwrap(alert.actions.first { $0.title == "Restore as a new revision" })
+        typealias AlertHandler = @convention(block) (UIAlertAction) -> Void
+        let handler = unsafeBitCast(try XCTUnwrap(confirm.value(forKey: "handler") as AnyObject?), to: AlertHandler.self)
+        let revisionBefore = store.project.revision
+        alert.dismiss(animated: false); handler(confirm)
+        let restored = await until { store.project.title == "Revision A" }
+        XCTAssertTrue(restored, "The previous revision's content is restored")
+        XCTAssertEqual(store.project.revision, revisionBefore + 1, "Restoring creates a new revision")
+        await dismissAll()
+
+        // Projects browser: New project replaces the open project.
+        let oldID = store.project.id
+        let projects = try await present(.projects)
+        try button(labelled: "New project", in: projects.view).sendActions(for: .primaryActionTriggered)
+        let created = await until { store.project.id != oldID }
+        XCTAssertTrue(created, "New project opens a fresh project")
+        await dismissAll()
+
+        // Teams (signed out): Sign in leads to the sign-in sheet.
+        let teams = try await present(.teams)
+        try button(labelled: "Sign in to Scriv", in: teams.view).sendActions(for: .primaryActionTriggered)
+        let signIn = await until { topmost().flatMap { controller(ScrivSignInController.self, in: $0) } != nil }
+        XCTAssertTrue(signIn, "Signing in from Teams opens the sign-in sheet")
+        await dismissAll()
+        await store.flushPendingSaves()
+        XCTAssertNil(store.errorMessage)
+    }
 }
