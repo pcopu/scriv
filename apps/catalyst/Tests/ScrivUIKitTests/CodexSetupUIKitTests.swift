@@ -148,8 +148,8 @@ final class CodexSetupUIKitTests: XCTestCase {
 
     func testWideSheetPinsDoneAndUsesFullWidthPrimaryAction() throws {
         XCTAssertEqual(ScrivCodexSetupView.preferredSheetSize, CGSize(width: 584, height: 614))
-        XCTAssertEqual(ScrivCodexSetupView.preferredSize(for: .ready), CGSize(width: 584, height: 538))
-        XCTAssertEqual(ScrivCodexSetupView.preferredSize(for: .signInRequired), CGSize(width: 584, height: 538))
+        XCTAssertEqual(ScrivCodexSetupView.preferredSize(for: .ready), CGSize(width: 584, height: 614))
+        XCTAssertEqual(ScrivCodexSetupView.preferredSize(for: .signInRequired), CGSize(width: 584, height: 614))
         XCTAssertEqual(ScrivCodexSetupView.preferredSize(for: .idle, available: CGSize(width: 420, height: 600)), CGSize(width: 388, height: 568))
         let setup = makeView(); setup.frame = CGRect(origin: .zero, size: ScrivCodexSetupView.preferredSheetSize)
         for _ in 0..<5 { setup.setNeedsLayout(); setup.layoutIfNeeded() }
@@ -222,7 +222,7 @@ final class CodexSetupUIKitTests: XCTestCase {
         XCTAssertEqual(settings.preferredContentSize.width, 640)
         XCTAssertGreaterThanOrEqual(settings.preferredContentSize.height, 800)
         XCTAssertTrue(navigation.isNavigationBarHidden, "The wrapper must not initially measure a system navigation bar.")
-        XCTAssertEqual(navigation.preferredContentSize, CGSize(width: 740, height: 840))
+        XCTAssertEqual(navigation.preferredContentSize, ScrivCodexSetupView.preferredSheetSize)
         let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         let previous = scenes.flatMap(\.windows).first(where: \.isKeyWindow)
         let window: UIWindow

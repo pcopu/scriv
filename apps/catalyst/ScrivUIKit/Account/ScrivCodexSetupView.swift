@@ -76,10 +76,13 @@ extension ScrivCodexSetupPresentation {
 @MainActor
 final class ScrivCodexSetupView: UIView {
     // Imagegen is a 1× desktop layout: 26-point heading, 17-point body,
-    // 584-point panels. Its connected panels are shorter, not stretched.
+    // 584-point panels. The reference drew connected panels shorter, but their
+    // real content needs ~594 points; at 538 the actions scrolled out of view.
+    // Keep one height for every phase so nothing is hidden and the sheet does
+    // not jump in size as the connection state changes.
     static let preferredSheetSize = CGSize(width: 584, height: 614)
     static func preferredSize(for phase: CodexConnectionCheck.Phase, available: CGSize? = nil, accessibility: Bool = false) -> CGSize {
-        var size = CGSize(width: 584, height: [.ready, .signInRequired].contains(phase) ? 538 : 614)
+        var size = preferredSheetSize
         if accessibility { size.height = 760 }
         if let available, available.width > 0, available.height > 0 {
             size.width = min(size.width, max(1, available.width - 32))
