@@ -90,6 +90,30 @@ final class EditorDraftJournalTests: XCTestCase {
         let reviewed = try draft.applying(to:project,scope:draft.scope,epoch:nil)
         XCTAssertFalse(reviewed.entries[index].characterLinks?.contains(where: { $0.isConfirmed && $0.characterId != nil }) ?? false)
     }
+    func testConsecutiveKeystrokesSaveAndForeignWriterIsStillDetected() throws {
+        try withJournal { journal, root in
+            var (_, draft) = fixture()
+            try journal.save(draft,replacing:nil)
+            // Fast path: each save chains on the revision this process just wrote.
+            for character in "abc" {
+                let previous = draft.revisionID
+                draft.replaceText(draft.text + String(character),edit:CharacterTextEdit(range:NSRange(location:draft.text.utf16.count,length:0),replacement:String(character)))
+                try journal.save(draft,replacing:previous)
+            }
+            XCTAssertEqual(try journal.load(draft.scope),draft)
+            // Another process (simulated by writing the file directly) replaces the record.
+            var foreign = draft; foreign.replaceText(draft.text + "!")
+            let url = root.appendingPathComponent(draft.scope.key + ".json")
+            try ScrivJSON.encoder.encode(foreign).write(to:url,options:.atomic)
+            var stale = draft; stale.replaceText(draft.text + "?")
+            XCTAssertThrowsError(try journal.save(stale,replacing:draft.revisionID))
+            XCTAssertEqual(try journal.load(draft.scope),foreign)
+            // Clearing then saving fresh does not reuse a stale cached revision.
+            XCTAssertTrue(try journal.clear(foreign))
+            try journal.save(draft,replacing:nil)
+            XCTAssertEqual(try journal.load(draft.scope),draft)
+        }
+    }
     func testLateSaveCannotClearOrOverwriteNewerTyping() throws {
         try withJournal { journal, _ in
             var (_, first) = fixture(); first.replaceText("First")

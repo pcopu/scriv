@@ -105,10 +105,30 @@ public struct EditorDraftJournal {
         guard draft.scope == scope else { throw ScrivError.invalid("Editor draft identity mismatch; the existing file has been retained.") }
         return draft
     }
+    /// Files this process wrote, by path: the revision plus the size and
+    /// modification time observed right after writing. A matching stat proves the
+    /// file is still that record, so a keystroke need not re-read, decode and
+    /// re-validate the previous draft. Any other writer changes the stat.
+    private static let written = WrittenRecords()
+    private final class WrittenRecords: @unchecked Sendable {
+        private let lock = NSLock()
+        private var records: [String: (revisionID: String, size: Int, modified: Date)] = [:]
+        func get(_ path: String) -> (revisionID: String, size: Int, modified: Date)? { lock.lock(); defer { lock.unlock() }; return records[path] }
+        func set(_ path: String, _ value: (revisionID: String, size: Int, modified: Date)?) { lock.lock(); records[path] = value; lock.unlock() }
+    }
+    /// Revision of the draft currently on disk for `scope`, or nil when none exists.
+    private func currentRevision(_ scope: EditorDraftScope) throws -> String? {
+        let url = try file(scope)
+        guard FileManager.default.fileExists(atPath: url.path) else { Self.written.set(url.path, nil); return nil }
+        if let known = Self.written.get(url.path),
+           let values = try? url.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey]),
+           values.fileSize == known.size, values.contentModificationDate == known.modified { return known.revisionID }
+        return try load(scope)?.revisionID
+    }
     public func save(_ draft: LocalEditorDraft, replacing revisionID: String?) throws {
         try validate(draft)
-        let current = try load(draft.scope)
-        guard current == nil || current?.revisionID == revisionID else {
+        let current = try currentRevision(draft.scope)
+        guard current == nil || current == revisionID else {
             throw ScrivError.conflict("A newer local editor already saved this draft. Reopen the line to recover it before editing.")
         }
         let data = try ScrivJSON.encoder.encode(draft)
@@ -125,15 +145,21 @@ public struct EditorDraftJournal {
             total += bytes
         }
         guard count < maximumRecords, total <= maximumTotalBytes else { throw ScrivError.invalid("Local draft recovery storage is full. No drafts were evicted.") }
+        Self.written.set(target.path, nil)
         try data.write(to: target, options: .atomic)
         try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: target.path)
+        var fresh = target; fresh.removeAllCachedResourceValues()
+        if let values = try? fresh.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey]), let size = values.fileSize, let modified = values.contentModificationDate {
+            Self.written.set(target.path, (draft.revisionID, size, modified))
+        }
     }
     /// A late canonical save must never remove newer typing or another editor's draft.
     @discardableResult
     public func clear(_ draft: LocalEditorDraft) throws -> Bool {
         guard let current = try load(draft.scope) else { return true }
         guard current.revisionID == draft.revisionID else { return false }
-        try FileManager.default.removeItem(at: file(draft.scope)); return true
+        let url = try file(draft.scope); Self.written.set(url.path, nil)
+        try FileManager.default.removeItem(at: url); return true
     }
     private func file(_ scope: EditorDraftScope) throws -> URL {
         let url = root.appendingPathComponent(scope.key + ".json")

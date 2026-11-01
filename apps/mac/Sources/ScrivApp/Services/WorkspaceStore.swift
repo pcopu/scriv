@@ -890,8 +890,13 @@ final class WorkspaceStore: ObservableObject {
     var editorLifecycleContext: Int { cloud.lifecycleContext }
     var editorAccountContext: String { cloud.baseURL.absoluteString + "|" + (cloud.account?.id ?? "<local>") }
     var editorDraftEpoch: Int? { project.cloudProjectId != nil && project.cloudProjectId == cloud.projectId ? cloud.epoch : nil }
+    /// Opening a journal creates and re-permissions its directory; reuse it
+    /// across keystrokes, re-opening only when the root changes or a write fails.
+    private var cachedEditorJournal: EditorDraftJournal?
     private func editorJournal() throws -> EditorDraftJournal {
-        try EditorDraftJournal(root:rootURL.deletingLastPathComponent().appendingPathComponent("EditorDrafts",isDirectory:true))
+        let root = rootURL.deletingLastPathComponent().appendingPathComponent("EditorDrafts",isDirectory:true)
+        if let cachedEditorJournal, cachedEditorJournal.root == root.resolvingSymlinksInPath().standardizedFileURL { return cachedEditorJournal }
+        let journal = try EditorDraftJournal(root:root); cachedEditorJournal = journal; return journal
     }
     private func editorDraftScope(_ id: String) throws -> EditorDraftScope {
         guard let package = projectURL else { throw ScrivError.unavailable("Choose a local project location before editing.") }
@@ -907,7 +912,10 @@ final class WorkspaceStore: ObservableObject {
     func persistEditorDraft(_ draft: LocalEditorDraft, replacing revisionID: String) throws {
         // The captured scope is deliberate: late navigation must never redirect
         // this write into the newly selected package/account.
-        try editorJournal().save(draft,replacing:revisionID)
+        // On failure, retry once with a freshly opened journal (its directory may
+        // have been removed); refusals such as conflicts simply recur.
+        do { try editorJournal().save(draft,replacing:revisionID) }
+        catch { cachedEditorJournal = nil; try editorJournal().save(draft,replacing:revisionID) }
     }
     func rebaseEditorDraft(_ draft: LocalEditorDraft) throws -> LocalEditorDraft {
         guard draft.scope == (try editorDraftScope(draft.scope.entryID)),
