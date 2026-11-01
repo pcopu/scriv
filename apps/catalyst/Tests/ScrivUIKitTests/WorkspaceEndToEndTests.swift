@@ -315,4 +315,46 @@ final class WorkspaceEndToEndTests: XCTestCase {
         await store.flushPendingSaves()
         XCTAssertNil(store.errorMessage)
     }
+
+    /// Rows shift when an editor above a direction opens and closes; the
+    /// direction's rail must follow its line without any later refresh.
+    func testDirectionRailFollowsItsLineWhenRowsAboveResize() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 1448, height: 900); window.overrideUserInterfaceStyle = .light
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        let ready = await until { !self.views(ScriptEntryRow.self, in: workspace.view).isEmpty }
+        XCTAssertTrue(ready)
+        let entries = store.sceneEntries
+        let directionIndex = try XCTUnwrap(entries.indices.first { $0 > 0 && entries[$0].kind == .direction })
+        let direction = entries[directionIndex]
+        let above = try XCTUnwrap(entries[..<directionIndex].last { $0.kind == .dialogue })
+        let rails = try XCTUnwrap(views(ScriptDirectionRails.self, in: workspace.view).first)
+        func offset() throws -> CGFloat {
+            let row = try XCTUnwrap(views(ScriptEntryRow.self, in: workspace.view).first { $0.entryID == direction.id })
+            let handle = try XCTUnwrap(rails.subviews.compactMap { $0 as? UIButton }.first { $0.accessibilityLabel == "Select direction: " + direction.text })
+            return handle.convert(handle.bounds, to: rails).midY - row.convert(row.bounds, to: rails).minY
+        }
+        try await Task.sleep(for: .milliseconds(300)); workspace.view.layoutIfNeeded()
+        let baseline = try offset()
+        XCTAssertLessThan(abs(baseline), 60, "The rail starts at its own line")
+        let row = try XCTUnwrap(views(ScriptEntryRow.self, in: workspace.view).first { $0.entryID == above.id })
+        row.onEdit?(0)
+        let opened = await until { !row.editor.isHidden }
+        XCTAssertTrue(opened)
+        try await Task.sleep(for: .milliseconds(200))
+        XCTAssertEqual(try offset(), baseline, accuracy: 0.5, "Rail follows its line while the editor above is open")
+        row.editor.finishEditing?()
+        let closed = await until { row.editor.isHidden }
+        XCTAssertTrue(closed)
+        try await Task.sleep(for: .milliseconds(200))
+        XCTAssertEqual(try offset(), baseline, accuracy: 0.5, "Rail follows its line after the editor above closes")
+    }
 }

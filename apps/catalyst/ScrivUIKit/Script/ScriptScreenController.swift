@@ -5,7 +5,15 @@ import ScrivCore
 @MainActor
 final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     private let scroll = UIScrollView()
-    private let content = UIView()
+    /// Rows are laid out inside the scroll content after the controller's
+    /// viewDidLayoutSubviews, so rail geometry read there could be stale (e.g.
+    /// a rail left below its line after an editor closed). Update rails from the
+    /// content's own layout pass, once row frames are final.
+    private final class ContentView: UIView {
+        var onLayout: (() -> Void)?
+        override func layoutSubviews() { super.layoutSubviews(); onLayout?() }
+    }
+    private let content = ContentView()
     private let rowsStack = ScrivUIKitTheme.stack([], spacing: 23)
     private let searchField = UISearchTextField()
     private let searchRow = ScrivUIKitTheme.stack([], axis: .horizontal, spacing: 7)
@@ -188,6 +196,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
             content.topAnchor.constraint(equalTo: scroll.contentLayoutGuide.topAnchor), content.bottomAnchor.constraint(equalTo: scroll.contentLayoutGuide.bottomAnchor),
             content.widthAnchor.constraint(equalTo: scroll.frameLayoutGuide.widthAnchor)
         ])
+        content.onLayout = { [weak self] in self?.updateRails() }
         content.addSubview(rowsStack); rowsStack.scrivPinEdges(to: content, insets: NSDirectionalEdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
         content.addSubview(rails); rails.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([rails.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20), rails.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20), rails.topAnchor.constraint(equalTo: content.topAnchor), rails.bottomAnchor.constraint(equalTo: content.bottomAnchor)])
@@ -204,6 +213,12 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if renderedPresentation != presentation { renderedPresentation = presentation; storeDidChange() }
+        updateRails()
+    }
+    private func updateRails() {
+        // Row frames are assigned when the row stack lays out, which happens
+        // after its container's pass; lay it out first so frames are final.
+        rowsStack.layoutIfNeeded()
         var frames: [String: CGRect] = [:]
         for (id, row) in rows { var frame = row.convert(row.bounds, to: content); frame.origin.x -= 20; frames[id] = frame }
         rails.update(entries: store.sceneEntries, frames: frames)
