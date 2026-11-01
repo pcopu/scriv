@@ -12,7 +12,7 @@ import ScrivCore
     private let collection: UICollectionView
     private let emptyLabel = ImageUI.label("No project images yet. Import or generate an image, then reuse it here.", size: 15, secondary: true)
     private var useButton: UIButton!
-    private var dataSignature = ""
+    private var dataSignature: [AnyHashable] = []
     private var collectionWidth: CGFloat = 0
 
     init(store: WorkspaceStore, cueID: String, versionsOf: String? = nil) {
@@ -45,7 +45,7 @@ import ScrivCore
         let cue = store.project.cues.first { $0.id == cueID }
         subtitle.text = cue.map { "For " + ($0.label.isEmpty ? "this picture placement" : $0.label) } ?? "This placement no longer exists."
         useButton.isEnabled = chosenID.flatMap { store.project.asset($0) } != nil && cue != nil && store.lockedByOther(cueID) == nil
-        let next = "\(store.project.images)|\(store.project.characters)|\(store.project.cues)|\(query)|\(store.peerTransferStatus)|\(store.statusMessage)"
+        let next: [AnyHashable] = [store.project.images, store.project.characters, store.project.cues, query, store.peerTransferStatus, store.statusMessage]
         guard next != dataSignature else { return }; dataSignature = next
         let available = versionsOf.map { ProjectEditing.imageVersions(in: store.project, imageId: $0) } ?? store.project.images.sorted { ($0.createdAt, $0.id) > ($1.createdAt, $1.id) }
         let term = query.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -5,7 +5,7 @@ import ScrivCore
     private let scroll = UIScrollView(), canvas = UIView(), playhead = UIView()
     private let zoom = UISlider(), overview = UISlider(), snap = UISwitch()
     private var scale: CGFloat = 0.04
-    private var signature = ""
+    private var signature: [AnyHashable] = []
     private var canvasHeight: CGFloat = 240
     private var lastFollowedCue: String?
     private var dragInProgress = false
@@ -17,7 +17,7 @@ import ScrivCore
     override func viewDidLoad() {
         super.viewDidLoad(); title = "Layers"; view.backgroundColor = .clear
         zoom.minimumValue = 0.3; zoom.maximumValue = 2.5; zoom.value = 1; zoom.accessibilityLabel = "Timeline zoom"; zoom.widthAnchor.constraint(equalToConstant: 85).isActive = true
-        zoom.addAction(UIAction { [weak self] _ in self?.signature = ""; self?.storeDidChange() }, for: .valueChanged)
+        zoom.addAction(UIAction { [weak self] _ in self?.signature = []; self?.storeDidChange() }, for: .valueChanged)
         snap.isOn = true; snap.accessibilityLabel = "Snap to words"; snap.transform = CGAffineTransform(scaleX: 0.7, y: 0.7)
         let audio = ImageUI.button("Audio", symbol: "waveform") { [weak self] in self?.show(.audio) }; ImageUI.compact(audio)
         let titleRow = ImageUI.row([ImageUI.label("Layers", size: 17, weight: .semibold), audio, ImageUI.spacer(), ImageUI.label("Snap", size: 10), snap, zoom], spacing: 4)
@@ -40,7 +40,7 @@ import ScrivCore
         guard isViewLoaded else { return }
         if timingDrivers.contains(where: { $0.isActive && !$0.sourceIsCurrent }) { timingDrivers.forEach { $0.cancel() }; return }
         scale = min(0.04 * CGFloat(zoom.value), 30_000 / CGFloat(max(1, store.sceneDurationMs)))
-        let next = "\(store.navigationContext)|\(store.selectedSceneID)|\(store.project.revision)|\(store.sceneCues)|\(store.sceneEntries)|\(store.project.audioClips)|\(store.project.audioAssets)|\(store.project.images)|\(scale)|\(store.scriptZoom)|\(store.peerTransferStatus)"
+        let next: [AnyHashable] = [store.navigationContext, store.selectedSceneID, store.project.revision, store.sceneCues, store.sceneEntries, store.project.audioClips, store.project.audioAssets, store.project.images, scale, store.scriptZoom, store.peerTransferStatus]
         if signature != next, !dragInProgress { signature = next; rebuild() }
         for (id, button) in imageButtons {
             button.layer.borderColor = ImageUI.accent.cgColor
@@ -158,7 +158,7 @@ import ScrivCore
             guard let self else { return }; self.dragInProgress = true; self.scroll.isScrollEnabled = false; self.becomeFirstResponder()
         }, onFinish: { [weak self] in
             guard let self else { return }; self.dragInProgress = false; self.scroll.isScrollEnabled = true
-            DispatchQueue.main.async { [weak self] in self?.signature = ""; self?.storeDidChange() }
+            DispatchQueue.main.async { [weak self] in self?.signature = []; self?.storeDidChange() }
         })
         timingDrivers.append(driver); scroll.panGestureRecognizer.require(toFail: driver.recognizer)
     }
@@ -183,7 +183,7 @@ import ScrivCore
     }
     private func addPan(to view: UIView, action: @escaping (CGFloat, Int) -> Void) {
         let driver = ImageTimelineDragDriver(view: view, begin: { [weak self] in guard let self else { return 0 }; self.dragInProgress = true; if self.store.isPlaying { self.store.togglePlayback() }; return self.store.navigationContext }, finish: { [weak self] delta, context, committed in
-            guard let self else { return }; self.dragInProgress = false; if committed { action(delta, context) }; self.signature = ""; self.storeDidChange()
+            guard let self else { return }; self.dragInProgress = false; if committed { action(delta, context) }; self.signature = []; self.storeDidChange()
         })
         dragDrivers.append(driver)
     }

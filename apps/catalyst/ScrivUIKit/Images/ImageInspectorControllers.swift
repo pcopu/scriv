@@ -5,7 +5,7 @@ import ScrivCore
     let imageID: String
     let cueID: String?
     private var content: UIStackView!
-    private var signature = ""
+    private var signature: [AnyHashable] = []
     private var promptExpanded = false
     init(store: WorkspaceStore, imageID: String, cueID: String? = nil) {
         self.imageID = imageID; self.cueID = cueID; super.init(store: store)
@@ -20,7 +20,7 @@ import ScrivCore
         guard contextIsCurrent else { dismiss(animated: true); return }
         let image = store.project.asset(imageID)
         let cue = UIKitImageContext.placement(imageID: imageID, cueID: cueID, project: store.project)
-        let next = "\(String(describing: image))|\(String(describing: cue))|\(image.flatMap { store.assetURL($0) }?.path ?? "")|\(store.project.characters)|\(store.peerTransferStatus)"
+        let next: [AnyHashable] = [image, cue, image.flatMap { store.assetURL($0) }?.path, store.project.characters, store.peerTransferStatus]
         guard next != signature else { return }; signature = next; ImageUI.clear(content)
         guard let image else { title = "Image unavailable"; content.addArrangedSubview(ImageUI.heading("Image unavailable") { [weak self] in self?.dismiss(animated: true) }); content.addArrangedSubview(ImageUI.notice("This image is no longer in the project. Close the preview and choose another image.", warning: true)); return }
         let name = UIKitImageContext.title(imageID: image.id, cueID: cueID, project: store.project); title = name
@@ -46,7 +46,7 @@ import ScrivCore
             self.dismiss(animated: true) { self.store.loadDiscussion(itemId: image.id); self.store.showDiscussion = true }
         }
         let more = ImageUI.button("", symbol: "ellipsis") {}; more.accessibilityLabel = "Image version actions"; more.showsMenuAsPrimaryAction = true
-        var actions: [UIMenuElement] = [UIAction(title: promptExpanded ? "Hide captured generation prompt" : "Show captured generation prompt", image: UIImage(systemName: "text.alignleft")) { [weak self] _ in self?.promptExpanded.toggle(); self?.signature = ""; self?.storeDidChange() }, UIAction(title: "Copy image direction", attributes: image.prompt.isEmpty ? [.disabled] : []) { _ in UIPasteboard.general.string = image.prompt }]
+        var actions: [UIMenuElement] = [UIAction(title: promptExpanded ? "Hide captured generation prompt" : "Show captured generation prompt", image: UIImage(systemName: "text.alignleft")) { [weak self] _ in self?.promptExpanded.toggle(); self?.signature = []; self?.storeDidChange() }, UIAction(title: "Copy image direction", attributes: image.prompt.isEmpty ? [.disabled] : []) { _ in UIPasteboard.general.string = image.prompt }]
         if let prompt = image.generationPrompt { actions.append(UIAction(title: "Copy captured generation prompt") { _ in UIPasteboard.general.string = prompt }) }
         if let url = store.assetURL(image) { actions.append(UIAction(title: "Share original image") { [weak self, weak more] _ in guard let self else { return }; let sheet = UIActivityViewController(activityItems: [url], applicationActivities: nil); sheet.popoverPresentationController?.sourceView = more ?? self.view; self.present(sheet, animated: true) }) }
         more.menu = UIMenu(children: actions)
@@ -71,7 +71,7 @@ import ScrivCore
 @MainActor final class CharacterTagsViewController: ScrivScreenController {
     let imageID: String
     private var content: UIStackView!
-    private var signature = ""
+    private var signature: [AnyHashable] = []
     init(store: WorkspaceStore, imageID: String) { self.imageID = imageID; super.init(store: store) }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(store:imageID:)") }
     override func viewDidLoad() {
@@ -82,7 +82,7 @@ import ScrivCore
         guard isViewLoaded, content != nil else { return }
         guard contextIsCurrent else { dismiss(animated: true); return }
         guard let image = store.project.asset(imageID) else { ImageUI.clear(content); content.addArrangedSubview(ImageUI.heading("Image unavailable") { [weak self] in self?.dismiss(animated: true) }); content.addArrangedSubview(ImageUI.notice("This image is no longer in the project.", warning: true)); return }
-        let next = "\(image)|\(store.project.characters)|\(store.assetURL(image)?.path ?? "")|\(store.lockedByOther(imageID) ?? "")"
+        let next: [AnyHashable] = [image, store.project.characters, store.assetURL(image)?.path, store.lockedByOther(imageID)]
         guard next != signature else { return }; signature = next; ImageUI.clear(content)
         content.addArrangedSubview(ImageUI.label("Who is pictured?", size: 23, weight: .semibold))
         content.addArrangedSubview(ImageUI.label(UIKitImageContext.title(imageID: image.id, project: store.project) + " · Version \(image.version)", secondary: true))
@@ -112,7 +112,7 @@ import ScrivCore
                 var tags = current.characterIds
                 if tags.contains(character.id) { tags.removeAll { $0 == character.id } } else { tags.append(character.id) }
                 self.store.setCharacterTags(imageId: current.id, characterIds: tags)
-                self.signature = ""; self.storeDidChange()
+                self.signature = []; self.storeDidChange()
             }, for: .touchUpInside)
             content.addArrangedSubview(ImageUI.row([portrait, dot, name, ImageUI.spacer(), toggle])); content.addArrangedSubview(ImageUI.divider())
         }

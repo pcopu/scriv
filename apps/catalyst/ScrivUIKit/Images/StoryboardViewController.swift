@@ -14,7 +14,7 @@ enum StoryboardSelectionPresentation {
     private let rows = ImageUI.stack(spacing: 26)
     private let countLabel = ImageUI.label(size: 12, secondary: true)
     private let selectionLabel = ImageUI.label(size: 11, secondary: true)
-    private var signature = ""
+    private var signature: [AnyHashable] = []
     private var columns = 3
     private var cards: [String: UIKitStoryboardCard] = [:]
     private var directionBands: [UIKitStoryboardDirectionBand] = []
@@ -51,13 +51,13 @@ enum StoryboardSelectionPresentation {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews(); let desired = view.bounds.width < 620 ? 1 : (view.bounds.width < 1000 ? 2 : 3)
-        if desired != columns { columns = desired; signature = ""; storeDidChange() }
+        if desired != columns { columns = desired; signature = []; storeDidChange() }
     }
     override func storeDidChange() {
         guard isViewLoaded else { return }
         countLabel.text = "\(store.sceneCues.count) images · \(ScrivFormat.duration(store.sceneDurationMs))"
         selectionLabel.text = StoryboardSelectionPresentation.summary(wordCount: store.selectedWordIDs.count)
-        let next = "\(store.navigationContext)|\(store.selectedSceneID)|\(store.project.revision)|\(store.sceneCues)|\(store.sceneEntries)|\(store.project.images)|\(columns)|\(store.peerTransferStatus)"
+        let next: [AnyHashable] = [store.navigationContext, store.selectedSceneID, store.project.revision, store.sceneCues, store.sceneEntries, store.project.images, columns, store.peerTransferStatus]
         if signature != next, marqueeOrigin == nil { signature = next; rebuild() }
         cards.values.forEach { $0.updateSelection() }; directionBands.forEach { $0.updateFont(store.scriptFontSize * 1.35) }; updateSharedScript()
     }

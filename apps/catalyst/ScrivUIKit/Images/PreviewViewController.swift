@@ -9,7 +9,7 @@ import ScrivCore
     private let media = ImageUI.stack()
     private let metadata = ImageUI.stack(spacing: 8)
     private var mediaSignature = ""
-    private var metadataSignature = ""
+    private var metadataSignature: [AnyHashable] = []
     private var timeline: LayerTimelineViewController!
     private var timelineHeight: NSLayoutConstraint?
     private var layersDisclosure: PreviewLayersDisclosureView!
@@ -52,7 +52,9 @@ import ScrivCore
             }
         }
         let overlaps = store.sceneCues.filter { $0.startMs <= Int(store.playheadMs) && $0.endMs > Int(store.playheadMs) }
-        let nextMetadata = "\(String(describing: cue))|\(String(describing: image))|\(inspecting)|\(overlaps.map(\.id))|\(store.project.characters)|\(store.project.entries)|\(store.scriptZoom)|\(store.lockedByOther(cue?.id ?? "") ?? "")"
+        // Compare values directly; describing whole model arrays as strings was
+        // reflection over the entire project on every playback tick.
+        let nextMetadata: [AnyHashable] = [cue, image, inspecting, overlaps.map(\.id), store.project.characters, store.project.entries, store.scriptZoom, store.lockedByOther(cue?.id ?? "")]
         if metadataSignature != nextMetadata {
             metadataSignature = nextMetadata; ImageUI.clear(metadata)
             if inspecting { metadata.addArrangedSubview(ImageUI.button("Follow playhead", symbol: "play.circle") { [weak self] in guard let self else { return }; self.store.selectedCueID = self.store.currentCue?.id }) }
