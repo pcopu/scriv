@@ -7,7 +7,9 @@ enum ScrivWorkspaceLayout {
     static let panelGap: CGFloat = 16
     static func usesFooterTransport(for tab: WorkspaceTab) -> Bool { true }
     static func stacksWorkPanels(availableWidth: CGFloat, discussionVisible: Bool, tab: WorkspaceTab) -> Bool {
-        discussionVisible && tab != .storyboard && availableWidth > 0 && availableWidth < 900
+        // Side by side stays readable down to ~430 points per panel; stacking
+        // earlier left the Script panel showing a single line beside discussion.
+        discussionVisible && tab != .storyboard && availableWidth > 0 && availableWidth < 860
     }
 }
 
@@ -73,6 +75,11 @@ final class ScrivWorkspaceHeader: UIView {
         [project, tabs, actions].forEach { $0.translatesAutoresizingMaskIntoConstraints = false; addSubview($0) }
         let preferredTabWidth = tabs.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.29)
         preferredTabWidth.priority = .defaultHigh
+        // Segments share the width equally; never let the 29% preference shrink
+        // them below the widest (selected, semibold) title, which truncated
+        // "Storyboard"/"Characters" near the minimum window width.
+        let widestTitle = WorkspaceTab.allCases.map { ($0.rawValue as NSString).size(withAttributes: [.font: UIFont.systemFont(ofSize: 18, weight: .semibold)]).width }.max() ?? 0
+        let minimumTabWidth = tabs.widthAnchor.constraint(greaterThanOrEqualToConstant: ceil(widestTitle + 32) * CGFloat(WorkspaceTab.allCases.count))
         NSLayoutConstraint.activate([
             project.leadingAnchor.constraint(equalTo: leadingAnchor),
             project.centerYAnchor.constraint(equalTo: centerYAnchor),
@@ -85,7 +92,7 @@ final class ScrivWorkspaceHeader: UIView {
             // 38 logical pixels at the unchanged scale). Keep that design target
             // rather than chasing its one-point native alignment outset.
             tabs.heightAnchor.constraint(equalToConstant: 48),
-            tabs.widthAnchor.constraint(lessThanOrEqualToConstant: 420), preferredTabWidth,
+            tabs.widthAnchor.constraint(lessThanOrEqualToConstant: 420), preferredTabWidth, minimumTabWidth,
             actions.leadingAnchor.constraint(greaterThanOrEqualTo: tabs.trailingAnchor, constant: 24),
             actions.trailingAnchor.constraint(equalTo: trailingAnchor),
             actions.centerYAnchor.constraint(equalTo: centerYAnchor)
