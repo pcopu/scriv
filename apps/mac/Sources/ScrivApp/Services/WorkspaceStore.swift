@@ -677,7 +677,20 @@ final class WorkspaceStore: ObservableObject {
     private func bootstrap() async {
 #if targetEnvironment(macCatalyst)
         defer { isBootstrapping = false }
-        if verificationMode { return }
+        if verificationMode {
+            // Isolated verification only: start playback on launch so the running
+            // app's playback cost can be measured without synthetic input events.
+            if ProcessInfo.processInfo.environment["SCRIV_VERIFICATION_AUTOPLAY"] == "1" {
+                Task { @MainActor [weak self] in
+                    try? await Task.sleep(for: .seconds(1))
+                    guard let self, !self.isPlaying else { return }
+                    self.togglePlayback()
+                    // Loop the scene for the duration of the measurement.
+                    while !Task.isCancelled { try? await Task.sleep(for: .milliseconds(250)); if !self.isPlaying { self.seek(toMs: 0); self.togglePlayback() } }
+                }
+            }
+            return
+        }
         // Account identity is restored before replaying account-bound cloud drafts.
         // Local-only pending packages do not require a network account.
         await cloud.restoreSession()
