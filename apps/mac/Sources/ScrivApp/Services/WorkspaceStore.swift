@@ -48,7 +48,8 @@ final class WorkspaceStore: ObservableObject {
     }
     private var localStorageIssueMessage: String? {
         guard repository != nil else { return "Local storage unavailable" }
-        if project.cues.contains(where: { promptIssue(for:$0) != nil }) { return "Direction recovery needs attention" }
+        // Most refreshes have no recorded issues; skip the per-cue scan then.
+        if !(promptPresentationIssues.isEmpty && generationPromptIssues.isEmpty), project.cues.contains(where: { promptIssue(for:$0) != nil }) { return "Direction recovery needs attention" }
         if codex.journalError != nil { return "Generation recovery needs attention" }
         return nil
     }
@@ -81,7 +82,22 @@ final class WorkspaceStore: ObservableObject {
         let accountID: String?
         let sceneID: String
         let cueID: String
-        var key: String { ScrivDigest.sha256((try? ScrivJSON.encoder.encode(self)) ?? Data()) }
+        /// JSON-encoding and hashing is costly and this is read per cue on every
+        /// refresh; scopes are immutable values, so memoize the digest.
+        var key: String {
+            if let cached = Self.keys.value(self) { return cached }
+            let value = ScrivDigest.sha256((try? ScrivJSON.encoder.encode(self)) ?? Data())
+            Self.keys.store(value, for: self); return value
+        }
+        private static let keys = KeyCache()
+        /// Read from detached work too, so guard with a lock rather than an actor.
+        private final class KeyCache: @unchecked Sendable {
+            private let lock = NSLock(); private var values: [PromptPresentationScope: String] = [:]
+            func value(_ scope: PromptPresentationScope) -> String? { lock.lock(); defer { lock.unlock() }; return values[scope] }
+            func store(_ value: String, for scope: PromptPresentationScope) {
+                lock.lock(); if values.count > 4096 { values.removeAll(keepingCapacity: true) }; values[scope] = value; lock.unlock()
+            }
+        }
     }
     private struct PromptPresentationInput: Hashable, Sendable {
         let scope: PromptPresentationScope // lexical UI identity; never a durable journal identity
