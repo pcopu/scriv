@@ -37,6 +37,34 @@ python3 updates/scripts/release.py \
 
 Publication is a separate authorized action: add `--publish --confirm-channel "$SCRIV_UPDATE_CHANNEL"` only with existing bucket-scoped S3 authentication. The publisher verifies signatures before immutable object writes, commits the channel pointer last with a conditional write, and reads it back. On timeout, collision or conditional-write failure, inspect exact remote objects/pointer before retrying. Never delete old evidence to make a retry succeed. The channel is public distribution, not confidentiality; stable must remain unchanged.
 
+### Cloud-side integrity check of returned staging
+
+The four public release-staging files (`Scriv.zip`, `appcast.xml`,
+`manifest.json`, and `channel.json`) can be checked on Linux without accessing
+Apple credentials, extracting the app, invoking native tools, or publishing:
+
+```sh
+python3 updates/scripts/verify_staged.py \
+  --staged "$RELEASE_STAGING_DIRECTORY" \
+  --team "$SCRIV_TEAM_ID" --public-key "$SCRIV_UPDATE_PUBLIC_KEY" \
+  --build "$SCRIV_BUILD_NUMBER" --channel "$SCRIV_UPDATE_CHANNEL"
+```
+
+Supply the team, public key, expected build, and channel from independently
+trusted release instructions, not by copying untrusted manifest values. The
+checker reads bounded files, verifies archive/feed Ed25519 signatures and
+content addresses, compares the channel pointer, and checks the signed ZIP's
+app metadata and update policy. It never extracts or launches executable code.
+It does not inspect the full ZIP path graph or establish that extraction is safe.
+
+A successful JSON result deliberately reports native signing/notarization,
+source provenance, installation, and publication as **not verified/performed**.
+An authentic archive can still contain an unsigned, unnotarized, wrong-source,
+or broken app. This is an integrity check for artifact transfer, not a portable
+substitute for the native release and acceptance gates below. Keep notarization
+receipts, local diagnostic paths, project snapshots and credentials private; the
+checker neither needs nor accepts them.
+
 ## Actual native acceptance
 
 1. Verify/download the exact signed app using `updates/scripts/acceptance.py download`; it never installs or launches anything.
