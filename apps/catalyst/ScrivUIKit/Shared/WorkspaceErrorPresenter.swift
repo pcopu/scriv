@@ -1,5 +1,6 @@
 import UIKit
 import Combine
+import ScrivCore
 
 /// Queue errors above the actual frontmost UIKit form, preserving its draft.
 @MainActor
@@ -11,11 +12,15 @@ final class WorkspaceErrorPresenter {
     init() {
         for name in [UIWindow.didBecomeKeyNotification, UIApplication.didBecomeActiveNotification] {
             NotificationCenter.default.publisher(for: name).receive(on: RunLoop.main)
-                .sink { [weak self] _ in self?.presentNext() }.store(in: &observers)
+                .sink { [weak self] _ in
+                    if name == UIWindow.didBecomeKeyNotification { StartupTrace.process.record(.windowBecameKey) }
+                    self?.presentNext()
+                }.store(in: &observers)
         }
     }
     func enqueue(_ message: String, onDismiss: @escaping () -> Void) {
         guard !message.isEmpty, active?.message != message, !pending.contains(where: { $0.message == message }) else { return }
+        StartupTrace.process.record(.errorQueued)
         pending.append(Issue(message: message, onDismiss: onDismiss)); presentNext()
     }
     private func presentNext() {
@@ -27,9 +32,10 @@ final class WorkspaceErrorPresenter {
         let issue = pending.removeFirst(); active = issue
         let alert = UIAlertController(title: "Scriv", message: issue.message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            StartupTrace.process.record(.errorDismissed)
             self?.active = nil; issue.onDismiss()
             DispatchQueue.main.async { [weak self] in self?.presentNext() }
         })
-        presenter.present(alert, animated: true)
+        presenter.present(alert, animated: true) { StartupTrace.process.record(.errorPresented) }
     }
 }

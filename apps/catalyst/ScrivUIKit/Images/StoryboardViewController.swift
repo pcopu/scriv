@@ -9,6 +9,25 @@ enum StoryboardSelectionPresentation {
     }
 }
 
+/// Partition a single source-ordered script between picture rows. Overlapping
+/// pictures do not own copies of the words; each word still has one control.
+/// Equal row starts belong to the first row at that time. Uncovered leading and
+/// trailing words remain visible, and unusual imported timing cannot reorder text.
+enum StoryboardSharedScriptLayout {
+    static func rowIndices(wordStarts: [Int], rowStarts: [Int]) -> [Int] {
+        var boundaries: [(row: Int, start: Int)] = []
+        for (row, start) in rowStarts.enumerated() {
+            if let previous = boundaries.last, start <= previous.start { continue }
+            boundaries.append((row: row, start: start))
+        }
+        var boundary = 0
+        return wordStarts.map { start in
+            while boundary + 1 < boundaries.count, boundaries[boundary + 1].start <= start { boundary += 1 }
+            return boundaries.isEmpty ? 0 : boundaries[boundary].row
+        }
+    }
+}
+
 @MainActor final class StoryboardViewController: ScrivScreenController, UIGestureRecognizerDelegate {
     private let scroll = UIScrollView()
     private let rows = ImageUI.stack(spacing: 26)
@@ -23,7 +42,7 @@ enum StoryboardSelectionPresentation {
     private var sharedWordButtons: [String: StoryboardWordButton] = [:]
     private var sharedDragDelegates: [StoryboardSharedWordDragDelegate] = []
     private var coverageRails: [StoryboardCoverageRail] = []
-    private let playbackLabel = ImageUI.label(size: 12, weight: .medium)
+    private var playbackLabels: [UILabel] = []
     private var sharedMenuCueID: String?
     /// What the shared word strip renders from; playback ticks that don't move
     /// the current word, selection or font leave every word button untouched.
@@ -41,6 +60,7 @@ enum StoryboardSelectionPresentation {
         super.viewDidLoad(); title = "Storyboard"
         let actions = ImageTagFlowView([ImageUI.button("Deselect") { [weak self] in self?.store.selectedWordIDs = [] }, ImageUI.button("Current moment", symbol: "scope") { [weak self] in self?.scrollToCurrent() }, ImageUI.button("Add placement", symbol: "plus.rectangle") { [weak self] in self?.store.addCue() }, ImageUI.button("Import image", symbol: "photo.badge.plus") { [weak self] in self?.store.importImage() }])
         let heading = ImageUI.row([ImageUI.stack([ImageUI.label("Storyboard", size: 16, weight: .semibold), countLabel], spacing: 3), selectionLabel, actions], spacing: 16)
+        scroll.accessibilityIdentifier = "storyboard-scroll"
         scroll.addSubview(rows); rows.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([rows.leadingAnchor.constraint(equalTo: scroll.contentLayoutGuide.leadingAnchor, constant: 0), rows.trailingAnchor.constraint(equalTo: scroll.contentLayoutGuide.trailingAnchor, constant: 0), rows.topAnchor.constraint(equalTo: scroll.contentLayoutGuide.topAnchor, constant: 6), rows.bottomAnchor.constraint(equalTo: scroll.contentLayoutGuide.bottomAnchor, constant: -24), rows.widthAnchor.constraint(equalTo: scroll.frameLayoutGuide.widthAnchor, constant: 0)])
         let hint = ImageUI.label("Select words · drag a marquee or an edge selection to move a cut", size: 10, secondary: true)
@@ -67,18 +87,28 @@ enum StoryboardSelectionPresentation {
         cards.values.forEach { $0.updateSelection() }; if bandFontSize != store.scriptFontSize * 1.35 { bandFontSize = store.scriptFontSize * 1.35; directionBands.forEach { $0.updateFont(store.scriptFontSize * 1.35) } }; updateSharedScript()
     }
     private func rebuild() {
-        ImageUI.clear(rows); cards.removeAll(); directionBands.removeAll(); sharedWordButtons.removeAll(); sharedDragDelegates.removeAll(); coverageRails.removeAll(); sharedMenuCueID = nil; renderedSharedScript = nil; bandFontSize = nil
+        ImageUI.clear(rows); cards.removeAll(); directionBands.removeAll(); sharedWordButtons.removeAll(); sharedDragDelegates.removeAll(); coverageRails.removeAll(); playbackLabels.removeAll(); sharedMenuCueID = nil; renderedSharedScript = nil; bandFontSize = nil
+        sharedWords = store.sceneEntries.flatMap { entry in
+            entry.words.map { StoryboardWordReference(word: $0, entryID: entry.id, absoluteStart: store.project.startMs(of: entry.id) + $0.startMs) }
+        }
         if store.sceneCues.isEmpty {
-            rows.addArrangedSubview(ImageUI.card(ImageUI.stack([ImageUI.label("Build the scene, one image at a time", size: 25, weight: .semibold), ImageUI.label("Start with a script moment, then choose the image that belongs there.", secondary: true), ImageUI.row([ImageUI.button("Write in Script", primary: true) { [weak self] in self?.store.tab = .script }, ImageUI.button("Import image…") { [weak self] in self?.store.importImage() }]), ImageUI.label("Images follow their script sources. Dialogue, direction and imported audio stay intact.", size: 12, secondary: true)]), padding: 32)); return
+            rows.addArrangedSubview(ImageUI.card(ImageUI.stack([ImageUI.label("Build the scene, one image at a time", size: 25, weight: .semibold), ImageUI.label("Start with a script moment, then choose the image that belongs there.", secondary: true), ImageUI.row([ImageUI.button("Write in Script", primary: true) { [weak self] in self?.store.tab = .script }, ImageUI.button("Import image…") { [weak self] in self?.store.importImage() }]), ImageUI.label("Images follow their script sources. Dialogue, direction and imported audio stay intact.", size: 12, secondary: true)]), padding: 32))
+            if !sharedWords.isEmpty { rows.addArrangedSubview(buildSharedScript(words: sharedWords, cues: [], rowIndex: 0)) }
+            return
         }
         let grouped = PresentationGeometry.storyboardRows(cues: store.sceneCues, entryStarts: Set(store.sceneEntries.map { store.project.startMs(of: $0.id) }), columns: columns)
-        for cues in grouped {
+        let wordRows = StoryboardSharedScriptLayout.rowIndices(wordStarts: sharedWords.map(\.absoluteStart), rowStarts: grouped.map { $0.first?.startMs ?? 0 })
+        var wordsByRow = Array(repeating: [StoryboardWordReference](), count: grouped.count)
+        for (word, rowIndex) in zip(sharedWords, wordRows) { wordsByRow[rowIndex].append(word) }
+        for (rowIndex, cues) in grouped.enumerated() {
             let row = ImageUI.stack(axis: .horizontal, spacing: 18); row.alignment = .top; row.distribution = .fillEqually
             for cue in cues {
                 let card = UIKitStoryboardCard(store: store, cue: cue, owner: self); cards[cue.id] = card; row.addArrangedSubview(card)
             }
             for _ in cues.count..<columns { row.addArrangedSubview(UIView()) }
+            row.accessibilityIdentifier = "storyboard-picture-row-\(rowIndex)"
             let group = ImageUI.stack([row], spacing: 9)
+            group.addArrangedSubview(buildSharedScript(words: wordsByRow[rowIndex], cues: cues, rowIndex: rowIndex))
             if let first = cues.first, let end = cues.map(\.endMs).max() {
                 for entry in store.sceneEntries where entry.kind == .direction {
                     let start = store.project.startMs(of: entry.id)
@@ -88,16 +118,13 @@ enum StoryboardSelectionPresentation {
             }
             rows.addArrangedSubview(group)
         }
-        buildSharedScript()
     }
-    private func buildSharedScript() {
-        sharedWords = store.sceneEntries.flatMap { entry in
-            entry.words.map { StoryboardWordReference(word: $0, entryID: entry.id, absoluteStart: store.project.startMs(of: entry.id) + $0.startMs) }
-        }
+    private func buildSharedScript(words: [StoryboardWordReference], cues: [ImageCue], rowIndex: Int) -> UIStackView {
         let flow = StoryboardWordFlowView()
-        flow.accessibilityIdentifier = "storyboard-shared-script"
-        for item in sharedWords {
+        flow.accessibilityIdentifier = rowIndex == 0 ? "storyboard-shared-script" : "storyboard-shared-script-\(rowIndex)"
+        for item in words {
             let button = StoryboardWordButton(text: item.word.text)
+            button.accessibilityIdentifier = "storyboard-word-" + item.word.id
             button.onSelect = { [weak self] modifiers in
                 guard let self else { return }
                 self.selectWord(item.word, cue: self.wordCue(item), words: self.sharedWords.map(\.word), modifiers: modifiers)
@@ -106,15 +133,16 @@ enum StoryboardSelectionPresentation {
             sharedDragDelegates.append(drag); button.addInteraction(UIDragInteraction(delegate: drag))
             flow.addSubview(button); sharedWordButtons[item.word.id] = button
         }
-        playbackLabel.textColor = .systemOrange
+        let playbackLabel = ImageUI.label(size: 12, weight: .medium)
+        playbackLabel.textColor = .systemOrange; playbackLabels.append(playbackLabel)
         let script = ImageUI.stack([ImageUI.row([ImageUI.label("Script · shared across pictures", size: 12, weight: .medium, secondary: true), ImageUI.spacer(), playbackLabel]), flow], spacing: 10)
-        for cue in store.sceneCues {
+        for cue in cues {
             let rail = StoryboardCoverageRail(cue: cue, durationMs: store.sceneDurationMs)
             rail.onSelect = { [weak self] in self?.store.selectedCueID = cue.id }
             coverageRails.append(rail); script.addArrangedSubview(rail)
         }
         script.addArrangedSubview(ImageUI.label("Blue = selected picture coverage · amber underline = playhead word. Overlapping placements stay intact.", size: 11, secondary: true))
-        rows.addArrangedSubview(script)
+        return script
     }
     private func wordCue(_ item: StoryboardWordReference) -> ImageCue? {
         if let selected = store.selectedCue, selected.startMs <= item.absoluteStart, item.absoluteStart < selected.endMs { return selected }
@@ -125,7 +153,8 @@ enum StoryboardSelectionPresentation {
         return cards[cue.id]?.transfer(wordID: wordID)
     }
     private func updateSharedScript() {
-        playbackLabel.text = (store.isPlaying ? "Playing " : "Playhead ") + ScrivFormat.time(Int(store.playheadMs))
+        let playbackText = (store.isPlaying ? "Playing " : "Playhead ") + ScrivFormat.time(Int(store.playheadMs))
+        playbackLabels.forEach { $0.text = playbackText }
         let sceneCues = store.sceneCues
         for rail in coverageRails { rail.update(selected: rail.cue.id == store.selectedCueID, playheadMs: Int(store.playheadMs), overlaps: sceneCues.filter { $0.id != rail.cue.id && $0.startMs < rail.cue.endMs && $0.endMs > rail.cue.startMs }) }
         // Derived once per refresh: currentWordID walks the whole scene's words.
