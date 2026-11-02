@@ -177,7 +177,9 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         let history = ScrivUIKitTheme.button("", symbol: "clock.arrow.circlepath") { [weak self] in self?.show(.history) }
         search.accessibilityLabel = "Find in script"; history.accessibilityLabel = "Script history"
         search.addInteraction(UIToolTipInteraction(defaultToolTip: "Find in script · ⌘F")); history.addInteraction(UIToolTipInteraction(defaultToolTip: "History"))
-        headingSpacerWidth = headingSpacer.widthAnchor.constraint(equalToConstant: 100); headingSpacerWidth?.isActive = true
+        // The alignment spacer gives way before the scene title truncates on narrow windows.
+        headingSpacerWidth = headingSpacer.widthAnchor.constraint(equalToConstant: 100); headingSpacerWidth?.priority = .defaultHigh - 10; headingSpacerWidth?.isActive = true
+        headingSpacer.setContentHuggingPriority(.required, for: .horizontal)
         let header = ScrivUIKitTheme.stack([icon, headingSpacer, titleStack, UIView(), search, history], axis: .horizontal, spacing: 12); header.alignment = .center
         searchField.placeholder = "Find in script"; searchField.delegate = self; searchField.addTarget(self, action: #selector(searchChanged), for: .editingChanged)
         searchRow.addArrangedSubview(searchField); searchRow.addArrangedSubview(matchLabel)
