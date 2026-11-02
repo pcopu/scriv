@@ -233,11 +233,13 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
             button.configuration?.imagePadding = 4
             return button
         }
-        tags.chips.append(CharacterTeamUI.button("", symbol: "plus", size: 11) { [weak self] in
+        let addTags = CharacterTeamUI.button("", symbol: "plus", size: 11) { [weak self] in
             guard let self else { return }
             let controller = UINavigationController(rootViewController: CharacterTagsViewController(store: self.store, imageID: image.id))
             CharacterTeamUI.present(controller, from: self, width: 470, height: 600)
-        })
+        }
+        addTags.accessibilityLabel = "Edit tags"
+        tags.chips.append(addTags)
         tags.chips.last?.accessibilityLabel = "Edit character tags"
         (tags.chips.last as? UIButton)?.configuration?.contentInsets = .init(top: 4, leading: 6, bottom: 4, trailing: 6)
         return ScrivUIKitTheme.stack([open, caption, tags], spacing: 6)
