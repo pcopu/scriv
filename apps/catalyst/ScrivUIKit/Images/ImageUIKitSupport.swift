@@ -60,6 +60,8 @@ import ScrivCore
     }
     static func badge(_ text: String) -> UIView {
         let label = self.label(text, size: 12, weight: .medium, secondary: true)
+        // A badge is a short token ("16:9"); it never wraps when its row narrows.
+        label.numberOfLines = 1; label.setContentCompressionResistancePriority(.required, for: .horizontal)
         let result = card(label, padding: 6); result.backgroundColor = ScrivUIKitTheme.inset; result.layer.cornerRadius = 8
         return result
     }
