@@ -19,4 +19,19 @@ public enum VerificationScratch {
         }
         return removed
     }
+
+    /// Older test runs left one empty preferences file per isolated suite.
+    public static let preferencePrefixes = ["ScrivStartupTests.", "ScrivPackageTest."]
+
+    @discardableResult
+    public static func pruneStalePreferences(in directory: URL, olderThan age: TimeInterval = 24 * 60 * 60, now: Date = Date(), fileManager: FileManager = .default) -> Int {
+        guard let items = try? fileManager.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.contentModificationDateKey, .isRegularFileKey], options: [.skipsHiddenFiles]) else { return 0 }
+        var removed = 0
+        for item in items where item.pathExtension == "plist" && preferencePrefixes.contains(where: { item.lastPathComponent.hasPrefix($0) }) {
+            guard let values = try? item.resourceValues(forKeys: [.contentModificationDateKey, .isRegularFileKey]), values.isRegularFile == true,
+                  let modified = values.contentModificationDate, now.timeIntervalSince(modified) > age else { continue }
+            if (try? fileManager.removeItem(at: item)) != nil { removed += 1 }
+        }
+        return removed
+    }
 }
