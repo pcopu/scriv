@@ -99,11 +99,12 @@ final class PlaybackResponsivenessTests: XCTestCase {
             }
             let directions = entries.filter { $0.kind == .direction }
             for entry in directions {
-                let button = try XCTUnwrap(rails.subviews.compactMap { $0 as? UIButton }.first { $0.accessibilityIdentifier == entry.id })
+                let button = try XCTUnwrap(rails.subviews.compactMap { $0 as? DirectionHandleButton }.first { $0.accessibilityIdentifier == entry.id })
+                XCTAssertNil(button.menu, "A press-and-hold menu would swallow coverage drags that start with a pause")
                 XCTAssertEqual(button.frame.midY, endpoint(entry), accuracy: 0.001)
                 XCTAssertEqual(button.accessibilityValue, ScrivFormat.time(project.startMs(of: entry.id) + entry.coverageDurationMs))
                 let expected = directions.filter { endpoint(entry) >= frames[$0.id]!.minY + 12 && endpoint(entry) <= endpoint($0) + 14 }
-                let actions = try XCTUnwrap(button.menu).children.compactMap { $0 as? UIAction }
+                let actions = try XCTUnwrap(button.overlapMenu).children.compactMap { $0 as? UIAction }
                 XCTAssertEqual(actions.map(\.title), expected.map(\.text))
                 XCTAssertEqual(actions.filter { $0.state == .on }.map(\.title), expected.filter { $0.id == store.selectedEntryID }.map(\.text))
             }

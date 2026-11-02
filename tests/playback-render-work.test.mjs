@@ -38,10 +38,10 @@ test('candidate source snapshots only within each pass, and preserves accessible
   const layout = rails.split('override func layoutSubviews() {')[1].split('override func draw(')[0];
   assert.equal((layout.match(/let rows = geometry/g) ?? []).length, 1);
   assert.match(layout, /directions\.map \{ \(\$0\.id, endpoint\(\$0, rows: rows\)\) \}/);
-  const overlap = layout.split('let overlap = directions.filter')[1].split('pair.1.menu')[0];
+  const overlap = layout.split('let overlap = directions.filter')[1].split('pair.1.overlapMenu')[0];
   assert.doesNotMatch(overlap, /endpoint\(/);
   assert.match(overlap, /end >= frame\.minY \+ 12 && end <= candidateEnd \+ 14/);
-  for (const value of ['pair.0.accessibilityLabel', 'pair.1.accessibilityLabel', 'pair.1.accessibilityValue', 'pair.1.menu', 'pair.1.isEnabled']) assert.ok(layout.includes(value));
+  for (const value of ['pair.0.accessibilityLabel', 'pair.1.accessibilityLabel', 'pair.1.accessibilityValue', 'pair.1.overlapMenu', 'pair.1.isEnabled']) assert.ok(layout.includes(value));
   assert.match(rails, /drag\?\.id == entry\.id \? drag!\.currentY/);
   assert.match(rails, /old\.navigation == store\.navigationContext/);
   assert.match(rails, /store\.project\.entries\.first\(where: \{ \$0\.id == id \}\) == old\.entry/);

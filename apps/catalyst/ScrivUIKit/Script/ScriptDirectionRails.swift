@@ -1,8 +1,23 @@
 import UIKit
 import ScrivCore
 
-private final class DirectionHandleButton: UIButton {
+final class DirectionHandleButton: UIButton {
     var adjust: ((Int) -> Void)?
+    /// Opened by secondary click through its own interaction. The button's
+    /// built-in `menu` also opens on press-and-hold, which swallowed coverage
+    /// drags that began with a short pause.
+    var overlapMenu: UIMenu? {
+        didSet { if overlapMenu != nil, secondaryMenu == nil { let provider = SecondaryMenu(button: self); secondaryMenu = provider; addInteraction(UIContextMenuInteraction(delegate: provider)) } }
+    }
+    private var secondaryMenu: SecondaryMenu?
+    private final class SecondaryMenu: NSObject, UIContextMenuInteractionDelegate {
+        weak var button: DirectionHandleButton?
+        init(button: DirectionHandleButton) { self.button = button }
+        func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+            guard let menu = button?.overlapMenu else { return nil }
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in menu }
+        }
+    }
     override func accessibilityIncrement() { adjust?(100) }
     override func accessibilityDecrement() { adjust?(-100) }
 }
@@ -89,7 +104,7 @@ final class ScriptDirectionRails: UIView {
                 guard let frame = frames[candidate.id], let candidateEnd = endpoints[candidate.id] else { return false }
                 return end >= frame.minY + 12 && end <= candidateEnd + 14
             }
-            pair.1.menu = UIMenu(title: "Overlapping directions", children: overlap.map { candidate in
+            pair.1.overlapMenu = UIMenu(title: "Overlapping directions", children: overlap.map { candidate in
                 UIAction(title: candidate.text, state: candidate.id == store.selectedEntryID ? .on : .off) { [weak self] _ in self?.store.selectEntry(candidate.id) }
             })
             if store.selectedEntryID == entry.id { bringSubviewToFront(pair.0); bringSubviewToFront(pair.1) }
