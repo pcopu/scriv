@@ -24,21 +24,28 @@ final class ScrivUIKitSceneDelegate: UIResponder, UIWindowSceneDelegate {
     private var store: WorkspaceStore?
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let scene = scene as? UIWindowScene else { return }
+        let trace = StartupTrace.process
+        trace.record(.sceneEntered); trace.record(.storeConstructionBegin)
+        trace.scheduleHeartbeats()
         let workspace = WorkspaceStore(); store = workspace
+        trace.record(.storeConstructionEnd)
         ScrivUpdateCoordinator.shared.register(workspace)
         let window = UIWindow(windowScene: scene)
+        trace.record(.windowCreated)
         // Match the approved light workspace even when macOS is dark. Individual
         // explicitly designed dark sheets may override this on their controller.
         window.overrideUserInterfaceStyle = .light
         window.rootViewController = ScrivWorkspaceController(store: workspace)
         window.tintColor = ScrivUIKitTheme.accent
         self.window = window; window.makeKeyAndVisible()
+        trace.record(.windowVisibilityRequested)
         scene.sizeRestrictions?.minimumSize = CGSize(width: 1080, height: 720)
         for context in connectionOptions.urlContexts { workspace.handleOpenURL(context.url) }
     }
     func scene(_ scene: UIScene, openURLContexts contexts: Set<UIOpenURLContext>) {
         for context in contexts { store?.handleOpenURL(context.url) }
     }
+    func sceneDidBecomeActive(_ scene: UIScene) { StartupTrace.process.record(.sceneBecameActive) }
     func sceneDidEnterBackground(_ scene: UIScene) {
         // This is a best-effort flush only. Durable accepted mutations must be
         // journaled before publication; scene callbacks cannot defer termination.

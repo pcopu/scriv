@@ -71,6 +71,10 @@ final class ScrivWorkspaceController: ScrivScreenController {
             show(.signIn)
         }
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        StartupTrace.process.record(.rootViewAppeared)
+    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         updatePanelLayout()

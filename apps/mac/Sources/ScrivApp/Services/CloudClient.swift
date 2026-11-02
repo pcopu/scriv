@@ -89,11 +89,18 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     }
     static func validEndpoint(_ url: URL) -> Bool { CloudEndpoint.isValid(url) }
     override init() {
+        let startupTrace = StartupTrace.process
+        startupTrace.record(.cloudInitializationBegin)
+        defer { startupTrace.record(.cloudInitializationEnd) }
         let configuration = URLSessionConfiguration.ephemeral
         configuration.timeoutIntervalForRequest = 30; configuration.timeoutIntervalForResource = 120
         urlSession = URLSession(configuration: configuration, delegate: CloudRedirectPolicy(), delegateQueue: nil)
         super.init()
-        if !ProcessInfo.processInfo.arguments.contains("--screenshots"), !ProcessInfo.processInfo.arguments.contains("--peer-smoke") { token = try? KeychainToken.read(account:baseURL.absoluteString) }
+        if !ProcessInfo.processInfo.arguments.contains("--screenshots"), !ProcessInfo.processInfo.arguments.contains("--peer-smoke") {
+            startupTrace.record(.cloudTokenReadBegin)
+            token = try? KeychainToken.read(account:baseURL.absoluteString)
+            startupTrace.record(.cloudTokenReadEnd)
+        }
     }
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
 #if targetEnvironment(macCatalyst)

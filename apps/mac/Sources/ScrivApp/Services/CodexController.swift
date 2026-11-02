@@ -130,19 +130,26 @@ final class CodexController: ObservableObject {
     private var imageGenerationError: String?
     var onChange: (() -> Void)?
     init() {
+        let startupTrace = StartupTrace.process
+        startupTrace.record(.codexInitializationBegin)
+        defer { startupTrace.record(.codexInitializationEnd) }
         executablePath = UserDefaults.standard.string(forKey: "codexExecutable") ?? Self.locateExecutable() ?? CodexLocalSetup.automaticExecutable
         endpoint = UserDefaults.standard.string(forKey: "codexEndpoint") ?? CodexLocalSetup.defaultEndpoint
         let verification = ProcessInfo.processInfo.arguments.contains("--screenshots") || ProcessInfo.processInfo.arguments.contains("--peer-smoke")
         #if targetEnvironment(macCatalyst)
         // Native synthetic verification must not query an existing pairing
         // capability in Keychain. Production retains the same explicit pairing.
+        if !verification { startupTrace.record(.pairingReadBegin) }
         if !verification { bridgePaired = MacRuntimeBridge.isPaired }
+        if !verification { startupTrace.record(.pairingReadEnd) }
         #endif
         installationID = verification ? UUID().uuidString : UserDefaults.standard.string(forKey: "generationInstallationID") ?? UUID().uuidString
         if UUID(uuidString: installationID) == nil { installationID = UUID().uuidString }
         if !verification { UserDefaults.standard.set(installationID, forKey: "generationInstallationID") }
         #if targetEnvironment(macCatalyst)
         if !verification, let data = UserDefaults.standard.data(forKey: "ScrivUIKitGenerationLocation.v1") {
+            startupTrace.record(.generationBookmarkBegin)
+            defer { startupTrace.record(.generationBookmarkEnd) }
             do {
                 let saved = try JSONDecoder().decode(SavedGenerationLocation.self, from: data)
                 guard UUID(uuidString: saved.installationID) != nil else { throw ScrivError.invalid("The saved generation identity is invalid.") }
@@ -150,9 +157,10 @@ final class CodexController: ObservableObject {
                 let url = try URL(resolvingBookmarkData: saved.bookmark, options: [], relativeTo: nil, bookmarkDataIsStale: &stale)
                 _ = url.startAccessingSecurityScopedResource(); scopedGenerationRoot = url; installationID = saved.installationID
                 if stale { let updated = try url.bookmarkData(options: .minimalBookmark, includingResourceValuesForKeys: nil, relativeTo: nil); UserDefaults.standard.set(try JSONEncoder().encode(SavedGenerationLocation(bookmark: updated, installationID: installationID)), forKey: "ScrivUIKitGenerationLocation.v1") }
-            } catch { generationRootIssue = "Existing generation history needs access again. Choose its original folder in Settings. " + error.localizedDescription }
+            } catch { startupTrace.record(.generationBookmarkFailed, error: error); generationRootIssue = "Existing generation history needs access again. Choose its original folder in Settings. " + error.localizedDescription }
         }
         #endif
+        startupTrace.record(.generationJournalBegin)
         do {
             journal = try GenerationJournal(root: generationRoot().appendingPathComponent("Journal"))
             let loaded = try journal!.load()
@@ -161,7 +169,8 @@ final class CodexController: ObservableObject {
                 job.recoverAfterRestart(); try persist(job)
             }
             if loaded.unreadable > 0 { journalError = "\(loaded.unreadable) unreadable generation records were preserved on disk, not discarded." }
-        } catch { journalError = "Generation recovery storage could not open: \(error.localizedDescription)" }
+        } catch { startupTrace.record(.generationJournalFailed, error: error); journalError = "Generation recovery storage could not open: \(error.localizedDescription)" }
+        startupTrace.record(.generationJournalEnd)
         #if !targetEnvironment(macCatalyst)
         sleepObserver = NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.willSleepNotification, object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor in self?.recordProgress(.waiting, "Waiting for this Mac to wake; no generation will be resubmitted.") }

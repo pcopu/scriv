@@ -553,6 +553,35 @@ final class WorkspaceStore: ObservableObject {
     private var editingIntents = LocalEditIntents()
     private var rootURL: URL
     private let verificationMode = ProcessInfo.processInfo.arguments.contains("--screenshots") || ProcessInfo.processInfo.arguments.contains("--peer-smoke")
+#if targetEnvironment(macCatalyst) && DEBUG
+    private var startupTestHarness: WorkspaceStartupTestHarness?
+#endif
+    private var startupTrace: StartupTrace {
+#if targetEnvironment(macCatalyst) && DEBUG
+        if let startupTestHarness { return startupTestHarness.trace }
+#endif
+        return .process
+    }
+#if targetEnvironment(macCatalyst)
+    private var skipStartupRecovery: Bool {
+#if DEBUG
+        if startupTestHarness != nil { return false }
+#endif
+        return verificationMode
+    }
+    private var startupDefaults: UserDefaults {
+#if DEBUG
+        if let startupTestHarness { return startupTestHarness.defaults }
+#endif
+        return .standard
+    }
+    private var projectFileAccess: UIKitFileAccess {
+#if DEBUG
+        if let startupTestHarness { return startupTestHarness.fileAccess }
+#endif
+        return .shared
+    }
+#endif
     private var bootstrapTask: Task<Void, Never>?
     private var peerTask: Task<Void, Never>?
     private var peerProjectId: String?
@@ -611,9 +640,17 @@ final class WorkspaceStore: ObservableObject {
             let output = ProcessInfo.processInfo.environment["SCRIV_VERIFICATION_ROOT"].map { URL(fileURLWithPath:$0,isDirectory:true) } ?? FileManager.default.temporaryDirectory.appendingPathComponent("ScrivVerification-" + UUID().uuidString,isDirectory:true)
             rootURL = output.appendingPathComponent("Projects",isDirectory:true)
         } else { rootURL = FileManager.default.urls(for:.applicationSupportDirectory,in:.userDomainMask)[0].appendingPathComponent("Scriv/Projects") }
-        do { repository = try ProjectRepository(root:rootURL) } catch { errorMessage = "Local project storage could not open: \(error.localizedDescription)" }
+        startupTrace.record(.projectStorageBegin)
+        do { repository = try ProjectRepository(root:rootURL) }
+        catch { startupTrace.record(.projectStorageFailed, error: error); errorMessage = "Local project storage could not open: \(error.localizedDescription)" }
+        startupTrace.record(.projectStorageEnd)
         projectURL = rootURL.appendingPathComponent(example.id).appendingPathExtension("scriv")
         $errorMessage.compactMap { $0 }.receive(on: RunLoop.main).sink { [weak self] message in
+#if targetEnvironment(macCatalyst) && DEBUG
+            // Synthetic bootstrap tests observe errorMessage without displaying
+            // a fixture alert above the XCTest host's unrelated window.
+            if self?.startupTestHarness != nil { return }
+#endif
             self?.errorPresenter.enqueue(message) { [weak self] in
                 // An earlier alert must not clear a newer queued error.
                 if self?.errorMessage == message { self?.errorMessage = nil }
@@ -668,6 +705,18 @@ final class WorkspaceStore: ObservableObject {
             }
         }
     }
+#if targetEnvironment(macCatalyst) && DEBUG
+    /// The capability is factory-created by the isolated XCTest host only.
+    /// MainActor construction has no suspension: configure before the already
+    /// scheduled bootstrap task can run. Production init() is unchanged.
+    convenience init(startupTestHarness harness: WorkspaceStartupTestHarness) throws {
+        self.init()
+        startupTestHarness = harness
+        rootURL = harness.root.appendingPathComponent("Projects", isDirectory: true)
+        repository = try ProjectRepository(root: rootURL)
+        projectURL = rootURL.appendingPathComponent(project.id).appendingPathExtension("scriv")
+    }
+#endif
     deinit {
         for worker in promptReadWorkers.values { worker.cancel() }
         for task in promptReadTasks.values { task.cancel() }
@@ -677,8 +726,10 @@ final class WorkspaceStore: ObservableObject {
     private func repo() throws -> ProjectRepository { guard let repository else { throw ScrivError.unavailable("Local project storage is unavailable. Check folder permissions.") }; return repository }
     private func bootstrap() async {
 #if targetEnvironment(macCatalyst)
-        defer { isBootstrapping = false }
-        if verificationMode {
+        startupTrace.record(.bootstrapBegin)
+        defer { isBootstrapping = false; startupTrace.record(.bootstrapEnd) }
+        if skipStartupRecovery {
+            startupTrace.record(.verificationBootstrapSkipped)
             // Isolated verification only: start playback on launch so the running
             // app's playback cost can be measured without synthetic input events.
             if ProcessInfo.processInfo.environment["SCRIV_VERIFICATION_AUTOPLAY"] == "1" {
@@ -694,11 +745,20 @@ final class WorkspaceStore: ObservableObject {
         }
         // Account identity is restored before replaying account-bound cloud drafts.
         // Local-only pending packages do not require a network account.
+        startupTrace.record(.accountRestoreBegin)
+#if DEBUG
+        if let startupTestHarness { await startupTestHarness.restoreAccount() }
+        else { await cloud.restoreSession() }
+#else
         await cloud.restoreSession()
+#endif
+        startupTrace.record(.accountRestoreEnd)
         do {
+            startupTrace.record(.pendingInventoryBegin)
             let journal = try pendingSaveJournal()
             let pending = try journal.allPackages()
-            if let path = UserDefaults.standard.string(forKey:"lastProjectURL"),
+            startupTrace.record(.pendingInventoryEnd)
+            if let path = startupDefaults.string(forKey:"lastProjectURL"),
                FileManager.default.fileExists(atPath:path) || pending.contains(where: { $0.path == path }) {
                 try await open(URL(fileURLWithPath:path))
             } else if let package = try pending.first(where: { url in
@@ -712,6 +772,7 @@ final class WorkspaceStore: ObservableObject {
                 queueSave(project,label:"Create project")
             }
         } catch {
+            startupTrace.record(.bootstrapFailed, error: error)
             errorMessage = "Project recovery needs attention. No pending changes were discarded: \(error.localizedDescription)"
             statusMessage = "Recovery needs review — open the affected package after restoring its account or access"
             return
@@ -766,13 +827,15 @@ final class WorkspaceStore: ObservableObject {
         try pendingSaveJournal().persist(scope:pendingScope(after,at:package),before:before,after:after,label:label)
     }
     private func recoverPendingSaves(at package: URL, through revision: Int = .max) async throws {
+        startupTrace.record(.pendingRecoveryBegin)
+        defer { startupTrace.record(.pendingRecoveryEnd) }
         let journal = try pendingSaveJournal(), records = try journal.load(package:package)
         guard let first = records.first else { return }
         guard pendingScopeIsAuthorized(first.scope) else {
             throw ScrivError.conflict("This package has pending changes from another Scriv account or server. Sign into that account and reopen it. The saved package and recovery records were not overwritten.")
         }
         let canonical: ScrivProject?
-        if FileManager.default.fileExists(atPath:package.appendingPathComponent("project.json").path) { canonical = try await repo().load(at:package) }
+        if FileManager.default.fileExists(atPath:package.appendingPathComponent("project.json").path) { canonical = try await loadProjectForOpening(at:package) }
         else { canonical = nil }
         // History only proves records the package already contains (revision at
         // or below the saved one). An ordinary save continues from the saved
@@ -1708,11 +1771,34 @@ final class WorkspaceStore: ObservableObject {
         }
     }
 #endif
-    private func open(_ requestedURL: URL) async throws {
 #if targetEnvironment(macCatalyst)
+    private func loadProjectForOpening(at package: URL) async throws -> ScrivProject {
+        startupTrace.record(.metadataReadBegin)
+        do {
+#if DEBUG
+            try startupTestHarness?.beforeMetadataRead(package)
+#endif
+            let value = try await repo().load(at:package)
+            startupTrace.record(.metadataReadEnd)
+            return value
+        } catch { startupTrace.record(.metadataReadFailed, error: error); throw error }
+    }
+#endif
+    private func open(_ requestedURL: URL) async throws {
+        startupTrace.record(.projectOpenBegin)
+        defer { startupTrace.record(.projectOpenEnd) }
+#if targetEnvironment(macCatalyst)
+#if DEBUG
+        try startupTestHarness?.validatePackage(requestedURL)
+#endif
         let url: URL
-        do { url = try UIKitFileAccess.shared.restoreProjectAccess(requestedURL) }
-        catch { throw ProjectOpeningFailure.annotating(error, stage: .restoreAccess) }
+        startupTrace.record(.accessRestoreBegin)
+        do { url = try projectFileAccess.restoreProjectAccess(requestedURL) }
+        catch { startupTrace.record(.accessRestoreFailed, error: error); throw ProjectOpeningFailure.annotating(error, stage: .restoreAccess) }
+        startupTrace.record(.accessRestoreEnd)
+#if DEBUG
+        try startupTestHarness?.validatePackage(url)
+#endif
 #else
         let url = requestedURL
 #endif
@@ -1722,16 +1808,20 @@ final class WorkspaceStore: ObservableObject {
         await flushPendingSaves()
 #if targetEnvironment(macCatalyst)
         do { try await recoverPendingSaves(at:url) }
-        catch { throw ProjectOpeningFailure.annotating(error, stage: .recoverChanges) }
+        catch { startupTrace.record(.pendingRecoveryFailed, error: error); throw ProjectOpeningFailure.annotating(error, stage: .recoverChanges) }
         let loaded: ScrivProject
         let checkpoint: CloudCheckpoint?
         let savedHistory: [HistoryEntry]
-        do { loaded = try await repo().load(at:url) }
+        do { loaded = try await loadProjectForOpening(at:url) }
         catch { throw ProjectOpeningFailure.annotating(error, stage: .readProject) }
+        startupTrace.record(.checkpointReadBegin)
         do { checkpoint = try await repo().checkpoint(at:url) }
-        catch { throw ProjectOpeningFailure.annotating(error, stage: .readCheckpoint) }
+        catch { startupTrace.record(.checkpointReadFailed, error: error); throw ProjectOpeningFailure.annotating(error, stage: .readCheckpoint) }
+        startupTrace.record(.checkpointReadEnd)
+        startupTrace.record(.historyReadBegin)
         do { savedHistory = try await repo().history(at:url,through:loaded.revision) }
-        catch { throw ProjectOpeningFailure.annotating(error, stage: .readHistory) }
+        catch { startupTrace.record(.historyReadFailed, error: error); throw ProjectOpeningFailure.annotating(error, stage: .readHistory) }
+        startupTrace.record(.historyReadEnd)
 #else
         let loaded = try await repo().load(at:url), checkpoint = try await repo().checkpoint(at:url)
         let savedHistory = try await repo().history(at:url,through:loaded.revision)
