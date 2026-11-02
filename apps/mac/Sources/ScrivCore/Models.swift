@@ -176,4 +176,8 @@ public enum ScrivError: LocalizedError, Equatable {
 public enum ScrivFormat {
     public static func time(_ ms: Int) -> String { String(format: "%02d:%04.1f", max(0, ms) / 60_000, Double(max(0, ms) % 60_000) / 1000) }
     public static func duration(_ ms: Int) -> String { ms == 0 ? "0s" : String(format: "%.1fs", Double(ms) / 1000) }
+    /// "1 entry", "2 entries".
+    public static func count(_ value: Int, _ singular: String, _ plural: String? = nil) -> String {
+        "\(value) " + (value == 1 ? singular : plural ?? singular + "s")
+    }
 }

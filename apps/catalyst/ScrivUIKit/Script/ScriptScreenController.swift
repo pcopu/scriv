@@ -306,7 +306,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
                 UIAction(title: "\(Int((zoom * 100).rounded()))%" + (zoom == 1 ? " · Default" : ""), state: abs(store.scriptZoom - zoom) < 0.001 ? .on : .off) { [weak self] _ in self?.store.setScriptZoom(zoom) }
             })
         }
-        let footer = "\(project.authoredEntryCount(in: store.selectedSceneID)) entries · \(ScrivFormat.duration(clock))"
+        let footer = ScrivFormat.count(project.authoredEntryCount(in: store.selectedSceneID), "entry", "entries") + " · " + ScrivFormat.duration(clock)
         if footerLabel.text != footer { footerLabel.text = footer; needsLayout = true }
         if followSwitch.isOn != store.followPlayback { followSwitch.isOn = store.followPlayback }
         statusDot.image = UIImage(systemName: store.localSaveNeedsAttention ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
