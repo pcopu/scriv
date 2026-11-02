@@ -459,4 +459,26 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertEqual(saved.cues.first { $0.id == previous.id }?.endMs, store.sceneCues.first { $0.id == previous.id }?.endMs)
         XCTAssertNil(store.errorMessage)
     }
+
+    /// Extending a direction's coverage while its text is open for editing, then
+    /// finishing without typing, is not a draft conflict.
+    func testOwnCoverageDragWhileEditingDoesNotConflict() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let direction = try XCTUnwrap(store.sceneEntries.first { $0.kind == .direction })
+        let session = ScriptDraftSession(store: store)
+        session.begin(direction.id)
+        let opened = await until { session.entryID == direction.id }
+        XCTAssertTrue(opened, "The direction opens for editing")
+        let end = store.project.startMs(of: direction.id) + direction.coverageDurationMs + 2_000
+        store.setCoverage(direction.id, endMs: end)
+        let extended = await until { store.project.entries.first { $0.id == direction.id }?.coverageDurationMs == direction.coverageDurationMs + 2_000 }
+        XCTAssertTrue(extended, "Coverage extends")
+        XCTAssertTrue(session.finish(), "Finishing an untouched draft succeeds")
+        XCTAssertNil(session.issue, "No 'Draft not applied' notice")
+        XCTAssertEqual(store.project.entries.first { $0.id == direction.id }?.coverageDurationMs, direction.coverageDurationMs + 2_000, "The coverage change is kept")
+    }
 }

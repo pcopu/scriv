@@ -1045,12 +1045,19 @@ final class WorkspaceStore: ObservableObject {
         guard savedDraft?.revisionID == draft.revisionID || (savedDraft == nil && draft.text == draft.sourceEntry.text) else {
             throw ScrivError.conflict("This draft was replaced or discarded in another editor. Reopen the line before applying it.")
         }
-        let next = try draft.applying(to:project,scope:editorDraftScope(draft.scope.entryID),epoch:editorDraftEpoch)
         let completed = { [weak self] in
             guard let self else { return }
             do { _ = try self.editorJournal().clear(draft) }
             catch { self.errorMessage = "The line was saved, but its recovery draft could not be cleared: " + error.localizedDescription }
         }
+        // A draft that reads exactly like the line has nothing to apply, so a
+        // timing or coverage change made meanwhile (often the writer's own rail
+        // drag) is not a conflict. Drafts with text changes still need review.
+        if try draft.scope == editorDraftScope(draft.scope.entryID),
+           let current = project.entries.first(where: { $0.id == draft.scope.entryID }), draft.text.utf16.elementsEqual(current.text.utf16) {
+            queueSave(project,label:"Apply recovered script draft",onSuccess:completed); return
+        }
+        let next = try draft.applying(to:project,scope:editorDraftScope(draft.scope.entryID),epoch:editorDraftEpoch)
         if next == project { queueSave(project,label:"Apply recovered script draft",onSuccess:completed); return }
         guard change("Edit script",afterSave:completed,{ $0 = next }) else {
             throw ScrivError.conflict(errorMessage ?? "The line could not be applied. Your local draft is retained.")
