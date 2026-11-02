@@ -148,7 +148,7 @@ import ScrivCore
         for (entry, lane) in directions {
             let start = store.project.startMs(of: entry.id)
             let block = textBlock(entry.text + "\n" + ScrivFormat.duration(entry.ownedDurationMs) + " owned", color: ImageUI.color(entry.color), frame: CGRect(x: 70 + CGFloat(start) * scale, y: directionY + CGFloat(lane) * (directionHeight + 4), width: max(20, CGFloat(entry.coverageDurationMs) * scale - 2), height: directionHeight), script: true) { [weak self] in self?.store.selectEntry(entry.id) }
-            block.menu = UIMenu(children: [ImageUI.guardedAction("Owned duration…", store: store, context: navigation) { [weak self] in guard let self else { return }; ImageUI.present(ImageCoverageViewController(store: self.store, entry: entry), from: self, size: CGSize(width: 430, height: 360)) }])
+            ScrivSecondaryMenu.set(UIMenu(children: [ImageUI.guardedAction("Owned duration…", store: store, context: navigation) { [weak self] in guard let self else { return }; ImageUI.present(ImageCoverageViewController(store: self.store, entry: entry), from: self, size: CGSize(width: 430, height: 360)) }]), on: block)
         }
         for (placement, lane) in audioLanes {
             guard let clip = store.project.audioClips.first(where: { $0.id == placement.clipId }), let asset = store.project.audioAssets.first(where: { $0.id == placement.assetId }) else { continue }
