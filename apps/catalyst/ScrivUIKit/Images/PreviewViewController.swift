@@ -217,9 +217,8 @@ import ScrivCore
             self.view.endEditing(true)
             guard let context = self.store.selectedImageGenerationContext, context.cueID == self.displayedCueID else { return }
             let controller = GenerationBriefReviewController(store: self.store, context: context)
-            if let size = self.view.window?.bounds.size {
-                controller.preferredContentSize = CGSize(width: min(GenerationReviewUI.preferredSize.width, max(320, size.width - 48)), height: min(GenerationReviewUI.preferredSize.height, max(480, size.height - 80)))
-            }
+            // Fitted like every sheet: inside the window's safe area, refitted as it resizes.
+            ScrivSheetFitting.fit(controller, presentedFrom: self)
             self.present(controller, animated: true)
         }
         review.accessibilityLabel = "Review source, people and exact image request"; review.accessibilityIdentifier = "generation-review-brief"
