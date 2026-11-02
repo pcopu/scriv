@@ -205,12 +205,21 @@ final class WorkspaceEndToEndTests: XCTestCase {
         let editor = try await present(.characterEditor(characterID: nil))
         let field = try XCTUnwrap(views(UITextField.self, in: editor.view).first { $0.placeholder == "Name" })
         field.text = "Zelda Quinn"; field.sendActions(for: .editingChanged)
+        // Picking colours never moves the swatches under the pointer.
+        func swatches() -> [String] { editor.view.layoutIfNeeded(); return views(UIButton.self, in: editor.view).filter { $0.window != nil && ($0.accessibilityLabel ?? "").hasSuffix("character colour") }.sorted { $0.convert($0.bounds, to: nil).minX < $1.convert($1.bounds, to: nil).minX }.compactMap(\.accessibilityLabel) }
+        let opening = swatches()
+        XCTAssertGreaterThanOrEqual(opening.count, 8)
+        try button(labelled: "Purple character colour", in: editor.view).sendActions(for: .touchUpInside)
+        XCTAssertEqual(swatches(), opening, "The swatches stay in place after a pick")
+        try button(labelled: "Pink character colour", in: editor.view).sendActions(for: .touchUpInside)
+        XCTAssertEqual(swatches(), opening)
         let save = try button(labelled: "Save character", in: editor.view)
         let enabled = await until { save.isEnabled }
         XCTAssertTrue(enabled, "Save enables once a name is typed")
         save.sendActions(for: .primaryActionTriggered)
         let created = await until { store.project.characters.contains { $0.name == "Zelda Quinn" } }
         XCTAssertTrue(created, "Saving adds the character")
+        XCTAssertEqual(store.project.characters.first { $0.name == "Zelda Quinn" }?.color, "F272AC", "The last picked colour is saved")
         _ = await until { workspace.presentedViewController == nil }
         if workspace.presentedViewController != nil { await dismiss() }
 

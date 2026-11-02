@@ -123,10 +123,15 @@ final class CharacterEditorController: ScrivScreenController, UITextViewDelegate
             self.renderAliases()
         }); present(alert, animated: true)
     }
+    /// The colour the editor opened with. When it is outside the standard
+    /// palette it keeps its swatch while the sheet is open, so picking another
+    /// colour neither shifts the swatches under the pointer nor loses it.
+    private lazy var openingColor = draft.color
     private func renderColors() {
         var colors = ["FF7E21", "FFD04D", "69C581", "45CDD1", "4E87EE", "B072DB", "F272AC", "98A6BC"]
         let names = ["FF7E21": "Orange", "FFD04D": "Yellow", "69C581": "Green", "45CDD1": "Teal", "4E87EE": "Blue", "B072DB": "Purple", "F272AC": "Pink", "98A6BC": "Slate"]
-        if !colors.contains(draft.color) { colors.insert(draft.color, at: 0) }
+        if !colors.contains(openingColor) { colors.insert(openingColor, at: 0) }
+        if !colors.contains(draft.color) { colors.append(draft.color) }
         palette.chips = colors.map { color in
             let button = UIButton(type: .custom); let selected = draft.color == color
             button.setImage(UIImage(systemName: selected ? "circle.inset.filled" : "circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30)), for: .normal)
