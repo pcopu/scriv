@@ -50,9 +50,16 @@ final class SheetFittingTests: XCTestCase {
         for _ in 0..<50 where navigation.isBeingPresented { try await Task.sleep(for: .milliseconds(20)) }
         // Word timing grows to its content, up to 720 pt: taller than this window.
         content.preferredContentSize = CGSize(width: 500, height: 720); navigation.preferredContentSize = content.preferredContentSize
+        // The navigation controller reports the size it was given plus its bar.
+        XCTAssertGreaterThan(navigation.preferredContentSize.height, 720)
         ScrivSheetFitting.refit(containing: content)
         let available = try XCTUnwrap(ScrivSheetFitting.available(in: window))
-        XCTAssertLessThanOrEqual(navigation.preferredContentSize.height, available.height - 2 * ScrivSheetFitting.margin.height)
+        XCTAssertEqual(navigation.preferredContentSize.height, available.height - 2 * ScrivSheetFitting.margin.height, "The reported (presented) size, bar included, is the fitted size")
         XCTAssertEqual(navigation.preferredContentSize.width, 500)
+        let fitted = navigation.preferredContentSize
+        ScrivSheetFitting.refit(containing: content)
+        XCTAssertEqual(navigation.preferredContentSize, fitted, "Refitting is idempotent")
+        ScrivSheetFitting.fit(navigation, in: CGSize(width: 1600, height: 1200))
+        XCTAssertGreaterThan(navigation.preferredContentSize.height, 720, "A taller window restores the full design, bar included")
     }
 }

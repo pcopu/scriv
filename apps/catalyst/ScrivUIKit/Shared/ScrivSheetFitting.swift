@@ -30,8 +30,14 @@ enum ScrivSheetFitting {
         }
         guard let designed = (objc_getAssociatedObject(sheet, &designedKey) as? NSValue)?.cgSizeValue, designed != .zero else { return }
         let target = fittedSize(designed: designed, available: available)
-        objc_setAssociatedObject(sheet, &appliedKey, NSValue(cgSize: target), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        if current != target { sheet.preferredContentSize = target }
+        if current != target {
+            sheet.preferredContentSize = target
+            // A navigation controller reports (and is presented at) the size it
+            // was given plus its bar, so ask for that much less.
+            let reported = sheet.preferredContentSize
+            if reported != target { sheet.preferredContentSize = CGSize(width: 2 * target.width - reported.width, height: 2 * target.height - reported.height) }
+        }
+        objc_setAssociatedObject(sheet, &appliedKey, NSValue(cgSize: sheet.preferredContentSize), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
 
     /// The window area a sheet may use (the title bar is a safe-area inset).
