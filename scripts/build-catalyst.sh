@@ -23,6 +23,14 @@ if [[ ! -d "$app" ]]; then echo "Expected Catalyst app is missing: $app" >&2; ex
 # The checked-in approved mark is compiled by Xcode, including direct IDE builds.
 # Do not patch a built bundle to hide missing source assets.
 python3 "$root/scripts/verify-catalyst-icon.py" "$app"
+# A plain `build` never strips (only install/archive do), leaving ~5 MB of local
+# symbol tables in the executables. dSYMs keep crash symbolication; -x keeps the
+# global symbols bundles export. Everything stripped here is re-signed below.
+if [[ "$configuration" == Release ]]; then
+  for binary in "$app/Contents/MacOS/Scriv" "$app/Contents/PlugIns/ScrivUpdatePlugin.bundle/Contents/MacOS/ScrivUpdatePlugin" "$app/Contents/XPCServices/com.scriv.runtime-companion.bootstrap.xpc/Contents/MacOS/ScrivRuntimeCompanion"; do
+    strip -x "$binary" 2>/dev/null
+  done
+fi
 identity="${SCRIV_SIGN_IDENTITY:--}"
 # Sign nested update components inside-out. Never use --deep for signing.
 plugin="$app/Contents/PlugIns/ScrivUpdatePlugin.bundle"
