@@ -1,4 +1,5 @@
 import UIKit
+import AVFoundation
 import XCTest
 import ScrivCore
 @testable import ScrivUIKit
@@ -356,5 +357,78 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertTrue(closed)
         try await Task.sleep(for: .milliseconds(200))
         XCTAssertEqual(try offset(), baseline, accuracy: 0.5, "Rail follows its line after the editor above closes")
+    }
+
+    /// Storyboard: select a word through its button, then move the cut with the
+    /// word's own menu action; and import real audio through the picker's path.
+    func testStoryboardWordCutMoveAndAudioImport() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 1448, height: 900); window.overrideUserInterfaceStyle = .light
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { if workspace.presentedViewController != nil { workspace.dismiss(animated: false) }; window.isHidden = true }
+        store.tab = .storyboard
+        let shown = await until { self.views(UIView.self, in: workspace.view).contains { $0.accessibilityIdentifier == "storyboard-shared-script" && $0.window != nil } }
+        XCTAssertTrue(shown)
+        let words = TimingEngine.absoluteWords(store.project, sceneId: store.selectedSceneID)
+        var wordButton: [String: UIButton] = [:]
+        for button in views(UIButton.self, in: workspace.view) {
+            if let id = button.accessibilityIdentifier, id.hasPrefix("storyboard-word-") { XCTAssertNil(wordButton[id], "One control per word"); wordButton[id] = button }
+        }
+        XCTAssertEqual(Set(wordButton.keys), Set(words.map { "storyboard-word-" + $0.id }), "Every timed word has its control under its picture row")
+
+        // Pick the first word of a picture that directly follows another one.
+        let cues = store.sceneCues
+        let pair = try XCTUnwrap(cues.indices.dropFirst().first { index in
+            cues[index - 1].endMs == cues[index].startMs && words.contains { $0.startMs >= cues[index].startMs && $0.startMs < cues[index].endMs }
+        })
+        let previous = cues[pair - 1], current = cues[pair]
+        let wordIndex = try XCTUnwrap(words.firstIndex { $0.startMs >= current.startMs && $0.startMs < current.endMs })
+        let button = try XCTUnwrap(wordButton["storyboard-word-" + words[wordIndex].id])
+        button.sendActions(for: .touchUpInside)
+        XCTAssertEqual(store.selectedWordIDs, [words[wordIndex].id], "Clicking a word selects it")
+        XCTAssertEqual(store.selectedCueID, current.id, "and its picture")
+        let menuReady = await until { button.menu?.children.contains { ($0 as? UIAction)?.title == "Move to previous image" } == true }
+        XCTAssertTrue(menuReady, "The word offers moving the cut to the previous image")
+        let move = try XCTUnwrap(button.menu?.children.compactMap { $0 as? UIAction }.first { $0.title == "Move to previous image" })
+        typealias ActionHandler = @convention(block) (UIAction) -> Void
+        unsafeBitCast(try XCTUnwrap(move.value(forKey: "handler") as AnyObject?), to: ActionHandler.self)(move)
+        let moved = await until { store.sceneCues.first { $0.id == previous.id }?.endMs ?? 0 > previous.endMs }
+        XCTAssertTrue(moved, "The cut moves so the word belongs to the previous picture")
+        XCTAssertEqual(store.sceneCues.first { $0.id == previous.id }?.endMs, store.sceneCues.first { $0.id == current.id }?.startMs, "Pictures stay contiguous")
+
+        // Audio: a real file through the same entry point the file picker uses.
+        let audioURL = FileManager.default.temporaryDirectory.appendingPathComponent("scriv-e2e-\(UUID().uuidString).caf")
+        defer { try? FileManager.default.removeItem(at: audioURL) }
+        let format = try XCTUnwrap(AVAudioFormat(standardFormatWithSampleRate: 44_100, channels: 1))
+        let buffer = try XCTUnwrap(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 44_100))
+        buffer.frameLength = 44_100
+        for i in 0..<Int(buffer.frameLength) { buffer.floatChannelData![0][i] = 0.3 * sin(Float(i) * 2 * .pi * 440 / 44_100) }
+        try AVAudioFile(forWriting: audioURL, settings: format.settings).write(from: buffer)
+        let dialogue = try XCTUnwrap(store.sceneEntries.first { $0.kind == .dialogue })
+        let clipsBefore = store.project.audioClips.count
+        let imported = await store.importAudio(from: audioURL, entryId: dialogue.id)
+        XCTAssertTrue(imported, store.errorMessage ?? store.audioStatus)
+        XCTAssertEqual(store.project.audioClips.count, clipsBefore + 1)
+        let clip = try XCTUnwrap(store.project.audioClips.last)
+        XCTAssertEqual(clip.entryId, dialogue.id)
+        let asset = try XCTUnwrap(store.project.audioAssets.first { $0.id == clip.assetId })
+        XCTAssertNotNil(store.audioURL(asset), "The audio is copied into the project package")
+        XCTAssertEqual(Double(asset.durationMs), 1000, accuracy: 50)
+        ScrivUIKitRouter.shared.present(.audio, from: workspace, store: store)
+        let library = await until { workspace.presentedViewController?.viewIfLoaded?.window != nil }
+        XCTAssertTrue(library)
+        await store.flushPendingSaves()
+        let repository = try ProjectRepository(root: package.deletingLastPathComponent())
+        let saved = try await repository.load(at: package)
+        XCTAssertEqual(saved.audioClips.count, clipsBefore + 1)
+        XCTAssertEqual(saved.cues.first { $0.id == previous.id }?.endMs, store.sceneCues.first { $0.id == previous.id }?.endMs)
+        XCTAssertNil(store.errorMessage)
     }
 }
