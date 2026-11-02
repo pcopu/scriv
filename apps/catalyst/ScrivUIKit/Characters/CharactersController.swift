@@ -138,6 +138,15 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
                 control.accessibilityLabel = "Review unnamed character"; control.addAction(UIAction { [weak self] _ in self?.openCharacterReview(itemID:item.id) },for:.touchUpInside)
             }
         }
+        // The ribbon shows three cards at a time; bring the selected one (e.g. a
+        // character just created at the end) into view.
+        if let selected, let card = ribbonItems.arrangedSubviews.first(where: { $0.accessibilityIdentifier == "character-ribbon-" + selected.id }) {
+            DispatchQueue.main.async { [weak self, weak card] in
+                guard let self, let card, card.superview === self.ribbonItems else { return }
+                self.ribbon.layoutIfNeeded()
+                self.ribbon.scrollRectToVisible(card.convert(card.bounds, to: self.ribbon).insetBy(dx: -10, dy: 0), animated: false)
+            }
+        }
         CharacterTeamUI.clear(profile)
         if let selected { profile.addArrangedSubview(profileCard(selected)) }
         else {
