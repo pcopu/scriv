@@ -28,6 +28,30 @@ class ScrivScreenController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated); storeDidChange()
     }
+    /// Shown as a sheet (directly, or as a navigation root), not embedded in the workspace.
+    var isPresentedSheet: Bool { presentingViewController != nil && (parent == nil || parent is UINavigationController) }
+    override var canBecomeFirstResponder: Bool { isPresentedSheet || super.canBecomeFirstResponder }
+    /// Escape closes sheets, as on any Mac. Sheets defining their own key
+    /// commands keep them; a sheet that must not be dismissed this way sets
+    /// isModalInPresentation.
+    override var keyCommands: [UIKeyCommand]? {
+        guard isPresentedSheet else { return super.keyCommands }
+        let escape = UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(scrivEscapeSheet))
+        escape.wantsPriorityOverSystemBehavior = true
+        return (super.keyCommands ?? []) + [escape]
+    }
+    @objc func scrivEscapeSheet() {
+        guard !(navigationController ?? self).isModalInPresentation, presentedViewController == nil else { return }
+        closeFromEscape()
+    }
+    /// Override to add cleanup; the default matches a Close/Cancel button.
+    func closeFromEscape() { dismiss(animated: true) }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // Key commands need a responder inside the sheet; don't steal focus
+        // from a field the sheet already focused.
+        if isPresentedSheet, !((ScrivKeyboardTextContext.firstResponder() as? UIView)?.isDescendant(of: view) ?? false) { becomeFirstResponder() }
+    }
     /// Override for idempotent rendering. Never silently replace a local form's
     /// draft with remote state; keep its original identity/version and review it.
     func storeDidChange() {}

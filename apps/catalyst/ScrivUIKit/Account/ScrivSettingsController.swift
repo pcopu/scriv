@@ -79,6 +79,7 @@ class ScrivSettingsController: ScrivScreenController, UIDocumentPickerDelegate, 
         navigationController?.presentationController?.delegate = self
     }
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) { store.codex.cancelConnectionCheck() }
+    override func closeFromEscape() { if runtimeOnly { store.codex.cancelConnectionCheck() }; dismiss(animated: true) }
     private func installCodexSetup() {
         // The setup sheet is a presentation of the same runtime. Opening or
         // dismissing it never launches, pairs, signs in, or generates anything.
