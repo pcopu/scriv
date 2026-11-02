@@ -1678,7 +1678,7 @@ final class WorkspaceStore: ObservableObject {
         catch { if generationCloudScopeMatches(context) { codex.sharedJobsError = "Local generation is retained; shared progress needs refresh: " + error.localizedDescription } }
     }
     private func refreshSharedGenerationJobs() {
-        guard let projectID = project.cloudProjectId, projectID == cloud.projectId, account != nil else { codex.sharedJobs = []; return }
+        guard let projectID = project.cloudProjectId, projectID == cloud.projectId, account != nil else { if !codex.sharedJobs.isEmpty { codex.sharedJobs = [] }; return } // Avoid a no-op publish every 30 s.
         sharedJobRefreshGeneration += 1; let request = sharedJobRefreshGeneration, navigation = navigationGeneration, server = cloud.baseURL, user = account?.id
         Task { [weak self] in
             guard let self else { return }
