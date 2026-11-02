@@ -37,4 +37,22 @@ final class SheetFittingTests: XCTestCase {
         ScrivSheetFitting.fit(page, in: CGSize(width: 1080, height: 720))
         XCTAssertEqual(page.preferredContentSize, CGSize(width: 2000, height: 2000))
     }
+
+    func testAPresentedSheetThatGrowsItselfIsRefittedToTheWindow() async throws {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene); window.frame = CGRect(x: 0, y: 0, width: 1080, height: 720)
+        let root = UIViewController(); window.rootViewController = root; window.makeKeyAndVisible()
+        defer { root.dismiss(animated: false); window.isHidden = true }
+        let content = UIViewController(); content.preferredContentSize = CGSize(width: 500, height: 410)
+        let navigation = UINavigationController(rootViewController: content)
+        navigation.modalPresentationStyle = .formSheet; navigation.preferredContentSize = content.preferredContentSize
+        root.present(navigation, animated: false)
+        for _ in 0..<50 where navigation.isBeingPresented { try await Task.sleep(for: .milliseconds(20)) }
+        // Word timing grows to its content, up to 720 pt: taller than this window.
+        content.preferredContentSize = CGSize(width: 500, height: 720); navigation.preferredContentSize = content.preferredContentSize
+        ScrivSheetFitting.refit(containing: content)
+        let available = try XCTUnwrap(ScrivSheetFitting.available(in: window))
+        XCTAssertLessThanOrEqual(navigation.preferredContentSize.height, available.height - 2 * ScrivSheetFitting.margin.height)
+        XCTAssertEqual(navigation.preferredContentSize.width, 500)
+    }
 }

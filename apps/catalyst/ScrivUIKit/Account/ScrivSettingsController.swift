@@ -167,7 +167,7 @@ class ScrivSettingsController: ScrivScreenController, UIDocumentPickerDelegate, 
         if let setupView {
             let presentation = ScrivCodexSetupPresentation(controller: controller, working: working)
             let size = ScrivCodexSetupView.preferredSize(for: presentation.phase, available: presentingViewController?.view.bounds.size ?? navigationController?.presentingViewController?.view.bounds.size, accessibility: traitCollection.preferredContentSizeCategory.isAccessibilityCategory)
-            preferredContentSize = size; navigationController?.preferredContentSize = size
+            preferredContentSize = size; navigationController?.preferredContentSize = size; ScrivSheetFitting.refit(containing: self)
             setupView.update(presentation,
                              error: localError ?? controller.lastError, journalError: controller.journalError,
                              log: controller.log)

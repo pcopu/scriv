@@ -86,6 +86,8 @@ final class WordTimingEditorController: ScrivScreenController {
         if abs(preferredContentSize.height - height) > 1 {
             preferredContentSize = CGSize(width: preferredContentSize.width, height: height)
             navigationController?.preferredContentSize = preferredContentSize
+            // Up to 720 pt is taller than a small window; the content scrolls instead.
+            ScrivSheetFitting.refit(containing: self)
         }
     }
     override func viewDidAppear(_ animated: Bool) { super.viewDidAppear(animated); revealSelectedWord() }

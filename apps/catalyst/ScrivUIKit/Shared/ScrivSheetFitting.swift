@@ -45,6 +45,13 @@ enum ScrivSheetFitting {
         if let available = available(in: presenter.view.window) { fit(sheet, in: available) }
     }
 
+    /// Refits the sheet that contains `controller` after it changed its own size,
+    /// so a sheet that grows to fit its content still stays inside the window.
+    static func refit(containing controller: UIViewController) {
+        let sheet = controller.navigationController ?? controller
+        if let presenter = sheet.presentingViewController { fit(sheet, presentedFrom: presenter) }
+    }
+
     /// Fits every sheet presented above `root`.
     static func fitPresentedSheets(above root: UIViewController) {
         guard let available = available(in: root.view.window) else { return }
