@@ -105,6 +105,49 @@ final class LayoutWrapTests: XCTestCase {
         }
         XCTAssertTrue(problems.isEmpty, "Sheet layout problems at 1080x720:\n" + problems.joined(separator: "\n"))
     }
+    /// VoiceOver reads an unlabelled icon button as just "button". Every visible
+    /// button on every tab and sheet says what it does.
+    func testEveryVisibleButtonHasALabel() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene); window.overrideUserInterfaceStyle = .light
+        window.frame = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { if workspace.presentedViewController != nil { workspace.dismiss(animated: false) }; window.isHidden = true; store.showDiscussion = false }
+        var unlabelled: Set<String> = []
+        func audit(_ root: UIView, _ place: String) {
+            for button in views(UIButton.self, in: root) where isVisible(button, in: window) && button.isAccessibilityElement {
+                let label = (button.accessibilityLabel ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                if label.isEmpty { unlabelled.insert("\(place): \(type(of: button)) image \(button.currentImage.map { String(describing: $0.description.prefix(60)) } ?? "none") — \(path(button))") }
+            }
+        }
+        for discussion in [false, true] {
+            store.showDiscussion = discussion
+            for tab in WorkspaceTab.allCases {
+                store.tab = tab
+                for _ in 0..<6 { try await Task.sleep(for: .milliseconds(30)); window.layoutIfNeeded() }
+                audit(window, "\(tab)\(discussion ? "+discussion" : "")")
+            }
+        }
+        store.showDiscussion = false
+        let routes: [(String, ScrivUIKitRoute)] = [("projects", .projects), ("history", .history), ("audio", .audio), ("teams", .teams), ("signIn", .signIn), ("account", .account), ("settings", .settings), ("generationJobs", .generationJobs), ("codex", .codex), ("characterEditor", .characterEditor(characterID: nil))]
+        for (name, route) in routes {
+            ScrivUIKitRouter.shared.present(route, from: workspace, store: store)
+            var sheet: UIViewController?
+            for _ in 0..<150 { if let presented = workspace.presentedViewController, presented.viewIfLoaded?.window != nil, !presented.isBeingPresented { sheet = presented; break }; try await Task.sleep(for: .milliseconds(20)) }
+            guard let sheet else { unlabelled.insert("\(name): did not open"); continue }
+            for _ in 0..<5 { try await Task.sleep(for: .milliseconds(30)); window.layoutIfNeeded() }
+            audit(sheet.view, name)
+            workspace.dismiss(animated: false)
+            for _ in 0..<50 where workspace.presentedViewController != nil { try await Task.sleep(for: .milliseconds(20)) }
+        }
+        XCTAssertTrue(unlabelled.isEmpty, "Buttons without an accessibility label:\n" + unlabelled.sorted().joined(separator: "\n"))
+    }
     /// Lines the text actually takes at its current width (a fixed frame may be taller than its text).
     private func wrapped(_ label: UILabel) -> Bool {
         label.textRect(forBounds: CGRect(x: 0, y: 0, width: label.bounds.width, height: .greatestFiniteMagnitude), limitedToNumberOfLines: label.numberOfLines).height > label.font.lineHeight * 1.6
