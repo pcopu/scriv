@@ -33,6 +33,7 @@ enum StoryboardSharedScriptLayout {
     private let rows = ImageUI.stack(spacing: 26)
     private let countLabel = ImageUI.label(size: 12, secondary: true)
     private let selectionLabel = ImageUI.label(size: 11, secondary: true)
+    private var deselectButton: UIButton!
     private var signature: [AnyHashable] = []
     private var columns = 3
     private var cards: [String: UIKitStoryboardCard] = [:]
@@ -58,7 +59,8 @@ enum StoryboardSharedScriptLayout {
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(store:)") }
     override func viewDidLoad() {
         super.viewDidLoad(); title = "Storyboard"
-        let actions = ImageTagFlowView([ImageUI.button("Deselect") { [weak self] in self?.store.selectedWordIDs = [] }, ImageUI.button("Current moment", symbol: "scope") { [weak self] in self?.scrollToCurrent() }, ImageUI.button("Add placement", symbol: "plus.rectangle") { [weak self] in self?.store.addCue() }, ImageUI.button("Import image", symbol: "photo.badge.plus") { [weak self] in self?.store.importImage() }])
+        deselectButton = ImageUI.button("Deselect") { [weak self] in self?.store.selectedWordIDs = [] }; deselectButton.accessibilityIdentifier = "storyboard-deselect"
+        let actions = ImageTagFlowView([deselectButton, ImageUI.button("Current moment", symbol: "scope") { [weak self] in self?.scrollToCurrent() }, ImageUI.button("Add placement", symbol: "plus.rectangle") { [weak self] in self?.store.addCue() }, ImageUI.button("Import image", symbol: "photo.badge.plus") { [weak self] in self?.store.importImage() }])
         let heading = ImageUI.row([ImageUI.stack([ImageUI.label("Storyboard", size: 16, weight: .semibold), countLabel], spacing: 3), selectionLabel, actions], spacing: 16)
         scroll.accessibilityIdentifier = "storyboard-scroll"
         scroll.addSubview(rows); rows.translatesAutoresizingMaskIntoConstraints = false
@@ -82,6 +84,7 @@ enum StoryboardSharedScriptLayout {
         guard isViewLoaded else { return }
         countLabel.text = "\(store.sceneCues.count) images · \(ScrivFormat.duration(store.sceneDurationMs))"
         selectionLabel.text = StoryboardSelectionPresentation.summary(wordCount: store.selectedWordIDs.count)
+        deselectButton.isEnabled = !store.selectedWordIDs.isEmpty
         let next: [AnyHashable] = [store.navigationContext, store.selectedSceneID, store.project.revision, store.sceneCues, store.sceneEntries, store.project.images, columns, store.peerTransferStatus]
         if signature != next, marqueeOrigin == nil { signature = next; rebuild() }
         cards.values.forEach { $0.updateSelection() }; if bandFontSize != store.scriptFontSize * 1.35 { bandFontSize = store.scriptFontSize * 1.35; directionBands.forEach { $0.updateFont(store.scriptFontSize * 1.35) } }; updateSharedScript()
@@ -194,9 +197,13 @@ enum StoryboardSharedScriptLayout {
     override var canBecomeFirstResponder: Bool { true }
     override var keyCommands: [UIKeyCommand]? { [UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(cancelStoryboardGesture))] }
     @objc private func cancelStoryboardGesture() { cards.values.forEach { $0.cancelDurationGesture() }; store.selectedWordIDs = [] }
-    private func scrollToCurrent() {
-        let id = store.currentCue?.id ?? store.selectedCueID
-        if let id, let card = cards[id] { scroll.scrollRectToVisible(card.convert(card.bounds, to: scroll), animated: true) }
+    /// Focuses the picture under the playhead, like Preview's "Follow playhead":
+    /// selects it (so the highlight moves even when the card is already on
+    /// screen) and scrolls it into view.
+    func scrollToCurrent() {
+        if let current = store.currentCue, current.id != store.selectedCueID { store.selectedCueID = current.id; store.selectedWordIDs = [] }
+        guard let id = store.selectedCueID, let card = cards[id] else { return }
+        scroll.layoutIfNeeded(); scroll.scrollRectToVisible(card.convert(card.bounds, to: scroll), animated: true)
     }
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if gestureRecognizer === backgroundTap { return StoryboardBackgroundSelectionPolicy.isBlankTouch(touch.view, within: view) }

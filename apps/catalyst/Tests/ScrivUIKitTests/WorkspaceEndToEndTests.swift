@@ -403,6 +403,24 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertTrue(moved, "The cut moves so the word belongs to the previous picture")
         XCTAssertEqual(store.sceneCues.first { $0.id == previous.id }?.endMs, store.sceneCues.first { $0.id == current.id }?.startMs, "Pictures stay contiguous")
 
+        // Deselect is only offered while words are selected.
+        let deselect = try XCTUnwrap(views(UIButton.self, in: workspace.view).first { $0.accessibilityIdentifier == "storyboard-deselect" })
+        button.sendActions(for: .touchUpInside)
+        let enabled = await until { deselect.isEnabled }
+        XCTAssertTrue(enabled, "Deselect is offered once a word is selected")
+        deselect.sendActions(for: .touchUpInside)
+        XCTAssertTrue(store.selectedWordIDs.isEmpty)
+        let disabled = await until { !deselect.isEnabled }
+        XCTAssertTrue(disabled, "Deselect does nothing with no words selected, so it is disabled")
+
+        // Current moment focuses the picture under the playhead even when it is on screen.
+        let first = try XCTUnwrap(store.sceneCues.first)
+        XCTAssertNotEqual(store.selectedCueID, first.id)
+        store.seek(toMs: Double(first.startMs) + 1)
+        let currentMoment = try XCTUnwrap(views(UIButton.self, in: workspace.view).first { $0.configuration?.title == "Current moment" })
+        currentMoment.sendActions(for: .touchUpInside)
+        XCTAssertEqual(store.selectedCueID, first.id, "Current moment selects the picture under the playhead")
+
         // Audio: a real file through the same entry point the file picker uses.
         let audioURL = FileManager.default.temporaryDirectory.appendingPathComponent("scriv-e2e-\(UUID().uuidString).caf")
         defer { try? FileManager.default.removeItem(at: audioURL) }
