@@ -394,9 +394,10 @@ final class WorkspaceEndToEndTests: XCTestCase {
         button.sendActions(for: .touchUpInside)
         XCTAssertEqual(store.selectedWordIDs, [words[wordIndex].id], "Clicking a word selects it")
         XCTAssertEqual(store.selectedCueID, current.id, "and its picture")
-        let menuReady = await until { button.menu?.children.contains { ($0 as? UIAction)?.title == "Move to previous image" } == true }
+        XCTAssertNil(button.menu, "Word pills are dragged; their menu opens on right-click only")
+        let menuReady = await until { ScrivSecondaryMenu.menu(of: button)?.children.contains { ($0 as? UIAction)?.title == "Move to previous image" } == true }
         XCTAssertTrue(menuReady, "The word offers moving the cut to the previous image")
-        let move = try XCTUnwrap(button.menu?.children.compactMap { $0 as? UIAction }.first { $0.title == "Move to previous image" })
+        let move = try XCTUnwrap(ScrivSecondaryMenu.menu(of: button)?.children.compactMap { $0 as? UIAction }.first { $0.title == "Move to previous image" })
         typealias ActionHandler = @convention(block) (UIAction) -> Void
         unsafeBitCast(try XCTUnwrap(move.value(forKey: "handler") as AnyObject?), to: ActionHandler.self)(move)
         let moved = await until { store.sceneCues.first { $0.id == previous.id }?.endMs ?? 0 > previous.endMs }

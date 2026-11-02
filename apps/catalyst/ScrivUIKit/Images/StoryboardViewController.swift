@@ -177,11 +177,12 @@ enum StoryboardSharedScriptLayout {
             button.accessibilityValue = playing ? "Playhead word" : covered ? "Covered by selected picture" : nil
             button.accessibilityTraits = selected ? [.button, .selected] : .button
             if button.titleLabel?.font != font { button.titleLabel?.font = font; button.invalidateIntrinsicContentSize(); button.superview?.invalidateIntrinsicContentSize() }
-            if changedMenu || button.menu == nil {
-                if let cue = wordCue(item), let card = cards[cue.id] { button.menu = UIMenu(children: card.wordActions(item)) }
+            // Right-click only: a press-and-hold menu would swallow a word drag that starts with a pause.
+            if changedMenu || ScrivSecondaryMenu.menu(of: button) == nil {
+                if let cue = wordCue(item), let card = cards[cue.id] { ScrivSecondaryMenu.set(UIMenu(children: card.wordActions(item)), on: button) }
                 else {
                     let navigation = store.navigationContext
-                    button.menu = UIMenu(children: [UIAction(title: "Play word") { [weak self] _ in guard let self, self.store.navigationContext == navigation else { return }; self.store.seek(toMs: Double(item.absoluteStart)) }, UIAction(title: "Edit word timing…") { [weak self] _ in guard let self, self.store.navigationContext == navigation else { return }; self.show(.wordTiming(entryID: item.entryID, wordIDs: [item.word.id])) }])
+                    ScrivSecondaryMenu.set(UIMenu(children: [UIAction(title: "Play word") { [weak self] _ in guard let self, self.store.navigationContext == navigation else { return }; self.store.seek(toMs: Double(item.absoluteStart)) }, UIAction(title: "Edit word timing…") { [weak self] _ in guard let self, self.store.navigationContext == navigation else { return }; self.show(.wordTiming(entryID: item.entryID, wordIDs: [item.word.id])) }]), on: button)
                 }
             }
         }
