@@ -183,8 +183,13 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         let header = ScrivUIKitTheme.stack([icon, headingSpacer, titleStack, UIView(), search, history], axis: .horizontal, spacing: 12); header.alignment = .center
         searchField.placeholder = "Find in script"; searchField.delegate = self; searchField.addTarget(self, action: #selector(searchChanged), for: .editingChanged)
         searchRow.addArrangedSubview(searchField); searchRow.addArrangedSubview(matchLabel)
-        searchRow.addArrangedSubview(ScrivUIKitTheme.button("Previous", symbol: "chevron.up") { [weak self] in self?.advanceSearch(-1) })
-        searchRow.addArrangedSubview(ScrivUIKitTheme.button("Next", symbol: "chevron.down") { [weak self] in self?.advanceSearch(1) })
+        // Chevrons only, as in Mac find bars, so the query stays readable on narrow windows.
+        searchField.widthAnchor.constraint(greaterThanOrEqualToConstant: 160).isActive = true
+        for (label, symbol, tip, offset) in [("Previous match", "chevron.up", "Previous · ⇧⌘G", -1), ("Next match", "chevron.down", "Next · ⌘G", 1)] {
+            let button = ScrivUIKitTheme.button("", symbol: symbol) { [weak self] in self?.advanceSearch(offset) }
+            button.accessibilityLabel = label; button.addInteraction(UIToolTipInteraction(defaultToolTip: tip))
+            searchRow.addArrangedSubview(button)
+        }
         searchRow.addArrangedSubview(ScrivUIKitTheme.button("Close", symbol: "xmark") { [weak self] in self?.toggleSearch() })
         searchRow.isHidden = true
         let top = ScrivUIKitTheme.stack([header, searchRow], spacing: 12)
@@ -261,6 +266,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
             renderedIDs = ids
         } else if rowsStack.arrangedSubviews.isEmpty { rowsStack.addArrangedSubview(emptyState) }
         let search = searchField.text ?? ""
+        let currentMatchID: String? = search.isEmpty ? nil : { let results = matches; return results.isEmpty ? nil : results[min(searchIndex, results.count - 1)].id }()
         // This derived value walks the complete scene word track. Every row in
         // this synchronous MainActor refresh sees the same playhead snapshot.
         let currentWordID = store.currentWordID
@@ -279,7 +285,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
             let selected = store.selectedEntryID == entry.id
             let start = starts[entry.id] ?? 0
             let active = store.isPlaying && playhead >= start && playhead < start + entry.ownedDurationMs
-            if row.configure(entry: entry, project: project, selected: selected, active: active, search: search, currentWordID: currentWordID, peers: peersByItem[entry.id] ?? [], locked: store.lockedByOther(entry.id) != nil, speakerMenu: speakerMenu(entry), fontSize: fontSize, presentation: presentation, startMs: start, continued: continued.contains(entry.id), menuContext: store.navigationContext) { needsLayout = true }
+            if row.configure(entry: entry, project: project, selected: selected, active: active, search: search, currentWordID: currentWordID, peers: peersByItem[entry.id] ?? [], locked: store.lockedByOther(entry.id) != nil, speakerMenu: speakerMenu(entry), fontSize: fontSize, presentation: presentation, startMs: start, continued: continued.contains(entry.id), menuContext: store.navigationContext, currentMatch: entry.id == currentMatchID) { needsLayout = true }
             let request = pendingCaret.flatMap { $0.entryID == entry.id && $0.navigation == store.navigationContext && session.entryID == entry.id ? $0 : nil }
             let caret = request.flatMap { request -> Int? in
                 if let wordID = request.afterWordID { return ScriptBoundaryEditing.utf16Range(ofWordID: wordID, in: entry).map(NSMaxRange) }
@@ -503,7 +509,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     }
     private func toggleSearch() { searchRow.isHidden.toggle(); if searchRow.isHidden { searchField.text = ""; searchField.resignFirstResponder() } else { searchField.becomeFirstResponder() }; searchChanged() }
     @objc private func searchChanged() { searchIndex = 0; storeDidChange(); if let id = matches.first?.id { scrollTo(id, animated: true) } }
-    private func advanceSearch(_ offset: Int) { let results = matches; guard !results.isEmpty else { return }; searchIndex = (searchIndex + offset + results.count) % results.count; updateMatchLabel(); scrollTo(results[searchIndex].id, animated: true) }
+    private func advanceSearch(_ offset: Int) { let results = matches; guard !results.isEmpty else { return }; searchIndex = (searchIndex + offset + results.count) % results.count; storeDidChange(); scrollTo(results[searchIndex].id, animated: true) }
     private func updateMatchLabel() { let count = matches.count; matchLabel.text = (searchField.text ?? "").isEmpty ? "" : count == 0 ? "0 results" : "\(min(searchIndex + 1, count)) / \(count)" }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool { advanceSearch(1); return false }
     private func scrollTo(_ id: String, animated: Bool) { guard let row = rows[id] else { return }; view.layoutIfNeeded(); scroll.scrollRectToVisible(row.convert(row.bounds, to: content).insetBy(dx: 0, dy: -35), animated: animated) }

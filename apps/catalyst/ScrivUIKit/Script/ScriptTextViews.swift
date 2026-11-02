@@ -98,6 +98,7 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
         let entry: ScriptEntry, characters: [ScriptCharacter], cues: [ImageCue]
         let selected: Bool, active: Bool, search: String, currentWordID: String?, peers: [PresencePeer], locked: Bool
         let fontSize: CGFloat, presentation: ScriptPresentationMetrics, startMs: Int, continued: Bool, menuContext: Int
+        let currentMatch: Bool
     }
     private var renderedInput: RenderInput?
     private var gutterWidth: NSLayoutConstraint!
@@ -166,7 +167,7 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
     /// pass; otherwise they are derived from `project` for this row alone.
     /// Returns whether anything was re-rendered.
     @discardableResult
-    func configure(entry: ScriptEntry, project: ScrivProject, selected: Bool, active: Bool, search: String, currentWordID: String?, peers: [PresencePeer], locked: Bool, speakerMenu: @autoclosure () -> UIMenu, fontSize: CGFloat, presentation: ScriptPresentationMetrics = .expanded, startMs: Int? = nil, continued: Bool? = nil, menuContext: Int = 0) -> Bool {
+    func configure(entry: ScriptEntry, project: ScrivProject, selected: Bool, active: Bool, search: String, currentWordID: String?, peers: [PresencePeer], locked: Bool, speakerMenu: @autoclosure () -> UIMenu, fontSize: CGFloat, presentation: ScriptPresentationMetrics = .expanded, startMs: Int? = nil, continued: Bool? = nil, menuContext: Int = 0, currentMatch: Bool = false) -> Bool {
         let start = startMs ?? project.startMs(of: entry.id)
         let continued = continued ?? {
             let ordered = project.entries(in: entry.sceneId)
@@ -175,7 +176,7 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
         }()
         // Only this row's own word affects its rendering.
         let wordID = currentWordID.flatMap { id in entry.words.contains { $0.id == id } ? id : nil }
-        let input = RenderInput(entry: entry, characters: project.characters, cues: project.cues, selected: selected, active: active, search: search, currentWordID: wordID, peers: peers, locked: locked, fontSize: fontSize, presentation: presentation, startMs: start, continued: continued, menuContext: menuContext)
+        let input = RenderInput(entry: entry, characters: project.characters, cues: project.cues, selected: selected, active: active, search: search, currentWordID: wordID, peers: peers, locked: locked, fontSize: fontSize, presentation: presentation, startMs: start, continued: continued, menuContext: menuContext, currentMatch: currentMatch)
         if input == renderedInput { return false }
         renderedInput = input
         lastEntry = entry
@@ -212,7 +213,8 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
         if display.attributedText != value { display.attributedText = value; display.invalidateIntrinsicContentSize() }
         display.presencePeers = peers
         let matched = !search.isEmpty && (entry.text.localizedCaseInsensitiveContains(search) || character.map { ([$0.name] + $0.aliases).contains { $0.localizedCaseInsensitiveContains(search) } } == true)
-        backgroundColor = active ? ScrivUIKitTheme.accent.withAlphaComponent(0.08) : selected ? ScrivUIKitTheme.accent.withAlphaComponent(0.055) : matched ? UIColor.systemYellow.withAlphaComponent(0.12) : .clear
+        // The find result Next/Previous landed on stands out from the other matches.
+        backgroundColor = active ? ScrivUIKitTheme.accent.withAlphaComponent(0.08) : currentMatch && matched ? UIColor.systemYellow.withAlphaComponent(0.34) : selected ? ScrivUIKitTheme.accent.withAlphaComponent(0.055) : matched ? UIColor.systemYellow.withAlphaComponent(0.12) : .clear
         return true
     }
     /// Returns whether the visible editor/display or its text changed.

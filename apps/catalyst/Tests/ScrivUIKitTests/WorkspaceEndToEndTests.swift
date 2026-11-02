@@ -481,4 +481,35 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertNil(session.issue, "No 'Draft not applied' notice")
         XCTAssertEqual(store.project.entries.first { $0.id == direction.id }?.coverageDurationMs, direction.coverageDurationMs + 2_000, "The coverage change is kept")
     }
+
+    /// Find marks the match Next/Previous landed on, even when it was already
+    /// on screen, and the query field stays readable on the smallest window.
+    func testFindMarksTheCurrentMatch() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene); window.frame = CGRect(x: 0, y: 0, width: 1080, height: 720)
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        store.tab = .script
+        for _ in 0..<5 { try await Task.sleep(for: .milliseconds(30)); window.layoutIfNeeded() }
+        try button(labelled: "Find in script", in: window).sendActions(for: .primaryActionTriggered)
+        let field = try XCTUnwrap(views(UISearchTextField.self, in: window).first { $0.window != nil })
+        field.text = "Miyazaki"; field.sendActions(for: .editingChanged)
+        window.layoutIfNeeded()
+        XCTAssertGreaterThanOrEqual(field.bounds.width, 160, "The query stays readable at 1080 pt")
+        let strong = UIColor.systemYellow.withAlphaComponent(0.34)
+        func current() -> [ScriptEntryRow] { views(ScriptEntryRow.self, in: window).filter { $0.window != nil && $0.backgroundColor == strong } }
+        XCTAssertEqual(current().count, 1, "Exactly one current match")
+        let first = try XCTUnwrap(current().first)
+        try button(labelled: "Next match", in: window).sendActions(for: .primaryActionTriggered)
+        XCTAssertEqual(current().count, 1)
+        XCTAssertFalse(current().first === first, "Next moves the mark to another line")
+        try button(labelled: "Previous match", in: window).sendActions(for: .primaryActionTriggered)
+        XCTAssertTrue(current().first === first, "Previous moves it back")
+    }
 }
