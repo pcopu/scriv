@@ -75,6 +75,7 @@ final class WorkspaceStartupDiagnosticsTests: XCTestCase {
         // skip its recovery coverage or run against ordinary account storage.
         XCTAssertTrue(ProcessInfo.processInfo.arguments.contains("--screenshots"))
         let harness = try WorkspaceStartupTestHarness.make(trace: trace)
+        addTeardownBlock { @MainActor in harness.discard() }
         let repository = try ProjectRepository(root: harness.root.appendingPathComponent("Projects"))
         let baseline = ScrivProject(id: "startup-fixture", title: "Synthetic startup", scenes: [ScriptScene(id: "scene-test")],
             entries: [ScriptEntry(id: "line-test", sceneId: "scene-test", order: 0, text: "Synthetic fixture words", ownedDurationMs: 2000)])

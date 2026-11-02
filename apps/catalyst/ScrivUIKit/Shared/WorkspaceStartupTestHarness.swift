@@ -10,12 +10,13 @@ import ScrivCore
 final class WorkspaceStartupTestHarness {
     let root: URL
     let defaults: UserDefaults
+    let suiteName: String
     let fileAccess: UIKitFileAccess
     let trace: StartupTrace
     var denyMetadataRead = false
     var restoreAccount: () async -> Void = {}
-    private init(root: URL, defaults: UserDefaults, trace: StartupTrace) {
-        self.root = root; self.defaults = defaults; self.trace = trace
+    private init(root: URL, defaults: UserDefaults, suiteName: String, trace: StartupTrace) {
+        self.root = root; self.defaults = defaults; self.suiteName = suiteName; self.trace = trace
         fileAccess = UIKitFileAccess(defaults: defaults)
     }
     static func make(trace: StartupTrace) throws -> WorkspaceStartupTestHarness {
@@ -27,10 +28,19 @@ final class WorkspaceStartupTestHarness {
             .appendingPathComponent("ScrivStartupTests-" + token, isDirectory: true)
         guard !FileManager.default.fileExists(atPath: root.path) else { throw ScrivError.conflict("Startup test location already exists.") }
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: false, attributes: [.posixPermissions: 0o700])
-        guard let defaults = UserDefaults(suiteName: "ScrivStartupTests." + token) else {
+        // An absolute-path suite keeps the preferences file inside the fixture
+        // folder, so it is removed with it (cfprefsd recreates a deleted
+        // ~/Library/Preferences/<suite>.plist after removePersistentDomain).
+        let suiteName = root.appendingPathComponent("Preferences").path
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
             throw ScrivError.unavailable("The isolated startup preferences could not be created.")
         }
-        return WorkspaceStartupTestHarness(root: root, defaults: defaults, trace: trace)
+        return WorkspaceStartupTestHarness(root: root, defaults: defaults, suiteName: suiteName, trace: trace)
+    }
+    /// Removes the fixture folder, including its preferences file.
+    func discard() {
+        defaults.removePersistentDomain(forName: suiteName)
+        try? FileManager.default.removeItem(at: root)
     }
     func validatePackage(_ url: URL) throws {
         let canonical = url.standardizedFileURL

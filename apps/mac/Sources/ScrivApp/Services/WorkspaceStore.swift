@@ -639,6 +639,8 @@ final class WorkspaceStore: ObservableObject {
         if verificationMode {
             let output = ProcessInfo.processInfo.environment["SCRIV_VERIFICATION_ROOT"].map { URL(fileURLWithPath:$0,isDirectory:true) } ?? FileManager.default.temporaryDirectory.appendingPathComponent("ScrivVerification-" + UUID().uuidString,isDirectory:true)
             rootURL = output.appendingPathComponent("Projects",isDirectory:true)
+            let scratch = FileManager.default.temporaryDirectory
+            Task.detached(priority: .utility) { VerificationScratch.pruneStale(in: scratch) }
         } else { rootURL = FileManager.default.urls(for:.applicationSupportDirectory,in:.userDomainMask)[0].appendingPathComponent("Scriv/Projects") }
         startupTrace.record(.projectStorageBegin)
         do { repository = try ProjectRepository(root:rootURL) }

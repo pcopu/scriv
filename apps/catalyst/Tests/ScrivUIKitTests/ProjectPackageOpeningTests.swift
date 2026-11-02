@@ -19,9 +19,11 @@ final class ProjectPackageOpeningTests: XCTestCase {
 
     func testExportedPackageReopensViaBookmarkWithExactIdentityEditsAndImages() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("ScrivPackageTest-" + UUID().uuidString, isDirectory: true)
-        let suiteName = "ScrivPackageTest." + UUID().uuidString
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        // Preferences live inside the fixture folder and are removed with it.
+        let suiteName = root.appendingPathComponent("Preferences").path
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
-        defer { try? FileManager.default.removeItem(at: root); defaults.removePersistentDomain(forName: suiteName) }
+        defer { defaults.removePersistentDomain(forName: suiteName); try? FileManager.default.removeItem(at: root) }
         let repository = try ProjectRepository(root: root)
         var expected = ScrivProject.example()
         let original = await repository.defaultURL(for: expected)

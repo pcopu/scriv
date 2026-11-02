@@ -655,6 +655,7 @@
 				"E39CAF1F77929022B6E74C0A",
 				"104158410037951C699DA1B8",
 				"FF5A6958643346A9F6BAF885",
+				"3927F7BA9EC8887F3329BA54",
 				"0424E993C145053BBD919A0B",
 				"3768E235D7F453CD8492D31F",
 				"A2189CB2742F584E884A4DDF",
@@ -971,6 +972,12 @@
 			"path" = "../mac/Sources/ScrivCore/TimingEngine.swift";
 			"sourceTree" = "SOURCE_ROOT";
 		};
+		"EDA9062D3890398423E17F3B" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "../mac/Sources/ScrivCore/VerificationScratch.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
 		"68005AE194A067AC75DFD7D3" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -1024,6 +1031,7 @@
 				"4B4A404E0E63DDD2E3F6CC7D",
 				"3EA710AE354DD64784162268",
 				"01D6024D37FB76B97D87EB43",
+				"EDA9062D3890398423E17F3B",
 				"68005AE194A067AC75DFD7D3",
 			);
 			"sourceTree" = "<group>";
@@ -1199,6 +1207,10 @@
 		"FF5A6958643346A9F6BAF885" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "01D6024D37FB76B97D87EB43";
+		};
+		"3927F7BA9EC8887F3329BA54" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "EDA9062D3890398423E17F3B";
 		};
 		"0424E993C145053BBD919A0B" = {
 			"isa" = "PBXBuildFile";
@@ -1403,6 +1415,10 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "01D6024D37FB76B97D87EB43";
 		};
+		"4A9F8460A8F6D30E0ADB9D7E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "EDA9062D3890398423E17F3B";
+		};
 		"2D59B6B5FFF6AC00D61AEFCA" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "68005AE194A067AC75DFD7D3";
@@ -1534,6 +1550,7 @@
 				"B011FB56E75D30AB19A2482F",
 				"7823EC33D8BA46AA594E115E",
 				"A4D790BC7D444E8E1FB07697",
+				"4A9F8460A8F6D30E0ADB9D7E",
 				"2D59B6B5FFF6AC00D61AEFCA",
 				"3C312E60AB32CE162B1C6BF1",
 				"3D1ED082817550D21BF515EE",
