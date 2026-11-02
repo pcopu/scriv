@@ -25,6 +25,12 @@ final class HistoryController: ScrivScreenController, UITableViewDataSource, UIT
     private var previewIssue: String?
     private var previewTask: Task<Void, Never>?
     private var technicalExpanded: Set<String> = []
+    /// A revision can touch every item in the project (e.g. its creation), and
+    /// each change card is a stack of labels and text views; building them all
+    /// made the sheet take seconds to appear. Show a first page, then the rest
+    /// on request.
+    private static let changePageSize = 8
+    private var showsAllChanges = false
     private var characterExpanded: Set<String> = []
     private weak var accessibilityPresenterView: UIView?
     private var presenterAccessibilityWasHidden = false
@@ -106,7 +112,7 @@ final class HistoryController: ScrivScreenController, UITableViewDataSource, UIT
     @objc private func sourceChanged() { previewTask?.cancel(); reloadEvents(); choose(local ? events.dropFirst().first ?? events.first : events.first); if !local { refresh() } }
     @objc private func detailChanged() { renderDetail() }
     private func choose(_ value: UIKitHistorySelection?) {
-        previewTask?.cancel(); selection = value; preview = nil; previewIssue = nil; technicalExpanded = []; characterExpanded = []
+        previewTask?.cancel(); selection = value; preview = nil; previewIssue = nil; technicalExpanded = []; characterExpanded = []; showsAllChanges = false
         guard let value else { loading = false; renderDetail(); return }
         loading = true; renderDetail()
         let context = store.navigationContext
@@ -160,7 +166,14 @@ final class HistoryController: ScrivScreenController, UITableViewDataSource, UIT
             if case .cloud(let event) = selection, event.kind.hasPrefix("discussion.") { detail.addArrangedSubview(ScrivUIKitTheme.notice("Discussion activity", message: "This event is not a script restore point. Restoring never rewinds the conversation.")) }
             else { detail.addArrangedSubview(ScrivUIKitTheme.notice("Read-only snapshot", message: "No item delta is available for this revision. Open Revision preview to read its saved contents.")) }
         }
-        for change in changes { detail.addArrangedSubview(changeCard(change)) }
+        let shown = showsAllChanges ? changes : Array(changes.prefix(Self.changePageSize))
+        for change in shown { detail.addArrangedSubview(changeCard(change)) }
+        if shown.count < changes.count {
+            let remaining = changes.count - shown.count
+            detail.addArrangedSubview(ScrivUIKitTheme.button("Show \(remaining) more change\(remaining == 1 ? "" : "s")", symbol: "chevron.down") { [weak self] in
+                guard let self else { return }; self.showsAllChanges = true; self.renderDetail()
+            })
+        }
         if case .cloud(let event) = selection, let data = event.data {
             let expanded = technicalExpanded.contains("event")
             detail.addArrangedSubview(ScrivUIKitTheme.button("Event metadata", symbol: expanded ? "chevron.down" : "chevron.right") { [weak self] in self?.toggleTechnical("event") })
@@ -226,7 +239,7 @@ final class HistoryController: ScrivScreenController, UITableViewDataSource, UIT
     }
     private func renderSnapshot(_ project: ScrivProject) {
         detail.addArrangedSubview(ScrivUIKitTheme.label(project.title, size: 20, weight: .semibold))
-        detail.addArrangedSubview(ScrivUIKitTheme.label("\(project.scenes.count) scenes · \(project.entries.count) entries · \(project.characters.count) characters · \(project.cues.count) image cues · \(project.audioClips.count) local audio clips", size: 12, color: ScrivUIKitTheme.secondary))
+        detail.addArrangedSubview(ScrivUIKitTheme.label([ScrivFormat.count(project.scenes.count, "scene"), ScrivFormat.count(project.entries.count, "entry", "entries"), ScrivFormat.count(project.characters.count, "character"), ScrivFormat.count(project.cues.count, "image cue"), ScrivFormat.count(project.audioClips.count, "local audio clip")].joined(separator: " · "), size: 12, color: ScrivUIKitTheme.secondary))
         for scene in project.orderedScenes {
             let body = ScrivUIKitTheme.stack([ScrivUIKitTheme.stack([ScrivUIKitTheme.label(scene.title, size: 17, weight: .semibold), UIView(), ScrivUIKitTheme.label(ScrivFormat.duration(project.durationMs(of: scene.id)), size: 12, color: ScrivUIKitTheme.secondary)], axis: .horizontal)], spacing: 14)
             for entry in project.entries(in: scene.id) {
