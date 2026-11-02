@@ -69,7 +69,7 @@ enum CharacterTeamUI {
     }
     static func present(_ child: UIViewController, from controller: UIViewController, width: CGFloat = 710, height: CGFloat = 820) {
         child.preferredContentSize = CGSize(width: width, height: height); child.modalPresentationStyle = .formSheet
-        controller.present(child, animated: true)
+        ScrivSheetFitting.fit(child, presentedFrom: controller); controller.present(child, animated: true)
     }
     /// A sentence cannot fit in the 56×58 review avatar. Keep the complete
     /// missing state available without squeezing it into the portrait pixels.

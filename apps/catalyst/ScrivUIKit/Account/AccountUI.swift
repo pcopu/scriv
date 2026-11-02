@@ -73,7 +73,7 @@ enum AccountUI {
     static func clear(_ stack: UIStackView) { for view in stack.arrangedSubviews { stack.removeArrangedSubview(view); view.removeFromSuperview() } }
     static func present(_ screen: UIViewController, from parent: UIViewController, size: CGSize) {
         let navigation = UINavigationController(rootViewController: screen); navigation.modalPresentationStyle = .formSheet; navigation.preferredContentSize = size; screen.preferredContentSize = size
-        parent.present(navigation, animated: true)
+        ScrivSheetFitting.fit(navigation, presentedFrom: parent); parent.present(navigation, animated: true)
     }
 }
 

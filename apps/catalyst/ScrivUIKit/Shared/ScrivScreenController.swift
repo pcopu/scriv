@@ -27,6 +27,7 @@ class ScrivScreenController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated); storeDidChange()
+        if isPresentedSheet, let presenter = presentingViewController { ScrivSheetFitting.fit(navigationController ?? self, presentedFrom: presenter) }
     }
     /// Shown as a sheet (directly, or as a navigation root), not embedded in the workspace.
     var isPresentedSheet: Bool { presentingViewController != nil && (parent == nil || parent is UINavigationController) }

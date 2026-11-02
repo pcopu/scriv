@@ -78,6 +78,7 @@ final class ScrivWorkspaceController: ScrivScreenController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         updatePanelLayout()
+        ScrivSheetFitting.fitPresentedSheets(above: self)
     }
     private func updateTransport() {
         let shouldShow = ScrivWorkspaceLayout.usesFooterTransport(for: store.tab)

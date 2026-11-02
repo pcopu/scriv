@@ -49,6 +49,7 @@ final class ScrivUIKitRouter {
             store.errorMessage = "Wait for the current screen to finish opening, then try again."
             return
         }
+        ScrivSheetFitting.fit(controller, presentedFrom: front)
         front.present(controller, animated: true)
     }
 }

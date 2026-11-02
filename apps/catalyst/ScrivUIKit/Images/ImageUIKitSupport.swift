@@ -122,7 +122,8 @@ import ScrivCore
     }
     static func present(_ controller: UIViewController, from parent: UIViewController, size: CGSize = CGSize(width: 720, height: 720)) {
         let navigation = UINavigationController(rootViewController: controller); navigation.modalPresentationStyle = .formSheet
-        navigation.preferredContentSize = size; controller.preferredContentSize = size; parent.present(navigation, animated: true)
+        navigation.preferredContentSize = size; controller.preferredContentSize = size
+        ScrivSheetFitting.fit(navigation, presentedFrom: parent); parent.present(navigation, animated: true)
     }
     static func closeButton(_ controller: UIViewController, title: String = "Done") {
         controller.navigationItem.rightBarButtonItem = UIBarButtonItem(title: title, primaryAction: UIAction { [weak controller] _ in controller?.dismiss(animated: true) })
