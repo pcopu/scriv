@@ -328,7 +328,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
             lastRecoverySessionID = session.sessionID
             let controller = RecoveredDraftController(store: store, session: session)
             controller.onEditDraft = { [weak self] in guard let self, let id = session.entryID else { return }; rows[id]?.editor.becomeFirstResponder() }
-            recovery = controller; controller.modalPresentationStyle = .formSheet; present(controller, animated: true)
+            recovery = controller; controller.modalPresentationStyle = .formSheet; ScrivSheetFitting.fit(controller, presentedFrom: self); present(controller, animated: true)
         }
     }
     private func queueSessionRefresh() {
@@ -419,7 +419,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         guard session.finish(), let entry = store.project.entries.first(where: { $0.id == id }) else { return }
         let context = store.navigationContext
         let controller = CharacterLinksController(store: store, entry: entry, navigationContext: context)
-        controller.modalPresentationStyle = .formSheet; present(controller, animated: true)
+        controller.modalPresentationStyle = .formSheet; ScrivSheetFitting.fit(controller, presentedFrom: self); present(controller, animated: true)
     }
     private func speakerMenu(_ entry: ScriptEntry) -> UIMenu {
         let context = store.navigationContext
