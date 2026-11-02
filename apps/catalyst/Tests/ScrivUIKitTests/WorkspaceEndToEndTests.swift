@@ -511,5 +511,19 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertFalse(current().first === first, "Next moves the mark to another line")
         try button(labelled: "Previous match", in: window).sendActions(for: .primaryActionTriggered)
         XCTAssertTrue(current().first === first, "Previous moves it back")
+        // Escape in the field closes Find and clears every match highlight.
+        func controllers(_ root: UIViewController) -> [UIViewController] { [root] + root.children.flatMap(controllers) }
+        let script = try XCTUnwrap(controllers(workspace).compactMap { $0 as? ScriptScreenController }.first)
+        let escape = try XCTUnwrap(script.keyCommands?.first { $0.input == UIKeyCommand.inputEscape })
+        XCTAssertTrue(escape.wantsPriorityOverSystemBehavior, "The field must not swallow Escape")
+        field.becomeFirstResponder()
+        let action = try XCTUnwrap(escape.action)
+        XCTAssertTrue(script.canPerformAction(action, withSender: escape))
+        script.perform(action, with: escape)
+        window.layoutIfNeeded()
+        XCTAssertEqual(field.text ?? "", "")
+        XCTAssertNil(field.window.flatMap { _ in field.superview?.isHidden == false ? field : nil }, "The find bar is hidden")
+        XCTAssertTrue(views(ScriptEntryRow.self, in: window).allSatisfy { $0.backgroundColor != strong && $0.backgroundColor != UIColor.systemYellow.withAlphaComponent(0.12) }, "No line stays highlighted")
+        XCTAssertFalse(script.canPerformAction(action, withSender: escape), "With Find closed, Escape keeps its other meanings")
     }
 }

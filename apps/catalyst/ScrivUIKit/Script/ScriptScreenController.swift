@@ -62,6 +62,9 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     override var canBecomeFirstResponder: Bool { true }
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(scrivToggleScriptEditing(_:)) { return viewIfLoaded?.window != nil && presentedViewController == nil && (session.active || store.selectedEntryID != nil) }
+        // Escape belongs to Find only while its field is focused; otherwise it
+        // keeps its other meanings (finishing an edit, clearing a selection).
+        if action == #selector(closeFindCommand) { return !searchRow.isHidden && searchField.isFirstResponder }
         return super.canPerformAction(action, withSender: sender)
     }
     @objc func scrivToggleScriptEditing(_ sender: Any?) {
@@ -513,7 +516,14 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     private func updateMatchLabel() { let count = matches.count; matchLabel.text = (searchField.text ?? "").isEmpty ? "" : count == 0 ? "0 results" : "\(min(searchIndex + 1, count)) / \(count)" }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool { advanceSearch(1); return false }
     private func scrollTo(_ id: String, animated: Bool) { guard let row = rows[id] else { return }; view.layoutIfNeeded(); scroll.scrollRectToVisible(row.convert(row.bounds, to: content).insetBy(dx: 0, dy: -35), animated: animated) }
-    override var keyCommands: [UIKeyCommand]? { [UIKeyCommand(input: "f", modifierFlags: .command, action: #selector(findCommand)), UIKeyCommand(input: "g", modifierFlags: .command, action: #selector(nextCommand)), UIKeyCommand(input: "g", modifierFlags: [.command, .shift], action: #selector(previousCommand))] }
+    override var keyCommands: [UIKeyCommand]? { [UIKeyCommand(input: "f", modifierFlags: .command, action: #selector(findCommand)), UIKeyCommand(input: "g", modifierFlags: .command, action: #selector(nextCommand)), UIKeyCommand(input: "g", modifierFlags: [.command, .shift], action: #selector(previousCommand)), closeFindKey] }
+    /// Escape in the find field closes Find, as in any Mac find bar. Without
+    /// priority the field cleared its text silently, leaving a stale "3 / 8"
+    /// and the old matches highlighted.
+    private lazy var closeFindKey: UIKeyCommand = {
+        let key = UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(closeFindCommand)); key.wantsPriorityOverSystemBehavior = true; return key
+    }()
+    @objc private func closeFindCommand() { if !searchRow.isHidden { toggleSearch() } }
     func focusSearch() { if searchRow.isHidden { toggleSearch() } else { searchField.becomeFirstResponder() } }
     @objc private func findCommand() { focusSearch() }
     @objc private func nextCommand() { advanceSearch(1) }
