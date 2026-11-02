@@ -31,7 +31,9 @@ import ScrivCore
         overview.addAction(UIAction { [weak self] _ in guard let self else { return }; self.store.seek(toMs: Double(self.overview.value) * Double(self.store.sceneDurationMs)) }, for: .valueChanged)
         let help = ImageUI.label("Drag a picture to offset within its source. Lower right edge: coverage. Upper cut grip: shared cut. Shift: no snap. Change source: picture menu.", size: 10, secondary: true)
         help.isHidden = !expanded; scroll.accessibilityHint = help.text
-        let stack = ImageUI.stack([titleRow, scroll, overview, help], spacing: 7); ImageUI.pinToSafeArea(stack, in: self)
+        let stack = ImageUI.stack([titleRow, scroll, overview, help], spacing: 7)
+        // Embedded, the Preview panel pads the timeline; as its own sheet it needs margins.
+        ImageUI.pinToSafeArea(stack, in: self, insets: expanded ? NSDirectionalEdgeInsets(top: 8, leading: 20, bottom: 16, trailing: 20) : .zero)
         scroll.heightAnchor.constraint(greaterThanOrEqualToConstant: 180).isActive = true
         let seek = UITapGestureRecognizer(target: self, action: #selector(seekCanvas(_:))); seek.cancelsTouchesInView = false; canvas.addGestureRecognizer(seek)
         storeDidChange()
@@ -49,6 +51,14 @@ import ScrivCore
         }
         playhead.frame = CGRect(x: 70 + CGFloat(store.playheadMs) * scale, y: 22, width: 1.5, height: max(0, canvasHeight - 22))
         if !overview.isTracking { overview.value = Float(store.playheadMs / Double(max(1, store.sceneDurationMs))) }
+        followPicture()
+    }
+    override func viewDidLayoutSubviews() { super.viewDidLayoutSubviews(); followPicture() }
+    /// Keeps the selected (or playing) picture in view. Waits for a laid-out
+    /// viewport: scrolling a zero-width view aligns the picture's end and
+    /// opened the timeline scrolled past its start.
+    private func followPicture() {
+        guard isViewLoaded, scroll.bounds.width > 1 else { return }
         let cue = store.isPlaying ? store.currentCue : store.selectedCue
         if cue?.id != lastFollowedCue, (!store.isPlaying || store.followPlayback), !scroll.isDragging, !dragInProgress {
             lastFollowedCue = cue?.id
@@ -92,7 +102,7 @@ import ScrivCore
             image.configure(url: store.project.asset(cue.imageId).flatMap { store.assetURL($0) }, title: cue.label, missingText: "No local image"); tile.addSubview(image)
             let label = ImageUI.label(cue.label.isEmpty ? ScrivFormat.duration(cue.durationMs) : cue.label, size: 9, weight: .medium); label.textColor = .white; label.backgroundColor = UIColor.black.withAlphaComponent(0.45); label.frame = CGRect(x: 3, y: 34, width: max(0, frame.width - 6), height: 18); label.numberOfLines = 1; label.autoresizingMask = [.flexibleWidth]; tile.addSubview(label)
             tile.accessibilityLabel = "\(cue.label), \(ScrivFormat.duration(cue.authoredDurationMs ?? cue.durationMs)) authored coverage"; tile.addAction(UIAction { [weak self] _ in guard let self, self.store.navigationContext == navigation else { return }; if self.store.isPlaying { self.store.togglePlayback() }; self.store.seek(toMs: Double(cue.startMs)); self.store.selectedCueID = cue.id }, for: .touchUpInside)
-            tile.menu = UIMenu(children: pictureActions(cue)); canvas.addSubview(tile); imageButtons[cue.id] = tile
+            ScrivSecondaryMenu.set(UIMenu(children: pictureActions(cue)), on: tile); // Tiles are dragged; a hold must not open the menu. canvas.addSubview(tile); imageButtons[cue.id] = tile
             let coverageGrip = UIView(frame: CGRect(x: frame.maxX - 13, y: frame.minY + 33, width: 13, height: 20))
             coverageGrip.backgroundColor = ImageUI.accent.withAlphaComponent(0.8); coverageGrip.layer.cornerRadius = 3
             coverageGrip.isAccessibilityElement = true; coverageGrip.accessibilityLabel = "Authored coverage edge for " + cue.label; canvas.addSubview(coverageGrip)
@@ -122,7 +132,7 @@ import ScrivCore
             for word in entry.words {
                 let wordFrame = CGRect(x: 70 + CGFloat(start + word.startMs) * scale, y: wordY, width: max(4, CGFloat(word.endMs - word.startMs) * scale - 1), height: wordHeight)
                 let wordBlock = textBlock(word.text, color: color, frame: wordFrame, script: true) { [weak self] in guard let self else { return }; self.store.selectedWordIDs = [word.id]; self.store.seek(toMs: Double(start + word.startMs)) }
-                wordBlock.menu = UIMenu(children: [ImageUI.guardedAction("Edit word timing…", store: store, context: navigation) { [weak self] in self?.show(.wordTiming(entryID: entry.id, wordIDs: [word.id])) }])
+                ScrivSecondaryMenu.set(UIMenu(children: [ImageUI.guardedAction("Edit word timing…", store: store, context: navigation) { [weak self] in self?.show(.wordTiming(entryID: entry.id, wordIDs: [word.id])) }]), on: wordBlock)
                 addPan(to: wordBlock) { [weak self] delta, context in
                     guard let self, self.store.navigationContext == context, self.store.project.entries.first(where: { $0.id == entry.id })?.words == entry.words else { return }
                     _ = self.store.shiftWords(wordIds: [word.id], byMs: Int(delta / self.scale))
@@ -144,7 +154,7 @@ import ScrivCore
             guard let clip = store.project.audioClips.first(where: { $0.id == placement.clipId }), let asset = store.project.audioAssets.first(where: { $0.id == placement.assetId }) else { continue }
             let block = textBlock(asset.originalName, color: clip.isMuted ? .secondaryLabel : .systemTeal, frame: CGRect(x: 70 + CGFloat(placement.startMs) * scale, y: audioY + CGFloat(lane) * 43, width: max(3, CGFloat(placement.durationMs) * scale - 2), height: 38)) { [weak self] in self?.store.seek(toMs: Double(placement.startMs)) }
             let wave = ImageTimelineWaveform(peaks: AudioTimeline.waveform(for: placement, asset: asset), color: .systemTeal); wave.frame = CGRect(x: 0, y: 19, width: block.bounds.width, height: 18); block.addSubview(wave)
-            block.menu = UIMenu(children: [ImageUI.guardedAction("Audio trim and timing…", store: store, context: navigation) { [weak self] in guard let self else { return }; let editor = AudioClipEditorController(store: self.store, clip: clip); editor.modalPresentationStyle = .formSheet; self.present(editor, animated: true) }, UIAction(title: clip.isMuted ? "Unmute clip" : "Mute clip") { [weak self] _ in guard let self, self.store.navigationContext == navigation, self.store.project.audioClips.first(where: { $0.id == clip.id }) == clip else { return }; var changed = clip; changed.isMuted.toggle(); _ = self.store.updateAudioClip(changed) }, UIAction(title: "Remove clip", attributes: .destructive) { [weak self] _ in guard let self, self.store.navigationContext == navigation else { return }; self.store.deleteAudioClip(clip.id) }])
+            ScrivSecondaryMenu.set(UIMenu(children: [ImageUI.guardedAction("Audio trim and timing…", store: store, context: navigation) { [weak self] in guard let self else { return }; let editor = AudioClipEditorController(store: self.store, clip: clip); editor.modalPresentationStyle = .formSheet; self.present(editor, animated: true) }, UIAction(title: clip.isMuted ? "Unmute clip" : "Mute clip") { [weak self] _ in guard let self, self.store.navigationContext == navigation, self.store.project.audioClips.first(where: { $0.id == clip.id }) == clip else { return }; var changed = clip; changed.isMuted.toggle(); _ = self.store.updateAudioClip(changed) }, UIAction(title: "Remove clip", attributes: .destructive) { [weak self] _ in guard let self, self.store.navigationContext == navigation else { return }; self.store.deleteAudioClip(clip.id) }]), on: block)
             addPan(to: block) { [weak self] delta, context in guard let self, self.store.navigationContext == context, self.store.project.audioClips.first(where: { $0.id == clip.id }) == clip else { return }; var moved = clip; moved.startMs = min(86_400_000, max(0, self.snapped(clip.startMs + Int(delta / self.scale)))); _ = self.store.updateAudioClip(moved) }
         }
         canvas.addSubview(playhead)
