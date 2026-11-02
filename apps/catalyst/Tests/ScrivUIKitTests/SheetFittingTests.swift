@@ -9,11 +9,14 @@ final class SheetFittingTests: XCTestCase {
         sheet.preferredContentSize = CGSize(width: 1040, height: 740)
         // Minimum Scriv window (1080×720): the footer must stay inside it.
         ScrivSheetFitting.fit(sheet, in: CGSize(width: 1080, height: 720))
-        XCTAssertEqual(sheet.preferredContentSize, CGSize(width: 1032, height: 680))
+        XCTAssertEqual(sheet.preferredContentSize, CGSize(width: 1024, height: 680))
         ScrivSheetFitting.fit(sheet, in: CGSize(width: 1080, height: 720))
-        XCTAssertEqual(sheet.preferredContentSize, CGSize(width: 1032, height: 680), "Fitting is idempotent")
+        XCTAssertEqual(sheet.preferredContentSize, CGSize(width: 1024, height: 680), "Fitting is idempotent")
         ScrivSheetFitting.fit(sheet, in: CGSize(width: 1600, height: 1000))
-        XCTAssertEqual(sheet.preferredContentSize, CGSize(width: 1040, height: 740), "A larger window restores the designed size")
+        XCTAssertEqual(sheet.preferredContentSize, CGSize(width: 1024, height: 740), "A larger window restores the designed height; width stays within the form-sheet maximum")
+        let narrow = UIViewController(); narrow.modalPresentationStyle = .formSheet; narrow.preferredContentSize = CGSize(width: 960, height: 600)
+        ScrivSheetFitting.fit(narrow, in: CGSize(width: 1600, height: 1000))
+        XCTAssertEqual(narrow.preferredContentSize, CGSize(width: 960, height: 600), "Sheets within limits are untouched")
     }
 
     func testASheetThatResizesItselfKeepsItsNewDesign() {

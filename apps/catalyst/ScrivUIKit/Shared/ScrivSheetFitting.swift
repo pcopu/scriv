@@ -8,12 +8,15 @@ import ObjectiveC
 enum ScrivSheetFitting {
     /// Space kept between the sheet and the window edges.
     static let margin = CGSize(width: 24, height: 20)
+    /// Catalyst draws a form sheet no wider than about 1040 pt but still lays
+    /// its content out at the requested width, clipping both edges.
+    static let maximumWidth: CGFloat = 1024
     private nonisolated(unsafe) static var designedKey: UInt8 = 0
     private nonisolated(unsafe) static var appliedKey: UInt8 = 0
 
     /// The size a sheet asks for in a window of `available` size.
     static func fittedSize(designed: CGSize, available: CGSize) -> CGSize {
-        CGSize(width: max(320, min(designed.width, available.width - 2 * margin.width)),
+        CGSize(width: max(320, min(designed.width, maximumWidth, available.width - 2 * margin.width)),
                height: max(320, min(designed.height, available.height - 2 * margin.height)))
     }
 
