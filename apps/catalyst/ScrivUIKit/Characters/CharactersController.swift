@@ -59,7 +59,20 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
         scanButton.addAction(UIAction { [weak self] _ in guard let self else { return }; if self.store.characterAnalysis.isScanning { self.store.characterAnalysis.pause() } else { self.store.characterAnalysis.scanAgain() }; self.renderAnalysis() },for:.touchUpInside)
         let footer = CharacterTeamUI.row([scanStatus,CharacterTeamUI.spacer(),scanButton],spacing:8)
         let body = ScrivUIKitTheme.stack([title, analysisCard, reviewBanner, search, ribbon, scroll, hint, CharacterTeamUI.separator(),footer], spacing: 10)
-        view.addSubview(body); body.scrivPinEdges(to: view, insets: .init(top: 20, leading: 20, bottom: 20, trailing: 20))
+        // The body fills the panel and the profile scrolls inside it; on short
+        // windows the profile keeps a usable height and the whole panel scrolls.
+        let page = UIScrollView(); page.translatesAutoresizingMaskIntoConstraints = false; page.showsHorizontalScrollIndicator = false
+        view.addSubview(page); body.translatesAutoresizingMaskIntoConstraints = false; page.addSubview(body)
+        let fill = body.heightAnchor.constraint(equalTo: page.frameLayoutGuide.heightAnchor, constant: -40); fill.priority = .defaultHigh - 1
+        NSLayoutConstraint.activate([
+            page.leadingAnchor.constraint(equalTo: view.leadingAnchor), page.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            page.topAnchor.constraint(equalTo: view.topAnchor), page.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            body.leadingAnchor.constraint(equalTo: page.contentLayoutGuide.leadingAnchor, constant: 20), body.trailingAnchor.constraint(equalTo: page.contentLayoutGuide.trailingAnchor, constant: -20),
+            body.topAnchor.constraint(equalTo: page.contentLayoutGuide.topAnchor, constant: 20), body.bottomAnchor.constraint(equalTo: page.contentLayoutGuide.bottomAnchor, constant: -20),
+            body.widthAnchor.constraint(equalTo: page.frameLayoutGuide.widthAnchor, constant: -40),
+            body.heightAnchor.constraint(greaterThanOrEqualTo: page.frameLayoutGuide.heightAnchor, constant: -40),
+            scroll.heightAnchor.constraint(greaterThanOrEqualToConstant: 220), fill
+        ])
         render()
     }
     override func viewDidLayoutSubviews() {
@@ -240,7 +253,7 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
         renderedAnalysis = key
         analysisDot.tintColor = analysis.availability == nil ? .systemGreen : .systemOrange
         analysisStatus.text = analysis.availability ?? (analysis.isScanning ? "Checking image characters…" : "Image analysis ready")
-        scanStatus.text = analysis.status
+        scanStatus.text = analysis.status; scanStatus.isHidden = analysis.status == analysis.availability
         scanButton.setTitle(analysis.isScanning ? "Pause" : "Scan again",for:.normal)
         scanButton.isEnabled = analysis.availability == nil
         CharacterTeamUI.clear(reviewBanner)
