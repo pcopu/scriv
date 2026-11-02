@@ -238,10 +238,9 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
             let controller = UINavigationController(rootViewController: CharacterTagsViewController(store: self.store, imageID: image.id))
             CharacterTeamUI.present(controller, from: self, width: 470, height: 600)
         }
-        addTags.accessibilityLabel = "Edit tags"
+        addTags.accessibilityLabel = "Edit character tags"
+        addTags.configuration?.contentInsets = .init(top: 4, leading: 6, bottom: 4, trailing: 6)
         tags.chips.append(addTags)
-        tags.chips.last?.accessibilityLabel = "Edit character tags"
-        (tags.chips.last as? UIButton)?.configuration?.contentInsets = .init(top: 4, leading: 6, bottom: 4, trailing: 6)
         return ScrivUIKitTheme.stack([open, caption, tags], spacing: 6)
     }
     private var renderedAnalysis: [AnyHashable]?
