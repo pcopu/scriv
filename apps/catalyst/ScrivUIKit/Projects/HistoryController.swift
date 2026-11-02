@@ -186,7 +186,12 @@ final class HistoryController: ScrivScreenController, UITableViewDataSource, UIT
         let fields = allFields.filter { $0.label != "Word timing" }
         let wordTiming = allFields.filter { $0.label == "Word timing" }
         let content = ScrivUIKitTheme.stack([], spacing: 16)
-        content.addArrangedSubview(ScrivUIKitTheme.stack([ScrivUIKitTheme.label(HistoryPresentation.title(for: change), size: 18, weight: .semibold), UIView(), ScrivUIKitTheme.label(HistoryPresentation.operation(for: change), size: 11, weight: .medium, color: ScrivUIKitTheme.secondary)], axis: .horizontal, spacing: 10))
+        // The short operation tag ("Added") keeps one line; a long title wraps instead.
+        let changeTitle = ScrivUIKitTheme.label(HistoryPresentation.title(for: change), size: 18, weight: .semibold)
+        changeTitle.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        let operation = ScrivUIKitTheme.label(HistoryPresentation.operation(for: change), size: 11, weight: .medium, color: ScrivUIKitTheme.secondary)
+        operation.numberOfLines = 1; operation.setContentCompressionResistancePriority(.required, for: .horizontal); operation.setContentHuggingPriority(.required, for: .horizontal)
+        content.addArrangedSubview(ScrivUIKitTheme.stack([changeTitle, UIView(), operation], axis: .horizontal, spacing: 10))
         let timingOnly = !fields.isEmpty && fields.allSatisfy { ["Owned time", "Coverage"].contains($0.label) }
         let unchangedText = !fields.contains(where: { $0.label == "Text" }) ? (change.after ?? change.before)?.data["text"]?.string : nil
         if let text = unchangedText, !timingOnly {

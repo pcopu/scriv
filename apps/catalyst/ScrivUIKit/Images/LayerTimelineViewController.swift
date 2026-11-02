@@ -185,7 +185,9 @@ import ScrivCore
     }
     private func textBlock(_ text: String, color: UIColor, frame: CGRect, script: Bool = false, action: @escaping () -> Void) -> UIButton {
         let block = UIButton(type: .system); block.frame = frame; block.layer.cornerRadius = 5; block.clipsToBounds = true; block.backgroundColor = color.withAlphaComponent(0.12)
-        block.setTitle(text, for: .normal); block.setTitleColor(color, for: .normal); block.titleLabel?.font = .systemFont(ofSize: script ? store.scriptFontSize : 10); block.titleLabel?.numberOfLines = 3; block.contentHorizontalAlignment = .left
+        block.setTitle(text, for: .normal); block.setTitleColor(color, for: .normal); block.titleLabel?.font = .systemFont(ofSize: script ? store.scriptFontSize : 10); block.contentHorizontalAlignment = .left
+        // A single word in a short block is clipped on one line, never broken letter by letter.
+        if text.contains(where: { $0.isWhitespace }) { block.titleLabel?.numberOfLines = 3 } else { block.titleLabel?.numberOfLines = 1; block.titleLabel?.lineBreakMode = .byClipping }
         block.addAction(ImageUI.guardedAction(text, store: store, context: store.navigationContext, handler: action), for: .touchUpInside); block.accessibilityLabel = text; canvas.addSubview(block); return block
     }
     private func addDragHandle(frame: CGRect, label: String, action: @escaping (CGFloat, Int) -> Void) {
