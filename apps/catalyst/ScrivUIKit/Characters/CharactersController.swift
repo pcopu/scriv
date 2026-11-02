@@ -110,6 +110,18 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
     }
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) { self.searchText = searchText; render() }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { searchBar.resignFirstResponder() }
+    /// Escape in the search field clears the search, as on any Mac. Left to the
+    /// field, Escape emptied the text without telling the delegate, so the
+    /// ribbon stayed filtered under an empty field.
+    private lazy var clearSearchKey: UIKeyCommand = {
+        let key = UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(clearSearchCommand)); key.wantsPriorityOverSystemBehavior = true; return key
+    }()
+    override var keyCommands: [UIKeyCommand]? { (super.keyCommands ?? []) + [clearSearchKey] }
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(clearSearchCommand) { return search.searchTextField.isFirstResponder }
+        return super.canPerformAction(action, withSender: sender)
+    }
+    @objc private func clearSearchCommand() { searchText = ""; search.text = ""; search.resignFirstResponder(); render() }
     private var characters: [ScriptCharacter] {
         store.project.characters.filter { searchText.isEmpty || ([$0.name] + $0.aliases).contains { $0.localizedCaseInsensitiveContains(searchText) } }
     }

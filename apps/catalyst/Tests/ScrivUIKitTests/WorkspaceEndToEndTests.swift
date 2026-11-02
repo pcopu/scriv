@@ -526,4 +526,36 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertTrue(views(ScriptEntryRow.self, in: window).allSatisfy { $0.backgroundColor != strong && $0.backgroundColor != UIColor.systemYellow.withAlphaComponent(0.12) }, "No line stays highlighted")
         XCTAssertFalse(script.canPerformAction(action, withSender: escape), "With Find closed, Escape keeps its other meanings")
     }
+
+    /// Escape in the Characters search clears the filter, not just the field.
+    func testCharacterSearchEscapeClearsTheFilter() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene); window.frame = CGRect(x: 0, y: 0, width: 1080, height: 720)
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        store.tab = .characters
+        for _ in 0..<5 { try await Task.sleep(for: .milliseconds(30)); window.layoutIfNeeded() }
+        func controllers(_ root: UIViewController) -> [UIViewController] { [root] + root.children.flatMap(controllers) }
+        let characters = try XCTUnwrap(controllers(workspace).compactMap { $0 as? CharactersController }.first)
+        let bar = try XCTUnwrap(views(UISearchBar.self, in: window).first { $0.window != nil })
+        func shown(_ name: String) -> Bool { views(UILabel.self, in: window).contains { $0.window != nil && !$0.isHidden && $0.text == name } }
+        XCTAssertTrue(shown("Randy"))
+        bar.text = "Miya"; characters.searchBar(bar, textDidChange: "Miya"); window.layoutIfNeeded()
+        XCTAssertFalse(shown("Randy"), "The filter hides non-matching characters")
+        bar.searchTextField.becomeFirstResponder()
+        let escape = try XCTUnwrap(characters.keyCommands?.first { $0.input == UIKeyCommand.inputEscape })
+        XCTAssertTrue(escape.wantsPriorityOverSystemBehavior, "The field must not swallow Escape")
+        let action = try XCTUnwrap(escape.action)
+        XCTAssertTrue(characters.canPerformAction(action, withSender: escape))
+        characters.perform(action, with: escape); window.layoutIfNeeded()
+        XCTAssertEqual(bar.text ?? "", "")
+        XCTAssertTrue(shown("Randy"), "Every character is listed again")
+        XCTAssertFalse(characters.canPerformAction(action, withSender: escape), "Outside the field, Escape keeps its other meanings")
+    }
 }
