@@ -21,6 +21,10 @@ enum ScrivKeyboardPolicy {
                        editingText: Bool, markedText: Bool = false, canToggleScriptEditing: Bool = false, canFindScript: Bool = true) -> ScrivKeyboardAction? {
         // Composition belongs to the input method, including its modifier keys.
         guard !markedText else { return nil }
+        // Caps Lock and the keypad flag describe keyboard state, not a chord:
+        // with Caps Lock on, Space must still play, and Command with the
+        // keypad + or − must still zoom.
+        let modifiers = modifiers.subtracting([.alphaShift, .numericPad])
         if characters == " " || ignoringModifiers == " " {
             return modifiers.isEmpty && !editingText && !markedText ? .togglePlayback : nil
         }
@@ -140,6 +144,14 @@ final class ScrivUIKitApplication: UIApplication {
             for input in ["\r", "\n", "\u{3}"] { commands.append(command("Toggle script editing", input: input, modifiers: .command, action: #selector(toggleScriptEditingFromKeyboard(_:)))) }
         }
         return commands + (super.keyCommands ?? [])
+    }
+    /// Scripts are plain text, so the system Format menu never applies. Its
+    /// disabled Font ▸ Bigger (⌘+) and Smaller (⌘-) still claimed those keys,
+    /// which silently blocked script text zoom.
+    override func buildMenu(with builder: UIMenuBuilder) {
+        super.buildMenu(with: builder)
+        guard builder.system == .main else { return }
+        builder.remove(menu: .format)
     }
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(findScriptFromKeyboard(_:)) {

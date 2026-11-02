@@ -4,9 +4,11 @@ import XCTest
 final class ScrivPlaybackKeyboardPolicyTests: XCTestCase {
     func testOnlyUnmodifiedSpaceOutsideTextStartsPlayback() {
         XCTAssertEqual(action(" "), .togglePlayback)
-        for modifier: ScrivKeyboardModifiers in [.shift, .control, .alternate, .command, .alphaShift, .numericPad, .other] {
+        for modifier: ScrivKeyboardModifiers in [.shift, .control, .alternate, .command, .other] {
             XCTAssertNil(action(" ", modifiers: modifier))
         }
+        // Caps Lock is a state, not a chord: Space still plays with it on.
+        XCTAssertEqual(action(" ", modifiers: .alphaShift), .togglePlayback)
         XCTAssertNil(action(" ", modifiers: [.command, .shift]))
         XCTAssertNil(action(" ", editing: true))
         XCTAssertNil(action(" ", marked: true))
@@ -26,6 +28,11 @@ final class ScrivPlaybackKeyboardPolicyTests: XCTestCase {
             }
             XCTAssertEqual(ScrivKeyboardPolicy.action(characters: "+", ignoringModifiers: "=", modifiers: [.command, .shift], editingText: editing), .zoomIn)
             XCTAssertEqual(action("-", modifiers: .command, editing: editing), .zoomOut)
+            // Keypad + / − and Caps Lock do not block zoom.
+            XCTAssertEqual(action("+", modifiers: [.command, .numericPad], editing: editing), .zoomIn)
+            XCTAssertEqual(action("=", modifiers: [.command, .numericPad], editing: editing), .zoomIn)
+            XCTAssertEqual(action("-", modifiers: [.command, .numericPad], editing: editing), .zoomOut)
+            XCTAssertEqual(action("=", modifiers: [.command, .alphaShift], editing: editing), .zoomIn)
         }
     }
     func testZoomRejectsPlainKeysAndOtherModifierCombinations() {
