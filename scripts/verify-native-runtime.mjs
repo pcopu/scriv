@@ -146,7 +146,7 @@ async function main() {
   await mkdir(peerOutput); await mkdir(screenshots);
   const env = { ...process.env, SCRIV_VERIFICATION_ROOT: join(directory, 'isolated-app-data') };
   const peerStarted = await runStage(executable, ['--peer-smoke', peerOutput], { output: peerOutput, log: join(directory, 'peer-smoke.log'), timeoutMs: 75000, env });
-  const peer = await validatePeerTransfer(peerOutput, join(root, 'apps/mac/Sources/ScrivApp/Resources/SampleImages/farm-wide.png'), peerStarted);
+  const peer = await validatePeerTransfer(peerOutput, join(root, 'apps/mac/Sources/ScrivApp/Resources/SampleImages/farm-wide.jpg'), peerStarted);
   const captureStarted = await runStage(executable, ['--screenshots', screenshots], { output: screenshots, log: join(directory, 'screenshots.log'), timeoutMs: 90000, env });
   const captures = await validateCaptures(screenshots, captureStarted);
   const report = { schemaVersion: 1, verifiedAt: new Date().toISOString(), platform: process.platform, architecture: process.arch, executableSha256: digest(await readFile(executable)), peer, captures, productionAccountChecksRun: false, humanVisualParityAccepted: false };

@@ -2449,7 +2449,7 @@ final class WorkspaceStore: ObservableObject {
         let projectID = project.id
         var assets: [String:ImageAsset] = [:]
         for name in ["farm-wide","franklin","miyazaki"] {
-            guard let url = Bundle.scrivResources.url(forResource:name,withExtension:"png",subdirectory:"SampleImages") ?? Bundle.scrivResources.url(forResource:name,withExtension:"png") else { throw ScrivError.unavailable("The sample scene images are missing from this app bundle.") }
+            guard let url = Bundle.scrivResources.url(forResource:name,withExtension:"jpg",subdirectory:"SampleImages") ?? Bundle.scrivResources.url(forResource:name,withExtension:"jpg") else { throw ScrivError.unavailable("The sample scene images are missing from this app bundle.") }
             let tags = name == "farm-wide" ? ["character-randy","character-franklin","character-miyazaki"] : ["character-" + name]
             let asset = try await repo().importAsset(data:Data(contentsOf:url),at:package,prompt:"Built-in generated sample frame",characterIds:tags)
             guard project.id == projectID else { return }; assets[name] = asset

@@ -392,7 +392,7 @@ These are the generated design references. They are distinct from the real appli
 
 Three standalone generated film frames were added to make the native sample project playable. These are additional assets, not replacements for any of the 25 interface concepts. Their prompts and digests are retained in [sample provenance](apps/mac/Sources/ScrivApp/Resources/SampleImages/provenance.json).
 
-**[farm-wide.png](apps/mac/Sources/ScrivApp/Resources/SampleImages/farm-wide.png)**
+**[farm-wide.jpg](apps/mac/Sources/ScrivApp/Resources/SampleImages/farm-wide.jpg)**
 
 Recorded generation description:
 
@@ -400,7 +400,7 @@ Recorded generation description:
 
 SHA-256: `4eabd5b2f94eb1e42cab254343fccb86f4c9c3e4c587811719fa1147d0eae415`.
 
-**[franklin.png](apps/mac/Sources/ScrivApp/Resources/SampleImages/franklin.png)**
+**[franklin.jpg](apps/mac/Sources/ScrivApp/Resources/SampleImages/franklin.jpg)**
 
 Recorded generation description:
 
@@ -408,7 +408,7 @@ Recorded generation description:
 
 SHA-256: `83e34a336c42734737c8416b66050a1e9253184acd36132995ca91dc2bf6e916`.
 
-**[miyazaki.png](apps/mac/Sources/ScrivApp/Resources/SampleImages/miyazaki.png)**
+**[miyazaki.jpg](apps/mac/Sources/ScrivApp/Resources/SampleImages/miyazaki.jpg)**
 
 Recorded generation description:
 

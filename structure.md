@@ -106,9 +106,9 @@ All views use the same WorkspaceStore and stable model IDs. Selecting a linked n
 | --- | --- |
 | `PeerTransfer/bridge.html` | Minimal local document with a restrictive content policy; hosts the headless WebRTC transport. |
 | `PeerTransfer/bridge.js` | Deterministic lower-ID sole offerer, higher-ID connection requests with per-attempt UUID nonces, serialized SDP/ICE handling and bounded queued candidates. Both peers use negotiated data channel ID 0. Includes chunking/backpressure, SHA-256 checking, request/transfer limits, stale-callback protection and 60-second cleanup so retries create a fresh connection/nonce. It has no Scriv bearer token. |
-| `SampleImages/farm-wide.png` | Generated wide farm-scene frame used by the bundled sample. |
-| `SampleImages/franklin.png` | Generated Franklin close-up. |
-| `SampleImages/miyazaki.png` | Generated Miyazaki close-up. |
+| `SampleImages/farm-wide.jpg` | Generated wide farm-scene frame used by the bundled sample. |
+| `SampleImages/franklin.jpg` | Generated Franklin close-up. |
+| `SampleImages/miyazaki.jpg` | Generated Miyazaki close-up. |
 | `SampleImages/provenance.json` | Sample-image generation descriptions, source names and byte digests. |
 | `README.txt` | Resource-bundle notes. |
 

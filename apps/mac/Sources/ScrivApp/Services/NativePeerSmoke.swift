@@ -32,7 +32,7 @@ enum NativePeerSmoke {
                 fputs("Scriv native peer smoke failed: \(message)\n", stderr)
                 exit(1)
             }
-            guard let bundled = Bundle.scrivResources.url(forResource: "farm-wide", withExtension: "png", subdirectory: "SampleImages") ?? Bundle.scrivResources.url(forResource: "farm-wide", withExtension: "png") else {
+            guard let bundled = Bundle.scrivResources.url(forResource: "farm-wide", withExtension: "jpg", subdirectory: "SampleImages") ?? Bundle.scrivResources.url(forResource: "farm-wide", withExtension: "jpg") else {
                 throw ScrivError.unavailable("Bundled sample PNG is missing.")
             }
             let source = temporary.appendingPathComponent("source.png")
