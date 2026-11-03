@@ -15,15 +15,15 @@ test('approved Script and Characters design references remain byte-identical', a
   }
 });
 
-test('UIKit presentation uses deliberate full/compact typography without changing stored zoom', async () => {
+test('Script and Characters tabs share one script presentation and the stored zoom', async () => {
   const metrics = await source('ScrivUIKit/Script/ScriptPresentationMetrics.swift');
   const controller = await source('ScrivUIKit/Script/ScriptScreenController.swift');
-  assert.match(metrics, /bodySize: CGFloat \{ \(isCompact \? 16 : 22\) \* opticalScale \}/);
+  assert.match(metrics, /bodySize: CGFloat \{ 22 \* opticalScale \}/);
   assert.match(metrics, /bodySize \* CGFloat\(zoom\)/);
   assert.match(controller, /presentation\.fontSize\(zoom: store\.scriptZoom\)/);
   assert.match(controller, /rails\.presentation = presentation/);
-  assert.match(controller, /headingSpacer\.isHidden = presentation\.isCompact/);
-  assert.match(controller, /headingSpacerWidth\?\.isActive = !presentation\.isCompact/);
+  // No per-tab density: the Characters tab must not restyle the script.
+  assert.doesNotMatch(metrics + controller, /isCompact|store\.tab == \.characters, paneWidth/);
   assert.doesNotMatch(metrics, /SwiftUI|UserDefaults|setScriptZoom|ownedDurationMs/);
 });
 

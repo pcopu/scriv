@@ -40,19 +40,15 @@ final class ScriptCharacterParityTests: XCTestCase {
         XCTAssertEqual(cardIDs(), expected)
     }
 
-    func testApprovedDensitiesUseOneSharedZoomFactor() {
+    func testOnePresentationWithOneSharedZoomFactor() {
         for zoom in [0.7, 1.0, 1.3, 2.0] {
             XCTAssertEqual(ScriptPresentationMetrics.expanded.fontSize(zoom: zoom), CGFloat(22 * zoom), accuracy: 0.001)
-            XCTAssertEqual(ScriptPresentationMetrics.compact.fontSize(zoom: zoom), CGFloat(16 * zoom), accuracy: 0.001)
         }
         XCTAssertEqual(ScriptPresentationMetrics.expanded.textInset + 20, 222)
         XCTAssertEqual(ScriptPresentationMetrics.expanded.railX + 20, 136)
-        let reference = ScriptPresentationMetrics(isCompact: false, paneWidth: 930)
-        XCTAssertEqual(reference.fontSize(zoom: 1), 28.6, accuracy: 0.001)
-        XCTAssertEqual(ScriptPresentationMetrics(isCompact: true, paneWidth: 930).fontSize(zoom: 1), 20.8, accuracy: 0.001)
-        XCTAssertEqual(ScriptPresentationMetrics(isCompact: false, paneWidth: 2_000).opticalScale, 1.3)
-        XCTAssertEqual(ScriptPresentationMetrics(isCompact: false, paneWidth: 480).opticalScale, 1)
-        XCTAssertLessThan(ScriptPresentationMetrics.compact.rowSpacing, ScriptPresentationMetrics.expanded.rowSpacing)
+        XCTAssertEqual(ScriptPresentationMetrics(paneWidth: 930).fontSize(zoom: 1), 28.6, accuracy: 0.001)
+        XCTAssertEqual(ScriptPresentationMetrics(paneWidth: 2_000).opticalScale, 1.3)
+        XCTAssertEqual(ScriptPresentationMetrics(paneWidth: 480).opticalScale, 1)
     }
 
     func testChangingDensityPreservesLiveEditorAndExactCaret() {
@@ -63,7 +59,7 @@ final class ScriptCharacterParityTests: XCTestCase {
         row.setEditing(true, text: entry.text, focus: false)
         let identity = ObjectIdentifier(row.editor)
         row.editor.selectedRange = NSRange(location: 3, length: 3)
-        for metrics in [ScriptPresentationMetrics.expanded, .compact, .expanded] {
+        for metrics in [ScriptPresentationMetrics.expanded, ScriptPresentationMetrics(paneWidth: 930), .expanded] {
             row.configure(entry: entry, project: project, selected: true, active: false, search: "", currentWordID: nil, peers: [], locked: false, speakerMenu: UIMenu(children: []), fontSize: metrics.fontSize(zoom: 1.3), presentation: metrics)
             row.setEditing(true, text: entry.text, focus: false)
             XCTAssertEqual(ObjectIdentifier(row.editor), identity)

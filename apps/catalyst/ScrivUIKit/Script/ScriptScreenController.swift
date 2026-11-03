@@ -23,7 +23,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     private var addBarLeading: NSLayoutConstraint?
     private let headingSpacer = UIView()
     private var headingSpacerWidth: NSLayoutConstraint?
-    private var presentation: ScriptPresentationMetrics { ScriptPresentationMetrics(isCompact: store.tab == .characters, paneWidth: isViewLoaded ? max(715, view.bounds.width) : 715) }
+    private var presentation: ScriptPresentationMetrics { ScriptPresentationMetrics(paneWidth: isViewLoaded ? max(715, view.bounds.width) : 715) }
     private var renderedPresentation: ScriptPresentationMetrics?
     private let presence = ScrivUIKitTheme.stack([], axis: .horizontal, spacing: -5)
     private let footerLabel = ScrivUIKitTheme.label("", size: 11, color: ScrivUIKitTheme.secondary, lines: 1)
@@ -247,15 +247,10 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         if presentation != renderedChrome {
             renderedChrome = presentation; needsLayout = true
             rowsStack.spacing = presentation.rowSpacing
-            // UIStackView gives hidden arranged views a required zero width. Release
-            // the expanded gutter before hiding it, then restore only when visible.
-            if presentation.isCompact { headingSpacerWidth?.isActive = false }
-            headingSpacer.isHidden = presentation.isCompact
             headingSpacerWidth?.constant = 100 * presentation.opticalScale
-            headingSpacerWidth?.isActive = !presentation.isCompact
             heading.font = .systemFont(ofSize: presentation.titleSize, weight: .semibold)
             sceneButton.titleLabel?.font = .systemFont(ofSize: presentation.subtitleSize)
-            footerLabel.font = .systemFont(ofSize: (presentation.isCompact ? 12 : 15) * presentation.opticalScale)
+            footerLabel.font = .systemFont(ofSize: 15 * presentation.opticalScale)
             rails.presentation = presentation; addBarLeading?.constant = presentation.textInset
         }
         let entries = store.sceneEntries, ids = entries.map(\.id)

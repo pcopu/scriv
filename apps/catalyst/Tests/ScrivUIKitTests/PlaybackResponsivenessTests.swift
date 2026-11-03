@@ -78,7 +78,7 @@ final class PlaybackResponsivenessTests: XCTestCase {
             }
             store.project = project
             store.selectedEntryID = project.entries[pass * 6].id
-            rails.presentation = pass == 2 ? .compact : .expanded
+            rails.presentation = pass == 2 ? ScriptPresentationMetrics(paneWidth: 930) : .expanded
             let entries = store.sceneEntries
             let frames: [String: CGRect] = Dictionary(uniqueKeysWithValues: entries.enumerated().map { index, entry in
                 let height = CGFloat(pass == 2 ? 94 : 140)

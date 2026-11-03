@@ -579,4 +579,31 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertFalse(try XCTUnwrap(item("Move up", last)).attributes.contains(.disabled))
         XCTAssertTrue(try XCTUnwrap(item("Move down", last)).attributes.contains(.disabled))
     }
+
+    /// The Characters tab shows the same script as the Script tab: same text
+    /// size and the same place in the script.
+    func testScriptLooksTheSameInScriptAndCharactersTabs() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene); window.frame = CGRect(x: 0, y: 0, width: 1280, height: 800)
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        func settle() async throws { for _ in 0..<5 { try await Task.sleep(for: .milliseconds(30)); window.layoutIfNeeded() } }
+        store.tab = .script; try await settle()
+        func controllers(_ root: UIViewController) -> [UIViewController] { [root] + root.children.flatMap(controllers) }
+        let script = try XCTUnwrap(controllers(workspace).compactMap { $0 as? ScriptScreenController }.first)
+        let scroll = try XCTUnwrap(views(UIScrollView.self, in: script.view).first { $0.contentSize.height > $0.bounds.height && !($0 is UITextView) })
+        scroll.contentOffset.y = 300; window.layoutIfNeeded()
+        func fontSize() -> CGFloat? { views(ScriptEntryRow.self, in: window).first { $0.window != nil }?.display.font?.pointSize }
+        let scriptSize = try XCTUnwrap(fontSize()), scriptOffset = scroll.contentOffset.y, scriptWidth = script.view.bounds.width
+        store.tab = .characters; try await settle()
+        XCTAssertEqual(script.view.bounds.width, scriptWidth, accuracy: 1, "Both tabs give the script the same width")
+        XCTAssertEqual(try XCTUnwrap(fontSize()), scriptSize, accuracy: 0.01, "Same text size in both tabs")
+        XCTAssertEqual(scroll.contentOffset.y, scriptOffset, accuracy: 1, "Same place in the script")
+    }
 }
