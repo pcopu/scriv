@@ -6,6 +6,23 @@ import ScrivCore
 /// These execute the real UIViewController and Auto Layout hierarchy on Catalyst.
 /// The companion Node contracts are not a replacement for this native gate.
 @MainActor final class GenerationBriefReviewTests: XCTestCase {
+    /// Escape closes Review brief, as it closes every other sheet.
+    func testEscapeClosesTheReview() async throws {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene); window.frame = CGRect(x: 0, y: 0, width: 1000, height: 900)
+        let root = UIViewController(); window.rootViewController = root; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        let controller = GenerationBriefReviewController(snapshot: try snapshotFixture())
+        root.present(controller, animated: false)
+        for _ in 0..<20 where !controller.isFirstResponder { try await Task.sleep(for: .milliseconds(20)) }
+        XCTAssertTrue(controller.isFirstResponder, "The sheet takes key focus so Escape reaches it")
+        let escape = try XCTUnwrap(controller.keyCommands?.first { $0.input == UIKeyCommand.inputEscape })
+        XCTAssertTrue(escape.wantsPriorityOverSystemBehavior)
+        controller.perform(try XCTUnwrap(escape.action), with: escape)
+        for _ in 0..<50 where root.presentedViewController != nil { try await Task.sleep(for: .milliseconds(20)) }
+        XCTAssertNil(root.presentedViewController, "Escape closed the review")
+    }
+
     func testControllerFirstLoadHasCommonAncestorsAndFixedChromeAcrossTabsAndSizes() throws {
         let controller = GenerationBriefReviewController(snapshot: try snapshotFixture())
         controller.loadViewIfNeeded()

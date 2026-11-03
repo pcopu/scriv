@@ -52,6 +52,16 @@ import ScrivCore
         }
         storeDidChange()
     }
+    /// Escape closes the review like Done, as every other sheet does. This
+    /// controller is not a ScrivScreenController, so it never got that rule.
+    override var canBecomeFirstResponder: Bool { true }
+    override var keyCommands: [UIKeyCommand]? {
+        let escape = UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(closeFromEscape))
+        escape.wantsPriorityOverSystemBehavior = true
+        return (super.keyCommands ?? []) + [escape]
+    }
+    @objc func closeFromEscape() { guard presentedViewController == nil else { return }; dismiss(animated: true) }
+    override func viewDidAppear(_ animated: Bool) { super.viewDidAppear(animated); becomeFirstResponder() }
     var reviewIsCurrent: Bool {
         guard let store else { return true }
         return store.navigationContext == originalNavigation && store.generationPromptScopeKey == originalScope && store.selectedSceneID == originalSceneID &&
