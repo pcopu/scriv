@@ -211,12 +211,25 @@ public enum TimingEngine {
         }
         return result
     }
+    /// Storyboard shots are lettered within their number: splitting 01A makes
+    /// 01B (or the next free letter), not "01AB". Labels outside that pattern
+    /// keep the old suffix so they stay distinct.
+    static func splitLabel(after label: String, taken: Set<String>) -> String {
+        let digits = label.prefix { $0.isNumber }, letters = label.dropFirst(digits.count)
+        guard !digits.isEmpty, letters.count == 1, let letter = letters.first, letter.isUppercase, letter.isASCII,
+              let start = letter.asciiValue, start < UInt8(ascii: "Z") else { return label + "B" }
+        for value in (start + 1)...UInt8(ascii: "Z") {
+            let candidate = String(digits) + String(UnicodeScalar(value))
+            if !taken.contains(candidate) { return candidate }
+        }
+        return label + "B"
+    }
     public static func splitCue(_ project: inout ScrivProject, cueId: String, atMs: Int, newCueId: String = UUID().uuidString) throws {
         var next = project
         guard let i = next.cues.firstIndex(where: { $0.id == cueId }), atMs > next.cues[i].startMs, atMs < next.cues[i].endMs else { throw ScrivError.invalid("Place the playhead inside an image to split it.") }
         let sceneId = next.cues[i].sceneId
         try CueAnchoring.materialize(&next, sceneId: sceneId)
-        var right = next.cues[i]; right.id = newCueId; right.startMs = atMs; right.label += "B"
+        var right = next.cues[i]; right.id = newCueId; right.startMs = atMs; right.label = splitLabel(after: next.cues[i].label, taken: Set(next.cues.map(\.label)))
         right.authoredDurationMs = next.cues[i].startMs + next.cues[i].authoredDurationMs! - atMs
         right.startAnchor = try CueAnchoring.anchor(atMs: atMs, in: next, sceneId: sceneId)
         next.cues[i].authoredDurationMs = atMs - next.cues[i].startMs

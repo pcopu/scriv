@@ -94,4 +94,12 @@ final class TimingTests: XCTestCase {
         XCTAssertEqual(project.cues.count, 20)
         try TimingEngine.validate(project)
     }
+
+    func testSplitLabelsUseTheNextFreeLetter() {
+        XCTAssertEqual(TimingEngine.splitLabel(after: "01A", taken: ["01A", "02A"]), "01B")
+        XCTAssertEqual(TimingEngine.splitLabel(after: "01A", taken: ["01A", "01B"]), "01C")
+        XCTAssertEqual(TimingEngine.splitLabel(after: "12B", taken: ["12B"]), "12C")
+        XCTAssertEqual(TimingEngine.splitLabel(after: "01Z", taken: ["01Z"]), "01ZB", "Past Z keeps the old suffix")
+        XCTAssertEqual(TimingEngine.splitLabel(after: "Wide", taken: ["Wide"]), "WideB", "Custom labels keep the old suffix")
+    }
 }
