@@ -100,7 +100,7 @@ enum CharacterTeamUI {
             view = CharacterCropImageView(source:store.assetURL(asset),sha256:asset.sha256,region:crop.region,title:"Portrait of " + character.name)
         } else {
             let image = UIKitAssetImageView()
-            image.configure(url:asset.flatMap { store.assetURL($0) },title:character.name,fill:true,missingText:"No portrait on this device")
+            image.configure(url:asset.flatMap { store.assetURL($0) },title:character.name,fill:true,missingText:"No portrait on this device",expectedDigest:asset?.sha256)
             view = image
         }
         view.backgroundColor = ScrivUIKitTheme.color(character.color).withAlphaComponent(0.12)

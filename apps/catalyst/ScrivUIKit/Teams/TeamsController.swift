@@ -133,7 +133,8 @@ final class TeamsController: ScrivScreenController, UIAdaptivePresentationContro
     }
     private func sharingCard(_ team: CloudTeam) -> UIView {
         let currentTeamID = store.cloudProjects.first { $0.id == store.project.cloudProjectId }?.teamId
-        let picture = UIKitAssetImageView(); picture.configure(url: store.project.asset(store.project.cues.first?.imageId).flatMap { store.assetURL($0) }, title: store.project.title, fill: true, missingText: "No preview")
+        let coverAsset = store.project.asset(store.project.cues.first?.imageId)
+        let picture = UIKitAssetImageView(); picture.configure(url: coverAsset.flatMap { store.assetURL($0) }, title: store.project.title, fill: true, missingText: "No preview", expectedDigest: coverAsset?.sha256)
         picture.widthAnchor.constraint(equalToConstant: 230).isActive = true; picture.heightAnchor.constraint(equalToConstant: 82).isActive = true
         let text = ScrivUIKitTheme.stack([ScrivUIKitTheme.label(store.project.title, size: 17, weight: .semibold), ScrivUIKitTheme.label(currentTeamID == team.id ? "Shared with this team" : "This project is not shared with this team", size: 13, color: ScrivUIKitTheme.secondary)], spacing: 6)
         let action = CharacterTeamUI.button(currentTeamID == team.id ? "Open project" : "Share team copy") { [weak self] in

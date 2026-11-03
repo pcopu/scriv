@@ -114,7 +114,7 @@ final class ScrivPlaybackKeyboardResponderTests: XCTestCase {
             // animated:false does not make presentation completion synchronous.
             // A detached view cannot successfully become first responder.
             XCTAssertNotNil(field.window)
-            XCTAssertTrue(field.window?.isKeyWindow == true)
+            guard let window = field.window, await self.waitForKeyWindow(window) else { return }
             XCTAssertTrue(field.becomeFirstResponder())
             self.assertTypingContext("presented navigation field")
             self.placeCaretAtEnd(field, expectedOffset: 5, name: "presented navigation field")
@@ -149,9 +149,23 @@ final class ScrivPlaybackKeyboardResponderTests: XCTestCase {
         defer { window.endEditing(true); window.isHidden = true; previous?.makeKey() }
         await fulfillment(of: [appeared], timeout: 5)
         controller.didAppear = nil
-        XCTAssertTrue(window.isKeyWindow)
+        guard await waitForKeyWindow(window) else { return }
         XCTAssertNotNil(content.window)
         await body(controller)
+    }
+    private func waitForKeyWindow(_ window: UIWindow, file: StaticString = #filePath, line: UInt = #line) async -> Bool {
+        // Appearing and becoming key are separate on Catalyst. Another fixture
+        // or an app activation can change focus while presentation completes.
+        window.makeKey()
+        let deadline = Date().addingTimeInterval(5)
+        while !window.isKeyWindow, Date() < deadline {
+            try? await Task.sleep(for: .milliseconds(10))
+        }
+        guard window.isKeyWindow else {
+            XCTFail("Keyboard fixture could not become key; responder assertions require key focus", file: file, line: line)
+            return false
+        }
+        return true
     }
 }
 

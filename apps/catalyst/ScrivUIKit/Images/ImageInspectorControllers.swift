@@ -26,7 +26,7 @@ import ScrivCore
         let name = UIKitImageContext.title(imageID: image.id, cueID: cueID, project: store.project); title = name
         content.addArrangedSubview(ImageUI.heading(name, badge: "Version \(image.version)") { [weak self] in self?.dismiss(animated: true) })
         if let url = store.assetURL(image) {
-            let picture = UIKitAssetImageView(); picture.configure(url: url, title: name, fill: false)
+            let picture = UIKitAssetImageView(); picture.configure(url: url, title: name, fill: false, expectedDigest: image.sha256)
             picture.heightAnchor.constraint(equalTo: picture.widthAnchor, multiplier: 9 / 16).isActive = true; content.addArrangedSubview(picture)
         } else { content.addArrangedSubview(missingImageCard(image, title: name, cue: cue)) }
         var tags: [UIView] = store.project.characters.filter { image.characterIds.contains($0.id) }.map { ImageUI.tag($0.name, color: ImageUI.color($0.color)) }
@@ -86,12 +86,13 @@ import ScrivCore
         guard next != signature else { return }; signature = next; ImageUI.clear(content)
         content.addArrangedSubview(ImageUI.label("Who is pictured?", size: 23, weight: .semibold))
         content.addArrangedSubview(ImageUI.label(UIKitImageContext.title(imageID: image.id, project: store.project) + " · Version \(image.version)", secondary: true))
-        let picture = UIKitAssetImageView(); picture.configure(url: store.assetURL(image), title: "Image being tagged", fill: false, missingText: "Not on this Mac")
+        let picture = UIKitAssetImageView(); picture.configure(url: store.assetURL(image), title: "Image being tagged", fill: false, missingText: "Not on this Mac", expectedDigest: image.sha256)
         picture.heightAnchor.constraint(equalTo: picture.widthAnchor, multiplier: 9 / 16).isActive = true; content.addArrangedSubview(picture)
         content.addArrangedSubview(ImageUI.label("Tag people visible in this image, not people mentioned in the script.", size: 12, secondary: true))
         for character in store.project.characters {
             let portrait = UIKitAssetImageView(); portrait.layer.cornerRadius = 22
-            portrait.configure(url: store.project.asset(character.portraitImageId).flatMap { store.assetURL($0) }, title: character.name, missingText: String(character.name.prefix(1)))
+            let portraitAsset = store.project.asset(character.portraitImageId)
+            portrait.configure(url: portraitAsset.flatMap { store.assetURL($0) }, title: character.name, missingText: String(character.name.prefix(1)), expectedDigest: portraitAsset?.sha256)
             portrait.widthAnchor.constraint(equalToConstant: 44).isActive = true; portrait.heightAnchor.constraint(equalToConstant: 44).isActive = true
             let dot = UIView(); dot.backgroundColor = ImageUI.color(character.color); dot.layer.cornerRadius = 5
             dot.widthAnchor.constraint(equalToConstant: 10).isActive = true; dot.heightAnchor.constraint(equalToConstant: 10).isActive = true

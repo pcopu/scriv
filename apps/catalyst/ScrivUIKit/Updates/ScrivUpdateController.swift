@@ -22,6 +22,31 @@ final class ScrivUpdateController: UIViewController {
         preferredContentSize = CGSize(width: 480, height: 510)
     }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init()") }
+    override var canBecomeFirstResponder: Bool { true }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        becomeFirstResponder()
+    }
+    override var keyCommands: [UIKeyCommand]? {
+        let escape = UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(cancelFromEscape))
+        escape.wantsPriorityOverSystemBehavior = true
+        return (super.keyCommands ?? []) + [escape]
+    }
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(cancelFromEscape) { return canCancelFromEscape }
+        return super.canPerformAction(action, withSender: sender)
+    }
+    private var canCancelFromEscape: Bool {
+        presentingViewController != nil && viewIfLoaded?.window != nil && presentedViewController == nil
+            && !isBeingPresented && !isBeingDismissed
+            && !secondary.isHidden && secondary.isEnabled && reply != nil
+    }
+    @objc private func cancelFromEscape() {
+        // Sparkle owns cancellation, including prepared updates. Never dismiss
+        // the sheet independently or treat an in-flight install as canceled.
+        guard canCancelFromEscape else { return }
+        chooseSecondary()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.985, green: 0.98, blue: 0.97, alpha: 1)
@@ -80,10 +105,11 @@ final class ScrivUpdateController: UIViewController {
         else { consume("close"); closeIfIdle() }
     }
     private func chooseSecondary() {
-        guard secondary.isEnabled else { return }
+        guard !secondary.isHidden, secondary.isEnabled, reply != nil else { return }
         primary.isEnabled = false; secondary.isEnabled = false
         consume("cancel")
-        if phase == "blocked" || phase == "error" { closeIfIdle() }
+        // The callback may synchronously show a new phase, including an error.
+        // Leave that notice visible and let the plugin own cancellation/dismissal.
     }
     private func consume(_ choice: String) { let callback = reply; reply = nil; callback?(choice) }
     private func closeIfIdle() { dismiss(animated: true); onClose?() }

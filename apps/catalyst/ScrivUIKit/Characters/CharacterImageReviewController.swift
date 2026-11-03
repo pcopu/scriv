@@ -104,6 +104,7 @@ final class CharacterImageReviewController: ScrivScreenController, UISearchBarDe
         search.placeholder = "Find a character"; search.searchBarStyle = .minimal; search.delegate = self
         search.accessibilityLabel = "Find a character for this image region"
         save.accessibilityIdentifier = "character-review-save"
+        save.heightAnchor.constraint(greaterThanOrEqualToConstant:44).isActive = true
         save.addAction(UIAction { [weak self] _ in self?.submit() },for:.touchUpInside)
         render()
     }
@@ -153,7 +154,7 @@ final class CharacterImageReviewController: ScrivScreenController, UISearchBarDe
         choices.removeFromSuperview(); choiceScroll.addSubview(choices); choices.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([choices.leadingAnchor.constraint(equalTo:choiceScroll.contentLayoutGuide.leadingAnchor),choices.trailingAnchor.constraint(equalTo:choiceScroll.contentLayoutGuide.trailingAnchor),choices.topAnchor.constraint(equalTo:choiceScroll.contentLayoutGuide.topAnchor),choices.bottomAnchor.constraint(equalTo:choiceScroll.contentLayoutGuide.bottomAnchor),choices.heightAnchor.constraint(equalTo:choiceScroll.frameLayoutGuide.heightAnchor),choiceScroll.heightAnchor.constraint(equalToConstant:65)])
         content.addArrangedSubview(choiceScroll); renderChoices()
-        save.heightAnchor.constraint(greaterThanOrEqualToConstant:44).isActive = true; content.addArrangedSubview(save)
+        content.addArrangedSubview(save)
         let ignore = CharacterTeamUI.button("Not a character") { [weak self] in self?.submit(ignore:true) }; ignore.accessibilityIdentifier = "character-review-ignore"
         let skip = CharacterTeamUI.button("Skip for now") { [weak self] in guard let self, let item = self.current else { return }; self.skipped.insert(item.id); self.currentID = nil; self.render() }
         for button in [ignore,skip] { button.backgroundColor = ScrivUIKitTheme.panel; button.layer.borderColor = ScrivUIKitTheme.hairline.cgColor; button.layer.borderWidth = 1; button.layer.cornerRadius = 10; button.heightAnchor.constraint(equalToConstant:44).isActive = true }

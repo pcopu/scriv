@@ -22,10 +22,12 @@ struct GenerationBriefSnapshot {
     func referenceNumber(for characterID: String) -> Int? {
         context.portraits.firstIndex { $0.characterIDs.contains(characterID) }.map { $0 + 1 }
     }
-    func attachedPortraitURL(for characterID: String) -> URL? {
-        guard let portrait = context.portraits.first(where: { $0.characterIDs.contains(characterID) }) else { return nil }
-        return localPortraitURLs[portrait.assetID]
+    func attachedPortrait(for characterID: String) -> (url: URL, sha256: String)? {
+        guard let portrait = context.portraits.first(where: { $0.characterIDs.contains(characterID) }),
+              let url = localPortraitURLs[portrait.assetID] else { return nil }
+        return (url, portrait.sha256)
     }
+    func attachedPortraitURL(for characterID: String) -> URL? { attachedPortrait(for: characterID)?.url }
     func portraitStatus(for character: ScriptCharacter) -> String {
         if let number = referenceNumber(for: character.id) { return "Reference \(number)" }
         guard let id = character.portraitImageId else { return "Text identity only · no portrait saved" }
@@ -91,8 +93,8 @@ struct GenerationBriefSnapshot {
     }
     static func avatar(_ character: ScriptCharacter, snapshot: GenerationBriefSnapshot, size: CGFloat) -> UIView {
         let view: UIView
-        if let url = snapshot.attachedPortraitURL(for: character.id) {
-            let picture = UIKitAssetImageView(); picture.configure(url: url, title: "Attached identity portrait for " + character.name, fill: false)
+        if let portrait = snapshot.attachedPortrait(for: character.id) {
+            let picture = UIKitAssetImageView(); picture.configure(url: portrait.url, title: "Attached identity portrait for " + character.name, fill: false, expectedDigest: portrait.sha256)
             view = picture
         } else {
             let initial = ImageUI.label(String(character.name.prefix(1)).uppercased(), size: size * 0.4, weight: .medium)

@@ -114,6 +114,11 @@ enum ScrivKeyboardTextContext {
 @objc(ScrivUIKitApplication)
 @MainActor
 final class ScrivUIKitApplication: UIApplication {
+#if DEBUG
+    /// Opt-in isolated XCTest observation only. No key text or private events
+    /// are retained; release builds contain neither this hook nor its call.
+    static var onVerificationEscapeEnded: (() -> Void)?
+#endif
     private var pressGate = ScrivKeyboardPressGate()
     private let toggleEditingSelector = NSSelectorFromString("scrivToggleScriptEditing:")
     private var currentStore: WorkspaceStore? { (UIKitPresentation.window?.rootViewController as? ScrivWorkspaceController)?.store }
@@ -194,6 +199,15 @@ final class ScrivUIKitApplication: UIApplication {
         for press in presses where press.phase == .ended || press.phase == .cancelled {
             if let key = press.key { pressGate.ended(keyCode: Int(key.keyCode.rawValue)) }
         }
+#if DEBUG
+        if let observed = Self.onVerificationEscapeEnded,
+           ProcessInfo.processInfo.arguments.contains("--screenshots"),
+           ProcessInfo.processInfo.environment["SCRIV_PHYSICAL_ESCAPE_ACCEPTANCE"] == "1" {
+            for press in presses where press.phase == .ended && press.key?.keyCode == .keyboardEscape {
+                observed()
+            }
+        }
+#endif
     }
     @objc private func togglePlaybackFromKeyboard(_ command: UIKeyCommand) {
         guard canPerformAction(#selector(togglePlaybackFromKeyboard(_:)), withSender: command), pressGate.consume(.togglePlayback) else { return }

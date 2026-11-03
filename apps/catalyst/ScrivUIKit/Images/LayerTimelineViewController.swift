@@ -99,10 +99,13 @@ import ScrivCore
             let cue = row.cue, frame = CGRect(x: 70 + CGFloat(cue.startMs) * scale, y: 26 + CGFloat(row.lane) * 60, width: max(3, CGFloat(cue.durationMs) * scale - 2), height: 55)
             let tile = UIButton(type: .system); tile.frame = frame; tile.clipsToBounds = true; tile.layer.cornerRadius = 6
             let image = UIKitAssetImageView(frame: tile.bounds); image.autoresizingMask = [.flexibleWidth, .flexibleHeight]; image.isUserInteractionEnabled = false
-            image.configure(url: store.project.asset(cue.imageId).flatMap { store.assetURL($0) }, title: cue.label, missingText: "No local image"); tile.addSubview(image)
+            let asset = store.project.asset(cue.imageId)
+            image.configure(url: asset.flatMap { store.assetURL($0) }, title: cue.label, missingText: "No local image", expectedDigest: asset?.sha256); tile.addSubview(image)
             let label = ImageUI.label(cue.label.isEmpty ? ScrivFormat.duration(cue.durationMs) : cue.label, size: 9, weight: .medium); label.textColor = .white; label.backgroundColor = UIColor.black.withAlphaComponent(0.45); label.frame = CGRect(x: 3, y: 34, width: max(0, frame.width - 6), height: 18); label.numberOfLines = 1; label.autoresizingMask = [.flexibleWidth]; tile.addSubview(label)
             tile.accessibilityLabel = "\(cue.label), \(ScrivFormat.duration(cue.authoredDurationMs ?? cue.durationMs)) authored coverage"; tile.addAction(UIAction { [weak self] _ in guard let self, self.store.navigationContext == navigation else { return }; if self.store.isPlaying { self.store.togglePlayback() }; self.store.seek(toMs: Double(cue.startMs)); self.store.selectedCueID = cue.id }, for: .touchUpInside)
-            ScrivSecondaryMenu.set(UIMenu(children: pictureActions(cue)), on: tile); // Tiles are dragged; a hold must not open the menu. canvas.addSubview(tile); imageButtons[cue.id] = tile
+            // Tiles are dragged; a hold must not open the menu.
+            ScrivSecondaryMenu.set(UIMenu(children: pictureActions(cue)), on: tile)
+            canvas.addSubview(tile); imageButtons[cue.id] = tile
             let coverageGrip = UIView(frame: CGRect(x: frame.maxX - 13, y: frame.minY + 33, width: 13, height: 20))
             coverageGrip.backgroundColor = ImageUI.accent.withAlphaComponent(0.8); coverageGrip.layer.cornerRadius = 3
             coverageGrip.isAccessibilityElement = true; coverageGrip.accessibilityLabel = "Authored coverage edge for " + cue.label; canvas.addSubview(coverageGrip)

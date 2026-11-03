@@ -71,5 +71,45 @@ test('native diagnostics are isolated and independently test heartbeat, pause, o
   assert.match(native, /DispatchQueue\.main\.asyncAfter/);
   assert.match(native, /await fulfillment\(of: \[heartbeat\], timeout: 3\)/);
   assert.match(native, /XCTAssertEqual\(store\.project, original/);
-  assert.match(native, /measure\(metrics: \[XCTClockMetric\(\)\]\)/);
+});
+
+test('native fixed-work playback profile retains every sample and semantic invariant without XCTest metric reporting', async () => {
+  const native = await source('apps/catalyst/Tests/ScrivUIKitTests/PlaybackResponsivenessTests.swift');
+  const profile = native.split('func testProfileSyntheticScriptPlaybackRenderPasses() async throws {')[1]?.split('private func isolatedStore()')[0];
+  assert.ok(profile, 'The profile remains an async XCTest, not an excluded diagnostic');
+  assert.doesNotMatch(profile, /XCTSkip|measure\(|XCTClockMetric|XCTMeasureOptions/);
+  assert.match(profile, /let bootstrapDeadline = ProcessInfo\.processInfo\.systemUptime \+ 5/);
+  assert.match(profile, /while store\.isBootstrapping && ProcessInfo\.processInfo\.systemUptime < bootstrapDeadline/);
+  assert.match(profile, /guard !store\.isBootstrapping else \{\s*XCTFail/);
+  assert.ok(profile.indexOf('guard !store.isBootstrapping') < profile.indexOf('store.project = fixture(count: 96)'));
+  assert.match(profile, /CGRect\(x: 0, y: 0, width: 800, height: 900\)/);
+  assert.match(profile, /store\.isPlaying = true\s*defer \{ store\.isPlaying = false \}/);
+  assert.match(profile, /for batch in 0\.\.<11 \{/);
+  const timed = profile.split('let started = ProcessInfo.processInfo.systemUptime')[1]?.split('let elapsed = ProcessInfo.processInfo.systemUptime - started')[0];
+  assert.ok(timed, 'Each complete batch must use monotonic elapsed time');
+  assert.match(timed, /for tick in 0\.\.<12 \{\s*store\.playheadMs = Double\(tick \* 16\)\s*controller\.storeDidChange\(\)\s*controller\.view\.layoutIfNeeded\(\)\s*completedTicks \+= 1\s*\}/);
+  assert.doesNotMatch(timed, /await|XCTAssert|print\(|JSONSerialization|XCTAttachment|FileManager|Data\(/);
+  for (const invariant of [
+    'XCTAssertEqual(completedTicks, 12)',
+    'XCTAssertEqual(store.project, original',
+    'XCTAssertEqual(store.sceneEntries.map(\\.id), entryIDs)',
+    'XCTAssertEqual(store.sceneEntries.flatMap { $0.words.map(\\.id) }, wordIDs)',
+    'XCTAssertEqual(rowIdentities(), originalRows',
+    'XCTAssertEqual(store.selectedSceneID, "scene")',
+    'XCTAssertEqual(store.selectedEntryID, selectedEntryID)',
+    'XCTAssertEqual(store.playheadMs, 176)',
+    'XCTAssertEqual(store.currentWordID, expectedWord.id)',
+    'XCTAssertTrue(store.isPlaying)',
+    'XCTAssertEqual(durations.count, 11)',
+    'XCTAssertEqual(batchTickCounts.reduce(0, +), 132)',
+    'XCTAssertEqual(measured.count, 10)',
+  ]) assert.ok(profile.includes(invariant), invariant);
+  assert.match(profile, /elapsed\.isFinite && elapsed > 0/);
+  assert.match(profile, /let measured = Array\(durations\.dropFirst\(\)\)/);
+  for (const field of ['coldSeconds', 'measuredSeconds', 'rawBatchSeconds', 'batchTickCounts', 'sampleCount', 'totalTicks', 'operatingSystem', 'processorCount', 'appVersion', 'appBuild']) assert.ok(profile.includes(`"${field}":`), field);
+  assert.match(profile, /"coldSeconds": durations\[0\], "measuredSeconds": measured/);
+  assert.match(profile, /"rawBatchSeconds": durations, "batchTickCounts": batchTickCounts/);
+  assert.match(profile, /attachment\.lifetime = \.keepAlways\s*add\(attachment\)/);
+  assert.match(profile, /print\("Playback fixed-work profile:/);
+  assert.match(profile, /underlying file-open cause remains unknown/);
 });

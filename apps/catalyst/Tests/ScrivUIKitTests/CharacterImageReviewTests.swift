@@ -5,6 +5,10 @@ import ScrivCore
 
 @MainActor
 final class CharacterImageReviewTests: XCTestCase {
+    private final class EscapeProbe: ScrivScreenController {
+        var closeCount = 0
+        override func closeFromEscape() { closeCount += 1 }
+    }
     private final class Provider: CharacterImageAnalysisProvider {
         let providerID = "synthetic-test"
         var availability: String?
@@ -144,6 +148,37 @@ final class CharacterImageReviewTests: XCTestCase {
             XCTAssertTrue(controls.contains { $0.currentTitle == "Skip for now" || $0.configuration?.title == "Skip for now" })
         }
         XCTAssertEqual(store.project,before,"Opening, resizing and dismissing review are not edits")
+    }
+    func testNavigationWrappedSheetEscapeHonorsBothChildAndContainerSaveLocks() async throws {
+        let (store, _) = try await storeFixture()
+        // UIKit exposes a navigation child's modal policy through its wrapper.
+        // The original shared handler must therefore work for either lock owner,
+        // without assuming the child and container flags are independent.
+        for lockChild in [true, false] {
+            let screen = EscapeProbe(store: store)
+            let navigation = UINavigationController(rootViewController: screen)
+            XCTAssertFalse(screen.isModalInPresentation)
+            XCTAssertFalse(navigation.isModalInPresentation)
+            let owner = lockChild ? "child" : "navigation container"
+            if lockChild { screen.isModalInPresentation = true }
+            else { navigation.isModalInPresentation = true }
+            XCTAssertTrue(navigation.isModalInPresentation, "The effective navigation policy reflects the \(owner) lock")
+            screen.scrivEscapeSheet()
+            XCTAssertEqual(screen.closeCount, 0, "Escape must respect the \(owner) save lock")
+            screen.scrivEscapeSheet()
+            XCTAssertEqual(screen.closeCount, 0, "Repeated Escape must also respect the \(owner) save lock")
+            screen.isModalInPresentation = false; navigation.isModalInPresentation = false
+            XCTAssertFalse(navigation.isModalInPresentation)
+            screen.scrivEscapeSheet()
+            XCTAssertEqual(screen.closeCount, 1, "Escape works after the \(owner) lock is released")
+        }
+        let unwrapped = EscapeProbe(store: store)
+        unwrapped.isModalInPresentation = true
+        unwrapped.scrivEscapeSheet()
+        XCTAssertEqual(unwrapped.closeCount, 0)
+        unwrapped.isModalInPresentation = false
+        unwrapped.scrivEscapeSheet()
+        XCTAssertEqual(unwrapped.closeCount, 1)
     }
     func testDerivedCropLeavesOriginalBytesUntouchedAndCachesByRegion() async throws {
         let (store,root) = try await storeFixture()
