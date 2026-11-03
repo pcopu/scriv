@@ -94,7 +94,7 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
         if let image { contextThumbnail.configure(url: store.assetURL(image), title: UIKitDiscussionPresentation.imageLabel(image, project: store.project), missingText: "Image unavailable") }
         preferredContentSize = CGSize(width: 400, height: ready && store.messages.isEmpty ? 440 : 560)
         activityButton.isEnabled = ready; activityButton.setImage(UIImage(systemName: store.unreadDiscussionMentionCount > 0 ? "bell.badge.fill" : "bell"), for: .normal)
-        activityButton.accessibilityLabel = "Project activity, \(store.unreadDiscussionMentionCount) unread mentions"
+        activityButton.accessibilityLabel = "Project activity, " + ScrivFormat.count(store.unreadDiscussionMentionCount, "unread mention")
         filterButton.isHidden = mentionsOfMe.isEmpty; filterButton.tintColor = onlyMentions ? ScrivUIKitTheme.accent : ScrivUIKitTheme.secondary
         filterButton.accessibilityLabel = ScrivFormat.count(mentionsOfMe.count, "message") + (mentionsOfMe.count == 1 ? " mentions" : " mention") + " you. " + (onlyMentions ? "Show all messages" : "Filter to your mentions")
         unavailable.isHidden = ready; table.isHidden = !ready

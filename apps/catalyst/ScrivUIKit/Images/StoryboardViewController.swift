@@ -278,7 +278,7 @@ fileprivate struct StoryboardWordReference { let word: TimedWord; let entryID: S
             overlapSegments = overlaps.map { _ in let segment = CALayer(); segment.backgroundColor = UIColor.systemPurple.cgColor; segment.cornerRadius = 1; layer.addSublayer(segment); return segment }
         }
         time = playheadMs
-        accessibilityLabel = label.text; accessibilityValue = "\(overlaps.count) overlapping placements"; accessibilityTraits = selected ? [.button, .selected] : .button
+        accessibilityLabel = label.text; accessibilityValue = overlaps.isEmpty ? nil : ScrivFormat.count(overlaps.count, "overlapping placement"); accessibilityTraits = selected ? [.button, .selected] : .button
         setNeedsLayout()
     }
     override func layoutSubviews() {

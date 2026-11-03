@@ -59,7 +59,7 @@ final class ScrivWorkspaceController: ScrivScreenController {
         tabs.selectedSegmentIndex = WorkspaceTab.allCases.firstIndex(of: store.tab) ?? 0
         let status = store.statusMessage + " · " + store.syncStatus
         if statusLabel.text != status { statusLabel.text = status }
-        chrome.moreButton.accessibilityValue = "\(store.unreadDiscussionMentionCount) unread discussion mentions"
+        chrome.moreButton.accessibilityValue = ScrivFormat.count(store.unreadDiscussionMentionCount, "unread discussion mention")
         updateTransport()
         // Rebuild only when menu-visible state changes, not on every playhead tick.
         let nextMenuState = "\(store.account?.id ?? "")|\(store.showDiscussion)|\(store.unreadDiscussionMentionCount)"
