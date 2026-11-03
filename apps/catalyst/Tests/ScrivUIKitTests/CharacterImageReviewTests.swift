@@ -38,7 +38,11 @@ final class CharacterImageReviewTests: XCTestCase {
     }
     private func storeFixture() async throws -> (WorkspaceStore,URL) {
         guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated --screenshots storage, never a real-user store.") }
-        let store = WorkspaceStore(); await Task.yield()
+        let store = WorkspaceStore()
+        // Let startup finish first: a slow bootstrap otherwise lands after the
+        // fixture project below and replaces it, so the scan never sees the
+        // test image (an intermittent failure on a loaded Mac).
+        while store.isBootstrapping { await Task.yield() }
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("scriv")
         let assets = root.appendingPathComponent("assets",isDirectory:true); try FileManager.default.createDirectory(at:assets,withIntermediateDirectories:true)
         let format = UIGraphicsImageRendererFormat(); format.scale = 1

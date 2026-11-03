@@ -9,6 +9,8 @@ import ScrivCore
 final class PlaybackResponsivenessTests: XCTestCase {
     func testNoAudioPlaybackYieldsToMainQueueAndRepeatedPauseStopsClock() async throws {
         let store = try isolatedStore()
+        // Startup must not land after the fixture and replace it mid-test.
+        while store.isBootstrapping { await Task.yield() }
         store.project = fixture(count: 24, withCue: true)
         store.selectedSceneID = "scene"
         store.selectedEntryID = store.sceneEntries.first?.id
