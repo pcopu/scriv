@@ -176,7 +176,11 @@ enum StoryboardSharedScriptLayout {
             button.layer.borderWidth = covered ? 1 : 0.5; button.layer.borderColor = (covered ? ImageUI.accent.withAlphaComponent(0.35) : ScrivUIKitTheme.hairline).cgColor
             button.accessibilityValue = playing ? "Playhead word" : covered ? "Covered by selected picture" : nil
             button.accessibilityTraits = selected ? [.button, .selected] : .button
-            if button.titleLabel?.font != font { button.titleLabel?.font = font; button.invalidateIntrinsicContentSize(); button.superview?.invalidateIntrinsicContentSize() }
+            if button.titleLabel?.font != font {
+                // Re-measure the chips too: with an unchanged row height the flow kept
+                // the old, narrower widths and words broke mid-word ("Miyazak / i,").
+                button.titleLabel?.font = font; button.invalidateIntrinsicContentSize(); button.superview?.invalidateIntrinsicContentSize(); button.superview?.setNeedsLayout()
+            }
             // Right-click only: a press-and-hold menu would swallow a word drag that starts with a pause.
             if changedMenu || ScrivSecondaryMenu.menu(of: button) == nil {
                 if let cue = wordCue(item), let card = cards[cue.id] { ScrivSecondaryMenu.set(UIMenu(children: card.wordActions(item)), on: button) }

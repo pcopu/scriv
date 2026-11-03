@@ -788,4 +788,40 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertFalse(views(UIButton.self, in: view).contains { !$0.isHidden && $0.title(for: .normal) == "Retry" })
         XCTAssertTrue(views(UILabel.self, in: view).contains { !$0.isHidden && $0.text == "No image yet" })
     }
+
+    /// After a script zoom change, every Storyboard word chip is wide enough for
+    /// its word, so no word breaks across two lines inside its chip.
+    func testStoryboardWordChipsFitTheirWordsAfterZoom() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        let originalZoom = store.scriptZoom
+        defer { store.setScriptZoom(originalZoom); try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene); window.frame = CGRect(x: 0, y: 0, width: 1280, height: 772)
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        func settle() async throws { for _ in 0..<6 { try await Task.sleep(for: .milliseconds(30)); window.layoutIfNeeded() } }
+        func check(_ label: String) throws {
+            let chips = views(UIButton.self, in: window).filter { $0.window != nil && ($0.accessibilityIdentifier ?? "").hasPrefix("storyboard-word-") }
+            XCTAssertFalse(chips.isEmpty)
+            for chip in chips {
+                let title = try XCTUnwrap(chip.title(for: .normal)), font = try XCTUnwrap(chip.titleLabel?.font)
+                let needed = ceil((title as NSString).size(withAttributes: [.font: font]).width) + 24
+                XCTAssertGreaterThanOrEqual(chip.bounds.width + 0.5, min(needed, chip.superview?.bounds.width ?? needed), "\(label): “\(title)” fits on one line (font \(font.pointSize))")
+                let line = font.lineHeight
+                XCTAssertLessThan(chip.titleLabel?.bounds.height ?? 0, line * 1.6, "\(label): “\(title)” is one line")
+            }
+        }
+        for zoom in [0.8, 0.9, 1.0, 1.3, 2.0] {
+            store.tab = .script; try await settle()
+            store.setScriptZoom(zoom); store.tab = .storyboard; try await settle()
+            try check("opened at \(zoom)")
+        }
+        store.setScriptZoom(0.8); try await settle()
+        store.setScriptZoom(1.5); try await settle()
+        try check("changed while showing")
+    }
 }
