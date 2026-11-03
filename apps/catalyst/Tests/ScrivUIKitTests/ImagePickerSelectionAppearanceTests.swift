@@ -88,6 +88,41 @@ final class ImagePickerSelectionAppearanceTests: XCTestCase {
         XCTAssertEqual(store.project, before, "Search must not lose the existing selected version or mutate it.")
     }
 
+    /// The Version picker lists exactly the image's lineage, newest first, and
+    /// Use version swaps only this placement to the chosen version.
+    func testVersionPickerListsTheLineageAndAppliesAnOlderVersion() async throws {
+        let store = try await makeStore()
+        let base = Date(timeIntervalSince1970: 1_800_000_000)
+        store.project.images = [
+            ImageAsset(id: "v1", version: 1, fileName: "a.png", sha256: String(repeating: "a", count: 64), byteCount: 1, createdAt: base),
+            ImageAsset(id: "v2", version: 2, fileName: "b.png", sha256: String(repeating: "b", count: 64), byteCount: 1, createdAt: base + 60, previousVersionId: "v1"),
+            ImageAsset(id: "v3", version: 3, fileName: "c.png", sha256: String(repeating: "c", count: 64), byteCount: 1, createdAt: base + 120, previousVersionId: "v2"),
+            ImageAsset(id: "other", version: 1, fileName: "d.png", sha256: String(repeating: "d", count: 64), byteCount: 1, createdAt: base + 180)]
+        store.project.cues[0].imageId = "v3"; store.project.cues[1].imageId = "v3"
+        for opened in ["v3", "v1"] {
+            let controller = ImagePickerViewController(store: store, cueID: "existing", versionsOf: opened)
+            controller.loadViewIfNeeded(); controller.view.frame = CGRect(x: 0, y: 0, width: 720, height: 720); await settle(controller.view)
+            let collection = try XCTUnwrap(descendants(controller.view).compactMap { $0 as? UICollectionView }.first)
+            let labels = (0..<controller.collectionView(collection, numberOfItemsInSection: 0)).map { controller.collectionView(collection, cellForItemAt: IndexPath(item: $0, section: 0)).accessibilityLabel ?? "" }
+            XCTAssertEqual(labels.map { $0.components(separatedBy: "\n")[1].components(separatedBy: " · ")[0] }, ["Version 3", "Version 2", "Version 1"], "opened from \(opened)")
+        }
+        let controller = ImagePickerViewController(store: store, cueID: "existing", versionsOf: "v3")
+        controller.loadViewIfNeeded(); controller.view.frame = CGRect(x: 0, y: 0, width: 720, height: 720); await settle(controller.view)
+        let collection = try XCTUnwrap(descendants(controller.view).compactMap { $0 as? UICollectionView }.first)
+        controller.collectionView(collection, didSelectItemAt: IndexPath(item: 2, section: 0))
+        try useButton(in: controller).sendActions(for: .primaryActionTriggered)
+        XCTAssertEqual(store.project.cues.first { $0.id == "existing" }?.imageId, "v1", "error: \(store.errorMessage ?? "none"), status: \(store.statusMessage)")
+        XCTAssertEqual(store.project.cues.first { $0.id == "target" }?.imageId, "v3", "Only this placement changes.")
+        XCTAssertEqual(store.project.images.count, 4, "Switching versions never deletes one.")
+        store.selectedCueID = "existing"
+        let preview = PreviewViewController(store: store); preview.loadViewIfNeeded(); preview.view.frame = CGRect(x: 0, y: 0, width: 640, height: 900)
+        preview.storeDidChange(); await settle(preview.view)
+        let labels = descendants(preview.view).compactMap { ($0 as? UILabel)?.text }
+        XCTAssertTrue(labels.contains { $0.hasSuffix("· Version 1") }, "Preview subtitle names the chosen version: \(labels)")
+        let versionButton = try XCTUnwrap(descendants(preview.view).first { $0.accessibilityIdentifier == "preview-version" } as? UIButton)
+        XCTAssertEqual(versionButton.configuration?.title, "Version 1")
+    }
+
     private func makeStore() async throws -> WorkspaceStore {
         guard ProcessInfo.processInfo.arguments.contains("--screenshots") else {
             XCTFail("Run only with the scheme's isolated --screenshots verification argument.")
