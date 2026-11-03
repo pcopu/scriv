@@ -824,4 +824,41 @@ final class WorkspaceEndToEndTests: XCTestCase {
         store.setScriptZoom(1.5); try await settle()
         try check("changed while showing")
     }
+
+    /// Portrait options is a menu of the character's tagged images plus Remove
+    /// portrait. It used to open the character editor, which has no portrait fields.
+    func testPortraitOptionsChoosesAndRemovesThePortrait() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let hex = { (c: String) in String(repeating: c, count: 64) }
+        store.project = ScrivProject(id: UUID().uuidString, scenes: [ScriptScene(id: "scene")],
+            entries: [ScriptEntry(id: "line", sceneId: "scene", order: 0, text: "Hello there.", ownedDurationMs: 1000)],
+            characters: [ScriptCharacter(id: "randy", name: "Randy")],
+            images: [ImageAsset(id: "a", fileName: "a.png", sha256: hex("a"), byteCount: 1, characterIds: ["randy"]),
+                     ImageAsset(id: "b", version: 2, fileName: "b.png", sha256: hex("b"), byteCount: 1, characterIds: ["randy"]),
+                     ImageAsset(id: "c", fileName: "c.png", sha256: hex("c"), byteCount: 1)],
+            cues: [ImageCue(id: "01a", sceneId: "scene", imageId: "a", label: "01A", startMs: 0, endMs: 500), ImageCue(id: "01b", sceneId: "scene", imageId: "b", label: "01B", startMs: 500, endMs: 1000)])
+        let controller = CharactersController(store: store)
+        typealias ActionHandler = @convention(block) (UIAction) -> Void
+        func run(_ title: String) throws {
+            let menu = controller.portraitMenu(try XCTUnwrap(store.project.character("randy")))
+            let action = try XCTUnwrap(menu.children.flatMap { ($0 as? UIMenu)?.children ?? [$0] }.compactMap { $0 as? UIAction }.first { $0.title == title }, "\(title) in \(menu.children)")
+            unsafeBitCast(try XCTUnwrap(action.value(forKey: "handler") as AnyObject?), to: ActionHandler.self)(action)
+        }
+        func titles() throws -> [String] { controller.portraitMenu(try XCTUnwrap(store.project.character("randy"))).children.flatMap { ($0 as? UIMenu)?.children ?? [$0] }.compactMap { ($0 as? UIAction)?.title } }
+        XCTAssertEqual(try titles(), ["Use 01A · v1", "Use 01B · v2"], "Only tagged images; no Remove without a portrait")
+        try run("Use 01B · v2")
+        XCTAssertEqual(store.project.character("randy")?.portraitImageId, "b", "error: \(store.errorMessage ?? "none")")
+        XCTAssertEqual(try titles(), ["Use 01A · v1", "Use 01B · v2", "Remove portrait"])
+        let current = controller.portraitMenu(try XCTUnwrap(store.project.character("randy"))).children.flatMap { ($0 as? UIMenu)?.children ?? [$0] }.compactMap { $0 as? UIAction }.first { $0.state == .on }
+        XCTAssertEqual(current?.title, "Use 01B · v2", "The current portrait is ticked")
+        try run("Remove portrait")
+        XCTAssertNil(store.project.character("randy")?.portraitImageId)
+        store.project.images = store.project.images.map { var image = $0; image.characterIds = []; return image }
+        let empty = controller.portraitMenu(try XCTUnwrap(store.project.character("randy"))).children.flatMap { ($0 as? UIMenu)?.children ?? [$0] }.compactMap { $0 as? UIAction }
+        XCTAssertEqual(empty.map(\.title), ["Tag Randy in an image to use it here"])
+        XCTAssertTrue(empty[0].attributes.contains(.disabled))
+    }
 }
+

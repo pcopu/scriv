@@ -196,8 +196,14 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
         let heading = CharacterTeamUI.row([ScrivUIKitTheme.label(character.name, size: 28 * presentationScale, weight: .semibold), CharacterTeamUI.spacer(), edit, remove], spacing: 6)
         let portraitAsset = store.project.asset(character.portraitImageId)
         let portraitCue = store.project.cues.first { $0.imageId == portraitAsset?.id }
-        let portraitSource = character.portraitRegion != nil ? "Portrait cropped from \(portraitCue?.label.isEmpty == false ? portraitCue!.label : "image") · v\(portraitAsset?.version ?? 1)" : "Character"
-        let options = CharacterTeamUI.button("Portrait options",size:13) { [weak self] in self?.show(.characterEditor(characterID:character.id)) }
+        let portraitName = portraitCue.flatMap { $0.label.isEmpty ? nil : $0.label } ?? "image"
+        let portraitSource = portraitAsset.map { "Portrait \(character.portraitRegion != nil ? "cropped from" : "from") \(portraitName) · v\($0.version)" } ?? "No portrait yet"
+        // The editor has no portrait fields, so this is a menu of the
+        // character's tagged images rather than a second way into Edit.
+        let options = CharacterTeamUI.button("Portrait options", symbol: "chevron.down", size: 13) {}
+        options.accessibilityIdentifier = "character-portrait-options"
+        options.configuration?.imagePlacement = .trailing
+        options.menu = portraitMenu(character); options.showsMenuAsPrimaryAction = true
         let details = ScrivUIKitTheme.stack([heading, ScrivUIKitTheme.label(portraitSource, size: 13 * presentationScale, color: ScrivUIKitTheme.secondary), CharacterTeamUI.separator(), aliases,options], spacing: 11)
         let header = CharacterTeamUI.row([portrait, details], spacing: 18); header.alignment = .top
         let content = ScrivUIKitTheme.stack([header], spacing: 16)
@@ -218,6 +224,22 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
             content.addArrangedSubview(row)
         }
         return ScrivUIKitTheme.card(content, padding: 17 * presentationScale)
+    }
+    func portraitMenu(_ character: ScriptCharacter) -> UIMenu {
+        let locked: UIMenuElement.Attributes = store.lockedByOther(character.id) == nil ? [] : .disabled
+        let tagged = store.project.images.filter { $0.characterIds.contains(character.id) }
+        var choices: [UIMenuElement] = tagged.map { image in
+            UIAction(title: "Use \(UIKitImageContext.title(imageID: image.id, project: store.project)) · v\(image.version)", attributes: locked, state: character.portraitImageId == image.id ? .on : .off) { [weak self] _ in
+                guard character.portraitImageId != image.id else { return }
+                self?.store.setCharacterPortrait(character.id, imageId: image.id)
+            }
+        }
+        if choices.isEmpty { choices = [UIAction(title: "Tag \(character.name) in an image to use it here", attributes: .disabled) { _ in }] }
+        var sections: [UIMenuElement] = [UIMenu(title: "", options: .displayInline, children: choices)]
+        if character.portraitImageId != nil {
+            sections.append(UIMenu(title: "", options: .displayInline, children: [UIAction(title: "Remove portrait", image: UIImage(systemName: "person.crop.circle.badge.minus"), attributes: locked.union(.destructive)) { [weak self] _ in self?.store.setCharacterPortrait(character.id, imageId: nil) }]))
+        }
+        return UIMenu(children: sections)
     }
     private func imageCard(_ image: ImageAsset, character: ScriptCharacter) -> UIView {
         let cue = store.project.cues.first { $0.imageId == image.id }
