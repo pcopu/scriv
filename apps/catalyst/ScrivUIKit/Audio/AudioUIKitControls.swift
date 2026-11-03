@@ -7,6 +7,18 @@ enum AudioUIKitLayout {
         view.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
         return view
     }
+    /// Sizes a scrolling sheet to its measured content (notices come and go),
+    /// within bounds; taller than a small window, the content scrolls instead.
+    @MainActor static func fitSheet(_ controller: UIViewController, scroll: UIScrollView, minimum: CGFloat, maximum: CGFloat = 720) {
+        scroll.layoutIfNeeded() // contentSize is only current after the scroll view's own layout
+        guard scroll.contentSize.height > 0 else { return }
+        let needed = ceil(scroll.contentSize.height + scroll.adjustedContentInset.top + scroll.adjustedContentInset.bottom)
+        let height = min(max(minimum, needed), maximum)
+        guard abs(controller.preferredContentSize.height - height) > 1 else { return }
+        controller.preferredContentSize = CGSize(width: controller.preferredContentSize.width, height: height)
+        controller.navigationController?.preferredContentSize = controller.preferredContentSize
+        ScrivSheetFitting.refit(containing: controller)
+    }
     static func scrollContent(_ content: UIView, in container: UIView, padding: CGFloat = 22) -> UIScrollView {
         let scroll = UIScrollView(); scroll.alwaysBounceVertical = false
         container.addSubview(scroll); scroll.scrivPinEdges(to: container)

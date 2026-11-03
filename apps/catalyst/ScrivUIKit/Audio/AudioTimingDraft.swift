@@ -27,6 +27,15 @@ struct AudioClipTimingDraft {
         source = AudioTimingInput.seconds(clip.sourceStartMs)
         duration = AudioTimingInput.seconds(clip.durationMs)
     }
+    /// Sets the source-in text. When the current duration would then run past
+    /// the end of the recording, the duration shrinks to fit. Returns whether
+    /// the duration changed.
+    mutating func setSource(_ text: String, assetDurationMs: Int) -> Bool {
+        source = text
+        guard let start = AudioTimingInput.milliseconds(text, maximum: assetDurationMs), start < assetDurationMs,
+              let length = AudioTimingInput.milliseconds(duration, maximum: assetDurationMs), start + length > assetDurationMs else { return false }
+        duration = AudioTimingInput.seconds(assetDurationMs - start); return true
+    }
     func trim(asset: AudioAsset) -> ClosedRange<Int>? {
         guard let start = AudioTimingInput.milliseconds(source, maximum: asset.durationMs),
               let length = AudioTimingInput.milliseconds(duration, maximum: asset.durationMs), length > 0,

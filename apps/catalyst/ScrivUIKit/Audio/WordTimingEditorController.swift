@@ -82,17 +82,7 @@ final class WordTimingEditorController: ScrivScreenController {
         // At the sheet's 500-point width the footer stacks vertically, which
         // pushed Save/Cancel below a fixed 410-point sheet. Fit the measured
         // content (notice and lease rows come and go), within sensible bounds.
-        guard let scroll = contentScroll else { return }
-        scroll.layoutIfNeeded() // contentSize is only current after the scroll view's own layout
-        guard scroll.contentSize.height > 0 else { return }
-        let needed = ceil(scroll.contentSize.height + scroll.adjustedContentInset.top + scroll.adjustedContentInset.bottom)
-        let height = min(max(410, needed), 720)
-        if abs(preferredContentSize.height - height) > 1 {
-            preferredContentSize = CGSize(width: preferredContentSize.width, height: height)
-            navigationController?.preferredContentSize = preferredContentSize
-            // Up to 720 pt is taller than a small window; the content scrolls instead.
-            ScrivSheetFitting.refit(containing: self)
-        }
+        if let scroll = contentScroll { AudioUIKitLayout.fitSheet(self, scroll: scroll, minimum: 410) }
     }
     override func viewDidAppear(_ animated: Bool) { super.viewDidAppear(animated); revealSelectedWord() }
     override func viewDidDisappear(_ animated: Bool) {

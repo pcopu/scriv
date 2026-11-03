@@ -14,18 +14,27 @@ final class AudioClipEditorController: ScrivScreenController {
     private let placementHint = ScrivUIKitTheme.label("", size: 11, color: ScrivUIKitTheme.secondary)
     private let anchorHint = ScrivUIKitTheme.label("", size: 11, color: ScrivUIKitTheme.secondary)
     private let notice = AudioTimingNotice()
+    private let assetDurationMs: Int
+    private var contentScroll: UIScrollView?
     init(store: WorkspaceStore, clip: AudioClip) {
         draft = AudioClipTimingDraft(clip: clip)
         let maximum = store.project.audioAssets.first { $0.id == clip.assetId }?.durationMs ?? AudioTimeline.maximumDurationMs
         sourceField = AudioSecondsField(title: "Source in", accessibilityName: "Source in", maximumMs: maximum, identifier: "audio-source-in")
         durationField = AudioSecondsField(title: "Duration", accessibilityName: "Audio duration", maximumMs: maximum, minimumMs: 1, identifier: "audio-duration")
+        assetDurationMs = maximum
         super.init(store: store); preferredContentSize = CGSize(width: 500, height: 470)
     }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(store:clip:)") }
     override func viewDidLoad() {
         super.viewDidLoad(); view.accessibilityIdentifier = "audio-trim-editor"
         sourceField.text = draft.source; durationField.text = draft.duration; offsetField.text = draft.offset
-        sourceField.onChange = { [weak self] text in self?.draft.source = text; self?.refreshPreview() }
+        sourceField.onChange = { [weak self] text in
+            guard let self else { return }
+            // A later start keeps the clip inside the recording: the duration
+            // gives way instead of the trim silently running past the end.
+            if self.draft.setSource(text, assetDurationMs: self.assetDurationMs) { self.durationField.text = self.draft.duration }
+            self.refreshPreview()
+        }
         durationField.onChange = { [weak self] text in self?.draft.duration = text; self?.refreshPreview() }
         offsetField.onChange = { [weak self] text in self?.draft.offset = text; self?.refreshPreview() }
         waveform.onTrimChanged = { [weak self] range in
@@ -66,7 +75,7 @@ final class AudioClipEditorController: ScrivScreenController {
             ScrivUIKitTheme.label("Trim & timing", size: 19, weight: .semibold), filename, waveform, trimHint, fields,
             AudioUIKitLayout.separator(), attachRow, offsetRow, anchorHint, placementHint, notice, footer
         ], spacing: 16)
-        _ = AudioUIKitLayout.scrollContent(content, in: view)
+        contentScroll = AudioUIKitLayout.scrollContent(content, in: view)
         storeDidChange()
     }
     override func storeDidChange() {
@@ -74,9 +83,16 @@ final class AudioClipEditorController: ScrivScreenController {
         guard contextIsCurrent, store.selectedSceneID == draft.original.sceneId else { dismiss(animated: true); return }
         refreshPreview(); refreshAttachmentMenu()
     }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let scroll = contentScroll { AudioUIKitLayout.fitSheet(self, scroll: scroll, minimum: 470) }
+    }
+    /// A notice grows the content inside the scroll view; lay out again so the
+    /// sheet refits instead of hiding Cancel and Apply below its edge.
+    func showNotice(_ text: String) { notice.show(text); view.setNeedsLayout() }
     private func refreshPreview() {
         guard isViewLoaded, let asset = store.project.audioAssets.first(where: { $0.id == draft.original.assetId }) else {
-            if isViewLoaded { notice.show("The source recording metadata is no longer in this project. Cancel and reopen audio to review the current clips.") }; return
+            if isViewLoaded { showNotice("The source recording metadata is no longer in this project. Cancel and reopen audio to review the current clips.") }; return
         }
         filename.text = asset.originalName; waveform.peaks = asset.waveform; waveform.sourceDurationMs = asset.durationMs
         let range = draft.trim(asset: asset); waveform.trim = range
@@ -121,7 +137,7 @@ final class AudioClipEditorController: ScrivScreenController {
             offsetField.text = draft.offset
             anchorHint.text = "Moved to the start of this line; negative offsets are not supported."; anchorHint.isHidden = !shifted
             refreshAttachmentMenu(); refreshPreview()
-        } catch { notice.show(error.localizedDescription) }
+        } catch { showNotice(error.localizedDescription) }
     }
     @objc private func applyDraft() {
         view.endEditing(true)
@@ -130,8 +146,8 @@ final class AudioClipEditorController: ScrivScreenController {
             let clip = try draft.applying(to: store.project)
             if clip == draft.original { dismiss(animated: true); return }
             if store.updateAudioClip(clip) { dismiss(animated: true) }
-            else { notice.show(store.errorMessage ?? "This clip could not be changed. Review its source and attachment, then try again.") }
-        } catch { notice.show(error.localizedDescription) }
+            else { showNotice(store.errorMessage ?? "This clip could not be changed. Review its source and attachment, then try again.") }
+        } catch { showNotice(error.localizedDescription) }
     }
     override var keyCommands: [UIKeyCommand]? {
         [UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(cancelDraft)), UIKeyCommand(input: "\r", modifierFlags: .command, action: #selector(applyDraft))]

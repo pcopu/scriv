@@ -679,4 +679,35 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertTrue(grew, "The sheet grows for the notice (was \(before), now \(sheet.preferredContentSize.height))")
         sheet.dismiss(animated: false)
     }
+
+    /// Raising Source in keeps the clip inside the recording, and a notice grows
+    /// the Trim & timing sheet instead of hiding Cancel and Apply.
+    func testAudioTrimStaysInsideRecordingAndNoticeGrowsSheet() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let asset = AudioAsset(fileName: "line.m4a", sha256: String(repeating: "0", count: 64), byteCount: 1, durationMs: 2_273, sampleRate: 44_100, channelCount: 1, waveform: [0.2, 0.5, 0.3], originalName: "line.m4a")
+        let clip = AudioClip(sceneId: store.selectedSceneID, assetId: asset.id, durationMs: 2_273)
+        var draft = AudioClipTimingDraft(clip: clip)
+        XCTAssertTrue(draft.setSource("0.100", assetDurationMs: asset.durationMs))
+        XCTAssertEqual(draft.duration, "2.173", "The duration gives way so the clip ends at the recording's end")
+        XCTAssertNotNil(draft.trim(asset: asset), "The trim stays valid")
+        XCTAssertFalse(draft.setSource("0.050", assetDurationMs: asset.durationMs), "An earlier start leaves the duration alone")
+
+        store.project.audioAssets.append(asset); store.project.audioClips.append(clip)
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene); window.frame = CGRect(x: 0, y: 0, width: 1280, height: 800)
+        let root = UIViewController(); window.rootViewController = root; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        let sheet = AudioClipEditorController(store: store, clip: clip)
+        root.present(sheet, animated: false)
+        for _ in 0..<5 { try await Task.sleep(for: .milliseconds(30)); window.layoutIfNeeded(); sheet.view.layoutIfNeeded() }
+        let before = sheet.preferredContentSize.height
+        sheet.showNotice("Use nonnegative times and a positive duration that fits inside the source recording. Source in and duration trim the recording; the placement offset only moves it.")
+        let grew = await until { sheet.view.layoutIfNeeded(); return sheet.preferredContentSize.height > before + 20 }
+        XCTAssertTrue(grew, "The sheet grows for the notice (was \(before), now \(sheet.preferredContentSize.height))")
+        sheet.dismiss(animated: false)
+    }
 }
