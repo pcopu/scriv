@@ -710,4 +710,29 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertTrue(grew, "The sheet grows for the notice (was \(before), now \(sheet.preferredContentSize.height))")
         sheet.dismiss(animated: false)
     }
+
+    /// Inspect is disabled while the picture has no image instead of a button
+    /// that silently does nothing.
+    func testInspectIsDisabledWithoutAnImage() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene); window.frame = CGRect(x: 0, y: 0, width: 1280, height: 800)
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        store.tab = .script
+        for _ in 0..<5 { try await Task.sleep(for: .milliseconds(30)); window.layoutIfNeeded() }
+        let cue = try XCTUnwrap(store.selectedCue ?? store.currentCue)
+        XCTAssertNil(cue.imageId, "The sample picture starts without an image")
+        let inspect = try XCTUnwrap(views(UIButton.self, in: window).first { $0.accessibilityIdentifier == "preview-inspect" && $0.window != nil })
+        XCTAssertFalse(inspect.isEnabled, "No image: Inspect is disabled")
+        let index = try XCTUnwrap(store.project.cues.firstIndex { $0.id == cue.id })
+        store.project.cues[index].imageId = "image-under-test"
+        let enabled = await until { window.layoutIfNeeded(); return inspect.isEnabled }
+        XCTAssertTrue(enabled, "With an image, Inspect is enabled")
+    }
 }

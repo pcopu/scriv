@@ -15,12 +15,16 @@ import ScrivCore
     private var layersDisclosure: PreviewLayersDisclosureView!
     private(set) var layersExpanded = false
     private var generation: GenerationPanelViewController!
+    /// Inspect opens the original image; with no image it is disabled rather
+    /// than a button that silently does nothing.
+    private var expand = UIButton()
     private var cue: ImageCue? { store.isPlaying ? store.currentCue : store.selectedCue ?? store.currentCue }
     init(store: WorkspaceStore) { super.init(store: store, scopeToProject: false) }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(store:)") }
     override func viewDidLoad() {
         super.viewDidLoad(); title = "Preview"; content = ImageUI.scrollStack(in: self, spacing: 9, padding: 12); view.backgroundColor = ScrivUIKitTheme.panel
-        let expand = PreviewChromeUI.inspect { [weak self] in guard let self, let imageID = self.cue?.imageId else { return }; self.show(.imageDetail(imageID: imageID, cueID: self.cue?.id)) }
+        expand = PreviewChromeUI.inspect { [weak self] in guard let self, let imageID = self.cue?.imageId else { return }; self.show(.imageDetail(imageID: imageID, cueID: self.cue?.id)) }
+        expand.accessibilityHint = "Opens the original image when this picture has one."
         // A one-word title must never wrap ("Previe / w") when the panel narrows.
         let heading = ImageUI.label("Preview", size: 30, weight: .semibold)
         heading.numberOfLines = 1; heading.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -33,6 +37,7 @@ import ScrivCore
         storeDidChange()
     }
     override func storeDidChange() {
+        if isViewLoaded { expand.isEnabled = cue?.imageId != nil }
         guard isViewLoaded, content != nil else { return }
         let navigation = store.navigationContext
         let cue = self.cue, image = store.project.asset(cue?.imageId), url = image.flatMap { store.assetURL($0) }

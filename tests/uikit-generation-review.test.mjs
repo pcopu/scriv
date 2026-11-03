@@ -132,7 +132,9 @@ test('profile facts use one compact ruled grid and missing-image guidance is not
 // review-sheet command style or alter media/routing semantics.
 test('Preview exposes Inspect text and compact full version labels without changing actions', async () => {
   const preview = await source('PreviewViewController');
-  assert.match(preview, /let expand = PreviewChromeUI\.inspect/);
+  assert.match(preview, /expand = PreviewChromeUI\.inspect/);
+  // Inspect is disabled while there is no image to inspect.
+  assert.match(preview, /expand\.isEnabled = cue\?\.imageId != nil/);
   assert.match(preview, /self\.show\(\.imageDetail\(imageID: imageID, cueID: self\.cue\?\.id\)\)/);
   assert.match(preview, /let versions = PreviewChromeUI\.version\(image\.version\)/);
   assert.match(preview, /self\.store\.navigationContext == navigation/);
