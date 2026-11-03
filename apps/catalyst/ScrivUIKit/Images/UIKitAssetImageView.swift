@@ -58,6 +58,8 @@ enum UIKitAssetImageLoadPhase: Equatable { case empty, loading, loaded, failed }
         retryButton.setTitle("Retry", for: .normal)
         retryButton.addAction(UIAction { [weak self] _ in self?.startLoad() }, for: .touchUpInside)
         [symbol, spinner, message, retryButton].forEach(placeholder.addArrangedSubview)
+        // Unconfigured is an empty placeholder: Retry belongs only to a failed load.
+        retryButton.isHidden = true; spinner.isHidden = true
         NSLayoutConstraint.activate([
             placeholder.centerXAnchor.constraint(equalTo: centerXAnchor), placeholder.centerYAnchor.constraint(equalTo: centerYAnchor),
             placeholder.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 12), placeholder.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -12)

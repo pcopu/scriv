@@ -25,7 +25,7 @@ import ScrivCore
         super.viewDidLoad(); title = "Split picture"; view.backgroundColor = ScrivUIKitTheme.panel
         preferredContentSize = CGSize(width: 420, height: 620)
         let image = UIKitAssetImageView()
-        if let asset = store.project.asset(original.imageId) { image.configure(url: store.assetURL(asset), title: original.label, fill: false, expectedDigest: asset.sha256) }
+        if let asset = store.project.asset(original.imageId) { image.configure(url: store.assetURL(asset), title: original.label, fill: false, expectedDigest: asset.sha256) } else { image.configure(url: nil, title: original.label, fill: false, missingText: "No image yet") }
         image.scrivPinEdges(to: imageContainer); imageContainer.heightAnchor.constraint(equalToConstant: 150).isActive = true
         cutMarker.translatesAutoresizingMaskIntoConstraints = false; cutMarker.backgroundColor = ImageUI.accent; cutMarker.isUserInteractionEnabled = false; imageContainer.addSubview(cutMarker)
         markerPosition = cutMarker.leadingAnchor.constraint(equalTo: imageContainer.leadingAnchor)
@@ -45,7 +45,7 @@ import ScrivCore
     }
     private func halfPreview(_ title: UILabel) -> UIView {
         let picture = UIKitAssetImageView()
-        if let asset = store.project.asset(original.imageId) { picture.configure(url: store.assetURL(asset), title: original.label, fill: false, expectedDigest: asset.sha256) }
+        if let asset = store.project.asset(original.imageId) { picture.configure(url: store.assetURL(asset), title: original.label, fill: false, expectedDigest: asset.sha256) } else { picture.configure(url: nil, title: original.label, fill: false, missingText: "No image yet") }
         picture.heightAnchor.constraint(equalToConstant: 74).isActive = true
         return ImageUI.card(ImageUI.stack([title, picture], spacing: 8), padding: 8)
     }

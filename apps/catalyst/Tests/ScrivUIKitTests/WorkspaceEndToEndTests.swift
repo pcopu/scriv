@@ -776,4 +776,16 @@ final class WorkspaceEndToEndTests: XCTestCase {
         large.setNeedsLayout(); large.layoutIfNeeded()
         XCTAssertTrue(views(UIImageView.self, in: large).contains { !$0.isHidden && $0.image != nil }, "Large views keep the picture icon")
     }
+
+    /// An image view that was never given an image shows no Retry button:
+    /// Retry belongs to a failed load (the split sheet showed three of them).
+    func testUnconfiguredImageViewOffersNoRetry() {
+        let view = UIKitAssetImageView(frame: CGRect(x: 0, y: 0, width: 240, height: 135))
+        view.layoutIfNeeded()
+        XCTAssertFalse(views(UIButton.self, in: view).contains { !$0.isHidden && $0.title(for: .normal) == "Retry" }, "No Retry before any load")
+        view.configure(url: nil, title: "01A", fill: false, missingText: "No image yet")
+        view.layoutIfNeeded()
+        XCTAssertFalse(views(UIButton.self, in: view).contains { !$0.isHidden && $0.title(for: .normal) == "Retry" })
+        XCTAssertTrue(views(UILabel.self, in: view).contains { !$0.isHidden && $0.text == "No image yet" })
+    }
 }
