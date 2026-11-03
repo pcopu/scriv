@@ -558,4 +558,25 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertTrue(shown("Randy"), "Every character is listed again")
         XCTAssertFalse(characters.canPerformAction(action, withSender: escape), "Outside the field, Escape keeps its other meanings")
     }
+
+    /// The first and last lines of a scene offer no move past its ends,
+    /// instead of an error after choosing it.
+    func testLineMenuDisablesMovesPastTheSceneEnds() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let script = ScriptScreenController(store: store)
+        let ids = store.sceneEntries.map(\.id)
+        let first = try XCTUnwrap(ids.first), last = try XCTUnwrap(ids.last)
+        func item(_ title: String, _ id: String) -> UIAction? {
+            func flat(_ menu: UIMenu) -> [UIAction] { menu.children.flatMap { ($0 as? UIMenu).map(flat) ?? [$0 as? UIAction].compactMap { $0 } } }
+            return flat(script.entryMenu(id)).first { $0.title == title }
+        }
+        XCTAssertTrue(try XCTUnwrap(item("Move up", first)).attributes.contains(.disabled))
+        XCTAssertFalse(try XCTUnwrap(item("Move down", first)).attributes.contains(.disabled))
+        XCTAssertFalse(try XCTUnwrap(item("Move up", last)).attributes.contains(.disabled))
+        XCTAssertTrue(try XCTUnwrap(item("Move down", last)).attributes.contains(.disabled))
+    }
 }

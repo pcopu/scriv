@@ -401,12 +401,14 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         row.details.isHidden = row.details.arrangedSubviews.isEmpty
         return true
     }
-    private func entryMenu(_ id: String) -> UIMenu {
+    func entryMenu(_ id: String) -> UIMenu {
         guard let entry = store.project.entries.first(where: { $0.id == id }) else { return UIMenu(children: []) }
         let locked = store.lockedByOther(id) != nil, context = store.navigationContext
-        func action(_ title: String, _ symbol: String, edit: Bool = false, destructive: Bool = false, _ body: @escaping () -> Void) -> UIAction {
-            UIAction(title: title, image: UIImage(systemName: symbol), attributes: edit && locked ? [.disabled] : destructive ? [.destructive] : []) { [weak self] _ in guard let self, store.navigationContext == context else { return }; body() }
+        func action(_ title: String, _ symbol: String, edit: Bool = false, destructive: Bool = false, enabled: Bool = true, _ body: @escaping () -> Void) -> UIAction {
+            UIAction(title: title, image: UIImage(systemName: symbol), attributes: (edit && locked) || !enabled ? [.disabled] : destructive ? [.destructive] : []) { [weak self] _ in guard let self, store.navigationContext == context else { return }; body() }
         }
+        // A line cannot leave its scene: the ends offer no move instead of an error.
+        let sceneIDs = store.project.entries(in: entry.sceneId).map(\.id), position = sceneIDs.firstIndex(of: id) ?? 0
         var actions: [UIMenuElement] = [
             action("Edit text", "pencil", edit: true) { [weak self] in self?.beginEditing(id, caret: self?.rememberedCaret[id] ?? 0) },
             action("Review character links…", "person.crop.rectangle", edit: true) { [weak self] in self?.reviewLinks(id) },
@@ -418,8 +420,8 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
             actions.append(action("Review word timing…", "clock", edit: true) { [weak self] in self?.show(.wordTiming(entryID: id, wordIDs: [])) })
         }
         actions.append(UIMenu(options: .displayInline, children: [
-            action("Move up", "arrow.up", edit: true) { [weak self] in self?.store.moveEntry(id, offset: -1) },
-            action("Move down", "arrow.down", edit: true) { [weak self] in self?.store.moveEntry(id, offset: 1) },
+            action("Move up", "arrow.up", edit: true, enabled: position > 0) { [weak self] in self?.store.moveEntry(id, offset: -1) },
+            action("Move down", "arrow.down", edit: true, enabled: position < sceneIDs.count - 1) { [weak self] in self?.store.moveEntry(id, offset: 1) },
             action("Delete entry", "trash", edit: true, destructive: true) { [weak self] in self?.confirmDeleteEntry(id) }
         ]))
         return UIMenu(children: actions)
