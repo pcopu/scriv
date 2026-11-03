@@ -99,7 +99,7 @@ final class ScrivWorkspaceController: ScrivScreenController {
         chrome.accountButton.addAction(UIAction { [weak self] _ in
             guard let self else { return }; self.show(self.store.account == nil ? .signIn : .account)
         }, for: .primaryActionTriggered)
-        chrome.codexButton.addAction(UIAction { [weak self] _ in self?.show(.codex) }, for: .primaryActionTriggered)
+        chrome.codexButton.addAction(UIAction { [weak self] _ in self?.showCodexPopup(from: self?.chrome.codexButton) }, for: .primaryActionTriggered)
         chrome.moreButton.menu = workspaceMenu(); chrome.moreButton.showsMenuAsPrimaryAction = true
     }
     @objc func findInScript() {
@@ -111,6 +111,9 @@ final class ScrivWorkspaceController: ScrivScreenController {
     private func toggleDiscussion() {
         if store.showDiscussion { store.showDiscussion = false }
         else { store.loadDiscussion(itemId: store.discussionItemID) }
+    }
+    private func showCodexPopup(from source: UIView?) {
+        ScrivUIKitRouter.shared.present(.codex, from: self, store: store, sourceView: source)
     }
     private func workspaceMenu() -> UIMenu {
         let mentions = store.unreadDiscussionMentionCount
@@ -128,9 +131,8 @@ final class ScrivWorkspaceController: ScrivScreenController {
                 UIAction(title: store.account == nil ? "Sign in…" : "Scriv account…", image: UIImage(systemName: "person.crop.circle")) { [weak self] _ in
                     guard let self else { return }; self.show(self.store.account == nil ? .signIn : .account)
                 },
-                UIAction(title: "Codex on this Mac…", image: UIImage(systemName: "sparkles")) { [weak self] _ in self?.show(.codex) },
-                UIAction(title: "Generation history…", image: UIImage(systemName: "photo.on.rectangle")) { [weak self] _ in self?.show(.generationJobs) },
-                UIAction(title: "Settings…", image: UIImage(systemName: "gearshape")) { [weak self] _ in self?.show(.settings) }
+                UIAction(title: "Codex…", image: UIImage(systemName: "sparkles")) { [weak self] _ in self?.showCodexPopup(from: self?.chrome.moreButton) },
+                UIAction(title: "Generation history…", image: UIImage(systemName: "photo.on.rectangle")) { [weak self] _ in self?.show(.generationJobs) }
             ])
         ])
     }

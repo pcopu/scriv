@@ -4,7 +4,7 @@ import UIKit
 /// Feature owners register factories; no SwiftUI or NSHostingView is involved.
 enum ScrivUIKitRoute: Hashable {
     case script, projects, history, audio, characters, teams, storyboard, preview
-    case signIn, account, settings, generationJobs, codex
+    case signIn, account, settings, codexSettings, generationJobs, codex
     case wordTiming(entryID: String, wordIDs: [String])
     case characterEditor(characterID: String?)
     case characterLinks(entryID: String)
@@ -13,7 +13,7 @@ enum ScrivUIKitRoute: Hashable {
 
     enum Kind: Hashable {
         case script, projects, history, audio, characters, teams, storyboard, preview
-        case signIn, account, settings, generationJobs, codex, wordTiming
+        case signIn, account, settings, codexSettings, generationJobs, codex, wordTiming
         case characterEditor, characterLinks, imageDetail, cueAnchor
     }
     var kind: Kind {
@@ -21,7 +21,7 @@ enum ScrivUIKitRoute: Hashable {
         case .script: return .script; case .projects: return .projects; case .history: return .history
         case .audio: return .audio; case .characters: return .characters; case .teams: return .teams
         case .storyboard: return .storyboard; case .preview: return .preview; case .signIn: return .signIn
-        case .account: return .account; case .settings: return .settings; case .generationJobs: return .generationJobs
+        case .account: return .account; case .settings: return .settings; case .codexSettings: return .codexSettings; case .generationJobs: return .generationJobs
         case .codex: return .codex; case .wordTiming: return .wordTiming; case .characterEditor: return .characterEditor
         case .characterLinks: return .characterLinks; case .imageDetail: return .imageDetail; case .cueAnchor: return .cueAnchor
         }
@@ -37,19 +37,40 @@ final class ScrivUIKitRouter {
     func controller(for route: ScrivUIKitRoute, store: WorkspaceStore) -> UIViewController? {
         factories[route.kind]?(route, store)
     }
-    func present(_ route: ScrivUIKitRoute, from presenter: UIViewController, store: WorkspaceStore) {
-        guard let controller = controller(for: route, store: store) else {
-            store.errorMessage = "This screen is unavailable in this build. No project data was changed."
-            return
-        }
-        controller.modalPresentationStyle = .formSheet
+    func present(_ route: ScrivUIKitRoute, from presenter: UIViewController, store: WorkspaceStore, sourceView: UIView? = nil) {
+        #if targetEnvironment(macCatalyst)
+        if case .settings = route { ScrivSettingsWindowCoordinator.shared.show(store: store); return }
+        if case .codexSettings = route { ScrivSettingsWindowCoordinator.shared.show(store: store, pane: .codex); return }
+        #endif
         var front = presenter
-        while let presented = front.presentedViewController, !presented.isBeingDismissed { front = presented }
+        while let presented = front.presentedViewController {
+            guard !presented.isBeingDismissed else { return }
+            // Reopening the menu must reuse the visible popup, not stack one.
+            if case .codex = route, (presented as? UINavigationController)?.topViewController is ScrivCodexController { return }
+            front = presented
+        }
+        if case .codex = route, front is ScrivCodexController { return }
         guard front.viewIfLoaded?.window != nil, !front.isBeingDismissed, !front.isBeingPresented else {
             store.errorMessage = "Wait for the current screen to finish opening, then try again."
             return
         }
-        ScrivSheetFitting.fit(controller, presentedFrom: front)
+        guard let controller = controller(for: route, store: store) else {
+            store.errorMessage = "This screen is unavailable in this build. No project data was changed."
+            return
+        }
+        if case .codex = route {
+            controller.modalPresentationStyle = .popover
+            if let popup = controller.popoverPresentationController {
+                let anchor = sourceView?.window === front.view.window ? sourceView : nil
+                popup.sourceView = anchor ?? front.view
+                popup.sourceRect = anchor?.bounds ?? CGRect(x: front.view.bounds.midX, y: 24, width: 1, height: 1)
+                popup.permittedArrowDirections = anchor == nil ? [] : [.up, .down]
+                popup.delegate = (controller as? UINavigationController)?.topViewController as? ScrivCodexController
+            }
+        } else {
+            controller.modalPresentationStyle = .formSheet
+            ScrivSheetFitting.fit(controller, presentedFrom: front)
+        }
         front.present(controller, animated: true)
     }
 }

@@ -70,7 +70,7 @@ checker neither needs nor accepts them.
 1. Verify/download the exact signed app using `updates/scripts/acceptance.py download`; it never installs or launches anything.
 2. Preserve any installed app and user data. Install the verified baseline through the normal OS flow; do not bypass security warnings. Launch the exact intended app path.
 3. Open a synthetic active project and retain a separate closed copied/synthetic project for byte-preservation checks. Capture private baseline evidence with `acceptance.py snapshot`.
-4. Publish a higher-build candidate in the same explicitly authorized channel. Exercise Settings → Check for Scriv updates, download, prepared-update Later/cancel, and Update & Relaunch. Do not substitute manual replacement for app-driven update acceptance.
+4. Publish a higher-build candidate in the same explicitly authorized channel. Exercise Scriv → Check for Updates…, download, prepared-update Later/cancel, and Update & Relaunch. Do not substitute manual replacement for app-driven update acceptance.
 5. Confirm the actual process changed, installed bundle identity/build/signatures match, the active project is saved/reopened, and protected closed-project bytes are unchanged. Use `acceptance.py compare` for the private snapshots, plus real interaction checks.
 6. Cover offline/tampered/wrong-key/older-build failures, save failure, repeated/late clicks, modal dismissal, Close/Cancel, and interrupted/repeated flows. A compiled test bundle or portable suite does not establish these outcomes.
 

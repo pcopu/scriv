@@ -6,16 +6,15 @@ const viewPath = 'apps/catalyst/ScrivUIKit/Account/ScrivCodexSetupView.swift';
 const controllerPath = 'apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift';
 const runtimePath = 'apps/mac/Sources/ScrivApp/Services/CodexController.swift';
 
-test('one-click sheet retains bounded body, persistent controls and collapsed optional details', async () => {
+test('compact popup keeps only everyday actions and sends advanced setup to Settings', async () => {
   const view = await source(viewPath);
-  for (const text of ['Connect Codex in one click', 'Check & connect', 'Get Codex ready', 'Codex is ready', 'Sign in to Codex', 'Cancel check']) assert.ok(view.includes(text));
-  assert.match(view, /scroll\.topAnchor\.constraint\(equalTo: topRule\.bottomAnchor\)/);
-  assert.match(view, /scroll\.bottomAnchor\.constraint\(equalTo: footer\.topAnchor/);
-  assert.match(view, /body\.widthAnchor\.constraint\(equalTo: scroll\.frameLayoutGuide\.widthAnchor/);
-  assert.match(view, /private var advancedExpanded = false/);
+  for (const text of ['Connect', 'Cancel connection', 'Advanced…', 'Installation help', 'Manual connection']) assert.ok(view.includes(text));
+  assert.match(view, /scroll\.topAnchor\.constraint\(equalTo: header\.bottomAnchor\)/);
+  assert.match(view, /scroll\.bottomAnchor\.constraint\(equalTo: footer\.topAnchor\)/);
+  assert.match(view, /if surface == \.settings \{ buildSettings\(\) \}/);
+  assert.match(view, /self\?\.onAdvanced\?\(\)/);
   assert.match(view, /private var pairingExpanded = false/);
-  assert.match(view, /stack\.removeArrangedSubview\(child\); child\.removeFromSuperview\(\)/);
-  assert.doesNotMatch(view, /Use the Runtime Companion|advancedContent\.isHidden|pairingContent\.isHidden|SwiftUI/);
+  assert.doesNotMatch(view, /Connect Codex in one click|Get Codex ready|advancedExpanded|SwiftUI/);
 });
 test('saved pairing, protocol readiness and account state remain distinct', async () => {
   const view = await source(viewPath), runtime = await source(runtimePath);
@@ -31,8 +30,9 @@ test('check probes compatible protocol and account without generating or signing
   const runtime = await source(runtimePath);
   const check = runtime.split('func checkAndConnect(')[1].split('func cancelConnectionCheck()')[0];
   assert.match(check, /connectionCheck\.begin\(\)/);
-  assert.match(check, /connect\(timeout: \.seconds\(6\)\)/);
-  assert.match(check, /bridgePaired && !receivedProtocolReply/);
+  assert.doesNotMatch(check, /endpointURL\(|\bconnect\(/);
+  assert.match(check, /if let prepareLocalRuntime/);
+  assert.match(check, /else if bridgePaired/);
   assert.doesNotMatch(check, /signIn\(|generate\(|turn\/start|account\/login\/start/);
   assert.match(runtime, /CodexAccountReadiness\.validateInitialize\(hello\)/);
   assert.match(runtime, /"initialized"/);
@@ -42,8 +42,9 @@ test('cancel, duplicate check, dismissal and stale responses are fenced', async 
   const runtime = await source(runtimePath), controller = await source(controllerPath);
   assert.match(runtime, /guard connectionCheck\.accepts\(attempt\), !Task\.isCancelled else/);
   assert.match(runtime, /connectionCheck\.cancel\(\); disconnect\(cancelCheck: false\)/);
-  assert.match(controller, /setup\.onDone = .*cancelConnectionCheck\(\).*dismiss\(animated: true\)/);
-  assert.match(controller, /presentationControllerDidDismiss.*cancelConnectionCheck\(\)/);
+  assert.match(controller, /setup\.onDone = .*cancelPendingConnectionCheck\(\).*dismiss\(animated: true\)/);
+  assert.match(controller, /presentationControllerDidDismiss.*cancelPendingConnectionCheck\(\)/);
+  assert.match(controller, /store\.codex\.connectionCheck\.accepts\(connectionAttempt\)/);
   assert.match(controller, /setup\.onCancelCheck/);
 });
 test('copy-only official commands never run inside the app or use global listeners', async () => {
@@ -59,13 +60,12 @@ test('optional advanced routes preserve explicit private pairing and ownership',
   for (const method of ['openRuntimeCompanion()', 'start()', 'connect()', 'importRuntimePairing(from: url)', 'useExistingGenerationFolder(url)', 'rotateRuntimePairing()', 'forgetRuntimePairing()']) assert.ok(controller.includes(method));
   assert.match(controller, /UIDocumentPickerViewController\(forOpeningContentTypes: \[\.item\], asCopy: false\)/);
   assert.match(view, /managed \? "Stop" : "Disconnect"/);
-  assert.match(view, /Check & connect checks only this address, not every app or port/);
+  assert.match(view, /Connect needs no server address/);
   assert.match(controller, /if !executable\.isFirstResponder \{ executable\.text = controller\.executablePath \}/);
 });
-test('native regression coverage retains route, optical footer, compact state and field identity gates', async () => {
+test('native regression coverage checks controls, state, layout and read-only navigation', async () => {
   const native = await source('apps/catalyst/Tests/ScrivUIKitTests/CodexSetupUIKitTests.swift');
-  assert.equal((native.match(/func test/g) ?? []).length, 16);
-  for (const name of ['testInitialViewHasOneCheckAndCollapsedOptionalDetails', 'testLoadResizeAndExpandedDetailsKeepHeaderAndFooterOutsideScroll', 'testRepeatedDisclosureAndStateUpdatesRetainConnectionFieldDrafts', 'testCancelRetryAndMissingCommandsDoNotDispatchAnInstall', 'testActualCodexRouteHidesChromeBeforeSizingAndPreservesSettings', 'testInstalledFooterLinksKeepOpticalGapAndStackWithoutLosingTitlesOrActions']) assert.ok(native.includes(name));
+  for (const name of ['testPopupHasOneConnectAndNoManualSetup', 'testPopupResizingKeepsAdvancedReachable', 'testSettingsRefreshRetainsFieldIdentityAndDraft', 'testAdvancedOnlyDispatchesNavigation', 'testModelsAndAccountStayTruthful']) assert.ok(native.includes(name));
   assert.doesNotMatch(native, /MacRuntimeBridge\(|XCTSkip/);
 });
 test('synthetic native verification does not query the saved pairing capability', async () => {
@@ -74,11 +74,12 @@ test('synthetic native verification does not query the saved pairing capability'
   assert.equal((runtime.match(/MacRuntimeBridge\.isPaired/g) ?? []).length, 1);
   assert.match(runtime, /if !verification \{ bridgePaired = MacRuntimeBridge\.isPaired \}/);
 });
-test('footer keeps its native optical-spacing correction and normal Settings links the same flow', async () => {
-  const view = await source(viewPath), controller = await source(controllerPath);
-  assert.match(view, /ScrivCodexFooterLinks\(history: jobs, jobs: history\)/);
-  assert.match(view, /addArrangedSubview\(trailingSpace\)/);
-  assert.match(view, /spacing = next == \.vertical \? 18 : 48/);
-  assert.match(controller, /self\?\.show\(\.codex\)/);
-  assert.match(controller, /navigationController\?\.setNavigationBarHidden\(previousNavigationBarHidden, animated: false\)/);
+test('Settings scene teardown cancels only the controller-owned pending connection', async () => {
+  const controller = await source(controllerPath);
+  const coordinator = await source('apps/catalyst/ScrivUIKit/Account/ScrivSettingsWindowCoordinator.swift');
+  const panel = await source('apps/catalyst/ScrivUIKit/Account/ScrivSettingsPanelController.swift');
+  assert.match(controller, /guard let connectionTask else \{ return \}/);
+  assert.match(controller, /try Task\.checkCancellation\(\)/);
+  assert.match(coordinator, /func sceneDidDisconnect[\s\S]*cancelPendingConnectionCheck\(\)/);
+  assert.match(panel, /panes\[selectedPane\]\?\.cancelPendingConnectionCheck\(\)/);
 });

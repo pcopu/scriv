@@ -41,6 +41,59 @@ public struct RuntimeBridgeBootstrapResponse: Codable, Sendable {
     }
 }
 
+/// A validated, explicitly approved capability for this application process.
+/// Only the authenticated bootstrap boundary may retain a grant. Storage is
+/// delegated to the caller; this cannot make a failed Keychain read safe:
+/// callers must establish a readable persistent grant (or definite absence)
+/// before resolving it. Conflicting grants require an explicit reset.
+public struct RuntimeBridgeSessionGrant: Sendable {
+    /// The storage adapter maps only these exact create outcomes. All other
+    /// failures throw; a read error is never represented by an absent grant.
+    public enum CreateResult: Sendable { case saved, duplicate, missingEntitlement }
+    private var approved: RuntimeBridgePairing?
+    public init() {}
+
+    /// Authenticated bootstrap is create-only. Keeping this policy independent
+    /// of Security.framework permits synthetic coverage without real secrets
+    /// or changes to the user's Keychain.
+    public mutating func importBootstrapped(_ incoming: RuntimeBridgePairing, ownerUID: UInt32,
+                                           readPersistent: () throws -> RuntimeBridgePairing?,
+                                           createPersistent: (RuntimeBridgePairing) throws -> CreateResult) throws {
+        try incoming.validate(ownerUID: ownerUID)
+        let existing = try resolve(persistent: readPersistent(), ownerUID: ownerUID)
+        try RuntimeBridgeBootstrapSigning.validateImport(existing: existing, incoming: incoming, ownerUID: ownerUID)
+        if existing != nil { return }
+        switch try createPersistent(incoming) {
+        case .saved: return
+        case .duplicate:
+            guard let raced = try readPersistent() else { throw ScrivError.conflict("Local pairing changed. Try again.") }
+            try RuntimeBridgeBootstrapSigning.validateImport(existing: raced, incoming: incoming, ownerUID: ownerUID)
+        case .missingEntitlement:
+            // A failed add says nothing about a concurrently created or now
+            // inaccessible grant. Only definite absence permits memory storage.
+            let raced = try readPersistent()
+            try RuntimeBridgeBootstrapSigning.validateImport(existing: raced, incoming: incoming, ownerUID: ownerUID)
+            if raced == nil { try retain(incoming, ownerUID: ownerUID) }
+        }
+    }
+
+    public mutating func retain(_ incoming: RuntimeBridgePairing, ownerUID: UInt32) throws {
+        try RuntimeBridgeBootstrapSigning.validateImport(existing: approved, incoming: incoming, ownerUID: ownerUID)
+        approved = incoming
+    }
+
+    public func resolve(persistent: RuntimeBridgePairing?, ownerUID: UInt32) throws -> RuntimeBridgePairing? {
+        if let persistent { try persistent.validate(ownerUID: ownerUID) }
+        if let approved {
+            try approved.validate(ownerUID: ownerUID)
+            try RuntimeBridgeBootstrapSigning.validateImport(existing: persistent, incoming: approved, ownerUID: ownerUID)
+        }
+        return persistent ?? approved
+    }
+
+    public mutating func reset() { approved = nil }
+}
+
 public enum RuntimeBridgeBootstrapSigning {
     /// The guided path may create an app-private saved copy or reuse the same
     /// one. Replacing a different capability needs the existing explicit reset

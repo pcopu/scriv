@@ -98,7 +98,11 @@ final class CodexController: ObservableObject {
     }
     func forgetRuntimePairing() {
         guard !isConnected, !isConnecting else { return }
-        MacRuntimeBridge.forgetPairing(); bridgePaired = false; onChange?()
+        do {
+            try MacRuntimeBridge.forgetPairing()
+            bridgePaired = false; lastError = nil
+        } catch { lastError = error.localizedDescription }
+        onChange?()
     }
     func openRuntimeCompanion() async throws { try await MacRuntimeBridge.openCompanion() }
     private var ownsTransport: Bool { bridge != nil }
@@ -193,47 +197,40 @@ final class CodexController: ObservableObject {
         return CodexLocalSetup.resolveExecutable()
         #endif
     }
-    /// Explicit user action. No scanning, installation, sign-in, or model turn.
-    /// Only the saved loopback endpoint and an already-authorized paired helper
-    /// are eligible. A responding incompatible server is never silently replaced.
+    /// Explicit user action. Discover and start the installed local runtime;
+    /// manual WebSocket settings belong only to connect(). No sign-in or turn.
     func checkAndConnect(prepareLocalRuntime: (@MainActor () async throws -> Void)? = nil) async {
         guard !isGenerating, !isAnalyzingCharacters, !isConnecting, let attempt = connectionCheck.begin() else { return }
         lastError = nil; onChange?()
-        if !isConnected {
-            do { _ = try CodexLocalSetup.endpointURL(endpoint) }
-            catch { connectionCheck.finish(.incompatible, attempt: attempt); lastError = error.localizedDescription; onChange?(); return }
-        }
         do {
+            try Task.checkCancellation()
             if isConnected {
                 try await readAccount(); try await readModels()
             } else {
-                do { try await connect(timeout: .seconds(6)) }
-                catch {
-                    guard connectionCheck.accepts(attempt), !Task.isCancelled else { return }
-                    #if targetEnvironment(macCatalyst)
-                    if !receivedProtocolReply, let prepareLocalRuntime {
-                        // The user-confirmed native adapter already owns the
-                        // bundled service; never open the standalone app here.
-                        try await prepareLocalRuntime()
-                        try Task.checkCancellation()
-                        guard connectionCheck.accepts(attempt) else { return }
-                        bridgePaired = try MacRuntimeBridge.savedPairing() != nil
-                        try await start(preservingBundledRuntime: true)
-                    } else if bridgePaired && !receivedProtocolReply {
-                        // The click explicitly requests use of this previously
-                        // paired runtime. Opening never installs or re-pairs it.
-                        try await openRuntimeCompanion()
-                        try Task.checkCancellation()
-                        guard connectionCheck.accepts(attempt) else { return }
-                        try await Task.sleep(for: .milliseconds(400))
-                        guard connectionCheck.accepts(attempt) else { return }
-                        try await start()
-                    } else { throw error }
-                    #else
-                    if !receivedProtocolReply, CodexLocalSetup.resolveExecutable(preferredPath: executablePath) != nil { try await start() }
-                    else { throw error }
-                    #endif
+                receivedProtocolReply = false
+                #if targetEnvironment(macCatalyst)
+                if let prepareLocalRuntime {
+                    // Release a previous helper before the new preparation
+                    // installs its cleanup. The signed helper discovers its port.
+                    disconnect(cancelCheck: false)
+                    try await prepareLocalRuntime()
+                    try Task.checkCancellation()
+                    guard connectionCheck.accepts(attempt) else { return }
+                    bridgePaired = try MacRuntimeBridge.savedPairing() != nil
+                    try await start(preservingBundledRuntime: true)
+                } else if bridgePaired {
+                    try await openRuntimeCompanion()
+                    try Task.checkCancellation()
+                    guard connectionCheck.accepts(attempt) else { return }
+                    try await Task.sleep(for: .milliseconds(400))
+                    guard connectionCheck.accepts(attempt) else { return }
+                    try await start()
+                } else {
+                    throw ScrivError.unavailable("Choose Connect to prepare the local Codex connection. No server address is needed.")
                 }
+                #else
+                try await start()
+                #endif
             }
             guard connectionCheck.accepts(attempt), !Task.isCancelled else { return }
             connectionCheck.finish(accountLabel != nil || !requiresAccountAuthentication ? .ready : .signInRequired, attempt: attempt)

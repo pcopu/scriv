@@ -188,21 +188,22 @@ final class ScrivSignInController: ScrivScreenController, UITextFieldDelegate {
 
 extension ScrivUIKitFeatures {
     @MainActor static func registerAccount(in router: ScrivUIKitRouter) {
-        for kind in [ScrivUIKitRoute.Kind.signIn, .account, .settings, .generationJobs, .codex] {
+        for kind in [ScrivUIKitRoute.Kind.signIn, .account, .settings, .codexSettings, .generationJobs, .codex] {
             router.register(kind) { route, store in
                 let controller: UIViewController
                 switch route {
                 case .signIn: controller = ScrivSignInController(store: store)
                 case .account: controller = ScrivAccountController(store: store)
-                case .settings: controller = ScrivSettingsController(store: store)
+                case .settings: return ScrivSettingsPanelController(store: store)
+                case .codexSettings:
+                    let settings = ScrivSettingsPanelController(store: store); settings.selectPane(.codex); return settings
                 case .generationJobs: controller = ScrivGenerationJobsController(store: store)
                 case .codex: controller = ScrivCodexController(store: store)
                 default: return nil
                 }
                 let navigation = UINavigationController(rootViewController: controller)
-                // Codex supplies its own fixed header. Hide the system bar
-                // before the form sheet measures preferred content; doing this
-                // only in viewWillAppear can leave Catalyst chrome-height space.
+                // The compact Codex popover supplies its own header. Hide
+                // the navigation bar before UIKit measures its content.
                 if case .codex = route { navigation.setNavigationBarHidden(true, animated: false) }
                 navigation.preferredContentSize = controller.preferredContentSize; navigation.modalPresentationStyle = .formSheet
                 if case .signIn = route { navigation.setNavigationBarHidden(true, animated: false) }

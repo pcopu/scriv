@@ -13,8 +13,10 @@ final class ScrivUIKitAppDelegate: UIResponder, UIApplicationDelegate {
     }
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession,
                      options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        let configuration = UISceneConfiguration(name: "Scriv workspace", sessionRole: connectingSceneSession.role)
-        configuration.delegateClass = ScrivUIKitSceneDelegate.self
+        let settings = connectingSceneSession.configuration.name == ScrivSettingsWindowCoordinator.configurationName
+            || options.userActivities.contains { $0.activityType == ScrivSettingsWindowCoordinator.activityType }
+        let configuration = UISceneConfiguration(name: settings ? ScrivSettingsWindowCoordinator.configurationName : "Scriv workspace", sessionRole: connectingSceneSession.role)
+        configuration.delegateClass = settings ? ScrivSettingsSceneDelegate.self : ScrivUIKitSceneDelegate.self
         return configuration
     }
 }
