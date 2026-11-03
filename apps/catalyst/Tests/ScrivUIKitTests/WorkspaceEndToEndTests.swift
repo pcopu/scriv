@@ -606,4 +606,31 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(fontSize()), scriptSize, accuracy: 0.01, "Same text size in both tabs")
         XCTAssertEqual(scroll.contentOffset.y, scriptOffset, accuracy: 1, "Same place in the script")
     }
+
+    /// A new line opens with its placeholder selected, so typing replaces it
+    /// instead of producing "Hello there.New line".
+    func testAddedLineOpensWithPlaceholderSelected() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene); window.frame = CGRect(x: 0, y: 0, width: 1280, height: 800)
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        store.tab = .script
+        for _ in 0..<5 { try await Task.sleep(for: .milliseconds(30)); window.layoutIfNeeded() }
+        let before = Set(store.sceneEntries.map(\.id))
+        store.addEntry(kind: .dialogue)
+        let added = try XCTUnwrap(store.sceneEntries.first { !before.contains($0.id) })
+        let selected = await until {
+            window.layoutIfNeeded()
+            guard let row = self.views(ScriptEntryRow.self, in: window).first(where: { $0.window != nil && !$0.editor.isHidden && $0.editor.isFirstResponder }) else { return false }
+            return row.editor.text == added.text && row.editor.selectedRange == NSRange(location: 0, length: added.text.utf16.count)
+        }
+        XCTAssertTrue(selected, "The new line's placeholder is selected for typing over")
+        XCTAssertFalse(store.requestedEntryEditingSelectsText, "The request is consumed")
+    }
 }

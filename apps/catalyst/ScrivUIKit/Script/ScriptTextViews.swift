@@ -219,7 +219,7 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
     }
     /// Returns whether the visible editor/display or its text changed.
     @discardableResult
-    func setEditing(_ value: Bool, text: String, focus: Bool, caret: Int? = nil) -> Bool {
+    func setEditing(_ value: Bool, text: String, focus: Bool, caret: Int? = nil, selectAll: Bool = false) -> Bool {
         let changed = editing != value; editing = value
         var updated = changed
         // Re-assigning isHidden on stack-view children invalidates layout even
@@ -241,7 +241,8 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
                 guard let self, self.editing, self.window != nil else { return }
                 self.editor.becomeFirstResponder()
                 let offset = min(self.editor.text.utf16.count, max(0, caret ?? self.editor.text.utf16.count))
-                if Range(NSRange(location: offset, length: 0), in: self.editor.text) != nil { self.editor.selectedRange = NSRange(location: offset, length: 0) }
+                if selectAll { self.editor.selectedRange = NSRange(location: 0, length: self.editor.text.utf16.count) }
+                else if Range(NSRange(location: offset, length: 0), in: self.editor.text) != nil { self.editor.selectedRange = NSRange(location: offset, length: 0) }
             }
         } else if !value && editor.isFirstResponder { editor.resignFirstResponder() }
         return updated

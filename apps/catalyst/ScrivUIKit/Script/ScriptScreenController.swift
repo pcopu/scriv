@@ -43,7 +43,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     private var finishObserver: NSObjectProtocol?
     private var addBar: UIView!
     private var emptyState: UIView!
-    private var pendingCaret: (entryID: String, offset: Int, navigation: Int, afterWordID: String?)?
+    private var pendingCaret: (entryID: String, offset: Int, navigation: Int, afterWordID: String?, selectAll: Bool)?
     private var rememberedCaret: [String: Int] = [:]
     private var playbackCaret: (entryID: String, offset: Int, navigation: Int)?
     private var playbackContext: (navigation: Int, sceneID: String)?
@@ -72,9 +72,9 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         if session.active { if session.finish() { view.endEditing(true); becomeFirstResponder() } }
         else if let id = store.selectedEntryID { beginEditing(id, caret: rememberedCaret[id] ?? 0) }
     }
-    private func beginEditing(_ id: String, caret: Int, preservingPlayhead: Bool = false, afterWordID: String? = nil) {
+    private func beginEditing(_ id: String, caret: Int, preservingPlayhead: Bool = false, afterWordID: String? = nil, selectAll: Bool = false) {
         guard boundaryPending == nil else { return }
-        pendingCaret = (id, caret, store.navigationContext, afterWordID)
+        pendingCaret = (id, caret, store.navigationContext, afterWordID, selectAll)
         playbackCaret = (id, caret, store.navigationContext)
         let playhead = store.playheadMs
         store.selectEntry(id)
@@ -154,7 +154,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
                 result = store.splitScriptEntry(entryID: id, atUTF16Offset: offset, expectedText: text).map { ($0, 0) }
             } else { result = store.mergeScriptEntryIntoPrevious(entryID: id, expectedText: text).map { ($0.entryID, $0.caretUTF16Offset) } }
             acquired.forEach { store.endEdit($0, context: navigation) }; acquired = []
-            boundaryPending = nil; store.requestedEntryEditingID = nil
+            boundaryPending = nil; store.requestedEntryEditingID = nil; store.requestedEntryEditingSelectsText = false
             if let result { beginEditing(result.entryID, caret: result.caret) }
             else { beginEditing(id, caret: splitOffset ?? 0) }
         }
@@ -289,7 +289,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
                 if let wordID = request.afterWordID { return ScriptBoundaryEditing.utf16Range(ofWordID: wordID, in: entry).map(NSMaxRange) }
                 return request.offset
             }
-            if row.setEditing(session.entryID == entry.id, text: session.text, focus: !session.requiresReview && scriptPlaybackSurfaceIsVisible && (request?.afterWordID == nil || caret != nil), caret: caret) { needsLayout = true }
+            if row.setEditing(session.entryID == entry.id, text: session.text, focus: !session.requiresReview && scriptPlaybackSurfaceIsVisible && (request?.afterWordID == nil || caret != nil), caret: caret, selectAll: request?.selectAll == true) { needsLayout = true }
             if request != nil { pendingCaret = nil }
             scrubbers[entry.id]?.refreshPreview()
             if configureDetails(row, entry: entry, selected: selected, start: start) { needsLayout = true }
@@ -326,7 +326,8 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         } else if previousSelected != store.selectedEntryID, store.isPlaying, store.followPlayback, let id = store.selectedEntryID { scrollTo(id, animated: true) }
         previousSelected = store.selectedEntryID
         if let id = store.requestedEntryEditingID, rows[id] != nil {
-            store.requestedEntryEditingID = nil; beginEditing(id, caret: 0); scrollTo(id, animated: true)
+            let selectAll = store.requestedEntryEditingSelectsText; store.requestedEntryEditingSelectsText = false
+            store.requestedEntryEditingID = nil; beginEditing(id, caret: 0, selectAll: selectAll); scrollTo(id, animated: true)
         }
         if session.requiresReview, session.active, session.record != nil, lastRecoverySessionID != session.sessionID, presentedViewController == nil {
             lastRecoverySessionID = session.sessionID

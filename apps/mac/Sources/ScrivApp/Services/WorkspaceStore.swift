@@ -14,6 +14,8 @@ final class WorkspaceStore: ObservableObject {
     @Published var selectedSceneID: String { didSet { invalidateSceneCache(); synchronizeAudio(); invalidatePromptPresentationContextIfNeeded() } }
     @Published var selectedEntryID: String?
     @Published var requestedEntryEditingID: String?
+    /// A freshly added line opens with its placeholder selected, so typing replaces it.
+    var requestedEntryEditingSelectsText = false
     @Published var selectedCharacterID: String?
     @Published var characterCreationRequest: UUID?
     @Published var selectedCueID: String? { didSet { invalidatePromptPresentationContextIfNeeded() } }
@@ -1147,7 +1149,7 @@ final class WorkspaceStore: ObservableObject {
     func addEntry(kind: EntryKind) {
         let entry = ScriptEntry(sceneId:selectedSceneID,order:0,kind:kind,text:kind == .direction ? "Direction" : "New line",characterId:kind == .dialogue ? project.characters.first?.id : nil,ownedDurationMs:kind == .direction ? 0 : 3000,coverageDurationMs:kind == .direction ? 3000 : 0)
         let after = sceneEntries.contains(where: { $0.id == selectedEntryID }) ? selectedEntryID : nil
-        if change(kind == .direction ? "Add direction" : "Add dialogue", { try ProjectEditing.insertEntry(&$0,entry:entry,after:after) }) { selectedEntryID = entry.id; requestedEntryEditingID = entry.id }
+        if change(kind == .direction ? "Add direction" : "Add dialogue", { try ProjectEditing.insertEntry(&$0,entry:entry,after:after) }) { selectedEntryID = entry.id; requestedEntryEditingSelectsText = true; requestedEntryEditingID = entry.id }
     }
     func splitScriptEntry(entryID: String, atUTF16Offset offset: Int, expectedText: String) -> String? {
         guard cloud.hasCurrentEditingLease(entryID) else { errorMessage = "Acquire this line’s editing lease before splitting it."; return nil }
