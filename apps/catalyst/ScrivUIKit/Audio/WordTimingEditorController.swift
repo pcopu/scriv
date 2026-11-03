@@ -73,6 +73,10 @@ final class WordTimingEditorController: ScrivScreenController {
         refreshFields(); refreshButtons(); refreshTimeline(); acquireLease()
     }
     private var contentScroll: UIScrollView?
+    /// A notice changes the content height inside the scroll view, which does
+    /// not lay out this controller's view by itself; without a fresh layout pass
+    /// the sheet kept its height and the notice pushed Cancel/Save out of sight.
+    func showNotice(_ text: String) { notice.show(text); view.setNeedsLayout() }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         // At the sheet's 500-point width the footer stacks vertically, which
@@ -101,7 +105,7 @@ final class WordTimingEditorController: ScrivScreenController {
         refreshTimeline()
         // Never replace active text with published data or a changing playhead.
         let current = store.project.entries.first { $0.id == draft.original.id }
-        if current == nil { saveButton.isEnabled = false; notice.show("This dialogue was removed. Cancel to return to the current script; no draft timing was applied.") }
+        if current == nil { saveButton.isEnabled = false; showNotice("This dialogue was removed. Cancel to return to the current script; no draft timing was applied.") }
     }
     private func acquireLease() {
         leaseTask = Task { [weak self] in
@@ -111,7 +115,7 @@ final class WordTimingEditorController: ScrivScreenController {
                 if allowed { self.store.endEdit(self.draft.original.id, context: self.initialNavigationContext) }; return
             }
             self.leaseHeld = allowed; self.leaseRow.isHidden = true; self.acquiring.stopAnimating(); self.saveButton.isEnabled = allowed
-            if !allowed { self.notice.show("This line cannot currently be edited. Close and retry when its edit lease is available.") }
+            if !allowed { self.showNotice("This line cannot currently be edited. Close and retry when its edit lease is available.") }
         }
     }
     private func releaseLease() {
@@ -158,13 +162,13 @@ final class WordTimingEditorController: ScrivScreenController {
     @objc private func saveTiming() {
         view.endEditing(true)
         guard leaseHeld, !closed, requireCurrentContext(), store.selectedSceneID == draft.original.sceneId else { return }
-        guard let current = store.project.entries.first(where: { $0.id == draft.original.id }) else { notice.show("This dialogue was removed. Cancel and reopen timing for a current line."); return }
+        guard let current = store.project.entries.first(where: { $0.id == draft.original.id }) else { showNotice("This dialogue was removed. Cancel and reopen timing for a current line."); return }
         do {
             let updated = try draft.updatedWords(current: current)
             if updated == current.words { cancelDraft(); return }
             if store.setWordTimings(entryId: current.id, expectedWords: draft.original.words, expectedDurationMs: draft.original.ownedDurationMs, updatedWords: updated) { cancelDraft() }
-            else { notice.show(store.errorMessage ?? "Timing could not be changed. Keep words in source order without overlaps, then try again.") }
-        } catch { notice.show(error.localizedDescription) }
+            else { showNotice(store.errorMessage ?? "Timing could not be changed. Keep words in source order without overlaps, then try again.") }
+        } catch { showNotice(error.localizedDescription) }
     }
     @objc private func cancelDraft() { releaseLease(); dismiss(animated: true) }
     override var keyCommands: [UIKeyCommand]? {

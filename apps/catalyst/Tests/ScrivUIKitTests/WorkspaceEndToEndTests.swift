@@ -656,4 +656,27 @@ final class WorkspaceEndToEndTests: XCTestCase {
         }
         XCTAssertTrue(labelled, "Storyboard header reads \"1 image · …\"")
     }
+
+    /// A timing problem notice grows the word-timing sheet instead of pushing
+    /// Cancel and Save timing out of sight.
+    func testWordTimingNoticeGrowsTheSheet() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let entry = try XCTUnwrap(store.sceneEntries.first { $0.kind == .dialogue && $0.words.count > 1 })
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene); window.frame = CGRect(x: 0, y: 0, width: 1280, height: 800)
+        let root = UIViewController(); window.rootViewController = root; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        let sheet = WordTimingEditorController(store: store, entry: entry, word: entry.words[1])
+        root.present(sheet, animated: false)
+        for _ in 0..<5 { try await Task.sleep(for: .milliseconds(30)); window.layoutIfNeeded(); sheet.view.layoutIfNeeded() }
+        let before = sheet.preferredContentSize.height
+        sheet.showNotice("“you” would overlap “Can”. Shorten the previous word’s end or move this word’s start later. Select either word above to adjust it; all changes save together. Your changes are still in this editor. Nothing was applied from this draft.")
+        let grew = await until { sheet.view.layoutIfNeeded(); return sheet.preferredContentSize.height > before + 20 }
+        XCTAssertTrue(grew, "The sheet grows for the notice (was \(before), now \(sheet.preferredContentSize.height))")
+        sheet.dismiss(animated: false)
+    }
 }
