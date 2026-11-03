@@ -633,4 +633,27 @@ final class WorkspaceEndToEndTests: XCTestCase {
         XCTAssertTrue(selected, "The new line's placeholder is selected for typing over")
         XCTAssertFalse(store.requestedEntryEditingSelectsText, "The request is consumed")
     }
+
+    /// A new project has one picture: the Storyboard says "1 image", not "1 images".
+    func testStoryboardCountIsSingularForOnePicture() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene); window.frame = CGRect(x: 0, y: 0, width: 1280, height: 800)
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        store.newProject()
+        let fresh = await until { store.sceneCues.count == 1 }
+        XCTAssertTrue(fresh, "A new project starts with one picture placement")
+        store.tab = .storyboard
+        let labelled = await until {
+            window.layoutIfNeeded()
+            return self.views(UILabel.self, in: window).contains { $0.window != nil && ($0.text ?? "").hasPrefix("1 image · ") }
+        }
+        XCTAssertTrue(labelled, "Storyboard header reads \"1 image · …\"")
+    }
 }

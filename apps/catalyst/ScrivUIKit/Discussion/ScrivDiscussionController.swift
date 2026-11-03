@@ -96,7 +96,7 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
         activityButton.isEnabled = ready; activityButton.setImage(UIImage(systemName: store.unreadDiscussionMentionCount > 0 ? "bell.badge.fill" : "bell"), for: .normal)
         activityButton.accessibilityLabel = "Project activity, \(store.unreadDiscussionMentionCount) unread mentions"
         filterButton.isHidden = mentionsOfMe.isEmpty; filterButton.tintColor = onlyMentions ? ScrivUIKitTheme.accent : ScrivUIKitTheme.secondary
-        filterButton.accessibilityLabel = "\(mentionsOfMe.count) messages mention you. " + (onlyMentions ? "Show all messages" : "Filter to your mentions")
+        filterButton.accessibilityLabel = ScrivFormat.count(mentionsOfMe.count, "message") + (mentionsOfMe.count == 1 ? " mentions" : " mention") + " you. " + (onlyMentions ? "Show all messages" : "Filter to your mentions")
         unavailable.isHidden = ready; table.isHidden = !ready
         // A hidden arranged composer would impose zero height while its editor
         // and tool buttons retain fixed heights. Detach only presentation; the

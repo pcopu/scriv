@@ -273,7 +273,7 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
         reviewBanner.isHidden = analysis.reviewImageCount == 0
         if analysis.reviewImageCount > 0 {
             reviewBanner.addArrangedSubview(CharacterTeamUI.symbol("exclamationmark.triangle.fill",color:.systemOrange,size:18))
-            reviewBanner.addArrangedSubview(ScrivUIKitTheme.label("\(analysis.reviewImageCount) images need your help",size:14,weight:.medium))
+            reviewBanner.addArrangedSubview(ScrivUIKitTheme.label(ScrivFormat.count(analysis.reviewImageCount, "image") + (analysis.reviewImageCount == 1 ? " needs" : " need") + " your help",size:14,weight:.medium))
             reviewBanner.addArrangedSubview(CharacterTeamUI.spacer())
             reviewBanner.addArrangedSubview(CharacterTeamUI.button("Review \(analysis.reviewImageCount)",primary:true,size:13) { [weak self] in self?.openCharacterReview() })
         }

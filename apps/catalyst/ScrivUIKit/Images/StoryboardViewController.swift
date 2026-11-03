@@ -82,7 +82,7 @@ enum StoryboardSharedScriptLayout {
     }
     override func storeDidChange() {
         guard isViewLoaded else { return }
-        countLabel.text = "\(store.sceneCues.count) images · \(ScrivFormat.duration(store.sceneDurationMs))"
+        countLabel.text = ScrivFormat.count(store.sceneCues.count, "image") + " · \(ScrivFormat.duration(store.sceneDurationMs))"
         selectionLabel.text = StoryboardSelectionPresentation.summary(wordCount: store.selectedWordIDs.count)
         deselectButton.isEnabled = !store.selectedWordIDs.isEmpty
         let next: [AnyHashable] = [store.navigationContext, store.selectedSceneID, store.project.revision, store.sceneCues, store.sceneEntries, store.project.images, columns, store.peerTransferStatus]
