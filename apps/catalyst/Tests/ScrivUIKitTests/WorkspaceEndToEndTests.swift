@@ -735,4 +735,29 @@ final class WorkspaceEndToEndTests: XCTestCase {
         let enabled = await until { window.layoutIfNeeded(); return inspect.isEnabled }
         XCTAssertTrue(enabled, "With an image, Inspect is enabled")
     }
+
+    /// Same script text size in both tabs at every window width, including wide
+    /// windows where the script pane's optical scale grows.
+    func testScriptTextSizeMatchesAcrossTabsAtManyWidths() async throws {
+        guard ProcessInfo.processInfo.arguments.contains("--screenshots") else { throw XCTSkip("Requires isolated verification storage.") }
+        let store = WorkspaceStore()
+        while store.isBootstrapping { await Task.yield() }
+        let package = try XCTUnwrap(store.projectURL)
+        defer { try? FileManager.default.removeItem(at: package.deletingLastPathComponent().deletingLastPathComponent()) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        let workspace = ScrivWorkspaceController(store: store)
+        window.rootViewController = workspace; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        func settle() async throws { for _ in 0..<6 { try await Task.sleep(for: .milliseconds(30)); window.layoutIfNeeded() } }
+        func fontSize() -> CGFloat? { views(ScriptEntryRow.self, in: window).first { $0.window != nil }?.display.font?.pointSize }
+        for width in [1080.0, 1280, 1600, 1920, 2400] {
+            window.frame = CGRect(x: 0, y: 0, width: width, height: 900)
+            store.tab = .script; try await settle()
+            let script = try XCTUnwrap(fontSize())
+            store.tab = .characters; try await settle()
+            let characters = try XCTUnwrap(fontSize())
+            XCTAssertEqual(characters, script, accuracy: 0.01, "Width \(width): Script \(script) pt vs Characters \(characters) pt")
+        }
+    }
 }
