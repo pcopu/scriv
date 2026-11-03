@@ -36,8 +36,8 @@ struct ScrivCodexSetupPresentation {
         if generating { return runtimeStatus }
         switch phase {
         case .checking: return "Checking local connection…"
-        case .notFound: return "No app server found at the saved address"
-        case .incompatible: return "App server needs attention"
+        case .notFound: return "Could not start Codex on this Mac"
+        case .incompatible: return "Codex needs attention"
         case .signInRequired: return pendingLogin ? "Connected · waiting for sign-in" : "Connected · sign-in needed"
         case .ready: return "Connected"
         case .cancelled: return "Check cancelled"
@@ -128,7 +128,7 @@ final class ScrivCodexSetupView: UIView {
     private let headline = AccountUI.label("", size: 26, weight: .bold, centered: true)
     private let subtitle = AccountUI.label("", size: 17, color: ScrivUIKitTheme.secondary, centered: true)
     private let accountStatus = AccountUI.label("", size: 15, color: ScrivUIKitTheme.secondary)
-    private let explanation = AccountUI.label("Checks your saved local endpoint. A paired local runtime can be started for you.", size: 14, color: ScrivUIKitTheme.secondary, centered: true)
+    private let explanation = AccountUI.label("Scriv finds and starts Codex on this Mac. No server address is needed.", size: 14, color: ScrivUIKitTheme.secondary, centered: true)
     private let errorLabel = AccountUI.label("", size: 14, color: .systemRed)
     private let journalLabel = AccountUI.label("", size: 14, color: .systemOrange)
     private let response = UITextView()
@@ -212,8 +212,7 @@ final class ScrivCodexSetupView: UIView {
     private func buildInstallation() {
         installation.addArrangedSubview(commandStep(1, "Install the CLI in Terminal", command: CodexLocalSetup.installCommand, id: "copy-install"))
         installation.addArrangedSubview(commandStep(2, "Sign in", command: CodexLocalSetup.signInCommand, id: "copy-sign-in"))
-        installation.addArrangedSubview(commandStep(3, "Start a local app server", command: CodexLocalSetup.serverCommand, id: "copy-server"))
-        installation.addArrangedSubview(AccountUI.label("Local WebSocket mode is experimental. Keep this Terminal window open.", size: 13, color: ScrivUIKitTheme.secondary))
+        installation.addArrangedSubview(AccountUI.label("Return here and choose Check & connect. Scriv finds and starts the local runtime for you.", size: 13, color: ScrivUIKitTheme.secondary))
     }
     private func commandStep(_ number: Int, _ title: String, command: String, id: String) -> UIView {
         let badge = AccountUI.label(String(number), size: 18, weight: .semibold, color: ScrivUIKitTheme.accent, centered: true)
@@ -233,12 +232,14 @@ final class ScrivCodexSetupView: UIView {
     }
     private func buildAdvanced() {
         executable.accessibilityLabel = "Installed Codex executable"; endpoint.accessibilityLabel = "Saved loopback server address"
-        advancedContent.addArrangedSubview(AccountUI.stack([AccountUI.label("Saved local app-server address", size: 15, weight: .semibold), endpoint], spacing: 6))
-        advancedContent.addArrangedSubview(AccountUI.label("Check & connect checks only this address, not every app or port. The installation commands use 127.0.0.1:4500; match that address here. Installing ChatGPT alone does not expose a compatible server. Disconnect leaves an external server running.", size: 14, color: ScrivUIKitTheme.secondary))
+        advancedContent.addArrangedSubview(AccountUI.stack([AccountUI.label("Custom local app-server address (optional)", size: 15, weight: .semibold), endpoint], spacing: 6))
+        advancedContent.addArrangedSubview(AccountUI.label("No address is needed for Check & connect. Use this only for a separately started local WebSocket server. Disconnect leaves that server running.", size: 14, color: ScrivUIKitTheme.secondary))
         advancedContent.addArrangedSubview(button("Connect to this address", id: "connect", outlined: true) { [weak self] in guard let self, self.state.canConnect else { return }; self.onConnect?() })
+        advancedContent.addArrangedSubview(commandStep(1, "Optional: start a custom server in Terminal", command: CodexLocalSetup.serverCommand, id: "copy-server"))
+        advancedContent.addArrangedSubview(AccountUI.label("Local WebSocket mode is experimental. Keep that Terminal window open and use the address from its command above.", size: 13, color: ScrivUIKitTheme.secondary))
         advancedContent.addArrangedSubview(divider())
         advancedContent.addArrangedSubview(AccountUI.label("Optional paired runtime", size: 16, weight: .semibold))
-        advancedContent.addArrangedSubview(AccountUI.label("An already-paired Scriv Runtime Companion can open and start your installed Codex when you choose Check & connect. Nothing is installed, paired, or started just by opening this sheet.", size: 14, color: ScrivUIKitTheme.secondary))
+        advancedContent.addArrangedSubview(AccountUI.label("Check & connect uses Scriv's bundled helper automatically. You can also pair a separate Scriv Runtime Companion and use Start paired runtime. Nothing starts just by opening this sheet.", size: 14, color: ScrivUIKitTheme.secondary))
         let open = button("Open companion", id: "open", outlined: true) { [weak self] in guard let self, !self.state.working else { return }; self.onOpen?() }
         let pair = button("Choose file…", id: "pair", outlined: true) { [weak self] in guard let self, self.state.canEditConnection else { return }; self.onPair?() }
         pair.accessibilityLabel = "Choose private pairing file…"
@@ -305,7 +306,7 @@ final class ScrivCodexSetupView: UIView {
         subtitle.font = .systemFont(ofSize: showingInstallation ? 16 : 17)
         footer.spacing = compact ? 4 : 8; footerBottom.constant = compact ? -10 : -20
         headline.text = showingInstallation ? "Get Codex ready" : phase == .ready ? "Codex is ready" : phase == .signInRequired ? "Sign in to Codex" : phase == .checking ? "Checking Codex…" : phase == .incompatible ? "This server can't connect" : "Connect Codex in one click"
-        subtitle.text = showingInstallation ? "Install Codex CLI, then sign in with Codex access. Installing ChatGPT alone does not expose a compatible local server." : phase == .ready ? (state.requiresAuthentication ? "Local app server connected. Your account is signed in." : "Local app server connected. This provider does not require an account.") : phase == .signInRequired ? (state.pendingLogin ? "Complete the sign-in in your browser, then return here. You can cancel without changing your project." : "The local app server is connected, but it reports no signed-in account. A ChatGPT account with Codex access is required.") : phase == .checking ? "Checking the app-server protocol and existing account. No image is being generated." : phase == .incompatible ? "The saved address or app-server response could not be verified. Inspect Advanced connection or update Codex, then try again." : "Check for a compatible local app server, then connect using your existing Codex account."
+        subtitle.text = showingInstallation ? "Install Codex, then choose Check & connect. Scriv starts the local runtime for you." : phase == .ready ? (state.requiresAuthentication ? "Local app server connected. Your account is signed in." : "Local app server connected. This provider does not require an account.") : phase == .signInRequired ? (state.pendingLogin ? "Complete the sign-in in your browser, then return here. You can cancel without changing your project." : "The local app server is connected, but it reports no signed-in account. A ChatGPT account with Codex access is required.") : phase == .checking ? "Checking the app-server protocol and existing account. No image is being generated." : phase == .incompatible ? "The local Codex runtime could not be verified. Update Codex or inspect Advanced connection, then try again." : "Connect using the Codex installation and account on this Mac."
         mount(installation, in: body, visible: showingInstallation, before: primaryActions)
         mount(readyDetails, in: body, visible: phase == .ready, before: primaryActions)
         mount(authActions, in: body, visible: phase == .signInRequired, before: controls["stop"])

@@ -1,8 +1,8 @@
 import UIKit
 import ScrivCore
 
-/// The sole first-use consent boundary. Constructed only by Check & connect,
-/// after an external endpoint fails without returning protocol evidence.
+/// The sole first-use consent boundary. Constructed only by Check & connect;
+/// the signed helper returns its local connection without address entry.
 @MainActor
 final class ScrivRuntimeBootstrapCoordinator {
     private var adapter: ScrivRuntimeBootstrapAdapter?

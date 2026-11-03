@@ -60,6 +60,7 @@ final class CodexSetupUIKitTests: XCTestCase {
         XCTAssertFalse(descendants(of: setup).contains { $0.accessibilityIdentifier == "codex-pair" })
         let labels = descendants(of: setup).compactMap { ($0 as? UILabel)?.text }
         XCTAssertTrue(labels.contains("Connect Codex in one click")); XCTAssertFalse(labels.contains("Use the Runtime Companion"))
+        XCTAssertTrue(labels.contains("Scriv finds and starts Codex on this Mac. No server address is needed."))
     }
 
     func testLoadResizeAndExpandedDetailsKeepHeaderAndFooterOutsideScroll() throws {
@@ -183,7 +184,10 @@ final class CodexSetupUIKitTests: XCTestCase {
         setup.update(ScrivCodexSetupPresentation(checkPhase: .notFound), error: "Synthetic absent server", journalError: nil, log: "")
         let labels = descendants(of: setup).compactMap { ($0 as? UILabel)?.text }
         XCTAssertTrue(labels.contains("curl -fsSL https://chatgpt.com/codex/install.sh | sh"))
-        XCTAssertTrue(labels.contains("codex app-server --listen ws://127.0.0.1:4500"))
+        XCTAssertFalse(labels.contains("codex app-server --listen ws://127.0.0.1:4500"), "Manual server setup belongs in Advanced")
+        try button("advanced", in: setup).sendActions(for: .primaryActionTriggered)
+        let advancedLabels = descendants(of: setup).compactMap { ($0 as? UILabel)?.text }
+        XCTAssertTrue(advancedLabels.contains("codex app-server --listen ws://127.0.0.1:4500"))
         XCTAssertEqual(try button("check", in: setup).configuration?.title, "Check again")
         try button("check", in: setup).sendActions(for: .primaryActionTriggered); XCTAssertEqual(checked, 1)
     }
@@ -213,14 +217,10 @@ final class CodexSetupUIKitTests: XCTestCase {
         let store = WorkspaceStore(), router = ScrivUIKitRouter()
         ScrivUIKitFeatures.registerAccount(in: router)
         let navigation = try XCTUnwrap(router.controller(for: .codex, store: store) as? UINavigationController)
-        let settings = try XCTUnwrap(router.controller(for: .settings, store: store) as? UINavigationController)
-        // Ordinary Settings retains its visible native navigation bar. Catalyst
-        // adds that chrome to the wrapper (854 vs800 on the verified Mac);
-        // the application-defined size belongs to its child, unlike Codex.
-        XCTAssertEqual(settings.topViewController?.preferredContentSize, CGSize(width: 640, height: 800))
-        XCTAssertFalse(settings.isNavigationBarHidden)
-        XCTAssertEqual(settings.preferredContentSize.width, 640)
-        XCTAssertGreaterThanOrEqual(settings.preferredContentSize.height, 800)
+        let settings = try XCTUnwrap(router.controller(for: .settings, store: store) as? ScrivSettingsPanelController)
+        let settingsDetail = try XCTUnwrap(settings.viewController(for: .secondary) as? UINavigationController)
+        XCTAssertEqual(settings.preferredContentSize, CGSize(width: 880, height: 660))
+        XCTAssertFalse(settingsDetail.isNavigationBarHidden)
         XCTAssertTrue(navigation.isNavigationBarHidden, "The wrapper must not initially measure a system navigation bar.")
         XCTAssertEqual(navigation.preferredContentSize, ScrivCodexSetupView.preferredSheetSize)
         let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }

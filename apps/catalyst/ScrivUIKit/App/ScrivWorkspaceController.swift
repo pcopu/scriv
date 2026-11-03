@@ -129,8 +129,7 @@ final class ScrivWorkspaceController: ScrivScreenController {
                     guard let self else { return }; self.show(self.store.account == nil ? .signIn : .account)
                 },
                 UIAction(title: "Codex on this Mac…", image: UIImage(systemName: "sparkles")) { [weak self] _ in self?.show(.codex) },
-                UIAction(title: "Generation history…", image: UIImage(systemName: "photo.on.rectangle")) { [weak self] _ in self?.show(.generationJobs) },
-                UIAction(title: "Settings…", image: UIImage(systemName: "gearshape")) { [weak self] _ in self?.show(.settings) }
+                UIAction(title: "Generation history…", image: UIImage(systemName: "photo.on.rectangle")) { [weak self] _ in self?.show(.generationJobs) }
             ])
         ])
     }

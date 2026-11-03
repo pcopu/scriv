@@ -38,8 +38,12 @@ public enum CodexLocalSetup {
         }
         let candidates = [
             "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+            "/Applications/Codex.app/Contents/Resources/codex",
+            homeDirectory.appendingPathComponent("Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex").path,
+            homeDirectory.appendingPathComponent("Applications/Codex.app/Contents/Resources/codex").path,
             "/opt/homebrew/bin/codex",
             "/usr/local/bin/codex",
+            homeDirectory.appendingPathComponent(".local/bin/codex").path,
             homeDirectory.appendingPathComponent(".npm-global/bin/codex").path
         ]
         return candidates.first(where: isExecutable)

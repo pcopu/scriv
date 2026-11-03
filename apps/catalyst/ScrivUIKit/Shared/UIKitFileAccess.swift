@@ -5,8 +5,9 @@ import QuickLook
 @MainActor
 enum UIKitPresentation {
     static var window: UIWindow? {
-        UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-            .flatMap(\.windows).first(where: \.isKeyWindow)
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        return scenes.filter { $0.activationState == .foregroundActive }.flatMap(\.windows).first(where: \.isKeyWindow)
+            ?? scenes.flatMap(\.windows).first(where: \.isKeyWindow)
     }
     static var presenter: UIViewController? {
         guard var controller = window?.rootViewController else { return nil }

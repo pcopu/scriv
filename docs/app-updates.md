@@ -4,7 +4,7 @@ The Catalyst application uses a UIKit update sheet and a separate native macOS `
 
 ## User control and durable saves
 
-Settings → **Check for Scriv updates…** starts a manual check. Automatic checks/install and optional profiling are disabled. Download preparation and Update & Relaunch each require every workspace to finish editing and prove that pending saves/journals are durable. Active generation, conflicts, save errors or on-disk drift block installation.
+**Scriv → Check for Updates…** starts a manual check. **Scriv → Settings…** (⌘,) opens the separate native Settings window; repeated requests focus that same window. Automatic checks/install and optional profiling are disabled. Download preparation and Update & Relaunch each require every workspace to finish editing and prove that pending saves/journals are durable. Active generation, conflicts, save errors or on-disk drift block installation.
 
 Sparkle can install a prepared update when the app quits. **Later** therefore cancels preparation using Skip rather than merely dismissing it. Rejected metadata or a failed save fence also returns Skip immediately, independently of the error notice. One-shot callbacks and generation guards prevent stale/repeated actions from authorizing another installation. The modal handoff clears the presenting sheet before advancing the update flow.
 

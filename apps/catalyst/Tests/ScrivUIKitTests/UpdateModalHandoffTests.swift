@@ -6,22 +6,23 @@ import XCTest
 final class UpdateModalHandoffTests: XCTestCase {
     func testHandoffDismissesSettingsAndUpdateBeforeReturning() async throws {
         let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-        let previous = scenes.flatMap(\.windows).first(where: \.isKeyWindow)
+        let previous = UIKitPresentation.window
         let window = (previous?.windowScene ?? scenes.first).map(UIWindow.init(windowScene:))
             ?? UIWindow(frame: CGRect(x: 0, y: 0, width: 1200, height: 900))
-        let root = UIViewController()
+        let root = UpdateHandoffTestHostController()
         window.rootViewController = root; window.makeKeyAndVisible()
         defer { window.isHidden = true; previous?.makeKey() }
-        let attached = await settled { root.viewIfLoaded?.window != nil }
+        let attached = await settled { root.hasAppeared && root.viewIfLoaded?.window != nil }
         XCTAssertTrue(attached)
         for initiallyEnabled in [true, false] {
             root.view.isUserInteractionEnabled = initiallyEnabled
             // The real route wraps Settings in a navigation sheet. A generic
             // settings body avoids constructing stores or touching user data.
-            let settings = UINavigationController(rootViewController: UIViewController())
+            let settingsBody = UpdateHandoffTestHostController()
+            let settings = UINavigationController(rootViewController: settingsBody)
             settings.modalPresentationStyle = .formSheet
             root.present(settings, animated: false)
-            let settingsVisible = await settled { settings.viewIfLoaded?.window != nil && !settings.isBeingPresented }
+            let settingsVisible = await settled { settingsBody.hasAppeared && settings.viewIfLoaded?.window != nil && !settings.isBeingPresented }
             XCTAssertTrue(settingsVisible)
             let update = ScrivUpdateController()
             settings.present(update, animated: false)
@@ -67,4 +68,10 @@ final class UpdateModalHandoffTests: XCTestCase {
         }
         return predicate()
     }
+}
+
+@MainActor
+private final class UpdateHandoffTestHostController: UIViewController {
+    private(set) var hasAppeared = false
+    override func viewDidAppear(_ animated: Bool) { super.viewDidAppear(animated); hasAppeared = true }
 }

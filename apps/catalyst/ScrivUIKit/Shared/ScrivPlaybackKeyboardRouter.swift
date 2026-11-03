@@ -152,8 +152,15 @@ final class ScrivUIKitApplication: UIApplication {
         super.buildMenu(with: builder)
         guard builder.system == .main else { return }
         builder.remove(menu: .format)
+        let updates = UICommand(title: "Check for Updates…", action: #selector(checkForUpdates(_:)))
+        builder.replaceChildren(ofMenu: .about) { $0 + [updates] }
+        let settings = UIKeyCommand(title: "Settings…", action: #selector(showSettings(_:)), input: ",", modifierFlags: .command)
+        builder.remove(menu: .preferences)
+        builder.insertSibling(UIMenu(title: "", identifier: .preferences, options: .displayInline, children: [settings]), afterMenu: .about)
     }
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(checkForUpdates(_:)) { return UIKitPresentation.presenter != nil }
+        if action == #selector(showSettings(_:)) { return ScrivSettingsWindowCoordinator.shared.canShow }
         if action == #selector(findScriptFromKeyboard(_:)) {
             let context = ScrivKeyboardTextContext.state(for: ScrivKeyboardTextContext.firstResponder(application: self))
             return currentStore != nil && !context.editingText && !context.markedText && UIKitPresentation.window?.rootViewController?.presentedViewController == nil
@@ -171,6 +178,21 @@ final class ScrivUIKitApplication: UIApplication {
             return currentStore != nil && scriptEditingTarget(responder: responder, context: ScrivKeyboardTextContext.state(for: responder)) != nil
         }
         return super.canPerformAction(action, withSender: sender)
+    }
+    override func sendAction(_ action: Selector, to target: Any?, from sender: Any?, for event: UIEvent?) -> Bool {
+        // App menu commands must still reach the application when a sheet owns focus.
+        if target == nil, action == #selector(checkForUpdates(_:)) || action == #selector(showSettings(_:)) {
+            guard canPerformAction(action, withSender: sender) else { return false }
+            return super.sendAction(action, to: self, from: sender, for: event)
+        }
+        return super.sendAction(action, to: target, from: sender, for: event)
+    }
+    @objc private func checkForUpdates(_ command: UICommand) {
+        guard let presenter = UIKitPresentation.presenter else { return }
+        ScrivUpdateCoordinator.shared.show(from: presenter)
+    }
+    @objc private func showSettings(_ command: UICommand) {
+        ScrivSettingsWindowCoordinator.shared.show()
     }
     override func sendEvent(_ event: UIEvent) {
         let presses = (event as? UIPressesEvent)?.allPresses ?? []

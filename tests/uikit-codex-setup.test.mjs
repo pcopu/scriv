@@ -31,8 +31,9 @@ test('check probes compatible protocol and account without generating or signing
   const runtime = await source(runtimePath);
   const check = runtime.split('func checkAndConnect(')[1].split('func cancelConnectionCheck()')[0];
   assert.match(check, /connectionCheck\.begin\(\)/);
-  assert.match(check, /connect\(timeout: \.seconds\(6\)\)/);
-  assert.match(check, /bridgePaired && !receivedProtocolReply/);
+  assert.doesNotMatch(check, /endpointURL\(|\bconnect\(/);
+  assert.match(check, /if let prepareLocalRuntime/);
+  assert.match(check, /else if bridgePaired/);
   assert.doesNotMatch(check, /signIn\(|generate\(|turn\/start|account\/login\/start/);
   assert.match(runtime, /CodexAccountReadiness\.validateInitialize\(hello\)/);
   assert.match(runtime, /"initialized"/);
@@ -59,7 +60,7 @@ test('optional advanced routes preserve explicit private pairing and ownership',
   for (const method of ['openRuntimeCompanion()', 'start()', 'connect()', 'importRuntimePairing(from: url)', 'useExistingGenerationFolder(url)', 'rotateRuntimePairing()', 'forgetRuntimePairing()']) assert.ok(controller.includes(method));
   assert.match(controller, /UIDocumentPickerViewController\(forOpeningContentTypes: \[\.item\], asCopy: false\)/);
   assert.match(view, /managed \? "Stop" : "Disconnect"/);
-  assert.match(view, /Check & connect checks only this address, not every app or port/);
+  assert.match(view, /No address is needed for Check & connect/);
   assert.match(controller, /if !executable\.isFirstResponder \{ executable\.text = controller\.executablePath \}/);
 });
 test('native regression coverage retains route, optical footer, compact state and field identity gates', async () => {

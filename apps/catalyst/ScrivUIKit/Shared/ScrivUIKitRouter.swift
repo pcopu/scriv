@@ -38,6 +38,9 @@ final class ScrivUIKitRouter {
         factories[route.kind]?(route, store)
     }
     func present(_ route: ScrivUIKitRoute, from presenter: UIViewController, store: WorkspaceStore) {
+        #if targetEnvironment(macCatalyst)
+        if case .settings = route { ScrivSettingsWindowCoordinator.shared.show(store: store); return }
+        #endif
         guard let controller = controller(for: route, store: store) else {
             store.errorMessage = "This screen is unavailable in this build. No project data was changed."
             return

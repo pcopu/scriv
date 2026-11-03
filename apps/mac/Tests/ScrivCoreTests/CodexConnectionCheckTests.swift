@@ -61,6 +61,17 @@ final class CodexConnectionCheckTests: XCTestCase {
         let path = "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex"
         XCTAssertEqual(CodexLocalSetup.resolveExecutable(preferredPath: CodexLocalSetup.automaticExecutable, homeDirectory: URL(fileURLWithPath: "/synthetic"), isExecutable: { $0 == path }), path)
     }
+    func testAutomaticDiscoveryFindsCodexDesktopAndUserInstallations() {
+        let home = URL(fileURLWithPath: "/synthetic")
+        for path in [
+            "/Applications/Codex.app/Contents/Resources/codex",
+            "/synthetic/Applications/Codex.app/Contents/Resources/codex",
+            "/synthetic/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+            "/synthetic/.local/bin/codex"
+        ] {
+            XCTAssertEqual(CodexLocalSetup.resolveExecutable(homeDirectory: home, isExecutable: { $0 == path }), path)
+        }
+    }
     func testSavedExecutableIsPreservedAndMissingExplicitChoiceDoesNotFallBack() {
         let custom = "/synthetic/custom/codex"
         XCTAssertEqual(CodexLocalSetup.resolveExecutable(preferredPath: custom, isExecutable: { _ in true }), custom)

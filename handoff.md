@@ -1,3 +1,67 @@
+# Scriv handoff — 2026-11-03
+
+This records the combined Settings/menu and automatic Codex connection tasks, based on `c017c0e`. The owner requested that both workers stop, preserve all work, write this handoff, and make one combined commit without pushing. The runtime worker was confirmed idle with a completed final report before this file was written. No further tests or implementation changes were made during closeout.
+
+**The final checkout is not green.** The runtime task stopped after adding tests for an unimplemented session-only pairing fallback. The passing results below precede those final additions and must not be presented as verification of the final combined checkout.
+
+## Settings and app menu changes
+
+- **Scriv → Settings…** has the standard **⌘,** shortcut. It opens a separate native UIKit/Mac Catalyst Settings window with **General**, **Account**, and **Codex** sidebar panes, following the owner's reference.
+- A dedicated scene configuration and coordinator reuse the Settings window, share the workspace's existing `WorkspaceStore`, and support closing and reopening it. The workspace overflow menu no longer carries Settings; existing routed Settings links open the window.
+- The panes retain their controllers and preserve an unsaved server-address draft when switching sections. Settings follows system light/dark appearance and uses grouped native controls.
+- Shared account scroll layouts respect horizontal safe areas, so controls do not extend underneath the native sidebar. Presentation helpers prefer the active window scene.
+- **Scriv → Check for Updates…** now calls the existing updater. App-level menu actions remain routable while a sheet owns focus. The manual check starts directly after presentation instead of waiting for a Catalyst sheet completion that left the native test stuck on Checking.
+- Update signing, cancellation and durable-save policies remain in place. Ad-hoc development builds still cannot install updates.
+- New native coverage checks app command dispatch, repeated update requests, the real development-build signing block, Settings window reuse/reopening, shared state, draft preservation, sidebar bounds, and light/dark rendering. Existing modal fixtures now wait for appearance and restore workspace scene activation.
+
+Key implementation files: `ScrivSettingsPanelController.swift`, `ScrivSettingsWindowCoordinator.swift`, `ScrivSettingsController.swift`, `ScrivPlaybackKeyboardRouter.swift`, `AppDelegate.swift`, `ScrivUIKitRouter.swift`, `UIKitFileAccess.swift`, `AccountUI.swift`, and `ScrivUpdateCoordinator.swift`. Both the generated Info.plist and its generator contain the Settings/workspace scene configurations.
+
+## Automatic Codex connection changes
+
+The other worker's completed changes, reviewed in the shared checkout:
+
+- `CodexController.checkAndConnect` prepares the local runtime directly instead of first validating or probing the saved WebSocket address. Manual endpoint settings belong to the explicit Advanced connection action. Already-connected runtimes refresh their account and model state.
+- The previous helper is released before preparation installs the new cleanup callback. Cancellation and stale-attempt guards remain around preparation and startup.
+- Executable discovery includes Codex and ChatGPT bundles under `/Applications` and the user's Applications directory, plus `~/.local/bin`, alongside the existing Homebrew and npm candidates. An explicit executable selection remains authoritative.
+- The Codex setup sheet explains automatic startup. Manual WebSocket server instructions and address controls are under Advanced. Opening the sheet still starts nothing; first-use consent and authenticated pairing remain required.
+- Connection, cancellation, duplicate-attempt, executable-discovery, and UI wording tests were updated, along with the README and integration documentation.
+
+Key files: `CodexController.swift`, `CodexConnectionCheck.swift`, `ScrivCodexSetupView.swift`, `ScrivRuntimeBootstrapCoordinator.swift`, and their tests. The runtime worker's contribution to the shared `ScrivSettingsController.swift` was its bootstrap-lifetime comment; the pane changes are from the Settings task.
+
+## Verification completed before the unfinished fallback
+
+| Evidence | Result and scope |
+| --- | --- |
+| Settings worker: `node --test tests/*.test.mjs` | **147 passed**, before the runtime worker's final fallback assertion was added. |
+| Settings worker: native Catalyst selected suites | **39 passed**: ApplicationUpdateMenuTests, SettingsPanelTests, UpdateModalHandoffTests, UpdatePresentationTests, CodexSetupUIKitTests, ScrivPlaybackKeyboardResponderTests, and SecondaryLayoutTests. This is a selected suite, not the full native suite. |
+| Settings worker: repository integrity | `node scripts/check-repo.mjs` passed. |
+| Settings worker: portable Catalyst verification | Passed integrity checks for 76 UIKit/client sources and syntax parsing for 116 source/test files. Native compilation is established separately by the native run above. |
+| Settings worker: Release build | `bash scripts/build-catalyst.sh` completed, including bundle/icon/signature checks, before subsequent runtime signing experiments changed the generated product. |
+| Settings visual review | Exported and inspected light/dark native UIKit render attachments; fixed the observed sidebar overlap. These are rendered content previews, not a manual physical-keyboard or signed-update-install acceptance pass. |
+| Runtime worker's final report | **364 Swift tests**, **144 repository tests**, **27 native Catalyst tests**, and a Developer ID build passed before its unfinished Keychain work. These results are reported by that worker, not rerun during closeout. |
+
+Build logs, test results, previews, caches, credentials, and generated app products are excluded from the combined commit. `scripts/__pycache__/` remains an untracked generated artifact and is deliberately not staged.
+
+## Remaining issues and current blockers
+
+1. **Live automatic connection is not working end to end.** The runtime worker reached the signed helper, then failed to save the authenticated pairing in Keychain. Its proposed fallback is not implemented.
+2. **Swift test compilation is currently broken.** `apps/mac/Tests/ScrivCoreTests/RuntimeBridgeSessionGrantTests.swift` references `RuntimeBridgeSessionGrant`, which does not exist in the sources. Its tests specify session-only lifetime/reset, owner/capability validation, authoritative persistent grants, and refusal to replace or conflict with an approved grant. The test file is preserved as unfinished work.
+3. **A repository assertion is also ahead of implementation.** The new test named “only an absent Keychain entitlement permits a verified in-memory grant” in `tests/runtime-bootstrap-integration.test.mjs` expects `sessionGrant` handling in `apps/catalyst/MacRuntimeBridge/MacRuntimeBridge.swift`. That implementation file has no corresponding changes.
+4. **Integration documentation describes the unfinished behavior as working.** The process-local pairing paragraph in `docs/codex-integration.md` is premature. Reconcile it when implementing or revising the proposal.
+5. **Treat the generated Release app as stale and unusable.** The runtime worker reports that its last signing experiment left restricted entitlements in the built Release product, which cannot launch without an unavailable provisioning profile. Its source edits to the signing script were reverted. Rebuild using the current checked-in script before trying the app; the earlier successful build log does not verify the product's final state. Generated binaries are not part of this commit.
+6. **Signed update installation/relaunch and a real Ready Codex connection remain unverified.** The Settings tests establish native command/presentation behavior and the intended development-build update block. They do not establish successful signed update installation, live account/model readiness, or generation.
+
+The runtime worker proposed retaining an authenticated pairing only in process memory when saving returns `errSecMissingEntitlement`. If resumed, preserve the existing first-use consent and signed/authenticated helper boundary. Locked or unreadable Keychain entries, invalid owners/capabilities, and conflicting persistent grants must still fail closed. Do not add a plaintext/preferences fallback or weaken signature checks. No such fallback has been implemented in this handoff.
+
+After the owner resumes implementation: resolve the unfinished fallback/tests/docs together, rerun the affected Swift, repository, and native suites, rebuild the app from the current script, and repeat the live automatic connection check. Do not claim the earlier passing counts apply to the final checkout. No push, installation, publication, or further implementation was authorized by this closeout request.
+
+## Previous handoff retained for historical context
+
+The snapshot below is preserved verbatim. Its old repository state, test counts, running-app claims, push workflow, and computer-use advice are historical, not current instructions. Follow the current owner request and applicable AGENTS.md/skills instead.
+
+<details>
+<summary>2026-11-02 handoff (historical)</summary>
+
 # Handoff: make Scriv fast and lean, and fix every interface bug
 
 Last updated **2026-11-02, about 22:30**. `main` is at `7273ca6`, pushed and clean.
@@ -158,3 +222,6 @@ xcrun swiftc -typecheck -target $T -sdk "$SDK" -swift-version 5 "${X[@]}" -modul
 - In the owner's 1280×802 window, the tabs sit at about y=90 on screen: Script about x=532, Characters about x=748. The playback bar is at y=786: back button about x=38, play about x=70, mute about x=1180.
 - To check how busy and how idle the Mac is: `sysctl -n vm.loadavg`, and `ioreg -c IOHIDSystem | awk '/HIDIdleTime/ {print int($NF/1e9); exit}'`.
 - To measure Scriv itself: `top -l 4 -pid <pid> -stats pid,cpu,mem,idlew,threads -s 3`, `footprint <pid>`, and `sample <pid> 6`.
+
+
+</details>

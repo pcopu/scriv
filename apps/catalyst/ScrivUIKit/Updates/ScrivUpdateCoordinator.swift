@@ -20,7 +20,10 @@ final class ScrivUpdateCoordinator {
         let controller = ScrivUpdateController()
         sheet = controller
         controller.onClose = { [weak self] in self?.sheet = nil }
-        presenter.present(controller, animated: true) { [weak self] in self?.check() }
+        presenter.present(controller, animated: true)
+        // Catalyst can defer a native sheet's presentation completion. The
+        // explicit check must start while the sheet is open, not on dismissal.
+        check()
     }
     private func check() {
         guard let key = Bundle.main.object(forInfoDictionaryKey: "SUPublicEDKey") as? String,

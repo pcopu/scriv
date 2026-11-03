@@ -194,7 +194,7 @@ extension ScrivUIKitFeatures {
                 switch route {
                 case .signIn: controller = ScrivSignInController(store: store)
                 case .account: controller = ScrivAccountController(store: store)
-                case .settings: controller = ScrivSettingsController(store: store)
+                case .settings: return ScrivSettingsPanelController(store: store)
                 case .generationJobs: controller = ScrivGenerationJobsController(store: store)
                 case .codex: controller = ScrivCodexController(store: store)
                 default: return nil

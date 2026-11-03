@@ -13,12 +13,14 @@ class ScrivSettingsController: ScrivScreenController, UIDocumentPickerDelegate, 
     private let executable = AccountUI.field("/opt/homebrew/bin/codex", height: 32)
     private let endpoint = AccountUI.field("ws://127.0.0.1:4500", height: 32)
     private var serverExpanded = false
+    private var serverDraft: String?
     private var advancedExpanded = true
     private var working = false
     private var localError: String?
     private var choosingPairing = false
     private var choosingHistory = false
     private var runtimeOnly = false
+    private let pane: ScrivSettingsPane
     private var renderKey = ""
     private var accountKey = ""
     private var statusLabel: UILabel?
@@ -29,15 +31,17 @@ class ScrivSettingsController: ScrivScreenController, UIDocumentPickerDelegate, 
     private var accountDetails: UILabel?
     private var setupView: ScrivCodexSetupView?
     private var previousNavigationBarHidden: Bool?
-    init(store: WorkspaceStore, runtimeOnly: Bool = false) {
-        self.runtimeOnly = runtimeOnly; super.init(store: store, scopeToProject: false)
+    init(store: WorkspaceStore, runtimeOnly: Bool = false, pane: ScrivSettingsPane = .general) {
+        self.runtimeOnly = runtimeOnly; self.pane = pane; super.init(store: store, scopeToProject: false)
         preferredContentSize = runtimeOnly ? ScrivCodexSetupView.preferredSheetSize : CGSize(width: 640, height: 800)
     }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(store:)") }
     override func viewDidLoad() {
-        super.viewDidLoad(); title = runtimeOnly ? "Codex on this Mac" : "Settings"; view.backgroundColor = AccountUI.inset.withAlphaComponent(0.3)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .done, primaryAction: UIAction { [weak self] _ in self?.dismiss(animated: true) })
+        super.viewDidLoad(); title = runtimeOnly ? "Codex on this Mac" : pane.title
+        view.backgroundColor = runtimeOnly ? AccountUI.inset.withAlphaComponent(0.3) : .systemGroupedBackground
+        if runtimeOnly { navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .done, primaryAction: UIAction { [weak self] _ in self?.dismiss(animated: true) }) }
         follow.addAction(UIAction { [weak self] _ in guard let self else { return }; self.store.followPlayback = self.follow.isOn }, for: .valueChanged)
+        server.addAction(UIAction { [weak self] _ in self?.serverDraft = self?.server.text }, for: .editingChanged)
         server.text = store.cloudBaseURL; executable.text = store.codex.executablePath; endpoint.text = store.codex.endpoint
         for field in [server, executable, endpoint] { field.delegate = self; field.autocapitalizationType = .none; field.font = .systemFont(ofSize: 13) }
         if runtimeOnly {
@@ -47,17 +51,19 @@ class ScrivSettingsController: ScrivScreenController, UIDocumentPickerDelegate, 
             return
         }
         _ = AccountUI.installScroll(in: self, content: content)
-        if !runtimeOnly {
+        switch pane {
+        case .general:
             buildGeneral()
-            content.addArrangedSubview(AccountUI.link("Check for Scriv updates…", symbol: "arrow.down.circle") { [weak self] in guard let self else { return }; ScrivUpdateCoordinator.shared.show(from: self) })
-            content.addArrangedSubview(AccountUI.stack([AccountUI.label("Scriv account", size: 18, weight: .semibold), AccountUI.card(accountContent), AccountUI.label("Sign out before changing servers.", size: 12, color: ScrivUIKitTheme.secondary)], spacing: 8))
+        case .account:
+            content.addArrangedSubview(AccountUI.stack([AccountUI.label("Scriv account", size: 18, weight: .semibold), AccountUI.card(accountContent, tint: .secondarySystemGroupedBackground), AccountUI.label("Sign out before changing servers.", size: 12, color: ScrivUIKitTheme.secondary)], spacing: 8))
+        case .codex:
+            content.addArrangedSubview(AccountUI.stack([AccountUI.label("Codex on this Mac", size: 18, weight: .semibold), AccountUI.card(runtimeContent, tint: .secondarySystemGroupedBackground)], spacing: 8))
+            content.addArrangedSubview(ScrivGenerationProgressView(controller: store.codex))
+            content.addArrangedSubview(AccountUI.label("Credentials stay on this Mac. Disconnecting an external server leaves it running.", size: 12, color: ScrivUIKitTheme.secondary))
+            content.addArrangedSubview(AccountUI.link("Generation jobs", symbol: "clock.arrow.circlepath") { [weak self] in self?.show(.generationJobs) })
+            content.addArrangedSubview(AccountUI.link("Use existing generation history…", symbol: "folder") { [weak self] in self?.pickHistory() })
+            store.codex.objectWillChange.receive(on: RunLoop.main).sink { [weak self] _ in self?.storeDidChange() }.store(in: &subscriptions)
         }
-        content.addArrangedSubview(AccountUI.stack([AccountUI.label("Codex on this Mac", size: 18, weight: .semibold), AccountUI.card(runtimeContent)], spacing: 8))
-        content.addArrangedSubview(ScrivGenerationProgressView(controller: store.codex))
-        content.addArrangedSubview(AccountUI.label("Credentials stay on this Mac. Disconnecting an external server leaves it running.", size: 12, color: ScrivUIKitTheme.secondary))
-        content.addArrangedSubview(AccountUI.link("Generation jobs", symbol: "clock.arrow.circlepath") { [weak self] in self?.show(.generationJobs) })
-        content.addArrangedSubview(AccountUI.link("Use existing generation history…", symbol: "folder") { [weak self] in self?.pickHistory() })
-        store.codex.objectWillChange.receive(on: RunLoop.main).sink { [weak self] _ in self?.storeDidChange() }.store(in: &subscriptions)
         storeDidChange()
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -92,8 +98,8 @@ class ScrivSettingsController: ScrivScreenController, UIDocumentPickerDelegate, 
             await self.store.codex.checkAndConnect(prepareLocalRuntime: { [weak self] in
                 guard let self else { throw CancellationError() }
                 let bootstrap = ScrivRuntimeBootstrapCoordinator()
-                // Installed only after the external probe fails, so its cleanup
-                // cannot cancel a new confirmation. Retained beyond this sheet.
+                // The controller releases the previous helper before preparing
+                // this connection. Retained beyond this sheet.
                 self.store.codex.releaseBundledRuntime = { bootstrap.cancel() }
                 try await bootstrap.prepare(from: self)
             })
@@ -120,11 +126,12 @@ class ScrivSettingsController: ScrivScreenController, UIDocumentPickerDelegate, 
         let followRow = AccountUI.stack([AccountUI.label("Follow active line during playback", size: 14), follow], horizontal: true); follow.setContentHuggingPriority(.required, for: .horizontal)
         let fileActions = AccountUI.stack([AccountUI.link("Show package…") { [weak self] in self?.revealPackage() }, AccountUI.button("Export project…") { [weak self] in self?.store.exportProject() }], spacing: 8, horizontal: true)
         let files = ScrivSecondaryAdaptiveRow([AccountUI.label("Local project package", size: 14), fileActions], minimumHorizontalWidth: 500, spacing: 10)
-        content.addArrangedSubview(AccountUI.stack([AccountUI.label("General", size: 18, weight: .semibold), AccountUI.card(AccountUI.stack([followRow, AccountUI.divider(), files], spacing: 10)), AccountUI.label("Changes save automatically.", size: 12, color: ScrivUIKitTheme.secondary)], spacing: 8))
+        content.addArrangedSubview(AccountUI.stack([AccountUI.label("General", size: 18, weight: .semibold), AccountUI.card(AccountUI.stack([followRow, AccountUI.divider(), files], spacing: 10), tint: .secondarySystemGroupedBackground), AccountUI.label("Changes save automatically.", size: 12, color: ScrivUIKitTheme.secondary)], spacing: 8))
     }
     override func storeDidChange() {
         guard isViewLoaded else { return }; follow.setOn(store.followPlayback, animated: false)
-        buildAccountIfNeeded(); buildRuntimeIfNeeded(); updateRuntime()
+        if !runtimeOnly, pane == .account { buildAccountIfNeeded() }
+        if runtimeOnly || pane == .codex { buildRuntimeIfNeeded(); updateRuntime() }
     }
     private func buildAccountIfNeeded() {
         guard !runtimeOnly else { return }
@@ -139,13 +146,13 @@ class ScrivSettingsController: ScrivScreenController, UIDocumentPickerDelegate, 
             accountContent.addArrangedSubview(AccountUI.link("Server settings", symbol: serverExpanded ? "chevron.down" : "chevron.right") { [weak self] in guard let self else { return }; self.view.endEditing(true); self.serverExpanded.toggle(); self.storeDidChange() })
             if serverExpanded {
                 accountContent.addArrangedSubview(server)
-                let save = AccountUI.button("Save address") { [weak self] in guard let self, self.store.account == nil else { return }; self.store.cloudBaseURL = self.server.text ?? "" }
+                let save = AccountUI.button("Save address") { [weak self] in guard let self, self.store.account == nil else { return }; self.store.cloudBaseURL = self.server.text ?? ""; self.serverDraft = nil }
                 save.isEnabled = store.account == nil; accountContent.addArrangedSubview(save)
                 accountContent.addArrangedSubview(AccountUI.label("Use your Scriv service's HTTPS address. Changing servers cancels any pending sign-in.", size: 12, color: ScrivUIKitTheme.secondary))
             }
         }
         accountName?.text = store.account?.name ?? "Write locally, or sign in"; server.isEnabled = store.account == nil
-        if !server.isFirstResponder { server.text = store.cloudBaseURL }
+        if serverDraft == nil, !server.isFirstResponder { server.text = store.cloudBaseURL }
     }
     private func buildRuntimeIfNeeded() {
         guard !runtimeOnly else { return }

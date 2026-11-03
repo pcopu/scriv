@@ -28,7 +28,7 @@ test('expanded connection details reveal the saved-address field without remount
   assert.match(view, /private weak var pendingRevealTarget: UIView\?/);
   assert.match(view, /target\.isDescendant\(of: scroll\)/);
   assert.match(view, /scroll\.scrollRectToVisible\(rect, animated: false\)/);
-  assert.match(view, /The installation commands use 127\.0\.0\.1:4500; match that address here/);
+  assert.match(view, /No address is needed for Check & connect/);
 });
 
 test('new native regressions cover default, narrow, repeated, disclosure and help navigation', async () => {

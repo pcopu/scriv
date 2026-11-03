@@ -25,9 +25,16 @@ test('guided pairing creates only; inaccessible or raced grants never overwrite'
   assert.ok(!guided.includes('SecItemUpdate')); assert.ok(!guided.includes('SecItemDelete'));
   assert.match(guided, /if status == errSecItemNotFound \{ return nil \}/);
 });
+test('only an absent Keychain entitlement permits a verified in-memory grant', async () => {
+  const bridge = await read('apps/catalyst/MacRuntimeBridge/MacRuntimeBridge.swift');
+  assert.match(bridge, /else if status == errSecMissingEntitlement \{[\s\S]*?sessionGrant\.retain\(incoming, ownerUID: geteuid\(\)\)/);
+  assert.match(bridge, /sessionGrant\.resolve\(persistent: nil, ownerUID: geteuid\(\)\)/);
+  assert.match(bridge, /static func forgetPairing\(\) \{\s*sessionGrant\.reset\(\)/);
+});
 test('guided connection owns XPC lifetime and does not open standalone companion', async () => {
   const controller = await read('apps/mac/Sources/ScrivApp/Services/CodexController.swift');
-  const guided = controller.split('if !receivedProtocolReply, let prepareLocalRuntime')[1].split('} else if')[0];
+  assert.ok(controller.includes('if let prepareLocalRuntime'), 'Check & connect must prepare the local helper directly');
+  const guided = controller.split('if let prepareLocalRuntime')[1].split('} else if')[0];
   assert.match(guided, /try await prepareLocalRuntime\(\)/);
   assert.match(guided, /start\(preservingBundledRuntime: true\)/);
   assert.ok(!guided.includes('openRuntimeCompanion'));

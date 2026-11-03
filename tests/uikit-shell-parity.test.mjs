@@ -36,9 +36,9 @@ test('each workspace tab has exactly one reachable transport and bounded split c
   }
 });
 
-test('compact chrome preserves all existing project and workspace destinations', async () => {
+test('compact chrome preserves project and workspace destinations', async () => {
   const shell = await source('App/ScrivWorkspaceController.swift');
-  for (const route of ['projects', 'audio', 'history', 'teams', 'settings', 'generationJobs', 'codex']) {
+  for (const route of ['projects', 'audio', 'history', 'teams', 'generationJobs', 'codex']) {
     assert.ok(shell.includes(`show(.${route})`), `missing ${route} route`);
   }
   for (const action of ['newProject()', 'openProject()', 'renameProject()', 'importScript()', 'exportScript()', 'exportProject()', 'loadDiscussion(itemId:', 'focusSearch()']) {

@@ -1,5 +1,6 @@
 import XCTest
 import UIKit
+import ScrivCore
 @testable import ScrivUIKit
 
 @MainActor
@@ -17,6 +18,62 @@ private final class SyntheticBootstrapAdapter: NSObject, ScrivRuntimeBootstrapAd
 
 @MainActor
 final class RuntimeBootstrapConsentTests: XCTestCase {
+    func testAutomaticConnectionPreparesLocalRuntimeWithoutAnAddress() async {
+        enum FixtureError: Error { case notInstalled }
+        let previous = UserDefaults.standard.object(forKey: "codexEndpoint")
+        defer { UserDefaults.standard.set(previous, forKey: "codexEndpoint") }
+        let controller = CodexController()
+        for address in ["", "not an address", "ws://example.test:4500"] {
+            controller.endpoint = address
+            var preparations = 0
+            await controller.checkAndConnect(prepareLocalRuntime: {
+                preparations += 1
+                throw FixtureError.notInstalled
+            })
+            XCTAssertEqual(preparations, 1, "Automatic connection must reach the local helper without parsing a saved address")
+            XCTAssertEqual(controller.endpoint, address, "Keep manual settings for the explicit Advanced action")
+            XCTAssertFalse(controller.isConnected)
+            XCTAssertFalse(controller.accountChecked)
+            XCTAssertEqual(controller.connectionCheck.phase, .notFound)
+        }
+    }
+
+    func testCancelledAutomaticConnectionNeverPreparesRuntime() async {
+        let controller = CodexController()
+        var preparations = 0
+        let task = Task {
+            await controller.checkAndConnect(prepareLocalRuntime: { preparations += 1 })
+        }
+        task.cancel()
+        await task.value
+        XCTAssertEqual(preparations, 0)
+        XCTAssertEqual(controller.connectionCheck.phase, .cancelled)
+    }
+
+    func testCancelAndDuplicateCheckCannotStartRuntimeAfterLatePreparation() async {
+        let previous = UserDefaults.standard.object(forKey: "codexEndpoint")
+        defer { UserDefaults.standard.set(previous, forKey: "codexEndpoint") }
+        let controller = CodexController(); controller.endpoint = ""
+        let prepared = expectation(description: "Local preparation started")
+        var release: CheckedContinuation<Void, Never>?
+        let task = Task {
+            await controller.checkAndConnect(prepareLocalRuntime: {
+                await withCheckedContinuation { continuation in
+                    release = continuation; prepared.fulfill()
+                }
+            })
+        }
+        await fulfillment(of: [prepared], timeout: 2)
+        await controller.checkAndConnect(prepareLocalRuntime: { XCTFail("Duplicate check must be ignored") })
+        controller.cancelConnectionCheck()
+        release?.resume()
+        await task.value
+        XCTAssertEqual(controller.connectionCheck.phase, .cancelled)
+        XCTAssertFalse(controller.isConnecting)
+        XCTAssertFalse(controller.isConnected)
+        XCTAssertFalse(controller.bridgePaired, "A cancelled preparation must not read or import a pairing")
+    }
+
     func testDeclineCreatesNoAdapterAndSavesNothing() async {
         var loads = 0, saves = 0
         let coordinator = ScrivRuntimeBootstrapCoordinator(hasSavedGrant: { false }, makeAdapter: {
