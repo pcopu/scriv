@@ -760,4 +760,20 @@ final class WorkspaceEndToEndTests: XCTestCase {
             XCTAssertEqual(characters, script, accuracy: 0.01, "Width \(width): Script \(script) pt vs Characters \(characters) pt")
         }
     }
+
+    /// A small avatar with no portrait shows the initial alone and fully,
+    /// not a picture icon that pushes the initial out of the circle.
+    func testSmallMissingPortraitShowsInitialOnly() throws {
+        let avatar = UIKitAssetImageView(frame: CGRect(x: 0, y: 0, width: 44, height: 44))
+        avatar.configure(url: nil, title: "Randy", missingText: "R")
+        avatar.setNeedsLayout(); avatar.layoutIfNeeded()
+        let labels = views(UILabel.self, in: avatar).filter { !$0.isHidden && $0.text == "R" }
+        let initial = try XCTUnwrap(labels.first)
+        XCTAssertTrue(avatar.bounds.contains(initial.convert(initial.bounds, to: avatar)), "The initial fits inside the avatar")
+        XCTAssertFalse(views(UIImageView.self, in: avatar).contains { !$0.isHidden && $0.image != nil && $0.bounds.width == 32 }, "No picture icon in a small avatar")
+        let large = UIKitAssetImageView(frame: CGRect(x: 0, y: 0, width: 205, height: 226))
+        large.configure(url: nil, title: "Randy", missingText: "No portrait on this device")
+        large.setNeedsLayout(); large.layoutIfNeeded()
+        XCTAssertTrue(views(UIImageView.self, in: large).contains { !$0.isHidden && $0.image != nil }, "Large views keep the picture icon")
+    }
 }

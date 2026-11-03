@@ -24,6 +24,21 @@ enum UIKitAssetImageLoadPhase: Equatable { case empty, loading, loaded, failed }
     private(set) var loadedDigest: String?
     private var missingText = "Add an image"
     private var initialized = false
+    /// Whether the placeholder icon belongs on screen (missing or unreadable image).
+    private var wantsSymbol = true { didSet { applyPlaceholderSize() } }
+    /// Avatars are too small for icon plus text: the icon pushed the initial
+    /// out of a 44-point circle. Small views show the text alone, centred.
+    private var isCompact: Bool { min(bounds.width, bounds.height) > 0 && min(bounds.width, bounds.height) < 72 }
+    override func layoutSubviews() { super.layoutSubviews(); applyPlaceholderSize() }
+    private func applyPlaceholderSize() {
+        let compact = isCompact
+        if symbol.isHidden != (!wantsSymbol || compact) { symbol.isHidden = !wantsSymbol || compact }
+        // An initial fills the avatar; longer placeholder text keeps the small size.
+        let initial = compact && (message.text ?? "").count <= 2
+        let font: UIFont = initial ? .systemFont(ofSize: max(11, min(bounds.width, bounds.height) * 0.4), weight: .semibold) : .systemFont(ofSize: compact ? 11 : 12)
+        if message.font != font { message.font = font }
+        placeholder.spacing = compact ? 0 : 8
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -58,7 +73,7 @@ enum UIKitAssetImageLoadPhase: Equatable { case empty, loading, loaded, failed }
         self.missingText = missingText
         let values = try? url?.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey])
         let stamp = "\(values?.contentModificationDate?.timeIntervalSince1970 ?? 0)|\(values?.fileSize ?? 0)"
-        guard !initialized || url != currentURL || expectedDigest != currentDigest || stamp != currentFileStamp else { if url == nil { message.text = missingText }; return }
+        guard !initialized || url != currentURL || expectedDigest != currentDigest || stamp != currentFileStamp else { if url == nil { message.text = missingText; applyPlaceholderSize() }; return }
         initialized = true; currentURL = url; currentDigest = expectedDigest; currentFileStamp = stamp; startLoad()
     }
     private func startLoad() {
@@ -66,7 +81,7 @@ enum UIKitAssetImageLoadPhase: Equatable { case empty, loading, loaded, failed }
         loadedDigest = nil; imageView.image = nil; imageView.isHidden = true; placeholder.isHidden = false; retryButton.isHidden = true
         guard let url = currentURL else {
             loadPhase = .empty
-            spinner.stopAnimating(); spinner.isHidden = true; symbol.isHidden = false; message.text = missingText; accessibilityValue = missingText
+            spinner.stopAnimating(); spinner.isHidden = true; message.text = missingText; wantsSymbol = true; accessibilityValue = missingText
             return
         }
         let values = try? url.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey])
@@ -82,7 +97,7 @@ enum UIKitAssetImageLoadPhase: Equatable { case empty, loading, loaded, failed }
             loadPhase = .loaded; loadedDigest = currentDigest; imageView.image = cached; imageView.isHidden = false; placeholder.isHidden = true; spinner.stopAnimating(); return
         }
         loadPhase = .loading
-        spinner.isHidden = false; spinner.startAnimating(); symbol.isHidden = true
+        spinner.isHidden = false; spinner.startAnimating(); wantsSymbol = false
         message.text = "Loading image…"; accessibilityValue = "Loading image"
         let request = requestID, expected = currentDigest
         loadTask = Task { [weak self] in
@@ -99,7 +114,7 @@ enum UIKitAssetImageLoadPhase: Equatable { case empty, loading, loaded, failed }
                 self.imageView.image = image; self.imageView.isHidden = false; self.placeholder.isHidden = true; self.accessibilityValue = nil
             } else {
                 self.loadPhase = .failed
-                self.symbol.isHidden = false; self.message.text = "Image could not be read on this Mac"; self.retryButton.isHidden = false
+                self.wantsSymbol = true; self.message.text = "Image could not be read on this Mac"; self.retryButton.isHidden = false
                 self.accessibilityValue = "Image unavailable. Retry loading."
             }
         }
