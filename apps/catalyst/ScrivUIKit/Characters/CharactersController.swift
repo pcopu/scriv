@@ -256,7 +256,7 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
             self?.store.selectScene(cue.sceneId); self?.store.selectedCueID = cue.id; self?.store.seek(toMs: Double(cue.startMs)); self?.store.tab = .script
         }) }
         if store.assetURL(image) == nil { menu.append(UIAction(title: "Download image") { [weak self] _ in self?.store.downloadImage(image) }) }
-        menu.append(UIAction(title: "Use as \(character.name)'s portrait", attributes: store.lockedByOther(character.id) == nil ? [] : .disabled) { [weak self] _ in self?.store.setCharacterPortrait(character.id, imageId: image.id) })
+        menu.append(UIAction(title: "Use as \(character.name)'s portrait", attributes: store.lockedByOther(character.id) == nil ? [] : .disabled, state: character.portraitImageId == image.id ? .on : .off) { [weak self] _ in self?.store.setCharacterPortrait(character.id, imageId: image.id) })
         actions.menu = UIMenu(children: menu); actions.showsMenuAsPrimaryAction = true; actions.accessibilityLabel = "Image actions"
         let caption = CharacterTeamUI.row([ScrivUIKitTheme.label(title, size: 14 * presentationScale, weight: .medium), CharacterTeamUI.spacer(), ScrivUIKitTheme.label("v\(image.version)", size: 11, color: ScrivUIKitTheme.secondary), actions], spacing: 5)
         let tags = CharacterChipWrapView(); tags.minimumChipHeight = 26 * presentationScale
