@@ -61,7 +61,7 @@ final class DiscussionMessageCell: UITableViewCell {
         body.text = message.body; column.addArrangedSubview(body)
         for attachment in message.attachments ?? [] {
             if let image = UIKitDiscussionPresentation.attachmentImage(attachment, project: store.project) {
-                let thumbnail = UIKitAssetImageView(); thumbnail.configure(url: store.assetURL(image), title: UIKitDiscussionPresentation.imageLabel(image, project: store.project), missingText: "Image unavailable")
+                let thumbnail = UIKitAssetImageView(); thumbnail.configure(url: store.assetURL(image), title: UIKitDiscussionPresentation.imageLabel(image, project: store.project), missingText: "Image unavailable", expectedDigest: image.sha256)
                 thumbnail.widthAnchor.constraint(equalToConstant: 80).isActive = true; thumbnail.heightAnchor.constraint(equalToConstant: 53).isActive = true; thumbnail.clipsToBounds = true
                 let label = ScrivUIKitTheme.label(UIKitDiscussionPresentation.imageLabel(image, project: store.project), size: 12, color: ScrivUIKitTheme.secondary)
                 let attachmentRow = ScrivUIKitTheme.stack([thumbnail, label, UIView()], axis: .horizontal, spacing: 8); attachmentRow.alignment = .center

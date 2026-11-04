@@ -82,3 +82,30 @@ If the latest account refresh fails, its error is retained and generation stays
 blocked; Stop and Connect retries the connection. A dedicated failed-account
 retry presentation remains untested. An installed but signed-out or incompatible
 Codex runtime still requires its actual setup.
+
+## Main branch merge verification
+
+The subsequent merge combines `origin/main` at `bc4ec3a` with the tested work
+at `0d0c283`. It retains the compact native Codex popup, Settings navigation,
+timeline, image-integrity and updater changes from main, together with the
+single-action bootstrap, account/cancellation fixes and persistent project
+bookmarks. The stronger create-only pairing policy from main remains intact,
+including its second storage read before a session fallback is permitted.
+
+- All **182 Node repository checks** passed on the merged source. One existing
+  timeout fixture failed during the initial busy parallel run; its focused
+  rerun and the final full suite passed without changing that fixture.
+- All **10 actual-controller cancellation/account regressions** passed against
+  a fresh native Core build.
+- The standalone session-grant check passed, including verified absence,
+  failed re-reads and conflicting concurrent storage results.
+- All **124 Catalyst source/test files** syntax-parsed. The merged UIKit app,
+  shared Core and native runtime XPC compiled and linked with standalone CLT.
+  Nested signature and approved-icon verification passed; the app records
+  Mac Catalyst 17.0 with SDK 26.2.
+- Repository integrity and whitespace checks passed. XCTest remains unavailable
+  with this CLT installation.
+
+This merge verification made no further live model requests and did not replace
+the previously accepted installed app. Its temporary app bundle was removed
+after build verification.

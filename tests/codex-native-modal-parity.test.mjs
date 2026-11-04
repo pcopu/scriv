@@ -2,40 +2,48 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 const source = path => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
-const path = 'apps/catalyst/ScrivUIKit/Account/ScrivCodexSetupView.swift';
+const base = 'apps/catalyst/ScrivUIKit/';
 
-test('the 584pt Codex reference sheet keeps its 524pt footer on one row', async () => {
-  const view = await source(path);
-  assert.match(view, /preferredSheetSize = CGSize\(width: 584, height: 614\)/);
-  assert.match(view, /bounds\.width < 440 \? \.vertical : \.horizontal/);
-  assert.doesNotMatch(view, /bounds\.width < 560/);
-  assert.match(view, /history\.contentHorizontalAlignment = \.leading; jobs\.contentHorizontalAlignment = \.leading/);
-  assert.match(view, /spacing = next == \.vertical \? 18 : 48/);
+test('Codex uses a compact native popover anchored to the workspace menu', async () => {
+  const view = await source(base + 'Account/ScrivCodexSetupView.swift');
+  const router = await source(base + 'Shared/ScrivUIKitRouter.swift');
+  const workspace = await source(base + 'App/ScrivWorkspaceController.swift');
+  assert.match(view, /preferredPopupSize = CGSize\(width: 360, height: 360\)/);
+  assert.match(router, /controller\.modalPresentationStyle = \.popover/);
+  assert.match(router, /popup\.sourceView = anchor \?\? front\.view/);
+  assert.match(workspace, /showCodexPopup\(from: self\?\.chrome\.moreButton\)/);
+  assert.match(router, /topViewController is ScrivCodexController \{ return \}/);
+  assert.doesNotMatch(view, /overrideUserInterfaceStyle = \.light|preferredSheetSize|UIImageView/);
 });
 
-test('help section changes reset the viewport but ordinary state refreshes preserve it', async () => {
-  const view = await source(path);
-  assert.match(view, /previousPhase != phase \|\| previouslyShowingInstallation != showingInstallation/);
-  assert.match(view, /pendingScrollToTop = true; pendingRevealTarget = nil/);
-  assert.match(view, /scroll\.setContentOffset\(CGPoint\(x: 0, y: -scroll\.adjustedContentInset\.top\), animated: false\)/);
-  assert.match(view, /explanation\.isHidden = showingInstallation \|\|/);
-  assert.match(view, /scroll\.contentInsetAdjustmentBehavior = \.never/);
+test('Advanced dismisses the popup and targets the existing Codex Settings pane', async () => {
+  const controller = await source(base + 'Account/ScrivSettingsController.swift');
+  const router = await source(base + 'Shared/ScrivUIKitRouter.swift');
+  const coordinator = await source(base + 'Account/ScrivSettingsWindowCoordinator.swift');
+  const panel = await source(base + 'Account/ScrivSettingsPanelController.swift');
+  assert.match(controller, /dismiss\(animated: true\) \{\s*ScrivUIKitRouter\.shared\.present\(\.codexSettings/);
+  assert.match(router, /case \.codexSettings = route \{ ScrivSettingsWindowCoordinator\.shared\.show\(store: store, pane: \.codex\)/);
+  assert.match(coordinator, /if let pane \{ pendingPane = pane \}/);
+  assert.match(coordinator, /guard pendingStore == nil else \{ return \}/);
+  assert.match(coordinator, /panel\.selectPane\(pane\)/);
+  assert.match(panel, /guard selectedPane != pane \|\| panes\[pane\] == nil else \{ return \}/);
+  assert.doesNotMatch(controller, /self\?\.show\(\.codex\)/);
 });
 
-test('expanded connection details reveal the saved-address field without remounting it', async () => {
-  const view = await source(path);
-  assert.match(view, /revealAfterLayout\(self\.advancedExpanded \? self\.endpoint : self\.controls\["advanced"\]\)/);
-  assert.match(view, /private weak var pendingRevealTarget: UIView\?/);
-  assert.match(view, /target\.isDescendant\(of: scroll\)/);
-  assert.match(view, /scroll\.scrollRectToVisible\(rect, animated: false\)/);
-  assert.match(view, /No address is needed for Check & connect/);
+test('native Settings has one scrolling body with persistent manual fields and no nested header', async () => {
+  const view = await source(base + 'Account/ScrivCodexSetupView.swift');
+  assert.match(view, /if surface == \.settings \{ buildSettings\(\) \}/);
+  assert.match(view, /body\.insertArrangedSubview\(header, at: 0\)/);
+  assert.match(view, /scroll\.leadingAnchor\.constraint\(equalTo: safeAreaLayoutGuide\.leadingAnchor\)/);
+  assert.match(view, /body\.widthAnchor\.constraint\(equalTo: scroll\.frameLayoutGuide\.widthAnchor/);
+  assert.match(view, /surface == \.popup \? \.systemBackground : \.systemGroupedBackground/);
+  assert.doesNotMatch(view, /Saved pairing survives restarts|overrideUserInterfaceStyle/);
 });
 
-test('new native regressions cover default, narrow, repeated, disclosure and help navigation', async () => {
-  const native = await source('apps/catalyst/Tests/ScrivUIKitTests/CodexNativeModalParityTests.swift');
-  for (const name of ['testReferenceWidthFooterDoesNotConsumeAnExtraBodyRow', 'testOpeningHelpAfterScrollingRevealsHeadingAndDoesNotStartRuntime', 'testOpeningAdvancedRevealsAddressAndRepeatedRefreshKeepsDraftAndViewport', 'testNewConnectionPhaseReturnsToHeadingWithoutChangingFields']) assert.ok(native.includes(name));
-  assert.doesNotMatch(native, /XCTSkip|MacRuntimeBridge\(|URLSession/);
-  const existing = await source('apps/catalyst/Tests/ScrivUIKitTests/CodexSetupUIKitTests.swift');
-  assert.match(existing, /XCTAssertEqual\(font\.pointSize, 14, accuracy: 0\.1\)/);
-  assert.match(existing, /The desktop .* reference shows every action without scrolling\./);
+test('native regressions cover popup repetition, settings lifecycle, drafts and synthetic cancellation', async () => {
+  const popup = await source('apps/catalyst/Tests/ScrivUIKitTests/CodexNativeModalParityTests.swift');
+  const settings = await source('apps/catalyst/Tests/ScrivUIKitTests/SettingsPanelTests.swift');
+  for (const name of ['testActualCodexRouteIsOneAnchoredPopoverWithoutConnecting', 'testClosingSettingsCancelsPendingPreparationAndCanRetry', 'testSwitchingPanesCancelsOnlyItsOwnCheck', 'testStalePopupDismissalCannotCancelNewSettingsAttempt']) assert.ok(popup.includes(name));
+  assert.ok(settings.includes('testAdvancedSelectsExistingSettingsWithoutLosingAccountDraft'));
+  assert.doesNotMatch(popup, /XCTSkip|MacRuntimeBridge\(|URLSession/);
 });

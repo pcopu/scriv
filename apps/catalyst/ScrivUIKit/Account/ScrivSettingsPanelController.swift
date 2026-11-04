@@ -14,11 +14,12 @@ enum ScrivSettingsPane: Int, CaseIterable {
 final class ScrivSettingsPanelController: UISplitViewController {
     let store: WorkspaceStore
     private let detail = UINavigationController()
+    private let makePane: @MainActor (WorkspaceStore, ScrivSettingsPane) -> ScrivSettingsController
     private var panes: [ScrivSettingsPane: ScrivSettingsController] = [:]
     private(set) var selectedPane = ScrivSettingsPane.general
 
-    init(store: WorkspaceStore) {
-        self.store = store
+    init(store: WorkspaceStore, makePane: @escaping @MainActor (WorkspaceStore, ScrivSettingsPane) -> ScrivSettingsController = { ScrivSettingsController(store: $0, pane: $1) }) {
+        self.store = store; self.makePane = makePane
         super.init(style: .doubleColumn)
         title = "Settings"
         preferredContentSize = CGSize(width: 880, height: 660)
@@ -37,20 +38,24 @@ final class ScrivSettingsPanelController: UISplitViewController {
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(store:)") }
 
     func selectPane(_ pane: ScrivSettingsPane) {
+        (viewController(for: .primary) as? ScrivSettingsSidebarController)?.select(pane)
+        guard selectedPane != pane || panes[pane] == nil else { return }
+        panes[selectedPane]?.cancelPendingConnectionCheck()
         viewIfLoaded?.endEditing(true)
         selectedPane = pane
-        if let sidebar = viewController(for: .primary) as? UICollectionViewController, sidebar.isViewLoaded {
-            sidebar.collectionView.selectItem(at: IndexPath(item: pane.rawValue, section: 0), animated: false, scrollPosition: [])
-        }
-        let controller = panes[pane] ?? ScrivSettingsController(store: store, pane: pane)
+        let controller = panes[pane] ?? makePane(store, pane)
         panes[pane] = controller
         detail.setViewControllers([controller], animated: false)
     }
+
+    func cancelPendingConnectionCheck() { panes[.codex]?.cancelPendingConnectionCheck() }
+
 }
 
 @MainActor
 private final class ScrivSettingsSidebarController: UICollectionViewController {
     var onSelect: ((ScrivSettingsPane) -> Void)?
+    private var selectedPane = ScrivSettingsPane.general
     private let cell = UICollectionView.CellRegistration<UICollectionViewListCell, ScrivSettingsPane> { cell, _, pane in
         var content = cell.defaultContentConfiguration()
         content.text = pane.title; content.image = UIImage(systemName: pane.symbol)
@@ -65,7 +70,12 @@ private final class ScrivSettingsSidebarController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.backgroundColor = .clear
-        collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: [])
+        select(selectedPane)
+    }
+    func select(_ pane: ScrivSettingsPane) {
+        selectedPane = pane
+        guard isViewLoaded else { return }
+        collectionView.selectItem(at: IndexPath(item: pane.rawValue, section: 0), animated: false, scrollPosition: [])
     }
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { ScrivSettingsPane.allCases.count }
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

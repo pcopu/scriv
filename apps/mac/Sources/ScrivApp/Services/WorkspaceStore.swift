@@ -1697,7 +1697,7 @@ final class WorkspaceStore: ObservableObject {
                 guard request == self.sharedJobRefreshGeneration, navigation == self.navigationGeneration, server == self.cloud.baseURL, user == self.account?.id else { return }
                 self.codex.sharedJobs = jobs; self.codex.sharedJobsError = nil
             } catch is CancellationError { }
-            catch { if navigation == self.navigationGeneration, server == self.cloud.baseURL, user == self.account?.id { self.codex.sharedJobsError = error.localizedDescription } }
+            catch { if request == self.sharedJobRefreshGeneration, navigation == self.navigationGeneration, server == self.cloud.baseURL, user == self.account?.id { self.codex.sharedJobsError = error.localizedDescription } }
         }
     }
     func downloadImage(_ asset: ImageAsset, silent: Bool = false) {

@@ -29,4 +29,40 @@ precondition(reset == nil)
 let stillSaved = try session.resolve(persistent: approved, ownerUID: 501)
 precondition(stillSaved == approved, "Reset must not remove a persistent grant")
 rejected { try session.retain(RuntimeBridgePairing(ownerUID: 501, port: 4501, secret: Data()), ownerUID: 501) }
-print("PASS: session lifetime/reset, persistent authority, conflict rejection, owner and capability validation")
+
+// The merged storage policy may retain a session grant only after both reads
+// establish absence. A failed/raced read must never inherit that fallback.
+var bootstrapped = RuntimeBridgeSessionGrant()
+var reads = 0, writes = 0
+try bootstrapped.importBootstrapped(approved, ownerUID: 501, readPersistent: {
+    reads += 1; return nil
+}, createPersistent: { value in
+    precondition(value == approved); writes += 1; return .missingEntitlement
+})
+precondition(reads == 2 && writes == 1)
+let bootstrappedGrant = try bootstrapped.resolve(persistent: nil, ownerUID: 501)
+precondition(bootstrappedGrant == approved)
+enum StorageFailure: Error { case locked }
+for outcome in [RuntimeBridgeSessionGrant.CreateResult.duplicate, .missingEntitlement] {
+    var denied = RuntimeBridgeSessionGrant()
+    var deniedReads = 0
+    rejected {
+        try denied.importBootstrapped(approved, ownerUID: 501, readPersistent: {
+            deniedReads += 1
+            if deniedReads == 2 { throw StorageFailure.locked }
+            return nil
+        }, createPersistent: { _ in outcome })
+    }
+    let deniedGrant = try denied.resolve(persistent: nil, ownerUID: 501)
+    precondition(deniedReads == 2 && deniedGrant == nil)
+    var raced = RuntimeBridgeSessionGrant()
+    var raceReads = 0
+    rejected {
+        try raced.importBootstrapped(approved, ownerUID: 501, readPersistent: {
+            raceReads += 1; return raceReads == 1 ? nil : different
+        }, createPersistent: { _ in outcome })
+    }
+    let racedGrant = try raced.resolve(persistent: nil, ownerUID: 501)
+    precondition(raceReads == 2 && racedGrant == nil)
+}
+print("PASS: session lifetime/reset, persistent authority, owner/capability checks, verified absence and failed/raced storage")

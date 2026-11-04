@@ -30,7 +30,10 @@ import ScrivCore
         content.addArrangedSubview(ImageUI.label("Follow this script entry", size: 16, weight: .regular)); source.showsMenuAsPrimaryAction = true; source.configuration?.image = UIImage(systemName: "chevron.down"); source.configuration?.imagePlacement = .trailing; source.contentHorizontalAlignment = .leading; source.configuration?.titleLineBreakMode = .byTruncatingTail; content.addArrangedSubview(source)
         let quoteCard = ImageUI.card(quote, padding: 14); quoteCard.backgroundColor = ScrivUIKitTheme.inset; content.addArrangedSubview(quoteCard); content.addArrangedSubview(ImageUI.label("Offset from entry", size: 16, weight: .regular))
         offset.widthAnchor.constraint(equalToConstant: 108).isActive = true; offset.keyboardType = .decimalPad; offset.accessibilityLabel = "Offset from entry, seconds"
-        offset.addAction(UIAction { [weak self] _ in self?.issue.text = nil; self?.issue.isHidden = true }, for: .editingChanged)
+        offset.addAction(UIAction { [weak self] _ in
+            guard let self else { return }; self.synchronizeOffsetStepper()
+            self.issue.text = nil; self.issue.isHidden = true
+        }, for: .editingChanged)
         stepper.minimumValue = 0; stepper.stepValue = 0.001; stepper.accessibilityLabel = "Adjust source offset"
         stepper.addAction(UIAction { [weak self] _ in guard let self else { return }; self.offset.text = String(format: "%.3f", self.stepper.value); self.issue.text = nil; self.issue.isHidden = true }, for: .valueChanged)
         content.addArrangedSubview(ImageUI.row([offset, stepper, ImageUI.badge("seconds"), ImageUI.spacer()])); content.addArrangedSubview(offsetHelp)
@@ -63,9 +66,15 @@ import ScrivCore
         quote.text = entry?.text ?? "Choose the dialogue or direction this picture belongs to."
         offset.isEnabled = entry?.ownedDurationMs ?? 0 > 0; stepper.isEnabled = offset.isEnabled
         stepper.maximumValue = Double(max(0, (entry?.ownedDurationMs ?? 0) - 1)) / 1000
-        stepper.value = min(stepper.maximumValue, max(0, Double(offset.text ?? "") ?? 0))
+        synchronizeOffsetStepper()
         offsetHelp.text = entry.map { $0.ownedDurationMs == 0 ? "This zero-owned direction starts at its authored position; its offset is 0." : "Within this entry’s \(ScrivFormat.duration($0.ownedDurationMs)) owned slot." }
         saveButton.isEnabled = ready && entry != nil
+    }
+    private func synchronizeOffsetStepper() {
+        // Text edits are local drafts and do not publish through the store.
+        // Keep +/- based on the displayed draft without replacing typed text.
+        guard let seconds = Double(offset.text ?? ""), seconds.isFinite else { return }
+        stepper.value = min(stepper.maximumValue, max(stepper.minimumValue, seconds))
     }
     private func save() {
         view.endEditing(true)

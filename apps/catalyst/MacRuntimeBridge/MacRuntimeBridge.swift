@@ -10,6 +10,8 @@ import ScrivCore
 /// commands, LAN access, implicit model requests, or access to cloud credentials.
 @MainActor
 final class MacRuntimeBridge {
+    // Main-actor isolated and never serialized. Retained only after a verified
+    // bootstrap response and a create-only Keychain write lacks entitlement.
     private static var sessionGrant = RuntimeBridgeSessionGrant()
     private let pairing: RuntimeBridgePairing
     private let sessionID = UUID()
@@ -37,6 +39,8 @@ final class MacRuntimeBridge {
             result = SecItemAdd(item as CFDictionary, nil)
         }
         guard result == errSecSuccess else { throw ScrivError.unavailable("The local runtime pairing could not be saved to this Mac's Keychain. The previous pairing was kept.") }
+        // This explicit manual replacement succeeded. Do not leave a different
+        // process-local grant in front of the newly chosen persistent pairing.
         sessionGrant.reset()
     }
     /// The signed bundled service may create a new grant or reuse the same one.
@@ -44,43 +48,49 @@ final class MacRuntimeBridge {
     static func importBootstrappedPairing(_ data: Data) throws {
         guard data.count <= 4096 else { throw ScrivError.invalid("Invalid local connection response.") }
         let incoming = try JSONDecoder().decode(RuntimeBridgePairing.self, from: data)
-        let existing = try savedPairing()
-        try RuntimeBridgeBootstrapSigning.validateImport(existing: existing, incoming: incoming, ownerUID: geteuid())
-        if existing != nil { return }
-        var item = pairingQuery
-        item[kSecValueData as String] = try JSONEncoder().encode(incoming)
-        item[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
-        let status = SecItemAdd(item as CFDictionary, nil)
-        if status == errSecDuplicateItem {
-            guard let raced = try savedPairing() else { throw ScrivError.conflict("Local pairing changed. Try again.") }
-            try RuntimeBridgeBootstrapSigning.validateImport(existing: raced, incoming: incoming, ownerUID: geteuid())
-        } else if status == errSecMissingEntitlement {
-            // Developer ID builds without a provisioning profile cannot use the
-            // Catalyst Keychain. Keep only this signed-XPC-approved capability
-            // in memory; provisioned builds continue to save it normally.
-            try sessionGrant.retain(incoming, ownerUID: geteuid())
-        } else if status != errSecSuccess { throw ScrivError.unavailable("The local connection could not be saved to this Mac's private Keychain (\(status)).") }
+        try sessionGrant.importBootstrapped(incoming, ownerUID: geteuid(), readPersistent: persistentPairing) { pairing in
+            var item = pairingQuery
+            item[kSecValueData as String] = try JSONEncoder().encode(pairing)
+            item[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+            switch SecItemAdd(item as CFDictionary, nil) {
+            case errSecSuccess: return .saved
+            case errSecDuplicateItem: return .duplicate
+            case errSecMissingEntitlement: return .missingEntitlement
+            default: throw ScrivError.unavailable("The local connection could not be saved to this Mac's private Keychain.")
+            }
+        }
     }
     private static var pairingQuery: [String: Any] {
         [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: "Scriv.LocalRuntimeBridge", kSecAttrAccount as String: "same-user-pairing"]
     }
-    /// Only a missing persistent item can use the process-local grant.
-    /// Damaged, locked and inaccessible saved items still fail closed.
+    /// The approved grant may be persistent or process-local. Every resolution
+    /// still reads Keychain, so a locked, unreadable or conflicting item cannot
+    /// be hidden by the in-memory capability.
     static func savedPairing() throws -> RuntimeBridgePairing? {
+        let persistent = try persistentPairing()
+        return try sessionGrant.resolve(persistent: persistent, ownerUID: geteuid())
+    }
+    /// nil means only errSecItemNotFound, never errSecMissingEntitlement.
+    /// A session grant cannot bypass an inaccessible persistent grant.
+    private static func persistentPairing() throws -> RuntimeBridgePairing? {
         var query = pairingQuery
         query[kSecReturnData as String] = true; query[kSecMatchLimit as String] = kSecMatchLimitOne
         var raw: CFTypeRef?; let status = SecItemCopyMatching(query as CFDictionary, &raw)
-        if status == errSecItemNotFound { return try sessionGrant.resolve(persistent: nil, ownerUID: geteuid()) }
+        if status == errSecItemNotFound { return nil }
         guard status == errSecSuccess, let data = raw as? Data, data.count <= 4096 else { throw ScrivError.permission("The existing local pairing was preserved. Unlock this Mac's Keychain or use the explicit pairing-reset controls.") }
         let pairing = try JSONDecoder().decode(RuntimeBridgePairing.self, from: data)
-        return try sessionGrant.resolve(persistent: pairing, ownerUID: geteuid())
+        try pairing.validate(ownerUID: geteuid()); return pairing
     }
-    static func forgetPairing() {
+    static func forgetPairing() throws {
         sessionGrant.reset()
-        SecItemDelete([kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: "Scriv.LocalRuntimeBridge", kSecAttrAccount as String: "same-user-pairing"] as CFDictionary)
+        let status = SecItemDelete(pairingQuery as CFDictionary)
+        if status == errSecMissingEntitlement, try persistentPairing() == nil { return }
+        guard status == errSecSuccess || status == errSecItemNotFound else {
+            throw ScrivError.permission("The in-memory local pairing was cleared, but the saved Keychain pairing could not be removed. Unlock this Mac's Keychain and try Forget pairing again.")
+        }
     }
     private static func loadPairing() throws -> RuntimeBridgePairing {
-        guard let pairing = try savedPairing() else { throw ScrivError.unavailable("Choose Connect Codex to start the local connection.") }
+        guard let pairing = try savedPairing() else { throw ScrivError.unavailable("Choose Connect to approve the local Codex connection, or explicitly pair a separate companion in Settings. No runtime has started.") }
         return pairing
     }
     static func openCompanion() async throws {
@@ -129,7 +139,7 @@ final class MacRuntimeBridge {
         guard !running else { throw ScrivError.conflict("Stop Codex before rotating local pairing.") }
         let status = try await request(.init(.status, sessionID: sessionID)); instanceID = status.instanceID
         guard instanceID != nil else { throw ScrivError.permission("The companion identity is missing.") }
-        _ = try await request(.init(.rotatePairing, sessionID: sessionID)); Self.forgetPairing()
+        _ = try await request(.init(.rotatePairing, sessionID: sessionID)); try Self.forgetPairing()
     }
     private func request(_ original: RuntimeBridgeCommand) async throws -> RuntimeBridgeReply {
         try Task.checkCancellation()

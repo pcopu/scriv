@@ -52,7 +52,7 @@ final class SettingsPanelTests: XCTestCase {
                 attachment.lifetime = .keepAlways; add(attachment)
                 XCTAssertGreaterThan(detail.view.bounds.width, 400)
                 let sidebar = try XCTUnwrap(panel.viewController(for: .primary))
-                let scroll = try XCTUnwrap(detail.topViewController?.view.subviews.compactMap { $0 as? UIScrollView }.first)
+                let scroll = try XCTUnwrap(detail.topViewController.flatMap { descendants($0.view).compactMap { $0 as? UIScrollView }.first })
                 let sidebarFrame = sidebar.view.convert(sidebar.view.bounds, to: panel.view)
                 let contentFrame = scroll.convert(scroll.bounds, to: panel.view)
                 XCTAssertGreaterThanOrEqual(contentFrame.minX, sidebarFrame.maxX - 1, "Settings must not extend underneath the sidebar.")
@@ -71,6 +71,53 @@ final class SettingsPanelTests: XCTestCase {
         app.requestSceneSessionDestruction(reopenedScene.session, options: nil, errorHandler: nil)
         let reclosed = await settled { self.settingsScenes.isEmpty }
         XCTAssertTrue(reclosed)
+        await activate(workspaceWindow)
+    }
+
+    func testAdvancedSelectsExistingSettingsWithoutLosingAccountDraft() async throws {
+        let app = UIApplication.shared
+        let workspaceWindow = try XCTUnwrap(app.connectedScenes.compactMap { $0 as? UIWindowScene }.flatMap(\.windows).first { $0.rootViewController is ScrivWorkspaceController })
+        let workspace = try XCTUnwrap(workspaceWindow.rootViewController as? ScrivWorkspaceController)
+        ScrivSettingsWindowCoordinator.shared.show(store: workspace.store)
+        let appeared = await settled { self.settingsScenes.count == 1 }
+        XCTAssertTrue(appeared)
+        let scene = try XCTUnwrap(settingsScenes.first)
+        defer { app.requestSceneSessionDestruction(scene.session, options: nil, errorHandler: nil); workspaceWindow.makeKey() }
+        let window = try XCTUnwrap(scene.windows.first)
+        let panel = try XCTUnwrap(window.rootViewController as? ScrivSettingsPanelController)
+        let detail = try XCTUnwrap(panel.viewController(for: .secondary) as? UINavigationController)
+        panel.selectPane(.account)
+        let account = try XCTUnwrap(detail.topViewController); account.loadViewIfNeeded()
+        let serverToggle = try XCTUnwrap(descendants(account.view).compactMap { $0 as? UIButton }.first { $0.accessibilityLabel == "Server settings" })
+        serverToggle.sendActions(for: .primaryActionTriggered)
+        let server = try XCTUnwrap(descendants(account.view).compactMap { $0 as? UITextField }.first)
+        let savedAddress = workspace.store.cloudBaseURL
+        server.text = "https://retained-advanced-draft.example"; server.sendActions(for: .editingChanged)
+        await activate(workspaceWindow)
+        ScrivUIKitRouter.shared.present(.codex, from: workspace, store: workspace.store)
+        let popupVisible = await settled { workspace.presentedViewController?.viewIfLoaded?.window != nil && workspace.presentedViewController?.isBeingPresented == false }
+        XCTAssertTrue(popupVisible)
+        let popup = try XCTUnwrap(workspace.presentedViewController as? UINavigationController)
+        let advanced = try XCTUnwrap(popup.topViewController.flatMap { descendants($0.view).compactMap { $0 as? UIButton }.first { $0.accessibilityIdentifier == "codex-advanced" } })
+        advanced.sendActions(for: .primaryActionTriggered)
+        let selected = await settled { panel.selectedPane == .codex && workspace.presentedViewController == nil && window.isKeyWindow }
+        XCTAssertTrue(selected)
+        XCTAssertEqual(settingsScenes.count, 1)
+        XCTAssertNil(panel.presentedViewController)
+        XCTAssertNil(detail.presentedViewController)
+        let codex = try XCTUnwrap(detail.topViewController)
+        XCTAssertTrue(descendants(codex.view).contains { $0.accessibilityIdentifier == "codex-settings" })
+        ScrivSettingsWindowCoordinator.shared.show(store: workspace.store, pane: .codex)
+        XCTAssertTrue(detail.topViewController === codex)
+        XCTAssertFalse(workspace.store.codex.isConnecting); XCTAssertFalse(workspace.store.codex.isConnected)
+        XCTAssertNil(workspace.store.codex.pendingLoginID)
+        panel.selectPane(.account)
+        XCTAssertTrue(detail.topViewController === account)
+        XCTAssertEqual(server.text, "https://retained-advanced-draft.example")
+        XCTAssertEqual(workspace.store.cloudBaseURL, savedAddress)
+        app.requestSceneSessionDestruction(scene.session, options: nil, errorHandler: nil)
+        let closed = await settled { self.settingsScenes.isEmpty }
+        XCTAssertTrue(closed)
         await activate(workspaceWindow)
     }
 

@@ -67,7 +67,8 @@ test('projects and history render real source identities while retaining restore
 test('compact settings and invitation UI preserve runtime and invitation safety boundaries', async () => {
   const settings = await source('Account/ScrivSettingsController');
   const teams = await source('Teams/TeamUIKitSupport');
-  assert.match(settings, /self\?\.show\(\.codex\)/);
+  assert.match(settings, /surface: runtimeOnly \? \.popup : \.settings/);
+  assert.match(settings, /present\(\.codexSettings, from: presenter, store: store\)/);
   assert.match(settings, /saveRuntimeFields\(\)/);
   assert.match(settings, /guard !store\.codex\.isConnected, !store\.codex\.isConnecting else/);
   assert.match(teams, /create\.isEnabled = UIKitTeamPolicy\.canManage\(team\) && team\.isPaid && !working/);

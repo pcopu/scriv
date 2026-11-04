@@ -101,7 +101,11 @@ final class CodexController: ObservableObject {
     }
     func forgetRuntimePairing() {
         guard !isConnected, !isConnecting else { return }
-        MacRuntimeBridge.forgetPairing(); bridgePaired = false; onChange?()
+        do {
+            try MacRuntimeBridge.forgetPairing()
+            bridgePaired = false; lastError = nil
+        } catch { lastError = error.localizedDescription }
+        onChange?()
     }
     func openRuntimeCompanion() async throws { try await MacRuntimeBridge.openCompanion() }
     private var ownsTransport: Bool { bridge != nil }
@@ -225,7 +229,7 @@ final class CodexController: ObservableObject {
                     guard connectionCheck.accepts(attempt) else { return }
                     try await start()
                 } else {
-                    throw ScrivError.unavailable("Choose Check & connect to prepare the local Codex connection. No server address is needed.")
+                    throw ScrivError.unavailable("Choose Connect to prepare the local Codex connection. No server address is needed.")
                 }
                 #else
                 try await start()

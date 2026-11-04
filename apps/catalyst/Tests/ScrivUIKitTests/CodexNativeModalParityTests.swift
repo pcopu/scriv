@@ -2,103 +2,177 @@ import UIKit
 import XCTest
 @testable import ScrivUIKit
 
-/// Screenshot-fed B1002 regressions. Synthetic state only; no pairing, account,
-/// server, clipboard, files or model turns are used by these layout checks.
+/// Repeated popup/Settings navigation and interrupted preparation, using isolated
+/// verification stores and synthetic preparation only.
 @MainActor
 final class CodexNativeModalParityTests: XCTestCase {
-    func testReferenceWidthFooterDoesNotConsumeAnExtraBodyRow() throws {
-        let setup = makeView()
-        let jobs = try button("jobs", in: setup), history = try button("history", in: setup)
-        let links = try XCTUnwrap(jobs.superview as? UIStackView)
-        for width in [CGFloat(584), 420, 584] {
-            setup.frame = CGRect(x: 0, y: 0, width: width, height: 614)
-            layout(setup)
-            XCTAssertEqual(links.axis, width == 584 ? .horizontal : .vertical)
-            let jobsRect = jobs.convert(jobs.bounds, to: setup), historyRect = history.convert(history.bounds, to: setup)
-            XCTAssertFalse(jobsRect.intersects(historyRect))
-            if width == 584 {
-                XCTAssertEqual(jobsRect.midY, historyRect.midY, accuracy: 1)
-                let advanced = try button("advanced", in: setup)
-                assertVisibleInBody(advanced, setup: setup)
-                XCTAssertLessThanOrEqual(setup.scroll.contentSize.height, setup.scroll.bounds.height + 1)
-            }
-            XCTAssertLessThanOrEqual(setup.scroll.frame.maxY, setup.footer.frame.minY)
+    func testActualCodexRouteIsOneAnchoredPopoverWithoutConnecting() async throws {
+        let store = WorkspaceStore(), router = ScrivUIKitRouter()
+        ScrivUIKitFeatures.registerAccount(in: router)
+        let previous = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.flatMap(\.windows).first(where: \.isKeyWindow)
+        let scene = try XCTUnwrap(previous?.windowScene)
+        let window = UIWindow(windowScene: scene), host = CodexPopupTestHostController()
+        let anchor = UIButton(type: .system); anchor.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        host.loadViewIfNeeded(); host.view.addSubview(anchor); anchor.frame = CGRect(x: 40, y: 40, width: 32, height: 32)
+        let appeared = expectation(description: "Popup fixture host appeared")
+        host.didAppear = { appeared.fulfill() }; window.rootViewController = host; window.makeKeyAndVisible()
+        defer { host.dismiss(animated: false); window.isHidden = true; previous?.makeKey() }
+        await fulfillment(of: [appeared], timeout: 5)
+        for _ in 0..<2 {
+            router.present(.codex, from: host, store: store, sourceView: anchor)
+            let attached = await settled { host.presentedViewController?.viewIfLoaded?.window != nil && host.presentedViewController?.isBeingPresented == false }
+            XCTAssertTrue(attached)
+            let popup = try XCTUnwrap(host.presentedViewController as? UINavigationController)
+            XCTAssertEqual(popup.modalPresentationStyle, .popover)
+            XCTAssertTrue(popup.popoverPresentationController?.sourceView === anchor)
+            XCTAssertEqual(popup.popoverPresentationController?.sourceRect, anchor.bounds)
+            XCTAssertTrue(popup.isNavigationBarHidden)
+            XCTAssertEqual(popup.preferredContentSize, ScrivCodexSetupView.preferredPopupSize)
+            let controller = try XCTUnwrap(popup.topViewController as? ScrivCodexController)
+            let setup = try XCTUnwrap(descendants(controller.view).compactMap { $0 as? ScrivCodexSetupView }.first)
+            XCTAssertEqual(setup.surface, .popup)
+            router.present(.codex, from: host, store: store, sourceView: anchor)
+            XCTAssertTrue(host.presentedViewController === popup)
+            XCTAssertNil(popup.presentedViewController)
+            XCTAssertEqual(store.codex.connectionCheck.phase, .idle)
+            XCTAssertFalse(store.codex.isConnecting); XCTAssertFalse(store.codex.isConnected)
+            XCTAssertFalse(store.codex.bridgePaired); XCTAssertFalse(store.codex.accountChecked)
+            XCTAssertNil(store.codex.pendingLoginID)
+            try button("done", in: setup).sendActions(for: .primaryActionTriggered)
+            // Reopening during dismissal must not stack or resurrect the popup.
+            router.present(.codex, from: host, store: store, sourceView: anchor)
+            let dismissed = await settled { host.presentedViewController == nil }
+            XCTAssertTrue(dismissed)
         }
     }
 
-    func testOpeningHelpAfterScrollingRevealsHeadingAndDoesNotStartRuntime() throws {
-        let setup = makeView(); setup.frame = CGRect(x: 0, y: 0, width: 584, height: 614)
-        var checks = 0, starts = 0, connects = 0
-        setup.onCheck = { checks += 1 }; setup.onStart = { starts += 1 }; setup.onConnect = { connects += 1 }
-        layout(setup)
-        setup.scroll.setContentOffset(CGPoint(x: 0, y: 90), animated: false)
-        try button("installation-help", in: setup).sendActions(for: .primaryActionTriggered)
-        layout(setup)
-        let headline = try XCTUnwrap(descendants(setup).first { $0.accessibilityIdentifier == "codex-setup-headline" } as? UILabel)
-        XCTAssertEqual(headline.text, "Get Codex ready")
-        XCTAssertEqual(setup.scroll.contentOffset.y, -setup.scroll.adjustedContentInset.top, accuracy: 0.5)
-        assertVisibleInBody(headline, setup: setup)
-        XCTAssertFalse(descendants(setup).compactMap { $0 as? UILabel }.contains {
-            $0.text == "Checks your saved local endpoint. A paired local runtime can be started for you." && !$0.isHidden
-        }, "The idle explanation must not add another row to the installation state.")
-        XCTAssertEqual(checks, 0); XCTAssertEqual(starts, 0); XCTAssertEqual(connects, 0)
-        let format = UIGraphicsImageRendererFormat(); format.scale = 1
-        let image = UIGraphicsImageRenderer(size: setup.bounds.size, format: format).image { context in setup.layer.render(in: context.cgContext) }
-        let attachment = XCTAttachment(image: image); attachment.name = "Codex-B1002-help-candidate"; attachment.lifetime = .keepAlways; add(attachment)
-    }
-
-    func testOpeningAdvancedRevealsAddressAndRepeatedRefreshKeepsDraftAndViewport() throws {
-        let endpoint = AccountUI.field("endpoint", height: 32)
-        endpoint.text = "ws://127.0.0.1:9999"
-        let setup = makeView(endpoint: endpoint)
-        setup.frame = CGRect(x: 0, y: 0, width: 420, height: 600)
-        layout(setup)
-        try button("advanced", in: setup).sendActions(for: .primaryActionTriggered)
-        layout(setup); assertVisibleInBody(endpoint, setup: setup)
-        let beforeOffset = setup.scroll.contentOffset.y
-        for _ in 0..<3 {
-            setup.update(.init(), error: nil, journalError: nil, log: "")
-            layout(setup)
-            XCTAssertEqual(setup.scroll.contentOffset.y, beforeOffset, accuracy: 1)
-            XCTAssertEqual(endpoint.text, "ws://127.0.0.1:9999")
-            XCTAssertTrue(endpoint.isDescendant(of: setup.advancedContent))
+    func testClosingSettingsCancelsPendingPreparationAndCanRetry() async throws {
+        let store = WorkspaceStore(), first = expectation(description: "First preparation"), second = expectation(description: "Retry preparation")
+        var attempts = 0
+        var release: CheckedContinuation<Void, Error>?
+        let panel = ScrivSettingsPanelController(store: store) { store, pane in
+            ScrivSettingsController(store: store, pane: pane, prepareLocalRuntime: { _ in
+                attempts += 1
+                try await withCheckedThrowingContinuation { continuation in
+                    release = continuation
+                    if attempts == 1 { first.fulfill() } else { second.fulfill() }
+                }
+                try Task.checkCancellation()
+                XCTFail("A cancelled preparation must not proceed toward a runtime")
+            })
         }
-        try button("advanced", in: setup).sendActions(for: .primaryActionTriggered)
-        layout(setup)
-        XCTAssertNil(setup.advancedContent.superview)
-        assertVisibleInBody(try button("advanced", in: setup), setup: setup)
+        panel.selectPane(.codex); panel.loadViewIfNeeded()
+        let detail = try XCTUnwrap(panel.viewController(for: .secondary) as? UINavigationController)
+        let controller = try XCTUnwrap(detail.topViewController as? ScrivSettingsController)
+        controller.loadViewIfNeeded()
+        defer { controller.cancelPendingConnectionCheck(); release?.resume(throwing: CancellationError()); release = nil }
+        try button("check", in: controller.view).sendActions(for: .primaryActionTriggered)
+        await fulfillment(of: [first], timeout: 2)
+        XCTAssertEqual(store.codex.connectionCheck.phase, .checking)
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 880, height: 660)); window.rootViewController = panel
+        let delegate = ScrivSettingsSceneDelegate(); delegate.window = window
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.first)
+        delegate.sceneDidDisconnect(scene)
+        release?.resume(); release = nil
+        let cancelled = await settled { store.codex.connectionCheck.phase == .cancelled && (try? self.button("check", in: controller.view).isEnabled) == true }
+        XCTAssertTrue(cancelled)
+        XCTAssertFalse(store.codex.isConnected); XCTAssertFalse(store.codex.bridgePaired)
+        try button("check", in: controller.view).sendActions(for: .primaryActionTriggered)
+        await fulfillment(of: [second], timeout: 2)
+        XCTAssertEqual(attempts, 2)
+        panel.selectPane(.general)
+        release?.resume(); release = nil
+        let recancelled = await settled { store.codex.connectionCheck.phase == .cancelled && !store.codex.isConnecting }
+        XCTAssertTrue(recancelled)
+        panel.selectPane(.codex)
+        XCTAssertTrue(detail.topViewController === controller)
+        XCTAssertFalse(store.codex.isConnected)
+        XCTAssertNil(store.codex.pendingLoginID)
     }
 
-    func testNewConnectionPhaseReturnsToHeadingWithoutChangingFields() throws {
-        let endpoint = AccountUI.field("endpoint", height: 32); endpoint.text = "ws://127.0.0.1:9999"
-        let setup = makeView(endpoint: endpoint); setup.frame = CGRect(x: 0, y: 0, width: 420, height: 600)
-        layout(setup)
-        try button("advanced", in: setup).sendActions(for: .primaryActionTriggered); layout(setup)
-        XCTAssertGreaterThan(setup.scroll.contentOffset.y, 0)
-        setup.update(.init(checkPhase: .notFound), error: nil, journalError: nil, log: "")
-        layout(setup)
-        XCTAssertEqual(setup.scroll.contentOffset.y, -setup.scroll.adjustedContentInset.top, accuracy: 0.5)
-        XCTAssertEqual(endpoint.text, "ws://127.0.0.1:9999")
-        XCTAssertTrue(endpoint.isDescendant(of: setup.advancedContent))
-        XCTAssertLessThanOrEqual(setup.scroll.frame.maxY, setup.footer.frame.minY)
-        XCTAssertLessThanOrEqual(setup.header.frame.maxY, setup.scroll.frame.minY)
+    func testSwitchingPanesCancelsOnlyItsOwnCheck() async throws {
+        let store = WorkspaceStore(), started = expectation(description: "Another surface started preparation")
+        var release: CheckedContinuation<Void, Never>?
+        let attempt = Task {
+            await store.codex.checkAndConnect(prepareLocalRuntime: {
+                await withCheckedContinuation { continuation in release = continuation; started.fulfill() }
+            })
+        }
+        await fulfillment(of: [started], timeout: 2)
+        defer { store.codex.cancelConnectionCheck(); release?.resume(); release = nil; attempt.cancel() }
+        let panel = ScrivSettingsPanelController(store: store)
+        panel.selectPane(.codex); panel.loadViewIfNeeded(); panel.selectPane(.general)
+        panel.cancelPendingConnectionCheck()
+        XCTAssertEqual(store.codex.connectionCheck.phase, .checking, "Read-only navigation must not cancel a different surface's request")
+        store.codex.cancelConnectionCheck(); release?.resume(); release = nil
+        await attempt.value
+        XCTAssertFalse(store.codex.isConnected); XCTAssertFalse(store.codex.bridgePaired)
     }
 
-    private func assertVisibleInBody(_ child: UIView, setup: ScrivCodexSetupView, file: StaticString = #filePath, line: UInt = #line) {
-        let rect = child.convert(child.bounds, to: setup)
-        XCTAssertGreaterThanOrEqual(rect.minY, setup.scroll.frame.minY - 0.5, file: file, line: line)
-        XCTAssertLessThanOrEqual(rect.maxY, setup.scroll.frame.maxY + 0.5, file: file, line: line)
-        XCTAssertGreaterThan(child.bounds.height, 0, file: file, line: line)
+    func testStalePopupDismissalCannotCancelNewSettingsAttempt() async throws {
+        let store = WorkspaceStore()
+        let firstStarted = expectation(description: "Popup preparation started")
+        let nextStarted = expectation(description: "Settings preparation started")
+        let firstUnwound = expectation(description: "Old preparation unwound")
+        var firstRelease: CheckedContinuation<Void, Never>?
+        var nextRelease: CheckedContinuation<Void, Never>?
+        let popup = ScrivSettingsController(store: store, runtimeOnly: true, prepareLocalRuntime: { _ in
+            await withCheckedContinuation { continuation in firstRelease = continuation; firstStarted.fulfill() }
+            firstUnwound.fulfill()
+            try Task.checkCancellation()
+        })
+        popup.loadViewIfNeeded()
+        defer {
+            popup.cancelPendingConnectionCheck(); store.codex.cancelConnectionCheck()
+            firstRelease?.resume(); nextRelease?.resume()
+        }
+        try button("check", in: popup.view).sendActions(for: .primaryActionTriggered)
+        await fulfillment(of: [firstStarted], timeout: 2)
+        let firstAttempt = try XCTUnwrap(store.codex.connectionCheck.attempt)
+        popup.cancelPendingConnectionCheck()
+        XCTAssertEqual(store.codex.connectionCheck.phase, .cancelled)
+        // Keep the cancelled popup preparation suspended while Settings starts.
+        let settings = ScrivSettingsController(store: store, pane: .codex, prepareLocalRuntime: { _ in
+            await withCheckedContinuation { continuation in nextRelease = continuation; nextStarted.fulfill() }
+            try Task.checkCancellation()
+        })
+        settings.loadViewIfNeeded()
+        defer { settings.cancelPendingConnectionCheck() }
+        try button("check", in: settings.view).sendActions(for: .primaryActionTriggered)
+        await fulfillment(of: [nextStarted], timeout: 2)
+        let nextAttempt = try XCTUnwrap(store.codex.connectionCheck.attempt)
+        XCTAssertNotEqual(firstAttempt, nextAttempt)
+        popup.presentationControllerDidDismiss(UIPresentationController(presentedViewController: popup, presenting: nil))
+        XCTAssertEqual(store.codex.connectionCheck.attempt, nextAttempt, "A stale dismissal must not cancel the new connection")
+        firstRelease?.resume(); firstRelease = nil
+        await fulfillment(of: [firstUnwound], timeout: 2)
+        XCTAssertEqual(store.codex.connectionCheck.attempt, nextAttempt)
+        XCTAssertEqual(store.codex.connectionCheck.phase, .checking)
+        settings.cancelPendingConnectionCheck(); nextRelease?.resume(); nextRelease = nil
+        let cancelled = await settled { store.codex.connectionCheck.phase == .cancelled && !store.codex.isConnecting }
+        XCTAssertTrue(cancelled)
+        XCTAssertFalse(store.codex.isConnected); XCTAssertFalse(store.codex.bridgePaired)
     }
-    private func layout(_ setup: ScrivCodexSetupView) {
-        for _ in 0..<8 { setup.setNeedsLayout(); setup.layoutIfNeeded(); setup.scroll.layoutIfNeeded(); setup.body.layoutIfNeeded() }
-    }
-    private func makeView(endpoint: UITextField? = nil) -> ScrivCodexSetupView {
-        let progress = UIView(); progress.isHidden = true
-        return ScrivCodexSetupView(executable: AccountUI.field("executable", height: 32), endpoint: endpoint ?? AccountUI.field("endpoint", height: 32), progress: progress)
-    }
+
     private func descendants(_ view: UIView) -> [UIView] { [view] + view.subviews.flatMap(descendants) }
     private func button(_ id: String, in view: UIView) throws -> UIButton {
         try XCTUnwrap(descendants(view).first { $0.accessibilityIdentifier == "codex-" + id } as? UIButton)
+    }
+    private func settled(_ predicate: () -> Bool) async -> Bool {
+        let deadline = Date().addingTimeInterval(5)
+        while Date() < deadline {
+            if predicate() { return true }
+            try? await Task.sleep(for: .milliseconds(20))
+        }
+        return predicate()
+    }
+}
+
+@MainActor
+private final class CodexPopupTestHostController: UIViewController {
+    var didAppear: (() -> Void)?
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        let callback = didAppear; didAppear = nil; callback?()
     }
 }

@@ -91,7 +91,7 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
         contextButton.setTitle(store.discussionItemID == nil ? store.project.title : UIKitDiscussionPresentation.itemLabel(store.discussionItemID, project: store.project) + "  ⌄", for: .normal); contextButton.menu = contextMenu()
         contextSubtitle.text = "Comments stay with this " + (store.discussionItemID == nil ? "project." : itemKind + ".")
         contextThumbnail.isHidden = image == nil
-        if let image { contextThumbnail.configure(url: store.assetURL(image), title: UIKitDiscussionPresentation.imageLabel(image, project: store.project), missingText: "Image unavailable") }
+        if let image { contextThumbnail.configure(url: store.assetURL(image), title: UIKitDiscussionPresentation.imageLabel(image, project: store.project), missingText: "Image unavailable", expectedDigest: image.sha256) }
         preferredContentSize = CGSize(width: 400, height: ready && store.messages.isEmpty ? 440 : 560)
         activityButton.isEnabled = ready; activityButton.setImage(UIImage(systemName: store.unreadDiscussionMentionCount > 0 ? "bell.badge.fill" : "bell"), for: .normal)
         activityButton.accessibilityLabel = "Project activity, " + ScrivFormat.count(store.unreadDiscussionMentionCount, "unread mention")

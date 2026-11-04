@@ -244,7 +244,7 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
     private func imageCard(_ image: ImageAsset, character: ScriptCharacter) -> UIView {
         let cue = store.project.cues.first { $0.imageId == image.id }
         let title = cue.flatMap { $0.label.isEmpty ? nil : $0.label } ?? "Image"
-        let picture = UIKitAssetImageView(); picture.configure(url: store.assetURL(image), title: title, fill: true, missingText: "Image not on this device")
+        let picture = UIKitAssetImageView(); picture.configure(url: store.assetURL(image), title: title, fill: true, missingText: "Image not on this device", expectedDigest: image.sha256)
         picture.layer.cornerRadius = 9; picture.clipsToBounds = true
         let open = UIButton(type: .custom); open.addSubview(picture); picture.scrivPinEdges(to: open); picture.isUserInteractionEnabled = false
         open.heightAnchor.constraint(equalTo: open.widthAnchor, multiplier: 0.54).isActive = true

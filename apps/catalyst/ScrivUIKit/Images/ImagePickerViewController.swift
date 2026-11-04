@@ -136,7 +136,7 @@ import ScrivCore
         return ceil((width - 6) * 0.5 + titleHeight + max(17, tagsHeight) + (local ? 0 : 18) + 34)
     }
     func configure(image: ImageAsset, store: WorkspaceStore, selected: Bool) {
-        let url = store.assetURL(image); picture.configure(url: url, title: UIKitImageContext.title(imageID: image.id, project: store.project), missingText: "Not on this Mac")
+        let url = store.assetURL(image); picture.configure(url: url, title: UIKitImageContext.title(imageID: image.id, project: store.project), missingText: "Not on this Mac", expectedDigest: image.sha256)
         titleLabel.text = UIKitImageContext.title(imageID: image.id, project: store.project)
         versionLabel.text = "Version \(image.version)"; availabilityLabel.isHidden = url != nil
         tags.subviews.forEach { $0.removeFromSuperview() }

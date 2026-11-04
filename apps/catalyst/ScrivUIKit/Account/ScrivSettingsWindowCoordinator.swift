@@ -6,6 +6,7 @@ final class ScrivSettingsWindowCoordinator {
     static let configurationName = "Scriv Settings"
     static let activityType = "app.scriv.settings"
     private var pendingStore: WorkspaceStore?
+    private var pendingPane: ScrivSettingsPane?
     private var settingsSession: UISceneSession? {
         UIApplication.shared.openSessions.first { $0.configuration.name == Self.configurationName }
     }
@@ -19,16 +20,37 @@ final class ScrivSettingsWindowCoordinator {
     }
     var canShow: Bool { settingsSession != nil || pendingStore != nil || activeStore != nil }
 
-    func show(store: WorkspaceStore? = nil) {
+    func show(store: WorkspaceStore? = nil, pane: ScrivSettingsPane? = nil) {
+        // A second Advanced request during scene creation changes the pending
+        // selection instead of creating another Settings window.
+        if let pane { pendingPane = pane }
         guard pendingStore == nil else { return }
         let session = settingsSession
         let source = store ?? activeStore
-        guard session != nil || source != nil else { return }
+        guard session != nil || source != nil else { pendingPane = nil; return }
+        let activity = NSUserActivity(activityType: Self.activityType)
+        if let pane { activity.userInfo = ["pane": pane.rawValue] }
         if session == nil { pendingStore = source }
-        UIApplication.shared.requestSceneSessionActivation(session, userActivity: NSUserActivity(activityType: Self.activityType), options: nil) { [weak self] error in
-            self?.pendingStore = nil
+        else {
+            if let pane, let scene = session?.scene as? UIWindowScene,
+               let panel = scene.windows.compactMap({ $0.rootViewController as? ScrivSettingsPanelController }).first {
+                panel.selectPane(pane)
+            }
+            pendingPane = nil
+        }
+        UIApplication.shared.requestSceneSessionActivation(session, userActivity: activity, options: nil) { [weak self] error in
+            self?.pendingStore = nil; self?.pendingPane = nil
             source?.errorMessage = "Settings could not open: \(error.localizedDescription)"
         }
+    }
+
+    func paneForConnection() -> ScrivSettingsPane? {
+        defer { pendingPane = nil }
+        return pendingPane
+    }
+    static func pane(in activity: NSUserActivity) -> ScrivSettingsPane? {
+        guard activity.activityType == activityType, let raw = activity.userInfo?["pane"] as? Int else { return nil }
+        return ScrivSettingsPane(rawValue: raw)
     }
 
     func storeForConnection() -> WorkspaceStore {
@@ -48,7 +70,11 @@ final class ScrivSettingsSceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.store = store
         ScrivUpdateCoordinator.shared.register(store)
         let window = UIWindow(windowScene: scene)
-        window.rootViewController = ScrivSettingsPanelController(store: store)
+        let panel = ScrivSettingsPanelController(store: store)
+        let pendingPane = ScrivSettingsWindowCoordinator.shared.paneForConnection()
+        let activityPane = connectionOptions.userActivities.compactMap { ScrivSettingsWindowCoordinator.pane(in: $0) }.first
+        if let pane = pendingPane ?? activityPane { panel.selectPane(pane) }
+        window.rootViewController = panel
         window.tintColor = .systemBlue
         self.window = window
         scene.title = "Settings"
@@ -61,7 +87,15 @@ final class ScrivSettingsSceneDelegate: UIResponder, UIWindowSceneDelegate {
         scene.requestGeometryUpdate(.Mac(systemFrame: CGRect(x: max(0, bounds.midX - 440), y: max(0, bounds.midY - 330), width: 880, height: 660)))
         #endif
     }
-    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) { window?.makeKeyAndVisible() }
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        if let pane = ScrivSettingsWindowCoordinator.pane(in: userActivity) {
+            (window?.rootViewController as? ScrivSettingsPanelController)?.selectPane(pane)
+        }
+        window?.makeKeyAndVisible()
+    }
+    func sceneDidDisconnect(_ scene: UIScene) {
+        (window?.rootViewController as? ScrivSettingsPanelController)?.cancelPendingConnectionCheck()
+    }
     func sceneDidEnterBackground(_ scene: UIScene) {
         window?.endEditing(true)
         guard let store else { return }
