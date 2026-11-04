@@ -31,6 +31,15 @@ final class UIKitFileAccess: NSObject, UIDocumentPickerDelegate {
     private var exportCompletion: (() -> Void)?
     private var retainedScopes: [String:URL] = [:]
     private let bookmarksKey = "ScrivUIKitProjectBookmarks.v1"
+#if targetEnvironment(macCatalyst)
+    // Mac sandbox grants must survive relaunch; minimal bookmarks do not retain
+    // the document picker's access. The app-scope entitlement is also required.
+    private static let bookmarkCreationOptions: URL.BookmarkCreationOptions = .withSecurityScope
+    private static let bookmarkResolutionOptions: URL.BookmarkResolutionOptions = .withSecurityScope
+#else
+    private static let bookmarkCreationOptions: URL.BookmarkCreationOptions = .minimalBookmark
+    private static let bookmarkResolutionOptions: URL.BookmarkResolutionOptions = []
+#endif
     private let defaults: UserDefaults
     init(defaults: UserDefaults = .standard) { self.defaults = defaults; super.init() }
     static let projectType = UTType(exportedAs: "app.scriv.project", conformingTo: .package)
@@ -63,7 +72,7 @@ final class UIKitFileAccess: NSObject, UIDocumentPickerDelegate {
         guard retainedScopes[key] == nil else { return }
         let scoped = url.startAccessingSecurityScopedResource()
         do {
-            let data = try url.bookmarkData(options: .minimalBookmark, includingResourceValuesForKeys: nil, relativeTo: nil)
+            let data = try url.bookmarkData(options: Self.bookmarkCreationOptions, includingResourceValuesForKeys: nil, relativeTo: nil)
             var saved = defaults.dictionary(forKey: bookmarksKey) as? [String:Data] ?? [:]
             saved[key] = data; defaults.set(saved, forKey: bookmarksKey)
             if scoped { retainedScopes[key] = url }
@@ -75,11 +84,11 @@ final class UIKitFileAccess: NSObject, UIDocumentPickerDelegate {
         let saved = defaults.dictionary(forKey: bookmarksKey) as? [String:Data] ?? [:]
         guard let data = saved[key] else { return url } // App-container URLs need no bookmark; normal I/O still enforces access.
         var stale = false
-        let resolved = try URL(resolvingBookmarkData: data, options: [], relativeTo: nil, bookmarkDataIsStale: &stale)
+        let resolved = try URL(resolvingBookmarkData: data, options: Self.bookmarkResolutionOptions, relativeTo: nil, bookmarkDataIsStale: &stale)
         let scoped = resolved.startAccessingSecurityScopedResource()
         if stale {
             do {
-                let refreshed = try resolved.bookmarkData(options:.minimalBookmark,includingResourceValuesForKeys:nil,relativeTo:nil)
+                let refreshed = try resolved.bookmarkData(options: Self.bookmarkCreationOptions,includingResourceValuesForKeys:nil,relativeTo:nil)
                 var bookmarks = saved; bookmarks[key] = refreshed
                 defaults.set(bookmarks,forKey:bookmarksKey)
             } catch { if scoped { resolved.stopAccessingSecurityScopedResource() }; throw error }

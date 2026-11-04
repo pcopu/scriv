@@ -69,6 +69,16 @@ test('scope/bookmark failures still throw and existing integrity, size and ident
   assert.match(repository, /Project packages cannot contain symbolic links/);
 });
 
+test('Catalyst retains external packages with persistent app-scoped bookmarks', async () => {
+  const entitlements = JSON.parse(execFileSync('python3', ['-c', 'import json,plistlib,sys; print(json.dumps(plistlib.load(open(sys.argv[1],"rb"))))', new URL('apps/catalyst/ScrivUIKit.entitlements', root).pathname], { encoding: 'utf8' }));
+  assert.equal(entitlements['com.apple.security.files.bookmarks.app-scope'], true);
+  const access = await source('apps/catalyst/ScrivUIKit/Shared/UIKitFileAccess.swift');
+  assert.match(access, /#if targetEnvironment\(macCatalyst\)[\s\S]*bookmarkCreationOptions[^\n]*\.withSecurityScope/);
+  assert.match(access, /bookmarkResolutionOptions[^\n]*\.withSecurityScope/);
+  assert.match(access, /bookmarkData\(options: Self\.bookmarkCreationOptions/g);
+  assert.match(access, /URL\(resolvingBookmarkData: data, options: Self\.bookmarkResolutionOptions/);
+});
+
 test('native regression covers bookmark restore, exact package bytes, authored edits and immutable image identity', async () => {
   const native = await source('apps/catalyst/Tests/ScrivUIKitTests/ProjectPackageOpeningTests.swift');
   assert.match(native, /UIKitFileAccess\(defaults: defaults\)/);

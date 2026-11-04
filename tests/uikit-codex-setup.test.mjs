@@ -8,7 +8,9 @@ const runtimePath = 'apps/mac/Sources/ScrivApp/Services/CodexController.swift';
 
 test('one-click sheet retains bounded body, persistent controls and collapsed optional details', async () => {
   const view = await source(viewPath);
-  for (const text of ['Connect Codex in one click', 'Check & connect', 'Get Codex ready', 'Codex is ready', 'Sign in to Codex', 'Cancel check']) assert.ok(view.includes(text));
+  for (const text of ['Connect Codex in one click', 'Connect Codex', 'Get Codex ready', 'Codex is ready', 'Sign in to Codex', 'Cancel check']) assert.ok(view.includes(text));
+  assert.doesNotMatch(view, /phase == \.notFound \|\| \(installationExpanded/);
+  assert.doesNotMatch(view, /advancedContent\.addArrangedSubview\(errorLabel\)/);
   assert.match(view, /scroll\.topAnchor\.constraint\(equalTo: topRule\.bottomAnchor\)/);
   assert.match(view, /scroll\.bottomAnchor\.constraint\(equalTo: footer\.topAnchor/);
   assert.match(view, /body\.widthAnchor\.constraint\(equalTo: scroll\.frameLayoutGuide\.widthAnchor/);

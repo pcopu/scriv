@@ -183,7 +183,8 @@ final class ScrivCodexSetupView: UIView {
         readyDetails.addArrangedSubview(divider())
         modelButton.showsMenuAsPrimaryAction = true; modelButton.accessibilityIdentifier = "codex-model"
         readyDetails.addArrangedSubview(detailRow("Model", value: modelButton)); body.addArrangedSubview(readyDetails)
-        let check = button("Check & connect", id: "check", primary: true) { [weak self] in guard let self, self.state.canConnect else { return }; self.onCheck?() }
+        primaryActions.addArrangedSubview(errorLabel)
+        let check = button("Connect Codex", id: "check", primary: true) { [weak self] in guard let self, self.state.canConnect else { return }; self.onCheck?() }
         primaryActions.addArrangedSubview(check)
         primaryActions.addArrangedSubview(button("Cancel check", id: "cancel-check", plain: true) { [weak self] in self?.onCancelCheck?() })
         primaryActions.addArrangedSubview(explanation)
@@ -202,7 +203,7 @@ final class ScrivCodexSetupView: UIView {
         advancedSection.addArrangedSubview(disclosure("Advanced connection", id: "advanced") { [weak self] in guard let self else { return }; self.advancedExpanded.toggle(); self.updateDisclosures(); self.revealAfterLayout(self.advancedExpanded ? self.endpoint : self.controls["advanced"]) })
         body.addArrangedSubview(advancedSection); buildAdvanced()
         errorLabel.accessibilityIdentifier = "codex-setup-error"; errorLabel.accessibilityTraits.insert(.updatesFrequently)
-        advancedContent.addArrangedSubview(errorLabel); body.addArrangedSubview(journalLabel)
+        body.addArrangedSubview(journalLabel)
         response.isEditable = false; response.isSelectable = true; response.backgroundColor = ScrivUIKitTheme.inset
         response.font = .monospacedSystemFont(ofSize: 13, weight: .regular); response.textColor = ScrivUIKitTheme.ink
         response.accessibilityLabel = "Generation response"; response.heightAnchor.constraint(equalToConstant: 150).isActive = true
@@ -291,7 +292,7 @@ final class ScrivCodexSetupView: UIView {
         let color: UIColor = phase == .ready ? .systemGreen : [.notFound, .incompatible, .signInRequired].contains(phase) ? .systemOrange : ScrivUIKitTheme.accent
         connectionDot.backgroundColor = color; hero.tintColor = color; hero.backgroundColor = color.withAlphaComponent(0.1)
         hero.image = UIImage(systemName: phase == .ready ? "checkmark" : phase == .signInRequired ? "person" : phase == .checking ? "arrow.triangle.2.circlepath" : "powerplug", withConfiguration: UIImage.SymbolConfiguration(pointSize: [.ready, .signInRequired].contains(phase) ? 42 : 64, weight: .medium))
-        let showingInstallation = phase == .notFound || (installationExpanded && !state.connected)
+        let showingInstallation = installationExpanded && !state.connected
         let compact = phase == .ready || phase == .signInRequired
         heroWidth.constant = compact ? (phase == .ready ? 80 : 88) : 130
         heroHeight.constant = heroWidth.constant; hero.layer.cornerRadius = compact ? heroWidth.constant / 2 : 36
@@ -305,13 +306,13 @@ final class ScrivCodexSetupView: UIView {
         headline.font = .systemFont(ofSize: showingInstallation ? 24 : 26, weight: .bold)
         subtitle.font = .systemFont(ofSize: showingInstallation ? 16 : 17)
         footer.spacing = compact ? 4 : 8; footerBottom.constant = compact ? -10 : -20
-        headline.text = showingInstallation ? "Get Codex ready" : phase == .ready ? "Codex is ready" : phase == .signInRequired ? "Sign in to Codex" : phase == .checking ? "Checking Codex…" : phase == .incompatible ? "This server can't connect" : "Connect Codex in one click"
+        headline.text = showingInstallation ? "Get Codex ready" : phase == .ready ? "Codex is ready" : phase == .signInRequired ? "Sign in to Codex" : phase == .checking ? "Connecting Codex…" : [.notFound, .incompatible].contains(phase) ? "Codex couldn’t connect" : "Connect Codex in one click"
         subtitle.text = showingInstallation ? "Install Codex, then choose Check & connect. Scriv starts the local runtime for you." : phase == .ready ? (state.requiresAuthentication ? "Local app server connected. Your account is signed in." : "Local app server connected. This provider does not require an account.") : phase == .signInRequired ? (state.pendingLogin ? "Complete the sign-in in your browser, then return here. You can cancel without changing your project." : "The local app server is connected, but it reports no signed-in account. A ChatGPT account with Codex access is required.") : phase == .checking ? "Checking the app-server protocol and existing account. No image is being generated." : phase == .incompatible ? "The local Codex runtime could not be verified. Update Codex or inspect Advanced connection, then try again." : "Connect using the Codex installation and account on this Mac."
         mount(installation, in: body, visible: showingInstallation, before: primaryActions)
         mount(readyDetails, in: body, visible: phase == .ready, before: primaryActions)
         mount(authActions, in: body, visible: phase == .signInRequired, before: controls["stop"])
         controls["check"]?.isHidden = state.connected || phase == .checking
-        controls["check"]?.configuration?.title = [.notFound, .incompatible, .cancelled].contains(phase) || showingInstallation ? "Check again" : "Check & connect"
+        controls["check"]?.configuration?.title = [.notFound, .incompatible, .cancelled].contains(phase) || showingInstallation ? "Check again" : "Connect Codex"
         controls["check"]?.accessibilityLabel = controls["check"]?.configuration?.title
         controls["check"]?.isEnabled = state.canConnect
         controls["cancel-check"]?.isHidden = phase != .checking

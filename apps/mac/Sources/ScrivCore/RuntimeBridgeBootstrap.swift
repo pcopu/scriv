@@ -62,3 +62,23 @@ public enum RuntimeBridgeBootstrapSigning {
         return "anchor apple generic and certificate leaf[subject.OU] = \"\(teamIdentifier)\" and identifier \"\(bundleIdentifier)\""
     }
 }
+
+/// A verified capability for this process when the build cannot save to Keychain.
+/// Persistent grants remain authoritative; conflicts never replace either grant.
+public struct RuntimeBridgeSessionGrant: Sendable {
+    private var pairing: RuntimeBridgePairing?
+    public init() {}
+    public mutating func retain(_ incoming: RuntimeBridgePairing, ownerUID: UInt32) throws {
+        try RuntimeBridgeBootstrapSigning.validateImport(existing: pairing, incoming: incoming, ownerUID: ownerUID)
+        pairing = incoming
+    }
+    public func resolve(persistent: RuntimeBridgePairing?, ownerUID: UInt32) throws -> RuntimeBridgePairing? {
+        if let persistent {
+            try RuntimeBridgeBootstrapSigning.validateImport(existing: pairing, incoming: persistent, ownerUID: ownerUID)
+            return persistent
+        }
+        if let pairing { try pairing.validate(ownerUID: ownerUID) }
+        return pairing
+    }
+    public mutating func reset() { pairing = nil }
+}

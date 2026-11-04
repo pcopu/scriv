@@ -182,6 +182,10 @@ final class CodexSetupUIKitTests: XCTestCase {
         XCTAssertFalse(try button("cancel-check", in: setup).isHidden)
         try button("cancel-check", in: setup).sendActions(for: .primaryActionTriggered); XCTAssertEqual(cancelled, 1)
         setup.update(ScrivCodexSetupPresentation(checkPhase: .notFound), error: "Synthetic absent server", journalError: nil, log: "")
+        let failedLabels = descendants(of: setup).compactMap { ($0 as? UILabel)?.text }
+        XCTAssertFalse(failedLabels.contains("curl -fsSL https://chatgpt.com/codex/install.sh | sh"), "A connection failure does not prove Codex is missing")
+        XCTAssertTrue(failedLabels.contains("Synthetic absent server"), "The error must be visible without expanding Advanced")
+        try button("installation-help", in: setup).sendActions(for: .primaryActionTriggered)
         let labels = descendants(of: setup).compactMap { ($0 as? UILabel)?.text }
         XCTAssertTrue(labels.contains("curl -fsSL https://chatgpt.com/codex/install.sh | sh"))
         XCTAssertFalse(labels.contains("codex app-server --listen ws://127.0.0.1:4500"), "Manual server setup belongs in Advanced")

@@ -23,7 +23,7 @@ test('guided pairing creates only; inaccessible or raced grants never overwrite'
   assert.match(guided, /validateImport\(existing: raced/);
   assert.match(guided, /kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly/);
   assert.ok(!guided.includes('SecItemUpdate')); assert.ok(!guided.includes('SecItemDelete'));
-  assert.match(guided, /if status == errSecItemNotFound \{ return nil \}/);
+  assert.match(guided, /if status == errSecItemNotFound \{ return try sessionGrant\.resolve/);
 });
 test('only an absent Keychain entitlement permits a verified in-memory grant', async () => {
   const bridge = await read('apps/catalyst/MacRuntimeBridge/MacRuntimeBridge.swift');
@@ -40,7 +40,9 @@ test('guided connection owns XPC lifetime and does not open standalone companion
   assert.ok(!guided.includes('openRuntimeCompanion'));
   assert.match(controller, /owned.stop\(completion: release\)/);
   const coordinator = await read('apps/catalyst/ScrivUIKit/Account/ScrivRuntimeBootstrapCoordinator.swift');
-  assert.ok(coordinator.indexOf('guard allowed else') < coordinator.indexOf('let native = try makeAdapter'));
+  assert.ok(coordinator.includes('guard userApproved else'));
+  assert.ok(coordinator.indexOf('guard userApproved else') < coordinator.indexOf('let native = try makeAdapter'));
+  assert.ok(!coordinator.includes('UIAlertController'), 'The Connect action is the consent; no second pairing prompt');
   assert.ok(coordinator.indexOf('guard !cancelled else', coordinator.indexOf('let bytes:')) < coordinator.indexOf('try savePairing(bytes)'));
   assert.match(coordinator, /pending\?\.resume\(throwing: CancellationError\(\)\)/);
 });

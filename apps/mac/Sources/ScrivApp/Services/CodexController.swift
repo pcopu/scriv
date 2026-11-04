@@ -30,6 +30,9 @@ final class CodexController: ObservableObject {
     @Published private(set) var accountLabel: String?
     @Published private(set) var accountChecked = false
     @Published private(set) var requiresAccountAuthentication = true
+    private var accountReadTask: Task<Void, Error>?
+    private var accountReadToken: UUID?
+    private var accountReadRequested = false
     @Published private(set) var connectionCheck = CodexConnectionCheck()
     @Published private(set) var modelCapabilities: [CodexModelCapabilities] = []
     var selectedModelSupportsImageInput: Bool { modelCapabilities.first { $0.model == selectedModel }?.supportsImageInput == true }
@@ -412,11 +415,36 @@ final class CodexController: ObservableObject {
     }
     func readAccount(timeout: Duration = .seconds(10)) async throws {
         let generation = connectionGeneration
-        let result = try await rpc("account/read", .object(["refreshToken":.bool(false)]), timeout: timeout)
+        accountReadRequested = true
+        accountChecked = false; onChange?()
+        if accountReadTask == nil {
+            let token = UUID(); accountReadToken = token
+            accountReadTask = Task { @MainActor in
+                defer {
+                    if self.accountReadToken == token { self.accountReadTask = nil; self.accountReadToken = nil }
+                }
+                // Coalesce updates while a read is in flight. A notification
+                // invalidates both the older snapshot and any older error.
+                while self.accountReadRequested {
+                    self.accountReadRequested = false
+                    do {
+                        let result = try await self.rpc("account/read", .object(["refreshToken":.bool(false)]), timeout: timeout)
+                        guard generation == self.connectionGeneration else { throw CancellationError() }
+                        if self.accountReadRequested { continue }
+                        let readiness = try CodexAccountReadiness(response: result)
+                        self.requiresAccountAuthentication = readiness.requiresAuthentication; self.accountLabel = readiness.label
+                        self.accountChecked = true; self.onChange?()
+                    } catch {
+                        guard generation == self.connectionGeneration else { throw CancellationError() }
+                        if self.accountReadRequested { continue }
+                        throw error
+                    }
+                }
+            }
+        }
+        guard let task = accountReadTask else { throw CancellationError() }
+        try await task.value
         guard generation == connectionGeneration else { throw CancellationError() }
-        let readiness = try CodexAccountReadiness(response: result)
-        requiresAccountAuthentication = readiness.requiresAuthentication; accountLabel = readiness.label
-        accountChecked = true; onChange?()
     }
     func stop() { disconnect() }
     func disconnect(cancelCheck: Bool = true, releaseBundledRuntime: Bool = true) {
@@ -424,6 +452,7 @@ final class CodexController: ObservableObject {
         if isAnalyzingCharacters { characterTurn.reject("The Codex connection ended during character analysis. Review the original turn before retrying.") }
         if isGenerating { recordProgress(.waiting, "Connection ended. Inspect the original turn before retrying.") }
         connectionGeneration += 1
+        accountReadTask = nil; accountReadToken = nil; accountReadRequested = false
         // Only terminate the child owned by this client, never an externally connected server.
         #if targetEnvironment(macCatalyst)
         let release = releaseBundledRuntime ? self.releaseBundledRuntime : nil
@@ -486,11 +515,14 @@ final class CodexController: ObservableObject {
             catch {
                 if error is CancellationError { if connectionGeneration == generation { await cancelGeneration() } }
                 else { lastError = error.localizedDescription }
-                let uncertain = connectionGeneration != generation || generationState.turnID == nil && generationState.threadID != nil
+                // An interrupt request, even one accepted by the server, does
+                // not establish the turn's final state. Recovery confirms it.
+                let cancellationUnconfirmed = generationState.cancellationRequested && generationState.threadID != nil
+                let uncertain = connectionGeneration != generation || generationState.turnID == nil && generationState.threadID != nil || cancellationUnconfirmed
                 let cancelled = error is CancellationError && !uncertain
                 recordProgress(uncertain ? .waiting : cancelled ? .cancelled : .failed,
-                               uncertain ? "The original turn may still exist. Inspect it before retrying." : cancelled ? "Cancellation requested; inspect the original turn before retrying." : "Generation did not produce an accepted image.",
-                               error: error.localizedDescription, errorCode: uncertain ? "runtime_unreachable" : cancelled ? "cancelled" : "generation_failed")
+                               cancellationUnconfirmed ? "Cancellation requested; inspect the original turn to confirm its final state." : uncertain ? "The original turn may still exist. Inspect it before retrying." : cancelled ? "Cancelled before an image turn was submitted." : "Generation did not produce an accepted image.",
+                               error: error.localizedDescription, errorCode: cancellationUnconfirmed ? "cancellation_unconfirmed" : uncertain ? "runtime_unreachable" : cancelled ? "cancelled" : "generation_failed")
                 throw error
             }
         } onCancel: {
@@ -604,6 +636,8 @@ final class CodexController: ObservableObject {
             let analysisToken = characterAnalysisToken
             let requestedThread = message["params"]?["threadId"]?.string
             let affectsAnalysis = analysisToken != nil && (requestedThread == nil || requestedThread == characterTurn.lifecycle.threadID)
+            let requestedGenerationJob = generationJobID
+            let affectsGeneration = isGenerating && requestedThread != nil && requestedThread == generationState.threadID
             if affectsAnalysis { characterTurn.reject("Codex requested a tool or additional access during character analysis. The scan was stopped; review it in Codex before retrying.") }
             // Respect sandbox/approval restrictions. This integration does not grant new tool permissions automatically.
             Task {
@@ -621,12 +655,15 @@ final class CodexController: ObservableObject {
                     lastError = "A connected Codex tool requested additional input. Review it in Codex before retrying."
                 case "item/tool/requestUserInput":
                     response = .object(["id":id,"result":.object(["answers":.object([:])])])
-                    lastError = "Codex needs additional input. Add the details to the image direction and retry."
+                    if generationJobID == requestedGenerationJob && (!isGenerating || affectsGeneration) {
+                        lastError = "Codex needs additional input. Add the details to the image direction and retry."
+                    }
                 default: response = .object(["id":id,"error":.object(["code":.number(-32601),"message":.string("This client does not implement \(method).")])])
                 }
                 try? await send(response); onChange?()
                 if affectsAnalysis, let analysisToken { await cancelCharacterAnalysis(analysisToken, generation: generation) }
-                if method == "item/tool/requestUserInput" { await cancelGeneration() }
+                if method == "item/tool/requestUserInput", affectsGeneration, generationJobID == requestedGenerationJob,
+                   generationState.threadID == requestedThread { await cancelGeneration() }
             }
             return
         }

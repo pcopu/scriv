@@ -78,25 +78,25 @@ final class RuntimeBootstrapConsentTests: XCTestCase {
         var loads = 0, saves = 0
         let coordinator = ScrivRuntimeBootstrapCoordinator(hasSavedGrant: { false }, makeAdapter: {
             loads += 1; return SyntheticBootstrapAdapter()
-        }, savePairing: { _ in saves += 1 }, confirm: { _ in false })
-        do { try await coordinator.prepare(from: UIViewController()); XCTFail("Decline must cancel") }
+        }, savePairing: { _ in saves += 1 })
+        do { try await coordinator.prepare(userApproved: false); XCTFail("Missing user action must cancel") }
         catch { XCTAssertTrue(error is CancellationError) }
         XCTAssertEqual(loads, 0); XCTAssertEqual(saves, 0)
     }
     func testExistingGrantReconnectsWithoutNewConsent() async throws {
         let adapter = SyntheticBootstrapAdapter(); adapter.immediate = Data([1, 2, 3])
-        var confirmations = 0, saved: Data?
-        let coordinator = ScrivRuntimeBootstrapCoordinator(hasSavedGrant: { true }, makeAdapter: { adapter }, savePairing: { saved = $0 }, confirm: { _ in confirmations += 1; return false })
-        try await coordinator.prepare(from: UIViewController())
-        XCTAssertEqual(confirmations, 0); XCTAssertEqual(adapter.calls, 1)
+        var saved: Data?
+        let coordinator = ScrivRuntimeBootstrapCoordinator(hasSavedGrant: { false }, makeAdapter: { adapter }, savePairing: { saved = $0 })
+        try await coordinator.prepare(userApproved: true)
+        XCTAssertEqual(adapter.calls, 1, "The Connect button authorizes the first connection without another prompt")
         XCTAssertEqual(saved, Data([1, 2, 3])); XCTAssertEqual(adapter.disconnected, 0)
         coordinator.cancel(); XCTAssertEqual(adapter.disconnected, 1)
     }
     func testCancellationBeforeLateReplyCannotSaveGrant() async {
         let adapter = SyntheticBootstrapAdapter(); var saves = 0
         let called = expectation(description: "Adapter requested")
-        let coordinator = ScrivRuntimeBootstrapCoordinator(hasSavedGrant: { false }, makeAdapter: { called.fulfill(); return adapter }, savePairing: { _ in saves += 1 }, confirm: { _ in true })
-        let task = Task { try await coordinator.prepare(from: UIViewController()) }
+        let coordinator = ScrivRuntimeBootstrapCoordinator(hasSavedGrant: { false }, makeAdapter: { called.fulfill(); return adapter }, savePairing: { _ in saves += 1 })
+        let task = Task { try await coordinator.prepare(userApproved: true) }
         await fulfillment(of: [called], timeout: 2)
         coordinator.cancel()
         adapter.reply?(Data([7]), nil)
@@ -106,10 +106,10 @@ final class RuntimeBootstrapConsentTests: XCTestCase {
     }
     func testUnreadableGrantFailsBeforeConsentOrAdapter() async {
         enum FixtureError: Error { case locked }
-        var confirmations = 0, loads = 0
-        let coordinator = ScrivRuntimeBootstrapCoordinator(hasSavedGrant: { throw FixtureError.locked }, makeAdapter: { loads += 1; return SyntheticBootstrapAdapter() }, savePairing: { _ in XCTFail("No write") }, confirm: { _ in confirmations += 1; return true })
-        do { try await coordinator.prepare(from: UIViewController()); XCTFail("Must preserve unreadable grant") }
+        var loads = 0
+        let coordinator = ScrivRuntimeBootstrapCoordinator(hasSavedGrant: { throw FixtureError.locked }, makeAdapter: { loads += 1; return SyntheticBootstrapAdapter() }, savePairing: { _ in XCTFail("No write") })
+        do { try await coordinator.prepare(userApproved: true); XCTFail("Must preserve unreadable grant") }
         catch { XCTAssertTrue(error is FixtureError) }
-        XCTAssertEqual(confirmations, 0); XCTAssertEqual(loads, 0)
+        XCTAssertEqual(loads, 0)
     }
 }

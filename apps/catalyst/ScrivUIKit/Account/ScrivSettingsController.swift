@@ -101,7 +101,7 @@ class ScrivSettingsController: ScrivScreenController, UIDocumentPickerDelegate, 
                 // The controller releases the previous helper before preparing
                 // this connection. Retained beyond this sheet.
                 self.store.codex.releaseBundledRuntime = { bootstrap.cancel() }
-                try await bootstrap.prepare(from: self)
+                try await bootstrap.prepare(userApproved: true)
             })
         } }
         setup.onCancelCheck = { [weak self] in self?.store.codex.cancelConnectionCheck() }

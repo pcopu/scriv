@@ -2,9 +2,19 @@
 
 Scriv runs the user's installed Codex app-server locally. The managed connection starts `codex app-server` over newline-delimited JSON on standard input/output. An optional connection attaches to a loopback WebSocket server. Scriv creates ordinary Codex threads and turns, then imports a real generated image into the project. ChatGPT authentication stays in the local Codex runtime and is separate from the Scriv cloud account.
 
-**Check & connect requires no address.** The Catalyst flow prepares its bundled signed helper, which supplies the local bridge connection and starts the installed Codex executable over stdio. The native Mac flow starts the executable directly. Automatic executable lookup includes the ChatGPT and Codex application bundles in `/Applications` and `~/Applications`, Homebrew, `~/.local/bin` and `~/.npm-global/bin`; an explicit executable choice remains authoritative. Saved WebSocket settings are used only by the separate Advanced **Connect to this address** action, so a blank, stale or invalid saved address cannot block automatic setup. Opening the sheet still starts nothing, existing connected runtimes are refreshed in place, and first-use consent and pairing validation remain required.
+**Connect Codex requires no address.** The Catalyst flow prepares its bundled signed helper, which supplies the local bridge connection and starts the installed Codex executable over stdio. The native Mac flow starts the executable directly. Automatic executable lookup includes the ChatGPT and Codex application bundles in `/Applications` and `~/Applications`, Homebrew, `~/.local/bin` and `~/.npm-global/bin`; an explicit executable choice remains authoritative. Saved WebSocket settings are used only by the separate Advanced **Connect to this address** action, so a blank, stale or invalid saved address cannot block automatic setup. Opening the sheet still starts nothing. The deliberate Connect action authorizes the helper; no second pairing confirmation is presented. Existing connected runtimes refresh in place, and signed peer authentication and pairing validation remain required.
 
-An authenticated bundled-helper connection can use a process-local pairing when Keychain reports `errSecMissingEntitlement`, as with a Developer ID build lacking a provisioning profile. The capability remains in memory for this app session; first-use consent is required again after restart. Other Keychain failures and unreadable or conflicting existing grants still fail closed. The pairing is never written to preferences or a plaintext fallback file. See [Apple's private Keychain access-group guidance](https://developer.apple.com/documentation/security/sharing-access-to-keychain-items-among-a-collection-of-apps).
+An authenticated bundled-helper connection uses a process-local pairing when Keychain reports `errSecMissingEntitlement`, as with a Developer ID build lacking a provisioning profile. The capability remains in memory for this app session; the next app launch connects through the same single button. Other Keychain failures and unreadable or conflicting existing grants still fail closed. The pairing is never written to preferences or a plaintext fallback file. See [Apple's private Keychain access-group guidance](https://developer.apple.com/documentation/security/sharing-access-to-keychain-items-among-a-collection-of-apps).
+
+### November 4 local verification
+
+The final installed **1.0.5 (1005)** reached **Codex is ready** from one Connect action on the owner's Apple Silicon Mac running macOS 26.3 and Codex CLI 0.166.0. The existing sign-in was retained. Two live Terra image turns completed in synthetic projects, including a copied reference image; a third turn was cancelled and its interrupted state confirmed by inspecting the existing turn. Image identity, SHA-256 and exact submitted prompt matched the saved project and journal. Reopening retained the first image. Editing the source during the reference turn kept its result as a candidate instead of overwriting the changed cue.
+
+The **Terra 6.1 / xhigh audit agent** reproduced and fixed unrelated-thread cancellation, premature confirmed-cancellation status and out-of-order account refreshes. All **146 Node repository checks** and **10 actual-controller synthetic-runtime regressions** passed. Standalone Swift self-checks also cover session lifetime/reset, capability/owner/conflict validation, single-action first use, denied authorization, locked-Keychain rejection, and cancellation before a late helper reply. Full XCTest suites could not run with standalone CLT because that toolchain has no XCTest module. See the [acceptance report](verification/codex-scriv-2026-11-04.md) for executed checks and limits.
+
+Live testing also caught external package bookmark creation failing. Catalyst now creates and resolves explicit security-scoped bookmarks with the app-scope entitlement. The same external synthetic package opened through the document picker and reopened after a clean app replacement/relaunch; failed bookmark operations still throw instead of silently dropping the grant.
+
+`scripts/rebuild-catalyst-cli.py` rebuilds the Catalyst Swift app/Core and native runtime XPC with the selected standalone macOS SDK. It requires an existing verified Scriv bundle as `--template` for the unchanged compiled assets, icon, native update adapter and Sparkle components; it is not a clean asset build or an xtool migration. The November 4 build passed the existing icon check, nested signature verification and native launch/connection checks. Intel hardware, other macOS versions, clean installation on another Mac, updater installation and notarization were not exercised.
 
 ## Verified runtime and evidence
 
@@ -111,6 +121,16 @@ The tool creates a fresh temporary HOME and CODEX_HOME, forwards only PATH and n
 The portable `CodexGenerationTests` cover cancellation before the turn-start response, single interruption of a late-started turn, completion arriving before that response, rejection of unrelated completions, fresh-job isolation, and valid artifact fallback when a preferred filename is empty, oversized or a symlink. AppKit still validates actual image decoding; those portable file fixtures are not generated images.
 
 The native controller correlates browser sign-in completions with the active login ID, exposes Cancel sign-in, prevents account changes during generation, and rejects duplicate login starts. A canceled Swift task also requests interruption; its job and connection IDs prevent a late cancellation handler from affecting a new job. No extra sandbox or tool approval is granted.
+
+An interrupt acknowledgement alone does not establish cancellation. Submitted jobs remain waiting until inspection of the original turn confirms its final state. Additional-input requests affect an image job only when their thread ID matches that job. Account refreshes are serialized and coalesced so older snapshots or errors cannot replace newer account state; a failed current refresh leaves generation blocked until the account can be verified again.
+
+Run the focused controller checks without accessing a real account:
+
+```sh
+python3 scripts/check-codex-cancellation.py
+```
+
+This compiles the shared controller with standalone macOS CLT and uses isolated synthetic runtimes for six cancellation and four account-refresh cases. It does not exercise Catalyst XPC/signing or submit a model request.
 
 These regressions and schema checks do **not** establish authenticated image generation or native Start/Stop/Connect behavior. The release smoke test below remains required.
 
