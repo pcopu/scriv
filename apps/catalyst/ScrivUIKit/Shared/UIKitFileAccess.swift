@@ -15,9 +15,16 @@ enum UIKitPresentation {
         if let navigation = controller as? UINavigationController { return navigation.visibleViewController ?? navigation }
         return controller
     }
-    static func finishEditing() {
-        NotificationCenter.default.post(name: .scrivFinishEditing, object: nil)
-        window?.endEditing(true)
+    static func finishEditing(in store: WorkspaceStore? = nil) {
+        NotificationCenter.default.post(name: .scrivFinishEditing, object: store)
+        guard let store else { window?.endEditing(true); return }
+        // A background scene or another window's Save must not dismiss the
+        // active editor in an unrelated workspace.
+        for scene in UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }) {
+            for window in scene.windows where (window.rootViewController as? ScrivWorkspaceController)?.store === store {
+                window.endEditing(true)
+            }
+        }
     }
     static func open(_ url: URL) { UIApplication.shared.open(url, options: [:], completionHandler: nil) }
 }

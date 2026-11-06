@@ -150,12 +150,16 @@ final class CharacterAnalysisController {
                         try self.clearPending(projectID:expectedProject,attempt:attempt); continue
                     }
                     guard await store.applyCharacterAnalysis(result,image:image,providerID:self.provider.providerID,navigation:navigation) else { throw ScrivError.conflict(store.errorMessage ?? "Character tags could not be saved. Retry when this image is editable.") }
+                    guard self.generation == currentGeneration, store.navigationContext == navigation, store.project.id == expectedProject else { return }
                     try self.clearPending(projectID:expectedProject,attempt:attempt)
                     self.forced.remove(key)
                 } catch is CancellationError { return }
                 catch let interruption as CharacterAnalysisInterruption {
                     // A reconnect, project switch, or app reopen must not replay
                     // a turn whose effects are uncertain. Only Scan again clears it.
+                    // A cancelled predecessor must not pause a replacement scan;
+                    // its unresolved pending marker remains available for recovery.
+                    guard self.generation == currentGeneration else { return }
                     UserDefaults.standard.set(interruption.reason, forKey: self.interruptionKey(expectedProject))
                     guard store.project.id == expectedProject, store.navigationContext == navigation else { return }
                     self.failed[key] = interruption.reason; self.paused = true
@@ -166,7 +170,10 @@ final class CharacterAnalysisController {
                     // A normal provider error has a known outcome. The Codex
                     // adapter classifies uncertain outcomes as interruption.
                     do { try self.clearPending(projectID:expectedProject,attempt:attempt) }
-                    catch { self.paused = true; self.publish("Character scan paused: its pending marker could not be cleared."); return }
+                    catch {
+                        guard self.generation == currentGeneration, store.project.id == expectedProject, store.navigationContext == navigation else { return }
+                        self.paused = true; self.publish("Character scan paused: its pending marker could not be cleared."); return
+                    }
                     guard self.generation == currentGeneration, store.project.id == expectedProject, store.navigationContext == navigation else { return }
                     self.failed[key] = error.localizedDescription
                 }

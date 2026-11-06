@@ -75,7 +75,8 @@ enum ScrivKeyboardTextContext {
     struct State: Equatable { var editingText = false; var markedText = false }
     /// nil-target public responder dispatch reaches text fields inside native
     /// alerts, search bars and presented navigation/form controllers as well.
-    static func firstResponder(application: UIApplication = .shared) -> UIResponder? {
+    static func firstResponder(application: UIApplication? = nil) -> UIResponder? {
+        let application = application ?? .shared
         let probe = ScrivFirstResponderProbe()
         application.sendAction(#selector(UIResponder.scrivCaptureKeyboardFirstResponder(_:)), to: nil, from: probe, for: nil)
         return probe.responder
@@ -246,7 +247,7 @@ final class ScrivUIKitApplication: UIApplication {
     @objc private func toggleScriptEditingFromKeyboard(_ command: UIKeyCommand) {
         let responder = ScrivKeyboardTextContext.firstResponder(application: self)
         guard let target = scriptEditingTarget(responder: responder, context: ScrivKeyboardTextContext.state(for: responder)), pressGate.consume(.toggleScriptEditing) else { return }
-        sendAction(toggleEditingSelector, to: target, from: command, for: nil)
+        _ = sendAction(toggleEditingSelector, to: target, from: command, for: nil)
     }
     @objc private func findScriptFromKeyboard(_ command: UIKeyCommand) {
         guard canPerformAction(#selector(findScriptFromKeyboard(_:)), withSender: command), pressGate.consume(.findInScript) else { return }

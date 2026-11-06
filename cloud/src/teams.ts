@@ -62,7 +62,7 @@ export async function teamRoutes(request: Request, env: Env, identity: Identity)
     const teamId=id(linksMatch[1]); await requireTeam(env,teamId,userId,['owner','admin']);
     if(method==='POST'&&!linksMatch[2]) {
       await rateLimit(env,`joinlink:${teamId}`,30,3600000);
-      const input=await body(request,4096); const role=input.role??'member';assert(['member','viewer'].includes(String(role)),400,'invalid_role','Join links can grant member or viewer access.');
+      const input=await body(request,4096); const role=input.role??'member';assert(typeof role==='string'&&['member','viewer'].includes(role),400,'invalid_role','Join links can grant member or viewer access.');
       const days=int(input.expiresInDays??30,'expiresInDays',1,365); const token=randomToken(); const now=Date.now(); const linkId=uuid();const expiresAt=now+days*86400000;
       const created=await env.DB.prepare(`INSERT INTO join_links(id,team_id,token_hash,role,created_by,created_at,expires_at)
         SELECT ?,?,?,?,?,?,? WHERE ${manager} AND ${liveSession} RETURNING id`).bind(linkId,teamId,await sha256(token),role,userId,now,expiresAt,teamId,userId,...sessionArgs()).first();
@@ -97,7 +97,7 @@ export async function teamRoutes(request: Request, env: Env, identity: Identity)
     assert(target,404,'not_found','Team member not found.'); assert(target.role!=='owner',409,'owner_required','Team ownership must be transferred before the owner can leave.');
     assert(role==='owner'||(role==='admin'&&target.role!=='admin')||(memberId===userId&&method==='DELETE'),403,'not_allowed','You cannot change this membership.');
     if(method==='PATCH') {
-      const input=await body(request,4096);assert(['admin','member','viewer'].includes(String(input.role)),400,'invalid_role','Choose admin, member, or viewer.');
+      const input=await body(request,4096);assert(typeof input.role==='string'&&['admin','member','viewer'].includes(input.role),400,'invalid_role','Choose admin, member, or viewer.');
       assert(input.role!=='admin'||role==='owner',403,'not_allowed','Only the owner can appoint an admin.');
       const changed=await env.DB.prepare(`UPDATE team_members SET role=? WHERE team_id=? AND user_id=? AND role<>'owner'
         AND EXISTS(SELECT 1 FROM team_members actor WHERE actor.team_id=? AND actor.user_id=?

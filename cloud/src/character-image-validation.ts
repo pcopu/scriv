@@ -25,10 +25,10 @@ export function validateCharacterImageAnalysis(data: Record<string, unknown>): v
     const annotation = record(raw, 'character annotation'), identity = id(annotation.id, 'annotation.id');
     assert(!ids.has(identity), 400, 'invalid_character_analysis', 'Character region identities must be unique.'); ids.add(identity);
     region(annotation.region); region(annotation.portraitRegion);
-    assert(['face', 'figure', 'partial', 'obscured'].includes(String(annotation.kind)), 400, 'invalid_character_analysis', 'Unknown character region type.');
-    assert(['automatic', 'needsReview', 'confirmed', 'ignored'].includes(String(annotation.decision)), 400, 'invalid_character_analysis', 'Unknown character review decision.');
+    assert(typeof annotation.kind === 'string' && ['face', 'figure', 'partial', 'obscured'].includes(annotation.kind), 400, 'invalid_character_analysis', 'Unknown character region type.');
+    assert(typeof annotation.decision === 'string' && ['automatic', 'needsReview', 'confirmed', 'ignored'].includes(annotation.decision), 400, 'invalid_character_analysis', 'Unknown character review decision.');
     if (annotation.characterID !== undefined && annotation.characterID !== null) id(annotation.characterID, 'annotation.characterID');
-    assert(!['automatic', 'confirmed'].includes(String(annotation.decision)) || typeof annotation.characterID === 'string', 400, 'invalid_character_analysis', 'Accepted character regions require a canonical identity.');
+    assert(!['automatic', 'confirmed'].includes(annotation.decision) || typeof annotation.characterID === 'string', 400, 'invalid_character_analysis', 'Accepted character regions require a canonical identity.');
     assert(typeof annotation.confidence === 'number' && Number.isFinite(annotation.confidence) && annotation.confidence >= 0 && annotation.confidence <= 1, 400, 'invalid_character_analysis', 'Confidence must be between zero and one.');
     str(annotation.reason, 'annotation.reason', 1000, 0);
     if (annotation.suggestedName !== undefined && annotation.suggestedName !== null) str(annotation.suggestedName, 'annotation.suggestedName', 200, 0);

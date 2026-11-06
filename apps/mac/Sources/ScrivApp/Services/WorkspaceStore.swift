@@ -597,7 +597,14 @@ final class WorkspaceStore: ObservableObject {
     private var peerTransferStarted: Set<String> = []
     private var automaticMediaAttempts: Set<String> = []
     private var pendingMessageIDs: [String:String] = [:]
-    private var navigationGeneration = 0 { didSet { cancelPromptWorkForNavigation() } }
+    private var navigationGeneration = 0 {
+        didSet {
+            cancelPromptWorkForNavigation()
+            // Navigation invalidates the old sync even if opening the next
+            // package fails. Its fenced completion can no longer clear these.
+            isProjectSynchronizing = false; isSyncing = false; pauseRemoteUpdates = false
+        }
+    }
     private var discussionGeneration = 0
     private var memberRequestGeneration = 0
     private var mentionHistoryRequestGeneration = 0
@@ -926,9 +933,14 @@ final class WorkspaceStore: ObservableObject {
                 try await self.repo().save(snapshot,at:package,label:label)
 #endif
                 onSuccess?()
-                if self.project.id == snapshot.id && self.project.revision == snapshot.revision { self.statusMessage = "Saved on this Mac" }
-                if !self.verificationMode { UserDefaults.standard.set(package.path,forKey:"lastProjectURL") }
-            } catch { self.errorMessage = "Could not save your project: \(error.localizedDescription)"; self.statusMessage = "Save failed — accepted changes remain in local recovery" }
+                if self.project.id == snapshot.id, self.projectURL == package {
+                    if self.project.revision == snapshot.revision { self.statusMessage = "Saved on this Mac" }
+                    if !self.verificationMode { UserDefaults.standard.set(package.path,forKey:"lastProjectURL") }
+                }
+            } catch {
+                self.errorMessage = "Could not save \(snapshot.title): \(error.localizedDescription)"
+                if self.project.id == snapshot.id, self.projectURL == package { self.statusMessage = "Save failed — accepted changes remain in local recovery" }
+            }
         }
     }
     private func enqueueCommit(before: ScrivProject, after: ScrivProject, label: String, changed: Set<String>) {
@@ -1705,7 +1717,14 @@ final class WorkspaceStore: ObservableObject {
         let contextID = project.id, navigation = navigationGeneration, requestToken = UUID().uuidString
         mediaRequests[asset.sha256] = requestToken
         perform(reportErrors:!silent) {
-            defer { if self.mediaRequests[asset.sha256] == requestToken { self.mediaRequests.removeValue(forKey:asset.sha256) } }
+            defer {
+                if self.mediaRequests[asset.sha256] == requestToken {
+                    self.mediaRequests.removeValue(forKey:asset.sha256)
+                    // Release the slot before refilling, including failed
+                    // downloads; an unavailable image must not starve later ones.
+                    if self.navigationGeneration == navigation { self.fetchMissingImages() }
+                }
+            }
             guard self.project.id == contextID, self.navigationGeneration == navigation, self.mediaRequests[asset.sha256] == requestToken, let package = self.projectURL else { return }
             let projectID = self.project.id
             do {
@@ -1714,7 +1733,7 @@ final class WorkspaceStore: ObservableObject {
                 try await self.repo().storeReplica(data,for:asset,at:package)
                 guard self.navigationGeneration == navigation, self.mediaRequests[asset.sha256] == requestToken, self.projectURL == package else { return }
                 if let repaired = self.rawAssetURL(asset) { self.invalidLocalAssetPaths.remove(repaired.path); self.checkedLocalAssets.removeValue(forKey:repaired.path); self.pendingLocalAssetChecks.removeValue(forKey:repaired.path) }
-                self.refreshPeerAuthorization(); self.objectWillChange.send(); self.fetchMissingImages()
+                self.refreshPeerAuthorization(); self.objectWillChange.send()
             } catch {
                 // Free projects and offline replicas use authorized peers. A missing replica never becomes a fake image.
                 guard projectID == self.project.id, self.navigationGeneration == navigation, self.mediaRequests[asset.sha256] == requestToken, self.projectURL == package else { return }
@@ -1754,7 +1773,7 @@ final class WorkspaceStore: ObservableObject {
     }
     private func finishEditing() {
 #if targetEnvironment(macCatalyst)
-        UIKitPresentation.finishEditing()
+        UIKitPresentation.finishEditing(in: self)
 #else
         NotificationCenter.default.post(name:.scrivFinishEditing,object:nil); NSApp.keyWindow?.makeFirstResponder(nil)
 #endif
@@ -1839,7 +1858,7 @@ final class WorkspaceStore: ObservableObject {
         let savedHistory = try await repo().history(at:url,through:loaded.revision)
 #endif
         guard navigationGeneration == navigation else { throw CancellationError() }
-        cloud.disconnect(); canonicalCheckpoint = checkpoint; dirtyItems = [:]; hasConflicts = false; isProjectSynchronizing = false; isSyncing = false; pauseRemoteUpdates = false
+        cloud.disconnect(); canonicalCheckpoint = checkpoint; dirtyItems = [:]; hasConflicts = false
         project = loaded; projectURL = url; selectedSceneID = loaded.scenes.first?.id ?? ""; selectedEntryID = loaded.entries(in:selectedSceneID).first?.id
         selectedCueID = sourceCue(for: selectedEntryID)?.id; selectedCharacterID = loaded.characters.first?.id; selectedWordIDs = []; editingIntents = LocalEditIntents()
         history = savedHistory; undoStack = []; redoStack = []; isPlaying = false; playheadMs = 0
@@ -1854,7 +1873,7 @@ final class WorkspaceStore: ObservableObject {
 #endif
         characterCreationRequest = nil; requestedEntryEditingID = nil
         navigationGeneration += 1; invalidLocalAssetPaths = []; checkedLocalAssets = [:]; pendingLocalAssetChecks = [:]
-        cloud.disconnect(); canonicalCheckpoint = nil; dirtyItems = [:]; hasConflicts = false; isProjectSynchronizing = false; isSyncing = false; pauseRemoteUpdates = false
+        cloud.disconnect(); canonicalCheckpoint = nil; dirtyItems = [:]; hasConflicts = false
         project = value; projectURL = rootURL.appendingPathComponent(value.id).appendingPathExtension("scriv")
 #if targetEnvironment(macCatalyst)
         if !verificationMode { UserDefaults.standard.set(projectURL?.path,forKey:"lastProjectURL") }
@@ -1886,19 +1905,26 @@ final class WorkspaceStore: ObservableObject {
         let navigation = navigationGeneration
         await commitTask?.value
         await flushPendingSaves()
-        guard navigation == navigationGeneration, let package = projectURL else {
-            throw ScrivError.conflict("The workspace changed while saving. Check for updates again when it is ready.")
-        }
-        guard generationPromptIssues.isEmpty, try pendingSaveJournal().load(package: package).isEmpty else {
-            throw ScrivError.conflict("Some changes still need saving or recovery. Resolve them before updating; nothing was discarded.")
-        }
-        let snapshot = project
-        let saved = try await repo().load(at: package)
-        guard navigation == navigationGeneration, project == snapshot, saved == snapshot else {
-            throw ScrivError.conflict("Scriv could not confirm the latest project on disk. Keep this version open and finish saving before updating.")
-        }
+        _ = try await durableProjectPackage(navigation: navigation)
     }
 #endif
+    /// Save tasks report errors to the workspace rather than throwing. Callers
+    /// that export or replace the app must also confirm the persisted snapshot.
+    private func durableProjectPackage(navigation: Int) async throws -> URL {
+        guard navigation == navigationGeneration, let package = projectURL else { throw CancellationError() }
+#if targetEnvironment(macCatalyst)
+        guard generationPromptIssues.isEmpty, try pendingSaveJournal().load(package: package).isEmpty else {
+            throw ScrivError.conflict("Some changes still need saving or recovery. Resolve them before continuing; nothing was discarded.")
+        }
+#endif
+        let snapshot = project
+        let saved = try await repo().load(at: package)
+        guard navigation == navigationGeneration, projectURL == package else { throw CancellationError() }
+        guard project == snapshot, saved == snapshot else {
+            throw ScrivError.conflict("Scriv could not confirm the latest project on disk. Finish saving before trying again.")
+        }
+        return package
+    }
     func flushPendingSaves() async {
         // A cue/context change may replace a read while this method awaits it.
         // Drain to a stable generation, including saves/clears it schedules,
@@ -1970,10 +1996,10 @@ final class WorkspaceStore: ObservableObject {
     func exportProject() {
         finishEditing()
 #if targetEnvironment(macCatalyst)
-        guard let source = projectURL else { return }
         let context = navigationGeneration
         perform {
-            await self.flushPendingSaves(); guard self.navigationGeneration == context else { return }
+            await self.flushPendingSaves()
+            let source = try await self.durableProjectPackage(navigation:context)
             let directory = FileManager.default.temporaryDirectory.appendingPathComponent("ScrivExport-" + UUID().uuidString,isDirectory:true)
             try FileManager.default.createDirectory(at:directory,withIntermediateDirectories:true)
             let url = directory.appendingPathComponent("Project.scriv")
@@ -1985,8 +2011,14 @@ final class WorkspaceStore: ObservableObject {
         }
 #else
         let panel = NSSavePanel(); panel.nameFieldStringValue = project.title+".scriv"; panel.canCreateDirectories = true
-        guard panel.runModal() == .OK, let url = panel.url, let source = projectURL else { return }
-        perform { await self.flushPendingSaves(); try await self.repo().copyPackage(from:source,to:url); self.statusMessage = "Project exported with local images, audio and history" }
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        let context = navigationGeneration
+        perform {
+            await self.flushPendingSaves()
+            let source = try await self.durableProjectPackage(navigation:context)
+            try await self.repo().copyPackage(from:source,to:url)
+            if self.navigationGeneration == context { self.statusMessage = "Project exported with local images, audio and history" }
+        }
 #endif
     }
     func undo() {
@@ -2080,18 +2112,22 @@ final class WorkspaceStore: ObservableObject {
         guard account != nil else { signIn(); return }
         guard !isSyncing else { return }
         let contextID = project.id, navigation = navigationGeneration
+        let cloudContext = cloud.lifecycleContext, accountContext = editorAccountContext
         isProjectSynchronizing = true; isSyncing = true
         perform {
+            // Saving and recovery can fail before we connect. Always release
+            // the busy state so the user can repair storage and retry syncing.
+            defer { if self.navigationGeneration == navigation, self.project.id == contextID { self.isProjectSynchronizing = false; self.isSyncing = false; self.pauseRemoteUpdates = false } }
             await self.commitTask?.value
             await self.flushPendingSaves()
-            guard self.navigationGeneration == navigation, self.project.id == contextID else { return }
+            guard self.navigationGeneration == navigation, self.project.id == contextID,
+                  self.cloud.lifecycleContext == cloudContext, self.editorAccountContext == accountContext else { throw CancellationError() }
 #if targetEnvironment(macCatalyst)
             if let package = self.projectURL, try !self.pendingSaveJournal().load(package:package).isEmpty {
                 throw ScrivError.conflict("Finish saving or recovering this package before changing its cloud connection. Pending changes remain on this Mac.")
             }
 #endif
             self.isSyncing = true; self.pauseRemoteUpdates = true
-            defer { if self.navigationGeneration == navigation, self.project.id == contextID { self.isProjectSynchronizing = false; self.isSyncing = false; self.pauseRemoteUpdates = false } }
             let draft = self.project
             var synchronizedRevision = draft.revision
             if let existing = self.project.cloudProjectId {
@@ -2145,8 +2181,16 @@ final class WorkspaceStore: ObservableObject {
                 self.history.insert(HistoryEntry(label:"Enable cloud sync",snapshot:self.project),at:0)
                 self.queueSave(self.project,label:"Enable cloud sync")
                 await self.flushPendingSaves()
+                // The disk flush suspends independently of CloudClient. A
+                // project/account switch must not attach this obsolete copy.
+                guard self.navigationGeneration == navigation, self.project.id == contextID,
+                      self.cloud.lifecycleContext == cloudContext, self.editorAccountContext == accountContext else { throw CancellationError() }
                 _ = try await self.cloud.attach(projectId:created.id,realtime:false)
+                guard self.navigationGeneration == navigation, self.project.id == contextID,
+                      self.editorAccountContext == accountContext else { throw CancellationError() }
                 try await self.cloud.seed(draft)
+                guard self.navigationGeneration == navigation, self.project.id == contextID,
+                      self.editorAccountContext == accountContext else { throw CancellationError() }
                 self.recordCheckpoint()
                 guard sourceUnchanged, self.project.revision == linkedRevision else { throw ScrivError.conflict("New edits remain local while the first copy uploads. Sync again to include them.") }
                 if self.isPremiumProject(created) { _ = try await self.cloud.attach(projectId:created.id,realtime:true) }
@@ -2175,18 +2219,27 @@ final class WorkspaceStore: ObservableObject {
         finishEditing()
         guard account != nil else { signIn(); return }
         if project.cloudProjectId == nil { syncProject(teamId:teamId); return }
-        let contextID = project.id
+        let contextID = project.id, navigation = navigationGeneration
+        let accountContext = editorAccountContext, cloudContext = cloud.lifecycleContext
         // Preserve the original solo project, all its history, and its remote identity.
         perform {
-            await self.flushPendingSaves()
             await self.commitTask?.value
-            guard self.project.id == contextID else { return }
-            var copy = self.project
+            await self.flushPendingSaves()
+            guard self.project.id == contextID, self.navigationGeneration == navigation,
+                  self.editorAccountContext == accountContext, self.cloud.lifecycleContext == cloudContext else { throw CancellationError() }
+            let original = try await self.durableProjectPackage(navigation:navigation)
+            let source = self.project
+            var copy = source
             copy.id = UUID().uuidString; copy.cloudProjectId = nil; copy.revision = 0
             copy.title += " — Team copy"; copy.createdAt = ScrivClock.now; copy.modifiedAt = copy.createdAt
             let destination = self.rootURL.appendingPathComponent(copy.id).appendingPathExtension("scriv")
-            if let original = self.projectURL {
+            do {
                 try await self.repo().copyPackage(from:original,to:destination)
+                guard self.navigationGeneration == navigation, self.project == source,
+                      self.editorAccountContext == accountContext, self.cloud.lifecycleContext == cloudContext else {
+                    try FileManager.default.removeItem(at:destination)
+                    throw CancellationError()
+                }
                 // A new content lineage gets a new history directory; the original package is untouched.
                 let copiedHistory = destination.appendingPathComponent("history")
                 if FileManager.default.fileExists(atPath:copiedHistory.path) { try FileManager.default.removeItem(at:copiedHistory) }
@@ -2197,9 +2250,14 @@ final class WorkspaceStore: ObservableObject {
                 let copiedCurrent = destination.appendingPathComponent("project.json")
                 if FileManager.default.fileExists(atPath:copiedCurrent.path) { try FileManager.default.removeItem(at:copiedCurrent) }
             }
-            guard self.project.id == contextID else { return }
             self.install(copy)
+            guard self.project.id == copy.id, self.projectURL == destination else { return }
+            let copyNavigation = self.navigationGeneration, copyCloudContext = self.cloud.lifecycleContext
             await self.flushPendingSaves()
+            guard self.navigationGeneration == copyNavigation, self.project.id == copy.id,
+                  self.editorAccountContext == accountContext, self.cloud.lifecycleContext == copyCloudContext else { throw CancellationError() }
+            _ = try await self.durableProjectPackage(navigation:copyNavigation)
+            guard self.editorAccountContext == accountContext, self.cloud.lifecycleContext == copyCloudContext else { throw CancellationError() }
             self.syncProject(teamId:teamId)
         }
     }

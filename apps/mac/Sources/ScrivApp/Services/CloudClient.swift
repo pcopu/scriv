@@ -249,13 +249,23 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     }
     func refreshAccount() async throws {
         struct Me: Decodable { var user: CloudUser; var teams: [CloudTeam]; var projects: [CloudProject] }
+        let operation = generation
         let result: Me = try await request("/v1/me")
+        guard generation == operation else { throw CancellationError() }
+        let currentDeviceID = try await sessionDeviceID()
+        guard generation == operation else { throw CancellationError() }
+        // Publish the account and its device identity together. Publishing the
+        // account first lets project attachment cancel the unfinished session read.
         if account?.id != result.user.id { disconnect() }
-        account = result.user; teams = result.teams; projects = result.projects
-        notify()
-        let sessions: JSONValue = try await request("/auth/sessions")
-        deviceId = sessions["currentSessionId"]?.string
+        account = result.user; teams = result.teams; projects = result.projects; deviceId = currentDeviceID
         status = projectId == nil ? "Signed in" : status; notify()
+    }
+    private func sessionDeviceID() async throws -> String {
+        let sessions: JSONValue = try await request("/auth/sessions")
+        guard let identifier = sessions["currentSessionId"]?.string, !identifier.isEmpty, identifier.utf8.count <= 128 else {
+            throw ScrivError.invalid("The server did not return a valid device session.")
+        }
+        return identifier
     }
     func signOut() async throws {
         cancelSignIn()
@@ -294,6 +304,13 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     func attach(projectId: String, realtime: Bool) async throws -> CloudSnapshot {
         disconnect(); stopped = false; self.projectId = projectId
         let operationGeneration = generation
+        // Fresh sign-in can expose its account before the optional catalog
+        // refresh finishes. Peer setup and signal polling require this identity.
+        if deviceId == nil {
+            let currentDeviceID = try await sessionDeviceID()
+            guard operationGeneration == generation, self.projectId == projectId else { throw CancellationError() }
+            deviceId = currentDeviceID
+        }
         let snapshot: CloudSnapshot = try await request("/v1/projects/\(projectId)/snapshot")
         guard operationGeneration == generation, self.projectId == projectId else { throw CancellationError() }
         _ = try snapshot.validatedItems(for:projectId)
@@ -559,8 +576,17 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
                 try? await Task.sleep(for: .seconds(realtime ? 2 : 5))
                 guard let self, !Task.isCancelled, self.generation == currentGeneration, self.projectId != nil else { return }
                 if realtime, self.socket !== heartbeatSocket { return }
-                do { if realtime { self.schedulePresenceSend(); try await self.send(.object(["type":.string("ping"),"after":.number(Double(self.headSeq))])) } else { try await self.replay() } }
-                catch { if !realtime { self.status = "Offline — local work is saved"; self.notify() } }
+                do {
+                    if realtime { self.schedulePresenceSend(); try await self.send(.object(["type":.string("ping"),"after":.number(Double(self.headSeq))])) }
+                    else {
+                        try await self.replay()
+                        guard !Task.isCancelled, self.generation == currentGeneration else { return }
+                        if self.status == "Offline — local work is saved" { self.status = "Cloud sync"; self.notify() }
+                    }
+                } catch {
+                    guard !Task.isCancelled, self.generation == currentGeneration else { return }
+                    if !realtime { self.status = "Offline — local work is saved"; self.notify() }
+                }
             }
         }
     }

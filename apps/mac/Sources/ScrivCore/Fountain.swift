@@ -65,7 +65,7 @@ public enum Fountain {
         let lines = source.replacingOccurrences(of: "\r\n", with: "\n").replacingOccurrences(of: "\r", with: "\n").components(separatedBy: "\n")
         let metadata = titlePage(lines)
         if let title = metadata.title { project.title = title }
-        var speaker: ScriptCharacter?, buffer: [String] = [], kind = EntryKind.direction
+        var speaker: ScriptCharacter?, buffer: [String] = [], kind = EntryKind.direction, forcedAction = false
         func flush() {
             let body = buffer.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
             guard !body.isEmpty else { buffer = []; return }
@@ -76,6 +76,9 @@ public enum Fountain {
         for index in metadata.bodyStart..<lines.count {
             let raw = lines[index]
             let line = raw.trimmingCharacters(in: .whitespaces)
+            // A leading ! forces the entire action paragraph. Continuation
+            // lines may literally begin with INT., @ or Scriv-looking metadata.
+            if forcedAction, !line.isEmpty { buffer.append(line); continue }
             if line.hasPrefix("[[scriv "), line.hasSuffix("]]") {
                 flush()
                 guard !project.entries.isEmpty else { continue }
@@ -92,9 +95,9 @@ public enum Fountain {
                 if project.entries[i].kind == .dialogue { project.entries[i].words = TimingEngine.retimeWords(text:project.entries[i].text,durationMs:duration,preserving:project.entries[i].words) }
                 continue
             }
-            if line.isEmpty { flush(); speaker = nil; kind = .direction; continue }
+            if line.isEmpty { flush(); speaker = nil; kind = .direction; forcedAction = false; continue }
             if line.hasPrefix("!") {
-                flush(); speaker = nil; kind = .direction; buffer.append(String(line.dropFirst())); continue
+                flush(); speaker = nil; kind = .direction; forcedAction = true; buffer.append(String(line.dropFirst())); continue
             }
             let forcedScene = line.hasPrefix(".") && !line.hasPrefix("..")
             if isSceneHeading(line) || forcedScene {

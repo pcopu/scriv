@@ -93,7 +93,7 @@ public struct PendingProjectSaveJournal {
             if let previous = related.first(where: { $0.after.revision == before?.revision }), previous.afterHash != record.beforeHash {
                 throw conflict("The pending source revision differs from this change’s reviewed source.")
             }
-            if let successor = related.first(where: { $0.before?.revision == after.revision }), successor.beforeHash != record.afterHash {
+            if let successor = related.first(where: { $0.sourceRevision == after.revision }), successor.beforeHash != record.afterHash {
                 throw conflict("A later pending revision follows a different version of this change.")
             }
             try checkCapacity(adding: data.count, directory: directory)

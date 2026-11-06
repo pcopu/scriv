@@ -69,6 +69,9 @@ public enum ScriptBoundaryEditing {
         guard previous.kind == current.kind else {
             throw ScrivError.invalid("A spoken line and a direction cannot be merged without changing their meaning. Move the text explicitly instead.")
         }
+        guard previous.kind != .dialogue || previous.characterId == current.characterId else {
+            throw ScrivError.invalid("These lines have different speakers. Assign the same speaker before merging so dialogue is not attributed to another character.")
+        }
         let caret = previous.text.utf16.count
         var merged = previous; merged.text = previous.text + current.text
         let duration = previous.ownedDurationMs, combined = duration + current.ownedDurationMs

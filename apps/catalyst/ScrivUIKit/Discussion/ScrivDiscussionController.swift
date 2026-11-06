@@ -29,8 +29,11 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
     private var memberScope = ""
     private var lastMessageIDs: [String] = []
     private var lastFocusedID: String?
+    private var lastMessageScope = ""
+    private var lastMentionsFilter = false
     private var refreshTask: Task<Void, Never>?
     private var scrollAfterReload = false
+    private var pendingScrollMessageID: String?
 
     init(store: WorkspaceStore) { super.init(store: store, scopeToProject: false); preferredContentSize = CGSize(width: 400, height: 560) }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError() }
@@ -95,8 +98,6 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
         preferredContentSize = CGSize(width: 400, height: ready && store.messages.isEmpty ? 440 : 560)
         activityButton.isEnabled = ready; activityButton.setImage(UIImage(systemName: store.unreadDiscussionMentionCount > 0 ? "bell.badge.fill" : "bell"), for: .normal)
         activityButton.accessibilityLabel = "Project activity, " + ScrivFormat.count(store.unreadDiscussionMentionCount, "unread mention")
-        filterButton.isHidden = mentionsOfMe.isEmpty; filterButton.tintColor = onlyMentions ? ScrivUIKitTheme.accent : ScrivUIKitTheme.secondary
-        filterButton.accessibilityLabel = ScrivFormat.count(mentionsOfMe.count, "message") + (mentionsOfMe.count == 1 ? " mentions" : " mention") + " you. " + (onlyMentions ? "Show all messages" : "Filter to your mentions")
         unavailable.isHidden = ready; table.isHidden = !ready
         // A hidden arranged composer would impose zero height while its editor
         // and tool buttons retain fixed heights. Detach only presentation; the
@@ -118,9 +119,26 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
     }
     private var renderedCellInputs: [AnyHashable]?
     private func renderMessages() {
+        let mentions = mentionsOfMe
+        // Keep the active filter reachable even if the last mention disappears.
+        filterButton.isHidden = mentions.isEmpty && !onlyMentions
+        filterButton.tintColor = onlyMentions ? ScrivUIKitTheme.accent : ScrivUIKitTheme.secondary
+        filterButton.accessibilityTraits = onlyMentions ? [.button, .selected] : [.button]
+        filterButton.accessibilityLabel = ScrivFormat.count(mentions.count, "message") + (mentions.count == 1 ? " mentions" : " mention") + " you. " + (onlyMentions ? "Show all messages" : "Filter to your mentions")
+        let wasNearBottom = table.contentSize.height + table.adjustedContentInset.bottom - table.contentOffset.y - table.bounds.height <= 80
         visibleMessages = onlyMentions ? mentionsOfMe : store.messages
         let ids = visibleMessages.map(\.id)
-        scrollAfterReload = ids != lastMessageIDs || store.discussionFocusedMessageID != lastFocusedID
+        let focusedID = store.discussionFocusedMessageID
+        let focusBecameVisible = focusedID.map { ids.contains($0) && ($0 != lastFocusedID || !lastMessageIDs.contains($0)) } ?? false
+        let changedList = lastMessageScope != store.discussionDraftKey || lastMentionsFilter != onlyMentions || lastMessageIDs.isEmpty
+        if focusBecameVisible {
+            pendingScrollMessageID = focusedID; scrollAfterReload = true
+        } else if ids != lastMessageIDs && (changedList || wasNearBottom) {
+            // New messages follow the bottom only when the reader is already
+            // there. A previous activity selection must not pull them back.
+            pendingScrollMessageID = nil; scrollAfterReload = true
+        }
+        lastMessageScope = store.discussionDraftKey; lastMentionsFilter = onlyMentions
         lastMessageIDs = ids; lastFocusedID = store.discussionFocusedMessageID
         // Reloading rebuilds every message cell; skip it when nothing the cells
         // show has changed (e.g. on playback ticks while the panel is open).
@@ -281,8 +299,10 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
     private func presentPopover(_ controller: UIViewController, from anchor: UIView) { controller.modalPresentationStyle = .popover; controller.popoverPresentationController?.sourceView = anchor; controller.popoverPresentationController?.sourceRect = anchor.bounds; present(controller, animated: true) }
     private func mentionName(_ id: String) -> String { id == store.account?.id ? store.account?.name ?? "You" : store.discussionMemberName(id) }
     private func scrollToCurrentMessage() {
-        let index = visibleMessages.firstIndex { $0.id == store.discussionFocusedMessageID } ?? (visibleMessages.isEmpty ? nil : visibleMessages.count - 1)
-        if let index { table.scrollToRow(at: IndexPath(row: index, section: 0), at: store.discussionFocusedMessageID == nil ? .bottom : .middle, animated: true) }
+        let focusedIndex = visibleMessages.firstIndex { $0.id == pendingScrollMessageID }
+        let index = focusedIndex ?? (visibleMessages.isEmpty ? nil : visibleMessages.count - 1)
+        pendingScrollMessageID = nil
+        if let index { table.scrollToRow(at: IndexPath(row: index, section: 0), at: focusedIndex == nil ? .bottom : .middle, animated: true) }
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { visibleMessages.count }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

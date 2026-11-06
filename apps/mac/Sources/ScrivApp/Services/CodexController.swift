@@ -8,6 +8,43 @@ import AppKit
 #endif
 import ScrivCore
 
+/// Captures only an owned journal location. Disk checks stay at the read boundary
+/// so the gallery can validate and decode on a background executor.
+struct CodexGenerationArtifact: Hashable, Sendable {
+    let root: URL
+    let jobID: String
+    let relativePath: String
+    let sha256: String
+
+    func validatedContents() throws -> (url: URL, data: Data) {
+        let directory = root.appendingPathComponent(jobID)
+        let file = directory.appendingPathComponent(relativePath)
+        guard UUID(uuidString: jobID) != nil, root == root.resolvingSymlinksInPath(),
+              directory == directory.resolvingSymlinksInPath(),
+              !relativePath.isEmpty, !relativePath.hasPrefix("/"), !relativePath.split(separator: "/").contains(".."),
+              CodexImageArtifacts.isEligible(file, in: directory) else {
+            throw ScrivError.invalid("The saved generation image is missing or has changed.")
+        }
+        let handle = try FileHandle(forReadingFrom: file)
+        defer { try? handle.close() }
+        var data = Data()
+        while data.count <= CodexImageArtifacts.maximumBytes {
+            try Task.checkCancellation()
+            guard let chunk = try handle.read(upToCount: min(65_536, CodexImageArtifacts.maximumBytes + 1 - data.count)), !chunk.isEmpty else { break }
+            data.append(chunk)
+        }
+        guard !data.isEmpty, data.count <= CodexImageArtifacts.maximumBytes,
+              ScrivDigest.sha256(data) == sha256,
+              let source = CGImageSourceCreateWithData(data as CFData, [kCGImageSourceShouldCache: false] as CFDictionary),
+              CGImageSourceGetCount(source) > 0,
+              CGImageSourceCopyPropertiesAtIndex(source, 0, nil) != nil else {
+            throw ScrivError.invalid("The saved generation image is missing or has changed.")
+        }
+        try Task.checkCancellation()
+        return (file, data)
+    }
+}
+
 /// A local listener cannot redirect this client to another host or borrow an
 /// ambient HTTP credential. Normal TLS trust still applies to wss loopback.
 private final class CodexLoopbackSessionDelegate: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
@@ -371,10 +408,16 @@ final class CodexController: ObservableObject {
             pendingLoginID = loginID
             if let completion = earlyLoginCompletions.removeValue(forKey: loginID) { completeLogin(completion); return }
             #if targetEnvironment(macCatalyst)
-            guard await UIApplication.shared.open(url) else { throw ScrivError.unavailable("The sign-in browser could not be opened. Check your default browser and retry.") }
+            let opened = await UIApplication.shared.open(url)
             #else
-            guard NSWorkspace.shared.open(url) else { throw ScrivError.unavailable("The sign-in browser could not be opened. Check your default browser and retry.") }
+            let opened = NSWorkspace.shared.open(url)
             #endif
+            guard generation == connectionGeneration else { throw CancellationError() }
+            // Browser activation suspends on Catalyst. Login completion or an
+            // explicit cancellation may already have advanced the account state.
+            guard pendingLoginID == loginID else { return }
+            try Task.checkCancellation()
+            guard opened else { throw ScrivError.unavailable("The sign-in browser could not be opened. Check your default browser and retry.") }
             status = "Waiting for ChatGPT sign-in…"; lastError = nil; onChange?()
         } catch {
             if generation == connectionGeneration { pendingLoginID = nil; earlyLoginCompletions.removeAll(); status = isConnected ? "Connected" : "Stopped" }
@@ -768,14 +811,18 @@ final class CodexController: ObservableObject {
         do { try updateJob(id) { $0.outputImageID = imageID; $0.progressText = "Saved as an immutable project image" } }
         catch { journalError = error.localizedDescription }
     }
-    func artifactURL(for jobID: String) throws -> URL {
+    func artifact(for jobID: String) throws -> CodexGenerationArtifact {
         let jobID = jobID.lowercased()
         guard let job = jobs.first(where: { $0.id == jobID }), job.ownerInstallationID == installationID,
-              let path = job.artifactRelativePath, let hash = job.artifactSha256 else { throw ScrivError.unavailable("Inspect this generation to recover its image first.") }
-        let directory = try jobDirectory(jobID), file = directory.appendingPathComponent(path)
-        guard CodexImageArtifacts.isEligible(file, in: directory), Self.isReadableImage(file),
-              ScrivDigest.sha256(try Data(contentsOf: file)) == hash else { throw ScrivError.invalid("The saved generation image is missing or has changed.") }
-        return file
+              let path = job.artifactRelativePath, let hash = job.artifactSha256,
+              let journal else { throw ScrivError.unavailable("Inspect this generation to recover its image first.") }
+        #if targetEnvironment(macCatalyst)
+        if let generationRootIssue { throw ScrivError.unavailable(generationRootIssue) }
+        #endif
+        return CodexGenerationArtifact(root: journal.root.deletingLastPathComponent(), jobID: jobID, relativePath: path, sha256: hash)
+    }
+    func artifactURL(for jobID: String) throws -> URL {
+        try artifact(for: jobID).validatedContents().url
     }
     func referenceURLs(for jobID: String) throws -> [URL] {
         let jobID = jobID.lowercased()

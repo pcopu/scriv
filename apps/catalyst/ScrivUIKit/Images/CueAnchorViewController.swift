@@ -73,15 +73,14 @@ import ScrivCore
     private func synchronizeOffsetStepper() {
         // Text edits are local drafts and do not publish through the store.
         // Keep +/- based on the displayed draft without replacing typed text.
-        guard let seconds = Double(offset.text ?? ""), seconds.isFinite else { return }
+        guard let seconds = AudioTimingInput.secondsValue(offset.text ?? "") else { return }
         stepper.value = min(stepper.maximumValue, max(stepper.minimumValue, seconds))
     }
     private func save() {
         view.endEditing(true)
         guard requireCurrentContext(), ready, let entry, let current = store.project.cues.first(where: { $0.id == original.id }) else { return }
         guard current == original else { issue.isHidden = false; issue.text = "This placement changed. Close and reopen the editor to review its current source."; return }
-        guard let seconds = Double(offset.text ?? ""), seconds.isFinite, seconds >= 0, seconds <= Double(entry.ownedDurationMs) / 1000 else { issue.isHidden = false; issue.text = "Enter an offset inside the selected source’s owned slot."; return }
-        let ms = Int((seconds * 1000).rounded())
+        guard let ms = AudioTimingInput.milliseconds(offset.text ?? "", maximum: entry.ownedDurationMs) else { issue.isHidden = false; issue.text = "Enter an offset inside the selected source’s owned slot."; return }
         guard ms < entry.ownedDurationMs || entry.kind == .direction && entry.ownedDurationMs == 0 && ms == 0 else { issue.isHidden = false; issue.text = "Offset must be before the source’s end; zero-owned directions use 0."; return }
         if current.startAnchor == ScriptTimeAnchor(entryId: entry.id, offsetMs: ms) { dismiss(animated: true); return }
         if store.setCueAnchor(cueId: current.id, entryId: entry.id, offsetMs: ms) { dismiss(animated: true) }

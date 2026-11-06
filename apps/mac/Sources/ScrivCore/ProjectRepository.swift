@@ -6,6 +6,7 @@ import Darwin
 #endif
 
 public actor ProjectRepository {
+    private static let maximumMetadataBytes = 64 * 1024 * 1024
     public let root: URL
     public init(root: URL) throws { self.root = root; try DurableDirectory.create(at:root) }
     public func defaultURL(for project: ScrivProject) -> URL { root.appendingPathComponent(project.id).appendingPathExtension("scriv") }
@@ -84,6 +85,12 @@ public actor ProjectRepository {
         try fm.createDirectory(at: history, withIntermediateDirectories: true)
         let data = try ScrivJSON.encoder.encode(project)
         let event = HistoryEntry(label: label, snapshot: project)
+        let historyData = try ScrivJSON.encoder.encode(event)
+        // Accepted writes must remain readable by both the package and history
+        // loaders. The history wrapper can cross the limit before project.json.
+        guard data.count <= Self.maximumMetadataBytes, historyData.count <= Self.maximumMetadataBytes else {
+            throw ScrivError.invalid("Project metadata or history exceeds the 64 MiB safety limit. The saved revision was not replaced.")
+        }
         let revisionURL = try member("history/" + String(format: "%012lld", Int64(project.revision)) + ".json", in:package)
         let currentURL = try member("project.json", in:package)
         let published = fm.fileExists(atPath:currentURL.path) ? try load(at:package) : nil
@@ -95,13 +102,13 @@ public actor ProjectRepository {
         // an orphan future snapshot; only that unpublished revision may be replaced.
         var writeHistory = true
         if fm.fileExists(atPath:revisionURL.path) {
-            let existing = try ScrivJSON.decoder.decode(HistoryEntry.self,from:Data(contentsOf:revisionURL))
+            let existing = try ScrivJSON.decoder.decode(HistoryEntry.self,from:Self.readFile(revisionURL,maximumBytes:Self.maximumMetadataBytes))
             if existing.snapshot == project { writeHistory = false }
             else {
                 if let published, project.revision <= published.revision { throw ScrivError.conflict("The accepted history snapshot differs from this revision. Its original contents have been preserved.") }
             }
         }
-        if writeHistory { try ScrivJSON.encoder.encode(event).write(to:revisionURL,options:.atomic) }
+        if writeHistory { try historyData.write(to:revisionURL,options:.atomic) }
         try data.write(to:currentURL,options:.atomic)
         // The write-ahead record may be acknowledged only after these bytes and
         // the atomic replacement directory entries have reached durable storage.
@@ -119,10 +126,7 @@ public actor ProjectRepository {
     }
     public func load(at package: URL) throws -> ScrivProject {
         let source = try member("project.json", in:package)
-        let size = try source.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
-        guard size <= 64*1024*1024 else { throw ScrivError.invalid("Project metadata exceeds the 64 MiB safety limit.") }
-        let data = try Data(contentsOf: source)
-        guard data.count <= 64*1024*1024 else { throw ScrivError.invalid("Project metadata exceeds the 64 MiB safety limit.") }
+        let data = try Self.readFile(source,maximumBytes:Self.maximumMetadataBytes)
         let p = try ScrivJSON.decoder.decode(ScrivProject.self, from: data)
         try TimingEngine.validate(p)
         return p
@@ -151,10 +155,7 @@ public actor ProjectRepository {
         DispatchQueue.concurrentPerform(iterations: sources.count) { index in
             do {
                 let (number, source) = sources[index]
-                let size = try source.resourceValues(forKeys:[.fileSizeKey]).fileSize ?? 0
-                guard size <= 64*1024*1024 else { throw ScrivError.invalid("A history snapshot exceeds the metadata limit.") }
-                let data = try Data(contentsOf:source)
-                guard data.count <= 64*1024*1024 else { throw ScrivError.invalid("A history snapshot exceeds the metadata limit.") }
+                let data = try Self.readFile(source,maximumBytes:maximumMetadataBytes)
                 let event = try ScrivJSON.decoder.decode(HistoryEntry.self,from:data)
                 guard event.revision == number, event.snapshot.revision == number, event.snapshot.id == current.id, event.date.timeIntervalSince1970.isFinite else { throw ScrivError.invalid("A history snapshot has a different project identity or revision.") }
                 try TimingEngine.validate(event.snapshot)
@@ -176,7 +177,7 @@ public actor ProjectRepository {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let destination = try member("assets/" + filename,in:package)
         if FileManager.default.fileExists(atPath: destination.path) {
-            guard ScrivDigest.sha256(try Data(contentsOf: destination)) == hash else { throw ScrivError.invalid("A local image failed its integrity check.") }
+            guard ScrivDigest.sha256(try Self.readFile(destination,maximumBytes:25*1024*1024)) == hash else { throw ScrivError.invalid("A local image failed its integrity check.") }
         } else { try data.write(to: destination, options: .atomic) }
         return ImageAsset(fileName: filename, sha256: hash, mimeType: mime, byteCount: data.count, characterIds: characterIds, prompt: prompt)
     }
@@ -204,9 +205,7 @@ public actor ProjectRepository {
         let directory = try member("assets",in:package).resolvingSymlinksInPath()
         let source = directory.appendingPathComponent(asset.fileName).resolvingSymlinksInPath()
         guard source.deletingLastPathComponent() == directory else { throw ScrivError.invalid("The image path leaves this project package.") }
-        let size = try source.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
-        guard size <= 25*1024*1024 else { throw ScrivError.invalid("The local image is too large.") }
-        let data = try Data(contentsOf: source)
+        let data = try Self.readFile(source,maximumBytes:25*1024*1024)
         guard data.count == asset.byteCount, ScrivDigest.sha256(data) == asset.sha256 else { throw ScrivError.invalid("The image failed its integrity check; request another replica.") }
         return data
     }
@@ -214,13 +213,34 @@ public actor ProjectRepository {
     public func checkpoint(at package: URL) throws -> CloudCheckpoint? {
         let file = try member("cloud-sync.json",in:package)
         guard FileManager.default.fileExists(atPath:file.path) else { return nil }
-        let size = try file.resourceValues(forKeys:[.fileSizeKey]).fileSize ?? 0
-        guard size <= 64*1024*1024 else { throw ScrivError.invalid("Cloud checkpoint exceeds the metadata limit.") }
-        return try ScrivJSON.decoder.decode(CloudCheckpoint.self,from:Data(contentsOf:file))
+        return try ScrivJSON.decoder.decode(CloudCheckpoint.self,from:Self.readFile(file,maximumBytes:Self.maximumMetadataBytes))
     }
     public func saveCheckpoint(_ checkpoint: CloudCheckpoint, at package: URL) throws {
+        let data = try ScrivJSON.encoder.encode(checkpoint)
+        guard data.count <= Self.maximumMetadataBytes else { throw ScrivError.invalid("Cloud checkpoint exceeds the 64 MiB safety limit. The previous checkpoint was retained.") }
         try FileManager.default.createDirectory(at:package,withIntermediateDirectories:true)
-        try ScrivJSON.encoder.encode(checkpoint).write(to:try member("cloud-sync.json",in:package),options:.atomic)
+        try data.write(to:try member("cloud-sync.json",in:package),options:.atomic)
+    }
+    /// Read from one opened regular file, with the byte bound enforced while
+    /// reading too: external packages can change after a size check. Nonblocking
+    /// open lets us reject a FIFO without hanging while waiting for its writer.
+    private nonisolated static func readFile(_ url: URL, maximumBytes: Int) throws -> Data {
+        let descriptor = open(url.path,O_RDONLY | O_NOFOLLOW | O_NONBLOCK)
+        guard descriptor >= 0 else { throw NSError(domain:NSPOSIXErrorDomain,code:Int(errno)) }
+        defer { close(descriptor) }
+        var info = stat()
+        guard fstat(descriptor,&info) == 0 else { throw NSError(domain:NSPOSIXErrorDomain,code:Int(errno)) }
+        guard info.st_mode & mode_t(S_IFMT) == mode_t(S_IFREG), info.st_size >= 0, info.st_size <= maximumBytes else {
+            throw ScrivError.invalid("A project file is not a regular file or exceeds its safety limit.")
+        }
+        let handle = FileHandle(fileDescriptor:descriptor,closeOnDealloc:false)
+        var data = Data()
+        while data.count <= maximumBytes {
+            guard let chunk = try handle.read(upToCount:min(65_536,maximumBytes + 1 - data.count)), !chunk.isEmpty else { break }
+            data.append(chunk)
+        }
+        guard data.count <= maximumBytes else { throw ScrivError.invalid("A project file grew beyond its safety limit while being read.") }
+        return data
     }
     public func copyPackage(from source: URL, to destination: URL) throws {
         let resolvedSource = source.resolvingSymlinksInPath().standardizedFileURL

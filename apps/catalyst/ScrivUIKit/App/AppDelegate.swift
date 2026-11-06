@@ -52,7 +52,7 @@ final class ScrivUIKitSceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This is a best-effort flush only. Durable accepted mutations must be
         // journaled before publication; scene callbacks cannot defer termination.
         guard let store else { return }
-        UIKitPresentation.finishEditing()
+        UIKitPresentation.finishEditing(in: store)
         Task { await store.flushPendingSaves() }
     }
 }

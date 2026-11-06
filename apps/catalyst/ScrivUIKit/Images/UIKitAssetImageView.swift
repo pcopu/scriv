@@ -96,7 +96,7 @@ enum UIKitAssetImageLoadPhase: Equatable { case empty, loading, loaded, failed }
         let cacheParts: [String] = [cachePath, cacheDigest, String(modifiedAt), String(byteCount)]
         let key: NSString = cacheParts.joined(separator: "|") as NSString
         if let cached = Self.cache.object(forKey: key) {
-            loadPhase = .loaded; loadedDigest = currentDigest; imageView.image = cached; imageView.isHidden = false; placeholder.isHidden = true; spinner.stopAnimating(); return
+            loadPhase = .loaded; loadedDigest = currentDigest; imageView.image = cached; imageView.isHidden = false; placeholder.isHidden = true; spinner.stopAnimating(); accessibilityValue = nil; return
         }
         loadPhase = .loading
         spinner.isHidden = false; spinner.startAnimating(); wantsSymbol = false

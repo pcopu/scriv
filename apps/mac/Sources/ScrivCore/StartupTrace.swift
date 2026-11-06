@@ -36,7 +36,7 @@ public final class StartupTrace: @unchecked Sendable {
     }
     public static let process = StartupTrace(
         enabled: ProcessInfo.processInfo.arguments.contains("--scriv-startup-trace"),
-        sink: localLog)
+        sink: { localLog($0) })
     public let enabled: Bool
     private let limit: Int
     private let started: TimeInterval

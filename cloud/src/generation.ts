@@ -114,7 +114,7 @@ export async function generationRoutes(request:Request,env:Env,identity:Identity
     assert(input.recover===undefined||typeof input.recover==='boolean',400,'invalid_field','recover must be a boolean.');
     status='running';progress='Starting on this Mac';
   } else {
-    assert(['running','waiting','completed','cancelled','failed'].includes(String(input.status)),400,'invalid_field','Invalid generation job status.');
+    assert(typeof input.status==='string'&&['running','waiting','completed','cancelled','failed'].includes(input.status),400,'invalid_field','Invalid generation job status.');
     status=input.status as Exclude<Status,'queued'>;
     progress=input.progressText===undefined?({running:'Generating on this Mac',waiting:'Waiting for this Mac',completed:'Completed',cancelled:'Cancelled',failed:'Generation failed'}[status]):str(input.progressText,'progressText',160);
     assert(!/[\u0000-\u001f\u007f]/.test(progress),400,'invalid_field','Progress must be a single short line.');

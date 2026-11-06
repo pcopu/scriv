@@ -34,7 +34,7 @@ final class CharacterEditorController: ScrivScreenController, UITextViewDelegate
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(store:character:navigationContext:isNew:)") }
     override func viewDidLoad() {
         super.viewDidLoad()
-        layout = CharacterTeamSheetLayout(title: isNew ? "Add character" : "Edit character") { [weak self] in self?.close() }
+        layout = CharacterTeamSheetLayout(title: isNew ? "Add character" : "Edit character") { [weak self] in self?.requestClose() }
         view.addSubview(layout); layout.scrivPinEdges(to: view)
         colorDot.layer.cornerRadius = 10; colorDot.widthAnchor.constraint(equalToConstant: 20).isActive = true; colorDot.heightAnchor.constraint(equalToConstant: 20).isActive = true
         name.autocapitalizationType = .words; name.returnKeyType = .done
@@ -50,7 +50,7 @@ final class CharacterEditorController: ScrivScreenController, UITextViewDelegate
         layout.content.addArrangedSubview(CharacterTeamUI.labeled("Biography", biography))
         layout.content.addArrangedSubview(CharacterTeamUI.labeled("Appearance & image direction", appearance))
         layout.content.addArrangedSubview(issue); issue.isHidden = true
-        layout.footer.addArrangedSubview(CharacterTeamUI.button("Cancel") { [weak self] in self?.close() })
+        layout.footer.addArrangedSubview(CharacterTeamUI.button("Cancel") { [weak self] in self?.requestClose() })
         saveButton = CharacterTeamUI.button("Save character", primary: true, size: 16) { [weak self] in self?.save() }
         layout.footer.addArrangedSubview(saveButton)
         loadFields(); setEditable(isNew)
@@ -80,6 +80,9 @@ final class CharacterEditorController: ScrivScreenController, UITextViewDelegate
         if isBeingDismissed || navigationController?.isBeingDismissed == true || presentingViewController == nil { release() }
     }
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) { release() }
+    func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool { draft == original }
+    func presentationControllerDidAttemptToDismiss(_ presentationController: UIPresentationController) { requestClose() }
+    override func closeFromEscape() { requestClose() }
     override func storeDidChange() {
         guard isViewLoaded else { return }
         if !contextValid { showIssue("The project or account changed. Close and reopen this form before saving."); setEditable(false) }
@@ -167,6 +170,15 @@ final class CharacterEditorController: ScrivScreenController, UITextViewDelegate
     private func release() {
         active = false; openingTask?.cancel(); openingTask = nil
         if hasLease { store.endEdit(draft.id, context: navigationContext); hasLease = false }
+    }
+    private func requestClose() {
+        view.endEditing(true)
+        guard draft != original else { close(); return }
+        guard presentedViewController == nil else { return }
+        let alert = UIAlertController(title: "Discard character changes?", message: "Your changes have not been saved.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Keep editing", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Discard changes", style: .destructive) { [weak self] _ in self?.close() })
+        present(alert, animated: true)
     }
     private func close() { view.endEditing(true); release(); dismiss(animated: true) }
 }

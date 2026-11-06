@@ -20,10 +20,14 @@ enum AudioUIKitLayout {
         ScrivSheetFitting.refit(containing: controller)
     }
     static func scrollContent(_ content: UIView, in container: UIView, padding: CGFloat = 22) -> UIScrollView {
-        let scroll = UIScrollView(); scroll.alwaysBounceVertical = false
-        container.addSubview(scroll); scroll.scrivPinEdges(to: container)
+        let scroll = UIScrollView(); scroll.alwaysBounceVertical = false; scroll.keyboardDismissMode = .interactive
+        scroll.translatesAutoresizingMaskIntoConstraints = false; container.addSubview(scroll)
         scroll.addSubview(content); content.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
+            scroll.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            scroll.topAnchor.constraint(equalTo: container.topAnchor),
+            scroll.bottomAnchor.constraint(equalTo: container.keyboardLayoutGuide.topAnchor),
             content.leadingAnchor.constraint(equalTo: scroll.contentLayoutGuide.leadingAnchor, constant: padding),
             content.trailingAnchor.constraint(equalTo: scroll.contentLayoutGuide.trailingAnchor, constant: -padding),
             content.topAnchor.constraint(equalTo: scroll.contentLayoutGuide.topAnchor, constant: padding),

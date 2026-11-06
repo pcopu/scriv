@@ -37,6 +37,8 @@ final class ScrivSignInController: ScrivScreenController, UITextFieldDelegate {
         _ = AccountUI.installScroll(in: self, content: content, padding: 34)
         email.textContentType = .emailAddress; email.keyboardType = .emailAddress; email.autocapitalizationType = .none; email.returnKeyType = .continue
         code.textContentType = .oneTimeCode; code.keyboardType = .numberPad; code.font = .monospacedSystemFont(ofSize: 26, weight: .medium); code.textAlignment = .center
+        email.accessibilityLabel = "Email address"; code.accessibilityLabel = "Verification code"
+        code.accessibilityHint = "Enter the six-digit code from your email."
         email.delegate = self; code.delegate = self
         email.addTarget(self, action: #selector(changed), for: .editingChanged); code.addTarget(self, action: #selector(changed), for: .editingChanged)
         store.cloud.objectWillChange.receive(on: RunLoop.main).sink { [weak self] _ in self?.storeDidChange() }.store(in: &subscriptions)

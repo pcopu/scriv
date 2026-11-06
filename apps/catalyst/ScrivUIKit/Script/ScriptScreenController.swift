@@ -138,14 +138,14 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         boundaryTask = Task { [weak self] in
             guard let self else { return }
             var acquired: [String] = []
-            defer { acquired.forEach { store.endEdit($0, context: navigation) }; boundaryPending = nil; queueSessionRefresh() }
+            defer { acquired.forEach { self.store.endEdit($0, context: navigation) }; boundaryPending = nil; queueSessionRefresh() }
             for target in [id, previous?.id].compactMap({ $0 }) {
                 guard !Task.isCancelled, navigation == store.navigationContext, scene == store.selectedSceneID else { return }
                 guard await store.beginEdit(target) else { return }; acquired.append(target)
             }
             guard !Task.isCancelled, navigation == store.navigationContext, scene == store.selectedSceneID,
                   let current = store.project.entries.first(where: { $0.id == id }), current == original,
-                  current.text.utf16.elementsEqual(text.utf16), previous.map({ old in store.project.entries.contains { $0 == old && $0.text.utf16.elementsEqual(old.text.utf16) } }) ?? true else {
+                  current.text.utf16.elementsEqual(text.utf16), previous.map({ old in self.store.project.entries.contains { $0 == old && $0.text.utf16.elementsEqual(old.text.utf16) } }) ?? true else {
                 if navigation == store.navigationContext { store.errorMessage = "These lines changed while acquiring editing access. No boundary was changed." }
                 return
             }
@@ -153,7 +153,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
             if let offset = splitOffset {
                 result = store.splitScriptEntry(entryID: id, atUTF16Offset: offset, expectedText: text).map { ($0, 0) }
             } else { result = store.mergeScriptEntryIntoPrevious(entryID: id, expectedText: text).map { ($0.entryID, $0.caretUTF16Offset) } }
-            acquired.forEach { store.endEdit($0, context: navigation) }; acquired = []
+            acquired.forEach { self.store.endEdit($0, context: navigation) }; acquired = []
             boundaryPending = nil; store.requestedEntryEditingID = nil; store.requestedEntryEditingSelectsText = false
             if let result { beginEditing(result.entryID, caret: result.caret) }
             else { beginEditing(id, caret: splitOffset ?? 0) }
@@ -215,8 +215,11 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         store.prepareScriptPlayback = { [weak self] in self?.preparePlayback() ?? true }
         store.didPauseScriptPlayback = { [weak self] in self?.restorePausedCaret() }
         session.changes.sink { [weak self] in self?.queueSessionRefresh() }.store(in: &subscriptions)
-        finishObserver = NotificationCenter.default.addObserver(forName: .scrivFinishEditing, object: nil, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { _ = self?.session.finish(); self?.view.endEditing(true) }
+        finishObserver = NotificationCenter.default.addObserver(forName: .scrivFinishEditing, object: nil, queue: .main) { [weak self] notification in
+            MainActor.assumeIsolated {
+                guard let self, notification.object == nil || (notification.object as? WorkspaceStore) === self.store else { return }
+                _ = self.session.finish(); self.view.endEditing(true)
+            }
         }
         storeDidChange()
     }

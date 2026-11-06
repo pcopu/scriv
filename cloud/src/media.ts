@@ -1,6 +1,6 @@
 import type { Env, Identity } from './types';
 import { projectAccess } from './access';
-import { APIError, assert, bytes, id, json, rateLimit, sha256 } from './http';
+import { APIError, assert, bytes, id, json, rateLimit, sha256, uuid } from './http';
 
 interface AssetRow {project_id:string;sha256:string;team_id:string;asset_id:string|null;object_key:string;content_type:string;bytes:number;state:'uploading'|'ready'|'deleting';uploaded_by:string;created_at:number}
 function mediaType(data:Uint8Array):string|null{
@@ -13,7 +13,7 @@ export async function mediaRoutes(request:Request,env:Env,identity:Identity):Pro
   const path=new URL(request.url).pathname;
   const match=/^\/v1\/projects\/([^/]+)\/assets\/([a-f0-9]{64})$/.exec(path);if(!match)return null;
   const projectId=id(match[1]),hash=match[2]!,access=await projectAccess(env,projectId,identity.user.id);
-  const row=await env.DB.prepare('SELECT * FROM assets WHERE project_id=? AND sha256=?').bind(projectId,hash).first<AssetRow>();
+  const row=request.method==='PUT'?null:await env.DB.prepare('SELECT * FROM assets WHERE project_id=? AND sha256=?').bind(projectId,hash).first<AssetRow>();
   if(request.method==='GET'||request.method==='HEAD'){
     assert(row?.state==='ready',404,'asset_unavailable','This image has no hosted copy. Request it from an online peer.');
     const object=request.method==='HEAD'?await env.MEDIA.head(row.object_key):await env.MEDIA.get(row.object_key);
@@ -25,9 +25,22 @@ export async function mediaRoutes(request:Request,env:Env,identity:Identity):Pro
     assert(access.canManage,403,'not_allowed','Only an owner or administrator can delete hosted images.');
     if(!row)return json({ok:true});
     assert(row.state!=='uploading',409,'upload_in_progress','Wait for the current image upload to finish before deleting it.');
-    await env.DB.prepare("UPDATE assets SET state='deleting' WHERE project_id=? AND sha256=?").bind(projectId,hash).run();
+    const now=Date.now();
+    // Authorize and claim this exact replica together. A delayed delete must
+    // neither outlive revoked access nor target a replacement upload.
+    const claimed=await env.DB.prepare(`UPDATE assets SET state='deleting'
+      WHERE project_id=? AND sha256=? AND object_key=? AND state IN ('ready','deleting')
+        AND EXISTS(SELECT 1 FROM projects p LEFT JOIN teams t ON t.id=p.team_id
+          LEFT JOIN team_members actor ON actor.team_id=t.id AND actor.user_id=?
+          WHERE p.id=assets.project_id AND p.archived_at IS NULL AND (
+            (p.team_id IS NULL AND p.owner_id=?) OR t.owner_id=? OR
+            (actor.role='admin' AND t.subscription_status IN ('active','trialing') AND t.paid_until>?)))
+        AND EXISTS(SELECT 1 FROM sessions actor_session WHERE actor_session.id=? AND actor_session.user_id=?
+          AND actor_session.revoked_at IS NULL AND actor_session.expires_at>?) RETURNING object_key`)
+      .bind(projectId,hash,row.object_key,identity.user.id,identity.user.id,identity.user.id,now,identity.sessionId,identity.user.id,now).first();
+    assert(claimed,409,'asset_changed','The image or your access changed. Refresh and retry.');
     await env.MEDIA.delete(row.object_key);
-    await env.DB.prepare("DELETE FROM assets WHERE project_id=? AND sha256=? AND state='deleting'").bind(projectId,hash).run();
+    await env.DB.prepare("DELETE FROM assets WHERE project_id=? AND sha256=? AND object_key=? AND state='deleting'").bind(projectId,hash,row.object_key).run();
     return json({ok:true});
   }
   assert(request.method==='PUT',405,'method_not_allowed','Use GET, PUT or DELETE for image media.');
@@ -37,9 +50,14 @@ export async function mediaRoutes(request:Request,env:Env,identity:Identity):Pro
   const content=await bytes(request,limit);assert(content.length>0,400,'empty_media','The image is empty.');
   const type=mediaType(content);assert(type&&type===request.headers.get('content-type')?.split(';')[0],415,'invalid_media','The bytes must match a PNG, JPEG or WebP Content-Type.');
   assert(await sha256(content)===hash,422,'hash_mismatch','Image SHA-256 does not match its content-addressed URL.');
-  if(row){assert(row.state==='ready',409,'upload_in_progress','This image is already being transferred. Retry shortly.');assert(row.bytes===content.length&&row.content_type===type,409,'asset_conflict','The stored image metadata does not match.');return json({sha256:hash,bytes:row.bytes,hosted:true});}
+  // Observe the replica after receiving the body: an earlier read can become
+  // stale while a concurrent DELETE removes the hosted copy.
+  const existing=await env.DB.prepare('SELECT * FROM assets WHERE project_id=? AND sha256=?').bind(projectId,hash).first<AssetRow>();
+  if(existing){assert(existing.state==='ready',409,'upload_in_progress','This image is already being transferred. Retry shortly.');assert(existing.bytes===content.length&&existing.content_type===type,409,'asset_conflict','The stored image metadata does not match.');return json({sha256:hash,bytes:existing.bytes,hosted:true});}
   const assetId=request.headers.get('x-scriv-asset-id');if(assetId)id(assetId,'assetId');
-  const key=`projects/${projectId}/${hash}`,now=Date.now();
+  // Content-addressed API URLs stay stable, while each reservation owns its R2
+  // key so stale deletes/reconciliation cannot remove a later hosted replica.
+  const key=`projects/${projectId}/${hash}/${uuid()}`,now=Date.now();
   let reserved:unknown;
   // Upload bodies/hash verification may take time. Linearize authorization with
   // the quota reservation so removal, viewer downgrade, archive, session revoke
@@ -56,7 +74,16 @@ export async function mediaRoutes(request:Request,env:Env,identity:Identity):Pro
   assert(reserved,409,'upload_unavailable','Access changed or another device is uploading this image. Refresh and retry.');
   try{
     await env.MEDIA.put(key,content,{httpMetadata:{contentType:type},customMetadata:{sha256:hash,projectId,teamId:access.team.id}});
-    await env.DB.prepare("UPDATE assets SET state='ready' WHERE project_id=? AND sha256=? AND state='uploading' AND created_at=?").bind(projectId,hash,now).run();
+    const finalized=await env.DB.prepare("UPDATE assets SET state='ready' WHERE project_id=? AND sha256=? AND object_key=? AND state='uploading' RETURNING sha256").bind(projectId,hash,key).first();
+    if(!finalized){
+      const current=await env.DB.prepare("SELECT state FROM assets WHERE project_id=? AND sha256=? AND object_key=?").bind(projectId,hash,key).first<{state:AssetRow['state']}>();
+      // Reconciliation may already have finalized this exact upload. Otherwise
+      // it reclaimed the reservation; remove only this request's late R2 write.
+      if(current?.state!=='ready'){
+        await env.MEDIA.delete(key);
+        throw new APIError(503,'upload_pending','The image upload reservation expired. Retry the upload.');
+      }
+    }
   }catch(error){
     // Leave a recoverable reservation when R2 or D1 acknowledgement is uncertain.
     // Scheduled reconciliation validates R2 metadata before finalizing or reclaiming quota.
@@ -85,8 +112,17 @@ export async function reconcileMedia(env:Env):Promise<void>{
   for(const row of rows.results){
     try{
       const object=await env.MEDIA.head(row.object_key);
-      if(row.state==='uploading'&&object?.size===row.bytes&&object.customMetadata?.sha256===row.sha256){await env.DB.prepare("UPDATE assets SET state='ready' WHERE project_id=? AND sha256=? AND state='uploading'").bind(row.project_id,row.sha256).run();}
-      else{if(object)await env.MEDIA.delete(row.object_key);await env.DB.prepare("DELETE FROM assets WHERE project_id=? AND sha256=? AND state!='ready'").bind(row.project_id,row.sha256).run();}
+      if(row.state==='uploading'&&object?.size===row.bytes&&object.customMetadata?.sha256===row.sha256){
+        await env.DB.prepare("UPDATE assets SET state='ready' WHERE project_id=? AND sha256=? AND object_key=? AND state='uploading'").bind(row.project_id,row.sha256,row.object_key).run();
+      }else{
+        // Claim cleanup before touching R2: the uploader may have finalized
+        // since the head request, or a prior cleanup may have been replaced.
+        const claimed=await env.DB.prepare("UPDATE assets SET state='deleting' WHERE project_id=? AND sha256=? AND object_key=? AND state=? RETURNING object_key")
+          .bind(row.project_id,row.sha256,row.object_key,row.state).first();
+        if(!claimed)continue;
+        await env.MEDIA.delete(row.object_key);
+        await env.DB.prepare("DELETE FROM assets WHERE project_id=? AND sha256=? AND object_key=? AND state='deleting'").bind(row.project_id,row.sha256,row.object_key).run();
+      }
     }catch{console.error('Media reconciliation deferred');}
   }
 }

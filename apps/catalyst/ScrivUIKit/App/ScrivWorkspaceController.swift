@@ -104,7 +104,7 @@ final class ScrivWorkspaceController: ScrivScreenController {
     }
     @objc func findInScript() {
         guard presentedViewController == nil else { return }
-        UIKitPresentation.finishEditing()
+        UIKitPresentation.finishEditing(in: store)
         if store.tab != .script { store.tab = .script; installContent() }
         (child(.script) as? ScriptScreenController)?.focusSearch()
     }
@@ -162,7 +162,7 @@ final class ScrivWorkspaceController: ScrivScreenController {
     }
     @objc private func changeTab() {
         guard WorkspaceTab.allCases.indices.contains(tabs.selectedSegmentIndex) else { return }
-        UIKitPresentation.finishEditing(); store.tab = WorkspaceTab.allCases[tabs.selectedSegmentIndex]
+        UIKitPresentation.finishEditing(in: store); store.tab = WorkspaceTab.allCases[tabs.selectedSegmentIndex]
     }
     private func child(_ route: ScrivUIKitRoute) -> UIViewController {
         if let existing = cached[route.kind] { return existing }
@@ -265,7 +265,7 @@ final class ScrivWorkspaceController: ScrivScreenController {
         }
         return super.canPerformAction(action,withSender:sender)
     }
-    @objc private func saveProject() { UIKitPresentation.finishEditing(); store.saveProject() }
+    @objc private func saveProject() { UIKitPresentation.finishEditing(in: store); store.saveProject() }
     @objc private func newProject() { store.newProject() }
     @objc private func openProject() { store.openProject() }
     @objc private func undoProject() { store.undo() }

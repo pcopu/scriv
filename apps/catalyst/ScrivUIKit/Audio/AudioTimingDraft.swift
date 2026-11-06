@@ -4,9 +4,18 @@ import ScrivCore
 /// Millisecond precision with bounded conversion. Invalid text stays in the UI
 /// until corrected; parsing never silently clamps or replaces an invalid draft.
 enum AudioTimingInput {
+    static func secondsValue(_ text: String) -> Double? {
+        // Decimal keyboards follow the user's locale; saved drafts keep the
+        // canonical dot so switching locales does not invalidate existing text.
+        let separator = Locale.current.decimalSeparator ?? "."
+        let normalized = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: separator, with: ".")
+        guard let seconds = Double(normalized), seconds.isFinite else { return nil }
+        return seconds
+    }
     static func milliseconds(_ text: String, maximum: Int) -> Int? {
-        guard maximum >= 0, let seconds = Double(text.trimmingCharacters(in: .whitespacesAndNewlines)),
-              seconds.isFinite, seconds >= 0, seconds <= Double(maximum) / 1000 else { return nil }
+        guard maximum >= 0, let seconds = secondsValue(text),
+              seconds >= 0, seconds <= Double(maximum) / 1000 else { return nil }
         let milliseconds = (seconds * 1000).rounded()
         guard milliseconds.isFinite, milliseconds < Double(Int.max) else { return nil }
         let result = Int(milliseconds)

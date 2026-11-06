@@ -1,4 +1,9 @@
 import Foundation
+#if os(Linux)
+import Glibc
+#else
+import Darwin
+#endif
 
 /// Local recovery only: never included in project packages, CloudCodec or outbox payloads.
 public struct EditorDraftScope: Codable, Hashable, Sendable {
@@ -39,7 +44,7 @@ public struct LocalEditorDraft: Codable, Equatable, Sendable {
     }
     public mutating func replaceText(_ value: String, edit: CharacterTextEdit? = nil) {
         if let edit, Self.validRange(edit.range, in: text),
-           (text as NSString).replacingCharacters(in: edit.range, with: edit.replacement) == value, edits.count < 1024 {
+           (text as NSString).replacingCharacters(in: edit.range, with: edit.replacement).utf16.elementsEqual(value.utf16), edits.count < 1024 {
             edits.append(Edit(edit))
         } else {
             // Missing native events or a very long invalid editing session must
@@ -48,7 +53,9 @@ public struct LocalEditorDraft: Codable, Equatable, Sendable {
         }
         text = value; revisionID = UUID().uuidString; updatedAt = ScrivClock.now
     }
-    public func needsRebase(current: ScriptEntry, epoch: Int?) -> Bool { sourceEntry != current || sourceEpoch != epoch }
+    public func needsRebase(current: ScriptEntry, epoch: Int?) -> Bool {
+        sourceEntry != current || !sourceEntry.text.utf16.elementsEqual(current.text.utf16) || sourceEpoch != epoch
+    }
     static func validRange(_ range: NSRange, in text: String) -> Bool {
         range.location >= 0 && range.length >= 0 && range.location <= text.utf16.count &&
         range.length <= text.utf16.count - range.location && Range(range, in: text) != nil
@@ -84,6 +91,9 @@ public struct EditorDraftJournal {
     public let maximumRecords: Int
     public init(root: URL, maximumRecordBytes: Int = 2 * 1024 * 1024,
                 maximumTotalBytes: Int = 64 * 1024 * 1024, maximumRecords: Int = 128) throws {
+        guard maximumRecordBytes > 0, maximumTotalBytes > 0, maximumRecords > 0 else {
+            throw ScrivError.invalid("Editor draft storage limits must be positive.")
+        }
         let fm = FileManager.default
         if fm.fileExists(atPath: root.path), try root.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink == true {
             throw ScrivError.invalid("Editor draft storage must not be a symbolic link.")
@@ -94,6 +104,9 @@ public struct EditorDraftJournal {
         try fm.setAttributes([.posixPermissions: 0o700], ofItemAtPath: self.root.path)
     }
     public func load(_ scope: EditorDraftScope) throws -> LocalEditorDraft? {
+        try locked { try loadUnlocked(scope) }
+    }
+    private func loadUnlocked(_ scope: EditorDraftScope) throws -> LocalEditorDraft? {
         let url = try file(scope)
         guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? Int.max
@@ -123,10 +136,13 @@ public struct EditorDraftJournal {
         if let known = Self.written.get(url.path),
            let values = try? url.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey]),
            values.fileSize == known.size, values.contentModificationDate == known.modified { return known.revisionID }
-        return try load(scope)?.revisionID
+        return try loadUnlocked(scope)?.revisionID
     }
     public func save(_ draft: LocalEditorDraft, replacing revisionID: String?) throws {
         try validate(draft)
+        try locked { try saveUnlocked(draft, replacing: revisionID) }
+    }
+    private func saveUnlocked(_ draft: LocalEditorDraft, replacing revisionID: String?) throws {
         let current = try currentRevision(draft.scope)
         guard current == nil || current == revisionID else {
             throw ScrivError.conflict("A newer local editor already saved this draft. Reopen the line to recover it before editing.")
@@ -156,10 +172,39 @@ public struct EditorDraftJournal {
     /// A late canonical save must never remove newer typing or another editor's draft.
     @discardableResult
     public func clear(_ draft: LocalEditorDraft) throws -> Bool {
-        guard let current = try load(draft.scope) else { return true }
+        try locked { try clearUnlocked(draft) }
+    }
+    private func clearUnlocked(_ draft: LocalEditorDraft) throws -> Bool {
+        guard let current = try loadUnlocked(draft.scope) else { return true }
         guard current.revisionID == draft.revisionID else { return false }
         let url = try file(draft.scope); Self.written.set(url.path, nil)
         try FileManager.default.removeItem(at: url); return true
+    }
+    /// Serialize revision checks with replacement/removal across windows and
+    /// processes. Typing runs synchronously, so contention rejects the edit
+    /// rather than blocking the main thread behind another process.
+    private func locked<T>(_ action: () throws -> T) throws -> T {
+        let attributes = try FileManager.default.attributesOfItem(atPath: root.path)
+        guard attributes[.type] as? FileAttributeType == .typeDirectory else {
+            throw ScrivError.invalid("Editor draft storage was replaced by an unsafe path.")
+        }
+        let descriptor = open(root.appendingPathComponent(".journal-lock").path, O_RDWR | O_CREAT | O_NOFOLLOW, mode_t(0o600))
+        guard descriptor >= 0 else { throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
+        defer { close(descriptor) }
+        var status = stat()
+        guard fstat(descriptor, &status) == 0, status.st_mode & mode_t(S_IFMT) == mode_t(S_IFREG),
+              status.st_nlink == 1, status.st_uid == getuid() else {
+            throw ScrivError.invalid("Editor draft lock must be a regular private file.")
+        }
+        guard fchmod(descriptor, mode_t(0o600)) == 0 else { throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
+        while flock(descriptor, LOCK_EX | LOCK_NB) != 0 {
+            if errno == EWOULDBLOCK || errno == EAGAIN {
+                throw ScrivError.conflict("Another editor is saving local recovery data. Retry this edit; the existing draft was retained.")
+            }
+            if errno != EINTR { throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
+        }
+        defer { _ = flock(descriptor, LOCK_UN) }
+        return try action()
     }
     private func file(_ scope: EditorDraftScope) throws -> URL {
         let url = root.appendingPathComponent(scope.key + ".json")

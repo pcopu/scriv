@@ -30,8 +30,16 @@ def main():
     template, output, work = args.template.resolve(), args.output.resolve(), args.work.resolve()
     if output.exists() or output == template or template in output.parents or output in template.parents:
         parser.error('Output must be a new, separate app bundle.')
+    for bundle in (template, output):
+        if work == bundle or work in bundle.parents or bundle in work.parents:
+            parser.error('Work must be separate from both template and output bundle trees.')
     if not args.build.isdecimal() or not all(part.isdecimal() for part in args.version.split('.')):
         parser.error('Use numeric version and build identifiers.')
+    # The template is copied with symlinks preserved. Reject symlinked resource
+    # ancestors before refreshing files, which could otherwise mutate the input.
+    for directory in (template / 'Contents', template / 'Contents/Resources'):
+        if directory.is_symlink() or not directory.is_dir():
+            parser.error('Template Contents and Resources must be real directories.')
     info = plistlib.loads((template / 'Contents/Info.plist').read_bytes())
     if info.get('CFBundleIdentifier') != 'app.scriv.uikit':
         parser.error('Template must be the UIKit Mac Catalyst Scriv app.')
@@ -49,6 +57,15 @@ def main():
     work.mkdir(parents=True, exist_ok=True)
     output.parent.mkdir(parents=True, exist_ok=True)
     shutil.copytree(template, output, symlinks=True)
+    # Compiled icon assets require the verified template, but runtime resources
+    # must match the source being compiled rather than the template's old code.
+    for name in ('PeerTransfer', 'SampleImages'):
+        destination = output / 'Contents/Resources' / name
+        if destination.is_symlink() or destination.is_file():
+            destination.unlink()
+        elif destination.exists():
+            shutil.rmtree(destination)
+        shutil.copytree(ROOT / 'apps/mac/Sources/ScrivApp/Resources' / name, destination)
     core = sorted((ROOT / 'apps/mac/Sources/ScrivCore').glob('*.swift'))
     common = ['xcrun', 'swiftc', '-swift-version', '5', '-sdk', sdk,
               '-module-cache-path', work / 'module-cache', '-O', '-whole-module-optimization']

@@ -20,6 +20,7 @@ final class RuntimeCompanion {
     private var pairing: RuntimeBridgePairing?
     private var replay = RuntimeBridgeReplayWindow()
     private var process: Process?
+    private var processGeneration: UUID?
     private var input: FileHandle?
     private var output: FileHandle?
     private var stderr: FileHandle?
@@ -89,11 +90,9 @@ final class RuntimeCompanion {
             guard case .hostPort(let host, _) = connection.endpoint,
                   host == .ipv4(.loopback), self.peers < 16 else { connection.cancel(); return }
             self.peers += 1
-            CompanionConnection(connection: connection, queue: self.queue) { [weak self] data, respond in
-                guard let self else { respond(nil); return }
-                defer { self.peers -= 1 }
-                respond(self.handle(data))
-            }.start()
+            CompanionConnection(connection: connection, queue: self.queue,
+                handler: { [weak self] data in self?.handle(data) },
+                onClose: { [weak self] in self?.peers -= 1 }).start()
         }
         listener.start(queue: queue)
         let timer = DispatchSource.makeTimerSource(queue: queue); leaseTimer = timer
@@ -174,10 +173,16 @@ final class RuntimeCompanion {
             child.standardInput = stdin; child.standardOutput = stdout; child.standardError = errors
             ownerSession = command.sessionID; generationRoot = root; failure = nil; events = []; eventBytes = 0; nextSequence = 1; outputBuffer = Data(); leaseAt = Date()
             input = stdin.fileHandleForWriting; output = stdout.fileHandleForReading; stderr = errors.fileHandleForReading; process = child
-            let session = command.sessionID
-            output?.readabilityHandler = { [weak self] handle in let data = handle.availableData; self?.queue.async { guard self?.ownerSession == session else { return }; self?.receive(data) } }
-            stderr?.readabilityHandler = { handle in _ = handle.availableData }
-            child.terminationHandler = { [weak self] _ in self?.queue.async { guard self?.ownerSession == session else { return }; self?.process = nil } }
+            // A connection can stop and restart a child using the same session.
+            // Already queued callbacks from that child must not affect its replacement.
+            let generation = UUID(); processGeneration = generation
+            output?.readabilityHandler = { [weak self] handle in
+                let data = handle.availableData
+                if data.isEmpty { handle.readabilityHandler = nil }
+                self?.queue.async { guard self?.processGeneration == generation else { return }; self?.receive(data) }
+            }
+            stderr?.readabilityHandler = { handle in if handle.availableData.isEmpty { handle.readabilityHandler = nil } }
+            child.terminationHandler = { [weak self] _ in self?.queue.async { guard self?.processGeneration == generation else { return }; self?.process = nil } }
             do { try child.run() } catch { stopOwned(); throw error }
             return RuntimeBridgeReply(running: true)
         }
@@ -216,6 +221,7 @@ final class RuntimeCompanion {
         }
     }
     private func stopOwned() {
+        processGeneration = nil
         let child = process; process = nil; child?.terminationHandler = nil
         if let child, child.isRunning {
             child.terminate()
@@ -245,16 +251,22 @@ final class RuntimeCompanion {
 private final class CompanionConnection {
     private let connection: NWConnection
     private let queue: DispatchQueue
-    private let handler: (Data?, @escaping (Data?) -> Void) -> Void
+    private let handler: (Data) -> Data?
+    private let onClose: () -> Void
     private var buffer = Data(), expected: Int?
     private var deadline: DispatchWorkItem?
     private var finished = false
+    private var closed = false
     private var keepAlive: CompanionConnection?
-    init(connection: NWConnection, queue: DispatchQueue, handler: @escaping (Data?, @escaping (Data?) -> Void) -> Void) { self.connection = connection; self.queue = queue; self.handler = handler }
+    init(connection: NWConnection, queue: DispatchQueue, handler: @escaping (Data) -> Data?, onClose: @escaping () -> Void) {
+        self.connection = connection; self.queue = queue; self.handler = handler; self.onClose = onClose
+    }
     func start() {
         keepAlive = self
-        let timer = DispatchWorkItem { [weak self] in self?.finish(nil) }; deadline = timer; queue.asyncAfter(deadline: .now() + 12, execute: timer)
-        connection.stateUpdateHandler = { [weak self] state in if case .failed = state { self?.finish(nil) } }
+        // Bound the entire exchange, including a peer that sends its request
+        // but never reads the reply. Its connection slot stays occupied until close.
+        let timer = DispatchWorkItem { [weak self] in self?.close() }; deadline = timer; queue.asyncAfter(deadline: .now() + 12, execute: timer)
+        connection.stateUpdateHandler = { [weak self] state in if case .failed = state { self?.close() } }
         connection.start(queue: queue); receive()
     }
     private func receive() {
@@ -269,15 +281,19 @@ private final class CompanionConnection {
         }
     }
     private func finish(_ data: Data?) {
-        guard !finished else { return }; finished = true; deadline?.cancel(); deadline = nil
-        handler(data) { [self] response in
-            guard let response, response.count <= RuntimeBridgeEnvelope.maximumFrameBytes else { close(); return }
-            var count = UInt32(response.count).bigEndian
-            let header = withUnsafeBytes(of: &count) { Data($0) }
-            connection.send(content: header + response, completion: .contentProcessed { [self] _ in close() })
-        }
+        guard !finished else { return }; finished = true
+        guard let data, let response = handler(data), response.count <= RuntimeBridgeEnvelope.maximumFrameBytes else { close(); return }
+        buffer = Data()
+        var count = UInt32(response.count).bigEndian
+        let header = withUnsafeBytes(of: &count) { Data($0) }
+        connection.send(content: header + response, completion: .contentProcessed { [self] _ in close() })
     }
-    private func close() { connection.stateUpdateHandler = nil; connection.cancel(); keepAlive = nil }
+    private func close() {
+        guard !closed else { return }; closed = true; finished = true
+        deadline?.cancel(); deadline = nil; buffer = Data()
+        connection.stateUpdateHandler = nil; connection.cancel(); keepAlive = nil
+        onClose()
+    }
 }
 
 /// URL activation is consumed but cannot execute commands or carry secrets.
