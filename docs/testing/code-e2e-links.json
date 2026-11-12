@@ -4472,6 +4472,7 @@
       "actions": [
         "tracer app -- workspace inspect ${valid}",
         "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${ancestorSymbolic}",
         "tracer app -- workspace inspect ${hardLinked}",
         "tracer app -- workspace inspect ${fixture-markerMode-0400}",
         "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
@@ -4486,10 +4487,10 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 238,
-        "end": 267,
-        "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+        "end": 269,
+        "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
-      "why": "Workspace routing accepts only inspect with its exact arity and emits the host inspection JSON. Resume/reset/delete are rejected without changing fixture bytes. Other malformed arities are not independently asserted. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+      "why": "Workspace routing accepts only inspect with its exact arity and emits the host inspection JSON. Resume/reset/delete are rejected without changing fixture bytes. Other malformed arities are not independently asserted. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
     },
     {
       "id": "10477b10fe327839",
@@ -5752,6 +5753,7 @@
       "actions": [
         "tracer app -- workspace inspect ${valid}",
         "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${ancestorSymbolic}",
         "tracer app -- workspace inspect ${hardLinked}",
         "tracer app -- workspace inspect ${fixture-markerMode-0400}",
         "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
@@ -5766,10 +5768,10 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 238,
-        "end": 267,
-        "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+        "end": 269,
+        "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
-      "why": "The public inspector rejects non-owned naming, invokes host validation, returns the exact object explicitly denying native validation and resume authority, and normalizes tested validation failures. Non-string input and native ownership are not established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+      "why": "The public inspector rejects non-owned naming, invokes host validation, returns the exact object explicitly denying native validation and resume authority, and normalizes tested validation failures. Non-string input and native ownership are not established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
     },
     {
       "id": "145fa3d775f40497",
@@ -10473,6 +10475,7 @@
       "actions": [
         "tracer app -- workspace inspect ${valid}",
         "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${ancestorSymbolic}",
         "tracer app -- workspace inspect ${hardLinked}",
         "tracer app -- workspace inspect ${fixture-markerMode-0400}",
         "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
@@ -10487,10 +10490,10 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 238,
-        "end": 267,
-        "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+        "end": 269,
+        "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
-      "why": "Ownership helper predicates accept the synthetic private directory/files and reject tested directory-mode, file-mode and hard-link cases. Error helper returns the asserted owned-workspace-unavailable. Device/inode sameness is checked on successful access; no replacement race, wrong uid or special-file injection is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+      "why": "Ownership helper predicates accept the synthetic private directory/files and reject tested directory-mode, file-mode and hard-link cases. Error helper returns the asserted owned-workspace-unavailable. Device/inode sameness is checked on successful access; no replacement race, wrong uid or special-file injection is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
     },
     {
       "id": "25469c65b965a27e",
@@ -15344,6 +15347,7 @@
       "actions": [
         "tracer app -- workspace inspect ${valid}",
         "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${ancestorSymbolic}",
         "tracer app -- workspace inspect ${hardLinked}",
         "tracer app -- workspace inspect ${fixture-markerMode-0400}",
         "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
@@ -15358,10 +15362,10 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 238,
-        "end": 267,
-        "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+        "end": 269,
+        "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
-      "why": "Retaining an inspect-only host handle validates absolute canonical UUID-named root, private directory mode and stable identity, then validates owned files. Symlink-root and unsafe-root fixtures reject; valid fixture yields the exact non-resumable inspection. No retained live application lease or concurrent root swap is established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+      "why": "Retaining an inspect-only host handle validates absolute canonical UUID-named root, private directory mode and stable identity, then validates owned files. Symlink-root and unsafe-root fixtures reject; valid fixture yields the exact non-resumable inspection. No retained live application lease or concurrent root swap is established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
     },
     {
       "id": "360891e9dc934874",
@@ -43504,6 +43508,7 @@
       "actions": [
         "tracer app -- workspace inspect ${valid}",
         "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${ancestorSymbolic}",
         "tracer app -- workspace inspect ${hardLinked}",
         "tracer app -- workspace inspect ${fixture-markerMode-0400}",
         "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
@@ -43518,10 +43523,10 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 238,
-        "end": 267,
-        "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+        "end": 269,
+        "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
-      "why": "Valid marker size/content and empty lock pass; the deliberately wrong-length marker rejects at the size guard. Same-length corrupt marker, short read, lock nonzero size and unexpected read failure are not rejection-tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+      "why": "Valid marker size/content and empty lock pass; the deliberately wrong-length marker rejects at the size guard. Same-length corrupt marker, short read, lock nonzero size and unexpected read failure are not rejection-tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
     },
     {
       "id": "9912ab5e8458fede",
@@ -62980,6 +62985,7 @@
       "actions": [
         "tracer app -- workspace inspect ${valid}",
         "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${ancestorSymbolic}",
         "tracer app -- workspace inspect ${hardLinked}",
         "tracer app -- workspace inspect ${fixture-markerMode-0400}",
         "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
@@ -62994,10 +63000,10 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 238,
-        "end": 267,
-        "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+        "end": 269,
+        "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
-      "why": "Successful validation confirms named file/root identity and returns the inspected file set; scenario verifies original filenames and file bytes remain unchanged. This is the successful read-only path, not concurrent replacement detection or guaranteed descriptor cleanup under all failures. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+      "why": "Successful validation confirms named file/root identity and returns the inspected file set; scenario verifies original filenames and file bytes remain unchanged. This is the successful read-only path, not concurrent replacement detection or guaranteed descriptor cleanup under all failures. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
     },
     {
       "id": "ddf91bd2da983cf2",
@@ -71428,6 +71434,7 @@
       "actions": [
         "tracer app -- workspace inspect ${valid}",
         "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${ancestorSymbolic}",
         "tracer app -- workspace inspect ${hardLinked}",
         "tracer app -- workspace inspect ${fixture-markerMode-0400}",
         "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
@@ -71442,10 +71449,10 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 238,
-        "end": 267,
-        "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+        "end": 269,
+        "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
-      "why": "Validation reads the opened/named root and each marker/lock, checks private regular-file ownership/link count/mode and obtains stable file identities. Hard-linked/mode-0400 marker and absent-lock fixtures reject. No identity-change race, file-symlink race, device mismatch or revalidation of an existing lease.files set is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+      "why": "Validation reads the opened/named root and each marker/lock, checks private regular-file ownership/link count/mode and obtains stable file identities. Hard-linked/mode-0400 marker and absent-lock fixtures reject. No identity-change race, file-symlink race, device mismatch or revalidation of an existing lease.files set is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
     },
     {
       "id": "f8238da104df0411",
@@ -78438,7 +78445,7 @@
         "end": 192,
         "sha256": "d16b1f9020b0bcaa25259c8819584f78cc7989345302fcc4470adac8bfde6d71"
       },
-      "fileSha256": "b78bd67c812f2e30331b222b678c8b88b406464e84f754326c93533c56d5f329"
+      "fileSha256": "6b064a106507294fa331083e282bc419bd0c75c54aa9a65bf3c91440b8a9b3ab"
     },
     {
       "id": "6553b5e98e6500e0",
@@ -80648,7 +80655,7 @@
         "end": 160,
         "sha256": "b1ae110c8d7fd2ea91a819152e6f4434d7199cf755bded5dcf0424b23396379b"
       },
-      "fileSha256": "b78bd67c812f2e30331b222b678c8b88b406464e84f754326c93533c56d5f329"
+      "fileSha256": "6b064a106507294fa331083e282bc419bd0c75c54aa9a65bf3c91440b8a9b3ab"
     },
     {
       "id": "9670bc197e6e0b93",
@@ -80888,7 +80895,7 @@
         "end": 3,
         "sha256": "c5ebf59b9856b043cecb2bb51903c03d02c4b3cc0d73016cc7b0e15ca9b78d19"
       },
-      "fileSha256": "b78bd67c812f2e30331b222b678c8b88b406464e84f754326c93533c56d5f329"
+      "fileSha256": "6b064a106507294fa331083e282bc419bd0c75c54aa9a65bf3c91440b8a9b3ab"
     },
     {
       "id": "9a9bdad371295cf2",

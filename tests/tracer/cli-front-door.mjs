@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { assertServiceDiscovery } from './service-discovery.mjs';
 import { spawnSync } from 'node:child_process';
-import { mkdtemp, readFile, readdir, mkdir, writeFile, symlink, link, chmod } from 'node:fs/promises';
+import { mkdtemp, realpath, readFile, readdir, mkdir, writeFile, symlink, link, chmod } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
@@ -20,7 +20,7 @@ export async function main() {
   const env = { ...process.env, TRACER_NO_UPDATE: '1', SCRIV_CLI_TOOLING_ACTIVE: '1' };
   delete env.SCRIV_E2E_APP; // This journey must never launch a supplied real app.
   delete env.SCRIV_E2E_COVERAGE_CONTEXT;
-  const output = await mkdtemp(join(tmpdir(), 'scriv-tracer-tooling-'));
+  const output = await realpath(await mkdtemp(join(tmpdir(), 'scriv-tracer-tooling-')));
   let passed = 0;
   const run = (args, expected = 0, environment = {}) => {
     const child = spawnSync(executable, [...prefix, ...args], { cwd: root, env: { ...env, ...environment }, encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024, shell: false });
@@ -253,8 +253,10 @@ export async function main() {
     assert.deepEqual(await readdir(valid), beforeNames);
     assert.deepEqual(await Promise.all(beforeNames.map(name => readFile(join(valid, name)))), before);
     const symbolic = join(output, `ScrivVerification-CLI-${randomUUID()}`); await symlink(valid, symbolic);
+    const parentAlias = join(output, 'parent-alias'); await symlink(output, parentAlias);
+    const ancestorSymbolic = join(parentAlias, valid.slice(output.length + 1));
     const hardLinked = await fixture(); await link(join(hardLinked, '.scriv-cli-persistent'), join(output, 'marker-alias'));
-    const unsafe = [symbolic, hardLinked, await fixture({ markerMode: 0o400 }), await fixture({ markerText: 'not an ownership marker\n' }),
+    const unsafe = [symbolic, ancestorSymbolic, hardLinked, await fixture({ markerMode: 0o400 }), await fixture({ markerText: 'not an ownership marker\n' }),
       await fixture({ missingLock: true }), await fixture({ rootMode: 0o755 }), join(output, 'NotOwned'), '../outside'];
     for (const directory of unsafe) {
       const rejected = run(['app', '--', 'workspace', 'inspect', directory], 1);
