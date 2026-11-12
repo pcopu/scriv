@@ -40,6 +40,9 @@ final class ScrivUIKitSceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.rootViewController = ScrivWorkspaceController(store: workspace)
         window.tintColor = ScrivUIKitTheme.accent
         self.window = window; window.makeKeyAndVisible()
+#if SCRIV_CLI_AUTOMATION
+        ScrivCLI.shared.start(window: window)
+#endif
         trace.record(.windowVisibilityRequested)
         scene.sizeRestrictions?.minimumSize = CGSize(width: 1080, height: 720)
         for context in connectionOptions.urlContexts { workspace.handleOpenURL(context.url) }

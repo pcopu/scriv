@@ -15,7 +15,7 @@ for (const image of manifest.images) {
 if (manifest.images.length !== 25 || bytes !== manifest.total_image_bytes) throw new Error('Design archive is incomplete.');
 const fixture = JSON.parse(await readFile(resolve(root, 'design/storyboard-timing-example.json'), 'utf8'));
 for (const key of ['main_concept_file', 'storyboard_concept_file']) await stat(resolve(root, 'design', fixture.presentation[key]));
-for (const path of ['apps/mac/Package.swift', 'apps/mac/Info.plist', 'apps/mac/Sources/ScrivApp/Services/ResourceBundle.swift', 'cloud/src/index.ts', 'cloud/src/project-room.ts', 'cloud/migrations/0001_identity_teams.sql', '.github/workflows/verify.yml']) await stat(resolve(root, path));
+for (const path of ['apps/mac/Package.swift', 'apps/catalyst/Info.plist', 'apps/catalyst/ScrivUIKit.entitlements', 'apps/mac/Sources/ScrivApp/Services/ResourceBundle.swift', 'cloud/src/index.ts', 'cloud/src/project-room.ts', 'cloud/migrations/0001_identity_teams.sql', '.github/workflows/verify.yml']) await stat(resolve(root, path));
 const media = JSON.parse(await readFile(resolve(root, 'apps/mac/Sources/ScrivApp/Resources/SampleImages/provenance.json'), 'utf8'));
 for (const image of media.images) {
   const data = await readFile(resolve(root, 'apps/mac/Sources/ScrivApp/Resources/SampleImages', image.file));

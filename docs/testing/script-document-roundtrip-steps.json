@@ -1,0 +1,1266 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "script-document-launch",
+      "title": "Launch isolated native session",
+      "preconditions": [
+        "SCRIV_E2E_APP names a matching actual Catalyst automation bundle on macOS; no fallback driver. ScrivSession.launch includes its own capabilities handshake and owned-root verification."
+      ],
+      "actions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [public launch includes capabilities handshake; fresh synthetic root]"
+      ],
+      "expectations": [
+        {
+          "id": "launched",
+          "description": "The real session returns a verified synthetic root after its launch handshake.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-document-roundtrip.mjs",
+            "start": 16,
+            "end": 18,
+            "sha256": "ee1a8391a426079571f353c5f77cadbc20d0e8343f5abe15c1927dc8f6b47c6c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "script-document-setup",
+      "title": "Save isolated startup",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(one enabled hittable workspace-tabs, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"select\", {target: tabs.path, index: tabs.segments.indexOf(\"Script\")})",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session, project.title === \"YAM MAN\" && project.entries.length === 18, 15000) [persisted-projects repeats at 75 ms; only publication-pending is retryable]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "One saved unillustrated synthetic startup project is loaded; matching public import, export and readback routes exist.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 120,
+            "end": 122,
+            "sha256": "6d321def926dde01d670db7c2ce9cd399736b4e1afae2ecadce0a3339b763264"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "script-document-import-document",
+      "title": "Import document",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"import-fountain\", {\"text\":\"﻿\\r\\ntItLe:\\r\\n    Midnight Ledger\\r\\n    Return\\r\\nAuthor: Test Writer\\r\\nCustom-key: ignored title-page metadata\\r\\n\\r\\n[[scriv duration=123 coverage=456]]\\r\\n\\r\\nINT. ARCHIVE - NIGHT\\r\\n\\r\\n!RUN\\r\\nINT. remains a direction.\\r\\n@camera stays still\\r\\n[[scriv duration=999]]\\r\\n\\r\\n[[scriv duration=1500 coverage=2500 duration=-1 duration=3600001 coverage=86400001 duration=NaN coverage=NaN]]\\r\\n\\r\\n@MARA (V.O.)\\r\\n(quietly)\\r\\nWe wait.\\r\\n\\r\\n[[scriv duration=0 coverage=7]]\\r\\n\\r\\n@mara (CONT'D)\\r\\nReturn now.\\r\\n\\r\\n[[scriv duration=1800 coverage=0]]\\r\\n\\r\\n.An empty interlude\\r\\n\\r\\n.The final room\\r\\n\\r\\n!CUT TO:\\r\\n\\r\\n[[scriv duration=0 coverage=0]]\",\"filename\":\"Document.fountain\"})",
+        "waitForSavedProject(session, project.id is absent from beforePackages IDs, 15000) [persisted-projects repeats at 75 ms; only publication-pending is retryable]",
+        "session.waitFor(headerIs(nodes, imported), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exactly one fresh saved project appears, all earlier packages are unchanged, loaded content equals saved content, and the independently specified document oracle matches.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 138,
+            "end": 152,
+            "sha256": "d7e47f103b8ebd0fd581544c1c9936d20e56133f68a5752f28d59df4f9eff201"
+          }
+        },
+        {
+          "id": "document",
+          "description": "The imported document matches its exact literal expectedDocument/boundaryDocument oracle: title, ordered scene titles, entry order/text/kind/speaker/duration/coverage, exact word timing, characters and cues; generated identities are unique. See the selected fixture variant in the action.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 79,
+            "end": 96,
+            "sha256": "00e1f02532b11831aa5c70940a438e6cecc66379d7704bbb63dd31905255cb7c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 4,
+            "end": 7,
+            "sha256": "0c9c0bd35751871d623ba8dfcf83e18b4d3a8bfe2c8cccd2f6151a6d6379b971"
+          },
+          "expectation": "document",
+          "why": "Scene-heading detection supports recognized INT. headings and forced custom scene export/import; not all recognized heading variants."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 32,
+            "end": 58,
+            "sha256": "098ee873c9a233fd06c6b3a08244630f782fed3fd56e068fa0f0f74a9bd19130"
+          },
+          "expectation": "document",
+          "why": "Opening BOM/CRLF multiline mixed-case title and known/unknown metadata are consumed by the opening title-page parser; unknown opening Warning remains source in the separate plain-text fixture. Known metadata-looking keys later in body text and every invalid-key branch are not separately claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 60,
+            "end": 75,
+            "sha256": "a4dc6d7377bfc5d87d76f5935fada7984333b396a118ed859bfb24c2a9587004"
+          },
+          "expectation": "document",
+          "why": "BOM removal, newline normalization, implicit initial scene, buffered entry creation and estimated direction timings match exact saved payloads."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 76,
+            "end": 98,
+            "sha256": "d00b051c9ffe0114bd9a98adc96fdd82dc925e55993ee2690379961636bf399b"
+          },
+          "expectation": "document",
+          "why": "The leading annotation with no entry is ignored; literal forced-action annotations stay text; later valid timing annotations apply and negative, noninteger and over-limit fields are ignored. Two dialogue words clamp duration zero to two milliseconds."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 99,
+            "end": 109,
+            "sha256": "9cf253526989e9e22a1e5d67e513ee3c1bfa8f78df1e78546f7af58ad4edfd08"
+          },
+          "expectation": "document",
+          "why": "Forced paragraphs preserve scene-looking/@/annotation continuation text; ordinary and custom headings keep an explicit empty middle scene without an extra initial scene."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 110,
+            "end": 117,
+            "sha256": "df2cff0e0b15655f086fc19f179fd2852c04a7714064127e6ca301fac496ea18"
+          },
+          "expectation": "document",
+          "why": "Explicit Mara speaker markers and V.O./CONT'D suffixes resolve to one catalog identity; no claim for physical input or every uppercase-name heuristic variant."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 119,
+            "end": 132,
+            "sha256": "8e46c8b8816be7c2cf521cf22a2afe1f6ec811997363667b7d0f7812a5656e43"
+          },
+          "expectation": "document",
+          "why": "Case-insensitive reuse, parenthetical forward direction, following dialogue, final flush and positive-duration-only scene cues produce the literal full document oracle. Alias lookup inside Fountain and the empty-name guard are not separately claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1928,
+            "end": 1932,
+            "sha256": "845053ced87ff5777ae051aaa36f70601a326a4c77c76287935a5197ac0a29ac"
+          },
+          "expectation": "observed",
+          "why": "Accepted bounded UTF-8 input reaches Fountain parsing, normal validation and installation; malformed UTF-8, size rejection and error presentation remain excluded."
+        }
+      ]
+    },
+    {
+      "id": "script-document-import-roundtrip",
+      "title": "Import roundtrip",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"import-fountain\", {text: exported.text, filename:\"Roundtrip.fountain\"})",
+        "waitForSavedProject(session, project.id is absent from beforePackages IDs, 15000) [persisted-projects repeats at 75 ms; only publication-pending is retryable]",
+        "session.waitFor(headerIs(nodes, imported), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exactly one fresh saved project appears, all earlier packages are unchanged, loaded content equals saved content, and the independently specified document oracle matches.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 138,
+            "end": 152,
+            "sha256": "d7e47f103b8ebd0fd581544c1c9936d20e56133f68a5752f28d59df4f9eff201"
+          }
+        },
+        {
+          "id": "document",
+          "description": "The imported document matches its exact literal expectedDocument/boundaryDocument oracle: title, ordered scene titles, entry order/text/kind/speaker/duration/coverage, exact word timing, characters and cues; generated identities are unique. See the selected fixture variant in the action.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 79,
+            "end": 96,
+            "sha256": "00e1f02532b11831aa5c70940a438e6cecc66379d7704bbb63dd31905255cb7c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1928,
+            "end": 1932,
+            "sha256": "845053ced87ff5777ae051aaa36f70601a326a4c77c76287935a5197ac0a29ac"
+          },
+          "expectation": "observed",
+          "why": "Accepted bounded UTF-8 input reaches Fountain parsing, normal validation and installation; malformed UTF-8, size rejection and error presentation remain excluded."
+        }
+      ]
+    },
+    {
+      "id": "script-document-import-alias-json",
+      "title": "Import alias-json",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"import-json\", {text: JSON.stringify(aliasInput)})",
+        "waitForSavedProject(session, project.id is absent from beforePackages IDs, 15000) [persisted-projects repeats at 75 ms; only publication-pending is retryable]",
+        "session.waitFor(headerIs(nodes, imported), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exactly one fresh saved project appears, all earlier packages are unchanged, loaded content equals saved content, and the independently specified document oracle matches.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 138,
+            "end": 152,
+            "sha256": "d7e47f103b8ebd0fd581544c1c9936d20e56133f68a5752f28d59df4f9eff201"
+          }
+        },
+        {
+          "id": "document",
+          "description": "The imported document matches its exact literal expectedDocument/boundaryDocument oracle: title, ordered scene titles, entry order/text/kind/speaker/duration/coverage, exact word timing, characters and cues; generated identities are unique. See the selected fixture variant in the action.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 79,
+            "end": 96,
+            "sha256": "00e1f02532b11831aa5c70940a438e6cecc66379d7704bbb63dd31905255cb7c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1924,
+            "end": 1927,
+            "sha256": "a8a2c5579238035752af411c51b7db44077e9041421bf9f1027cb8079bd6b854"
+          },
+          "expectation": "observed",
+          "why": "Production JSON decode validates input revision17 and old date sentinels; the result must have a different project ID, revision0, equal new dates within the observed synchronous import window, and exact remaining alias-input payload."
+        }
+      ]
+    },
+    {
+      "id": "script-document-import-metadata-only",
+      "title": "Import metadata-only",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"import-fountain\", {\"text\":\"Author:\\n\\tTest Writer\\nCustom-key: ignored\\n\",\"filename\":\"Empty.fountain\"})",
+        "waitForSavedProject(session, project.id is absent from beforePackages IDs, 15000) [persisted-projects repeats at 75 ms; only publication-pending is retryable]",
+        "session.waitFor(headerIs(nodes, imported), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exactly one fresh saved project appears, all earlier packages are unchanged, loaded content equals saved content, and the independently specified document oracle matches.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 138,
+            "end": 152,
+            "sha256": "d7e47f103b8ebd0fd581544c1c9936d20e56133f68a5752f28d59df4f9eff201"
+          }
+        },
+        {
+          "id": "document",
+          "description": "The imported document matches its exact literal expectedDocument/boundaryDocument oracle: title, ordered scene titles, entry order/text/kind/speaker/duration/coverage, exact word timing, characters and cues; generated identities are unique. See the selected fixture variant in the action.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 79,
+            "end": 96,
+            "sha256": "00e1f02532b11831aa5c70940a438e6cecc66379d7704bbb63dd31905255cb7c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1928,
+            "end": 1932,
+            "sha256": "845053ced87ff5777ae051aaa36f70601a326a4c77c76287935a5197ac0a29ac"
+          },
+          "expectation": "observed",
+          "why": "Accepted bounded UTF-8 input reaches Fountain parsing, normal validation and installation; malformed UTF-8, size rejection and error presentation remain excluded."
+        }
+      ]
+    },
+    {
+      "id": "script-document-import-plain-opening",
+      "title": "Import plain-opening",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"import-fountain\", {\"text\":\"Warning: Keep the door shut.\\n\\nCUT TO:\\n\\nINT. EXIT - DAY\\n\\n!Wait.\",\"filename\":\"Plain.fountain\"})",
+        "waitForSavedProject(session, project.id is absent from beforePackages IDs, 15000) [persisted-projects repeats at 75 ms; only publication-pending is retryable]",
+        "session.waitFor(headerIs(nodes, imported), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exactly one fresh saved project appears, all earlier packages are unchanged, loaded content equals saved content, and the independently specified document oracle matches.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 138,
+            "end": 152,
+            "sha256": "d7e47f103b8ebd0fd581544c1c9936d20e56133f68a5752f28d59df4f9eff201"
+          }
+        },
+        {
+          "id": "document",
+          "description": "The imported document matches its exact literal expectedDocument/boundaryDocument oracle: title, ordered scene titles, entry order/text/kind/speaker/duration/coverage, exact word timing, characters and cues; generated identities are unique. See the selected fixture variant in the action.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 79,
+            "end": 96,
+            "sha256": "00e1f02532b11831aa5c70940a438e6cecc66379d7704bbb63dd31905255cb7c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1928,
+            "end": 1932,
+            "sha256": "845053ced87ff5777ae051aaa36f70601a326a4c77c76287935a5197ac0a29ac"
+          },
+          "expectation": "observed",
+          "why": "Accepted bounded UTF-8 input reaches Fountain parsing, normal validation and installation; malformed UTF-8, size rejection and error presentation remain excluded."
+        }
+      ]
+    },
+    {
+      "id": "script-document-export-document",
+      "title": "Export document twice",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Both actual UTF-8 captures equal the literal expected Fountain bytes, report the exact byte count and successful temporary cleanup, and preserve complete saved/loaded state.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 168,
+            "end": 170,
+            "sha256": "f78ee30b3dfc3642b13f7f431fe9221d3b7e928f655a14408379ce7a38c36962"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 8,
+            "end": 26,
+            "sha256": "e9e1ec19827746d0a756e6d8d7e1d9d92f3f17ed4d4faaaed91d493232d2425b"
+          },
+          "expectation": "observed",
+          "why": "The exact independently authored UTF-8 export oracle checks title formatting, scene order, forced custom headings, dialogue names, forced directions and timing annotations for this input; both repeated captures must match and clean up."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1935,
+            "end": 1936,
+            "sha256": "c0b8fde54c8d1a918321f8acb3b509dedb6c74debaf90dd7b8956e62abe0bca6"
+          },
+          "expectation": "observed",
+          "why": "The production exporter begins at the ordinary finish-editing boundary; this fixture has no active draft, so draft commit is not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1938,
+            "end": 1943,
+            "sha256": "8865257ff67a296f7a085d77a6a43c5ea0bd0fd26071460b540c384f8cf543be"
+          },
+          "expectation": "observed",
+          "why": "Production UTF-8 file creation and completion cleanup are observed through the bounded semantic export handoff; no external destination or cancel-picker claim."
+        }
+      ]
+    },
+    {
+      "id": "script-document-export-roundtrip",
+      "title": "Export roundtrip twice",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Both actual UTF-8 captures equal the literal expected Fountain bytes, report the exact byte count and successful temporary cleanup, and preserve complete saved/loaded state.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 168,
+            "end": 170,
+            "sha256": "f78ee30b3dfc3642b13f7f431fe9221d3b7e928f655a14408379ce7a38c36962"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 8,
+            "end": 26,
+            "sha256": "e9e1ec19827746d0a756e6d8d7e1d9d92f3f17ed4d4faaaed91d493232d2425b"
+          },
+          "expectation": "observed",
+          "why": "The exact independently authored UTF-8 export oracle checks title formatting, scene order, forced custom headings, dialogue names, forced directions and timing annotations for this input; both repeated captures must match and clean up."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1935,
+            "end": 1936,
+            "sha256": "c0b8fde54c8d1a918321f8acb3b509dedb6c74debaf90dd7b8956e62abe0bca6"
+          },
+          "expectation": "observed",
+          "why": "The production exporter begins at the ordinary finish-editing boundary; this fixture has no active draft, so draft commit is not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1938,
+            "end": 1943,
+            "sha256": "8865257ff67a296f7a085d77a6a43c5ea0bd0fd26071460b540c384f8cf543be"
+          },
+          "expectation": "observed",
+          "why": "Production UTF-8 file creation and completion cleanup are observed through the bounded semantic export handoff; no external destination or cancel-picker claim."
+        }
+      ]
+    },
+    {
+      "id": "script-document-export-metadata-only",
+      "title": "Export metadata-only twice",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Both actual UTF-8 captures equal the literal expected Fountain bytes, report the exact byte count and successful temporary cleanup, and preserve complete saved/loaded state.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 168,
+            "end": 170,
+            "sha256": "f78ee30b3dfc3642b13f7f431fe9221d3b7e928f655a14408379ce7a38c36962"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 8,
+            "end": 26,
+            "sha256": "e9e1ec19827746d0a756e6d8d7e1d9d92f3f17ed4d4faaaed91d493232d2425b"
+          },
+          "expectation": "observed",
+          "why": "The exact independently authored UTF-8 export oracle checks title formatting, scene order, forced custom headings, dialogue names, forced directions and timing annotations for this input; both repeated captures must match and clean up."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1935,
+            "end": 1936,
+            "sha256": "c0b8fde54c8d1a918321f8acb3b509dedb6c74debaf90dd7b8956e62abe0bca6"
+          },
+          "expectation": "observed",
+          "why": "The production exporter begins at the ordinary finish-editing boundary; this fixture has no active draft, so draft commit is not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1938,
+            "end": 1943,
+            "sha256": "8865257ff67a296f7a085d77a6a43c5ea0bd0fd26071460b540c384f8cf543be"
+          },
+          "expectation": "observed",
+          "why": "Production UTF-8 file creation and completion cleanup are observed through the bounded semantic export handoff; no external destination or cancel-picker claim."
+        }
+      ]
+    },
+    {
+      "id": "script-document-export-plain-opening",
+      "title": "Export plain-opening twice",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Both actual UTF-8 captures equal the literal expected Fountain bytes, report the exact byte count and successful temporary cleanup, and preserve complete saved/loaded state.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 168,
+            "end": 170,
+            "sha256": "f78ee30b3dfc3642b13f7f431fe9221d3b7e928f655a14408379ce7a38c36962"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 8,
+            "end": 26,
+            "sha256": "e9e1ec19827746d0a756e6d8d7e1d9d92f3f17ed4d4faaaed91d493232d2425b"
+          },
+          "expectation": "observed",
+          "why": "The exact independently authored UTF-8 export oracle checks title formatting, scene order, forced custom headings, dialogue names, forced directions and timing annotations for this input; both repeated captures must match and clean up."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1935,
+            "end": 1936,
+            "sha256": "c0b8fde54c8d1a918321f8acb3b509dedb6c74debaf90dd7b8956e62abe0bca6"
+          },
+          "expectation": "observed",
+          "why": "The production exporter begins at the ordinary finish-editing boundary; this fixture has no active draft, so draft commit is not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1938,
+            "end": 1943,
+            "sha256": "8865257ff67a296f7a085d77a6a43c5ea0bd0fd26071460b540c384f8cf543be"
+          },
+          "expectation": "observed",
+          "why": "Production UTF-8 file creation and completion cleanup are observed through the bounded semantic export handoff; no external destination or cancel-picker claim."
+        }
+      ]
+    },
+    {
+      "id": "script-document-search-open",
+      "title": "Open imported script Find",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.waitFor(one enabled hittable workspace-tabs, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"select\", {target: tabs.path, index: tabs.segments.indexOf(\"Script\")})",
+        "session.waitFor(all imported first-scene script lines mounted, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"key\", {input:\"f\",modifiers:[\"command\"]})",
+        "session.waitFor(uniqueField(nodes) && searchField.text === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Find opens empty with keyboard focus and all exact imported first-scene display lines still mounted.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 222,
+            "end": 224,
+            "sha256": "1ada37af4228f50b116394c22d1f81d426766efe44a88303f9b8e588f14a0447"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "script-document-search-speaker-name",
+      "title": "Find speaker-name",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path, text:\"mArA\"})",
+        "session.waitFor(query === \"mArA\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"mArA\" && count === \"2 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"mArA\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"mArA\" && count === \"2 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"mArA\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The speaker-name query has exact counts 1 / 2, 2 / 2, 1 / 2, 2 / 2, 1 / 2 for initial, Next, Next, Previous, Previous; mounted source lines and complete saved/loaded state are unchanged.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 190,
+            "end": 205,
+            "sha256": "7b2bdaead94f8de58aaf00d52a06f64aa400cc5356883bfde2cdf9c098eb3305"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 511,
+            "end": 518,
+            "sha256": "0a13f86ee4f8bce04acc15b824ae44b26fe5b33899001ae8aa8cd2e7210a099d"
+          },
+          "expectation": "observed",
+          "why": "Exact first-scene counts and repeated Next/Previous checks distinguish source text, speaker name, alias, no-match and clear query; no cross-scene search, pixel highlight or physical keyboard claim."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 187,
+            "end": 194,
+            "sha256": "df0ca2403fca3da77ee1d75e2be09f47b2c01c9434c3d02dd169beca739cfe87"
+          },
+          "expectation": "observed",
+          "why": "Mounted Find-field editingChanged and Previous/Next button callbacks provide the observed exact counter sequence; field Return is excluded."
+        }
+      ]
+    },
+    {
+      "id": "script-document-search-speaker-alias",
+      "title": "Find speaker-alias",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path, text:\"nIgHtWaTcH\"})",
+        "session.waitFor(query === \"nIgHtWaTcH\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"nIgHtWaTcH\" && count === \"2 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"nIgHtWaTcH\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"nIgHtWaTcH\" && count === \"2 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"nIgHtWaTcH\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The speaker-alias query has exact counts 1 / 2, 2 / 2, 1 / 2, 2 / 2, 1 / 2 for initial, Next, Next, Previous, Previous; mounted source lines and complete saved/loaded state are unchanged.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 190,
+            "end": 205,
+            "sha256": "7b2bdaead94f8de58aaf00d52a06f64aa400cc5356883bfde2cdf9c098eb3305"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 511,
+            "end": 518,
+            "sha256": "0a13f86ee4f8bce04acc15b824ae44b26fe5b33899001ae8aa8cd2e7210a099d"
+          },
+          "expectation": "observed",
+          "why": "Exact first-scene counts and repeated Next/Previous checks distinguish source text, speaker name, alias, no-match and clear query; no cross-scene search, pixel highlight or physical keyboard claim."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 187,
+            "end": 194,
+            "sha256": "df0ca2403fca3da77ee1d75e2be09f47b2c01c9434c3d02dd169beca739cfe87"
+          },
+          "expectation": "observed",
+          "why": "Mounted Find-field editingChanged and Previous/Next button callbacks provide the observed exact counter sequence; field Return is excluded."
+        }
+      ]
+    },
+    {
+      "id": "script-document-search-missing",
+      "title": "Find missing",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path, text:\"unfindable-6831\"})",
+        "session.waitFor(query === \"unfindable-6831\" && count === \"0 results\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"unfindable-6831\" && count === \"0 results\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"unfindable-6831\" && count === \"0 results\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"unfindable-6831\" && count === \"0 results\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"unfindable-6831\" && count === \"0 results\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The missing query has exact counts 0 results, 0 results, 0 results, 0 results, 0 results for initial, Next, Next, Previous, Previous; mounted source lines and complete saved/loaded state are unchanged.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 190,
+            "end": 205,
+            "sha256": "7b2bdaead94f8de58aaf00d52a06f64aa400cc5356883bfde2cdf9c098eb3305"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 511,
+            "end": 518,
+            "sha256": "0a13f86ee4f8bce04acc15b824ae44b26fe5b33899001ae8aa8cd2e7210a099d"
+          },
+          "expectation": "observed",
+          "why": "Exact first-scene counts and repeated Next/Previous checks distinguish source text, speaker name, alias, no-match and clear query; no cross-scene search, pixel highlight or physical keyboard claim."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 187,
+            "end": 194,
+            "sha256": "df0ca2403fca3da77ee1d75e2be09f47b2c01c9434c3d02dd169beca739cfe87"
+          },
+          "expectation": "observed",
+          "why": "Mounted Find-field editingChanged and Previous/Next button callbacks provide the observed exact counter sequence; field Return is excluded."
+        }
+      ]
+    },
+    {
+      "id": "script-document-search-literal-source",
+      "title": "Find literal-source",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path, text:\"camera\"})",
+        "session.waitFor(query === \"camera\" && count === \"1 / 1\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"camera\" && count === \"1 / 1\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"camera\" && count === \"1 / 1\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"camera\" && count === \"1 / 1\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"camera\" && count === \"1 / 1\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The literal-source query has exact counts 1 / 1, 1 / 1, 1 / 1, 1 / 1, 1 / 1 for initial, Next, Next, Previous, Previous; mounted source lines and complete saved/loaded state are unchanged.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 190,
+            "end": 205,
+            "sha256": "7b2bdaead94f8de58aaf00d52a06f64aa400cc5356883bfde2cdf9c098eb3305"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 511,
+            "end": 518,
+            "sha256": "0a13f86ee4f8bce04acc15b824ae44b26fe5b33899001ae8aa8cd2e7210a099d"
+          },
+          "expectation": "observed",
+          "why": "Exact first-scene counts and repeated Next/Previous checks distinguish source text, speaker name, alias, no-match and clear query; no cross-scene search, pixel highlight or physical keyboard claim."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 187,
+            "end": 194,
+            "sha256": "df0ca2403fca3da77ee1d75e2be09f47b2c01c9434c3d02dd169beca739cfe87"
+          },
+          "expectation": "observed",
+          "why": "Mounted Find-field editingChanged and Previous/Next button callbacks provide the observed exact counter sequence; field Return is excluded."
+        }
+      ]
+    },
+    {
+      "id": "script-document-search-clear",
+      "title": "Find clear",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path, text:\"\"})",
+        "session.waitFor(query === \"\" && count === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"\" && count === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"\" && count === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"\" && count === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"\" && count === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The clear query has exact counts , , , ,  for initial, Next, Next, Previous, Previous; mounted source lines and complete saved/loaded state are unchanged.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 190,
+            "end": 205,
+            "sha256": "7b2bdaead94f8de58aaf00d52a06f64aa400cc5356883bfde2cdf9c098eb3305"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 511,
+            "end": 518,
+            "sha256": "0a13f86ee4f8bce04acc15b824ae44b26fe5b33899001ae8aa8cd2e7210a099d"
+          },
+          "expectation": "observed",
+          "why": "Exact first-scene counts and repeated Next/Previous checks distinguish source text, speaker name, alias, no-match and clear query; no cross-scene search, pixel highlight or physical keyboard claim."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 187,
+            "end": 194,
+            "sha256": "df0ca2403fca3da77ee1d75e2be09f47b2c01c9434c3d02dd169beca739cfe87"
+          },
+          "expectation": "observed",
+          "why": "Mounted Find-field editingChanged and Previous/Next button callbacks provide the observed exact counter sequence; field Return is excluded."
+        }
+      ]
+    },
+    {
+      "id": "script-document-search-cancel-close",
+      "title": "Cancel Find with Close",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path,text:\"Nightwatch\"})",
+        "session.waitFor(query === \"Nightwatch\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Close\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Close\" button.path})",
+        "session.waitFor(no Find field or Previous/Next controls, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"key\", {input:\"f\",modifiers:[\"command\"]})",
+        "session.waitFor(uniqueField(nodes) && searchField.text === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Closing a nonempty Find through the selected public control removes its controls; reopening resets to empty and preserves all imported content and Date witnesses.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 243,
+            "end": 258,
+            "sha256": "d6aaea7d6ea07fd7569d4109ddddc98462fb7e836c2f39287986cd6d09fa7c28"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 196,
+            "end": 197,
+            "sha256": "ce0858c829f45742b732170f47b76f4ea98f9d32f97b4a41fedadd90ca60c497"
+          },
+          "expectation": "observed",
+          "why": "Actual Close control/search-row hiding belongs to the public Find cancellation composition, with full state preservation."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 525,
+            "end": 530,
+            "sha256": "2b807880a5346daa1532fa56697d16ac2a3ce24e086ae8f841e17b9f00111270"
+          },
+          "expectation": "observed",
+          "why": "Priority Escape close or command-F reopen is reached through the mounted responder route and restores an empty focused Find field; key delivery is semantic, not physical."
+        }
+      ]
+    },
+    {
+      "id": "script-document-search-cancel-escape",
+      "title": "Cancel Find with Escape",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path,text:\"Nightwatch\"})",
+        "session.waitFor(query === \"Nightwatch\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"key\", {input:\"Escape\",modifiers:[]})",
+        "session.waitFor(no Find field or Previous/Next controls, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"key\", {input:\"f\",modifiers:[\"command\"]})",
+        "session.waitFor(uniqueField(nodes) && searchField.text === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Closing a nonempty Find through the selected public control removes its controls; reopening resets to empty and preserves all imported content and Date witnesses.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 243,
+            "end": 258,
+            "sha256": "d6aaea7d6ea07fd7569d4109ddddc98462fb7e836c2f39287986cd6d09fa7c28"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 196,
+            "end": 197,
+            "sha256": "ce0858c829f45742b732170f47b76f4ea98f9d32f97b4a41fedadd90ca60c497"
+          },
+          "expectation": "observed",
+          "why": "Actual Close control/search-row hiding belongs to the public Find cancellation composition, with full state preservation."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 525,
+            "end": 530,
+            "sha256": "2b807880a5346daa1532fa56697d16ac2a3ce24e086ae8f841e17b9f00111270"
+          },
+          "expectation": "observed",
+          "why": "Priority Escape close or command-F reopen is reached through the mounted responder route and restores an empty focused Find field; key delivery is semantic, not physical."
+        }
+      ]
+    },
+    {
+      "id": "script-document-search-finish",
+      "title": "Close Find before imports",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"key\", {input:\"Escape\",modifiers:[]})",
+        "session.waitFor(no Find field or Previous/Next controls, 15000) [snapshot repeats at 50 ms until true; no mutation]"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Find is closed before further document imports.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 264,
+            "end": 264,
+            "sha256": "bfade547d7c37651dc8d2065195a8568fbe636e8e9ceddfcab9716931045d8da"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "script-document-reject-filename",
+      "title": "Reject import traversal component",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"import-fountain\", {text:\"!Do not install.\",filename:\"../outside.fountain\"})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The bounded import route rejects a path-like filename before presentation or installation and preserves complete saved/loaded state. This is not a production parser rejection or picker cancellation.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 271,
+            "end": 275,
+            "sha256": "491a75c3c56d5f2566027cafc56d99c728c062aa8a29bda59732c143c3d03703"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIImport.swift",
+            "start": 26,
+            "end": 31,
+            "sha256": "013752406dad82ea43c9efe5134aa1cdcfd4747df5de1848795b4182ee25cbaa"
+          },
+          "expectation": "observed",
+          "why": "The exact filename ../outside.fountain passes text/length/extension checks and fails the leading-dot predicate first; the remainder of this compound guard is supporting code, not separately exercised slash/control-character coverage. Production import is not called and complete saved/loaded state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "script-document-final",
+      "title": "Verify complete document set",
+      "preconditions": [
+        "One fresh real automation-enabled Catalyst ScrivSession, synthetic root only; no live user project and no cloud account. Native execution remains NOT RUN until an actual matching macOS bundle executes the journey.",
+        "This is the ordered public session-method call plan, not a fixed wire transcript. Each waitFor expands to 1..N snapshot reads with 50 ms delays and a 15000 ms deadline. waitForSavedProject expands to 1..N persisted-projects reads with 75 ms delays, retrying only the exact publication-pending error. Callback command timeouts can extend wall time; writes are never retried.",
+        "Dynamic targets are fresh snapshot paths. tabs is the unique enabled/hittable workspace-tabs; queryField is the unique focused Find field; named button targets are unique enabled/hittable mounted controls. No conditional scrolling, model setters or unlisted setup commands occur.",
+        "UUIDs and Date values are observed from prior import results, not fixed inputs. exported.text is the prior actual export, required by assertions to equal the literal expectedExport. aliasInput is a JSON input copy of the original import with title=Midnight aliases, Mara aliases=[Nightwatch], revision=17, createdAt=1600000000000 and modifiedAt=1600000001000; import must reset revision to0 and both dates to the same new millisecond inside the observed import call window (±1ms rounding).",
+        "On failure the entrypoint closes the one process in finally and later phases do not run. The normal-success sequence includes launch and final close. No test execution is inferred from this catalog."
+      ],
+      "actions": [
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exactly six packages remain: startup, original, roundtrip, alias-JSON, metadata-only and plain text; their complete contents match their saved snapshots.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 286,
+            "end": 287,
+            "sha256": "9d418c9b3d3022b8fa037a74dee83a61b98569e692cd571454c623057dc5f042"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "script-document-close",
+      "title": "Finish and close session",
+      "preconditions": [
+        "All named phases returned normally; finally always closes the session, including failure paths."
+      ],
+      "actions": [
+        "session.close() [finally; awaits owned process termination through ScrivSession.close]"
+      ],
+      "expectations": [
+        {
+          "id": "completed",
+          "description": "All declared phases returned passed in order before final reporting and close resolved.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-document-roundtrip.mjs",
+            "start": 23,
+            "end": 24,
+            "sha256": "a6b9fb96c3ab151937c6c9357aa445a0dbce6a02168062c1a956137d9db7a7d6"
+          }
+        }
+      ],
+      "mappings": []
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "script-document-roundtrip",
+      "title": "Import, find and roundtrip scripts",
+      "steps": [
+        "script-document-launch",
+        "script-document-setup",
+        "script-document-import-document",
+        "script-document-export-document",
+        "script-document-import-roundtrip",
+        "script-document-export-roundtrip",
+        "script-document-import-alias-json",
+        "script-document-search-open",
+        "script-document-search-speaker-name",
+        "script-document-search-speaker-alias",
+        "script-document-search-missing",
+        "script-document-search-literal-source",
+        "script-document-search-clear",
+        "script-document-search-cancel-close",
+        "script-document-search-cancel-escape",
+        "script-document-search-finish",
+        "script-document-reject-filename",
+        "script-document-import-metadata-only",
+        "script-document-export-metadata-only",
+        "script-document-import-plain-opening",
+        "script-document-export-plain-opening",
+        "script-document-final",
+        "script-document-close"
+      ]
+    }
+  ]
+}

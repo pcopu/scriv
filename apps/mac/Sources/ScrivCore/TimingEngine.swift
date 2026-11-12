@@ -100,11 +100,16 @@ public enum TimingEngine {
         let previous = next.entries[i].words
         let links = CharacterMentions.reconcile(entry: next.entries[i], editedText: text, characters: next.characters, edits: edits)
         if next.entries[i].kind == .dialogue {
-            let count = text.split(whereSeparator: { $0.isWhitespace }).count
+            let tokens = text.split(whereSeparator: { $0.isWhitespace }).map(String.init)
+            let count = tokens.count
             // Resize while the old text/word pair is still valid. Updating text first
             // makes resize validation fail whenever an edit needs additional time.
             if count > next.entries[i].ownedDurationMs { try setOwnedDuration(&next, entryId: entryId, durationMs: count) }
-            if previous.map(\.text) != text.split(whereSeparator: { $0.isWhitespace }).map(String.init) {
+            if previous.map(\.text) == tokens {
+                // Equivalent wording retains every word ID and timing, but a
+                // normalization-only edit must also update its exact spelling.
+                for index in tokens.indices { next.entries[i].words[index].text = tokens[index] }
+            } else {
                 next.entries[i].words = try retimePreservingAuthored(text: text, durationMs: next.entries[i].ownedDurationMs, preserving: previous)
             }
         }

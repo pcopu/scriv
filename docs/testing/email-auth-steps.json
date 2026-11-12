@@ -1,0 +1,673 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "request-code",
+      "title": "Request code",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "POST /auth/email/request synthetic address and proof challenge"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 136,
+            "end": 136,
+            "sha256": "85222e3bc79e21bed2f277a5d05282686ed7d3f10b409f26fca3822a1fbb8b5d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 11,
+            "end": 18,
+            "sha256": "88828f861047398450be20fc4ace347e7976bb4bc2eaaf5ac66fd8557683d278"
+          },
+          "expectation": "observed",
+          "why": "Mixed-case padded input is returned normalized and delivered to the matching local mailbox; only this valid address is exercised. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 33,
+            "end": 39,
+            "sha256": "adf6a8477aa09605bb15f6feb7f7d127538ae7abae21a0155589ba684d31d5bd"
+          },
+          "expectation": "observed",
+          "why": "A configured binding and valid synthetic address/challenge reach successful request; invalid and absent branches are not established here. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 43,
+            "end": 44,
+            "sha256": "11406b1464c2bb1dc22fb546efc36d85f48c330f9a940e592267af75df034168"
+          },
+          "expectation": "observed",
+          "why": "A successful request returns an opaque challenge and delivers a six-digit value; randomness quality is not established. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 48,
+            "end": 60,
+            "sha256": "5c9500a7b4c87030ec912109e6d39cda4cda45876619951cf16f536e4812fb5f"
+          },
+          "expectation": "observed",
+          "why": "The first request reserves a challenge and invokes the local mailbox; the observable request and later successful verification do not separately attest each storage field. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 68,
+            "end": 68,
+            "sha256": "1dd13f389a0c68b733f18872aded8c6b264d92f993227a1afdf4cc3ffdd9fd77"
+          },
+          "expectation": "observed",
+          "why": "The returned challenge, future expiry and resend time are asserted, without proving exact durations. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email.ts",
+            "start": 5,
+            "end": 11,
+            "sha256": "ee5b31b13bda8e16db4d817e8e056a1fb09716f9b097d05dc8085b4e1c21e3dc"
+          },
+          "expectation": "observed",
+          "why": "The local RPC receives the expected synthetic recipient, sender, subject and text code; HTML rendering and real provider delivery are not asserted. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "reject-resend",
+      "title": "Reject resend",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "POST /auth/email/request same address and proof during cooldown"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Enforces resend cooldown without a second delivery.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 140,
+            "end": 140,
+            "sha256": "52e840d2d66bceb7352dbee2e9039385a407b719f9aeaee8813ddd75bfea1ac0"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 49,
+            "end": 56,
+            "sha256": "5a3d80c30bcbc8e96c0dd175ef45c1e2490061875f9ac3291cdc1c3ed4913a95"
+          },
+          "expectation": "observed",
+          "why": "A repeated same-address same-proof request returns 429 during cooldown with no second local delivery; the fixture is below address and IP quotas. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "reject-wrong-code",
+      "title": "Reject wrong code",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "POST /auth/email/verify incorrect code"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejects an incorrect six-digit code.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 144,
+            "end": 144,
+            "sha256": "4f3c9bbf6b4e3a6c03150a3ace81ef414a805e312319c4b75eab5f4a5ac9df43"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 91,
+            "end": 95,
+            "sha256": "30b18da3fbe39108b5c2a583268895020649d582d26472f352ff280c3f40ff68"
+          },
+          "expectation": "observed",
+          "why": "An intentionally different code with the correct proof fails and the later correct verification succeeds; the assertion does not inspect attempts or max-attempt behavior. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "reject-wrong-proof",
+      "title": "Reject wrong proof",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "POST /auth/email/verify correct code incorrect proof"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejects the correct code with a mismatched proof key.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 148,
+            "end": 148,
+            "sha256": "4f3c9bbf6b4e3a6c03150a3ace81ef414a805e312319c4b75eab5f4a5ac9df43"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 91,
+            "end": 95,
+            "sha256": "30b18da3fbe39108b5c2a583268895020649d582d26472f352ff280c3f40ff68"
+          },
+          "expectation": "observed",
+          "why": "Correct code with a different valid verifier fails; the later success shows this attempt did not consume the challenge. Race and lockout behavior are not established. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "verify-code",
+      "title": "Verify code",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "POST /auth/email/verify correct code and proof"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Issues a session for the normalized synthetic email after successful proof.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 152,
+            "end": 152,
+            "sha256": "4633f2d0f81ae4b0c12b1a55bf0cc842f9fce292e1cff675da9a894c6b9fb47c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 90,
+            "end": 95,
+            "sha256": "31c1ba0f61539a47f62fdf7ab87969cfbaa0427f99816179f311510fbd4629c1"
+          },
+          "expectation": "observed",
+          "why": "The valid code and proof lead to the successful consumption path; no race, attempt-limit or expiry behavior is asserted. Narrow local association only; not measured execution."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 96,
+            "end": 99,
+            "sha256": "cdbdc80e1393bb39f7857fe599f19ceef9833e58fb5616a5301bc00db37380a3"
+          },
+          "expectation": "observed",
+          "why": "The first successful verification returns a user for the normalized address; this alone does not prove every database insert condition. Narrow local association only; not measured execution."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 100,
+            "end": 103,
+            "sha256": "a3f050c4fb467f063529fb916215655d280ecaf6412551178cf2094c9ac93b3f"
+          },
+          "expectation": "observed",
+          "why": "A later distinct proof verifies to the same user; individual identity-table rows are not independently inspected. Narrow local association only; not measured execution."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 104,
+            "end": 109,
+            "sha256": "ada90407f2fc77c16e3747771475cc6ed29018fc75d084dfa62276c0f168e956"
+          },
+          "expectation": "observed",
+          "why": "Successful verification issues a bearer session later used to read identity and device sessions; token hashing and exact database contents are not directly inspected. Narrow local association only; not measured execution."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 111,
+            "end": 113,
+            "sha256": "96944eae9d3cd8578adf32629e126c63dc4d480fc355d081f7d09d10bb3afe33"
+          },
+          "expectation": "observed",
+          "why": "The successful verification returns a token, future expiry and normalized user; exact expiry duration is not asserted. Narrow local association only; not measured execution."
+        }
+      ]
+    },
+    {
+      "id": "reject-replay",
+      "title": "Reject replay",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "POST /auth/email/verify replay consumed code"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejects reuse of the consumed challenge.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 156,
+            "end": 156,
+            "sha256": "4f3c9bbf6b4e3a6c03150a3ace81ef414a805e312319c4b75eab5f4a5ac9df43"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 91,
+            "end": 95,
+            "sha256": "30b18da3fbe39108b5c2a583268895020649d582d26472f352ff280c3f40ff68"
+          },
+          "expectation": "observed",
+          "why": "The consumed challenge cannot mint another session when replayed serially; races and expiry are untested. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 111,
+            "end": 112,
+            "sha256": "18d53ec6554da18257359f1358be15fcce2f8c93e5558c3eb1e2a258681678ad"
+          },
+          "expectation": "observed",
+          "why": "The replay returns invalid_code; the assertion cannot distinguish all causes of that shared error. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "read-identity",
+      "title": "Read identity",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "GET /v1/me using issued session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Reads the issued identity and empty initial team and project lists.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 160,
+            "end": 160,
+            "sha256": "0330e15efcb1db8647e7dffbb73bafb26b31314a065914b83a981db4ca00bd30"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 3,
+            "end": 10,
+            "sha256": "290ed7a5f269798092cd015ee24a83739092bad7fdc6ffb57229ec57355e28b3"
+          },
+          "expectation": "observed",
+          "why": "The issued token resolves to the asserted user and session; invalid bearer syntax and independent expiry cases are not tested. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 29,
+            "end": 29,
+            "sha256": "a9061c19ab69f08660b262640a703852c81b607727ba400308ddf27622079386"
+          },
+          "expectation": "observed",
+          "why": "The authenticated identity readback returns this user and empty team/project lists in the synthetic fixture. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "list-session",
+      "title": "List session",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "GET /auth/sessions using issued session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Lists the active session and device name.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 164,
+            "end": 164,
+            "sha256": "95924dc29e5a54e7c7fb230a57760820395cce74a6e715f80e84ae67bcae6f50"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 80,
+            "end": 83,
+            "sha256": "6ac017592eb9916296f84c0b6bad520ac366809d7f6f8a87c186c30afb56062d"
+          },
+          "expectation": "observed",
+          "why": "The first authenticated device sees its own current session and device name; ordering and expired sessions are not tested. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "request-second-code",
+      "title": "Request second code",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "POST /auth/email/request same synthetic account second device proof"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Issues a second challenge for the same synthetic account and another proof key.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 170,
+            "end": 170,
+            "sha256": "b131364810546f235df9a31f8df8338c9607c1f6b435219d29f21f81d5e391ff"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "verify-second-device",
+      "title": "Verify second device",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "POST /auth/email/verify second device proof and code"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Issues a second device session for the existing user.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 174,
+            "end": 174,
+            "sha256": "ad12826b84b783d2d871b7a3f8bb8a8c0719f15310d92b1c3ef28c1d77d219ed"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 96,
+            "end": 107,
+            "sha256": "32fab1330e6c1a7e30711d80a036aa497fc232a755d84ff44f2119b59161a8db"
+          },
+          "expectation": "observed",
+          "why": "A second successful code/proof for the normalized email returns the same user and creates a second observable session; uniqueness under concurrency is untested. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "read-two-sessions",
+      "title": "Read two sessions",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "GET /auth/sessions with two authenticated devices"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Lists both device sessions and identifies the current session.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 178,
+            "end": 178,
+            "sha256": "bcfb9d5f3dc44cba87079e97a11dac3c18417743b89a22ff8f7c2e6d3e62c09e"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 80,
+            "end": 83,
+            "sha256": "6ac017592eb9916296f84c0b6bad520ac366809d7f6f8a87c186c30afb56062d"
+          },
+          "expectation": "observed",
+          "why": "The first session lists two devices and identifies the current session; no ordering is asserted. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "revoke-second-session",
+      "title": "Revoke second session",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "DELETE /auth/sessions second device from first device"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Revokes the second device session from the first.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 182,
+            "end": 182,
+            "sha256": "913b77b23f93373bbcdeaebca44e7bf4d3e3711ea044497c38cd0016a2f43cdb"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 85,
+            "end": 89,
+            "sha256": "59ecab0b9f5876f918f75c6f60fa81120d638cd08272d65d3a8b72a53a778dab"
+          },
+          "expectation": "observed",
+          "why": "The first authenticated device revokes its own second device; other-user ownership and real-time connection effects are not established. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "reject-second-revoked",
+      "title": "Reject second revoked",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "GET /v1/me using revoked second session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejects the revoked second session.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 186,
+            "end": 186,
+            "sha256": "b021bc8dc42cb14609439da4d3c8fe786bf9adf2d42a3a4ad92384f8193d1ab1"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 6,
+            "end": 9,
+            "sha256": "c45cafa274f42112e3b849ff73df7d3c9718ce683984550c0b692b2a24d20cc6"
+          },
+          "expectation": "observed",
+          "why": "The revoked second bearer token receives session_expired. This does not independently isolate the SQL revoked predicate from expiry. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "read-after-revocation",
+      "title": "Read after revocation",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "GET /auth/sessions after second device revocation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Lists only the still-active first session after revocation.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 190,
+            "end": 190,
+            "sha256": "da188fab88fe12c70b85abee03918d681d8a58493107ecdd476370e59265ab3e"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 80,
+            "end": 83,
+            "sha256": "6ac017592eb9916296f84c0b6bad520ac366809d7f6f8a87c186c30afb56062d"
+          },
+          "expectation": "observed",
+          "why": "Only the first active device remains in the account session list after revocation. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "logout",
+      "title": "Logout",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "POST /auth/logout using issued session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Logs out the first session.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 194,
+            "end": 194,
+            "sha256": "913b77b23f93373bbcdeaebca44e7bf4d3e3711ea044497c38cd0016a2f43cdb"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 75,
+            "end": 78,
+            "sha256": "6133c51be5597cb7e00569ae7cd564161eb6eb7dff47653b9a3dd2151c9b7594"
+          },
+          "expectation": "observed",
+          "why": "A live first-device logout returns success; its subsequent rejection supports revocation, not websocket refresh behavior. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    },
+    {
+      "id": "reject-revoked-session",
+      "title": "Reject revoked session",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded."
+      ],
+      "actions": [
+        "GET /v1/me using logged-out session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejects the logged-out first session.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 198,
+            "end": 198,
+            "sha256": "b021bc8dc42cb14609439da4d3c8fe786bf9adf2d42a3a4ad92384f8193d1ab1"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 6,
+            "end": 9,
+            "sha256": "c45cafa274f42112e3b849ff73df7d3c9718ce683984550c0b692b2a24d20cc6"
+          },
+          "expectation": "observed",
+          "why": "The logged-out bearer is rejected as session_expired; other reasons sharing that error are not tested. This is a narrow association for this synthetic local outcome, not measured execution or proof of unobserved branches."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "local-email-session-lifecycle",
+      "title": "Local synthetic email session lifecycle",
+      "steps": [
+        "request-code",
+        "reject-resend",
+        "reject-wrong-code",
+        "reject-wrong-proof",
+        "verify-code",
+        "reject-replay",
+        "read-identity",
+        "list-session",
+        "request-second-code",
+        "verify-second-device",
+        "read-two-sessions",
+        "revoke-second-session",
+        "reject-second-revoked",
+        "read-after-revocation",
+        "logout",
+        "reject-revoked-session"
+      ]
+    }
+  ]
+}

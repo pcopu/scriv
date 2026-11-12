@@ -1,0 +1,11 @@
+{
+  "operation": "merge-only-proposal-not-applied",
+  "journey": "IJ-02",
+  "slice": {
+    "path": "tests/e2e/journeys/model-document.mjs",
+    "status": "prepared-not-run",
+    "case_count": 23,
+    "route": "Public semantic import-json, complete loaded/persisted metadata observation and ordinary browser reopen",
+    "catalog": "docs/testing/model-document-steps.json"
+  }
+}

@@ -48,6 +48,7 @@ struct ScrivKeyboardPressGate {
     private struct Press { let action: ScrivKeyboardAction?; let sequence: UInt64; var fired = false }
     private var down: [Int: Press] = [:]
     private var sequence: UInt64 = 0
+    var isIdle: Bool { down.isEmpty }
     mutating func began(keyCode: Int, action: ScrivKeyboardAction?) {
         guard down[keyCode] == nil else { return }
         sequence &+= 1; down[keyCode] = Press(action: action, sequence: sequence)
@@ -115,10 +116,8 @@ enum ScrivKeyboardTextContext {
 @objc(ScrivUIKitApplication)
 @MainActor
 final class ScrivUIKitApplication: UIApplication {
-#if DEBUG
-    /// Opt-in isolated XCTest observation only. No key text or private events
-    /// are retained; release builds contain neither this hook nor its call.
-    static var onVerificationEscapeEnded: (() -> Void)?
+#if SCRIV_CLI_AUTOMATION
+    private(set) var cliMenuKeyCommands: [UIKeyCommand] = []
 #endif
     private var pressGate = ScrivKeyboardPressGate()
     private let toggleEditingSelector = NSSelectorFromString("scrivToggleScriptEditing:")
@@ -161,6 +160,9 @@ final class ScrivUIKitApplication: UIApplication {
         let updates = UICommand(title: "Check for Updates…", action: #selector(checkForUpdates(_:)))
         builder.replaceChildren(ofMenu: .about) { $0 + [updates] }
         let settings = UIKeyCommand(title: "Settings…", action: #selector(showSettings(_:)), input: ",", modifierFlags: .command)
+#if SCRIV_CLI_AUTOMATION
+        cliMenuKeyCommands = [settings]
+#endif
         builder.remove(menu: .preferences)
         builder.insertSibling(UIMenu(title: "", identifier: .preferences, options: .displayInline, children: [settings]), afterMenu: .about)
     }
@@ -222,15 +224,6 @@ final class ScrivUIKitApplication: UIApplication {
         for press in presses where press.phase == .ended || press.phase == .cancelled {
             if let key = press.key { pressGate.ended(keyCode: Int(key.keyCode.rawValue)) }
         }
-#if DEBUG
-        if let observed = Self.onVerificationEscapeEnded,
-           ProcessInfo.processInfo.arguments.contains("--screenshots"),
-           ProcessInfo.processInfo.environment["SCRIV_PHYSICAL_ESCAPE_ACCEPTANCE"] == "1" {
-            for press in presses where press.phase == .ended && press.key?.keyCode == .keyboardEscape {
-                observed()
-            }
-        }
-#endif
     }
     @objc private func togglePlaybackFromKeyboard(_ command: UIKeyCommand) {
         guard canPerformAction(#selector(togglePlaybackFromKeyboard(_:)), withSender: command), pressGate.consume(.togglePlayback) else { return }
@@ -253,6 +246,35 @@ final class ScrivUIKitApplication: UIApplication {
         guard canPerformAction(#selector(findScriptFromKeyboard(_:)), withSender: command), pressGate.consume(.findInScript) else { return }
         (UIKitPresentation.window?.rootViewController as? ScrivWorkspaceController)?.findInScript()
     }
+#if SCRIV_CLI_AUTOMATION
+    /// A synthetic single stroke, not physical-event delivery. Reuse the same
+    /// eligibility policy and repeat fence; never manufacture private UIEvents.
+    func performCLIKeyStroke(_ command: UIKeyCommand) -> Bool {
+        guard CommandLine.arguments.contains("--scriv-cli"), CommandLine.arguments.contains("--screenshots"),
+              let action = command.action, let input = command.input,
+              canPerformAction(action, withSender: command) else { return false }
+        let context = ScrivKeyboardTextContext.state(for: ScrivKeyboardTextContext.firstResponder(application: self))
+        let decision = ScrivKeyboardPolicy.action(characters: input, ignoringModifiers: input,
+            modifiers: Self.modifiers(command.modifierFlags), editingText: context.editingText,
+            markedText: context.markedText,
+            canToggleScriptEditing: scriptEditingTarget(responder: ScrivKeyboardTextContext.firstResponder(application: self), context: context) != nil,
+            canFindScript: UIKitPresentation.window?.rootViewController?.presentedViewController == nil)
+        let expected: ScrivKeyboardAction?
+        switch action {
+        case #selector(findScriptFromKeyboard(_:)): expected = .findInScript
+        case #selector(togglePlaybackFromKeyboard(_:)): expected = .togglePlayback
+        case #selector(increaseScriptZoom(_:)): expected = .zoomIn
+        case #selector(decreaseScriptZoom(_:)): expected = .zoomOut
+        case #selector(toggleScriptEditingFromKeyboard(_:)): expected = .toggleScriptEditing
+        default: return sendAction(action, to: self, from: command, for: nil)
+        }
+        guard decision == expected, decision != nil, pressGate.isIdle else { return false }
+        // Negative namespace is disjoint from physical HID key codes.
+        pressGate.began(keyCode: -1, action: decision)
+        defer { pressGate.ended(keyCode: -1) }
+        return sendAction(action, to: self, from: command, for: nil)
+    }
+#endif
     @objc private func resetKeyboardFence() { pressGate.reset() }
     private func command(_ title: String, input: String, modifiers: UIKeyModifierFlags, action: Selector) -> UIKeyCommand {
         let value = UIKeyCommand(title: title, action: action, input: input, modifierFlags: modifiers)

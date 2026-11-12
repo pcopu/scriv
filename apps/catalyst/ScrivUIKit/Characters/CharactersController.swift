@@ -154,7 +154,7 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
         if searchText.isEmpty {
             for item in store.characterAnalysis.reviewItems {
                 let control = UIButton(type:.custom)
-                let portrait = CharacterCropImageView(source:store.assetURL(item.image),sha256:item.image.sha256,region:item.annotation.portraitRegion,title:"Character needs a name")
+                let portrait = CharacterCropImageView(source:store.assetURL(item.image),sha256:item.image.sha256,region:item.annotation.portraitRegion,title:"Character needs a name",store:store,asset:item.image)
                 portrait.widthAnchor.constraint(equalToConstant:100 * presentationScale).isActive = true; portrait.heightAnchor.constraint(equalToConstant:100 * presentationScale).isActive = true; portrait.layer.cornerRadius = 50 * presentationScale
                 let label = ScrivUIKitTheme.label("Needs a name",size:13,weight:.medium); label.backgroundColor = UIColor.systemOrange.withAlphaComponent(0.65); label.textAlignment = .center
                 let contents = ScrivUIKitTheme.stack([portrait,label],spacing:9); contents.alignment = .center; contents.isUserInteractionEnabled = false

@@ -1,0 +1,601 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "revision-safety",
+      "title": "Recover document revisions through lease handover and restore",
+      "featureId": "revision-safety",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/revision-safety-journey.mjs"
+      ],
+      "plannedActions": [
+        "POST project revision base",
+        "POST commands original scenes",
+        "GET snapshot create-revision-base",
+        "GET events create-revision-base",
+        "POST leases opening",
+        "Wait past initial lease timestamp",
+        "PUT leases renew opening",
+        "GET leases renewed opening",
+        "GET snapshot acquire-and-renew",
+        "GET events acquire-and-renew",
+        "DELETE leases opening",
+        "GET leases after release",
+        "GET snapshot release-owned-lease",
+        "GET events release-owned-lease",
+        "POST leases reacquire opening",
+        "POST commands released proof",
+        "GET leases current fence",
+        "GET snapshot reacquire-new-fence",
+        "GET events reacquire-new-fence",
+        "POST commands mismatched session",
+        "GET leases after session refusal",
+        "GET snapshot reject-wrong-session",
+        "GET events reject-wrong-session",
+        "POST commands delete opening",
+        "GET snapshot delete-opening",
+        "GET events delete-opening",
+        "POST commands undo deletion",
+        "GET snapshot undo-deletion",
+        "GET events undo-deletion",
+        "POST leases ending",
+        "POST commands ending deletion and new scene",
+        "GET snapshot prepare-restore-divergence",
+        "GET events prepare-restore-divergence",
+        "GET snapshot deleted revision",
+        "GET snapshot undone revision",
+        "GET snapshot wrong historical epoch",
+        "GET snapshot read-historical-tombstone",
+        "GET events read-historical-tombstone",
+        "POST restore original revision",
+        "GET leases after restore",
+        "GET snapshot restore-original-revision",
+        "GET events restore-original-revision",
+        "POST commands replay old delete",
+        "POST commands changed old delete",
+        "POST restore replay original",
+        "GET snapshot replay-after-epoch-change",
+        "GET events replay-after-epoch-change",
+        "POST commands old epoch",
+        "GET snapshot reject-stale-epoch",
+        "GET events reject-stale-epoch",
+        "POST commands old lease current epoch",
+        "GET leases remain invalidated",
+        "GET snapshot reject-invalidated-proof",
+        "GET events reject-invalidated-proof",
+        "POST leases after restore",
+        "POST commands stale item version",
+        "GET leases after version refusal",
+        "GET snapshot reacquire-after-restore",
+        "GET events reacquire-after-restore",
+        "POST restore beyond head",
+        "POST restore stale epoch",
+        "GET snapshot reject-invalid-restores",
+        "GET events reject-invalid-restores",
+        "GET history first page",
+        "GET history terminal page",
+        "GET snapshot read-ordered-history",
+        "GET events read-ordered-history",
+        "Wait until lease expiration",
+        "POST commands expired proof",
+        "GET leases after natural expiry",
+        "GET snapshot expire-lease-naturally",
+        "GET events expire-lease-naturally",
+        "POST leases after expiry",
+        "POST commands recovered edit",
+        "GET snapshot save-after-recovery",
+        "GET events save-after-recovery"
+      ],
+      "expectedOutcomes": [
+        "Two scenes persist exactly at version one and sequence one, with exact receipt and event before=null. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Acquire fence one then renew its unchanged identity/token/fence with a later bounded expiry; public listing omits token. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "DELETE returns ok and removes the active public lease without changing document/events. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Reacquisition advances fence to two with a new token; old released proof is refused with no document/event mutation. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Valid proof cannot be used under a different command session; active lease is unchanged. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Delete receipt/event retain deleted before/after content while public tombstone strips data and retains version two. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "A put at tombstone version two restores the same identity at version three with exact receipt and deletion-to-live event. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Delete second scene and add later scene atomically at sequence four; retain exact tombstone and event before/after values. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Historical sequence two returns only Ending plus empty-data Opening tombstone at version two; sequence three returns recovered Opening v3 and Ending v1; wrong requested epoch is rejected. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Restore sequence one resurrects Ending at v3, returns Opening at v4, tombstones later scene at v2, advances epoch to two/timing one, and invalidates active leases. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Exact old delete request returns original sequence-two receipt after restoration without mutating epoch-two document or events; modified replay is command_reused. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Fresh command with old epoch is rejected before editing restored content. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Current epoch and correct version with the pre-restore lease fails lease_required. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "New epoch lease advances fence to three; stale item version is version_conflict despite fresh valid lease. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Fresh restore beyond head rejects invalid_sequence; old epoch restore rejects stale_epoch; both leave tombstones/history intact. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "History pagination after sequence three returns exact command four then restore five, hasMore true then false; before/after changes and restore snapshotRequired are asserted. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Wait until actual lease expiry without clock or storage injection; old proof is refused and active lease list empties. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Reacquire expired lease at fence four, save correct version in epoch two, and preserve unrelated restored Ending and later-scene tombstone. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations. Reuse the refused version-conflict command ID with corrected bytes: failed attempts did not reserve a successful receipt."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "revision-safety-acquire-and-renew-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 465,
+        "end": 465,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "e10404933435c6b393f2235812990ddf73fe75e5fb1fdd1c2155782546471c1f",
+        "sha256": "c3c40f45832b37a47e0fbf1005c2e04fdcf7675a1857db8f9c48cb647eec4a34"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "PUT renews the owned existing lease and extends expiry without changing its identity; no stale-epoch PUT branch claim Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Acquire fence one then renew its unchanged identity/token/fence with a later bounded expiry; public listing omits token. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-release-owned-lease-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 466,
+        "end": 466,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "13082dd18dfd421b229dceb58e151fd6fd7ee2fc1f66c445e716d45aeaecc06c",
+        "sha256": "8827b89fb6c956e55a0a0f3cd7982f684821c8ce70921b5f697b6849ded2a67a"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Owner releases matching proof and public active lease disappears Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "DELETE returns ok and removes the active public lease without changing document/events. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-reacquire-new-fence-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 461,
+        "end": 462,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "a61879138a5aeee098a540533b549cbcfdc4beccf7159299c2c1d2be672d225c",
+        "sha256": "3424067e7f6e063a4b09e4acc2b50c514599d70410989a2143297d77eee4deab"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Released existing row is reacquired with incremented fence/new token and current epoch Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Reacquisition advances fence to two with a new token; old released proof is refused with no document/event mutation. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-reject-wrong-session-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 156,
+        "end": 157,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "24be0534136e1711e24569bfa8fb10cce32200945b5c85f581859a64a06acec4",
+        "sha256": "6378f76ff421f8d039114b4881e15279fbfaac80ef2844255538c048c6dcbf27"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Exact command session mismatch with otherwise current owned proof is refused; other requireLease conjunction variants are not claimed Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Valid proof cannot be used under a different command session; active lease is unchanged. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-delete-opening-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 334,
+        "end": 335,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "3b5f1e089ad3e76b1d6c32f3bfbd81f35d44cacebbaeda54f67ded16602f448e",
+        "sha256": "d808bd4ce2a95c53a9b5a17ba73e96166c9d09264d608dbdcf7cb8fe95997207"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Current snapshot projects deleted scene to empty-data tombstone version two, not content; canImport remains false Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Delete receipt/event retain deleted before/after content while public tombstone strips data and retains version two. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-undo-deletion-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 261,
+        "end": 262,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "9df5e9d266bdee80968faa5baa52cf6e51da9f8f6843e8171aad66acdf261956",
+        "sha256": "8bdd5e237d6c0c18ff42b034aa678f7b047c9be924bc57ece86b112c7a170518"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Existing tombstone put produces live version three and persists it; atomic-batch byte-budget branch is excluded Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "A put at tombstone version two restores the same identity at version three with exact receipt and deletion-to-live event. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-read-historical-tombstone-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 282,
+        "end": 282,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "b460a3a057ca3ea986c621e90bd766a57466e8bc546d0fc6f7adbc2642ec1068",
+        "sha256": "9a2ff57b6b3c09eaf56dfaaa3e6ff43ed66b1cec8e423e92c218bceb2e29ef54"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Explicit wrong historical epoch rejected for valid sequence Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Historical sequence two returns only Ending plus empty-data Opening tombstone at version two; sequence three returns recovered Opening v3 and Ending v1; wrong requested epoch is rejected. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-read-historical-tombstone-1",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 283,
+        "end": 285,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "13ecbb97a8309d654850f2e7989a2cdb3791071417c5ec16e603a8d05522d011",
+        "sha256": "d37f95934a6c7357d01f323a13b572caa3018923489f47cfee7fd47e80422566"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Small historical pages recover exact deleted/live versions, hide tombstone data and return final-page cursor; byte and pagination boundaries excluded Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Historical sequence two returns only Ending plus empty-data Opening tombstone at version two; sequence three returns recovered Opening v3 and Ending v1; wrong requested epoch is rejected. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-read-historical-tombstone-2",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 287,
+        "end": 287,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "b9d2a2aacd184e8153555121243d3d961a7e665b769c6e57dd968892d014ae46",
+        "sha256": "c70bc13058442596f1eb0314d820e2b85c538d70b8e2ca73aa56254b4b120c41"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Small historical pages recover exact deleted/live versions, hide tombstone data and return final-page cursor; byte and pagination boundaries excluded Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Historical sequence two returns only Ending plus empty-data Opening tombstone at version two; sequence three returns recovered Opening v3 and Ending v1; wrong requested epoch is rejected. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-read-historical-tombstone-3",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 289,
+        "end": 290,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "dd4ab6d20fc6946a5204a915a3cfd6509e84cbfd30528fba72e038c63af665c7",
+        "sha256": "70a4987f73dae6120ffbe16cdc5a8f10d35d021879e0c271a6a0a4cdaebbba03"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Small historical pages recover exact deleted/live versions, hide tombstone data and return final-page cursor; byte and pagination boundaries excluded Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Historical sequence two returns only Ending plus empty-data Opening tombstone at version two; sequence three returns recovered Opening v3 and Ending v1; wrong requested epoch is rejected. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-restore-original-revision-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 298,
+        "end": 299,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "4b69f9bbc8fc557da9c78f8b898f3a8fad06a095d650398dabb5e880b3100694",
+        "sha256": "2f85672ca6b6ea6f27c396982adfb37f38ec8879aaab7574e774416721163e0d"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Historical restore covers changed live item, resurrection of tombstone and tombstoning post-target item; already-deleted skip excluded Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Restore sequence one resurrects Ending at v3, returns Opening at v4, tombstones later scene at v2, advances epoch to two/timing one, and invalidates active leases. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-restore-original-revision-1",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 301,
+        "end": 301,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "9922d6b5e1764cce9eb1c57cb8cd44e665b9968fabb4611f2370bae30b952508",
+        "sha256": "3e8ea83f8cc47f2d058e3461d96a33e353975de5c95016a97dd3d2017ed16c36"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Historical restore covers changed live item, resurrection of tombstone and tombstoning post-target item; already-deleted skip excluded Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Restore sequence one resurrects Ending at v3, returns Opening at v4, tombstones later scene at v2, advances epoch to two/timing one, and invalidates active leases. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-restore-original-revision-2",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 303,
+        "end": 305,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "7ede09ad81bccc6d9d19a2bd1e3af22dded438a38ac7d7d58feeb8196c7e1b20",
+        "sha256": "87c28a944b98034d945eaa2c02d7291947087afffa093d8d6eb41eab571fd6ec"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Restore increments head/epoch/timing and invalidates active leases, with exact public restore event Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Restore sequence one resurrects Ending at v3, returns Opening at v4, tombstones later scene at v2, advances epoch to two/timing one, and invalidates active leases. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-restore-original-revision-3",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 307,
+        "end": 308,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "b6cdf4cb1197941c98c080c5fd8daf26ed133c834f6fe1f693960712e6b76a38",
+        "sha256": "cbe706e12b2b582f76651ad22e22b618efc00b4d4f5b2d68b203573b499295a3"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Restore returns snapshot-required empty-items receipt and journal event Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Restore sequence one resurrects Ending at v3, returns Opening at v4, tombstones later scene at v2, advances epoch to two/timing one, and invalidates active leases. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-replay-after-epoch-change-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 357,
+        "end": 358,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "c1cc55cca8ef35bbf50049e7388207a4556d75a82d8aa4b856c6fc44b65aa90f",
+        "sha256": "e52ece1894b46e571a983f1d1b79bcc80e37f751870a3b1f5e31500b22a8d73e"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "HTTP cached command receipt precedes stale epoch/lease checks, and changed retry refuses reuse Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Exact old delete request returns original sequence-two receipt after restoration without mutating epoch-two document or events; modified replay is command_reused. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-replay-after-epoch-change-1",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 366,
+        "end": 367,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "a73cea2935e727d6cc8f180ad81d87f8349b80a5994121d228a329d77d3cd514",
+        "sha256": "852178b64099cd17ed7d09369c0c4576757b6dec8557b7e8124e04b34c3aa360"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "HTTP restore receipt replay returns exact previous epoch-changing result without another restore Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Exact old delete request returns original sequence-two receipt after restoration without mutating epoch-two document or events; modified replay is command_reused. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+        "Exact owner restore retry returns the original receipt with its commandId, seq=5, epoch=2, timingVersion=1, items=[], and snapshotRequired=true after the epoch change; the current public document and ordered event journal remain unchanged."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-reject-stale-epoch-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 232,
+        "end": 232,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "47851d5ce1f7f559a3864858616afba0cbb5c5f4c68060a31258a9745475aaf4",
+        "sha256": "a0f3ee21298cfbfd0c26a7b33e6813be971d1530b41f533909c3495bd20b60e7"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Fresh old epoch command rejected; cached replay is separately intercepted Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Fresh command with old epoch is rejected before editing restored content. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-reacquire-after-restore-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 239,
+        "end": 239,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "f0d5d33842d5543a934b7081bc10aad7d6e23c3265ff6839957414f1740d1b15",
+        "sha256": "91055b8241e5c58f1ec18ccada1522ee461ec435b9dbaf2f063cfac93ddb2bdb"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Fresh command with stale item version refuses before lease validation Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "New epoch lease advances fence to three; stale item version is version_conflict despite fresh valid lease. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-reject-invalid-restores-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 297,
+        "end": 297,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "d0af45d19c7847f7f7c7708e826f4d3efda6e9f43058e70dd73efd4520f628db",
+        "sha256": "f3780a47c2a9a93375a2d8002b7935a71d3b253754e3d7b3e9143e4a719070a6"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Fresh owner restore rejects future sequence or stale epoch; replay has different outer path Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "Fresh restore beyond head rejects invalid_sequence; old epoch restore rejects stale_epoch; both leave tombstones/history intact. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-read-ordered-history-0",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 119,
+        "end": 119,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "5f1d176f8fdc79e48b5bafe6a6a43c5e47f41f8f13e44103f816731ad0cf8a12",
+        "sha256": "229d5f1d71c8381b745c779b3878e70b9a9e6ec32c2cacac31c030b57d891014"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Small event/history pages select strictly after sequence in ascending order with limit one Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "History pagination after sequence three returns exact command four then restore five, hasMore true then false; before/after changes and restore snapshotRequired are asserted. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-read-ordered-history-1",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 128,
+        "end": 128,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "15850848dc1d857510cb9591cd5a06c57453ac1543b356616bceb650af8f5ce4",
+        "sha256": "2d1e5a14371fb7fccc21ef233f5ce34640d3f51bd2a1c1e487e3ca86abe4fd94"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Small page event ordering and hasMore transition true to false; byte-cap branches excluded Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "History pagination after sequence three returns exact command four then restore five, hasMore true then false; before/after changes and restore snapshotRequired are asserted. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    },
+    {
+      "rangeId": "revision-safety-read-ordered-history-2",
+      "featureId": "revision-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 130,
+        "end": 130,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "d3d61573a8741656379b1a5840a73712f8f8287ecce41d12c9845e61f23afcad",
+        "sha256": "e146dbdc8fd7c5bd4957f3e105c5ec855ebfcd9cb52bc98c98f532905f13a884"
+      },
+      "scenarioIds": [
+        "revision-safety"
+      ],
+      "rationale": "Small page event ordering and hasMore transition true to false; byte-cap branches excluded Candidate only; independent review required.",
+      "confidence": "medium",
+      "uncertainty": "Independent audit pending. Public HTTP state only; helper state() checks authored document/event invariants after every step. No SQL-internal receipt inventory, race, websocket, process-restart durability, large-page/batch limits, native UI or provider behavior claimed.",
+      "proposedAssertions": [
+        "History pagination after sequence three returns exact command four then restore five, hasMore true then false; before/after changes and restore snapshotRequired are asserted. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations."
+      ]
+    }
+  ]
+}

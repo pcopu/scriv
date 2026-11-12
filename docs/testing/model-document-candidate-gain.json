@@ -1,0 +1,327 @@
+{
+  "status": "candidate-physical-nonblank-noncomment-lines-not-reviewed-not-executed",
+  "candidateLines": 132,
+  "newLines": 80,
+  "lines": [
+    {
+      "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+      "line": 100
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+      "line": 101
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+      "line": 112
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+      "line": 113
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+      "line": 122
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+      "line": 123
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 18
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 64
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 65
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 66
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 67
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 68
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 69
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 70
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 71
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 72
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 88
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 89
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 90
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 91
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 92
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 93
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 94
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 95
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 96
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 97
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 100
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 101
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 102
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "line": 161
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 36
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 37
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 38
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 39
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 40
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 41
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 42
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 43
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 46
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 47
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 48
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 49
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 50
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 51
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 52
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 53
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 54
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 55
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 56
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 57
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 58
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 59
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 60
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 61
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 63
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 64
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 65
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 66
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 67
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 68
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 69
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 71
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 72
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 74
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 75
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 76
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 77
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 80
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 81
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 82
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 83
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 84
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 85
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 86
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 87
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 89
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 92
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 93
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 94
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "line": 95
+    }
+  ]
+}

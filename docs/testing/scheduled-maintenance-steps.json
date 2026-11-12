@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "maintenance-stage-v93",
+      "title": "Establish independently expected maintenance preconditions",
+      "preconditions": [
+        "Run the entire public command tracer app -- test services cloud. The original 72 initial HTTP checks and empty identity/email guards run unchanged before the maintenance chapter. The harness owns its process group, isolated home and D1/R2 state, denies outbound requests and disables telemetry.",
+        "The existing locked Miniflare dependency exposes the official local event adapter only after this owned 127.0.0.1 fixture enables unsafeTriggerHandlers. GET /cdn-cgi/local/scheduled?format=json invokes the actual Worker scheduled handler without a time/cron override or direct production-function call. Exact dependency excerpts and file hashes are frozen in scheduled-runtime-contract.md.",
+        "Setup stages nine isolated asset rows and eight R2 objects across two synthetic projects/teams. These are declared interrupted-state preconditions, not a reproduced upload failure or crash. Stale records are two hours old; fresh upload is current. Image data is inert PNG-signature fixture content, not decoded image acceptance.",
+        "Five stale removals are missing object, size mismatch, SHA metadata mismatch, absent metadata, and deleting state. A matching stale upload becomes ready; fresh upload, existing ready and same-digest other-project/team ready sentinel survive. Row bytes deliberately differ from object size in one case, distinguishing exact quota release.",
+        "Named expired/live auth records and 31-day versus recently expired sessions are independently authored. Expected removals name fixture identities. No exact threshold, batch 100 limit, concurrent replacement/CAS refusal, error-retry, independent byte-corruption hashing, full R2 metadata, live billing/provider/cron or native execution claim."
+      ],
+      "actions": [
+        "Complete initial service assertions, then configure only the local scheduled-event adapter and reacquire fixture D1/R2 handles.",
+        "Provision synthetic owner/session and two teams; create each project through real HTTP. Stage the nine named media states and independently expected object metadata/bytes.",
+        "Compare all asset rows, R2 keys/content bytes/contentType/customMetadata and exact per-team reserved bytes with authored fixture values. Save complete project rows.",
+        "Stage expired/live OAuth state, authorization code, email challenge and rate-limit records plus old-expired/recent-expired/revoked-live sessions. Observe stale recoverable media unavailable and preexisting ready media readable."
+      ],
+      "expectations": [
+        {
+          "id": "initial",
+          "description": "Initial asset rows/objects and both teams' reserved bytes match the independent nine-record fixture; matching stale upload is initially unavailable and old ready data is readable.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 309,
+            "end": 332,
+            "sha256": "aa106e9812c53287ecc57077847feea28dfce0b00ceb5a9e48d4fbfc308c8f11"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "maintenance-reconcile-v93",
+      "title": "Run real scheduled cleanup and verify every retained record",
+      "preconditions": [
+        "Run the entire public command tracer app -- test services cloud. The original 72 initial HTTP checks and empty identity/email guards run unchanged before the maintenance chapter. The harness owns its process group, isolated home and D1/R2 state, denies outbound requests and disables telemetry.",
+        "The existing locked Miniflare dependency exposes the official local event adapter only after this owned 127.0.0.1 fixture enables unsafeTriggerHandlers. GET /cdn-cgi/local/scheduled?format=json invokes the actual Worker scheduled handler without a time/cron override or direct production-function call. Exact dependency excerpts and file hashes are frozen in scheduled-runtime-contract.md.",
+        "Setup stages nine isolated asset rows and eight R2 objects across two synthetic projects/teams. These are declared interrupted-state preconditions, not a reproduced upload failure or crash. Stale records are two hours old; fresh upload is current. Image data is inert PNG-signature fixture content, not decoded image acceptance.",
+        "Five stale removals are missing object, size mismatch, SHA metadata mismatch, absent metadata, and deleting state. A matching stale upload becomes ready; fresh upload, existing ready and same-digest other-project/team ready sentinel survive. Row bytes deliberately differ from object size in one case, distinguishing exact quota release.",
+        "Named expired/live auth records and 31-day versus recently expired sessions are independently authored. Expected removals name fixture identities. No exact threshold, batch 100 limit, concurrent replacement/CAS refusal, error-retry, independent byte-corruption hashing, full R2 metadata, live billing/provider/cron or native execution claim."
+      ],
+      "actions": [
+        "Capture full expiry tables and define removals by the explicitly authored expired record IDs. Define four expected retained media rows, changing only the matching stale upload to ready.",
+        "Invoke one local scheduled event over HTTP and require platform outcome ok; poll only read-only media state for at most 5 seconds.",
+        "Compare every final asset row, R2 key/content bytes/contentType/customMetadata and both teams' exact reserved bytes. Compare all expiry tables with the independently named removals and preserve both full project rows.",
+        "GET recovered, old-ready and same-digest other-project sentinel media and compare exact bytes/MIME/digest header. Require unavailable responses for the five removed replicas and the retained fresh upload."
+      ],
+      "expectations": [
+        {
+          "id": "media",
+          "description": "One matching stale upload becomes ready; exactly five stale D1 rows and four existing R2 objects are removed, leaving four rows and four objects, and 87 row-reserved bytes are released. Fresh upload, old ready and same-digest other-project/team sentinel retain exact rows, keys, bytes and specified metadata, with unchanged sentinel-team quota.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 337,
+            "end": 353,
+            "sha256": "7caaef95a958cf3f145803c4b53bd1dc7f8507d4fa911b87f5c2a8b6caa26023"
+          }
+        },
+        {
+          "id": "expiry",
+          "description": "Only the named expired OAuth/code/email/rate records and 31-day-old expired session disappear. Live records, recent-expired and revoked-live sessions, prior counters and both project rows remain exact.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 332,
+            "end": 347,
+            "sha256": "3b0a0c274119160452bb4ddde37c7e71ba2df12adb7b33b11ac383b5b691c3dc"
+          }
+        },
+        {
+          "id": "readback",
+          "description": "Recovered, old-ready and same-digest other-project media return exact fixture bytes, image/png and their SHA headers. Removed media and the retained nonready fresh upload return 404 asset_unavailable.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 348,
+            "end": 353,
+            "sha256": "6241e9aa7b26f69554848d96cb3714ad6ca6a786f8ad76a11f766c23ccc5ea3b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/index.ts",
+            "start": 41,
+            "end": 50,
+            "sha256": "9ec2dd8b6d03fd3eb530c52ee81ca6276801efeb7dba8734dadd9e3667c2f949"
+          },
+          "expectation": "expiry",
+          "why": "The actual scheduled orchestrator batches the five named cleanup operations and starts media reconciliation; synthetic teams have no Stripe customer so provider reconciliation is excluded. The complete shared contract also checks media outcomes."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 110,
+            "end": 114,
+            "sha256": "2f11294912c4c2e0d1ab100ccef6327d6fd8640bd2b67bf1229ebc9d05294e25"
+          },
+          "expectation": "media",
+          "why": "Only old nonready rows are selected and their owned object metadata inspected. Fresh-upload and old-ready sentinels distinguish age/state exclusion; no exact cutoff, ordering or 100-row limit claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 115,
+            "end": 116,
+            "sha256": "6ef5f19d9451f4274f72d28d2a57cda9e098d1bdfbaa1622baed72bb3ad25ae1"
+          },
+          "expectation": "media",
+          "why": "Matching object size and SHA metadata finalize only the stale upload as ready. Size/hash/missing-metadata alternatives are distinguishable fixtures, not independent byte hashing."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 120,
+            "end": 121,
+            "sha256": "1d43e9fcfcb09b928c14baff9f36e0ec310e90c852fbd152192266abf3b7cb91"
+          },
+          "expectation": "media",
+          "why": "The admitted cleanup claim targets the matching project, digest, key and prior state. The same-digest other-project ready sentinel remains intact. No failed-claim/concurrent replacement assertion."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 123,
+            "end": 124,
+            "sha256": "80d9b52a2321b1826580969e99c3e4bb6345364825f5d1433fca99106799f7ae"
+          },
+          "expectation": "media",
+          "why": "Production scheduled cleanup deletes five matching D1 rows and four existing R2 objects; the missing-object case has no object to remove. Four rows and four objects remain, preserving unrelated, fresh and ready replicas."
+        },
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 111,
+            "end": 113,
+            "sha256": "705a57ec058e2b1dd61589d55056b72ec2d13485d1b7be08aae7b4ae182fb61b"
+          },
+          "expectation": "media",
+          "why": "Actual scheduled DELETE fires the migrated release trigger. Exact accounting uses each removed row's bytes, not object size, and preserves the second team. Underflow/MAX-clamp behavior is excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 17,
+            "end": 22,
+            "sha256": "2f75434d3132bcba85cc70c763e28a894b7e6420f3a420eba32f8892427da791"
+          },
+          "expectation": "readback",
+          "why": "Real authenticated public GET makes readiness transition observable through bytes, MIME and digest headers. HEAD, etag/cache headers and missing-object-in-ready-row failure are not claimed."
+        }
+      ]
+    },
+    {
+      "id": "maintenance-repeat-v93",
+      "title": "Repeat cleanup without consuming retained state",
+      "preconditions": [
+        "Run the entire public command tracer app -- test services cloud. The original 72 initial HTTP checks and empty identity/email guards run unchanged before the maintenance chapter. The harness owns its process group, isolated home and D1/R2 state, denies outbound requests and disables telemetry.",
+        "The existing locked Miniflare dependency exposes the official local event adapter only after this owned 127.0.0.1 fixture enables unsafeTriggerHandlers. GET /cdn-cgi/local/scheduled?format=json invokes the actual Worker scheduled handler without a time/cron override or direct production-function call. Exact dependency excerpts and file hashes are frozen in scheduled-runtime-contract.md.",
+        "Setup stages nine isolated asset rows and eight R2 objects across two synthetic projects/teams. These are declared interrupted-state preconditions, not a reproduced upload failure or crash. Stale records are two hours old; fresh upload is current. Image data is inert PNG-signature fixture content, not decoded image acceptance.",
+        "Five stale removals are missing object, size mismatch, SHA metadata mismatch, absent metadata, and deleting state. A matching stale upload becomes ready; fresh upload, existing ready and same-digest other-project/team ready sentinel survive. Row bytes deliberately differ from object size in one case, distinguishing exact quota release.",
+        "Named expired/live auth records and 31-day versus recently expired sessions are independently authored. Expected removals name fixture identities. No exact threshold, batch 100 limit, concurrent replacement/CAS refusal, error-retry, independent byte-corruption hashing, full R2 metadata, live billing/provider/cron or native execution claim."
+      ],
+      "actions": [
+        "Capture expiry state after legitimate public verification reads; invoke the same local scheduled adapter once more.",
+        "Require identical media rows/objects/quotas and expiry records, then reread the recovered bytes; keep the original ASSETS bucket empty and require exactly 2 triggers and 0 outbound attempts before awaited cleanup."
+      ],
+      "expectations": [
+        {
+          "id": "repeat",
+          "description": "Second scheduled invocation preserves the complete retained media/quota/expiry state, recovered media remains exact, original ASSETS stays empty and no outbound attempt occurs. Request counters from verification GETs are captured before the repeat rather than mistaken for cleanup mutation.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 354,
+            "end": 359,
+            "sha256": "03fa7783dd5a93e5d49986b6e4b02d2193286999e5927983440bc9573a0c34ab"
+          }
+        }
+      ],
+      "mappings": []
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "scheduled-maintenance-v93",
+      "title": "Reconcile synthetic interrupted media and expired authorization records",
+      "steps": [
+        "maintenance-stage-v93",
+        "maintenance-reconcile-v93",
+        "maintenance-repeat-v93"
+      ]
+    }
+  ]
+}

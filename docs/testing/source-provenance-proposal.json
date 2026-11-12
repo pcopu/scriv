@@ -1,0 +1,835 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "provenance-export-source",
+      "title": "export source",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Fresh synthetic Git repository containing exact copied current CLI/scripts/tests bytes, a tracked retired.txt deleted after commit, and explicitly included extra/included.txt.",
+        "node scripts/export-cli-source-manifest.mjs --output ${externalManifest} --include extra"
+      ],
+      "expectedOutcomes": [
+        "Exporter returns the exact output-byte digest and file count, records the tracked deletion and explicit untracked include, and preserves source names, types, modes and bytes."
+      ]
+    },
+    {
+      "id": "provenance-valid-readback",
+      "title": "valid readback",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "The immediately preceding exported manifest remains outside source and its digest is unchanged. Only the already blocked character-aliases scenario is selected.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest."
+      ]
+    },
+    {
+      "id": "provenance-refuse-overwrite",
+      "title": "refuse overwrite",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "The exporter output already exists with known exact bytes.",
+        "node scripts/export-cli-source-manifest.mjs --output ${externalManifest} --include extra"
+      ],
+      "expectedOutcomes": [
+        "A repeated export exits 2 with fixed safe error and preserves existing manifest and all source names, modes and bytes."
+      ]
+    },
+    {
+      "id": "provenance-reject-digest",
+      "title": "reject digest",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Valid manifest bytes paired with a different syntactically valid all-zero SHA256.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${wrongDigest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Runner reports source-manifest-digest-mismatch, null source identity and not-run; source and manifest remain unchanged."
+      ]
+    },
+    {
+      "id": "provenance-reject-content",
+      "title": "reject content",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Only synthetic/story.txt content differs from the exported manifest; source file set is unchanged.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Runner reports source-manifest-content-mismatch, null source identity and not-run; modified source and manifest remain unchanged."
+      ]
+    },
+    {
+      "id": "provenance-reject-extra-file",
+      "title": "reject extra file",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Original content restored, then extra/unlisted.txt added after export.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Runner reports source-manifest-file-set-mismatch, null source identity and not-run; original plus extra file and manifest remain unchanged."
+      ]
+    },
+    {
+      "id": "provenance-reject-missing-file",
+      "title": "reject missing file",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Unlisted file removed; tracked synthetic/story.txt moved outside source.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Runner reports source-manifest-missing-file, null source identity and not-run; missing-file fixture and manifest remain unchanged."
+      ]
+    },
+    {
+      "id": "provenance-reject-ancestor-symlink",
+      "title": "reject ancestor symlink",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Missing file restored, then synthetic directory moved outside source and replaced with symlink to that same directory, so referenced content still matches.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Runner reports source-manifest-symlink, null source identity and not-run; source readlink target string and manifest remain unchanged; external target contents are not asserted."
+      ]
+    },
+    {
+      "id": "provenance-reject-malformed-json",
+      "title": "reject malformed json",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Original source restored. New external manifest contains exactly a single opening brace and the CLI receives its correct digest.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${malformedManifest} --source-manifest-sha256 ${matchingDigest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Runner reports source-manifest-invalid, null source and not-run for malformed JSON with a matching outer digest, preserving source and variant manifest."
+      ]
+    },
+    {
+      "id": "provenance-reject-schema",
+      "title": "reject schema",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Original source and manifest cloned into a new external variant; only schemaVersion becomes 2; outer digest recomputed.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${schemaManifest} --source-manifest-sha256 ${matchingDigest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Runner reports source-manifest-invalid, null source and not-run for the unsupported schema version with matching outer digest, preserving source and variant manifest."
+      ]
+    },
+    {
+      "id": "provenance-reject-unsafe-path",
+      "title": "reject unsafe path",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Valid original manifest cloned externally; only first path becomes ../outside.txt; outer digest recomputed. The unsafe-path guard precedes sorting and entry reads.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${unsafePathManifest} --source-manifest-sha256 ${matchingDigest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Runner reports source-manifest-unsafe-path, null source and not-run for traversal path with matching outer digest, preserving source and variant manifest."
+      ]
+    },
+    {
+      "id": "provenance-reject-duplicate-path",
+      "title": "reject duplicate path",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Valid original manifest cloned externally; its first entry is duplicated adjacent to itself so paths remain sorted; outer digest recomputed.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${duplicatePathManifest} --source-manifest-sha256 ${matchingDigest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Runner reports source-manifest-invalid, null source and not-run for sorted duplicate paths with matching outer digest, preserving source and variant manifest."
+      ]
+    },
+    {
+      "id": "provenance-reject-entry-hash-format",
+      "title": "reject entry hash format",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Valid original manifest cloned externally; only first entry sha256 becomes invalid-hash; outer digest recomputed.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${invalidEntryHashManifest} --source-manifest-sha256 ${matchingDigest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Runner reports source-manifest-invalid, null source and not-run for malformed entry hash with matching outer digest, preserving source and variant manifest."
+      ]
+    },
+    {
+      "id": "provenance-reject-entry-hash-mismatch",
+      "title": "reject entry hash mismatch",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Valid original manifest cloned externally; only first entry sha256 becomes 64 zeroes; source bytes unchanged and outer digest recomputed.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${wrongEntryHashManifest} --source-manifest-sha256 ${matchingDigest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Runner reports source-manifest-content-mismatch, null source and not-run for a well-formed wrong entry hash with matching outer digest, preserving source and variant manifest."
+      ]
+    },
+    {
+      "id": "provenance-refuse-inside-output",
+      "title": "refuse inside output",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Original source restored; selected output inside-manifest.json is nonexistent inside source; original external manifest remains unchanged.",
+        "node scripts/export-cli-source-manifest.mjs --output ${sourceRoot}/inside-manifest.json --include extra"
+      ],
+      "expectedOutcomes": [
+        "Exporter exits 2 with fixed safe error; inside output remains absent, source snapshot is unchanged and original external manifest bytes are unchanged. Error text is intentionally generic; no claim that text alone distinguishes the internal guard."
+      ]
+    },
+    {
+      "id": "provenance-recover-readback",
+      "title": "recover readback",
+      "featureId": "source-provenance",
+      "state": "existing",
+      "existingPaths": [
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Symlink removed and original synthetic directory restored; original exported bytes and digest reused.",
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectedOutcomes": [
+        "Restored source verifies with original file count, worktree hash, base commit and manifest digest, still returns blocked/not-run with no app identity; source and manifest remain unchanged."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "provenance-source-19",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 19,
+        "end": 29,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "87e4991ebeba3456b50a0465702c8956929d8021386b0d88ebf3cad5c4202106",
+        "sha256": "d57e586255043e006942cdf891b474d546770e69a03900eb026b5d91091d35ff"
+      },
+      "scenarioIds": [
+        "provenance-reject-extra-file"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Runner reports source-manifest-file-set-mismatch, null source identity and not-run; original plus extra file and manifest remain unchanged."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-33",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 33,
+        "end": 40,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "4fc1bb0a2d36e8a3bc4c482114094d00ccf9df4c53f8ede27ce059ddaf3b1c91",
+        "sha256": "06f66cf717f96cae72c0a1ab1907262a0adb5febe380fb5b97ffda70be7f67d0"
+      },
+      "scenarioIds": [
+        "provenance-reject-ancestor-symlink",
+        "provenance-reject-content",
+        "provenance-reject-missing-file"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Runner reports source-manifest-content-mismatch, null source identity and not-run; modified source and manifest remain unchanged.",
+        "Runner reports source-manifest-missing-file, null source identity and not-run; missing-file fixture and manifest remain unchanged.",
+        "Runner reports source-manifest-symlink, null source identity and not-run; source readlink target string and manifest remain unchanged; external target contents are not asserted."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-41",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 41,
+        "end": 41,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "737db166c79ae98e44bbe5ad43e03bf3774f7b3696068842d56a72e863dfeb20",
+        "sha256": "27e5788d5d9d73d24a81dbc0a5a74bfa82c9c3b3af99e52af796e90b468a8a3d"
+      },
+      "scenarioIds": [
+        "provenance-reject-ancestor-symlink",
+        "provenance-reject-content"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Runner reports source-manifest-content-mismatch, null source identity and not-run; modified source and manifest remain unchanged.",
+        "Runner reports source-manifest-symlink, null source identity and not-run; source readlink target string and manifest remain unchanged; external target contents are not asserted."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-42",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 42,
+        "end": 43,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "238fbe81617061f49bd83bd32767d68aa4ff20a2d2c46a7c79c7e88a0f0f20ce",
+        "sha256": "962a553b267f4dfea2033e01f475af5653dcffb512920d641c32bc6902e1e8a6"
+      },
+      "scenarioIds": [
+        "provenance-reject-content"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Runner reports source-manifest-content-mismatch, null source identity and not-run; modified source and manifest remain unchanged."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-48",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 48,
+        "end": 50,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "92c93067853713d8026bac2e641cb6dd7c0bb1a7901939514cc34b469603c949",
+        "sha256": "9dabe6ea81ff2122f6234f9a2dc5bc5c674b144d286b8c590cf997943e1bbdf9"
+      },
+      "scenarioIds": [
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-51",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 51,
+        "end": 54,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "4e350df460f1c4dac6a77ab2542169a971b4eaae089011065506b42f30647426",
+        "sha256": "dc06b041be222e46cf8577723427e9c13a3e209e509d303ae29fc87d28b1a31a"
+      },
+      "scenarioIds": [
+        "provenance-reject-digest",
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest.",
+        "Runner reports source-manifest-digest-mismatch, null source identity and not-run; source and manifest remain unchanged."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-55",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 55,
+        "end": 56,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "3b6fe9956cea1011039eba69b8392fe221804fc4c061f3932279efbb9bd00020",
+        "sha256": "dbef6493cf00560fa4ff9b5574775c52d8c6367d3f45d25aa6948f752687f192"
+      },
+      "scenarioIds": [
+        "provenance-reject-malformed-json",
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest.",
+        "Runner reports source-manifest-invalid, null source and not-run for malformed JSON with a matching outer digest, preserving source and variant manifest."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-57",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 57,
+        "end": 58,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "e2b2418eaf2f3c6da39cf78d3dc7a60b02e6e0dfc8c88cc847da63732e318e3a",
+        "sha256": "76c160f3296af0b37a15575bcc56bf8e652ab8670766296a5f7326de88ab3e42"
+      },
+      "scenarioIds": [
+        "provenance-reject-schema",
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest.",
+        "Runner reports source-manifest-invalid, null source and not-run for the unsupported schema version with matching outer digest, preserving source and variant manifest."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-59",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 59,
+        "end": 59,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "abaf6eb9960e6961a96813a41d8bf722bb4ee3ff0e75ec3e6cf0097ad6f22bd4",
+        "sha256": "ab8b5589536263f94804b9cd6692c73953e8dc19ad335182ef98e50eedcaa959"
+      },
+      "scenarioIds": [
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-64",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 64,
+        "end": 67,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "bca939f36785f3e9b5377592964db6a7ac73b01374205fd5cd055e36553e1380",
+        "sha256": "4c9f8c9ce1ebe1031ac547a82634714f7046134e33de9693e45791cc8d2d48d7"
+      },
+      "scenarioIds": [
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-68",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 68,
+        "end": 69,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "c9a254f4ae003e743a2141f0a13d25d2d6800982a58c9813524b629af37c2a6a",
+        "sha256": "debb3a022dac2b67e28d66e52b3249bb5f44ff77a2e9180ccc6655d8253b9c14"
+      },
+      "scenarioIds": [
+        "provenance-reject-unsafe-path",
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest.",
+        "Runner reports source-manifest-unsafe-path, null source and not-run for traversal path with matching outer digest, preserving source and variant manifest."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-70",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 70,
+        "end": 70,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "ad921727f9d807bf0c4b424f5c5f47e5d40d976abd37934132510a0c257cf04b",
+        "sha256": "fae08be32b91ff80008326a67f7f34cdcbfcd30720aac6c618da73c33b1201f5"
+      },
+      "scenarioIds": [
+        "provenance-reject-duplicate-path",
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest.",
+        "Runner reports source-manifest-invalid, null source and not-run for sorted duplicate paths with matching outer digest, preserving source and variant manifest."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-71",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 71,
+        "end": 72,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "6d3109e97fd8984b69c4f655f6f19e144376cefd4185cf70480ca808804da5ac",
+        "sha256": "21ff1906c9984ecada2e9e36e020b4a1fc4886a941ba30e508393a5b3c9cce31"
+      },
+      "scenarioIds": [
+        "provenance-recover-readback",
+        "provenance-reject-content",
+        "provenance-reject-entry-hash-format",
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest.",
+        "Runner reports source-manifest-content-mismatch, null source identity and not-run; modified source and manifest remain unchanged.",
+        "Runner reports source-manifest-invalid, null source and not-run for malformed entry hash with matching outer digest, preserving source and variant manifest.",
+        "Restored source verifies with original file count, worktree hash, base commit and manifest digest, still returns blocked/not-run with no app identity; source and manifest remain unchanged."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-73",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 73,
+        "end": 73,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "9334bac7e1307d0e392d75c6f8c90bbcc4c9bf4cc36a4cd466560e84c6e6ea81",
+        "sha256": "b18043f278801151313c77dc35e22ec9f5c9e350e0791f53e501fa7b9647b5e8"
+      },
+      "scenarioIds": [
+        "provenance-recover-readback",
+        "provenance-reject-content",
+        "provenance-reject-entry-hash-mismatch",
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest.",
+        "Runner reports source-manifest-content-mismatch, null source identity and not-run; modified source and manifest remain unchanged.",
+        "Runner reports source-manifest-content-mismatch, null source and not-run for a well-formed wrong entry hash with matching outer digest, preserving source and variant manifest.",
+        "Restored source verifies with original file count, worktree hash, base commit and manifest digest, still returns blocked/not-run with no app identity; source and manifest remain unchanged."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-74",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 74,
+        "end": 74,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "737db166c79ae98e44bbe5ad43e03bf3774f7b3696068842d56a72e863dfeb20",
+        "sha256": "27e5788d5d9d73d24a81dbc0a5a74bfa82c9c3b3af99e52af796e90b468a8a3d"
+      },
+      "scenarioIds": [
+        "provenance-recover-readback",
+        "provenance-reject-content",
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest.",
+        "Runner reports source-manifest-content-mismatch, null source identity and not-run; modified source and manifest remain unchanged.",
+        "Restored source verifies with original file count, worktree hash, base commit and manifest digest, still returns blocked/not-run with no app identity; source and manifest remain unchanged."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-75",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 75,
+        "end": 75,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "95d9c9df90baa256029f3515502b55c749316adad13e941615b29b3182a3b504",
+        "sha256": "4aa08d7d2eba74878d6c0e6c82f12b39a86c4cd9eb06cc8c8913202a77f3612d"
+      },
+      "scenarioIds": [
+        "provenance-recover-readback",
+        "provenance-reject-extra-file",
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest.",
+        "Runner reports source-manifest-file-set-mismatch, null source identity and not-run; original plus extra file and manifest remain unchanged.",
+        "Restored source verifies with original file count, worktree hash, base commit and manifest digest, still returns blocked/not-run with no app identity; source and manifest remain unchanged."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-76",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 76,
+        "end": 78,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "3e1029d13193230ae68d2b27637e5c21888697338539441594e30aa4ea0415b2",
+        "sha256": "c870120cd09b6615ccb290505710e659be6c523e25bc36d648eea2994b2c01d6"
+      },
+      "scenarioIds": [
+        "provenance-recover-readback",
+        "provenance-valid-readback"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest.",
+        "Restored source verifies with original file count, worktree hash, base commit and manifest digest, still returns blocked/not-run with no app identity; source and manifest remain unchanged."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-80",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 80,
+        "end": 83,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "d44a65437792bcc2020984761b5cf25613a98083c9e58b907eab3bb27ce46339",
+        "sha256": "15999a07359dd99023f0553e004ae8736b78bfbe0361919cb6b59c1e889d2d85"
+      },
+      "scenarioIds": [
+        "provenance-refuse-inside-output"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Exporter exits 2 with fixed safe error; inside output remains absent, source snapshot is unchanged and original external manifest bytes are unchanged. Error text is intentionally generic; no claim that text alone distinguishes the internal guard."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-89",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 89,
+        "end": 103,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "36453cde1532f03a5e3c5d1c3666d02e5e5283862acafb9fb5c44ab1a8799adb",
+        "sha256": "a314d6945f291832c0c37abe8ad67c9de9b7c2aef5a54056e04bd13ceb259a0b"
+      },
+      "scenarioIds": [
+        "provenance-export-source"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Exporter returns the exact output-byte digest and file count, records the tracked deletion and explicit untracked include, and preserves source names, types, modes and bytes."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-104",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 104,
+        "end": 104,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "9895c3ec4fce9563c4fef0c398d2f1a482ec984ba1d79bf5356f77aeb90026c5",
+        "sha256": "972b30e70a8a2949a4d787fed7d5ef55b3f5bae9e6909f78c7bebc9126eef154"
+      },
+      "scenarioIds": [
+        "provenance-export-source",
+        "provenance-refuse-overwrite"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Exporter returns the exact output-byte digest and file count, records the tracked deletion and explicit untracked include, and preserves source names, types, modes and bytes.",
+        "A repeated export exits 2 with fixed safe error and preserves existing manifest and all source names, modes and bytes."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-105",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 105,
+        "end": 105,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "eabf039a786696f090f05fa6f4078dd2dd99f07c756b504287a104103a0a7987",
+        "sha256": "8714cd297770d35d36d04227ad4f50be9155c9a46162dd7a69ba0090e3c5cec7"
+      },
+      "scenarioIds": [
+        "provenance-export-source"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Exporter returns the exact output-byte digest and file count, records the tracked deletion and explicit untracked include, and preserves source names, types, modes and bytes."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-109",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 109,
+        "end": 111,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "557b59191f98847e117f446436a9930ae34139605d4ed25adf4f0f37e888f1af",
+        "sha256": "0440aa1b2d6579716fb5381202e0bf3ea8d2532043f6dcf58d9d1befcb5a91cf"
+      },
+      "scenarioIds": [
+        "provenance-export-source"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Exporter returns the exact output-byte digest and file count, records the tracked deletion and explicit untracked include, and preserves source names, types, modes and bytes."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-115",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 115,
+        "end": 115,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "e9b27853a5c2358e7bc11b81a1b380fc9a344593f2200e7486e75ef18bc26c41",
+        "sha256": "3b62b47b27b5c3a7d4e39c508d91cdc437b78f21b6c1f911f7346849c0b42ef9"
+      },
+      "scenarioIds": [
+        "provenance-export-source"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "Exporter returns the exact output-byte digest and file count, records the tracked deletion and explicit untracked include, and preserves source names, types, modes and bytes."
+      ]
+    },
+    {
+      "rangeId": "provenance-source-118",
+      "source": {
+        "path": "scripts/export-cli-source-manifest.mjs",
+        "start": 118,
+        "end": 118,
+        "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3",
+        "spanSha256": "19444df76af909c5c25a61d15d821a6ecf6c485e0194c6c003eab56ce308b7a3",
+        "sha256": "3e803edba2d173b7f15e8441ed55b885da11612f80d55cad0436070f9d0e1707"
+      },
+      "scenarioIds": [
+        "provenance-refuse-inside-output",
+        "provenance-refuse-overwrite"
+      ],
+      "featureId": "source-provenance",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Bounded source support for the referenced sequential CLI stages; only the exact listed fixture outcomes are asserted.",
+      "confidence": "medium",
+      "uncertainty": "CLI source identity only. Fixture Git base commit is producer-declared, not source-to-binary attestation. The selected character-aliases route is already restricted and never launched. No native acceptance, permissions change, hostile race, exhaustive malformed-input handling or measured coverage claimed. Snapshot oracle excludes synthetic .git metadata and does not follow links; outside link target content mutation is not asserted. Full scenario must run in catalog order.",
+      "proposedAssertions": [
+        "A repeated export exits 2 with fixed safe error and preserves existing manifest and all source names, modes and bytes.",
+        "Exporter exits 2 with fixed safe error; inside output remains absent, source snapshot is unchanged and original external manifest bytes are unchanged. Error text is intentionally generic; no claim that text alone distinguishes the internal guard."
+      ]
+    }
+  ]
+}

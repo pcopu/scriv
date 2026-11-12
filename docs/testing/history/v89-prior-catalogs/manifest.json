@@ -1,0 +1,27 @@
+{
+  "status": "historical-import-catalogs-not-current-source-witness-inputs",
+  "baseline": "v88",
+  "files": [
+    {
+      "originalPath": "docs/testing/v83-preserved-cli-links.json",
+      "historicalPath": "docs/testing/history/v89-prior-catalogs/v83-preserved-cli-links.json",
+      "sha256": "58fb179931bb37ea4e51b22c767414ed02f395e0df0aacf43cb51df2e8787c53"
+    },
+    {
+      "originalPath": "docs/testing/v85-preserved-cli-links.json",
+      "historicalPath": "docs/testing/history/v89-prior-catalogs/v85-preserved-cli-links.json",
+      "sha256": "d621979e24dee7be38751b5b6890bab3227aca1df1854502603e672b874ed63b"
+    },
+    {
+      "originalPath": "docs/testing/v87-preserved-cli-links.json",
+      "historicalPath": "docs/testing/history/v89-prior-catalogs/v87-preserved-cli-links.json",
+      "sha256": "cd20333ddb49e53087b54d6310aab676dd534f05f72fe4b70bc9db7c59820ff7"
+    },
+    {
+      "originalPath": "docs/testing/v88-preserved-cli-links.json",
+      "historicalPath": "docs/testing/history/v89-prior-catalogs/v88-preserved-cli-links.json",
+      "sha256": "bdc87ad963207efc8080132f9042e5e558866f05a6d72a306a61a1e40434353c"
+    }
+  ],
+  "current": "docs/testing/v89-preserved-cli-links.json and authoritative code-e2e-links.json retain current reviewed associations; older exact catalogs remain recoverable here and in frozen v88."
+}

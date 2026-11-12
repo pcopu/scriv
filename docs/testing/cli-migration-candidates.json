@@ -1,0 +1,908 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "4d14b29f4fb49891e850fa9a8e5742dc878603c8",
+  "verified_migrated_entries": 0,
+  "candidate_mappings": [
+    {
+      "baseline_id": "tests/uikit-shell-parity.test.mjs::0001",
+      "baseline_source_sha256": "f6a0af13c373bf354e9e85ba029a8f28ff9f7758e475d4c07e228565d9a3159b",
+      "candidate_scenario": "tests/e2e/transport.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Checks actual window light appearance. Adaptive foreground colors and button transformers remain unmapped.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "tests/uikit-shell-parity.test.mjs::0002",
+      "baseline_source_sha256": "f6a0af13c373bf354e9e85ba029a8f28ff9f7758e475d4c07e228565d9a3159b",
+      "candidate_scenario": "tests/e2e/transport.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Checks actual header center and height. Subtitle, alternate widths, and implementation separation remain unmapped.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "tests/uikit-shell-parity.test.mjs::0003",
+      "baseline_source_sha256": "f6a0af13c373bf354e9e85ba029a8f28ff9f7758e475d4c07e228565d9a3159b",
+      "candidate_scenario": "tests/e2e/transport.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Checks one visible seek and footer transport per tab. Script split constraints and layout thresholds remain unmapped.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScrivUIKitTests/PlaybackResponsivenessTests.swift::0001",
+      "baseline_source_sha256": "0001c1df71f0fbd58bb6fc5051e3f4b403cd06a9d0d3f8ed2dc34129e1cb3110",
+      "candidate_scenario": "tests/e2e/transport.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Checks real clock advance and pause per tab. Original repeated-pause and main-queue responsiveness probes are not fully mapped.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScrivUIKitTests/WorkspaceVisualLayoutTests.swift::0004",
+      "baseline_source_sha256": "536bdef28377fc68f6448d291d926f833369cfba7ecf9b1f9c94778d28eb88a7",
+      "candidate_scenario": "tests/e2e/transport.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Checks one visible transport per tab. Balanced split geometry remains unmapped.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScrivUIKitTests/WorkspaceEndToEndTests.swift::0001",
+      "baseline_source_sha256": "8bf3334e3ef7dfcfadb8118ab33a6d79756914ea1956ee5311fbf656db7aaae5",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-source.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Adds native editor input/finish and persisted output. Playback highlights, journal emptiness and existing-line gesture activation remain unmapped.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScrivUIKitTests/WorkspaceEndToEndTests.swift::0002",
+      "baseline_source_sha256": "8bf3334e3ef7dfcfadb8118ab33a6d79756914ea1956ee5311fbf656db7aaae5",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-source.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Adds dialogue and undo/redo through registered key commands. Character ribbon selection and storyboard gesture selection remain unmapped.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScrivUIKitTests/WorkspaceEndToEndTests.swift::0003",
+      "baseline_source_sha256": "8bf3334e3ef7dfcfadb8118ab33a6d79756914ea1956ee5311fbf656db7aaae5",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-source.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Adds new-character form, colours and persistence. Settings, remaining sheets and all original assertions remain unmapped.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScrivUIKitTests/WorkspaceEndToEndTests.swift::0013",
+      "baseline_source_sha256": "8bf3334e3ef7dfcfadb8118ab33a6d79756914ea1956ee5311fbf656db7aaae5",
+      "candidate_scenario": "tests/e2e/storyboard-count.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Both original behavioral assertions replaced: one cue in the new sole scene and mounted Storyboard UILabel starts with 1 image · . Also verified after tab round-trip. Original1280x800 fixture is replaced by actual native window geometry; no original geometry assertion exists. Does not certify window-size or physical keyboard parity.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScrivUIKitTests/WorkspaceEndToEndTests.swift::0009",
+      "baseline_source_sha256": "8bf3334e3ef7dfcfadb8118ab33a6d79756914ea1956ee5311fbf656db7aaae5",
+      "candidate_scenario": "tests/e2e/journeys/character-catalog.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All original behaviors replaced: Randy initially visible, Miya filter hides Randy, Escape priority true, enabled while focused, clears query/restores all ribbons, disabled afterward. Repeated twice. Actual native window replaces1080x720 fixture; no geometry assertion existed.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScrivUIKitTests/WorkspaceEndToEndTests.swift::0012",
+      "baseline_source_sha256": "8bf3334e3ef7dfcfadb8118ab33a6d79756914ea1956ee5311fbf656db7aaae5",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-source.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Initial placeholder and full UTF16 selection, native insertion replacing selection, later caret append, finish and saved result pass. Original internal requestedEntryEditingSelectsText false assertion remains unobserved; old test retained.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScrivUIKitTests/WorkspaceEndToEndTests.swift::0006",
+      "baseline_source_sha256": "8bf3334e3ef7dfcfadb8118ab33a6d79756914ea1956ee5311fbf656db7aaae5",
+      "candidate_scenario": "tests/e2e/journeys/picture-coverage.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Follow group preserves startup scene full-word inventory, three select/deselect cycles, exact current-cue following and full model invariance. Cut moves, modifier/marquee selection and full original workflow remain uncovered; no legacy retirement.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/CodexConnectionCheckTests.swift::0004",
+      "baseline_source_sha256": "0a25b14c1e9cf59a01860f055400a2d8fe5bbfe016504e4f7596414b0a05e589",
+      "candidate_scenario": "tests/e2e/codex-endpoint-validation.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Eight invalid endpoint cases through actual Settings UI, twice. Positive localhost normalization and default-port assertions remain uncovered.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScriptUIKitTests.swift::0001",
+      "baseline_source_sha256": "986a3151f30ac1ca31c0f0d42272958891b692387f0fc1b06162a107a960c177",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-source.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Actual native UTF16 selection/replacement, saved exact text and undo/redo. Width constraints and object identity remain uncovered. See scenario document for secondary mappings.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/WorkspaceDurabilityTests.swift::0005",
+      "baseline_source_sha256": "7a0c28c7101670500ce0be739a98bfbcbe87a868072e23c6489afb9e091b9232",
+      "candidate_scenario": "tests/e2e/workspace-zoom.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Native zoom chords, font sizes, bounds and saved-content equality. Preference reload, menu presets, physical keyboard and exact legacy state assertions remain gaps.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivAppTests/CharacterFormTests.swift::0003",
+      "baseline_source_sha256": "8d951589f92bf63da49aaee76e09ab2308c1e146706a7f80e2ec8cfc3d3b3d63",
+      "candidate_scenario": "tests/e2e/character-aliases.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Alias dialog add/remove/search/persistence candidate; UIAlertController action reachability and literal newline cases remain unverified.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScrivUIKitTests/CharacterTeamTests.swift::0006",
+      "baseline_source_sha256": "43b372703babd778c1112dcea4e9f8ce98f543cda9ea3fc14bbcfd12e8a6b80d",
+      "candidate_scenario": "tests/e2e/journeys/character-catalog.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Real biography/appearance/colour form validation and exact persistence candidate. Original pure validator bounds/alias/link counts not fully covered. Revised palette selector and canonical-only changes pending.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScriptUIKitTests.swift::0008",
+      "baseline_source_sha256": "986a3151f30ac1ca31c0f0d42272958891b692387f0fc1b06162a107a960c177",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-source.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Public UIKit delegate-contract Return through actual app. Five split/history candidates; physical events, callback count and Backspace remain gaps.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScrivUIKitTests/WorkspaceEndToEndTests.swift::0010",
+      "baseline_source_sha256": "8bf3334e3ef7dfcfadb8118ab33a6d79756914ea1956ee5311fbf656db7aaae5",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-boundaries.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All four original first/last Move up/down disabled-attribute assertions replaced. Actual two-entry new project replaces sample fixture; both have distinct first and last lines. Physical menu presentation and action execution were not asserted by the original and are not claimed.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/CodexConnectionCheckTests.swift::0006",
+      "baseline_source_sha256": "0a25b14c1e9cf59a01860f055400a2d8fe5bbfe016504e4f7596414b0a05e589",
+      "candidate_scenario": "tests/e2e/codex-setup-instructions.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All three original literal setup-command assertions verified against actual native labels. Repeated disclosure preserves disconnected state and runtime fields; commands were neither copied nor executed. This does not test installation, login or runtime startup.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0002",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All unchanged frozen parse assertions exercised through actual production import, validation/install and saved packages. No picker or export coverage claimed; those are separate retained methods.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/fountain-import.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0003",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All unchanged frozen parse assertions exercised through actual production import, validation/install and saved packages. No picker or export coverage claimed; those are separate retained methods.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/fountain-import.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0005",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All unchanged frozen parse assertions exercised through actual production import, validation/install and saved packages. No picker or export coverage claimed; those are separate retained methods.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/fountain-import.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0006",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All unchanged frozen parse assertions exercised through actual production import, validation/install and saved packages. No picker or export coverage claimed; those are separate retained methods.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/fountain-import.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0007",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Corrected malformed-metadata CI fixture is covered; original exact input also covered with intentional literal-continuation1500ms expectation. Not unchanged-assertion equivalence. No picker or export coverage claimed; those are separate retained methods.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/fountain-import.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0008",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All unchanged frozen parse assertions exercised through actual production import, validation/install and saved packages. No picker or export coverage claimed; those are separate retained methods.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/fountain-import.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0011",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All unchanged frozen parse assertions exercised through actual production import, validation/install and saved packages. No picker or export coverage claimed; those are separate retained methods.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/fountain-import.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0012",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All unchanged frozen parse assertions exercised through actual production import, validation/install and saved packages. No picker or export coverage claimed; those are separate retained methods.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/fountain-import.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0013",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All unchanged frozen parse assertions exercised through actual production import, validation/install and saved packages. No picker or export coverage claimed; those are separate retained methods.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/fountain-import.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0015",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All unchanged frozen parse assertions exercised through actual production import, validation/install and saved packages. No picker or export coverage claimed; those are separate retained methods.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/fountain-import.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0016",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All unchanged frozen parse assertions exercised through actual production import, validation/install and saved packages. No picker or export coverage claimed; those are separate retained methods.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/fountain-import.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/EditingTests.swift::0006",
+      "baseline_source_sha256": "d3f69339fc5d303713696c3ae18ea21bba5882ad89f376ebf1dc18d7e8f1a1de",
+      "candidate_scenario": "tests/e2e/text-growth-timing.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "retirement_allowed": false,
+      "coverage_and_gaps": "All original value assertions through actual application production operations and saved packages. No system picker, external destination or hardware input claim.",
+      "actual_app_evidence": []
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0001",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "retirement_allowed": false,
+      "coverage_and_gaps": "All original value assertions through actual application production operations and saved packages. No system picker, external destination or hardware input claim.",
+      "actual_app_evidence": [],
+      "prior_scenario_slice": "tests/e2e/fountain-export.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0009",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "retirement_allowed": false,
+      "coverage_and_gaps": "All original value assertions through actual application production operations and saved packages. No system picker, external destination or hardware input claim.",
+      "actual_app_evidence": [],
+      "prior_scenario_slice": "tests/e2e/fountain-export.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0004",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "retirement_allowed": false,
+      "coverage_and_gaps": "All original assertions via actual app. Synthetic fixture setup and picker exclusions documented.",
+      "actual_app_evidence": [],
+      "prior_scenario_slice": "tests/e2e/fountain-forced-action-roundtrip.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/TimingTests.swift::0001",
+      "baseline_source_sha256": "26b6b40639a22d73269ab511e4d7472d63001f0df2adb1cb9dfc568936ffca9e",
+      "candidate_scenario": "tests/e2e/project-creation.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "retirement_allowed": false,
+      "coverage_and_gaps": "All original assertions via actual app. Synthetic fixture setup and picker exclusions documented.",
+      "actual_app_evidence": []
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0010",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "retirement_allowed": false,
+      "coverage_and_gaps": "All original assertions through actual production import/export as applicable, with verified starting fixture. No system picker/external destination coverage claimed.",
+      "actual_app_evidence": [],
+      "prior_scenario_slice": "tests/e2e/fountain-filename-fallback.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0014",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "retirement_allowed": false,
+      "coverage_and_gaps": "All original assertions through actual production import/export as applicable, with verified starting fixture. No system picker/external destination coverage claimed.",
+      "actual_app_evidence": [],
+      "prior_scenario_slice": "tests/e2e/fountain-filename-fallback.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/FountainTests.swift::0017",
+      "baseline_source_sha256": "ef94a9c83bd09dcd8055f876a1126f06d16286f2bffc816795a6e3b05bd71e8b",
+      "candidate_scenario": "tests/e2e/journeys/import-export.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "retirement_allowed": false,
+      "coverage_and_gaps": "All original assertions through actual production import/export as applicable, with verified starting fixture. No system picker/external destination coverage claimed.",
+      "actual_app_evidence": [],
+      "prior_scenario_slice": "tests/e2e/fountain-multiline-title.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/TimingTests.swift::0010",
+      "baseline_source_sha256": "26b6b40639a22d73269ab511e4d7472d63001f0df2adb1cb9dfc568936ffca9e",
+      "candidate_scenario": "tests/e2e/journeys/json-validation.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All frozen method assertions replaced by 2 exact invalid JSON cases plus positive import counterparts, stable exact public UIAlertController error metadata and unchanged saved packages. Production importer invokes original validation. Pixels, native accessibility, dismissal and document picker are not claimed or required by this frozen validator method.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/json-model-validation.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/CueAnchoringTests.swift::0006",
+      "baseline_source_sha256": "bd5c8bb7516f83e4ca54cf72599e792165a729818a8873ffabd6a5e7f7c920c4",
+      "candidate_scenario": "tests/e2e/journeys/json-validation.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All frozen method assertions replaced by 4 exact invalid JSON cases plus positive import counterparts, stable exact public UIAlertController error metadata and unchanged saved packages. Production importer invokes original validation. Pixels, native accessibility, dismissal and document picker are not claimed or required by this frozen validator method.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/json-model-validation.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/CueAnchoringTests.swift::0013",
+      "baseline_source_sha256": "bd5c8bb7516f83e4ca54cf72599e792165a729818a8873ffabd6a5e7f7c920c4",
+      "candidate_scenario": "tests/e2e/journeys/json-validation.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All frozen method assertions replaced by 2 exact invalid JSON cases plus positive import counterparts, stable exact public UIAlertController error metadata and unchanged saved packages. Production importer invokes original validation. Pixels, native accessibility, dismissal and document picker are not claimed or required by this frozen validator method.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/json-model-validation.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/CharacterMentionTests.swift::0013",
+      "baseline_source_sha256": "cb01be993cb6a0cb3d6835993cfb9e544404c83054283c8d4bc943dd8ccb10e5",
+      "candidate_scenario": "tests/e2e/journeys/json-validation.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "All frozen method assertions replaced by 6 exact invalid JSON cases plus positive import counterparts, stable exact public UIAlertController error metadata and unchanged saved packages. Production importer invokes original validation. Pixels, native accessibility, dismissal and document picker are not claimed or required by this frozen validator method.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "prior_scenario_slice": "tests/e2e/json-character-links.mjs"
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/WordTimingEditingTests.swift::0011",
+      "baseline_source_sha256": "90425bbc8b6e97fa0ca74c6da78103ff378c68c85ee1f736d406a1b3afab19c9",
+      "candidate_scenario": "tests/e2e/journeys/json-validation.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Additional/1 proves the exact legacy word retains absent timingSource.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/CueAnchoringTests.swift::0008",
+      "baseline_source_sha256": "bd5c8bb7516f83e4ca54cf72599e792165a729818a8873ffabd6a5e7f7c920c4",
+      "candidate_scenario": "tests/e2e/journeys/project-roundtrip.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Additional/2 proves absent legacy ownership; loaded/1 proves complete actual model including exact Date bits survives real save/switch/reopen and normal validation. Production ScrivJSON storage replaces original default JSON codec pairing, not a claim of testing that exact API pairing.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/AudioTrackTests.swift::0004",
+      "baseline_source_sha256": "748b5ea27f359312b8e5e4d7a48e243846b2d83ff16d354ef8380c608bc1ccd6",
+      "candidate_scenario": "tests/e2e/journeys/project-roundtrip.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Additional/5 proves absent audio defaults; loaded/2 proves complete model including exact Date bits survives real save/switch/reopen through production ScrivJSON storage. XCTUnwrap was fixture setup.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/CueAnchoringTests.swift::0003",
+      "baseline_source_sha256": "bd5c8bb7516f83e4ca54cf72599e792165a729818a8873ffabd6a5e7f7c920c4",
+      "candidate_scenario": "tests/e2e/journeys/picture-coverage.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Actual duration editor sets child500ms; real seek999/1000/1500 shows Parent/Child/Parent; complete saved cue count remains2. Fixture adds explicit empty character annotations to avoid documented Undo bootstrap of absent legacy links. Numeric-control routes, not physical gestures; all other saved fields compare unchanged.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift::0006",
+      "baseline_source_sha256": "b82428d728f60400b7ca9f3b676c283776b006529f0c9811647e92491ff908ad",
+      "candidate_scenario": "tests/e2e/journeys/script-merge.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "authored-words: all frozen identity/caret/text/duration/word IDs/markers/endpoints and normal production validation. Exact frozen fixtures reconciled independently; generated IDs stabilized. Public focused ScriptTextView override, not physical Backspace. Core methods do not require physical event proof.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift::0007",
+      "baseline_source_sha256": "b82428d728f60400b7ca9f3b676c283776b006529f0c9811647e92491ff908ad",
+      "candidate_scenario": "tests/e2e/journeys/script-merge.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "touching-annotations: exact AlexAlex, one word, link locations0/4 and distinct IDs. Exact frozen fixtures reconciled independently; generated IDs stabilized. Public focused ScriptTextView override, not physical Backspace. Core methods do not require physical event proof.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift::0008",
+      "baseline_source_sha256": "b82428d728f60400b7ca9f3b676c283776b006529f0c9811647e92491ff908ad",
+      "candidate_scenario": "tests/e2e/journeys/script-merge.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "all-cues-retained: complete cues, owners, authored extent and projected start. Exact frozen fixtures reconciled independently; generated IDs stabilized. Public focused ScriptTextView override, not physical Backspace. Core methods do not require physical event proof.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift::0009",
+      "baseline_source_sha256": "b82428d728f60400b7ca9f3b676c283776b006529f0c9811647e92491ff908ad",
+      "candidate_scenario": "tests/e2e/journeys/script-merge.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "zero-owned-direction-roundtrip: actual Return split then Backspace merge, both zero-owned, exact text and5000ms coverage. Exact frozen fixtures reconciled independently; generated IDs stabilized. Public focused ScriptTextView override, not physical Backspace. Core methods do not require physical event proof.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/catalyst/Tests/ScriptUIKitTests.swift::0010",
+      "baseline_source_sha256": "986a3151f30ac1ca31c0f0d42272958891b692387f0fc1b06162a107a960c177",
+      "candidate_scenario": "tests/e2e/journeys/script-merge.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Exact Unicode selection deletion and caret, with zero actual merge-callback delta; positive merge counters corroborate instrumentation.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/TimingTests.swift::0004",
+      "baseline_source_sha256": "26b6b40639a22d73269ab511e4d7472d63001f0df2adb1cb9dfc568936ffca9e",
+      "candidate_scenario": "tests/e2e/journeys/line-duration.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "sample-direction: exact ordered 2400→3400→1400 edits, runtime, following starts, cue extent and validated complete model.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/TimingTests.swift::0005",
+      "baseline_source_sha256": "26b6b40639a22d73269ab511e4d7472d63001f0df2adb1cb9dfc568936ffca9e",
+      "candidate_scenario": "tests/e2e/journeys/line-duration.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "zero-owned-prefix: exact Turn/Look/Hello there fixture, 0→1000 edit, following start/coverage/runtime and complete model.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/EditingTests.swift::0013",
+      "baseline_source_sha256": "d3f69339fc5d303713696c3ae18ea21bba5882ad89f376ebf1dc18d7e8f1a1de",
+      "candidate_scenario": "tests/e2e/journeys/line-duration.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "terminal-zero-owned: exact terminal Fade 0→700 edit, runtime 3700, final cue end and coverage 1700.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/CueAnchoringTests.swift::0009",
+      "baseline_source_sha256": "bd5c8bb7516f83e4ca54cf72599e792165a729818a8873ffabd6a5e7f7c920c4",
+      "candidate_scenario": "tests/e2e/journeys/line-duration.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "anchored-zero-return: exact ordered 1000→0→1000 sequence with cue owner, authored extent, child starts and complete model.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/CharacterMentionTests.swift::0001",
+      "baseline_source_sha256": "cb01be993cb6a0cb3d6835993cfb9e544404c83054283c8d4bc943dd8ccb10e5",
+      "candidate_scenario": "tests/e2e/journeys/character-catalog.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "mention-detection/canonical-alias-longest: exact ordered IDs, longest-name exclusion and source spans.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/CharacterMentionTests.swift::0002",
+      "baseline_source_sha256": "cb01be993cb6a0cb3d6835993cfb9e544404c83054283c8d4bc943dd8ccb10e5",
+      "candidate_scenario": "tests/e2e/journeys/character-catalog.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "mention-detection: original b-before-a catalog, canonical-over-alias result and ambiguous Sam exclusion; separate duplicate-name catalog returns no proposals.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/CharacterMentionTests.swift::0003",
+      "baseline_source_sha256": "cb01be993cb6a0cb3d6835993cfb9e544404c83054283c8d4bc943dd8ccb10e5",
+      "candidate_scenario": "tests/e2e/journeys/character-catalog.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "mention-detection/unicode-boundaries-regex-literal: exact Unicode text, ordered IDs, UTF-16 location and source substrings; no extra proposals.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift::0003",
+      "baseline_source_sha256": "73d4173f801e8b09fa7adf19d22848b0efc05f492eae32f000a010dc4abf5c8e",
+      "candidate_scenario": "tests/e2e/journeys/generation-review.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Exact half-open later cue [3000,4000), expired/future/off-scene distractors preserved, ordered passage second/know. and person b; all3 original assertions. Independent whole-method audit accepts deterministic unasserted IDs/dates and unavailable local portrait bytes; no provider or portrait coverage claimed.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift::0012",
+      "baseline_source_sha256": "73d4173f801e8b09fa7adf19d22848b0efc05f492eae32f000a010dc4abf5c8e",
+      "candidate_scenario": "tests/e2e/journeys/generation-review.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Both exact authored timing states imported with full metadata verified; selected excerpt now, then Not  now, with two spaces; both original assertions. Frozen method asserts no cross-call identity or mutation callbacks. Independent whole-method audit accepts deterministic unasserted IDs/dates and unavailable local portrait bytes; no provider or portrait coverage claimed.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ImageInspectorInvariantTests.swift::0001",
+      "baseline_source_sha256": "24891524ae5fc6e7bb8005d247e1940dff3ed350fdb60e4160a1c83bd6932753",
+      "candidate_scenario": "tests/e2e/journeys/package-image-invariants.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Exact foreground historical-version choice and all original whole-model invariants, frozen assertions10–16 and19–23. Original overlapping anchored cues, nil links and manual/captured prompts preserved; only random IDs/dates and fake PNG bytes adapted, with exact immutable Date witnesses. Normal accepted-action revision/modifiedAt checked separately.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ImageInspectorInvariantTests.swift::0003",
+      "baseline_source_sha256": "24891524ae5fc6e7bb8005d247e1940dff3ed350fdb60e4160a1c83bd6932753",
+      "candidate_scenario": "tests/e2e/journeys/package-image-invariants.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Restored original foreground, changed background version, then actual slider/preview at500/1500/2500 verifies latest-start background/foreground/background; exact cue count/durations and whole model preserved. Frozen assertions42–46. No physical input claim.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift::0007",
+      "baseline_source_sha256": "73d4173f801e8b09fa7adf19d22848b0efc05f492eae32f000a010dc4abf5c8e",
+      "candidate_scenario": "tests/e2e/journeys/generation-review.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Exact current-image tag fixture and frozen assertions107–109: ordered people a,b,c, Clara singleton reason scoped to actual detail stack and bounded raw request record, unrelated biography absent. No provider or portrait execution claim.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/WordTimingEditingTests.swift::0009",
+      "baseline_source_sha256": "90425bbc8b6e97fa0ca74c6da78103ff378c68c85ee1f736d406a1b3afab19c9",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-source.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Exact frozen words, absent timingSource, cue fixture and literal whitespace replacement; every original word field unchanged (assertion113). Actual UITextView whole-text replacement, finish/save and different-document reopen with whole saved/loaded checks. Semantic text route, not physical Return.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ImageImportPlacementTests.swift::0001",
+      "baseline_source_sha256": "20b2bcd761b31b1b73042d6d6096627f370df9c7dfde9ce700b16c60dcc02629",
+      "candidate_scenario": "tests/e2e/journeys/local-images.mjs",
+      "status": "source-mapping-only-no-public-attestation",
+      "coverage_and_gaps": "Frozen assertions19–26: actual first-line import preserves exact missing old asset, later cue with15300 authored duration, all entries/word times/optional omissions; new direction/0 placement ends1500. Actual Layers navigation0→1500→0 preserves imported/old/imported routing with unique preview labels and missing-old presentation. Only generated new IDs and real PNG metadata replace manually constructed newasset; oldasset remains literal fake. No picker, decodedpixels, zero-owned or history claim.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false,
+      "candidate_arguments": [
+        "--group",
+        "first-line"
+      ]
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ImageInspectorInvariantTests.swift::0002",
+      "baseline_source_sha256": "24891524ae5fc6e7bb8005d247e1940dff3ed350fdb60e4160a1c83bd6932753",
+      "candidate_scenario": "tests/e2e/journeys/package-image-invariants.mjs",
+      "candidate_arguments": [
+        "--with-semantic-prompts"
+      ],
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "apps/mac/Tests/ScrivCoreTests/ImageInspectorInvariantTests.swift:30",
+        "apps/mac/Tests/ScrivCoreTests/ImageInspectorInvariantTests.swift:31",
+        "apps/mac/Tests/ScrivCoreTests/ImageInspectorInvariantTests.swift:32",
+        "apps/mac/Tests/ScrivCoreTests/ImageInspectorInvariantTests.swift:33",
+        "apps/mac/Tests/ScrivCoreTests/ImageInspectorInvariantTests.swift:34",
+        "apps/mac/Tests/ScrivCoreTests/ImageInspectorInvariantTests.swift:35",
+        "apps/mac/Tests/ScrivCoreTests/ImageInspectorInvariantTests.swift:36"
+      ],
+      "coverage_and_gaps": "Gallery latest-first identity and lineage; exact separate manual/captured prompts for historical version and explicit missing-capture text for restored version. Semantic original UIButton/UIAction Show/Hide/Show, complete persisted invariants and loaded Date bits after Done. No native menu presentation or physical input claim.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift::0001",
+      "baseline_source_sha256": "73d4173f801e8b09fa7adf19d22848b0efc05f492eae32f000a010dc4abf5c8e",
+      "candidate_scenario": "tests/e2e/journeys/generation-review.mjs",
+      "candidate_arguments": [
+        "--group",
+        "context"
+      ],
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift:29",
+        "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift:30",
+        "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift:31",
+        "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift:32",
+        "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift:33",
+        "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift:34",
+        "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift:35",
+        "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift:36"
+      ],
+      "coverage_and_gaps": "Exact source IDs/text and literal raw request rows bind all millisecond endpoints; three excluded distractors absent. Unique enabled Generate UIButton proves the production context.hasContent conjunction using title/identifier/label/enabled, not unsupported AX button trait. No Generate activation or provider execution.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift::0001",
+      "baseline_source_sha256": "b82428d728f60400b7ca9f3b676c283776b006529f0c9811647e92491ff908ad",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-source.mjs",
+      "candidate_arguments": [
+        "--group",
+        "exact-split"
+      ],
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:12",
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:13",
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:14",
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:15"
+      ],
+      "coverage_and_gaps": "Exact whitespace, untouched word IDs, scene duration, returned right-entry identity and cue bounds. Literal full-model oracles through actual mounted editor selection/public Return delegate, save, undo/redo and different-document reopen. No physical keyboard or audio-byte/playback claim.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift::0002",
+      "baseline_source_sha256": "b82428d728f60400b7ca9f3b676c283776b006529f0c9811647e92491ff908ad",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-source.mjs",
+      "candidate_arguments": [
+        "--group",
+        "exact-split"
+      ],
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:23",
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:24",
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:25",
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:26",
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:27"
+      ],
+      "coverage_and_gaps": "Inside-word split preserves untouched identity and authored timing markers. Literal full-model oracles through actual mounted editor selection/public Return delegate, save, undo/redo and different-document reopen. No physical keyboard or audio-byte/playback claim.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift::0003",
+      "baseline_source_sha256": "b82428d728f60400b7ca9f3b676c283776b006529f0c9811647e92491ff908ad",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-source.mjs",
+      "candidate_arguments": [
+        "--group",
+        "exact-split"
+      ],
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:34",
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:35",
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:36"
+      ],
+      "coverage_and_gaps": "Emoji UTF-16 split partitions confirmed character links with stable unaffected identity and location. Literal full-model oracles through actual mounted editor selection/public Return delegate, save, undo/redo and different-document reopen. No physical keyboard or audio-byte/playback claim.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift::0004",
+      "baseline_source_sha256": "b82428d728f60400b7ca9f3b676c283776b006529f0c9811647e92491ff908ad",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-source.mjs",
+      "candidate_arguments": [
+        "--group",
+        "exact-split"
+      ],
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:42",
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:43"
+      ],
+      "coverage_and_gaps": "Both empty-left and empty-right offsets preserve words and scene duration with two positive-duration entries. Literal full-model oracles through actual mounted editor selection/public Return delegate, save, undo/redo and different-document reopen. No physical keyboard or audio-byte/playback claim.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift::0005",
+      "baseline_source_sha256": "b82428d728f60400b7ca9f3b676c283776b006529f0c9811647e92491ff908ad",
+      "candidate_scenario": "tests/e2e/journeys/script-authoring-source.mjs",
+      "candidate_arguments": [
+        "--group",
+        "exact-split"
+      ],
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:52",
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:53",
+        "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift:54"
+      ],
+      "coverage_and_gaps": "Image and audio anchors move to the right entry while immutable audio metadata and absolute/source placement remain unchanged. Literal full-model oracles through actual mounted editor selection/public Return delegate, save, undo/redo and different-document reopen. No physical keyboard or audio-byte/playback claim.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "apps/mac/Tests/ScrivCoreTests/WordTimingEditingTests.swift::0001",
+      "baseline_source_sha256": "90425bbc8b6e97fa0ca74c6da78103ff378c68c85ee1f736d406a1b3afab19c9",
+      "candidate_scenario": "tests/e2e/journeys/word-timing.mjs",
+      "candidate_arguments": [
+        "--case",
+        "interior-word"
+      ],
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "apps/mac/Tests/ScrivCoreTests/WordTimingEditingTests.swift:15",
+        "apps/mac/Tests/ScrivCoreTests/WordTimingEditingTests.swift:16",
+        "apps/mac/Tests/ScrivCoreTests/WordTimingEditingTests.swift:17",
+        "apps/mac/Tests/ScrivCoreTests/WordTimingEditingTests.swift:18",
+        "apps/mac/Tests/ScrivCoreTests/WordTimingEditingTests.swift:19",
+        "apps/mac/Tests/ScrivCoreTests/WordTimingEditingTests.swift:20",
+        "apps/mac/Tests/ScrivCoreTests/WordTimingEditingTests.swift:21"
+      ],
+      "coverage_and_gaps": "Exact frozen fixture and all eight observable assertions reviewed: authored interior word, unchanged neighbors/text/cues/empty audio collections and scene duration. Actual editor uses plural setWordTimings; singular helper branch is not covered. Retry catches only exact read-only scope rejection, never mutations or failed invariance assertions. Complete saved/loaded comparisons, actual 3000 ms slider maximum, cancel/reopen, invalid-overlap correction, one-revision save and different-document reopen. No native menu, hardware input, continuous transient invariance, populated audio or playback claim. No other method accepted.",
+      "actual_app_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "updates/tests/feed.test.mjs::0001",
+      "baseline_source_sha256": "6004421ab8f0f74702de5fb210d193bdaee848130aa7d4e0a65b5772d14ed387",
+      "candidate_scenario": "updates/tests-e2e/update-journey.mjs",
+      "acceptance_kind": "service-process-integration",
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "updates/tests/feed.test.mjs:15",
+        "updates/tests/feed.test.mjs:16"
+      ],
+      "coverage_and_gaps": "Independent source review and real loopback HTTP rerun preserved the exact frozen service behavior. Local synthetic R2 and ephemeral Ed25519 keys only. No Catalyst, Sparkle, installation or provider publication claim. URL traversal inputs undergo the same WHATWG normalization as the original fetch tests. Default updates npm test includes the replacement. Pure validation and all Python tests remain.",
+      "actual_app_evidence": [],
+      "service_process_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "updates/tests/feed.test.mjs::0002",
+      "baseline_source_sha256": "6004421ab8f0f74702de5fb210d193bdaee848130aa7d4e0a65b5772d14ed387",
+      "candidate_scenario": "updates/tests-e2e/update-journey.mjs",
+      "acceptance_kind": "service-process-integration",
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "updates/tests/feed.test.mjs:19",
+        "updates/tests/feed.test.mjs:20"
+      ],
+      "coverage_and_gaps": "Independent source review and real loopback HTTP rerun preserved the exact frozen service behavior. Local synthetic R2 and ephemeral Ed25519 keys only. No Catalyst, Sparkle, installation or provider publication claim. URL traversal inputs undergo the same WHATWG normalization as the original fetch tests. Default updates npm test includes the replacement. Pure validation and all Python tests remain.",
+      "actual_app_evidence": [],
+      "service_process_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "updates/tests/feed.test.mjs::0004",
+      "baseline_source_sha256": "6004421ab8f0f74702de5fb210d193bdaee848130aa7d4e0a65b5772d14ed387",
+      "candidate_scenario": "updates/tests-e2e/update-journey.mjs",
+      "acceptance_kind": "service-process-integration",
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "updates/tests/feed.test.mjs:40",
+        "updates/tests/feed.test.mjs:41",
+        "updates/tests/feed.test.mjs:42",
+        "updates/tests/feed.test.mjs:43",
+        "updates/tests/feed.test.mjs:44",
+        "updates/tests/feed.test.mjs:45",
+        "updates/tests/feed.test.mjs:46",
+        "updates/tests/feed.test.mjs:47",
+        "updates/tests/feed.test.mjs:48",
+        "updates/tests/feed.test.mjs:49",
+        "updates/tests/feed.test.mjs:50",
+        "updates/tests/feed.test.mjs:52"
+      ],
+      "coverage_and_gaps": "Independent source review and real loopback HTTP rerun preserved the exact frozen service behavior. Local synthetic R2 and ephemeral Ed25519 keys only. No Catalyst, Sparkle, installation or provider publication claim. URL traversal inputs undergo the same WHATWG normalization as the original fetch tests. Default updates npm test includes the replacement. Pure validation and all Python tests remain.",
+      "actual_app_evidence": [],
+      "service_process_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "updates/tests/feed.test.mjs::0005",
+      "baseline_source_sha256": "6004421ab8f0f74702de5fb210d193bdaee848130aa7d4e0a65b5772d14ed387",
+      "candidate_scenario": "updates/tests-e2e/update-journey.mjs",
+      "acceptance_kind": "service-process-integration",
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "updates/tests/feed.test.mjs:55",
+        "updates/tests/feed.test.mjs:57",
+        "updates/tests/feed.test.mjs:58"
+      ],
+      "coverage_and_gaps": "Independent source review and real loopback HTTP rerun preserved the exact frozen service behavior. Local synthetic R2 and ephemeral Ed25519 keys only. No Catalyst, Sparkle, installation or provider publication claim. URL traversal inputs undergo the same WHATWG normalization as the original fetch tests. Default updates npm test includes the replacement. Pure validation and all Python tests remain.",
+      "actual_app_evidence": [],
+      "service_process_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "updates/tests/feed.test.mjs::0006",
+      "baseline_source_sha256": "6004421ab8f0f74702de5fb210d193bdaee848130aa7d4e0a65b5772d14ed387",
+      "candidate_scenario": "updates/tests-e2e/update-journey.mjs",
+      "acceptance_kind": "service-process-integration",
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "updates/tests/feed.test.mjs:67",
+        "updates/tests/feed.test.mjs:68",
+        "updates/tests/feed.test.mjs:69",
+        "updates/tests/feed.test.mjs:70",
+        "updates/tests/feed.test.mjs:71",
+        "updates/tests/feed.test.mjs:73"
+      ],
+      "coverage_and_gaps": "Independent source review and real loopback HTTP rerun preserved the exact frozen service behavior. Local synthetic R2 and ephemeral Ed25519 keys only. No Catalyst, Sparkle, installation or provider publication claim. URL traversal inputs undergo the same WHATWG normalization as the original fetch tests. Default updates npm test includes the replacement. Pure validation and all Python tests remain.",
+      "actual_app_evidence": [],
+      "service_process_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "cloud/tests/email-auth.test.ts::0018",
+      "baseline_source_sha256": "204cde128e7e44703936d6b9326b278dbaa366bd7e4fd433c2d3feba32794beb",
+      "candidate_scenario": "cloud/tests-e2e/service-journey.mjs",
+      "acceptance_kind": "service-process-integration",
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "cloud/tests/email-auth.test.ts:210",
+        "cloud/tests/email-auth.test.ts:211"
+      ],
+      "coverage_and_gaps": "Exact four observable predicates independently reviewed: EMAIL absent with sender and valid body produces503/auth_not_configured; configured inert EMAIL plus5000-character email produces413 without any send RPC invocation. Independent fixture counter increments before throwing and is checked before runtime replacement and afterward. No successful auth, real email, provider or native app claim. Remaining legacy tests preserved; cloud default npm test includes the journey.",
+      "actual_app_evidence": [],
+      "service_process_evidence": [],
+      "retirement_allowed": false
+    },
+    {
+      "baseline_id": "updates/tests/feed.test.mjs::0003",
+      "baseline_source_sha256": "6004421ab8f0f74702de5fb210d193bdaee848130aa7d4e0a65b5772d14ed387",
+      "candidate_scenario": "updates/tests-e2e/update-journey.mjs",
+      "acceptance_kind": "service-process-integration",
+      "status": "source-mapping-only-no-public-attestation",
+      "assertion_line_keys": [
+        "updates/tests/feed.test.mjs:24",
+        "updates/tests/feed.test.mjs:25"
+      ],
+      "coverage_and_gaps": "Observable service-contract replacement, not literal helper-return or branch equivalence. Valid publication and original invalid-build/schema/traversal/hash-key rejection categories exercised through HTTP with valid downstream fixtures. Actual hashes replace impossible fixed digest preimages to discriminate key coupling from downstream content checks. Independent private-copy guard mutations prove the specified HTTP oracles detect missing protections. Invalid-channel helper remains retained.",
+      "actual_app_evidence": [],
+      "service_process_evidence": [],
+      "retirement_allowed": false
+    }
+  ],
+  "note": "Static candidate source mappings only. No public execution attestation or retirement authorization is included. Historical execution records are not published with this source inventory.",
+  "corrected_baseline_contracts": 1,
+  "verified_native_migrated_entries": 0,
+  "verified_service_migrated_entries": 0
+}

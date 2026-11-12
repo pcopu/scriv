@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "restore-empty-history-v104",
+      "title": "Restore empty content without losing discussion or history",
+      "featureId": "restore-empty-history",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/revision-safety-journey.mjs"
+      ],
+      "plannedActions": [
+        "Complete the original journey, capture its exact final snapshot/journal, and create a project-level discussion plus a single authored message through member HTTP routes.",
+        "Refuse fresh member and viewer restore requests to sequence six. Verify unchanged nonlease snapshot, complete journal, thread and messages.",
+        "As owner, restore sequence six using epoch two. Require one new restore event/receipt, unchanged live/tombstone item versions and exact retained discussion, with no active leases.",
+        "Restore sequence zero in epoch three. Require no live items, three exact metadata-only tombstones, false canImport, exact retained discussion and one new restore event.",
+        "Submit a valid fresh owner import in epoch four. Require project_not_empty and unchanged public state/history/discussion.",
+        "Restore sequence zero again in epoch four. Require one epoch/head/timing increment but identical tombstone versions. Replay all three prior restore requests exactly and require original receipts without another mutation.",
+        "Read exact empty sequence-zero history, then sequence-six history in three limit-one ID-cursor pages. Require original live/tombstone data and event metadata despite current empty content.",
+        "Confirm current observations remain exact, users/sessions unchanged, R2 empty, zero outbound and 123 total HTTP checks; dispose owned temporary process/state."
+      ],
+      "expectedOutcomes": [
+        "Three fresh owner restores each append exactly one snapshotRequired receipt/event and increment head, epoch and timing once. Restoring the current content at sequence six preserves both live item versions and the existing tombstone; restoring sequence zero tombstones only the two live scenes with one version increase each; another empty restore leaves all three tombstone versions fixed. Each resulting current snapshot has no active leases and retains the exact discussion thread/message. This is visible state evidence, not raw change-table equality or a fault/race proof.",
+        "Fresh member and viewer restores are exact 403/not_allowed and preserve nonlease snapshot, full journal, thread and message list. After restoring empty, canImport is false and a valid fresh owner import is exact 409/project_not_empty with those observations unchanged. Three exact owner restore retries return their original receipts despite later epochs and leave current public state/history unchanged. Users and sessions remain exact, R2 empty and outbound zero.",
+        "After all three restores, sequence zero has the exact empty historical snapshot and null historyEvent. Sequence six still returns the original two live scenes and metadata-only tombstone across exactly three limit-one ID-cursor pages, with expected versions/data, epoch two, timing one, cursor/hasMore boundaries and original event metadata. Current discussion data remains readable through its own routes; historical snapshots deliberately have empty thread/lease projections. All six original events and two new discussion events remain byte-equivalent values in the current journal before the three exact restore events."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "restore-empty-history-v104-1",
+      "featureId": "restore-empty-history",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 275,
+        "end": 277,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "88815b65f054adf8955715ec28beb225a8dd52c5dc18a88c6185017968ca2ace",
+        "sha256": "f9de6589e0036688a52c51af2ec796a968e1ea975b5da6d6d3344fdebe5f39d6"
+      },
+      "scenarioIds": [
+        "restore-empty-history-v104"
+      ],
+      "rationale": "Historical lookup reconstructs latest changes at or before the selected sequence and applies the ID cursor. Three limit-one pages recover the exact pre-restore state; private changes rows are not directly read.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Sequential mutations with concurrent read-only observation batches; no raw DO rows, large limits, storage faults, forced races, restart/crash, permission transition, native or live provider guarantee. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "After all three restores, sequence zero has the exact empty historical snapshot and null historyEvent. Sequence six still returns the original two live scenes and metadata-only tombstone across exactly three limit-one ID-cursor pages, with expected versions/data, epoch two, timing one, cursor/hasMore boundaries and original event metadata. Current discussion data remains readable through its own routes; historical snapshots deliberately have empty thread/lease projections. All six original events and two new discussion events remain byte-equivalent values in the current journal before the three exact restore events."
+      ]
+    },
+    {
+      "rangeId": "restore-empty-history-v104-2",
+      "featureId": "restore-empty-history",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 279,
+        "end": 285,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "0a68a9c38a172d3d7353c78830d4e639651f92e0ffd13d850f685728c2a20890",
+        "sha256": "d1274dde95b8382524fbf758d02d9cbcbe5e08326f7fd66107ec50c057383660"
+      },
+      "scenarioIds": [
+        "restore-empty-history-v104"
+      ],
+      "rationale": "Valid sequence/epoch/cursor inputs reach historical page selection and metadata-only tombstone projection. Zero history has no event; malformed input and large-byte cap branches are not newly tested.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Sequential mutations with concurrent read-only observation batches; no raw DO rows, large limits, storage faults, forced races, restart/crash, permission transition, native or live provider guarantee. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "After all three restores, sequence zero has the exact empty historical snapshot and null historyEvent. Sequence six still returns the original two live scenes and metadata-only tombstone across exactly three limit-one ID-cursor pages, with expected versions/data, epoch two, timing one, cursor/hasMore boundaries and original event metadata. Current discussion data remains readable through its own routes; historical snapshots deliberately have empty thread/lease projections. All six original events and two new discussion events remain byte-equivalent values in the current journal before the three exact restore events."
+      ]
+    },
+    {
+      "rangeId": "restore-empty-history-v104-3",
+      "featureId": "restore-empty-history",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 287,
+        "end": 290,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "59a2e72588dfd87bf63922966f77095566790e2791d97ad543f4bc72de911c32",
+        "sha256": "0334e3b14beaef38b992a62215c3ed9d459b642521fb72760aebdd5f2ededb6a"
+      },
+      "scenarioIds": [
+        "restore-empty-history-v104"
+      ],
+      "rationale": "Exact one-item pages distinguish cursor/hasMore boundaries, live/deleted projections and stable historical event metadata. The preceding byte-size break is intentionally excluded.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Sequential mutations with concurrent read-only observation batches; no raw DO rows, large limits, storage faults, forced races, restart/crash, permission transition, native or live provider guarantee. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "After all three restores, sequence zero has the exact empty historical snapshot and null historyEvent. Sequence six still returns the original two live scenes and metadata-only tombstone across exactly three limit-one ID-cursor pages, with expected versions/data, epoch two, timing one, cursor/hasMore boundaries and original event metadata. Current discussion data remains readable through its own routes; historical snapshots deliberately have empty thread/lease projections. All six original events and two new discussion events remain byte-equivalent values in the current journal before the three exact restore events."
+      ]
+    },
+    {
+      "rangeId": "restore-empty-history-v104-4",
+      "featureId": "restore-empty-history",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 297,
+        "end": 301,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "b250f414c74fa7db6838ce31e1ed96dec534cfe5888ec46786308dbb30eef218",
+        "sha256": "bd72e9817b8be14cb5aa5b750d45e9f50bbe0614c8d83414ed59c9f0ce475e59"
+      },
+      "scenarioIds": [
+        "restore-empty-history-v104"
+      ],
+      "rationale": "Fresh current-epoch restores target known current or empty history. Unchanged live content and already-deleted items skip version changes; live items absent from empty history become exact versioned tombstones. Invalid epoch/sequence variants remain in the original chapter.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Sequential mutations with concurrent read-only observation batches; no raw DO rows, large limits, storage faults, forced races, restart/crash, permission transition, native or live provider guarantee. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Three fresh owner restores each append exactly one snapshotRequired receipt/event and increment head, epoch and timing once. Restoring the current content at sequence six preserves both live item versions and the existing tombstone; restoring sequence zero tombstones only the two live scenes with one version increase each; another empty restore leaves all three tombstone versions fixed. Each resulting current snapshot has no active leases and retains the exact discussion thread/message. This is visible state evidence, not raw change-table equality or a fault/race proof."
+      ]
+    },
+    {
+      "rangeId": "restore-empty-history-v104-5",
+      "featureId": "restore-empty-history",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 303,
+        "end": 308,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "8a18df1e7c4be11ace47f1f7522ce0ca3b83da4b28d43bf6572c23fe4db80dd7",
+        "sha256": "4a95e177c8ff54ff22844d67ddda908b2893e228e501098c16ca6a2a3a75dbc0"
+      },
+      "scenarioIds": [
+        "restore-empty-history-v104"
+      ],
+      "rationale": "Each fresh restore advances metadata once, clears active public leases and appends an exact snapshotRequired event/receipt while preserving discussion. No raw change-table or lease-token storage inspection.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Sequential mutations with concurrent read-only observation batches; no raw DO rows, large limits, storage faults, forced races, restart/crash, permission transition, native or live provider guarantee. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Three fresh owner restores each append exactly one snapshotRequired receipt/event and increment head, epoch and timing once. Restoring the current content at sequence six preserves both live item versions and the existing tombstone; restoring sequence zero tombstones only the two live scenes with one version increase each; another empty restore leaves all three tombstone versions fixed. Each resulting current snapshot has no active leases and retains the exact discussion thread/message. This is visible state evidence, not raw change-table equality or a fault/race proof."
+      ]
+    },
+    {
+      "rangeId": "restore-empty-history-v104-6",
+      "featureId": "restore-empty-history",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 329,
+        "end": 335,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "35a0ae716f57074f804c0bde740ab6e66217ab7f2e96d98931c74c38352eb8ab",
+        "sha256": "1fd211a8560a682e785076b08f4a451b278b4a6d3553995d7e7d621b5a1bbfb3"
+      },
+      "scenarioIds": [
+        "restore-empty-history-v104"
+      ],
+      "rationale": "Current snapshot exposes exact live/tombstone metadata, retained thread and empty active leases after restore. Empty live content remains non-importable because tombstones persist.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Sequential mutations with concurrent read-only observation batches; no raw DO rows, large limits, storage faults, forced races, restart/crash, permission transition, native or live provider guarantee. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Three fresh owner restores each append exactly one snapshotRequired receipt/event and increment head, epoch and timing once. Restoring the current content at sequence six preserves both live item versions and the existing tombstone; restoring sequence zero tombstones only the two live scenes with one version increase each; another empty restore leaves all three tombstone versions fixed. Each resulting current snapshot has no active leases and retains the exact discussion thread/message. This is visible state evidence, not raw change-table equality or a fault/race proof."
+      ]
+    },
+    {
+      "rangeId": "restore-empty-history-v104-7",
+      "featureId": "restore-empty-history",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 346,
+        "end": 352,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "159de9b7e038f8c2cf702873af260ee94fe759ef012e8601c89477d44aca9813",
+        "sha256": "2ec1a730b58fbc4b79073c241e366a5f4321796692442f33a2aff6913311f9c2"
+      },
+      "scenarioIds": [
+        "restore-empty-history-v104"
+      ],
+      "rationale": "A syntactically valid fresh owner import after empty restore reaches the nonempty-item guard, returning project_not_empty without new items/events/discussion changes. Cached import and all size limits are not newly exercised.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Sequential mutations with concurrent read-only observation batches; no raw DO rows, large limits, storage faults, forced races, restart/crash, permission transition, native or live provider guarantee. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Fresh member and viewer restores are exact 403/not_allowed and preserve nonlease snapshot, full journal, thread and message list. After restoring empty, canImport is false and a valid fresh owner import is exact 409/project_not_empty with those observations unchanged. Three exact owner restore retries return their original receipts despite later epochs and leave current public state/history unchanged. Users and sessions remain exact, R2 empty and outbound zero."
+      ]
+    },
+    {
+      "rangeId": "restore-empty-history-v104-8",
+      "featureId": "restore-empty-history",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 363,
+        "end": 369,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "ef395ca050c89d385119d3e7aa4c403687137c3490803684e4ea1fdc438dcf6f",
+        "sha256": "42e925a8bf59f14424d463bf5674ef808e28f3dac4406116239ad442a1c24b23"
+      },
+      "scenarioIds": [
+        "restore-empty-history-v104"
+      ],
+      "rationale": "Fresh member/viewer restore requests are refused while authorized owner requests succeed. Exact owner retries are intercepted by the route receipt lookup and return original results despite later epochs; inner cached restore branch is not claimed.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Sequential mutations with concurrent read-only observation batches; no raw DO rows, large limits, storage faults, forced races, restart/crash, permission transition, native or live provider guarantee. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Fresh member and viewer restores are exact 403/not_allowed and preserve nonlease snapshot, full journal, thread and message list. After restoring empty, canImport is false and a valid fresh owner import is exact 409/project_not_empty with those observations unchanged. Three exact owner restore retries return their original receipts despite later epochs and leave current public state/history unchanged. Users and sessions remain exact, R2 empty and outbound zero."
+      ]
+    }
+  ]
+}

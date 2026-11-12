@@ -1,5 +1,23 @@
 # Scriv application structure
 
+## Current source boundary after AppKit retirement
+
+The current client is `apps/catalyst/` (UIKit with Mac Catalyst), including its
+native update adapter. `apps/runtime-bridge/` provides the local runtime helper.
+`apps/mac/Package.swift` now exports only `ScrivCore`; the same tree retains eight
+shared app services, `Views/ProjectHistoryPresentation.swift`, and resources used
+by Catalyst. The cloud server in `cloud/` and update service in `updates/` remain
+active parts of the product. Build with `npm run build:mac` or
+`scripts/build-catalyst.sh`; release through `scripts/archive-catalyst-release.sh`
+and the existing updater tooling. See [retirement and recovery](docs/verification/appkit-retirement-20261109.md).
+
+## Historical map below
+
+The original detailed map below describes the earlier AppKit implementation and
+its former tests. It is retained as design history, not a list of current files
+or runnable commands. Use the current README, Catalyst implementation notes and
+CLI-only testing guide for active commands.
+
 This is the source map of the Scriv application. Paths are relative to the repository root. Product behavior is specified in [docs/design.md](docs/design.md); the implementation protocol is [docs/cloud-api.md](docs/cloud-api.md). Actual verification is recorded separately in [docs/verification.md](docs/verification.md).
 
 ## 1. Runtime boundaries

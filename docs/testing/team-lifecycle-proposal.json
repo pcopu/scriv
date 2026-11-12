@@ -1,0 +1,1034 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "local-team-membership-lifecycle",
+      "title": "Local synthetic team membership lifecycle",
+      "featureId": "team-membership",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/team-lifecycle-journey.mjs",
+        "docs/testing/team-lifecycle-steps.json"
+      ],
+      "plannedActions": [
+        "POST /v1/teams with padded synthetic name",
+        "GET created team as owner",
+        "POST member invitation as owner",
+        "POST member invitation join while team is free",
+        "GET team after rejected free-plan join",
+        "Fixture only: seed active entitlement in owned D1",
+        "POST valid member invitation after fixture entitlement",
+        "POST same invitation again as existing member",
+        "GET team after duplicate member join",
+        "POST viewer invitation as owner",
+        "POST viewer invitation as viewer actor",
+        "POST viewer invitation as existing member",
+        "GET team as nonmanager member",
+        "POST invitation as nonmanager member",
+        "PATCH team name as nonmanager member",
+        "DELETE owner membership as owner",
+        "PATCH member role to admin as owner",
+        "GET team as newly appointed admin",
+        "PATCH team name as admin",
+        "GET viewer team list after rename",
+        "PATCH viewer to admin as admin",
+        "PATCH owner role as admin",
+        "POST team project as admin",
+        "GET project as viewer",
+        "PATCH viewer to member as admin",
+        "GET project after viewer promotion",
+        "DELETE project as ordinary member",
+        "DELETE own membership as ordinary member",
+        "GET own identity after leaving team",
+        "GET project after leaving team",
+        "DELETE viewer invitation as admin",
+        "GET team invitation list after revocation",
+        "POST revoked invitation as outsider",
+        "GET outsider identity after revoked join",
+        "DELETE admin membership as owner",
+        "GET team after owner removed admin",
+        "GET team as removed admin",
+        "DELETE team project as owner",
+        "GET owner project list after archive",
+        "GET archived project as owner"
+      ],
+      "expectedOutcomes": [
+        "Creation returns trimmed name, free plan and authenticated owner role.",
+        "Readback contains exactly the owner membership and no invitations.",
+        "Owner creates a member invitation with exact one-day lifetime and local URL.",
+        "A valid invitation cannot admit a member while the team is free.",
+        "Rejected free-plan join leaves only the owner membership.",
+        "Synthetic fixture setup updates exactly one owned team; no payment or subscription transition is asserted.",
+        "Entitled team admits a member through its valid invitation.",
+        "A sequential duplicate join returns the existing member role.",
+        "Duplicate join creates no second membership in public readback.",
+        "Owner creates a viewer invitation with default 30-day lifetime.",
+        "Viewer invitation admits the requested viewer role.",
+        "An existing member joining a viewer invitation retains its member role.",
+        "Nonmanager member sees membership list but no invitation management rows.",
+        "A nonmanager cannot create invitations.",
+        "A member cannot rename the team.",
+        "The owner cannot remove its own membership.",
+        "Owner can promote a member to admin.",
+        "Promoted admin reads its persisted role, both invitations, and the unchanged original Synthetic team name after the denied member rename.",
+        "Admin can rename the team with whitespace trimmed.",
+        "Viewer team list reflects the admin rename and unchanged viewer membership.",
+        "An admin cannot appoint another admin.",
+        "An admin cannot change the owner membership.",
+        "Admin creates a team project owned by the team owner.",
+        "Viewer project readback explicitly reports read-only access.",
+        "Admin can promote a viewer to ordinary member.",
+        "After promotion public project readback changes to member and writable.",
+        "A writable ordinary member cannot archive the project.",
+        "A nonowner ordinary member can leave the team.",
+        "Self-leave removes the team and project from public identity lists.",
+        "Departed member cannot read the former team project.",
+        "Admin can revoke the viewer invitation.",
+        "Public manager readback marks only the selected invitation revoked.",
+        "A revoked invitation cannot admit a new outsider.",
+        "Rejected revoked invitation leaves outsider without team or project access.",
+        "Owner can remove an admin membership.",
+        "Owner readback contains only the owner after self-leave and admin removal.",
+        "Removed admin cannot read the team.",
+        "Owner archives the team project.",
+        "Archived project disappears from owner project list.",
+        "Even its owner cannot retrieve an archived project via normal project read."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "team-lifecycle-001",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 12,
+        "end": 14,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "d27b3f8da171ea34ed05e54d60fe86e63c623a3264c4ecebf54c7fb7728115f0",
+        "sha256": "b9abf80d883963cc4588dc1b735ecee52305c370f2c12fff1eab925832f653bf"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: create-free-team",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Creation returns trimmed name, free plan and authenticated owner role."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-002",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 22,
+        "end": 24,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "081b342551dda7313b955895a39dc3bba21d2938ca0a66fd6494b5123edba978",
+        "sha256": "df58731cf788e2df4ec7bed2f019aead8ae01567459f0dcdcd88e748331f78d9"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: deny-member-invite, reject-removed-admin",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "A nonmanager cannot create invitations.",
+        "Removed admin cannot read the team."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-003",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 25,
+        "end": 25,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "3aa73c940fc868a425833c95cf25922cc507d5b1162e35c286de19d449e9665a",
+        "sha256": "60c765c716e768b9e51bc7468e1d32deb0d5dddf8166ee7dd763ff6f8481bcf7"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: deny-member-invite",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "A nonmanager cannot create invitations."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-004",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 28,
+        "end": 29,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "5bbb74e2efc928666877ca80238a7169bf7c48effbf915e9206f8f0ed691b116",
+        "sha256": "69ee91f3ce6484fd14fe5c58b1a0d9c5fef34a69ef50dd07690cb2bb3df7a7a8"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: create-free-team",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Creation returns trimmed name, free plan and authenticated owner role."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-005",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 34,
+        "end": 36,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "28b9661b11908657c8672f9a56815f982783210c6c726f782894c26d84aadd69",
+        "sha256": "85d766db60d19a5425903bb886aea03183c9c95db856c60bb734bb10d3c7bc7d"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: read-promoted-project, read-viewer-project, reject-archived-get, reject-left-project",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "After promotion public project readback changes to member and writable.",
+        "Viewer project readback explicitly reports read-only access.",
+        "Even its owner cannot retrieve an archived project via normal project read.",
+        "Departed member cannot read the former team project."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-006",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 37,
+        "end": 38,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "011fdcfc25cb09a362a99914533e9ab9013573c1f920daa8ddd0b9828115b3bc",
+        "sha256": "1a9a43cb7ee1087f805986dfb8d336d62aad7ff43eb4fc5115ada7de04a3fbd4"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: read-promoted-project, read-viewer-project, reject-left-project",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "After promotion public project readback changes to member and writable.",
+        "Viewer project readback explicitly reports read-only access.",
+        "Departed member cannot read the former team project."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-007",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 40,
+        "end": 41,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "d1722740bcee112a2d027a30d1197e8504cd3e39475edb5e62c32cd61f4363ec",
+        "sha256": "4c255ac3d7fb1e48f88c331483a641a49e9f1c06d1eb5f5ac4c41a783240d484"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: read-promoted-project, read-viewer-project, reject-left-project",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "After promotion public project readback changes to member and writable.",
+        "Viewer project readback explicitly reports read-only access.",
+        "Departed member cannot read the former team project."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-008",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 42,
+        "end": 42,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "a8c68552dd09ebf7074b9828a7db20a8f741dd87c5bf02023162182df43b1dd0",
+        "sha256": "8aef27d86388124ce02aa438e662a0945c88899a594cb1db09e641762c9ba5e3"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: read-promoted-project, read-viewer-project",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "After promotion public project readback changes to member and writable.",
+        "Viewer project readback explicitly reports read-only access."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-009",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 46,
+        "end": 46,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "9f5a2109e24f331bdce56c94ff5ba3de62ac142d8161857421eed386d5fc6486",
+        "sha256": "0236a16059310bbce17d637abbb203c41a990949d05cc0290acf9bc3f5cb51bb"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: read-promoted-project, read-viewer-project",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "After promotion public project readback changes to member and writable.",
+        "Viewer project readback explicitly reports read-only access."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-010",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 6,
+        "end": 8,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "0af78c02e386a65462b4478ada1d3e8c210ca9a7b8ab42b0057cdc0c17dde698",
+        "sha256": "8901c6d602f274d373f10a34e60ba4fcf94b509286f093d40c9fea5366608b0e"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: read-after-self-leave, read-no-outsider-membership, read-renamed-team-list",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Self-leave removes the team and project from public identity lists.",
+        "Rejected revoked invitation leaves outsider without team or project access.",
+        "Viewer team list reflects the admin rename and unchanged viewer membership."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-011",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 10,
+        "end": 12,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "b2298605214e94c822441d9cf1fb87ddccc01ab597f7b95762a66c04b81c56f9",
+        "sha256": "30a25377bff26225d9062646ecb9350a2a93d772922c5e32265a097c95ed32cd"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: read-after-self-leave, read-archived-list, read-no-outsider-membership",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Self-leave removes the team and project from public identity lists.",
+        "Archived project disappears from owner project list.",
+        "Rejected revoked invitation leaves outsider without team or project access."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-012",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 19,
+        "end": 19,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "73c9882f388e593b5966f5f07d437db788be080720d5a59b0ee2c8712076bb60",
+        "sha256": "3a8c6033b952b90b4faf0970d30981a80966c572eafa4a5542bcbb130f44cc95"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: read-after-self-leave, read-archived-list, read-no-outsider-membership",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Self-leave removes the team and project from public identity lists.",
+        "Archived project disappears from owner project list.",
+        "Rejected revoked invitation leaves outsider without team or project access."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-013",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 29,
+        "end": 29,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "4dedeabc7ff715bc9d6d00f19da7a6a99966f3305c917b02f8bb49aa39853c3c",
+        "sha256": "a9061c19ab69f08660b262640a703852c81b607727ba400308ddf27622079386"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: read-after-self-leave, read-no-outsider-membership",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Self-leave removes the team and project from public identity lists.",
+        "Rejected revoked invitation leaves outsider without team or project access."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-014",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 30,
+        "end": 31,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "1e11de8a33ad2838c15aac654c2af7b549e12cb21dd2c8f070d4859d5a508816",
+        "sha256": "562d80818b4a951d6fae8c35e64e93fb72fbbce46e0751da779b2595ecc9a3c0"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: read-renamed-team-list",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Viewer team list reflects the admin rename and unchanged viewer membership."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-015",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 32,
+        "end": 41,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "b67825b223b3c097bda3d803ba30a410a3e3cee5036330a665e65d145081431d",
+        "sha256": "70c8fcdd8d599146d37647e8564ab59e3bd3ced62ebfa3a605a1414f4ea8044c"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: create-free-team",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Creation returns trimmed name, free plan and authenticated owner role."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-016",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 44,
+        "end": 45,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "b9bbbb1712d43352bd1b03dfa133aee6d04d738eae520bec2e60cebafc63d049",
+        "sha256": "d09377fe371f9f9c888d45a94c2d10c19c09e6258c8131109410caa5a9b43008"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: reject-removed-admin",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Removed admin cannot read the team."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-017",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 46,
+        "end": 50,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "fe4d1057ea87f1e84f701661aa095223f96797e13dc7ce84872c1aed5f9405ca",
+        "sha256": "42d83528043127347d8c0fc2b95f3ff8547ec3ab0b465fa9b9d4b897385f9d10"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: hide-invites-from-member, read-admin-role, read-after-admin-removal, read-created-team, read-rejected-join, read-revoked-invite, read-single-membership",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Nonmanager member sees membership list but no invitation management rows.",
+        "Promoted admin reads its persisted role, both invitations, and the unchanged original Synthetic team name after the denied member rename.",
+        "Owner readback contains only the owner after self-leave and admin removal.",
+        "Readback contains exactly the owner membership and no invitations.",
+        "Rejected free-plan join leaves only the owner membership.",
+        "Public manager readback marks only the selected invitation revoked.",
+        "Duplicate join creates no second membership in public readback."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-018",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 52,
+        "end": 53,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "8403d65a8ba0a9b0da968f1ffb113edbaa2a81cf756c4ccaebe5e624b10a3c32",
+        "sha256": "88250a44f8cfdaeed793a4fa62e5b52ae8ed207f125e6a623394f62612905cb2"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: admin-rename, deny-member-rename",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Admin can rename the team with whitespace trimmed.",
+        "A member cannot rename the team."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-019",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 54,
+        "end": 57,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "3b5eb3cd9c3d845b4cb8cb6be3bd55df24ebf427e2de0e9e4f197828e396616d",
+        "sha256": "6afeb03aa272d2a4a77c291d84737d4a1c73dde3a967464c0381540a5f13157c"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: admin-rename",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Admin can rename the team with whitespace trimmed."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-020",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 60,
+        "end": 62,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "b4ae7302d2c47b52d5b26da3c4396dac4b1e96cb2013494d63cbb27bc70a76c6",
+        "sha256": "923c18b6a85dff6840f58b145084b61672da562cf0058884dc7db555fec95a3c"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: create-member-invite, create-viewer-invite, deny-member-invite, revoke-viewer-invite",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Owner creates a member invitation with exact one-day lifetime and local URL.",
+        "Owner creates a viewer invitation with default 30-day lifetime.",
+        "A nonmanager cannot create invitations.",
+        "Admin can revoke the viewer invitation."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-021",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 63,
+        "end": 70,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "e2f9413eca4021a75fbc955aac2105747afe59882a0fd90cce38f089f2280709",
+        "sha256": "960b2cae3de760386cc82d4c9455fdb02b4352868046aad7f60b57215faa86a7"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: create-member-invite, create-viewer-invite",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Owner creates a member invitation with exact one-day lifetime and local URL.",
+        "Owner creates a viewer invitation with default 30-day lifetime."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-022",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 72,
+        "end": 72,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "d0b22a0c8409f68ad3712fcbde81e88c36e08b833587120a6c3df7b81e9b2693",
+        "sha256": "6795c8553a8aa9f6e1f2ccefcd2beb8f773e0f21136e944e3e7bbd103ce78402"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: revoke-viewer-invite",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Admin can revoke the viewer invitation."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-023",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 74,
+        "end": 78,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "ecf9d92947cffe34157079de09bb3149255796eb2579b2684083aa7d0d012d40",
+        "sha256": "8e02a3e5fb9dc13670548bc907c4a8e8b51488d851d4e6b2778f2d7fcb0e9c0c"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: join-member, reject-revoked-invite, reject-unpaid-join",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Entitled team admits a member through its valid invitation.",
+        "A revoked invitation cannot admit a new outsider.",
+        "A valid invitation cannot admit a member while the team is free."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-024",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 79,
+        "end": 79,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "634aae25ebb28a30870c169e9759273f917601a0ea4783bc075f087df39d1744",
+        "sha256": "20e2ea10f68ea6c5be47d9a0d8869c4f838c1c82b3b1777fbdedb23de9e52d34"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: join-member, reject-unpaid-join",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Entitled team admits a member through its valid invitation.",
+        "A valid invitation cannot admit a member while the team is free."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-025",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 80,
+        "end": 82,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "16e96df50b997d8c772377b8d4e135020c28c8e478a19eae170fb0b4214f9206",
+        "sha256": "98fa55f666e1d8891f9f8d91c00f37193152edfcd720ecfdb97685c2aa29838d"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: join-member",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Entitled team admits a member through its valid invitation."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-026",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 83,
+        "end": 92,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "732eb42bf8ca5618ada20f40c35845899e589196a6b05a3bf51bc91a281e9664",
+        "sha256": "3843cf341b6c34ab2e8e5836df9fd55eb0a197686e4658ed1ddd7a397d275c74"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: join-member, join-member-again, join-viewer, member-keeps-role",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Entitled team admits a member through its valid invitation.",
+        "A sequential duplicate join returns the existing member role.",
+        "Viewer invitation admits the requested viewer role.",
+        "An existing member joining a viewer invitation retains its member role."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-027",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 93,
+        "end": 97,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "6f0eb1d412e1533ede65069be67d4215b807b506e0d7c5e374b5d3ef0bb02cc3",
+        "sha256": "1eb13233c70c0feb33478a9846f24f287851cafbd6fa8edc8adce87e81191e35"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: deny-admin-change-owner, deny-owner-leave",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "An admin cannot change the owner membership.",
+        "The owner cannot remove its own membership."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-028",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 98,
+        "end": 98,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "092f8eaed6723d31056956a24a3038ab161f59398614732168aa25aac1efbe3c",
+        "sha256": "e10ebdc3c320af39a13fc5f0f70941fd2150621a853c945397a019a1744ff526"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: admin-promote-viewer, appoint-admin, member-self-leave, owner-removes-admin",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Admin can promote a viewer to ordinary member.",
+        "Owner can promote a member to admin.",
+        "A nonowner ordinary member can leave the team.",
+        "Owner can remove an admin membership."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-029",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 99,
+        "end": 101,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "f15b98e7af47bf8a02641e52e26509c8dc98050e31178686b57d249dcaba2a31",
+        "sha256": "96d83d6f6f0dfe5df2bdfe153ad07ad4f3dde4cd5e13801666e88885374a3ce6"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: admin-promote-viewer, appoint-admin, deny-admin-appoint-admin",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Admin can promote a viewer to ordinary member.",
+        "Owner can promote a member to admin.",
+        "An admin cannot appoint another admin."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-030",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 102,
+        "end": 107,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "a080902b59bdf5ecaea70f3656bfb2dd3daf4b19aa31bcdc4896247cc144c8f3",
+        "sha256": "16c90c2e0dcedfa52c8d2a92e3e7366a8c977e42022053bc4e9adc04435e9d89"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: admin-promote-viewer, appoint-admin",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Admin can promote a viewer to ordinary member.",
+        "Owner can promote a member to admin."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-031",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 109,
+        "end": 114,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "729b74e14103d16b9d29efda2f2226a433e7b5a9e75f1752602548a24e59a1ef",
+        "sha256": "fd89e6e10f3d2c43337396177cb80cf40c0170f5cf5d9d4b8554573041a4c20a"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: member-self-leave, owner-removes-admin",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "A nonowner ordinary member can leave the team.",
+        "Owner can remove an admin membership."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-032",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 117,
+        "end": 118,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "91e1f258cf66d0a71ba24441392fe31a7e748d6f4cf8624f07b67874c0985779",
+        "sha256": "b0cebb1577e0829b62802f0fbb7038f40fb25070b21622c555af5970319c2e1b"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: read-archived-list",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Archived project disappears from owner project list."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-033",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 119,
+        "end": 124,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "48407916ff90ae58afd02ccd2ffa07ac71d556143d431d7cc13e3b2481b6418f",
+        "sha256": "2cb3eb9ff7f99d9a9e1d58ab5104e076d86f8a12d11c73e70434b96dc50a0664"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: create-team-project",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Admin creates a team project owned by the team owner."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-034",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 126,
+        "end": 131,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "3fd97d7f099324b27101610afff6f745abe0768ffb2a6939548827db7ae2e41a",
+        "sha256": "cb833b14a8f392f86b5fa68c5a0f3e66426cbcf5afdf67c8bd9f54a898388eee"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: create-team-project",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Admin creates a team project owned by the team owner."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-035",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 133,
+        "end": 134,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "4bee200cb9df5848e0c18915c57c6ea60d2056afc36f2de2be548da52c4276d5",
+        "sha256": "afc01f50afb550bc8f43eb8c80f840d2c54d28a609f24a168518943471d71fa0"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: create-team-project",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Admin creates a team project owned by the team owner."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-036",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 137,
+        "end": 139,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "782e5b0ad8eaacfa0f7113400aecbe897de60c5cc4cda093705df557e1c6cdc0",
+        "sha256": "18d829762a7162a6799fc077314345bc566dea4b240e2b8264de7127289ef786"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: archive-project, deny-member-archive, read-promoted-project, read-viewer-project, reject-archived-get, reject-left-project",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Owner archives the team project.",
+        "A writable ordinary member cannot archive the project.",
+        "After promotion public project readback changes to member and writable.",
+        "Viewer project readback explicitly reports read-only access.",
+        "Even its owner cannot retrieve an archived project via normal project read.",
+        "Departed member cannot read the former team project."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-037",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 140,
+        "end": 140,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "2122b86d14ce01d01e21d4d46a7e2037a41a14bbb2614c2a092fcc7761fe148e",
+        "sha256": "ec732d6ed5d1211daed9536a4da0d21b2a2396ed5ae26a04b982e64299cb145e"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: archive-project, deny-member-archive, read-promoted-project, read-viewer-project",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Owner archives the team project.",
+        "A writable ordinary member cannot archive the project.",
+        "After promotion public project readback changes to member and writable.",
+        "Viewer project readback explicitly reports read-only access."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-038",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 141,
+        "end": 141,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "c89e651fb6a12fc2638c9d2156909c5162cdef6b503b789e7df18070ee3782c0",
+        "sha256": "d152833ccae21ca72c9dfc0fbda7bf966393cafb936e7056db53be59c78a9b18"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: archive-project, deny-member-archive",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Owner archives the team project.",
+        "A writable ordinary member cannot archive the project."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-039",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 142,
+        "end": 143,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "47b6722846feb4664da5971ca373e0096fc3ea381e958dfd8f94e8dc13071a9e",
+        "sha256": "abf5d8f7340f893c257470f87fcc9f01abff01c683bda769de2f21ea40f587fb"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: archive-project",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Owner archives the team project."
+      ]
+    },
+    {
+      "rangeId": "team-lifecycle-040",
+      "featureId": "team-membership",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 150,
+        "end": 150,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "66ad054757140f90fb5320d3829553ef51ce395bd7b18a80bfa97bd4b90c57fc",
+        "sha256": "89d50873152806fb0e65b034e7b45d9bb37e24db1a842398854d555336cad79e"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Supports these exact ordered lifecycle observations: archive-project",
+      "confidence": "medium",
+      "uncertainty": "Public sequential local HTTP only. Synthetic account/session and explicit entitlement fixtures are direct owned D1 setup, not provider/payment transitions. No concurrent revocation, expiry, live sockets, email, native UI, live billing, invalid input or all-branch coverage claimed. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Owner archives the team project."
+      ]
+    }
+  ]
+}

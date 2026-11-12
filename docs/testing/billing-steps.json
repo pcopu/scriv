@@ -1,0 +1,1010 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "read-free-team",
+      "title": "Read free team",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "Synthetic owner is a member of a free team with a synthetic customer."
+      ],
+      "actions": [
+        "GET synthetic free team as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 reports free plan and status and exposes billing-customer flag to owner.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 135,
+            "end": 135,
+            "sha256": "f197dfcb9d95f73b7d8da768280cab0cedd6229294298663d175639950e5986d"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-member-billing",
+      "title": "Reject member billing",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "Synthetic member belongs to the free team."
+      ],
+      "actions": [
+        "POST billing portal as member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Member portal request returns 403 not_allowed before any provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 139,
+            "end": 139,
+            "sha256": "eecc04633d5b65d3fd57bd300022142cca084cac14c640ab4baa0c51f271b63f"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 190,
+            "end": 192,
+            "sha256": "09455830f0ab1ef2486ab460bac90cd8350226f6b3059d15b5f50b2bc62c1e28"
+          },
+          "expectation": "observed",
+          "why": "The billing route rejects a member at the owner role guard before a provider call; the rate limit on the same line and Durable Object checkout and portal routes are not reached. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        }
+      ]
+    },
+    {
+      "id": "reject-outsider-billing",
+      "title": "Reject outsider billing",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "Synthetic outsider is not a team member."
+      ],
+      "actions": [
+        "POST billing portal as outsider"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Outsider portal request returns 404 not_found before any provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 143,
+            "end": 143,
+            "sha256": "c54e64cf5f8e5dc91c2d9af181bf69851f74a859101a1a7f5d79c97bfbf52650"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-invalid-signature",
+      "title": "Reject invalid signature",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "A recognized synthetic event has a forged current signature."
+      ],
+      "actions": [
+        "POST webhook with invalid synthetic signature"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 invalid_signature occurs before any provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 148,
+            "end": 148,
+            "sha256": "c648c69ed3ad414109adc984f7216fba0d7b1b940b53a0ce431a5ed0f5a10d11"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 159,
+            "end": 160,
+            "sha256": "924ba8eaf79910fa80fcb78d0db5e47e17f5d3bb7056514472b65ee6bf6d7343"
+          },
+          "expectation": "observed",
+          "why": "A forged current signature is parsed in the webhook signature gate. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 162,
+            "end": 167,
+            "sha256": "54699395a7778641e8f8a76ad4b76f34a1dc0653646f5702eb62628e5d36c1fc"
+          },
+          "expectation": "observed",
+          "why": "A syntactically valid but forged v1 signature fails; accepted signatures are exercised elsewhere in the same sequence. Malformed and multiple signatures are not separately established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 169,
+            "end": 171,
+            "sha256": "c68712765ad376fbed66d63642424f6a6dab3067b95509f52ba028e473e7a6cb"
+          },
+          "expectation": "observed",
+          "why": "A forged current webhook signature returns invalid_signature before provider access; missing webhook configuration is not tested. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        }
+      ]
+    },
+    {
+      "id": "ignore-unknown-event",
+      "title": "Ignore unknown event",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "A current valid signature covers an unrecognized event type."
+      ],
+      "actions": [
+        "POST signed unrecognized webhook event"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 reports received and ignored, with no provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 152,
+            "end": 152,
+            "sha256": "236ce8cdf87f847de68319124b7cb885fc933e203e0b63013bbdad438fd2de12"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 172,
+            "end": 176,
+            "sha256": "1def5a23a870eea0c45fe54a75e934cdfbcd434f4766056703e2c0247eb95e43"
+          },
+          "expectation": "observed",
+          "why": "A valid signed JSON event with an unrecognized type returns ignored; malformed JSON rejection is not established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        }
+      ]
+    },
+    {
+      "id": "ignore-unknown-customer",
+      "title": "Ignore unknown customer",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "A recognized and validly signed event names a customer absent from the synthetic database."
+      ],
+      "actions": [
+        "POST signed event for unknown synthetic customer"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 reports ignored, with no provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 156,
+            "end": 156,
+            "sha256": "7841688d6d0c512f281ad395239e610b801dedea8806c5904bce693f72addf4a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 35,
+            "end": 35,
+            "sha256": "ecd795ce2fce9a877f60638d062222d6b3a2128789ec1e6edcd66f6a91ca2c8a"
+          },
+          "expectation": "observed",
+          "why": "The signed event supplies a string customer and is ignored when that customer has no team; object-form customer IDs are not established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 177,
+            "end": 182,
+            "sha256": "ab2a5811b888f5812ec28d096da894e21313380e04ea44766060c9feb7981ae8"
+          },
+          "expectation": "observed",
+          "why": "A recognized signed event for an unknown synthetic customer returns ignored; malformed object/customer/time rejection is not established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        }
+      ]
+    },
+    {
+      "id": "activate-subscription",
+      "title": "Activate subscription",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "Provider fixture has a matching active subscription with a future item period end."
+      ],
+      "actions": [
+        "POST signed activation with synthetic active provider snapshot"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Signed activation returns 200 and performs one accepted simulated provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 162,
+            "end": 162,
+            "sha256": "2eb8bd59ddbc88ca66c73c773d02a9c6c30e95bf0aed6eceb03783e92fec681e"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 65,
+            "end": 67,
+            "sha256": "65cd5061c59d66f55737e98adc8436fbb6569b667bacb56f6e3f1bf8746031e7"
+          },
+          "expectation": "observed",
+          "why": "The new signed event proceeds to synchronization and returns a successful receipt; this is distinct from duplicate-event handling. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 183,
+            "end": 183,
+            "sha256": "77dcbc7c0a8566f6282884aed4a5afe74ac977b0d3cc1a5a281b60a5508c4a3b"
+          },
+          "expectation": "observed",
+          "why": "A recognized event for the known synthetic customer reaches that team’s coordinator. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 186,
+            "end": 186,
+            "sha256": "41bc6e8fb7b529dacadebd91af7cdbcee89f828f9a6d0f63f7c9f6c8d28ef24b"
+          },
+          "expectation": "observed",
+          "why": "The known signed event reaches reconciliation and returns received, with one restricted provider call. Other accepted event types are not individually established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 188,
+            "end": 188,
+            "sha256": "e0cd5c6cea6d013faaa45982bb7f7d64a7f0612806996980e91c79d5237ddcf6"
+          },
+          "expectation": "observed",
+          "why": "Successful synthetic reconciliation returns received. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        }
+      ]
+    },
+    {
+      "id": "read-active-team",
+      "title": "Read active team",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The active event was reconciled and the synthetic member remains authorized."
+      ],
+      "actions": [
+        "GET synthetic active team as member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Member team read returns team plan, active status, exact item period end, and no owner-only billing-customer field.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 166,
+            "end": 166,
+            "sha256": "7a16ede0bb449e6ef23117f21a1089e0e2a53d11860c886f19dbd1a417ca1b1d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 14,
+            "end": 16,
+            "sha256": "95bf105561f04f2cb205968b6d55a5e32f458c2ecb5b716106ae67d8cc7f6bef"
+          },
+          "expectation": "observed",
+          "why": "The configured synthetic provider client supports the later active entitlement readback; missing credentials and the Stripe-Version header are not tested. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 19,
+            "end": 20,
+            "sha256": "f02e7504d0b6adcc5d036b76348d2819b0d0890342fda926ef7eccd967c564ff"
+          },
+          "expectation": "observed",
+          "why": "The current provider subscription-list GET participates in the later active entitlement readback; transport failures and POST forms are not established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 23,
+            "end": 26,
+            "sha256": "dc5dc8d6b9575527d776c0086dc77279890f96d4d0bdaa3541e06ee939859e0e"
+          },
+          "expectation": "observed",
+          "why": "A valid synthetic provider JSON object supports the active entitlement readback; invalid JSON and non-object rejection remain untested. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 28,
+            "end": 28,
+            "sha256": "618b16ba20bdd512f27a292960f9b8837902d2c44842b206a6dda2afa41513b2"
+          },
+          "expectation": "observed",
+          "why": "The accepted subscription uses the current item period for the team readback. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 31,
+            "end": 34,
+            "sha256": "881a0280c9fe521dd3ffd54fdb9f740cd4efe88f23788ffb66df8fcef38068f3"
+          },
+          "expectation": "observed",
+          "why": "The accepted item period is converted from seconds to the asserted millisecond period; fallback and invalid timestamp cases are not established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 75,
+            "end": 76,
+            "sha256": "cefba6c93a491d711974c558ce6a7d86d1e6c9916d00e79cc49e626af677e155"
+          },
+          "expectation": "observed",
+          "why": "The reconciliation fetches the synthetic team before applying the active subscription snapshot. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 78,
+            "end": 85,
+            "sha256": "3e65e7b8ef9376745fb6866d81732fb4724e6e957af9f65d56b94b46ddb81e3c"
+          },
+          "expectation": "observed",
+          "why": "One valid synthetic provider page is retrieved and used for active readback; missing configuration, malformed pages and multi-page traversal are not established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 89,
+            "end": 92,
+            "sha256": "2bde68dac66425ee9d2c804226dc5159c866036cb879bcfc48953fb07149d419"
+          },
+          "expectation": "observed",
+          "why": "The sole matching active, unexpired synthetic subscription yields the asserted active team and period; multiple-candidate sorting and expired variants are not established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 28,
+            "end": 30,
+            "sha256": "0e0b91dc8eb3598e6fda95345ca99466dee97efc28fe16953e9001fec617a908"
+          },
+          "expectation": "observed",
+          "why": "The member team view shows active Team status and period without owner-only billingCustomer. Free owner visibility is also separately asserted in the complete ordered journey. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        }
+      ]
+    },
+    {
+      "id": "create-paid-project",
+      "title": "Create paid project",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The team is active and the synthetic member has project-creation permission."
+      ],
+      "actions": [
+        "POST team project as member with active entitlement"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 201 creates the requested synthetic team project owned by the team owner.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 170,
+            "end": 170,
+            "sha256": "c3c2a940eb2720e2b1204d132740cc9389b6eb62b19089a764e5b85e4deb9ec8"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "read-paid-access",
+      "title": "Read paid access",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The member-created team project exists and active entitlement is current."
+      ],
+      "actions": [
+        "GET team project access as member while active"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Member project read reports premium and write access with member role.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 174,
+            "end": 174,
+            "sha256": "d3c578e85107d89bffe5adcd0dab042f102193f965769adb2c31bbd39ddb359c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "replay-receipt",
+      "title": "Replay receipt",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The active event was already recorded; the provider fixture is changed to canceled before replay."
+      ],
+      "actions": [
+        "POST duplicate activation after provider snapshot changes"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Duplicate event returns 200 without another provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 178,
+            "end": 178,
+            "sha256": "d565f513b80ed4381f4dd5ed39f00dd798fabab86b86d14d13cb5915a9760dc8"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 50,
+            "end": 58,
+            "sha256": "a3a4c5d42b030f24f6a4bf16156090ec27c55cb45903263c34b0a98d1929955d"
+          },
+          "expectation": "observed",
+          "why": "The duplicate event is looked up in the serialized coordinator; the observed replay does not request the changed provider snapshot. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 59,
+            "end": 59,
+            "sha256": "11bdceca12130e8819792e3dc7985963783a74c0e8a113bd94f9715093754f05"
+          },
+          "expectation": "observed",
+          "why": "The existing receipt belongs to the same team in this replay; cross-team event reuse rejection is not tested. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 63,
+            "end": 64,
+            "sha256": "01117ea0093aa6ae91b6e92002a1b68e052da19c7595b1fc33bfeae1482a070d"
+          },
+          "expectation": "observed",
+          "why": "An existing receipt returns without applying the changed snapshot; later readback remains active. This is the event-receipt path, not the checkout cache. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        }
+      ]
+    },
+    {
+      "id": "read-replay-state",
+      "title": "Read replay state",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The duplicate activation was replayed without consulting changed provider state."
+      ],
+      "actions": [
+        "GET team after duplicate receipt"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner read still reports active team plan.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 182,
+            "end": 182,
+            "sha256": "7b7e31f06cb4eb8269f3586e8433ea3f30a1d38154093b692c078dafcd44321b"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "cancel-subscription",
+      "title": "Cancel subscription",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "Provider fixture is canceled and the team has the earlier active receipt."
+      ],
+      "actions": [
+        "POST signed cancellation with synthetic canceled provider snapshot"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A new signed cancellation returns 200 and performs a second provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 187,
+            "end": 187,
+            "sha256": "fdcf0b56c45e6563adc64d1d4ca758c567decc6f0f98ed6199c18b1fcd2c4a4d"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "read-canceled-team",
+      "title": "Read canceled team",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The canceled provider snapshot was reconciled."
+      ],
+      "actions": [
+        "GET synthetic canceled team"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Team read reports canceled status and free plan.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 191,
+            "end": 191,
+            "sha256": "e9a696c3f7295e708b9c15381574e2c566402603e6e7db28e1e408227d2061e2"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 96,
+            "end": 98,
+            "sha256": "a05aaee34fb2ba338a77e0872c3f1d53ba0a600302ef8c2bb53853e62ca077f4"
+          },
+          "expectation": "observed",
+          "why": "The canceled snapshot is persisted and the next team readback reports canceled/free; the duplicate and retry steps separately exercise event receipts, not every bound field. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        }
+      ]
+    },
+    {
+      "id": "read-canceled-member-access",
+      "title": "Read canceled member access",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The team was recently canceled and the member project remains in the 30-day read grace."
+      ],
+      "actions": [
+        "GET team project access as member in cancellation grace"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Member project read remains available but reports no premium or write access.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 195,
+            "end": 195,
+            "sha256": "828f373b36c110e53a0f6ed1dc648992f6504bbcb30f90982e9a0116339702e5"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-canceled-member-write",
+      "title": "Reject canceled member write",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The member has recent-cancellation read grace and submits a valid new scene command."
+      ],
+      "actions": [
+        "POST project command as member after cancellation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The command is rejected with HTTP 403 read_only.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 199,
+            "end": 199,
+            "sha256": "96dcfbbcfbdde4b4b5f5bd1ed5250d710665e823b5dd28dd190bdc687a5818d6"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "read-canceled-owner-access",
+      "title": "Read canceled owner access",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The team was recently canceled and its owner retains project ownership."
+      ],
+      "actions": [
+        "GET team project access as owner after cancellation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner project read reports no premium but retains write access and owner role.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 203,
+            "end": 203,
+            "sha256": "f1366ce0611e3bed7761f98b73be6c7dafd674db969a6d9a77e6958470d9850d"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reconcile-delayed-event",
+      "title": "Reconcile delayed event",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "An older, previously unseen cancellation event arrives after fixture provider state changes to trialing."
+      ],
+      "actions": [
+        "POST older cancellation after synthetic provider reactivation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The signed event returns 200 and triggers a fresh third provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 208,
+            "end": 208,
+            "sha256": "2b2b0bbe9736fd704244c6233c2404d4b03c70af1cb6d6b9a7976245a43c1e9b"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "read-reactivated-team",
+      "title": "Read reactivated team",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The delayed event has reconciled the current trialing provider snapshot."
+      ],
+      "actions": [
+        "GET team after delayed cancellation reconciliation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Team read reports team plan, trialing status, and the exact future item period end.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 212,
+            "end": 212,
+            "sha256": "8ca756663769daf9058d80540c19571482867008f607a9aa264a8b5a8b682234"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "read-restored-member-access",
+      "title": "Read restored member access",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The team is trialing with an unexpired period and the project still exists."
+      ],
+      "actions": [
+        "GET team project access as member after reactivation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Member project read again reports premium and write access.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 216,
+            "end": 216,
+            "sha256": "1d2ea2207dd3f2eeb87e75bc96c894afa0adc2d8bae5c64974bdc90db27b876e"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "provider-outage",
+      "title": "Provider outage",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The current team is trialing and the local provider fixture returns 503 for an active snapshot."
+      ],
+      "actions": [
+        "POST signed event during synthetic provider outage"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The signed new event returns 502 billing_reconciliation_failed on the fourth provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 221,
+            "end": 221,
+            "sha256": "0e6df4aa4c339c5c4ea86072e5c04a010c59f2502b39efcee64049b185078844"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 22,
+            "end": 22,
+            "sha256": "b4e865f0d2dd18b33e5c60fc823705ee6ce3ad7ec43c39086c2abbf828c9cad3"
+          },
+          "expectation": "observed",
+          "why": "A synthetic 503 provider response is surfaced as reconciliation failure; other provider error forms are not established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 68,
+            "end": 68,
+            "sha256": "434f22668dd47bb1ecf1e0859495144423b1b071c35cc315c4a5ee616048c406"
+          },
+          "expectation": "observed",
+          "why": "A provider error exits the reconciliation work through its catch. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 71,
+            "end": 73,
+            "sha256": "b666e3be27d0a9c695c6fb4af2af568ce734f91d93c949a17ecadf1ec6d7f03d"
+          },
+          "expectation": "observed",
+          "why": "Provider failure is returned as retry-required and is observed as a 502; other errors are not separately established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 187,
+            "end": 187,
+            "sha256": "0a8475f3e3cd9fcbd78b9cc7af022d45aa8e3ba6a42cc4ccf7bebe2c1e43eb7a"
+          },
+          "expectation": "observed",
+          "why": "The synthetic provider outage is reported as retryable billing_reconciliation_failed. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        }
+      ]
+    },
+    {
+      "id": "read-after-outage",
+      "title": "Read after outage",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The provider outage prevented the new event from being applied."
+      ],
+      "actions": [
+        "GET team after failed reconciliation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Team read remains trialing and entitled after the failed reconciliation.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 225,
+            "end": 225,
+            "sha256": "1c71b0d412fd3a828b532f7432c838785d459cf02e7cbf949739e12daa4b9234"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "retry-provider-outage",
+      "title": "Retry provider outage",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The provider fixture has recovered with the active snapshot; the failed event ID is retried."
+      ],
+      "actions": [
+        "POST same signed event after synthetic provider recovery"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The same event now returns 200 and performs a fifth provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 229,
+            "end": 229,
+            "sha256": "a95e735ec79c46cd61a614af1f5e6952abaf7d4ec2db4f8098082f05049d6071"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "read-after-retry",
+      "title": "Read after retry",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The previously failed event was successfully reconciled."
+      ],
+      "actions": [
+        "GET team after successful reconciliation retry"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Team read reports active status and team plan.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 233,
+            "end": 233,
+            "sha256": "7b7e31f06cb4eb8269f3586e8433ea3f30a1d38154093b692c078dafcd44321b"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-mismatched-price",
+      "title": "Reject mismatched price",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The only provider subscription is active but its synthetic price ID does not match the configured team price."
+      ],
+      "actions": [
+        "POST signed update with wrong-price synthetic subscription"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Signed update returns 200 after a sixth simulated provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 238,
+            "end": 238,
+            "sha256": "0549f7bfd9fdafb21fe4ee905f133a8b564aedbd04d067096264564a85167a31"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "read-mismatched-price",
+      "title": "Read mismatched price",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "The mismatched-price snapshot was reconciled and has no eligible subscription."
+      ],
+      "actions": [
+        "GET team after mismatched-price reconciliation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Team read reports free status and free plan.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 242,
+            "end": 242,
+            "sha256": "c6b9732919ebbeb37bf762bb5e4779ec93df90cc42b991af715f527e1f616b50"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 44,
+            "end": 46,
+            "sha256": "a5f2c7318d60853175d1a01cfe529afc90ea0b36fae479cc97a9b48cdbdc956c"
+          },
+          "expectation": "observed",
+          "why": "The only synthetic subscription differs in price and the subsequent readback is free; this does not separately test other matching predicates. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 88,
+            "end": 88,
+            "sha256": "effdd308695ab3db2e129b05d264f88225da333f34c77678f5f630c86486b609"
+          },
+          "expectation": "observed",
+          "why": "Filtering the wrong-price synthetic subscription precedes the asserted free result; other matching variants are not separately established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        }
+      ]
+    },
+    {
+      "id": "reject-stale-signature",
+      "title": "Reject stale signature",
+      "preconditions": [
+        "A local Worker, isolated synthetic identities, team, sessions and restricted in-process provider fixture are in use.",
+        "One fixed recognized synthetic event is signed 301 seconds before current time, and that same event body is posted."
+      ],
+      "actions": [
+        "POST webhook with expired synthetic signature"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 invalid_signature occurs without a seventh provider request.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 247,
+            "end": 247,
+            "sha256": "cae20653a5318495496894c9a5e76293a03d2c2b02e5b2b4fda1dd06383bff5a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 161,
+            "end": 161,
+            "sha256": "4477062a65d41ae07a0df385fdc746a47a694595441f98a1242f7da611c61a96"
+          },
+          "expectation": "observed",
+          "why": "The signed request timestamp is 301 seconds old and is rejected; malformed timestamps are not separately established. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "billing-entitlement-lifecycle",
+      "title": "Synthetic billing entitlement lifecycle",
+      "steps": [
+        "read-free-team",
+        "reject-member-billing",
+        "reject-outsider-billing",
+        "reject-invalid-signature",
+        "ignore-unknown-event",
+        "ignore-unknown-customer",
+        "activate-subscription",
+        "read-active-team",
+        "create-paid-project",
+        "read-paid-access",
+        "replay-receipt",
+        "read-replay-state",
+        "cancel-subscription",
+        "read-canceled-team",
+        "read-canceled-member-access",
+        "reject-canceled-member-write",
+        "read-canceled-owner-access",
+        "reconcile-delayed-event",
+        "read-reactivated-team",
+        "read-restored-member-access",
+        "provider-outage",
+        "read-after-outage",
+        "retry-provider-outage",
+        "read-after-retry",
+        "reject-mismatched-price",
+        "read-mismatched-price",
+        "reject-stale-signature"
+      ]
+    }
+  ]
+}

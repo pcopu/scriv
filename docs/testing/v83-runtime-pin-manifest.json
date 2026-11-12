@@ -1,0 +1,12 @@
+{
+  "publishedCommit": "8e12583bb8da60f9325a7cee5d1050b3b33aa679",
+  "publishedTree": "9f9964e22bfb77d9aad72aefac26f19706879e2c",
+  "scope": "External trusted toolchain fixture identity, not Scriv measured coverage",
+  "modulePins": {
+    "scenario-runtime.mjs": "b5f634d2d9318f216b044104f40636187ea6808f62ba78b64082ef5f6a2f829d",
+    "scenarios.mjs": "1c2fce69d317e4397b39789f351b8700613c2289f5c50d900b61ae2e1822acee",
+    "tracer.mjs": "97ab1e28255ee4b6a702ea9732b05c0532abd8179189ee3b02a7c09aa71b8eb6",
+    "catalog.mjs": "a084193be6c6bdaf95c94b0df36545182eb3cf47e976abe268f811b7f5a1a1c1",
+    "proposals.mjs": "8775d1938f43c707191636462f9897bd625935912f5ba6770282604eb7fedb1f"
+  }
+}

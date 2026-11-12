@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "scope": "Actual loopback HTTP service-process journeys. Separate from Catalyst/UI discovery and native acceptance.",
+  "journeys": [
+    {
+      "id": "SVC-J01",
+      "path": "cloud/tests-e2e/service-journey.mjs",
+      "command": "npm --prefix cloud run test:service"
+    },
+    {
+      "id": "SVC-J02",
+      "path": "updates/tests-e2e/update-journey.mjs",
+      "command": "npm --prefix updates run test:e2e"
+    },
+    {
+      "id": "SVC-J03",
+      "path": "cloud/tests-e2e/collaboration-journey.mjs",
+      "command": "node scripts/tracer-cli.mjs app -- test services collaboration"
+    },
+    {
+      "id": "SVC-J04",
+      "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+      "command": "node scripts/tracer-cli.mjs app -- test services discussions-assets"
+    },
+    {
+      "id": "SVC-J05",
+      "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+      "command": "node scripts/tracer-cli.mjs app -- test services atomic-batch"
+    },
+    {
+      "id": "SVC-J06",
+      "path": "cloud/tests-e2e/billing-journey.mjs",
+      "command": "node scripts/tracer-cli.mjs app -- test services billing"
+    },
+    {
+      "id": "SVC-J07",
+      "path": "cloud/tests-e2e/generation-journey.mjs",
+      "command": "node scripts/tracer-cli.mjs app -- test services generation"
+    }
+  ]
+}

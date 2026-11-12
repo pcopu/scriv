@@ -1,0 +1,253 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "email-consumption-v98",
+      "title": "Preserve verified identity and one-time email sign-in",
+      "featureId": "email-consumption",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/email-auth-journey.mjs"
+      ],
+      "plannedActions": [
+        "Finish original 16 steps and capture original identity/challenge rows. Seed one unverified contact user sharing the new synthetic email.",
+        "Request a real local-mailbox challenge and validate exact row hashes, timing and zero identity/session mutation.",
+        "Submit a guaranteed wrong six-digit code with correct proof five times. After each exact 401, require attempts one through five and otherwise exact challenge and identity/session rows.",
+        "Submit the correct code and proof while still unexpired; require exact 401, attempts still five and no identity/session creation.",
+        "Request another challenge for the same email with a different PKCE proof. Dispatch two identical correct verification fetches before awaiting either, supplying an over-100-character device name.",
+        "Require exactly one 200 and one exact 401. Inspect one consumption marker and attempt, exactly one new user/identity/session, separation from the existing contact user, hashed token, device truncation and default expiry.",
+        "Read winning public identity and session list. Replay the identical verification and require exact 401 with full identity/session/challenge state unchanged.",
+        "Log out the winner, verify only its revocation timestamp changed, and require subsequent identity read 401. Preserve original rows and the locked/consumed challenge states, empty mailbox, 15 added requests and zero outbound attempts."
+      ],
+      "expectedOutcomes": [
+        "Five wrong codes each return exact 401/invalid_code, increment only the target challenge attempts by one through five, and preserve all users, verified identities and sessions. A correct code/proof while the challenge is still unexpired is then refused with attempts fixed at five, unchanged challenge row and no identity/session creation.",
+        "For the same synthetic email under a fresh distinct PKCE proof, two correct verification fetches are dispatched before either result is awaited. Exactly one returns 200 and one exact 401. The challenge has attempts one and one consumption marker; there is exactly one additional verified user, identity and session. A later identical verification is refused with all identity/session/challenge state unchanged. No particular internal transaction overlap is forced.",
+        "A seeded GitHub-style user with the matching unverified contact email is preserved exactly and receives no session. The winning verified email identity belongs to a distinct new email-namespace user, and its session has the SHA-256 of the returned token, a 100-character truncated device name and the default 30-day expiry. Public identity/session reads agree. Public logout revokes only that session; its next identity read is 401. Original identities, sessions and challenges remain exact, and mailbox/outbound counters remain empty/zero."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "email-consumption-v98-1",
+      "featureId": "email-consumption",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 43,
+        "end": 48,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "bd2c48c39f3d13aa962b4dc6a9d8f7271ef417f2744b0be4597b8c216481d2ff",
+        "sha256": "9635c5d7960446494d694925e8a646c00251d0186b8bd0dc19987e98919662de"
+      },
+      "scenarioIds": [
+        "email-consumption-v98"
+      ],
+      "rationale": "Actual returned challenge ID and locally delivered code independently reproduce the stored SHA-256 values. This does not test random-code distribution or all at-rest data stores.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic local HTTP/mailbox; no forced internal race, storage failure, live email/provider, native behavior, all duration/input boundaries, statistical entropy or measured execution.",
+      "proposedAssertions": [
+        "Each newly requested challenge has exact declared row shape, SHA-256 challenge ID and challenge-bound code hash, correct PKCE proof, zero attempts, null consumption, persisted sent timestamp and real ten-minute/one-minute expiry/resend values. Issuance creates no user, verified identity or session."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-v98-2",
+      "featureId": "email-consumption",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 49,
+        "end": 55,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "317236a0d42a80e593616ec9ee329135b6fd6a47e3e7cf55a35d1fb1b035b661",
+        "sha256": "17c8b8f0193ae6c6f700cefe1104521851fc21c9a07cbefcc261f4a550ba347f"
+      },
+      "scenarioIds": [
+        "email-consumption-v98"
+      ],
+      "rationale": "Two fresh PKCE proofs cause distinct real challenge inserts with exact initial state and expiry; same-proof resend update is not exercised by the new chapter.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic local HTTP/mailbox; no forced internal race, storage failure, live email/provider, native behavior, all duration/input boundaries, statistical entropy or measured execution.",
+      "proposedAssertions": [
+        "Each newly requested challenge has exact declared row shape, SHA-256 challenge ID and challenge-bound code hash, correct PKCE proof, zero attempts, null consumption, persisted sent timestamp and real ten-minute/one-minute expiry/resend values. Issuance creates no user, verified identity or session."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-v98-3",
+      "featureId": "email-consumption",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 59,
+        "end": 60,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "65d8c9dc405a04f846c95271f67d17400426da0bf2956bcf0ab569090c199844",
+        "sha256": "2834668c91bcffdeac7e0e32cd475ff9948b05837a191c5ea98661ebb5fcf0e4"
+      },
+      "scenarioIds": [
+        "email-consumption-v98"
+      ],
+      "rationale": "Successful local mailbox delivery is followed by a real persisted sent_at timestamp before response; no delivery-failure/uncertain-ack path is claimed.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic local HTTP/mailbox; no forced internal race, storage failure, live email/provider, native behavior, all duration/input boundaries, statistical entropy or measured execution.",
+      "proposedAssertions": [
+        "Each newly requested challenge has exact declared row shape, SHA-256 challenge ID and challenge-bound code hash, correct PKCE proof, zero attempts, null consumption, persisted sent timestamp and real ten-minute/one-minute expiry/resend values. Issuance creates no user, verified identity or session."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-v98-4",
+      "featureId": "email-consumption",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 85,
+        "end": 86,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "a52d11f6fd7d635215d2754e42eb61cc448be86e00cd79d059aed3106f791769",
+        "sha256": "4868c7844c9a86b13047316b8934cde779a1b1e313ba3a88283df3e3a6e70622"
+      },
+      "scenarioIds": [
+        "email-consumption-v98"
+      ],
+      "rationale": "Default session duration and an overlong ASCII device name are observed in the winning issued session. Other configured durations or character-unit boundaries are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic local HTTP/mailbox; no forced internal race, storage failure, live email/provider, native behavior, all duration/input boundaries, statistical entropy or measured execution.",
+      "proposedAssertions": [
+        "The sole new session is linked to the newly verified user, stores the SHA-256 of the returned 64-character token, truncates the supplied device name to 100 characters, uses the same creation time as its new user and a default 30-day expiry, and starts unrevoked. No other SESSION_DAYS or Unicode boundary is varied."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-v98-5",
+      "featureId": "email-consumption",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 91,
+        "end": 95,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "e609703f9f1d186d8bb42b785950159342534c7a2940f1bc8fd86c8c336f4294",
+        "sha256": "30b18da3fbe39108b5c2a583268895020649d582d26472f352ff280c3f40ff68"
+      },
+      "scenarioIds": [
+        "email-consumption-v98"
+      ],
+      "rationale": "Five real wrong verifications exhaust the unexpired challenge; a correct sixth is blocked without increment or consumption. The fresh challenge competition consumes once with attempts one.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic local HTTP/mailbox; no forced internal race, storage failure, live email/provider, native behavior, all duration/input boundaries, statistical entropy or measured execution.",
+      "proposedAssertions": [
+        "Five wrong codes each return exact 401/invalid_code, increment only the target challenge attempts by one through five, and preserve all users, verified identities and sessions. A correct code/proof while the challenge is still unexpired is then refused with attempts fixed at five, unchanged challenge row and no identity/session creation."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-v98-6",
+      "featureId": "email-consumption",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 96,
+        "end": 99,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "bc2c02450a13b28dd398c1e19966b42dfbc318dc90903c58533a493f895d6a84",
+        "sha256": "cdbdc80e1393bb39f7857fe599f19ceef9833e58fb5616a5301bc00db37380a3"
+      },
+      "scenarioIds": [
+        "email-consumption-v98"
+      ],
+      "rationale": "The conditional new-user write creates one reserved email-namespace account and does not trust a matching users.email contact field as verified authority.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic local HTTP/mailbox; no forced internal race, storage failure, live email/provider, native behavior, all duration/input boundaries, statistical entropy or measured execution.",
+      "proposedAssertions": [
+        "Exactly one new user and verified identity are inserted; they share the winner ID and creation/verification timestamp, use the reserved email:<UUID> namespace and do not reuse the existing GitHub-style user with the matching contact email."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-v98-7",
+      "featureId": "email-consumption",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 100,
+        "end": 103,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "bb3f0aa9cb7ea8aee1488e2662a1853870f2302005f4ac1603070e730bd9c911",
+        "sha256": "a3f050c4fb467f063529fb916215655d280ecaf6412551178cf2094c9ac93b3f"
+      },
+      "scenarioIds": [
+        "email-consumption-v98"
+      ],
+      "rationale": "Exactly one verified identity maps the new synthetic email to the new user, not the preexisting contact user; existing identity reuse remains in the original chapter.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic local HTTP/mailbox; no forced internal race, storage failure, live email/provider, native behavior, all duration/input boundaries, statistical entropy or measured execution.",
+      "proposedAssertions": [
+        "Exactly one new user and verified identity are inserted; they share the winner ID and creation/verification timestamp, use the reserved email:<UUID> namespace and do not reuse the existing GitHub-style user with the matching contact email."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-v98-8",
+      "featureId": "email-consumption",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 104,
+        "end": 107,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "339db991f7d294254a8e3089856c67760f7cf030f61599b0f50145558e5fbded",
+        "sha256": "c480ae306f111b16fa972fed94aad28c25560ab06256690c7a2decfea67e6880"
+      },
+      "scenarioIds": [
+        "email-consumption-v98"
+      ],
+      "rationale": "Only the winning consume marker creates a session, with the exact stored token hash, device truncation and default expiry. No transaction rollback or arbitrary race coverage.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic local HTTP/mailbox; no forced internal race, storage failure, live email/provider, native behavior, all duration/input boundaries, statistical entropy or measured execution.",
+      "proposedAssertions": [
+        "The sole new session is linked to the newly verified user, stores the SHA-256 of the returned 64-character token, truncates the supplied device name to 100 characters, uses the same creation time as its new user and a default 30-day expiry, and starts unrevoked. No other SESSION_DAYS or Unicode boundary is varied."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-v98-9",
+      "featureId": "email-consumption",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 108,
+        "end": 113,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "39fadbae218a9686620df8305a69baae4a09994c9d23f4633855e0f138b1861e",
+        "sha256": "b98a322d5747053eee23188265bea2c9ff83738610e7ac422dead857be352756"
+      },
+      "scenarioIds": [
+        "email-consumption-v98"
+      ],
+      "rationale": "The winning request receives its own issued token/user while exhausted, losing and replayed verifications return the same exact invalid-code error without additional identity/session state.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic local HTTP/mailbox; no forced internal race, storage failure, live email/provider, native behavior, all duration/input boundaries, statistical entropy or measured execution.",
+      "proposedAssertions": [
+        "For the same synthetic email under a fresh distinct PKCE proof, two correct verification fetches are dispatched before either result is awaited. Exactly one returns 200 and one exact 401. The challenge has attempts one and one consumption marker; there is exactly one additional verified user, identity and session. A later identical verification is refused with all identity/session/challenge state unchanged. No particular internal transaction overlap is forced."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-v98-10",
+      "featureId": "email-consumption",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 80,
+        "end": 84,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "62611d94baa5dd5271a2d52d63aec8728df6ea09a32c42dd81809f91aeabe4c7",
+        "sha256": "d5bee0c7eba33a31698f2d05603ed2c7008a38eb1fb8f3b03d57b6d5bd452b89"
+      },
+      "scenarioIds": [
+        "email-consumption-v98"
+      ],
+      "rationale": "Real code/proof hashing and request-specific generated markers feed the competing verification batch. One successful consumption is observed; entropy quality and specific internal overlap are not proved.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic local HTTP/mailbox; no forced internal race, storage failure, live email/provider, native behavior, all duration/input boundaries, statistical entropy or measured execution.",
+      "proposedAssertions": [
+        "For the same synthetic email under a fresh distinct PKCE proof, two correct verification fetches are dispatched before either result is awaited. Exactly one returns 200 and one exact 401. The challenge has attempts one and one consumption marker; there is exactly one additional verified user, identity and session. A later identical verification is refused with all identity/session/challenge state unchanged. No particular internal transaction overlap is forced."
+      ]
+    }
+  ]
+}

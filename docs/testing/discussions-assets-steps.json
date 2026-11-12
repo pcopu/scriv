@@ -1,0 +1,680 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "synthetic-team-general-thread",
+      "title": "Create synthetic project and general thread",
+      "preconditions": [
+        "An isolated local Miniflare worker with migrated ephemeral D1 and empty private R2; outbound requests are denied.",
+        "Four synthetic owner, member, viewer and outsider users with unexpired sessions exist; owner/member/viewer belong to one active synthetic team, outsider does not.",
+        "Project and thread do not yet exist; projectId and itemId are synthetic, with the selected item absent."
+      ],
+      "actions": [
+        "POST /v1/projects; actor=member; body={id:projectId,title:'Synthetic discussion',teamId}",
+        "GET /v1/projects/${projectId}/threads; actor=outsider",
+        "GET /v1/projects/${projectId}/threads; actor=owner",
+        "POST /v1/projects/${projectId}/threads; actor=member; body={}",
+        "POST /v1/projects/${projectId}/threads; actor=viewer; body={}",
+        "GET /v1/projects/${projectId}/threads?scope=all; actor=viewer",
+        "GET /v1/projects/${projectId}/threads?scope=all&itemId=${itemId}; actor=owner",
+        "POST /v1/projects/${projectId}/threads; actor=owner; body={itemId}"
+      ],
+      "expectations": [
+        {
+          "id": "assert-119-123",
+          "description": "General thread initially lists empty, creation returns null item and unresolved state, repeat returns the same thread, and list-all contains its ID.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 119,
+            "end": 123,
+            "sha256": "c4244b0502dd0cd6496160036fc4e4c1ff17d67fe7b0b06ccbafef73993ceebe"
+          }
+        },
+        {
+          "id": "assert-119-125",
+          "description": "General thread initially lists empty, creation and repeat return matching state, list-all contains its ID, and invalid scope or missing selected item are rejected.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 119,
+            "end": 125,
+            "sha256": "806fffa86b351f23723e6c9c9e59a6e994ce0ae21d087283b598ea9a7a22a580"
+          }
+        },
+        {
+          "id": "assert-119-124",
+          "description": "General thread begins empty, creation and repeat match, list-all contains its ID, and combined scope and item is rejected.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 119,
+            "end": 124,
+            "sha256": "19f37e4584c3161fa90a4ae96bd058ea350476c2987d5e48d9e238dd8a3a65a7"
+          }
+        },
+        {
+          "id": "assert-119-122",
+          "description": "General thread begins empty, creation has null item and unresolved state, and a repeat returns the same thread.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 119,
+            "end": 122,
+            "sha256": "c509ff6699db31853a205d43cedfabc0a9929b6f61f592a0cefc78600bef2982"
+          }
+        },
+        {
+          "id": "assert-120-125",
+          "description": "Created thread has null item and unresolved state; repeat and list-all identify it, while invalid scope and missing selected item are rejected.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 120,
+            "end": 125,
+            "sha256": "e6b157640a38e7714e8e7c493514ab052c284e5d9bf834918eb74da533b9ed40"
+          }
+        },
+        {
+          "id": "assert-120-121",
+          "description": "A created general thread has null item and unresolved state.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 120,
+            "end": 121,
+            "sha256": "6baa76146bc7f2f8b6b569635405843a3ff557698a4ebdfe57dba7cfe20a170b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 75,
+            "end": 75,
+            "sha256": "220034cf853deba2e832a3bcf6c8091b39e589c0cf7f4aec8f51d9db037f6d6f"
+          },
+          "expectation": "assert-119-123",
+          "why": "The created and repeated general thread responses assert its null item and unresolved state, and the list-all result asserts its ID; other serialized fields are not individually checked. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 89,
+            "end": 91,
+            "sha256": "5f6a3bdc4e0be8a8d0141b8cdadf5ab9ce8d1726d392caa920517f8e7dc7556f"
+          },
+          "expectation": "assert-119-125",
+          "why": "General-thread lookup returns empty then existing; a lookup for an absent item ID takes the non-image fallback query. Image lineage and existing non-image item cases are not exercised. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 372,
+            "end": 372,
+            "sha256": "7ea6de90ce72760e19d8afa4efb267764aaff6cd8dae1e16ade5951322b23d83"
+          },
+          "expectation": "assert-119-125",
+          "why": "General-thread requests pass room dispatch to the discussion handler; this does not witness other routes or unauthorized outsider handling within the handler. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 470,
+            "end": 474,
+            "sha256": "5cbc414f01dc52c911d640dd457c6e054b8d18d12d8dd5034543743d99977576"
+          },
+          "expectation": "assert-119-123",
+          "why": "Valid collection routes dispatch to the general-thread handler; malformed discussion paths and invalid IDs are not tested. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 475,
+            "end": 482,
+            "sha256": "1329e3aa18c2ec952896e720efffc819c969167bdf0f6b320d893948fc147112"
+          },
+          "expectation": "assert-119-124",
+          "why": "List-all returns the created general thread and a combined scope/item request is rejected. Pagination boundaries are not tested. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 483,
+            "end": 485,
+            "sha256": "25d9ec2a08b0d0827970aafbc664166b1f29cc80202c75f9f256c11bc24fa954"
+          },
+          "expectation": "assert-119-122",
+          "why": "The default null-item GET returns an empty list before creation; unsupported scope and item-specific GET are not exercised. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 487,
+            "end": 492,
+            "sha256": "5db7ae3507e939ba10906c152406118a693154981154ffd78f8ee5862d4e117c"
+          },
+          "expectation": "assert-120-125",
+          "why": "POST accepts a general-thread request and checks an unknown selected item; image selection/root behavior and unsupported methods are not tested. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 495,
+            "end": 498,
+            "sha256": "9243b903933c611723eca62a6a71df3755fc98341c829d344ad76c695bec4bb5"
+          },
+          "expectation": "assert-120-125",
+          "why": "A repeated general-thread request returns the existing thread and a new request for an unknown item returns 404; actual inactive-team thread creation and nonempty anchor construction are not tested. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 509,
+            "end": 515,
+            "sha256": "07daeaa7ecb9ea0280738fba6716060176d54a4b2e4c1f150c62f8495aecd8ea"
+          },
+          "expectation": "assert-120-121",
+          "why": "A general thread is created with null item and unresolved state and returned as 201. Broadcast delivery and access races are not independently verified. Mapping is navigation, not measured coverage."
+        }
+      ]
+    },
+    {
+      "id": "general-thread-message-validation",
+      "title": "Validate general-thread messages and replies",
+      "preconditions": [
+        "The preceding project and general thread exist in the active synthetic team and the four actor sessions remain valid.",
+        "The thread has no messages; first is the original synthetic message object containing a fresh ID, whitespace-padded body and member mention. The nonexistent reply target and the existing outsider user’s ID are synthetic."
+      ],
+      "actions": [
+        "POST /v1/projects/${projectId}/threads/${thread.id}/messages; actor=member; body=first",
+        "POST /v1/projects/${projectId}/threads/${thread.id}/messages; actor=member; body=first",
+        "POST /v1/projects/${projectId}/threads/${thread.id}/messages; actor=member; body={...first,body:'changed'}",
+        "POST /v1/projects/${projectId}/threads/${thread.id}/messages; actor=owner; body={id:randomUUID(),body:'  '}",
+        "POST /v1/projects/${projectId}/threads/${thread.id}/messages; actor=owner; body={id:randomUUID(),body:'Invalid reply',replyToId:randomUUID()}",
+        "POST /v1/projects/${projectId}/threads/${thread.id}/messages; actor=owner; body={id:randomUUID(),body:'Invalid mention',mentionedUserIds:[actors.outsider.id]}",
+        "POST /v1/projects/${projectId}/threads/${thread.id}/messages; actor=owner; body={id:randomUUID(),body:'Duplicate mention',mentionedUserIds:[actors.member.id,actors.member.id]}",
+        "POST /v1/projects/${projectId}/threads/${thread.id}/messages; actor=viewer; body={id:randomUUID(),body:'Synthetic reply',replyToId:first.id}",
+        "GET /v1/projects/${projectId}/threads/${thread.id}/messages; actor=viewer",
+        "GET /v1/projects/${projectId}/threads/${thread.id}/messages?after=${sent.message.at}&afterId=${first.id}; actor=owner"
+      ],
+      "expectations": [
+        {
+          "id": "assert-127-142",
+          "description": "Message text, sender and mention are asserted along with identical retry, validation failures, reply and ordered cursor listing.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 127,
+            "end": 142,
+            "sha256": "0ca7faf590261781541b2781ac2cbf62433ce0c914f3d5f9239efa01e68ad21e"
+          }
+        },
+        {
+          "id": "assert-137-142",
+          "description": "The reply points to the first message, listing preserves both IDs in order, and a cursor returns only the later reply.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 137,
+            "end": 142,
+            "sha256": "b4119f2e565d274fecfffc2c5b52dc04a83714d8d856457c90d84fa10839d5a0"
+          }
+        },
+        {
+          "id": "assert-127-134",
+          "description": "The initial message is trimmed with the expected sender and mention; an identical retry matches, changed reuse, blank body and invalid reply are rejected.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 127,
+            "end": 134,
+            "sha256": "0d69a0eed5d911e67b2af96ea87120622259db234bde67dd82b4a36131ab64e2"
+          }
+        },
+        {
+          "id": "assert-127-136",
+          "description": "Message content and mention are asserted; retry, reuse conflict, blank body, invalid reply and invalid or duplicate mentions are checked.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 127,
+            "end": 136,
+            "sha256": "8218d1797647606e5e9f9eaaadd671ad133930cfc7772dd7c8c89cb09a68237a"
+          }
+        },
+        {
+          "id": "assert-127-132",
+          "description": "The first message is trimmed and attributed to the member with the expected mention; identical retry matches and changed reuse is rejected.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 127,
+            "end": 132,
+            "sha256": "03c0012621cd65098981455b784ca4503ef3af3d63c181625534bee21f582ff9"
+          }
+        },
+        {
+          "id": "assert-128-136",
+          "description": "The sent message and mention are checked, as are retry, reuse conflict and invalid message, reply and mention inputs.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 128,
+            "end": 136,
+            "sha256": "11c922f7c146171eb408622300030a90aa001fbaddb658bd85da637a6201b18d"
+          }
+        },
+        {
+          "id": "assert-134-138",
+          "description": "An invalid reply target and invalid mentions are rejected; the valid reply references the first message.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 134,
+            "end": 138,
+            "sha256": "c102c921470e1d197a9c0cdfbbfea40a9f77352c48bc66e85c84766118614380"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 100,
+            "end": 100,
+            "sha256": "817c5c9f7602ea7e862a88a0453eadfafe6c9e8fe1a941a68a718fe68339472b"
+          },
+          "expectation": "assert-127-142",
+          "why": "Message serialization is witnessed by trimmed text, user, mention, reply, listing and cursor assertions. Attachment contents and all other fields are not individually checked. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 517,
+            "end": 525,
+            "sha256": "053a542a728166c21827d60877b4ca13bd119161c3d4d94a5f1dbb692668bd8a"
+          },
+          "expectation": "assert-137-142",
+          "why": "Existing-thread message reads return ordered message IDs, and a timestamp/ID cursor returns the reply. Missing thread, invalid cursor and 500-message pagination are not tested. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 526,
+            "end": 531,
+            "sha256": "77389a3b403fce6e289adf77cfb10f78a68c56b031ce6d30de578afc299024e9"
+          },
+          "expectation": "assert-127-134",
+          "why": "A whitespace-padded message is returned trimmed, a blank message is rejected and a reply is submitted; attachment shape/limit failures and unsupported methods are not tested. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 532,
+            "end": 535,
+            "sha256": "1da405ad3b32be8397b8d268644522bcb12324238a8772ba4632160a4cdb41bc"
+          },
+          "expectation": "assert-127-136",
+          "why": "A valid member mention is returned and duplicate mention IDs are rejected; other invalid forms and size bounds are not exercised. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 539,
+            "end": 545,
+            "sha256": "f1975a471d083301300eba33232124409d5354c28a5cc4013a0b9f2cd0187b31"
+          },
+          "expectation": "assert-127-132",
+          "why": "An identical message retry returns the original response, and reusing its ID with changed text returns 409. Other equality fields and race conditions are not individually varied. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 546,
+            "end": 552,
+            "sha256": "5504439ee553ae087d1b5e04d86798ed2dbeaa7278755400ca5573b3d318d9cc"
+          },
+          "expectation": "assert-128-136",
+          "why": "A valid member mention is accepted and an outsider mention rejected. The concurrent accepted-after-member-lookup branch and access changes are not tested. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 558,
+            "end": 558,
+            "sha256": "515e1d3b93fc92cdd11b3ea617e270394ee0e7de4cd958982344e639de7c164e"
+          },
+          "expectation": "assert-134-138",
+          "why": "A nonexistent reply target is rejected and an existing same-thread message can be replied to; cross-thread reply targets are not separately tested. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 559,
+            "end": 570,
+            "sha256": "dc68b6d8725fefd9f345e1108887b35a587e6c445f1d786fb09b4a579560cc53"
+          },
+          "expectation": "assert-137-142",
+          "why": "A reply is created and subsequent list assertions verify its ID and later timestamp. Concurrency, broadcast delivery and all stored fields are not independently verified. Mapping is navigation, not measured coverage."
+        }
+      ]
+    },
+    {
+      "id": "thread-resolution-history",
+      "title": "Resolve, reopen and inspect history",
+      "preconditions": [
+        "The preceding synthetic general thread contains the first message and reply, in that order, with a valid active team and owner session.",
+        "History contains the thread-created and two message-created events from earlier phases; no previous resolution updates exist."
+      ],
+      "actions": [
+        "PATCH /v1/projects/${projectId}/threads/${thread.id}; actor=owner; body={resolved:true}",
+        "PATCH /v1/projects/${projectId}/threads/${thread.id}; actor=owner; body={resolved:true}",
+        "PATCH /v1/projects/${projectId}/threads/${thread.id}; actor=owner; body={resolved:false}",
+        "GET /v1/projects/${projectId}/history?after=0; actor=owner",
+        "GET /v1/projects/${projectId}/snapshot; actor=owner"
+      ],
+      "expectations": [
+        {
+          "id": "assert-143-149",
+          "description": "Resolution and reopening return expected states; history has exactly the expected creation and update event kinds.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 143,
+            "end": 149,
+            "sha256": "d0b39c204d1ee7a31f2a66d21a8631ccb3a85ac7e3e62d086a1dc2bf1b9840b2"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 314,
+            "end": 320,
+            "sha256": "ec017a2280ddb4b21c059b8c843adccac165c83a7aefbc405bf61bec23874667"
+          },
+          "expectation": "assert-143-149",
+          "why": "The history assertion sees one thread-created, two message-created and two thread-updated kinds, including no extra event for a repeated resolve. Sequence, epoch, actor, timing and event payload values are not directly asserted. Mapping is navigation, not measured coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 572,
+            "end": 583,
+            "sha256": "a419b43bd617111905bc89a41b92d696f35f18b1e343dc02fc3c309e13ed1b28"
+          },
+          "expectation": "assert-143-149",
+          "why": "Resolve, repeat the same resolution and reopen return the expected states; history contains only two update events. Invalid values, inactive-team updates, concurrent changes and broadcast delivery are not tested. Mapping is navigation, not measured coverage."
+        }
+      ]
+    },
+    {
+      "id": "content-addressed-png-lifecycle",
+      "title": "Validate synthetic PNG asset lifecycle",
+      "preconditions": [
+        "The same project belongs to the active synthetic team with valid owner, member, viewer and outsider sessions; private R2 is initially empty and no project asset row exists.",
+        "content is the synthetic PNG-signature byte sequence from the witness and hash is its SHA-256; the all-zero hash is the distinct invalid route input."
+      ],
+      "actions": [
+        "GET /v1/projects/${projectId}/assets/${hash}; actor=viewer",
+        "PUT /v1/projects/${projectId}/assets/${hash}; actor=viewer; Content-Type=image/png; body=content",
+        "PUT /v1/projects/${projectId}/assets/${hash}; actor=member; Content-Type=image/jpeg; body=content",
+        "PUT /v1/projects/${projectId}/assets/${'0'.repeat(64)}; actor=member; Content-Type=image/png; body=content",
+        "PUT /v1/projects/${projectId}/assets/${hash}; actor=member; Content-Type=image/png; body=content",
+        "PUT /v1/projects/${projectId}/assets/${hash}; actor=member; Content-Type=image/png; body=content",
+        "GET /v1/projects/${projectId}/assets/${hash}; actor=viewer",
+        "HEAD /v1/projects/${projectId}/assets/${hash}; actor=viewer",
+        "GET /v1/projects/${projectId}/assets/${hash}; actor=outsider",
+        "DELETE /v1/projects/${projectId}/assets/${hash}; actor=member",
+        "GET /v1/projects/${projectId}/assets/${hash}; actor=viewer",
+        "DELETE /v1/projects/${projectId}/assets/${hash}; actor=owner",
+        "DELETE /v1/projects/${projectId}/assets/${hash}; actor=owner",
+        "GET /v1/projects/${projectId}/assets/${hash}; actor=owner"
+      ],
+      "expectations": [
+        {
+          "id": "assert-168-188",
+          "description": "Asset requests assert unavailable, authorization and input failures, successful upload and readback, then owner deletion and unavailability.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 168,
+            "end": 188,
+            "sha256": "0d3123b97c9264ea226b1274b444d9c1283b198c90ccc1e2eecd2efd66de5e02"
+          }
+        },
+        {
+          "id": "assert-151-174",
+          "description": "Synthetic PNG-signature bytes labeled JPEG are rejected and valid content-addressed PNG upload and retry return the expected metadata.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 151,
+            "end": 174,
+            "sha256": "915a8c2796457353c5220a4084dbcdd0323670838757226bfdfbc829f62eac4a"
+          }
+        },
+        {
+          "id": "assert-168-174",
+          "description": "Before upload the asset is unavailable; authorization, declared type and content-address validation are checked and valid upload and retry return expected metadata.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 168,
+            "end": 174,
+            "sha256": "be71600c489742819951eec5262fd67966bdd8090a931493acb5150ec94092ab"
+          }
+        },
+        {
+          "id": "assert-168-182",
+          "description": "Asset upload and retry succeed, and download and HEAD assert bytes, content metadata, privacy headers and length.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 168,
+            "end": 182,
+            "sha256": "7276758dea4772670894396fa1e695ac7187259083e00d5ddac32cc5b70d3527"
+          }
+        },
+        {
+          "id": "assert-183-188",
+          "description": "Outsider access and member deletion are denied; bytes remain readable, owner deletion is repeatable and the asset then becomes unavailable.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 183,
+            "end": 188,
+            "sha256": "3b9e66b7c8cc4a34b9bda476007d27df1f71c2b9302022f1dcc54566f18bc145"
+          }
+        },
+        {
+          "id": "assert-183-190",
+          "description": "After denied member deletion, owner deletes twice; unavailable read, empty R2 and zero asset rows are asserted.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 183,
+            "end": 190,
+            "sha256": "4b067d6c624536efd79075d5a93c0d128f89d89c5caa10b0c2c1f38a52ff6cf9"
+          }
+        },
+        {
+          "id": "assert-172-175",
+          "description": "Fresh upload and identical retry return the same expected content metadata and leave exactly one R2 object.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 172,
+            "end": 175,
+            "sha256": "86055121eb5c396c5e30efdcb3724c51d879f672cea8e114192852cd24251a98"
+          }
+        },
+        {
+          "id": "assert-172-179",
+          "description": "Fresh upload and retry return expected metadata; the downloaded bytes, type, hash and ETag match.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 172,
+            "end": 179,
+            "sha256": "8181e15803d73c94373a200fc5f7309f2dab1788be972929200fc6a1aba68bf4"
+          }
+        },
+        {
+          "id": "assert-172-174",
+          "description": "Fresh upload and immediate identical retry return the same expected hash, byte count and hosted flag.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 172,
+            "end": 174,
+            "sha256": "86b3ce8a5046bbe7c6cc0f9b1685072a568f30ecdf84ea45c918f78374baa51d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/index.ts",
+            "start": 25,
+            "end": 27,
+            "sha256": "19bf5352378aa2df0281bccc6081eec6d9cbc83c005109f8de2ef284e1ef5f4a"
+          },
+          "expectation": "assert-168-188",
+          "why": "Authenticated asset requests pass the request limiter and are dispatched to mediaRoutes; the fixture observes the asset GET, PUT and DELETE statuses, bodies and headers in their actual order. No rate-limit boundary or unrelated dispatcher route is asserted here."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 6,
+            "end": 7,
+            "sha256": "e14959883d3e333b0b3497f23a3f3e6f6aa96b01eed3c533596b958f195ab0b4"
+          },
+          "expectation": "assert-151-174",
+          "why": "Synthetic bytes have the PNG signature. The matching PNG content type succeeds, while the same bytes labeled JPEG receive 415 invalid_media. This exercises the PNG signature decision, not image decoding or JPEG/WebP detection."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 12,
+            "end": 16,
+            "sha256": "469b1411c8787f65c56721c5123cc14cb921c0836f0c3dac5b02b8031c7c61ea"
+          },
+          "expectation": "assert-168-174",
+          "why": "Content-addressed asset requests are matched to project and SHA-256, project access is checked, and non-PUT requests look up the asset row. The pre-upload viewer GET returns asset_unavailable; valid member PUT creates the replica. Only this route pattern and fixture are represented."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 17,
+            "end": 23,
+            "sha256": "57abe5cf80585021612b531ee7a03e3c7b46e2f3b93f7db5486110c5386835e3"
+          },
+          "expectation": "assert-168-182",
+          "why": "Before upload the viewer GET is unavailable; after upload GET returns exactly the synthetic bytes with PNG type, hash, ETag and private no-store headers; HEAD has no body and reports the content length. The missing-object-after-row branch is not asserted."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 24,
+            "end": 27,
+            "sha256": "018d245320762ac386357c7212c15f2142aba7d2045f7fa2a5e298aba156d1f9"
+          },
+          "expectation": "assert-183-188",
+          "why": "A member DELETE is denied, a subsequent viewer GET preserves the bytes, and owner DELETE succeeds twice; the second reaches the absent-row idempotent return. The uploading-state conflict is not tested."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 28,
+            "end": 44,
+            "sha256": "7b2c1806f737c89b8c5daa61357726d22300a4481566d9f4a8b9a17328ea8bee"
+          },
+          "expectation": "assert-183-190",
+          "why": "The authorized owner delete claims the identified ready replica using the project/team/session predicates, deletes its object and row, and returns success. The following GET is unavailable and the test checks empty R2 and zero asset rows. This sequential fixture does not establish race, revocation, or concurrent behavior."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 46,
+            "end": 52,
+            "sha256": "e864512209d6a56737ac3d6425b26b4cba22a2b3ff78b9201856278137560f30"
+          },
+          "expectation": "assert-168-174",
+          "why": "Viewer PUT receives 402, mismatched declared JPEG type receives 415, wrong content-address hash receives 422, and a member PUT with matching PNG signature and hash succeeds. Body-size, empty-body and rate-limit rejection are not tested."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 55,
+            "end": 56,
+            "sha256": "bf99aa8d01a1fa12ea2188fe1ec18531ab53ce9ab9a478b83f6f1b82c52372be"
+          },
+          "expectation": "assert-172-175",
+          "why": "The same member PUT is repeated exactly: both responses contain the same hash, byte count and hosted flag, and only one R2 object exists. Only the ready, matching-metadata retry branch is witnessed, not transfer or metadata conflicts."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 57,
+            "end": 72,
+            "sha256": "2fdd484ea1129a8e4e5f8e5da2bf44f888bc8a77be5cb5e9fc35616e9c46c7f7"
+          },
+          "expectation": "assert-172-179",
+          "why": "For a fresh authorized upload, the handler generates a replica-specific key and reserves an uploading row under the active team and live session predicates; the successful 201 response, one R2 object, and subsequent byte-identical GET witness this sequential path. Optional asset ID, authorization-change and concurrent conflict branches are not separately tested."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 74,
+            "end": 77,
+            "sha256": "bc6b8ab598ca3efdaef25e9c10a016513faefe81e467f858b3eedf61cffbc54e"
+          },
+          "expectation": "assert-172-179",
+          "why": "The successful fresh upload writes synthetic content to R2 and finalizes its reserved row; the test observes one object and retrieves the exact bytes with hash and ETag. Failed reservation, ambiguous acknowledgement and reconciliation paths are not demonstrated."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 92,
+            "end": 92,
+            "sha256": "9b8344596ecb80f6015732a5d1ee53b88e1223a1988792b1cbced1274e230921"
+          },
+          "expectation": "assert-172-174",
+          "why": "The fresh upload returns 201 with the asserted content hash, byte count and hosted flag; the immediate identical retry returns the same payload at the default 200 status."
+        }
+      ]
+    },
+    {
+      "id": "lapsed-team-message-access",
+      "title": "Check messages after team lapse",
+      "preconditions": [
+        "The preceding phases produced two discussion messages and deleted the synthetic asset, leaving its R2 bucket and database asset rows empty.",
+        "Between the preceding HTTP action and this phase the fixture sets the team subscription to canceled and paid_until just in the past; sessions remain valid and first and sent refer to the original message and response."
+      ],
+      "actions": [
+        "POST /v1/projects/${projectId}/threads/${thread.id}/messages; actor=member; body=first",
+        "POST /v1/projects/${projectId}/threads/${thread.id}/messages; actor=member; body={id:randomUUID(),body:'New after lapse'}",
+        "GET /v1/projects/${projectId}/threads/${thread.id}/messages; actor=member"
+      ],
+      "expectations": [
+        {
+          "id": "assert-191-195",
+          "description": "After the fixture subscription lapse, exact message retry equals the original response, a new message is rejected as read-only, and two messages remain readable.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 191,
+            "end": 195,
+            "sha256": "bfb936a86d5a487b0c044739e22dff08df3a8f099de761d3b90e3915734762c6"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 44,
+            "end": 46,
+            "sha256": "7166e13e0cf855cce94ba3951c080be220a69512c5a6d5e16db33bf3a06ea113"
+          },
+          "expectation": "assert-191-195",
+          "why": "After the fixture marks the team canceled with paid_until just in the past, the member can retry an existing discussion message and read two messages, while a new write receives 403 read_only. This witnesses the grace-read and non-writing access result for this member; the image was already deleted and no post-lapse asset read occurs."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "svc-j04-discussions-assets",
+      "title": "Synthetic discussion and content-addressed asset lifecycle",
+      "steps": [
+        "synthetic-team-general-thread",
+        "general-thread-message-validation",
+        "thread-resolution-history",
+        "content-addressed-png-lifecycle",
+        "lapsed-team-message-access"
+      ]
+    }
+  ]
+}

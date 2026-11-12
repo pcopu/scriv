@@ -1,0 +1,449 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "capability-fresh-owned-v89",
+      "title": "Establish owned isolated fixture",
+      "preconditions": [
+        "Real automation-enabled Catalyst app on authorized macOS; new synthetic process-owned persistent root. No private capability files, tokens, journal injection, production data or native accessibility helper.",
+        "Run ordered entire journey through tracer app -- test --scenario journeys/capability-safety. Public ScrivSession manages IDs and retained descriptors. No command retries after timeout.",
+        "Read-only waitFor polls snapshots at 50ms up to 15s; saved-project poll at 75ms up to 15s retries only initial-publication-pending. Shared reveal resolves one control, requires enabled+hittable, and may scroll its reachable ancestor at most eight times. Project opening uses public activate, text search and Open project activation.",
+        "Full source context and helpers are pinned in capability-safety-manifest.json. This prepared witness needs independent semantic review and matching native execution; status advertisement alone does not prove transport/credential safety."
+      ],
+      "actions": [
+        "ScrivSession.launch(app,{persistent:true}); capabilities verifies protocol, driver, isolation object, workspace flags, UUID identities, root suffix, unique command list and declared supported/absent commands.",
+        "Select Script; key command-s; wait for saved YAM MAN sentinel. import-json exact one-direction fixture from witness lines 55-61; read persisted-projects and loaded-project.",
+        "Compare every fixture field, allowing only generated UUID and finite createdAt/modifiedAt; packages exactly [sample,current], loaded project exact, presented-alerts empty."
+      ],
+      "expectations": [
+        {
+          "id": "contract",
+          "description": "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input.",
+          "witness": {
+            "path": "tests/e2e/journeys/capability-safety.mjs",
+            "start": 19,
+            "end": 28,
+            "sha256": "606feaa3e97397c71f7d338775b4018223d6f7787e9648bf98b252dec59bbb19"
+          }
+        },
+        {
+          "id": "model",
+          "description": "Independent fixture and unchanged package/model/alert invariants.",
+          "witness": {
+            "path": "tests/e2e/journeys/capability-safety.mjs",
+            "start": 63,
+            "end": 70,
+            "sha256": "5a166f2fb24967bcd14958739b6d76b36b0e15545ab88078fdfe39bc031127b7"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 37,
+            "end": 40,
+            "sha256": "fbdad3b191acd5363afd36e8c47cf3fcce15a137c10cb62504d67dd449c17ac1"
+          },
+          "expectation": "contract",
+          "why": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 47,
+            "end": 48,
+            "sha256": "669898de4c4e2f5f5e30b45c3edd072c31ffdcf325f23db12dc4c3f4aff268e0"
+          },
+          "expectation": "contract",
+          "why": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 53,
+            "end": 60,
+            "sha256": "a489d12b7be97527198f64bb04436eedddec17e54fe3adb4beb2caf8743fc611"
+          },
+          "expectation": "contract",
+          "why": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 67,
+            "end": 67,
+            "sha256": "97643b4e317e77b52040a051798ebdb69b1557fca247220269b350f5fe2856fb"
+          },
+          "expectation": "contract",
+          "why": "The persistent flag is derived from fresh-persistent or resumed launch mode. The public fresh capability assertion verifies persistent=true; the host always supplies the session variable, so the absent-session fallback is not claimed. Static association only; native execution is recorded separately. Guard-failure, tamper, contention and unobserved OS metadata/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 83,
+            "end": 86,
+            "sha256": "489ad49273062351fdcd0aacc1bb5ab458dc89aee1ff713184bdc0281cd30044"
+          },
+          "expectation": "contract",
+          "why": "Fresh preparation derives the temporary parent, deterministic run-specific root name, root URL and resolved named-root URL. The fresh public capability assertion checks the run-specific root identity and the saved fixture uses that workspace. Resume-descriptor operations are outside this narrowed source range. Static association only; native execution is recorded separately."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 97,
+            "end": 100,
+            "sha256": "98f655a9b281aefdc039e3c6794263a2a6a8814b1f67806d641ab088cc1d1928"
+          },
+          "expectation": "contract",
+          "why": "Fresh launch creates and opens the exclusive owned root and creates its Outbox. The fresh public capability and saved fixture assertions depend on this admitted setup. Resumed-only root validation is not the source of this fresh-workspace observation. Static association only; native execution is recorded separately. Guard-failure, tamper, contention and unobserved OS metadata/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 101,
+            "end": 105,
+            "sha256": "5f264cb50a355e89106ea1975020bb1483b6f61aa03baa5e51f772c0073c40ea"
+          },
+          "expectation": "contract",
+          "why": "Successful fresh preparation opens the created Outbox and opens a new session-lock file with the declared fresh flags. The public capability/fixture assertions depend on this admitted setup; open failure, exclusive-lock rejection and OS metadata/security properties are not established. Static association only; native execution is recorded separately."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 106,
+            "end": 122,
+            "sha256": "9c991119eb4ad56779418bb1a39c8906af6b202646355cd63f203ba9121e16fe"
+          },
+          "expectation": "contract",
+          "why": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 124,
+            "end": 133,
+            "sha256": "fb5e06fb89119c378ebf11836b500e3a0bafe9bee5f449fec4971f9c33d29dac"
+          },
+          "expectation": "contract",
+          "why": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 155,
+            "end": 157,
+            "sha256": "0e22056d2e7d81d2a021bfe114084de9b6c976255b3a570745a79a12531c0c59"
+          },
+          "expectation": "contract",
+          "why": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 160,
+            "end": 174,
+            "sha256": "9eba3bd9f8f015772b28b4b62a2a932f445926d52eab1a9e362647c05316db78"
+          },
+          "expectation": "contract",
+          "why": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 225,
+            "end": 247,
+            "sha256": "df17deb3e89e6c27fc5c52a797129cb8ed1397777cb7be7676893442ca1f5b1e"
+          },
+          "expectation": "contract",
+          "why": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 258,
+            "end": 260,
+            "sha256": "d581fc50a032bb58bd6a2f4794a078c119ef03409b55c94149cfc58b3067bd7c"
+          },
+          "expectation": "contract",
+          "why": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 425,
+            "end": 443,
+            "sha256": "d54ac44efca050cb851745b8bd3ecfdd98953768cfab6d6b6439c7140702c1a7"
+          },
+          "expectation": "contract",
+          "why": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        }
+      ]
+    },
+    {
+      "id": "capability-refusal-v89",
+      "title": "Reject unsupported commands without mutation",
+      "preconditions": [
+        "Real automation-enabled Catalyst app on authorized macOS; new synthetic process-owned persistent root. No private capability files, tokens, journal injection, production data or native accessibility helper.",
+        "Run ordered entire journey through tracer app -- test --scenario journeys/capability-safety. Public ScrivSession manages IDs and retained descriptors. No command retries after timeout.",
+        "Read-only waitFor polls snapshots at 50ms up to 15s; saved-project poll at 75ms up to 15s retries only initial-publication-pending. Shared reveal resolves one control, requires enabled+hittable, and may scroll its reachable ancestor at most eight times. Project opening uses public activate, text search and Open project activation.",
+        "Full source context and helpers are pinned in capability-safety-manifest.json. This prepared witness needs independent semantic review and matching native execution; status advertisement alone does not prove transport/credential safety.",
+        "The first step saved sample and independent fixture; expectedLoaded is full read-only loaded-project response. Script tab is active and workspace-tabs is unique, enabled and hittable."
+      ],
+      "actions": [
+        "For install-token, authorize-origin, outbox-write, resume, reset and delete-workspace send target workspace-tabs and require exact Unknown command response. These are deliberately unsupported commands, not credential/network/outbox calls.",
+        "After EACH refusal compare entire sorted packages, full loaded-project including dates, and presented-alerts=[].",
+        "Reject activate without target and with absent target; select indices -1, segment count and string 0; text on noneditor workspace-tabs; key without modifiers. Require each exact error and invariant.",
+        "Reject extra path parameter on loaded-project, local-image-evidence, script-interaction-counts and presented-alerts; exact error and invariant after each.",
+        "import-json valid current project JSON padded to exactly 65,537 ASCII bytes (under 1 MiB transport); assert JSON parses identically, exact refusal and full unchanged invariant.",
+        "Reject relaunch({root:session.root}); require full capabilities unchanged, package/model/alert invariant and same selected tab."
+      ],
+      "expectations": [
+        {
+          "id": "refusal",
+          "description": "Every invalid public request receives exact error followed by full nonmutation assertions.",
+          "witness": {
+            "path": "tests/e2e/journeys/capability-safety.mjs",
+            "start": 37,
+            "end": 47,
+            "sha256": "5162742564a9ef35497ccaed0ac244e2a6bf34ae62b56631ec17741727661912"
+          }
+        },
+        {
+          "id": "host-refusal",
+          "description": "Argument-bearing relaunch retains full capability and selected tab.",
+          "witness": {
+            "path": "tests/e2e/journeys/capability-safety.mjs",
+            "start": 96,
+            "end": 100,
+            "sha256": "cb693030c8fb8135e5b404e7206b34d0ce4556230ebb056790d77e655682de5f"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 286,
+            "end": 289,
+            "sha256": "75f35ed14262dd5313e36336b0b41fc4397a8fc9d4003e1c34450e150fad0d60"
+          },
+          "expectation": "refusal",
+          "why": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 293,
+            "end": 296,
+            "sha256": "fd1208ec29481b3c0d6e820b8d3f96b24a68d9c97b1cce3368de8ecc24087688"
+          },
+          "expectation": "refusal",
+          "why": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 300,
+            "end": 303,
+            "sha256": "be53340637c0733a61c336310c1452479c5ef1b02038be1f08dacd3fcf7c1325"
+          },
+          "expectation": "refusal",
+          "why": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 309,
+            "end": 310,
+            "sha256": "390308ff98727586d6b0a3bb0587bfeeaa57fba2528d0817f1c3df41538bcc61"
+          },
+          "expectation": "refusal",
+          "why": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 408,
+            "end": 409,
+            "sha256": "b117780eb4da7c07ec66eda97fc40b69084ab5a63c4347d6311e483add47d76f"
+          },
+          "expectation": "refusal",
+          "why": "A public key request without modifiers reaches the input/modifier shape guard and returns the exact Expected input and modifier names error. The refusal helper independently checks every saved package, the complete loaded model including dates, and no presented alerts. Static association only; native execution is recorded separately. Other guard failures, tamper, contention and unobserved OS metadata/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 518,
+            "end": 520,
+            "sha256": "42012bb069693254b4836adeccce4487cac4e7915e8af932cba052184d7d1e3e"
+          },
+          "expectation": "refusal",
+          "why": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 798,
+            "end": 801,
+            "sha256": "6ccdd6df77ace49b02338e035534ba74df09e5c4910fb1989ac197764d5da3a6"
+          },
+          "expectation": "refusal",
+          "why": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 811,
+            "end": 811,
+            "sha256": "df4993a2dcd9414ca54bdbd35a37dc670f2ee5363b7c978a0f8effe92f47fa3e"
+          },
+          "expectation": "refusal",
+          "why": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIImport.swift",
+            "start": 27,
+            "end": 27,
+            "sha256": "2a6cbb1c86f875055aff28a4100251e82f603a03ac2c817b1d1f0fc12d30b39d"
+          },
+          "expectation": "refusal",
+          "why": "Valid JSON padded over the 64 KiB semantic import limit is rejected without a new package or model change Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 138,
+            "end": 138,
+            "sha256": "3692cf79f66c111c228c823b5f2cc4332c72b8d34dc64e7e74f4d31765b34cd9"
+          },
+          "expectation": "host-refusal",
+          "why": "Host rejects argument-bearing relaunch before stopping the owner Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        }
+      ]
+    },
+    {
+      "id": "capability-rotate-v89",
+      "title": "Rotate and reopen twice",
+      "preconditions": [
+        "Real automation-enabled Catalyst app on authorized macOS; new synthetic process-owned persistent root. No private capability files, tokens, journal injection, production data or native accessibility helper.",
+        "Run ordered entire journey through tracer app -- test --scenario journeys/capability-safety. Public ScrivSession manages IDs and retained descriptors. No command retries after timeout.",
+        "Read-only waitFor polls snapshots at 50ms up to 15s; saved-project poll at 75ms up to 15s retries only initial-publication-pending. Shared reveal resolves one control, requires enabled+hittable, and may scroll its reachable ancestor at most eight times. Project opening uses public activate, text search and Open project activation.",
+        "Full source context and helpers are pinned in capability-safety-manifest.json. This prepared witness needs independent semantic review and matching native execution; status advertisement alone does not prove transport/credential safety.",
+        "Prior refusal step succeeded; current fixture remains saved and owned by live persistent session. Never Save startup sample after relaunch."
+      ],
+      "actions": [
+        "Repeat twice: previous=session; session=await previous.relaunch(); capabilities asserts persistent/resumed, same root/run and new never-seen session UUID.",
+        "Read packages before Save; use Projects UI openProject(current), with public search text and Open project activation; compare full expectedLoaded and package/alert invariant.",
+        "Reject previous.command(snapshot) with Session is closing or relaunching and previous.relaunch with exact live persistent requirement; verify new session invariant after both refusals. Require three unique session IDs."
+      ],
+      "expectations": [
+        {
+          "id": "rotation",
+          "description": "Two process rotations preserve root/run and exact saved/loaded document while old sessions refuse use.",
+          "witness": {
+            "path": "tests/e2e/journeys/capability-safety.mjs",
+            "start": 103,
+            "end": 119,
+            "sha256": "06ebaf8994ca5376ecf5a38dceb5f13a3f7880fc5a4d6367ad00a63b2f271347"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 78,
+            "end": 82,
+            "sha256": "17487d961c07de3e546d73cd63fb7da5cf7b7445cf026ae49b49512791aa7b09"
+          },
+          "expectation": "rotation",
+          "why": "Both real persistent process rotations duplicate the inherited owned descriptor and close the original inherited descriptor before opening other files. The public capabilities and cold-open model assertions depend on this admitted resume path; failure cleanup is not claimed. Static association only; native execution is recorded separately. Guard-failure, tamper, contention and unobserved OS metadata/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 87,
+            "end": 91,
+            "sha256": "6eca048a8741c5b39db946ec1c199438c7ee70c251907019b6ffb24f016fbf43"
+          },
+          "expectation": "rotation",
+          "why": "Preparation opens the resolved temporary parent, checks the successful open, arranges its close and selects the resumed branch. The two public rotations rely on this parent setup. The following fstat/privateDirectory/childMatches checks are outside this exact range and are not attributed to it. Static association only; native execution is recorded separately. Guard-failure, tamper, contention and unobserved OS metadata/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 134,
+            "end": 153,
+            "sha256": "c208eeb788d539116d1aac821308b97258486242d81afabd19ed23237a33383d"
+          },
+          "expectation": "rotation",
+          "why": "Inherited owned descriptor and successful bounded retained-tree validation admit a real cold reopen without changing persisted models. No tamper, bounds rejection or lock contention claim Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 176,
+            "end": 204,
+            "sha256": "8a8aed9132a2729d6334e0bf81a38598a345bd6409431016bf22597a95b97db0"
+          },
+          "expectation": "rotation",
+          "why": "Inherited owned descriptor and successful bounded retained-tree validation admit a real cold reopen without changing persisted models. No tamper, bounds rejection or lock contention claim Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+            "start": 207,
+            "end": 211,
+            "sha256": "905acbc0c21f2c81499f427849869f8b32d10ffe52d3b799f1d5167446c50dc9"
+          },
+          "expectation": "rotation",
+          "why": "Inherited owned descriptor and successful bounded retained-tree validation admit a real cold reopen without changing persisted models. No tamper, bounds rejection or lock contention claim Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
+        }
+      ]
+    },
+    {
+      "id": "capability-fresh-isolation-v89",
+      "title": "Start another isolated workspace",
+      "preconditions": [
+        "Real automation-enabled Catalyst app on authorized macOS; new synthetic process-owned persistent root. No private capability files, tokens, journal injection, production data or native accessibility helper.",
+        "Run ordered entire journey through tracer app -- test --scenario journeys/capability-safety. Public ScrivSession manages IDs and retained descriptors. No command retries after timeout.",
+        "Read-only waitFor polls snapshots at 50ms up to 15s; saved-project poll at 75ms up to 15s retries only initial-publication-pending. Shared reveal resolves one control, requires enabled+hittable, and may scroll its reachable ancestor at most eight times. Project opening uses public activate, text search and Open project activation.",
+        "Full source context and helpers are pinned in capability-safety-manifest.json. This prepared witness needs independent semantic review and matching native execution; status advertisement alone does not prove transport/credential safety.",
+        "Both rotations completed; close the old owner before launching another app, avoiding simultaneous window/focus assumptions."
+      ],
+      "actions": [
+        "Close owner, launch default nonpersistent app, assert new root/run with sessionID=runID and same advertised isolation.",
+        "Select Script, Save fresh sample, observe exactly that one package and distinct sample IDs.",
+        "Reject fresh.relaunch; assert package and loaded model unchanged, no alerts; require exact four completed chapters; finally close owned sessions without deleting data."
+      ],
+      "expectations": [
+        {
+          "id": "fresh",
+          "description": "New root contains only new saved sample; nonpersistent relaunch rejection is nonmutating.",
+          "witness": {
+            "path": "tests/e2e/journeys/capability-safety.mjs",
+            "start": 123,
+            "end": 137,
+            "sha256": "eff59f90a221b808c12926043f6fc15b2172b20e88ad086c9ae04cd382500d9d"
+          }
+        }
+      ],
+      "mappings": []
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "capability-safety-v89",
+      "title": "Exercise owned capability safety",
+      "steps": [
+        "capability-fresh-owned-v89",
+        "capability-refusal-v89",
+        "capability-rotate-v89",
+        "capability-fresh-isolation-v89"
+      ]
+    }
+  ]
+}

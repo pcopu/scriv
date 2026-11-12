@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "app": [
+    "node",
+    "cli/scriv.mjs"
+  ],
+  "actions": [
+    "--help"
+  ]
+}

@@ -1,0 +1,861 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "cli-observers-package-v86",
+      "title": "Observe independent image package",
+      "featureId": "cli-automation",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/package-image-invariants.mjs"
+      ],
+      "plannedActions": [
+        "Prepared contract only: native execution NOT RUN in this lane. Use the real isolated automation-enabled Catalyst app on macOS; fresh process and synthetic workspace per scenario. No app fallback, production user data, provider calls or saved grants.",
+        "ScrivSession.launch performs capabilities handshake and validates run/session/root. Every command carries a new transport id; session.command emits {...parameters,id,command}. Never blindly repeat timed-out mutations.",
+        "Every waitFor polls snapshot every 50ms up to 15s. reveal performs up to 8 attempts, each finding exactly one target, conditionally scrolls its deepest hittable ancestor, rejects covered controls, and requires enabled+hittable before activation.",
+        "tab(name): snapshot until ready workspace-tabs; select {target:workspace-tabs,index:segments.indexOf(name)} only if not selected; snapshot until selected ready. Open(project): activate workspace-project; reveal Find a project; text {target:search.path,text:project.title}; snapshot until exact title and scene count; activate enabled Open project; snapshot until workspace-project title+hittable; loaded-project and assert exact project id.",
+        "waitForSavedProject polls persisted-projects every 75ms up to 15s and retries only the explicit initial-publication-pending read error; no mutation retry. saved sorts the entire persisted-projects array by id.",
+        "No --with-prompts or --with-semantic-prompts in package scenario. Do not retry denied character-aliases AppKit fallback, introduce native alert actions, use private dispatch, run a provider, widen observers into review modal, or infer physical input/retirement credit.",
+        "Existing validatePackageImageFixture() compares the whole Swift literal to independent JS expected input before launching the native journey; source-reconciliation assertion only.",
+        "Launch via tracer app -- test --scenario journeys/package-image-invariants --app /authorized/ScrivAutomation.app (not executed here).",
+        "Launch handshake capabilities, then journey capabilities; require declared commands and cloudIsolation.network=disabled.",
+        "tab(Script); key {input:s,modifiers:[command]}; poll persisted-projects for YAM MAN; capture sample and loaded-project.",
+        "In this exact order call stage-package-fixture with {}, {fixture:null}, {fixture:../image-inspector-invariants-v1}, {fixture:image-inspector-invariants-v1,path:/tmp/other.scriv}, {fixture:image-inspector-invariants-v1,text:{}}, {fixture:image-inspector-invariants-v1,projectID:sample.id}; after EACH require fixed error then persisted-projects=[sample] and loaded-project=initial.",
+        "stage-package-fixture {fixture:image-inspector-invariants-v1}; assert exact result keys/token/title and UUID distinct from sample; construct independent packageImageFixture() replacing id only. loaded-project unchanged; persisted-projects exactly sorted [sample,fixture]. Repeat same stage command ONCE expecting rejection; persisted-projects remains exact.",
+        "Open(fixture); assert opened.project equals complete independent fixture; tab(Script); Invariant: persisted-projects equals sorted [sample,current]; loaded-project.project equals current; presented-alerts equals []; package journey also requires absent entry characterLinks.",
+        "seek(1500,Foreground,2): reveal scene-playback-position, require maximum=3000; slider {target:path,value:1500}; snapshot until exact slider value and Foreground \u00b7 Version 2.",
+        "Gallery: activate preview-version; snapshot until image-picker-use-selection plus exactly two hittable labels containing newline Version; assert latest-first [2,1] and no Not on this Mac. Activate enabled Cancel; snapshot until picker disappears; invariant.",
+        "selectVersion(foreground,1): loaded-project and immutable Date-bit precheck; Gallery; activate cell whose label contains newline Version 1; activate image-picker-use-selection; snapshot until picker absent and preview-version hittable; poll saved project until revision increases; require exactly +1, finite nondecreasing modifiedAt and complete stable model differs ONLY foreground.imageId=v1; invariant; loaded-project and unchanged project/image creation Date bits. Poll local-image-evidence up to 60 times at 100ms: on EVERY observation require project id, 0 jobs, not scanning, both independently expected hashes, 73 bytes, decoded=true, 2x2; stop only when v1 visiblePreviewCount>0, otherwise fail.",
+        "Repeat full selectVersion(foreground,2), including Gallery, mutation and date assertions, invariant and bounded local-image-evidence poll for visible v2.",
+        "seek(500,Background,1); repeat full selectVersion(background,2), including all assertions and bounded visible-v2 poll.",
+        "In order seek(500,Background,2), invariant; seek(1500,Foreground,2), invariant; seek(2500,Background,2), invariant. Require exactly two cues with authored durations [3000,1000].",
+        "loaded-project before; Open(sample); Open(current) equals complete before including Date bits; invariant. Require completed case list exactly selectedCases. Finally close session even on failure."
+      ],
+      "expectedOutcomes": [
+        "The staged/current fixture is compared with the independently specified expected project object. The startup YAM MAN package is compared unchanged with its captured baseline, not an independent specification. The sorted saved list equals sorted [sample, current], and the actual loaded model equals current; responses arrive through real native stdio.",
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "id": "cli-observers-merge-v86",
+      "title": "Observe native callback counts",
+      "featureId": "cli-automation",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/script-merge.mjs",
+        "tests/e2e/journeys/support/script-authoring-steps.mjs",
+        "tests/e2e/journeys/support/script-merge-steps.mjs"
+      ],
+      "plannedActions": [
+        "Prepared static navigation only; native execution NOT RUN and blocked in this lane. Matching automation-enabled Catalyst app on macOS required; SCRIV_E2E_APP must resolve to an authorized verified bundle before any future execution.",
+        "The single full public invocation is the canonical identity for the complete script-merge journey. No fixed runtime wire trace is claimed. Journey runs merge-and-save, native-deletion, rejected-boundaries in source order; fresh ScrivSession per group, fresh session for each rejected-boundary case; finally close each.",
+        "Fixture source is script-merge-cases.mjs with independent literal expected text/caret; imports use production import-json, exact saved/loaded baselines and real Layers controls. setup saves YAM MAN and establishes capabilities/run identity. Public delete-backward calls actual mounted UITextView.deleteBackward once; never retry mutations.",
+        "ScrivSession capabilities handshake validates root/session. session.waitFor polls snapshots every 50ms with 15s deadline; waitForSavedProject polls persisted-projects every 75ms retrying only publication-pending. Dynamic IDs/paths come from previous replies; no fabricated UUIDs.",
+        "Only successful cumulative merge counter observation and editor text/selection observation are linked. No onTextEdit callback increment, exhausted counter behavior, non-CLI gate, rejected payload/security/permission gate, physical keyboard, asynchronous handling or detached-editor claim.",
+        "node cli/scriv.mjs test --scenario journeys/script-merge --app \"$SCRIV_E2E_APP\""
+      ],
+      "expectedOutcomes": [
+        "Response has exactly schema/observation/two bounded integer counters and nondecreasing process totals.",
+        "One public native deletion produces the independent expected merged project and exactly one merge callback invocation.",
+        "Mounted focused native editor must have exact expected text and UTF-16 selection, else polling throws.",
+        "The actual native text view disables smart insert/delete for the independent Unicode deletion case."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "cli-observers-package-v86-01",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 89,
+        "end": 90,
+        "sha256": "201a3929df2e0261b8f02979e5fdeb44829f8b3a8d63f11996dd41a096d2aeed",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "33195b76b81f0a3251364b73774af108c9889b1c5b82ef1f2e135337be8aaa0e"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Successful command dispatch/reply and saved JSON return support the exact independent model oracle. Error paths, serialization failure and isolation gates are excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "The staged/current fixture is compared with the independently specified expected project object. The startup YAM MAN package is compared unchanged with its captured baseline, not an independent specification. The sorted saved list equals sorted [sample, current], and the actual loaded model equals current; responses arrive through real native stdio."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-02",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 95,
+        "end": 95,
+        "sha256": "7c7955ce47df56b80f5443d72c5367cc9b43868209586079763250c3136648a7",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "67408f8a3a481afb42476b20035db6c31d7d2b678f116784186f15ef87203089"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Successful command dispatch/reply and saved JSON return support the exact independent model oracle. Error paths, serialization failure and isolation gates are excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "The staged/current fixture is compared with the independently specified expected project object. The startup YAM MAN package is compared unchanged with its captured baseline, not an independent specification. The sorted saved list equals sorted [sample, current], and the actual loaded model equals current; responses arrive through real native stdio."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-03",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 241,
+        "end": 242,
+        "sha256": "5fe56d9af1537141cc9dac966e206eddf55db3c329236c7912a3d0d0454c60ba",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "43ccee235eab8716241ab4ba2330f9ee2d5167971f9828d3d5bf06345d40672e"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Successful command dispatch/reply and saved JSON return support the exact independent model oracle. Error paths, serialization failure and isolation gates are excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "The staged/current fixture is compared with the independently specified expected project object. The startup YAM MAN package is compared unchanged with its captured baseline, not an independent specification. The sorted saved list equals sorted [sample, current], and the actual loaded model equals current; responses arrive through real native stdio."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-04",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 249,
+        "end": 249,
+        "sha256": "b4f7aeb9f63f0a57c09c742578d82c2b9d0fe379a6c1c3a405e3274544f288ac",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "9e156c997db184dcc939a9430db43b635e27fceb834ef05e0614c72792cf5a4d"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Successful command dispatch/reply and saved JSON return support the exact independent model oracle. Error paths, serialization failure and isolation gates are excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "The staged/current fixture is compared with the independently specified expected project object. The startup YAM MAN package is compared unchanged with its captured baseline, not an independent specification. The sorted saved list equals sorted [sample, current], and the actual loaded model equals current; responses arrive through real native stdio."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-05",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 297,
+        "end": 297,
+        "sha256": "42c475b9792fc983b1cc1b2156a5eda23f7c136eafa61bf98a274774b9f0b2d7",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "77d7e80694d51bcfe53e6c7cb5fcd54e5014041a7916323c5cbe8d26a8460ab9"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Successful command dispatch/reply and saved JSON return support the exact independent model oracle. Error paths, serialization failure and isolation gates are excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "The staged/current fixture is compared with the independently specified expected project object. The startup YAM MAN package is compared unchanged with its captured baseline, not an independent specification. The sorted saved list equals sorted [sample, current], and the actual loaded model equals current; responses arrive through real native stdio."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-06",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 378,
+        "end": 378,
+        "sha256": "cc0f92a36210d7cf478a1dcd404ed40f0f1956d12202059503ac6325c63a2748",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "12d13f15d5174b8e15bbc96133b6ac8594cdf168dad1540bc086453403cef3cd"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Successful command dispatch/reply and saved JSON return support the exact independent model oracle. Error paths, serialization failure and isolation gates are excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "The staged/current fixture is compared with the independently specified expected project object. The startup YAM MAN package is compared unchanged with its captured baseline, not an independent specification. The sorted saved list equals sorted [sample, current], and the actual loaded model equals current; responses arrive through real native stdio."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-07",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILoadedProject.swift",
+        "start": 14,
+        "end": 14,
+        "sha256": "f9b50cbbe54db6af2c72da06ef365643aebf1617e80922c1b5c2d72811c5293f",
+        "fileSha256": "790202e3fad0deeae52510234d55e932e843f918ed7fb91891f7a0a847af68f2",
+        "spanSha256": "fce9077558c66ac60cf3d1f233b71532f3de373309b854e1ca3c0329c07ec9be"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Read the real store model, encode using production ScrivJSON and return its observation. Date fields are contextual existing output, not a new exact Date-bit oracle; all security and modal gates excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "The staged/current fixture is compared with the independently specified expected project object. The startup YAM MAN package is compared unchanged with its captured baseline, not an independent specification. The sorted saved list equals sorted [sample, current], and the actual loaded model equals current; responses arrive through real native stdio."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-08",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILoadedProject.swift",
+        "start": 36,
+        "end": 37,
+        "sha256": "b8ab153b8c0b5fa0a63c68c3470d5970f46e827822f005ff9471bf7da1467312",
+        "fileSha256": "790202e3fad0deeae52510234d55e932e843f918ed7fb91891f7a0a847af68f2",
+        "spanSha256": "972b8020f587f2044af0d287f679164f820220fa74dc94cc50b64b16ed745576"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Read the real store model, encode using production ScrivJSON and return its observation. Date fields are contextual existing output, not a new exact Date-bit oracle; all security and modal gates excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "The staged/current fixture is compared with the independently specified expected project object. The startup YAM MAN package is compared unchanged with its captured baseline, not an independent specification. The sorted saved list equals sorted [sample, current], and the actual loaded model equals current; responses arrive through real native stdio."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-09",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILoadedProject.swift",
+        "start": 95,
+        "end": 95,
+        "sha256": "e518b58f06d88526ed6813c2015763ab268fd8e5f9d0cad62030c6a09826c8be",
+        "fileSha256": "790202e3fad0deeae52510234d55e932e843f918ed7fb91891f7a0a847af68f2",
+        "spanSha256": "e8dd4439ea59f732b75537f13713ec431ba288126148683df0330604a2c8b14e"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Read the real store model, encode using production ScrivJSON and return its observation. Date fields are contextual existing output, not a new exact Date-bit oracle; all security and modal gates excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "The staged/current fixture is compared with the independently specified expected project object. The startup YAM MAN package is compared unchanged with its captured baseline, not an independent specification. The sorted saved list equals sorted [sample, current], and the actual loaded model equals current; responses arrive through real native stdio."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-10",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILoadedProject.swift",
+        "start": 111,
+        "end": 111,
+        "sha256": "288aa0c7508f3cb46711a9d33d7aac527e32a24b106b2001257da6e843661e06",
+        "fileSha256": "790202e3fad0deeae52510234d55e932e843f918ed7fb91891f7a0a847af68f2",
+        "spanSha256": "bd339662bb52a0813e200540b106c5f5cfe7787d4b0397411d8493164657f985"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Read the real store model, encode using production ScrivJSON and return its observation. Date fields are contextual existing output, not a new exact Date-bit oracle; all security and modal gates excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "The staged/current fixture is compared with the independently specified expected project object. The startup YAM MAN package is compared unchanged with its captured baseline, not an independent specification. The sorted saved list equals sorted [sample, current], and the actual loaded model equals current; responses arrive through real native stdio."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-11",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILoadedProject.swift",
+        "start": 113,
+        "end": 113,
+        "sha256": "772f9695c7467c74773c9ce7fc429c5d0d0e487f3c51d15d6668a3d24072bb95",
+        "fileSha256": "790202e3fad0deeae52510234d55e932e843f918ed7fb91891f7a0a847af68f2",
+        "spanSha256": "b77016998ac605957e02362b893470bd24805d5ab4a7760041882fc40749dfa5"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Read the real store model, encode using production ScrivJSON and return its observation. Date fields are contextual existing output, not a new exact Date-bit oracle; all security and modal gates excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "The staged/current fixture is compared with the independently specified expected project object. The startup YAM MAN package is compared unchanged with its captured baseline, not an independent specification. The sorted saved list equals sorted [sample, current], and the actual loaded model equals current; responses arrive through real native stdio."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-12",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 290,
+        "end": 290,
+        "sha256": "662541f5fd2f4f8a1c01d7814d5b3245d9d1169c9bd1fcf34e8ee04fe6804605",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "6845ab900c1174f2a09bab45a9a3f9314d9207bbcf7b3e68ea9b713a73a84e97"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Route read-only local-image-evidence to the real native observer after unchanged request/workspace checks. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-13",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 15,
+        "end": 15,
+        "sha256": "3cb95ed1e0cc8536a485082e282e94cb59f24e39e0a2673684349c6c992750cf",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "232ef5d1e6d158972ef8403fd69b1be2099a18b1aa46d196e27321b0534d309c"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-14",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 20,
+        "end": 20,
+        "sha256": "5873624c031a39a3475344f2259dedbb28525124704ab45be29479ce96a80069",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "500332571b8ac9f1176e14da53759c4248f271b9233b6b47a7b85e3f9d096bb8"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-15",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 64,
+        "end": 64,
+        "sha256": "0d729aa1c6ecc46233ba00fe8d0fdbcf489a9f1629c0e7a651fa0959707159af",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "f731c8408ad1fd7d89230d98066acead3b901ae1f72ed047f778e9e4ee165e48"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-16",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 81,
+        "end": 85,
+        "sha256": "00be0c4a9696352789f85b9b2d0ba2c0aa92ab2d7ae6929a18e02bc0bb62bee0",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "8a8f797361ea072336d6bc78aa29a50956d086299a15d2956f70581ecede6901"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-17",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 90,
+        "end": 90,
+        "sha256": "813a48ab01209538567225cd074bbc1d72128d2ba0a9a1848ebeaf16544da712",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "a5e9577b81b247ed8827df2015ee88bffac5df49fe78946b47dbddd962b91cd3"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-18",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 92,
+        "end": 94,
+        "sha256": "b78f0b882aa8d9eb55868a6c9848d2eafd2319d4a5730cebd31a0f9c551c6ab8",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "67a7e0b7adab1aabac1fed826c2531af71d7614efc5469f8a2640b037a634ffa"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-19",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 98,
+        "end": 98,
+        "sha256": "168e826d5a8526be07e94508810b06e0aac55892083ecdf63101bf6f17783b0c",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "846b23b1cf8d7e6c307b37cdb91c77a071b0cf0c007eac76e4a2401e1d68ee8a"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-20",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 108,
+        "end": 113,
+        "sha256": "74f58854468b2bb0285372db69bfc821eaa1292bdb52c5ffbc0146a030461ae8",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "3244fd3eb4e63eb5ddab23007f339d9da143a97d6da6e8e8646fdaa809db4f4a"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-21",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 118,
+        "end": 119,
+        "sha256": "5747871ab357fafef1871323c093bcb2bd820e478018b3e465c849060049367e",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "9d04af315ee01bb53c6c7b6a3317802b0d8b6471f1830ab4eb7e61bc9e1e4fb6"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-22",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 143,
+        "end": 145,
+        "sha256": "463d04a0474d3917a90791689d6b052811e2707d3630edde26af8ffd2aa103ef",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "686bba91522eca67252792687eb6fa9d5a50da757bb3740bcfe1daba54925277"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Successful workspace preview traversal and active-surface count support the bounded must-be-visible oracle. Excludes hidden/clipped rejection branches and unasserted emitted frame/window metadata; no pixel screenshot or occlusion guarantee. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-23",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 151,
+        "end": 153,
+        "sha256": "b3f7c7a9403c37c8b6e8e22463f0865417e7fe999a4d53147b66c3ab8a6d62c3",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "d6c430cb8a172908829a6a2742f097e458c0fbd58f35ccecf6e9c24c1d4f9096"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Successful workspace preview traversal and active-surface count support the bounded must-be-visible oracle. Excludes hidden/clipped rejection branches and unasserted emitted frame/window metadata; no pixel screenshot or occlusion guarantee. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-24",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 156,
+        "end": 157,
+        "sha256": "0229c3754b486e0f3fa0f36ce970ac7784c1282b7f95d75aaa64215a39f03ad3",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "1e1073b62d119e3ac68d615c66e2b3eb68f51611a9425dacadd8c073eb6d9e66"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Successful workspace preview traversal and active-surface count support the bounded must-be-visible oracle. Excludes hidden/clipped rejection branches and unasserted emitted frame/window metadata; no pixel screenshot or occlusion guarantee. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-25",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 159,
+        "end": 161,
+        "sha256": "dccf6ce3d8f3d98549426e11fa845980e95dd33b70b26f6a898de0aebe14fb26",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "5b74bd179522de2d8d67d2b8ab080b42e7394aeeab0d541c36f887a9dd8c1150"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Successful workspace preview traversal and active-surface count support the bounded must-be-visible oracle. Excludes hidden/clipped rejection branches and unasserted emitted frame/window metadata; no pixel screenshot or occlusion guarantee. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-26",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 168,
+        "end": 169,
+        "sha256": "625914995b73ff2ed03ae233c35a6af56c3bee6acf6e0b6631cd79da2a418621",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "76919b59edd9419cf8aa53eb6652f10e05068eeb8d97a5624cbdaa1661a2ab85"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Successful workspace preview traversal and active-surface count support the bounded must-be-visible oracle. Excludes hidden/clipped rejection branches and unasserted emitted frame/window metadata; no pixel screenshot or occlusion guarantee. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-package-v86-27",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageEvidence.swift",
+        "start": 171,
+        "end": 173,
+        "sha256": "cf2643b372946131ba5a5924c535a89a68bb3414ffe44b825e480cbc4bae168e",
+        "fileSha256": "8504fa370d8ad6f373372e770e0d0866f713fef195aa10838bb7e4729eeba464",
+        "spanSha256": "a3cdc95180dbfd76c9b4586959f70d262120927a375cb96662192098f59f4e72"
+      },
+      "scenarioIds": [
+        "cli-observers-package-v86"
+      ],
+      "rationale": "Successful workspace preview traversal and active-surface count support the bounded must-be-visible oracle. Excludes hidden/clipped rejection branches and unasserted emitted frame/window metadata; no pixel screenshot or occlusion guarantee. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Both independent fixture asset digests, byte counts and decoded dimensions are observed; selected version must eventually have a visible decoded preview or fail."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-merge-v86-01",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 304,
+        "end": 304,
+        "sha256": "425f9df57aef918b436ffdf46d77f4c629327209ce3534077644944761f9e46b",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "58de1e093bda972fd3f0d006c9e1d08d550b8e64a138f8b45fab8fb9f669cf1f"
+      },
+      "scenarioIds": [
+        "cli-observers-merge-v86"
+      ],
+      "rationale": "Real request routing invokes the cumulative observation helper; unchanged outer gates remain outside mapping. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Response has exactly schema/observation/two bounded integer counters and nondecreasing process totals."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-merge-v86-02",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIInteractionCounts.swift",
+        "start": 55,
+        "end": 58,
+        "sha256": "924dd86f404e38874dcfc842020141b81863d0729526979ebb885e0fb3fcd76e",
+        "fileSha256": "e08ea793fad0a88af18d0a825660371e044b9d3fbd3fb7a7e87ac60fd70df942",
+        "spanSha256": "ab7f82f0c2a6e14a2d90ed651f2c84107a17a63121749ec7327292bfb02d69fd"
+      },
+      "scenarioIds": [
+        "cli-observers-merge-v86"
+      ],
+      "rationale": "Return only exact asserted schema, observation label and cumulative bounded counters. This is not proof of callback correctness absent the independent delta assertion. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Response has exactly schema/observation/two bounded integer counters and nondecreasing process totals."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-merge-v86-03",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIInteractionCounts.swift",
+        "start": 29,
+        "end": 30,
+        "sha256": "a5a5215df7d3a577148a5a77a823749ea608dcf7862ea63d3b5bc61625a75fa5",
+        "fileSha256": "e08ea793fad0a88af18d0a825660371e044b9d3fbd3fb7a7e87ac60fd70df942",
+        "spanSha256": "ce06158e8e8e962480470be89f49d5dadf7904ffd87b5d1bab862e44b0dcd410"
+      },
+      "scenarioIds": [
+        "cli-observers-merge-v86"
+      ],
+      "rationale": "ScriptTextViews.deleteBackward records immediately before its real merge closure; the journey compares before/after counts and asserts exactly one, plus independently specified merged content. No limit-exhaustion or launch-flag assertion. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "One public native deletion produces the independent expected merged project and exactly one merge callback invocation."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-merge-v86-04",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIInteractionCounts.swift",
+        "start": 39,
+        "end": 40,
+        "sha256": "8322fd6ef0f9d3f8e7537554dbca7d6d1b5a7818a833da514dcbe3c5adac0418",
+        "fileSha256": "e08ea793fad0a88af18d0a825660371e044b9d3fbd3fb7a7e87ac60fd70df942",
+        "spanSha256": "39b82ed19a2e425641cdd64115c6a0796c104ddd5578dc496045f71c5d51659e"
+      },
+      "scenarioIds": [
+        "cli-observers-merge-v86"
+      ],
+      "rationale": "ScriptTextViews.deleteBackward records immediately before its real merge closure; the journey compares before/after counts and asserts exactly one, plus independently specified merged content. No limit-exhaustion or launch-flag assertion. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "One public native deletion produces the independent expected merged project and exactly one merge callback invocation."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-merge-v86-05",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 140,
+        "end": 144,
+        "sha256": "d1390fa9af10d99d524c8775628cb6df5692c11e51cb6010923543eac5094cad",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "809b4a9395eb9c6d4586a9af0be00357a26ab1a02490bbe1be1e8afeff9d73a0"
+      },
+      "scenarioIds": [
+        "cli-observers-merge-v86"
+      ],
+      "rationale": "Real view traversal and UITextInput snapshot emit text and native selection used by exact bounded polling after public deleteBackward. Visibility rejection, selectable/editable attributes and arbitrary snapshot attributes are not included. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Mounted focused native editor must have exact expected text and UTF-16 selection, else polling throws."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-merge-v86-06",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 497,
+        "end": 498,
+        "sha256": "87fb4fb7b226586f934ca41449da35e916035a5fc898f5924f7efed8f1260084",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "f4a8912127393f970aa217fa603b4e0b437fb9eba2dd70374ad6375e00000873"
+      },
+      "scenarioIds": [
+        "cli-observers-merge-v86"
+      ],
+      "rationale": "Real view traversal and UITextInput snapshot emit text and native selection used by exact bounded polling after public deleteBackward. Visibility rejection, selectable/editable attributes and arbitrary snapshot attributes are not included. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Mounted focused native editor must have exact expected text and UTF-16 selection, else polling throws."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-merge-v86-07",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 502,
+        "end": 504,
+        "sha256": "3af8be92706536575f44396134000a11adf737fae87c99c2427a9d8e13b0afd0",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "0e5cf0d1a37681473b26f0a30c520dc6c160a549f6f89170f2d7d488b549c776"
+      },
+      "scenarioIds": [
+        "cli-observers-merge-v86"
+      ],
+      "rationale": "Real view traversal and UITextInput snapshot emit text and native selection used by exact bounded polling after public deleteBackward. Visibility rejection, selectable/editable attributes and arbitrary snapshot attributes are not included. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Mounted focused native editor must have exact expected text and UTF-16 selection, else polling throws."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-merge-v86-08",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 515,
+        "end": 517,
+        "sha256": "e75ceef78142ba6150091ee1d701fe508c3750adc77fd0a8515a2abab938d0a1",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "4f8ee1876267e692d2bbd748696a858f13355b83f8b965c3b9ff23a1add7b006"
+      },
+      "scenarioIds": [
+        "cli-observers-merge-v86"
+      ],
+      "rationale": "Real view traversal and UITextInput snapshot emit text and native selection used by exact bounded polling after public deleteBackward. Visibility rejection, selectable/editable attributes and arbitrary snapshot attributes are not included. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "Mounted focused native editor must have exact expected text and UTF-16 selection, else polling throws."
+      ]
+    },
+    {
+      "rangeId": "cli-observers-merge-v86-09",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 500,
+        "end": 500,
+        "sha256": "97f462fc90f039c5470d57da43b84f5caf32b895462b9db5a7662402904e8f9c",
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "c401d7e9b5364d60ea596621221c0006be6e7843328d87142615b1d67c6ec956"
+      },
+      "scenarioIds": [
+        "cli-observers-merge-v86"
+      ],
+      "rationale": "Snapshot reads actual UITextView smartInsertDeleteType; independent selected Unicode deletion case explicitly requires disabled. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Positive-path candidate only; independent semantic review pending. Security, negative visibility, unasserted attribute and asynchronous branch behavior excluded.",
+      "proposedAssertions": [
+        "The actual native text view disables smart insert/delete for the independent Unicode deletion case."
+      ]
+    }
+  ]
+}

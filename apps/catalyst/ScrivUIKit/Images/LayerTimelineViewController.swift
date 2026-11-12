@@ -163,7 +163,18 @@ import ScrivCore
         canvas.addSubview(playhead)
     }
     override var canBecomeFirstResponder: Bool { true }
-    override var keyCommands: [UIKeyCommand]? { [UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(cancelTimingDrag))] }
+    override var keyCommands: [UIKeyCommand]? {
+        let escape = UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(handleLayersEscape))
+        escape.wantsPriorityOverSystemBehavior = true
+        return [escape]
+    }
+    @objc private func handleLayersEscape() {
+        // A drag owns the first Escape. An idle expanded sheet should follow
+        // the shared sheet dismissal policy rather than swallowing Escape.
+        let wasDragging = dragInProgress || timingDrivers.contains(where: { $0.isActive })
+        cancelTimingDrag()
+        if !wasDragging && expanded { scrivEscapeSheet() }
+    }
     @objc private func cancelTimingDrag() { timingDrivers.forEach { $0.cancel() }; dragDrivers.forEach { $0.cancel() } }
     override func viewDidDisappear(_ animated: Bool) { super.viewDidDisappear(animated); cancelTimingDrag() }
     private func installTimingDrag(surface: UIView, tile: UIView, cueID: String, mode: ImageTimelineDragDraft.Mode, coverageGrip: UIView? = nil) {

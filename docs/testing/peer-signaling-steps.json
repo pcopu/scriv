@@ -1,0 +1,1720 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "create-project",
+      "title": "Create project",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST /v1/projects synthetic signaling team project"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 201 returns a synthetic project owned by the team owner.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 164,
+            "end": 164,
+            "sha256": "8db76466b35a88598a1982657d587ce6b6281aa678fe93adf2cf078f19a27952"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "connect-three-devices",
+      "title": "Connect three devices",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "Connect three authenticated loopback project WebSockets"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Each authenticated socket receives hello for its own session and the empty project.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 168,
+            "end": 168,
+            "sha256": "0bb85737492ffc3132403bbb81e2d2ba548d8234b4af9e9c43a94c183d26dca2"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 601,
+            "end": 608,
+            "sha256": "e2db1d61020644102a8a20f80d8edef9ceb18705ceb03d9c124e7f121d45569b"
+          },
+          "expectation": "observed",
+          "why": "Authenticated production WebSocket upgrade creates session-bound hello envelopes."
+        }
+      ]
+    },
+    {
+      "id": "deliver-offer",
+      "title": "Deliver offer",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST offer from A to B with forged sender fields",
+        "Wait for B signal and synchronize A and C sockets with ping watermarks",
+        "Read B inbox, C own inbox and C forged B inbox"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "B receives exactly the A-authored offer through HTTP and WebSocket; sender fields cannot be forged; C own inbox and socket receive none; C reading B inbox returns 403 not_allowed.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 174,
+            "end": 174,
+            "sha256": "bbbfc067ad04d696e07b45dd65cb5d037531e37ff7676bd93639dbb5e4228913"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 588,
+            "end": 600,
+            "sha256": "467c2dfcd2984a649a4a96648ef50ee76370dc692b92816ec6195893afb1e11b"
+          },
+          "expectation": "observed",
+          "why": "Public offer routing persists and routes to the authenticated recipient session, while the inbox guard rejects a forged recipient."
+        }
+      ]
+    },
+    {
+      "id": "answer-through-websocket",
+      "title": "Answer through websocket",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "Send binary JSON answer from B to A over WebSocket",
+        "Wait for A answer and synchronize B and C watermark barriers",
+        "Read A durable signaling inbox"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Binary JSON WebSocket answer reaches A with exactly B authenticated device/user identity and payload in both live and durable envelopes; after B and C watermark barriers, B retains only its original offer and C has no signals.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 180,
+            "end": 180,
+            "sha256": "87d63e7156b8a084f0e85c52fb8b7b000a6fb4ffb28361c593263f63adf189e0"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 643,
+            "end": 650,
+            "sha256": "9350d82c6077ed6c8464dcc3055f5f94b2626033396820f3ce8365cc7d9ba6f0"
+          },
+          "expectation": "observed",
+          "why": "Production message decoding accepts the real binary JSON answer and authenticates its sender."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 660,
+            "end": 660,
+            "sha256": "dec92e1164a4334c91951bfac129632384b69afca29866c831af371b85ea901c"
+          },
+          "expectation": "observed",
+          "why": "The signal message dispatches to production recipient routing."
+        }
+      ]
+    },
+    {
+      "id": "accept-bounded-payload",
+      "title": "Accept bounded payload",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST exactly 50000 UTF-8 payload bytes as ICE",
+        "Read B inbox after initial offer cursor",
+        "Read complete B inbox as rejection baseline"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exactly 50000 UTF-8 payload bytes are accepted as ICE and returned exactly after the offer cursor; the complete B inbox is exactly the original offer plus accepted ICE and is saved as the rejection baseline.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 189,
+            "end": 189,
+            "sha256": "4ff12290c3c51e67d9a77c184e6ddb1c03466a4ce70975cafe5d5d953cdf1509"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 589,
+            "end": 589,
+            "sha256": "56e220a56dc30463a094146bb01b5b61eeaa458869676339d08083b3a6244dbe"
+          },
+          "expectation": "observed",
+          "why": "The after cursor excludes the earlier offer while preserving later payload bytes."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 596,
+            "end": 598,
+            "sha256": "13e9c4bca9b4b11f8138a6edbbb87ccf143ec87f09dc1be22d3f0dd26ce374f7"
+          },
+          "expectation": "observed",
+          "why": "The exact maximum payload passes size validation and is persisted."
+        }
+      ]
+    },
+    {
+      "id": "reject-large-payload",
+      "title": "Reject large payload",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST signaling variant reject-large-payload",
+        "Read B inbox to verify rejected signal was not persisted"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The specific reject-large-payload input returns HTTP 413 signal_too_large; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 203,
+            "end": 203,
+            "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 596,
+            "end": 596,
+            "sha256": "cb7b209338bc920b5a15611d3bbeab9ae2865c3a9e522fa5cddd0ef0daa9f43d"
+          },
+          "expectation": "observed",
+          "why": "This exact invalid input reaches the public signal route with valid preceding guards and is rejected without persistence."
+        }
+      ]
+    },
+    {
+      "id": "reject-invalid-signal-type",
+      "title": "Reject invalid signal type",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST signaling variant reject-invalid-signal-type",
+        "Read B inbox to verify rejected signal was not persisted"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The specific reject-invalid-signal-type input returns HTTP 400 invalid_signal; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 203,
+            "end": 203,
+            "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 593,
+            "end": 593,
+            "sha256": "4135461b3ff7ca7379d85e5c258b608d1364ab359dc2e95ad14bc6c59ca83f90"
+          },
+          "expectation": "observed",
+          "why": "This exact invalid input reaches the public signal route with valid preceding guards and is rejected without persistence."
+        }
+      ]
+    },
+    {
+      "id": "reject-nonobject-payload",
+      "title": "Reject nonobject payload",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST signaling variant reject-nonobject-payload",
+        "Read B inbox to verify rejected signal was not persisted"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The specific reject-nonobject-payload input returns HTTP 400 invalid_field; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 203,
+            "end": 203,
+            "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 596,
+            "end": 596,
+            "sha256": "cb7b209338bc920b5a15611d3bbeab9ae2865c3a9e522fa5cddd0ef0daa9f43d"
+          },
+          "expectation": "observed",
+          "why": "This exact invalid input reaches the public signal route with valid preceding guards and is rejected without persistence."
+        }
+      ]
+    },
+    {
+      "id": "reject-invalid-recipient",
+      "title": "Reject invalid recipient",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST signaling variant reject-invalid-recipient",
+        "Read B inbox to verify rejected signal was not persisted"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The specific reject-invalid-recipient input returns HTTP 400 invalid_id; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 203,
+            "end": 203,
+            "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 593,
+            "end": 593,
+            "sha256": "4135461b3ff7ca7379d85e5c258b608d1364ab359dc2e95ad14bc6c59ca83f90"
+          },
+          "expectation": "observed",
+          "why": "This exact invalid input reaches the public signal route with valid preceding guards and is rejected without persistence."
+        }
+      ]
+    },
+    {
+      "id": "reject-expired-recipient",
+      "title": "Reject expired recipient",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST signaling variant reject-expired-recipient",
+        "Read B inbox to verify rejected signal was not persisted"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The specific reject-expired-recipient input returns HTTP 404 peer_unavailable; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 203,
+            "end": 203,
+            "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 594,
+            "end": 594,
+            "sha256": "a9187dd383ee8090597a79af5d723bbe1815f61a4a922a9d8ad2bb4d9c87a99d"
+          },
+          "expectation": "observed",
+          "why": "This exact invalid input reaches the public signal route with valid preceding guards and is rejected without persistence."
+        }
+      ]
+    },
+    {
+      "id": "reject-outsider-recipient",
+      "title": "Reject outsider recipient",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST signaling variant reject-outsider-recipient",
+        "Read B inbox to verify rejected signal was not persisted"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The specific reject-outsider-recipient input returns HTTP 404 not_found; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 203,
+            "end": 203,
+            "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 595,
+            "end": 595,
+            "sha256": "ea186339ee028f37250137a5633edddec92323a9135131196db54aa2d6a6d072"
+          },
+          "expectation": "observed",
+          "why": "This exact invalid input reaches the public signal route with valid preceding guards and is rejected without persistence."
+        }
+      ]
+    },
+    {
+      "id": "reject-oversized-envelope",
+      "title": "Reject oversized envelope",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST signaling variant reject-oversized-envelope",
+        "Read B inbox to verify rejected signal was not persisted"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The specific reject-oversized-envelope input returns HTTP 413 body_too_large; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 203,
+            "end": 203,
+            "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 590,
+            "end": 590,
+            "sha256": "f1b033ac26e7a75ed685a1bd7a8bc89edaeb68fb011a274ffced2404ef5f2113"
+          },
+          "expectation": "observed",
+          "why": "This exact invalid input reaches the public signal route with valid preceding guards and is rejected without persistence."
+        }
+      ]
+    },
+    {
+      "id": "reject-websocket-signal-type",
+      "title": "Reject websocket signal type",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "Send unsupported signalType over authenticated WebSocket",
+        "Read B inbox after rejected WebSocket signal"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Unsupported signalType receives invalid_signal on the still-open authenticated sender socket; the entire B inbox, including IDs, timestamps, sender identity and payload, remains identical to the saved baseline.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 208,
+            "end": 208,
+            "sha256": "fc2e1314d6721c588b9773021618d2ad9de6bcd6d0d61278535df6a97a48d1ef"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 593,
+            "end": 593,
+            "sha256": "4135461b3ff7ca7379d85e5c258b608d1364ab359dc2e95ad14bc6c59ca83f90"
+          },
+          "expectation": "observed",
+          "why": "The unsupported signal type is rejected."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 660,
+            "end": 662,
+            "sha256": "04ec84f91536148dbf806bbbb08685e63388a856e3b2c7797035646fe0676ce9"
+          },
+          "expectation": "observed",
+          "why": "Authorized WebSocket signal errors are returned without unauthorized-access closure."
+        }
+      ]
+    },
+    {
+      "id": "exchange-asset-notifications",
+      "title": "Exchange asset notifications",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST asset-request and asset-available signals from A to B",
+        "Read B inbox with explicit authenticated deviceId"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Both supported asset notification types are accepted and returned with exact hash payloads in the intended explicit-device inbox.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 213,
+            "end": 213,
+            "sha256": "c18359128516c6017b9cd75845b22610e1bf589ad484ce49ae4340f00a916811"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 593,
+            "end": 599,
+            "sha256": "09bfcc14fe171c398ba07396e7754f1f84f38053d5f9af3db7e23d2807eb712c"
+          },
+          "expectation": "observed",
+          "why": "Both asset notification types route to their intended device."
+        }
+      ]
+    },
+    {
+      "id": "inspect-session-inventory",
+      "title": "Inspect session inventory",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "GET B current authenticated session inventory before revocation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Before revocation B sees its main and secondary live sessions, while its already-expired session is absent.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 217,
+            "end": 217,
+            "sha256": "24f028bf4ea05a339e08188859286c0e536d4039fb03d949a02ebad810f284a4"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "revoke-secondary-session",
+      "title": "Revoke secondary session",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "DELETE B secondary session through public auth route",
+        "Attempt revoked sender, revoked recipient and expired sender access"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Public session revocation succeeds; revoked and already-expired senders receive session_expired and a revoked recipient receives peer_unavailable.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 222,
+            "end": 222,
+            "sha256": "47a9ec674a3b6d9be5779aae0af632811353d10fc43b9bb169508cf7aa2d2831"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 3,
+            "end": 10,
+            "sha256": "290ed7a5f269798092cd015ee24a83739092bad7fdc6ffb57229ec57355e28b3"
+          },
+          "expectation": "observed",
+          "why": "Actual HTTP authentication filters revoked and expired synthetic sessions."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 594,
+            "end": 594,
+            "sha256": "a9187dd383ee8090597a79af5d723bbe1815f61a4a922a9d8ad2bb4d9c87a99d"
+          },
+          "expectation": "observed",
+          "why": "Recipient lookup excludes the session revoked through the public auth route."
+        }
+      ]
+    },
+    {
+      "id": "commit-five-item-model",
+      "title": "Commit five item model",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh command with valid scene character dialogue image and anchored cue",
+        "GET viewer snapshot after valid model command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "One public command durably stores all five exact item kinds and authored fields, including word timings, Unicode links, image metadata and anchored cue, then the viewer snapshot has five version-one items, head sequence one and timing version one.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 238,
+            "end": 238,
+            "sha256": "c0c9b95218fd8231ed7b32aed824b3336398719ae6fe968f3ac346722ef6da90"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 4,
+            "end": 4,
+            "sha256": "b7e8f6a6ea92fe45110e6a631e79c599b07f615a26d89ba03fc4007783f1e6ee"
+          },
+          "expectation": "observed",
+          "why": "All five supported item kinds pass the public command parser."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 20,
+            "end": 26,
+            "sha256": "e2014cca7b876fa188819d07a4b3b04eac1b946e0773dbb852534771b6724716"
+          },
+          "expectation": "observed",
+          "why": "The coherent item model meets identity, size, scene and entry field contracts."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 35,
+            "end": 51,
+            "sha256": "d7caf3c8b40234723167b0e3eb88b0725836e8fa6aeba86ee67d693f560cd300"
+          },
+          "expectation": "observed",
+          "why": "Explicit confirmed character link and authored timed words are preserved by the accepted public model."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 52,
+            "end": 57,
+            "sha256": "fe5c7a552e41bf46b065a7e1f5cf60a7e9dc47066d6b029eec10005bc31c9eda"
+          },
+          "expectation": "observed",
+          "why": "Valid character fields pass through the public command and exact snapshot readback."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 60,
+            "end": 64,
+            "sha256": "f39af4a42e309732940620acaac6ee383501e9208120f13b7bb000c6d086a075"
+          },
+          "expectation": "observed",
+          "why": "Valid image metadata passes through the public command and exact snapshot readback."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 67,
+            "end": 67,
+            "sha256": "4cda9830bf973b249e06b710f3f362be7daeb251e4e5ee5be546d9202f1062bc"
+          },
+          "expectation": "observed",
+          "why": "The exact captured generation prompt survives command and snapshot readback."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 70,
+            "end": 74,
+            "sha256": "d1f3bde3fb714e2341402ef32a9146a9061a0c82a685e58e7244529e9f927cb5"
+          },
+          "expectation": "observed",
+          "why": "The valid anchored cue passes through the public command and exact snapshot readback."
+        }
+      ]
+    },
+    {
+      "id": "reject-item-identity",
+      "title": "Reject item identity",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-item-identity",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-item-identity item command returns HTTP 400 item_identity; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 21,
+            "end": 21,
+            "sha256": "6211cda133111f899860d2f4a848ea5509263c5b8df344ac707e67b2b786f1ca"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-item-byte-limit",
+      "title": "Reject item byte limit",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-item-byte-limit",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-item-byte-limit item command returns HTTP 413 item_too_large; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 22,
+            "end": 22,
+            "sha256": "30da7a2ff993ff4ed444f60d75ec4b999a99dc3c7b1e52072cb73d85fa111629"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-scene-order",
+      "title": "Reject scene order",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-scene-order",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-scene-order item command returns HTTP 400 invalid_order; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 23,
+            "end": 23,
+            "sha256": "9ef43b52be6913aab751155da1b319c20599c811e28c194d0854849543880ca8"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-entry-word-order",
+      "title": "Reject entry word order",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-entry-word-order",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-entry-word-order item command returns HTTP 400 word_order; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 47,
+            "end": 49,
+            "sha256": "6f52eaa3209cf689bffd82b4cc4b7fafef4e9ebd61c36980e53f89992901657d"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-entry-surrogate-link",
+      "title": "Reject entry surrogate link",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-entry-surrogate-link",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-entry-surrogate-link item command returns HTTP 400 invalid_character_links; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 40,
+            "end": 41,
+            "sha256": "7ed0141520e5c45c0e2673a554a9bdcb2e816bc043112c82a43f5fd1edd16524"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-unconfirmed-link",
+      "title": "Reject unconfirmed link",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-unconfirmed-link",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-unconfirmed-link item command returns HTTP 400 invalid_character_links; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 39,
+            "end": 39,
+            "sha256": "f5676df03853d35c6dbf55ad05a1d2fd4f455e52350e02130a717b5fc1e7e476"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-direction-words",
+      "title": "Reject direction words",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-direction-words",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-direction-words item command returns HTTP 400 direction_timing; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 44,
+            "end": 45,
+            "sha256": "5182f8d3e5283c513de4aa69868e84f008160b8c01ed25041e341c2182253007"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-word-timing-source",
+      "title": "Reject word timing source",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-word-timing-source",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-word-timing-source item command returns HTTP 400 invalid_word_timing_source; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 49,
+            "end": 49,
+            "sha256": "2a2685df77e495b1b8559b2b0b4e6cd531ff1db756fde898e80454efc2eb178a"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-empty-character-name",
+      "title": "Reject empty character name",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-empty-character-name",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-empty-character-name item command returns HTTP 400 invalid_name; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 54,
+            "end": 56,
+            "sha256": "75d4d9fb5b8314ad32a719d0c33439ceb8b344c9f42955251a297db45675d210"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-character-alias-bound",
+      "title": "Reject character alias bound",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-character-alias-bound",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-character-alias-bound item command returns HTTP 400 invalid_field; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 5,
+            "end": 5,
+            "sha256": "5c5814159f2a1ae84043a373c0ec64e5d216db1ce814e77e124c9318366de7fa"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-image-filename",
+      "title": "Reject image filename",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-image-filename",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-image-filename item command returns HTTP 400 invalid_filename; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 62,
+            "end": 62,
+            "sha256": "07e28ac09d106fce967f6d8e60cc35ccfec6dd382f1e2cea3374fde284616655"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-image-digest",
+      "title": "Reject image digest",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-image-digest",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-image-digest item command returns HTTP 400 invalid_hash; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 63,
+            "end": 63,
+            "sha256": "1866bcd8f88119899d6f83ff86c50bb05045ae7e655447fb464b61a4bff5ca38"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-image-media",
+      "title": "Reject image media",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-image-media",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-image-media item command returns HTTP 400 invalid_media; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 64,
+            "end": 64,
+            "sha256": "91a67d667be0445128926b4141178fe8d2c197d04ef79268a1a0ab447e7cfb56"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-image-duplicate-tags",
+      "title": "Reject image duplicate tags",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-image-duplicate-tags",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-image-duplicate-tags item command returns HTTP 400 duplicate_character; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 64,
+            "end": 64,
+            "sha256": "91a67d667be0445128926b4141178fe8d2c197d04ef79268a1a0ab447e7cfb56"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-unpaired-cue-anchor",
+      "title": "Reject unpaired cue anchor",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-unpaired-cue-anchor",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-unpaired-cue-anchor item command returns HTTP 400 invalid_cue_anchor; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 71,
+            "end": 72,
+            "sha256": "be9176e429eb6dcfc64a3c263bff37e3076e86c8e6df32c899679af480aa1d76"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-cue-offset-bound",
+      "title": "Reject cue offset bound",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-cue-offset-bound",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-cue-offset-bound item command returns HTTP 400 invalid_field; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 73,
+            "end": 73,
+            "sha256": "8a43d3ca02365b2bcdf42577738a33b8e381d8a841f6158384d291eb7245cd93"
+          },
+          "expectation": "observed",
+          "why": "The named malformed field is rejected through a fresh public command; exact persisted state is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reject-missing-scene-reference",
+      "title": "Reject missing scene reference",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh public item command reject-missing-scene-reference",
+        "GET viewer snapshot after rejected item command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The fresh reject-missing-scene-reference item command returns HTTP 400 invalid_reference; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 263,
+            "end": 263,
+            "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "accept-nel-words",
+      "title": "Accept nel words",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh dialogue command accept-nel-words",
+        "GET viewer snapshot for exact saved Unicode dialogue"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The independently specified accept-nel-words dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 279,
+            "end": 279,
+            "sha256": "334894d594f7c21572931a0a31a0d22e5a424a143c557e10733072189c2da6fe"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 6,
+            "end": 18,
+            "sha256": "ef0a13826ef058f27e987496b24d9a0687e066bca491d206d755e82534ab44f7"
+          },
+          "expectation": "observed",
+          "why": "Independent Unicode word fixtures distinguish grapheme-leading White_Space splitting from JS whitespace splitting."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 44,
+            "end": 49,
+            "sha256": "f760060fe439dd94e2d228d6cf0b2ae578d7937de024a12e9bd0b070b0a71575"
+          },
+          "expectation": "observed",
+          "why": "The exact explicit word array matches the production field validator and persists through the command route."
+        }
+      ]
+    },
+    {
+      "id": "accept-bom-word",
+      "title": "Accept bom word",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh dialogue command accept-bom-word",
+        "GET viewer snapshot for exact saved Unicode dialogue"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The independently specified accept-bom-word dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 279,
+            "end": 279,
+            "sha256": "334894d594f7c21572931a0a31a0d22e5a424a143c557e10733072189c2da6fe"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 6,
+            "end": 18,
+            "sha256": "ef0a13826ef058f27e987496b24d9a0687e066bca491d206d755e82534ab44f7"
+          },
+          "expectation": "observed",
+          "why": "Independent Unicode word fixtures distinguish grapheme-leading White_Space splitting from JS whitespace splitting."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 44,
+            "end": 49,
+            "sha256": "f760060fe439dd94e2d228d6cf0b2ae578d7937de024a12e9bd0b070b0a71575"
+          },
+          "expectation": "observed",
+          "why": "The exact explicit word array matches the production field validator and persists through the command route."
+        }
+      ]
+    },
+    {
+      "id": "accept-combining-whitespace",
+      "title": "Accept combining whitespace",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh dialogue command accept-combining-whitespace",
+        "GET viewer snapshot for exact saved Unicode dialogue"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The independently specified accept-combining-whitespace dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 279,
+            "end": 279,
+            "sha256": "334894d594f7c21572931a0a31a0d22e5a424a143c557e10733072189c2da6fe"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 6,
+            "end": 18,
+            "sha256": "ef0a13826ef058f27e987496b24d9a0687e066bca491d206d755e82534ab44f7"
+          },
+          "expectation": "observed",
+          "why": "Independent Unicode word fixtures distinguish grapheme-leading White_Space splitting from JS whitespace splitting."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 44,
+            "end": 49,
+            "sha256": "f760060fe439dd94e2d228d6cf0b2ae578d7937de024a12e9bd0b070b0a71575"
+          },
+          "expectation": "observed",
+          "why": "The exact explicit word array matches the production field validator and persists through the command route."
+        }
+      ]
+    },
+    {
+      "id": "accept-emoji-word",
+      "title": "Accept emoji word",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh dialogue command accept-emoji-word",
+        "GET viewer snapshot for exact saved Unicode dialogue"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The independently specified accept-emoji-word dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 279,
+            "end": 279,
+            "sha256": "334894d594f7c21572931a0a31a0d22e5a424a143c557e10733072189c2da6fe"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 6,
+            "end": 18,
+            "sha256": "ef0a13826ef058f27e987496b24d9a0687e066bca491d206d755e82534ab44f7"
+          },
+          "expectation": "observed",
+          "why": "Independent Unicode word fixtures distinguish grapheme-leading White_Space splitting from JS whitespace splitting."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 44,
+            "end": 49,
+            "sha256": "f760060fe439dd94e2d228d6cf0b2ae578d7937de024a12e9bd0b070b0a71575"
+          },
+          "expectation": "observed",
+          "why": "The exact explicit word array matches the production field validator and persists through the command route."
+        }
+      ]
+    },
+    {
+      "id": "accept-empty-dialogue",
+      "title": "Accept empty dialogue",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh dialogue command accept-empty-dialogue",
+        "GET viewer snapshot for exact saved Unicode dialogue"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The independently specified accept-empty-dialogue dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 279,
+            "end": 279,
+            "sha256": "334894d594f7c21572931a0a31a0d22e5a424a143c557e10733072189c2da6fe"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 6,
+            "end": 18,
+            "sha256": "ef0a13826ef058f27e987496b24d9a0687e066bca491d206d755e82534ab44f7"
+          },
+          "expectation": "observed",
+          "why": "Independent Unicode word fixtures distinguish grapheme-leading White_Space splitting from JS whitespace splitting."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 44,
+            "end": 49,
+            "sha256": "f760060fe439dd94e2d228d6cf0b2ae578d7937de024a12e9bd0b070b0a71575"
+          },
+          "expectation": "observed",
+          "why": "The exact explicit word array matches the production field validator and persists through the command route."
+        }
+      ]
+    },
+    {
+      "id": "accept-whitespace-dialogue",
+      "title": "Accept whitespace dialogue",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST fresh dialogue command accept-whitespace-dialogue",
+        "GET viewer snapshot for exact saved Unicode dialogue"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The independently specified accept-whitespace-dialogue dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 279,
+            "end": 279,
+            "sha256": "334894d594f7c21572931a0a31a0d22e5a424a143c557e10733072189c2da6fe"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 6,
+            "end": 18,
+            "sha256": "ef0a13826ef058f27e987496b24d9a0687e066bca491d206d755e82534ab44f7"
+          },
+          "expectation": "observed",
+          "why": "Independent Unicode word fixtures distinguish grapheme-leading White_Space splitting from JS whitespace splitting."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 44,
+            "end": 49,
+            "sha256": "f760060fe439dd94e2d228d6cf0b2ae578d7937de024a12e9bd0b070b0a71575"
+          },
+          "expectation": "observed",
+          "why": "The exact explicit word array matches the production field validator and persists through the command route."
+        }
+      ]
+    },
+    {
+      "id": "inspect-expired-signals",
+      "title": "Inspect expired signals",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "Read B pre-expiry inbox and wait past actual stored signal TTL",
+        "Read B inbox after actual 120-second expiry without clock manipulation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "B inbox contains all four signals at an observation before the earliest stored at-plus-120000 deadline, and is empty at a later observation beyond the latest deadline; no continuous timing observation, clock or storage manipulation is claimed.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 284,
+            "end": 284,
+            "sha256": "743983744b81ff71d847ba16d7957c95e6da2d5446e037c5ae15ca55d627bc1d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 589,
+            "end": 589,
+            "sha256": "56e220a56dc30463a094146bb01b5b61eeaa458869676339d08083b3a6244dbe"
+          },
+          "expectation": "observed",
+          "why": "Discrete observations before the earliest deadline and beyond the latest deadline distinguish the expired-record filter from an always-empty inbox."
+        }
+      ]
+    },
+    {
+      "id": "revoke-live-recipient",
+      "title": "Revoke live recipient",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "POST B logout then wait for its authenticated WebSocket close",
+        "Attempt B inbox access and A send to revoked B"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Public B logout closes its existing WebSocket with 4001; subsequent B inbox access returns session_expired and sending to B returns peer_unavailable.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 289,
+            "end": 289,
+            "sha256": "7c4ad3229f3919ec16ef5b334ef52d8ad05c5c39cdbded2cb3e09fb55d6a85f8"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 594,
+            "end": 594,
+            "sha256": "a9187dd383ee8090597a79af5d723bbe1815f61a4a922a9d8ad2bb4d9c87a99d"
+          },
+          "expectation": "observed",
+          "why": "The revoked live recipient no longer resolves as an active session."
+        }
+      ]
+    },
+    {
+      "id": "verify-isolation",
+      "title": "Verify isolation",
+      "preconditions": [
+        "Isolated synthetic D1 sessions and paid team, empty R2, actual loopback production Worker; all earlier scenario steps complete in the declared order.",
+        "Unique command and item IDs prevent cached retries or leases from intercepting validation cases; no production fixture controls or clock manipulation."
+      ],
+      "actions": [
+        "Read final owner snapshot and isolated R2 object inventory"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner retains sequence seven and eleven items, R2 stays empty, outbound attempts and socket errors stay zero, and C has never received a signal.",
+          "witness": {
+            "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+            "start": 293,
+            "end": 293,
+            "sha256": "383de4a3b61f39e6f610d11eac17163f9d7649b49697e313cd2afbd5175baf08"
+          }
+        }
+      ],
+      "mappings": []
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "peer-signaling-service",
+      "title": "Exchange private peer signals and validate shared script content",
+      "steps": [
+        "create-project",
+        "connect-three-devices",
+        "deliver-offer",
+        "answer-through-websocket",
+        "accept-bounded-payload",
+        "reject-large-payload",
+        "reject-invalid-signal-type",
+        "reject-nonobject-payload",
+        "reject-invalid-recipient",
+        "reject-expired-recipient",
+        "reject-outsider-recipient",
+        "reject-oversized-envelope",
+        "reject-websocket-signal-type",
+        "exchange-asset-notifications",
+        "inspect-session-inventory",
+        "revoke-secondary-session",
+        "commit-five-item-model",
+        "reject-item-identity",
+        "reject-item-byte-limit",
+        "reject-scene-order",
+        "reject-entry-word-order",
+        "reject-entry-surrogate-link",
+        "reject-unconfirmed-link",
+        "reject-direction-words",
+        "reject-word-timing-source",
+        "reject-empty-character-name",
+        "reject-character-alias-bound",
+        "reject-image-filename",
+        "reject-image-digest",
+        "reject-image-media",
+        "reject-image-duplicate-tags",
+        "reject-unpaired-cue-anchor",
+        "reject-cue-offset-bound",
+        "reject-missing-scene-reference",
+        "accept-nel-words",
+        "accept-bom-word",
+        "accept-combining-whitespace",
+        "accept-emoji-word",
+        "accept-empty-dialogue",
+        "accept-whitespace-dialogue",
+        "inspect-expired-signals",
+        "revoke-live-recipient",
+        "verify-isolation"
+      ]
+    }
+  ]
+}

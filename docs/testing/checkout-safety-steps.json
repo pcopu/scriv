@@ -1,0 +1,328 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "checkout-guards-v94",
+      "title": "Reject provider and ownership failures before creation",
+      "preconditions": [
+        "Run the full public command tracer app -- test services billing. The original 27 named entitlement steps run before the appended 22-case checkout chapter. Its 27-step runtime report does not include the later chapter; separate checkout evidence and the final HTTP count report that chapter.",
+        "The harness owns loopback HTTP, a process group and isolated home/D1/R2 storage, disables telemetry and inherits no credentials. Synthetic identities and a new no-customer team are authored fixtures. No live provider, customer, account, payment, native or measured execution claim.",
+        "Every provider request must exactly match the next expected method, URL/query, synthetic authorization, Stripe version, body entries and idempotency header. Each HTTP case consumes its entire queue and checks zero unexpected requests. Existing team, all projects and billing-event rows remain exact. Legitimate synchronization may change the new team even when checkout is refused.",
+        "The owner has fewer than 30 billing requests in the real hour window. Provider callbacks deterministically modify a role or revoke a session only for named recheck cases, then fixtures restore them. These interleavings are not concurrency or remote rollback tests.",
+        "Limits: one invalid fixed amount, not every price clause; one cached customer mismatch, not every identity field; no failed-create retry, transaction failure/rollback, restart persistence, provider idempotency enforcement, network transport exception, malformed new receipt or full URL normalization claim."
+      ],
+      "actions": [
+        "Complete the existing entitlement journey and freeze unrelated database rows. Configure the strict queued local provider and seed a new synthetic owner team.",
+        "POST checkout with wrong amount, provider 503, invalid JSON and array price replies; verify exact status/error, full new team preservation and zero customer/session creates.",
+        "During a valid price response change the fixture role to member; require 403 before customer/subscription/session requests, then restore the owner role."
+      ],
+      "expectations": [
+        {
+          "id": "provider",
+          "description": "Wrong fixed amount returns 503 invalid_team_price; provider HTTP failure, malformed JSON and array replies return 502 billing_provider_error. Each consumes only its price request and leaves the complete new team row and customer/session create counts unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 314,
+            "end": 323,
+            "sha256": "7d8e25821f1154c976b1074518d517fce2c09d27f093c094b936f120769febb7"
+          }
+        },
+        {
+          "id": "owner",
+          "description": "Role changed during the price response produces 403 not_allowed before customer, subscription or checkout requests; the new team row remains exact and the role is restored for later cases.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 324,
+            "end": 329,
+            "sha256": "5ea762557f995df8ab0631e454ddcd3722ab0d60ea45feeaa62c642697ef8884"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 22,
+            "end": 26,
+            "sha256": "1b38126d4fb9e4f1fad89d6e861e893ca3ed50aff4f2030a8a0d7bb310b83d83"
+          },
+          "expectation": "provider",
+          "why": "HTTP status, JSON parsing and top-level object validation are independently distinguished using the price endpoint; no transport exception or null/primitive variant claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 41,
+            "end": 43,
+            "sha256": "f4c39bc0fe101e2dedef1181ecef7192fd084845647e0932e224439b6160f958"
+          },
+          "expectation": "provider",
+          "why": "Known-valid fixed price is distinguished from unit_amount 1000. Other predicate fields are held valid, not exhaustively varied."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 105,
+            "end": 106,
+            "sha256": "819a086852982fbc68f76a67bdb6c45bdd384a9bca8a454af52842ede20ab6ba"
+          },
+          "expectation": "owner",
+          "why": "Public owner authentication and the recheck helper re-read current role/session state; initial setup is valid and only named callbacks change it."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 117,
+            "end": 119,
+            "sha256": "5dc5e86adc5a9aa590eaeaaa568ae12133c3203ea624e6cd184dda4fe098150f"
+          },
+          "expectation": "owner",
+          "why": "The configured price is fetched and validated before the owner is rechecked; valid-price role loss prevents creation."
+        }
+      ]
+    },
+    {
+      "id": "checkout-create-v94",
+      "title": "Create fixed checkout and reuse authoritative open receipt",
+      "preconditions": [
+        "Run the full public command tracer app -- test services billing. The original 27 named entitlement steps run before the appended 22-case checkout chapter. Its 27-step runtime report does not include the later chapter; separate checkout evidence and the final HTTP count report that chapter.",
+        "The harness owns loopback HTTP, a process group and isolated home/D1/R2 storage, disables telemetry and inherits no credentials. Synthetic identities and a new no-customer team are authored fixtures. No live provider, customer, account, payment, native or measured execution claim.",
+        "Every provider request must exactly match the next expected method, URL/query, synthetic authorization, Stripe version, body entries and idempotency header. Each HTTP case consumes its entire queue and checks zero unexpected requests. Existing team, all projects and billing-event rows remain exact. Legitimate synchronization may change the new team even when checkout is refused.",
+        "The owner has fewer than 30 billing requests in the real hour window. Provider callbacks deterministically modify a role or revoke a session only for named recheck cases, then fixtures restore them. These interleavings are not concurrency or remote rollback tests.",
+        "Limits: one invalid fixed amount, not every price clause; one cached customer mismatch, not every identity field; no failed-create retry, transaction failure/rollback, restart persistence, provider idempotency enforcement, network transport exception, malformed new receipt or full URL normalization claim."
+      ],
+      "actions": [
+        "POST first checkout with adversarial price, quantity, currency and success URL body fields; expect price, customer, subscription inventory and checkout creation in exact order.",
+        "Compare the exact customer/checkout forms, synthetic idempotency headers, full new team row and bounded synchronization times; require one customer and one checkout create.",
+        "Wait only until the actual saved expiresAt has elapsed, then POST checkout with provider-open response carrying a different safe URL; reuse that authoritative URL without another create."
+      ],
+      "expectations": [
+        {
+          "id": "create",
+          "description": "Exact configured customer and fixed USD/price/quantity/return forms are sent despite adversarial client fields. First safe receipt is returned, one customer/session is created, and the new team row differs only by expected customer, free synchronization values and bounded timestamps.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 330,
+            "end": 342,
+            "sha256": "ddf700808113b7e04ce804786c00b622255ca1a86e35e3d993780892848cd692"
+          }
+        },
+        {
+          "id": "reuse",
+          "description": "After real saved expiresAt elapses, a provider-open cached lookup returns its different authoritative safe URL without another customer or checkout create.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 343,
+            "end": 347,
+            "sha256": "4a42ed6014052d5407618932b6231795317c80ddf664b4cbcbad2811f9b498e6"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 16,
+            "end": 20,
+            "sha256": "302fa40de09d5908872578d7bcaf5537eb37996ba1754ada0f330305ef8175d1"
+          },
+          "expectation": "create",
+          "why": "Outgoing provider method/path, version/auth headers, optional form encoding and idempotency headers are checked by the strict interceptor. Transport exception handling is excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 120,
+            "end": 124,
+            "sha256": "47686f75e98e5f6f4c1c7162092049d2198b675efa3165303d5c671e76f28649"
+          },
+          "expectation": "create",
+          "why": "No-customer fixture triggers one exact customer request, persists its synthetic ID, and later calls reuse it; no customer race or invalid-ID claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 131,
+            "end": 136,
+            "sha256": "26ee793a96b91bc093159c77b58b559d040825ccabaa002f68f5c28e36894c50"
+          },
+          "expectation": "reuse",
+          "why": "Cached receipt is retrieved and authoritatively verified; open status is reused despite elapsed local expiry. Later customer mismatch and unsafe URL cases guard the same route."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 143,
+            "end": 148,
+            "sha256": "95f8f7f6ae4fa62a595988d8e00ad5cd6b5662dbc286d00c87d2271888c44e94"
+          },
+          "expectation": "create",
+          "why": "Successful create requests use the exact fixed form and new per-attempt keys. Failed-create key reuse is not tested."
+        }
+      ]
+    },
+    {
+      "id": "checkout-replace-v94",
+      "title": "Replace only eligible receipts and preserve refused cache",
+      "preconditions": [
+        "Run the full public command tracer app -- test services billing. The original 27 named entitlement steps run before the appended 22-case checkout chapter. Its 27-step runtime report does not include the later chapter; separate checkout evidence and the final HTTP count report that chapter.",
+        "The harness owns loopback HTTP, a process group and isolated home/D1/R2 storage, disables telemetry and inherits no credentials. Synthetic identities and a new no-customer team are authored fixtures. No live provider, customer, account, payment, native or measured execution claim.",
+        "Every provider request must exactly match the next expected method, URL/query, synthetic authorization, Stripe version, body entries and idempotency header. Each HTTP case consumes its entire queue and checks zero unexpected requests. Existing team, all projects and billing-event rows remain exact. Legitimate synchronization may change the new team even when checkout is refused.",
+        "The owner has fewer than 30 billing requests in the real hour window. Provider callbacks deterministically modify a role or revoke a session only for named recheck cases, then fixtures restore them. These interleavings are not concurrency or remote rollback tests.",
+        "Limits: one invalid fixed amount, not every price clause; one cached customer mismatch, not every identity field; no failed-create retry, transaction failure/rollback, restart persistence, provider idempotency enforcement, network transport exception, malformed new receipt or full URL normalization claim."
+      ],
+      "actions": [
+        "Return complete cached receipt without matching terminal history and require billing_processing with no create. Supply matching canceled history and permit one replacement, then return expired second receipt and permit a third.",
+        "Require exactly three distinct successful checkout keys; use only the same synthetic customer.",
+        "Reject one cached customer mismatch and five unsafe URL forms, then supply a valid cached lookup to prove the retained receipt is still usable with no extra create."
+      ],
+      "expectations": [
+        {
+          "id": "replace",
+          "description": "Complete/unconfirmed receipt blocks replacement. Matching terminal history and expired cached status allow replacements, producing exactly three total creates with distinct keys and one total customer.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 348,
+            "end": 355,
+            "sha256": "8f6f70f2b30368dbf97022e7c4cc8c601bb155557e962eebb39ec9b84ab24ca7"
+          }
+        },
+        {
+          "id": "url",
+          "description": "Cached customer mismatch and HTTP, wrong-host, userinfo, nondefault-port and malformed URLs each return 502 billing_provider_error without creating a checkout. A following valid lookup returns the third receipt URL; customer and create counts remain one and three.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 356,
+            "end": 365,
+            "sha256": "82d3d7e65528b478ba6669929b268eaad8794c602bfa990d32f610811bc09c9b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 36,
+            "end": 39,
+            "sha256": "7aa328bd42675ee56c1a1e9311cbcc94cbe2a0906ddcd62eab305a67f97fb4f1"
+          },
+          "expectation": "url",
+          "why": "Provider URL parsing and fixed HTTPS host/userinfo/nondefault-port rejection are exercised, plus malformed input. Explicit default HTTPS port and other normalization are not negative cases."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 137,
+            "end": 142,
+            "sha256": "24762db0a1f02eefc3cb7c2d41ac3cf163e591471028923c0715fcade88b6a4c"
+          },
+          "expectation": "replace",
+          "why": "Complete cached status requires matching terminal history; expired status retires the prior receipt. No invalid-status variant or storage-error claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 149,
+            "end": 154,
+            "sha256": "591403678deb04625791eeb79b023da70184547f88aface1185917a38158f57c"
+          },
+          "expectation": "replace",
+          "why": "Valid create response is stored and its attempt retired, observable through later lookup and fresh keys. This is the successful path, not transactional rollback, malformed response, or final-checkout owner-loss coverage."
+        }
+      ]
+    },
+    {
+      "id": "checkout-entitlement-portal-v94",
+      "title": "Block duplicate subscriptions and guard portal response",
+      "preconditions": [
+        "Run the full public command tracer app -- test services billing. The original 27 named entitlement steps run before the appended 22-case checkout chapter. Its 27-step runtime report does not include the later chapter; separate checkout evidence and the final HTTP count report that chapter.",
+        "The harness owns loopback HTTP, a process group and isolated home/D1/R2 storage, disables telemetry and inherits no credentials. Synthetic identities and a new no-customer team are authored fixtures. No live provider, customer, account, payment, native or measured execution claim.",
+        "Every provider request must exactly match the next expected method, URL/query, synthetic authorization, Stripe version, body entries and idempotency header. Each HTTP case consumes its entire queue and checks zero unexpected requests. Existing team, all projects and billing-event rows remain exact. Legitimate synchronization may change the new team even when checkout is refused.",
+        "The owner has fewer than 30 billing requests in the real hour window. Provider callbacks deterministically modify a role or revoke a session only for named recheck cases, then fixtures restore them. These interleavings are not concurrency or remote rollback tests.",
+        "Limits: one invalid fixed amount, not every price clause; one cached customer mismatch, not every identity field; no failed-create retry, transaction failure/rollback, restart persistence, provider idempotency enforcement, network transport exception, malformed new receipt or full URL normalization claim."
+      ],
+      "actions": [
+        "Supply an active matching subscription and require already_subscribed before cache/creation; supply an unrelated-price past-due subscription and require subscription_exists before cache/creation.",
+        "Open portal with the exact synthetic customer and return URL; then reject a wrong-host portal URL.",
+        "Revoke the synthetic owner session during the portal response and require 401 before URL release; verify unchanged new team row, restore the session, and assert final provider queue/count/R2 invariants."
+      ],
+      "expectations": [
+        {
+          "id": "entitlement",
+          "description": "Active matching entitlement returns 409 already_subscribed, and a nonterminal unrelated-price past-due record returns 409 subscription_exists. Queues contain no cached lookup or checkout create; expected active/free team statuses are observed.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 366,
+            "end": 371,
+            "sha256": "25c45f2c9470f2baa4beb5b5776f0f0a94820128c36e53d3f18f404046088ef9"
+          }
+        },
+        {
+          "id": "portal",
+          "description": "Portal sends exact customer/return fields and returns only the safe expected URL. Wrong-host response yields 502; session revocation during a completed provider call yields 401 session_expired without releasing its URL. No provider rollback is claimed.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 372,
+            "end": 383,
+            "sha256": "0761a34e7403b824540752368b85c3cb3bc7a41a3b84228d55958fab8fff5d6d"
+          }
+        },
+        {
+          "id": "preservation",
+          "description": "Every case consumes its exact provider queue and preserves the original team, project and event rows. Final totals are 22 checkout cases, one customer, three creates and zero unexpected requests, with empty ASSETS.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-journey.mjs",
+            "start": 302,
+            "end": 386,
+            "sha256": "93bfef61d036bb54fac7143e35e23d1915c8c6f9740a60acd08a52b02eedfaea"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 127,
+            "end": 130,
+            "sha256": "a35dbd2c1d837acda183436a5134f6fcd8c0625a13ce0b9447bdde7b12de2b63"
+          },
+          "expectation": "entitlement",
+          "why": "Current provider synchronization precedes active and any-nonterminal subscription guards, which stop before cached lookup or creation."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 109,
+            "end": 114,
+            "sha256": "e26ef4a67a48c289dcfc0e51255b72895132aad0fc6e7dc64f6db2c4f82baa8d"
+          },
+          "expectation": "portal",
+          "why": "Portal posts exact customer/return form, reauthenticates after its provider call, and validates the allowed returned URL."
+        },
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 192,
+            "end": 196,
+            "sha256": "d3a253a5302908b83f055edd9995c21d1cf0f63780de66b283216da12c2ac41b"
+          },
+          "expectation": "portal",
+          "why": "Public owner/rate/body routing enters the serialized coordinator with client body drained; fixed-form checks in the earlier create step show adversarial fields are ignored. No rate/body-limit or malformed-route boundary claim."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "checkout-safety-v94",
+      "title": "Validate synthetic billing checkout and portal lifecycle",
+      "steps": [
+        "checkout-guards-v94",
+        "checkout-create-v94",
+        "checkout-replace-v94",
+        "checkout-entitlement-portal-v94"
+      ]
+    }
+  ]
+}

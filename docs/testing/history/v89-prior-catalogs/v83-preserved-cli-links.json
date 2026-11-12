@@ -1,0 +1,749 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "reconcile-16c9815c6f0c6224",
+      "title": "Preserve reviewed CLI association 16c9815c6f0c6224",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Ownership helper predicates accept the synthetic private directory/files and reject tested directory-mode, file-mode and hard-link cases. Error helper returns the asserted owned-workspace-unavailable. Device/inode sameness is checked on successful access; no replacement race, wrong uid or special-file injection is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 261,
+            "end": 290,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 5,
+            "end": 11,
+            "sha256": "bc93dcb64afeda3c3f45d6fa363a16819e147df5c72416be3b8c07d5ba1cb547"
+          },
+          "expectation": "observed",
+          "why": "Ownership helper predicates accept the synthetic private directory/files and reject tested directory-mode, file-mode and hard-link cases. Error helper returns the asserted owned-workspace-unavailable. Device/inode sameness is checked on successful access; no replacement race, wrong uid or special-file injection is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-1b1c6c7e8c61888b",
+      "title": "Preserve reviewed CLI association 1b1c6c7e8c61888b",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The public inspector rejects non-owned naming, invokes host validation, returns the exact object explicitly denying native validation and resume authority, and normalizes tested validation failures. Non-string input and native ownership are not established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 261,
+            "end": 290,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 62,
+            "end": 69,
+            "sha256": "12f8df5211832f829dbf6408c2e686b36020e816b30f3e3335fb34ab9feceb3a"
+          },
+          "expectation": "observed",
+          "why": "The public inspector rejects non-owned naming, invokes host validation, returns the exact object explicitly denying native validation and resume authority, and normalizes tested validation failures. Non-string input and native ownership are not established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-54e318989cbb273b",
+      "title": "Preserve reviewed CLI association 54e318989cbb273b",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "tracer actions",
+        "tracer app -- --help"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Public discovery and explicit help have identical advertised output; discovery exposes native and tooling routes. This asserts help only, not successful native JSON control. The v68 help string additionally advertises persistent workspace inspection and relaunch. This witness checks advertised help equality only; it does not dispatch those routes. The current help also advertises stored portrait menu-action dispatch. This association covers help text only, not portrait execution, native menu interaction or the newly added guard paths. The help now includes collaboration, discussions-assets, atomic-batch, billing and generation in the service selector; the same discovery/help equality assertions still apply. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 33,
+            "end": 40,
+            "sha256": "df5ce58e9b332626b4655208a60bc6afe186e74a832913a1c3feb37790b8c3ed"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 191,
+            "end": 193,
+            "sha256": "9d396fb379e53d013a8d8935e55ea9a4cf595ec45fcaa1bc314bfb0beeb58712"
+          },
+          "expectation": "observed",
+          "why": "Public discovery and explicit help have identical advertised output; discovery exposes native and tooling routes. This asserts help only, not successful native JSON control. The v68 help string additionally advertises persistent workspace inspection and relaunch. This witness checks advertised help equality only; it does not dispatch those routes. The current help also advertises stored portrait menu-action dispatch. This association covers help text only, not portrait execution, native menu interaction or the newly added guard paths. The help now includes collaboration, discussions-assets, atomic-batch, billing and generation in the service selector; the same discovery/help equality assertions still apply. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-6e06ba556c68e2ef",
+      "title": "Preserve reviewed CLI association 6e06ba556c68e2ef",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Valid marker size/content and empty lock pass; the deliberately wrong-length marker rejects at the size guard. Same-length corrupt marker, short read, lock nonzero size and unexpected read failure are not rejection-tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 261,
+            "end": 290,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 44,
+            "end": 50,
+            "sha256": "a2f7aea83663a96079bce5c765598f80f2590683ebdcac272ce766c87a473dbf"
+          },
+          "expectation": "observed",
+          "why": "Valid marker size/content and empty lock pass; the deliberately wrong-length marker rejects at the size guard. Same-length corrupt marker, short read, lock nonzero size and unexpected read failure are not rejection-tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-725cd72b6542886b",
+      "title": "Preserve reviewed CLI association 725cd72b6542886b",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "SCRIV_TRACER_CLI=<owned-temporary-directory>/NotPresentTracer node scripts/tracer-cli.mjs actions"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The public wrapper reports a missing explicitly selected executable as exit 2 with the setup error. This witness does not exercise successful child exit or signal propagation.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 257,
+            "end": 259,
+            "sha256": "51d4865cab067848a45c97eb9d43d6b29b6afea090587607f6a6017be2841be9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/tracer-cli.mjs",
+            "start": 21,
+            "end": 21,
+            "sha256": "4d1b5075685e6f1ce2e0419af9ff58f3873708cfa8ab74fdbe61b2b82475669f"
+          },
+          "expectation": "observed",
+          "why": "The public wrapper reports a missing explicitly selected executable as exit 2 with the setup error. This witness does not exercise successful child exit or signal propagation."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-94175e814deb2cc0",
+      "title": "Preserve reviewed CLI association 94175e814deb2cc0",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Workspace routing accepts only inspect with its exact arity and emits the host inspection JSON. Resume/reset/delete are rejected without changing fixture bytes. Other malformed arities are not independently asserted. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 261,
+            "end": 290,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 165,
+            "end": 167,
+            "sha256": "7b7f87c90ad72047fa13188b9bab73150ea539ec56a32b44fe521db073bd7bce"
+          },
+          "expectation": "observed",
+          "why": "Workspace routing accepts only inspect with its exact arity and emits the host inspection JSON. Resume/reset/delete are rejected without changing fixture bytes. Other malformed arities are not independently asserted. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-98dc7c8ef1b8fc6e",
+      "title": "Preserve reviewed CLI association 98dc7c8ef1b8fc6e",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "tracer app -- test services --list"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The public service catalog exposes exactly cloud, updates, collaboration, discussions-assets, atomic-batch, billing and generation with their fixed scenario paths. No arbitrary runner path may be supplied. This association covers discovery, not service execution. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 222,
+            "end": 238,
+            "sha256": "9954360e93717c5295c1d87a3afc76ef9abd0b7172f77ca944229a5d39b339b2"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-service-journeys.mjs",
+            "start": 8,
+            "end": 21,
+            "sha256": "743fa0da919d48cc29dd9f07248e2bc3c47b66f5eddafeb8f3cff3aef327a9b7"
+          },
+          "expectation": "observed",
+          "why": "The public service catalog exposes exactly cloud, updates, collaboration, discussions-assets, atomic-batch, billing and generation with their fixed scenario paths. No arbitrary runner path may be supplied. This association covers discovery, not service execution. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-9e07d1292eed8cc2",
+      "title": "Preserve reviewed CLI association 9e07d1292eed8cc2",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "node scripts/tracer-cli.mjs actions",
+        "tracer actions"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Wrapper records child completion, removes signal listeners and propagates successful exit code, witnessed by direct-wrapper versus Tracer actions equality. SIGINT/other signal fallback and cancellation forwarding remain untested. Preconditions and limits: The trusted configured Tracer runs through the npm wrapper, returns exit 0 and identical actions output. Signal forwarding and failed/terminated process exit alternatives are not exercised. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 247,
+            "end": 253,
+            "sha256": "cd102efbe736f66834785a26abc39543d9c93a24533ed7a36de9f9f1e917e6ef"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/tracer-cli.mjs",
+            "start": 22,
+            "end": 24,
+            "sha256": "50f9fcb6166b4696c41a1a082e8938b7da38e7859e673d7dc97ea04d231749e6"
+          },
+          "expectation": "observed",
+          "why": "Wrapper records child completion, removes signal listeners and propagates successful exit code, witnessed by direct-wrapper versus Tracer actions equality. SIGINT/other signal fallback and cancellation forwarding remain untested. Preconditions and limits: The trusted configured Tracer runs through the npm wrapper, returns exit 0 and identical actions output. Signal forwarding and failed/terminated process exit alternatives are not exercised. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-a5a55fa821658b79",
+      "title": "Preserve reviewed CLI association a5a55fa821658b79",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Successful validation confirms named file/root identity and returns the inspected file set; scenario verifies original filenames and file bytes remain unchanged. This is the successful read-only path, not concurrent replacement detection or guaranteed descriptor cleanup under all failures. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 261,
+            "end": 290,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 51,
+            "end": 56,
+            "sha256": "8d7f68ec8eee147383cb94e230d72c4df09e8c1bfe2ef6c4bb0463356c85fc57"
+          },
+          "expectation": "observed",
+          "why": "Successful validation confirms named file/root identity and returns the inspected file set; scenario verifies original filenames and file bytes remain unchanged. This is the successful read-only path, not concurrent replacement detection or guaranteed descriptor cleanup under all failures. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-ac0d3f1b0a3becda",
+      "title": "Preserve reviewed CLI association ac0d3f1b0a3becda",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "tracer app -- test services --list"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Dispatch the public services route to its fixed local service catalog. The assertion checks exact IDs/paths; this is CLI discovery, not service execution or native acceptance. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 222,
+            "end": 238,
+            "sha256": "9954360e93717c5295c1d87a3afc76ef9abd0b7172f77ca944229a5d39b339b2"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 175,
+            "end": 177,
+            "sha256": "c91f8e510844568a4785909f7090466790f910fea3df9583d474551c76ffaa87"
+          },
+          "expectation": "observed",
+          "why": "Dispatch the public services route to its fixed local service catalog. The assertion checks exact IDs/paths; this is CLI discovery, not service execution or native acceptance. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-b69d2673e40079c9",
+      "title": "Preserve reviewed CLI association b69d2673e40079c9",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "node scripts/tracer-cli.mjs actions",
+        "tracer actions"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "With the trusted configured Tracer, the npm wrapper forwards actions and output matches direct discovery. Signal behavior and other forwarded commands are not covered by this witness.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 247,
+            "end": 253,
+            "sha256": "cd102efbe736f66834785a26abc39543d9c93a24533ed7a36de9f9f1e917e6ef"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/tracer-cli.mjs",
+            "start": 13,
+            "end": 17,
+            "sha256": "55f74282a74b4a69cbbcc223e7e48b681c46e6ca95d8c42b3ed5e2b9cc03ccca"
+          },
+          "expectation": "observed",
+          "why": "With the trusted configured Tracer, the npm wrapper forwards actions and output matches direct discovery. Signal behavior and other forwarded commands are not covered by this witness."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-c268ff390fe19b60",
+      "title": "Preserve reviewed CLI association c268ff390fe19b60",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "tracer app -- test services --help"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Service help labels these as local integration checks, not native acceptance, and discovery exposes the route. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 239,
+            "end": 240,
+            "sha256": "71ec064229935b00743a44420e329bfb54d52f550393c5ef076ad227c6d4dc81"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-service-journeys.mjs",
+            "start": 23,
+            "end": 25,
+            "sha256": "40b3bf0567a7cbf81eb187aaa57b634c5d739744246ebf1faa8d919191399d16"
+          },
+          "expectation": "observed",
+          "why": "Service help labels these as local integration checks, not native acceptance, and discovery exposes the route. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-cbfdfe504a82ced2",
+      "title": "Preserve reviewed CLI association cbfdfe504a82ced2",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Validation reads the opened/named root and each marker/lock, checks private regular-file ownership/link count/mode and obtains stable file identities. Hard-linked/mode-0400 marker and absent-lock fixtures reject. No identity-change race, file-symlink race, device mismatch or revalidation of an existing lease.files set is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 261,
+            "end": 290,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 31,
+            "end": 43,
+            "sha256": "f9be17cfe57fd4559e86c35c683d3ef9da3506e8521039b4c5b069f0aec8abcf"
+          },
+          "expectation": "observed",
+          "why": "Validation reads the opened/named root and each marker/lock, checks private regular-file ownership/link count/mode and obtains stable file identities. Hard-linked/mode-0400 marker and absent-lock fixtures reject. No identity-change race, file-symlink race, device mismatch or revalidation of an existing lease.files set is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-d706ab6f8b2c45a2",
+      "title": "Preserve reviewed CLI association d706ab6f8b2c45a2",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "SCRIV_TRACER_CLI=relative-tool node scripts/tracer-cli.mjs actions"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The public wrapper refuses a relative executable selection with exit 2; only executable-selection rejection is asserted.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 254,
+            "end": 256,
+            "sha256": "fbd6f2b87f14b45c33d755a5cbbdcf2afb642c65afcb474b1a72c79abeb84bb9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/tracer-cli.mjs",
+            "start": 7,
+            "end": 10,
+            "sha256": "a03207d3589a18d5f7b9cbb4666ac7b583c06aaf0c8f8a77c92ed92ec911043c"
+          },
+          "expectation": "observed",
+          "why": "The public wrapper refuses a relative executable selection with exit 2; only executable-selection rejection is asserted."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-ddf71981b8879941",
+      "title": "Preserve reviewed CLI association ddf71981b8879941",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "tracer app -- test services --list",
+        "tracer app -- test services ../outside",
+        "tracer app -- test services unknown",
+        "tracer app -- test services cloud updates",
+        "tracer app -- test services --list cloud",
+        "tracer app -- test services --help --unknown"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The exact catalog is asserted, then malformed/unknown combinations fail before execution with empty stdout and invalid-service-scenario. This does not assert successful service execution or cancellation. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 222,
+            "end": 245,
+            "sha256": "bbbabbcbfe3cd9c751b901bbe643e9e4509d8dcb229e10722497e8e10dbc609a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-service-journeys.mjs",
+            "start": 27,
+            "end": 31,
+            "sha256": "43371114fff1f2d189935a4cb6aca2175b56a394caab921cf06dbcce467c2e48"
+          },
+          "expectation": "observed",
+          "why": "The exact catalog is asserted, then malformed/unknown combinations fail before execution with empty stdout and invalid-service-scenario. This does not assert successful service execution or cancellation. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged."
+        }
+      ]
+    },
+    {
+      "id": "reconcile-f6e812c65dbabc41",
+      "title": "Preserve reviewed CLI association f6e812c65dbabc41",
+      "preconditions": [
+        "Same existing synthetic CLI fixture and exact ordered actions; only reviewed discovery list extension or byte-identical witness relocation."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Retaining an inspect-only host handle validates absolute canonical UUID-named root, private directory mode and stable identity, then validates owned files. Symlink-root and unsafe-root fixtures reject; valid fixture yields the exact non-resumable inspection. No retained live application lease or concurrent root swap is established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 261,
+            "end": 290,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 16,
+            "end": 26,
+            "sha256": "263c8b9a2e7393f20c21af28d2bcc19817548fba2c9fedee43bdc52c26a9a2a1"
+          },
+          "expectation": "observed",
+          "why": "Retaining an inspect-only host handle validates absolute canonical UUID-named root, private directory mode and stable identity, then validates owned files. Symlink-root and unsafe-root fixtures reject; valid fixture yields the exact non-resumable inspection. No retained live application lease or concurrent root swap is established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "reconcile-16c9815c6f0c6224",
+      "title": "Preserve reviewed CLI association 16c9815c6f0c6224",
+      "steps": [
+        "reconcile-16c9815c6f0c6224"
+      ]
+    },
+    {
+      "id": "reconcile-1b1c6c7e8c61888b",
+      "title": "Preserve reviewed CLI association 1b1c6c7e8c61888b",
+      "steps": [
+        "reconcile-1b1c6c7e8c61888b"
+      ]
+    },
+    {
+      "id": "reconcile-54e318989cbb273b",
+      "title": "Preserve reviewed CLI association 54e318989cbb273b",
+      "steps": [
+        "reconcile-54e318989cbb273b"
+      ]
+    },
+    {
+      "id": "reconcile-6e06ba556c68e2ef",
+      "title": "Preserve reviewed CLI association 6e06ba556c68e2ef",
+      "steps": [
+        "reconcile-6e06ba556c68e2ef"
+      ]
+    },
+    {
+      "id": "reconcile-725cd72b6542886b",
+      "title": "Preserve reviewed CLI association 725cd72b6542886b",
+      "steps": [
+        "reconcile-725cd72b6542886b"
+      ]
+    },
+    {
+      "id": "reconcile-94175e814deb2cc0",
+      "title": "Preserve reviewed CLI association 94175e814deb2cc0",
+      "steps": [
+        "reconcile-94175e814deb2cc0"
+      ]
+    },
+    {
+      "id": "reconcile-98dc7c8ef1b8fc6e",
+      "title": "Preserve reviewed CLI association 98dc7c8ef1b8fc6e",
+      "steps": [
+        "reconcile-98dc7c8ef1b8fc6e"
+      ]
+    },
+    {
+      "id": "reconcile-9e07d1292eed8cc2",
+      "title": "Preserve reviewed CLI association 9e07d1292eed8cc2",
+      "steps": [
+        "reconcile-9e07d1292eed8cc2"
+      ]
+    },
+    {
+      "id": "reconcile-a5a55fa821658b79",
+      "title": "Preserve reviewed CLI association a5a55fa821658b79",
+      "steps": [
+        "reconcile-a5a55fa821658b79"
+      ]
+    },
+    {
+      "id": "reconcile-ac0d3f1b0a3becda",
+      "title": "Preserve reviewed CLI association ac0d3f1b0a3becda",
+      "steps": [
+        "reconcile-ac0d3f1b0a3becda"
+      ]
+    },
+    {
+      "id": "reconcile-b69d2673e40079c9",
+      "title": "Preserve reviewed CLI association b69d2673e40079c9",
+      "steps": [
+        "reconcile-b69d2673e40079c9"
+      ]
+    },
+    {
+      "id": "reconcile-c268ff390fe19b60",
+      "title": "Preserve reviewed CLI association c268ff390fe19b60",
+      "steps": [
+        "reconcile-c268ff390fe19b60"
+      ]
+    },
+    {
+      "id": "reconcile-cbfdfe504a82ced2",
+      "title": "Preserve reviewed CLI association cbfdfe504a82ced2",
+      "steps": [
+        "reconcile-cbfdfe504a82ced2"
+      ]
+    },
+    {
+      "id": "reconcile-d706ab6f8b2c45a2",
+      "title": "Preserve reviewed CLI association d706ab6f8b2c45a2",
+      "steps": [
+        "reconcile-d706ab6f8b2c45a2"
+      ]
+    },
+    {
+      "id": "reconcile-ddf71981b8879941",
+      "title": "Preserve reviewed CLI association ddf71981b8879941",
+      "steps": [
+        "reconcile-ddf71981b8879941"
+      ]
+    },
+    {
+      "id": "reconcile-f6e812c65dbabc41",
+      "title": "Preserve reviewed CLI association f6e812c65dbabc41",
+      "steps": [
+        "reconcile-f6e812c65dbabc41"
+      ]
+    }
+  ]
+}

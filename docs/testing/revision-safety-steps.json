@@ -1,0 +1,773 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "create-revision-base",
+      "title": "Create revision base",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST project revision base",
+        "POST commands original scenes",
+        "GET snapshot create-revision-base",
+        "GET events create-revision-base"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Two scenes persist exactly at version one and sequence one, with exact receipt and event before=null. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 171,
+            "end": 174,
+            "sha256": "7a6153be9c019fc2c273dbe258e2caa4525cc6e3715ef3a1302e7a12ecbfa9b1"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "acquire-and-renew",
+      "title": "Acquire and renew",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST leases opening",
+        "Wait past initial lease timestamp",
+        "PUT leases renew opening",
+        "GET leases renewed opening",
+        "GET snapshot acquire-and-renew",
+        "GET events acquire-and-renew"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Acquire fence one then renew its unchanged identity/token/fence with a later bounded expiry; public listing omits token. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 175,
+            "end": 180,
+            "sha256": "c3705a39a450d6ea3e4a6046095f480b15534c8755abaf8e797c589fb9fd86c8"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 465,
+            "end": 465,
+            "sha256": "c3c40f45832b37a47e0fbf1005c2e04fdcf7675a1857db8f9c48cb647eec4a34"
+          },
+          "expectation": "observed",
+          "why": "PUT renews the owned existing lease and extends expiry without changing its identity; no stale-epoch PUT branch claim Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "release-owned-lease",
+      "title": "Release owned lease",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "DELETE leases opening",
+        "GET leases after release",
+        "GET snapshot release-owned-lease",
+        "GET events release-owned-lease"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "DELETE returns ok and removes the active public lease without changing document/events. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 181,
+            "end": 184,
+            "sha256": "fd6cc0c7797ff3425e2791b777ba9c046ab0ba1ba347e531f970a88f0751ffb3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 466,
+            "end": 466,
+            "sha256": "8827b89fb6c956e55a0a0f3cd7982f684821c8ce70921b5f697b6849ded2a67a"
+          },
+          "expectation": "observed",
+          "why": "Owner releases matching proof and public active lease disappears Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "reacquire-new-fence",
+      "title": "Reacquire new fence",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST leases reacquire opening",
+        "POST commands released proof",
+        "GET leases current fence",
+        "GET snapshot reacquire-new-fence",
+        "GET events reacquire-new-fence"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Reacquisition advances fence to two with a new token; old released proof is refused with no document/event mutation. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 185,
+            "end": 189,
+            "sha256": "84d3e853d48c5db4262bce3e453d7e1076f80315597dbeeb0b8b4cbf784ef076"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 461,
+            "end": 462,
+            "sha256": "3424067e7f6e063a4b09e4acc2b50c514599d70410989a2143297d77eee4deab"
+          },
+          "expectation": "observed",
+          "why": "Released existing row is reacquired with incremented fence/new token and current epoch Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "reject-wrong-session",
+      "title": "Reject wrong session",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST commands mismatched session",
+        "GET leases after session refusal",
+        "GET snapshot reject-wrong-session",
+        "GET events reject-wrong-session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Valid proof cannot be used under a different command session; active lease is unchanged. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 190,
+            "end": 193,
+            "sha256": "0e17e62b8388498a643f87e25920cc933ae5678e811eb024d6416ee322dca845"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 156,
+            "end": 157,
+            "sha256": "6378f76ff421f8d039114b4881e15279fbfaac80ef2844255538c048c6dcbf27"
+          },
+          "expectation": "observed",
+          "why": "Exact command session mismatch with otherwise current owned proof is refused; other requireLease conjunction variants are not claimed Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "delete-opening",
+      "title": "Delete opening",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST commands delete opening",
+        "GET snapshot delete-opening",
+        "GET events delete-opening"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Delete receipt/event retain deleted before/after content while public tombstone strips data and retains version two. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 195,
+            "end": 197,
+            "sha256": "e7fb51d14f2f046970636ac22e34064b211a0e8bdb55ff1b0e597c0c303a70ea"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 334,
+            "end": 335,
+            "sha256": "d808bd4ce2a95c53a9b5a17ba73e96166c9d09264d608dbdcf7cb8fe95997207"
+          },
+          "expectation": "observed",
+          "why": "Current snapshot projects deleted scene to empty-data tombstone version two, not content; canImport remains false Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "undo-deletion",
+      "title": "Undo deletion",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST commands undo deletion",
+        "GET snapshot undo-deletion",
+        "GET events undo-deletion"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A put at tombstone version two restores the same identity at version three with exact receipt and deletion-to-live event. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 199,
+            "end": 201,
+            "sha256": "fe2239563b3d52ff2da94a2c68f47792345cf9390e4442514ce0aa50aa0bc45f"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 261,
+            "end": 262,
+            "sha256": "8bdd5e237d6c0c18ff42b034aa678f7b047c9be924bc57ece86b112c7a170518"
+          },
+          "expectation": "observed",
+          "why": "Existing tombstone put produces live version three and persists it; atomic-batch byte-budget branch is excluded Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "prepare-restore-divergence",
+      "title": "Prepare restore divergence",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST leases ending",
+        "POST commands ending deletion and new scene",
+        "GET snapshot prepare-restore-divergence",
+        "GET events prepare-restore-divergence"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Delete second scene and add later scene atomically at sequence four; retain exact tombstone and event before/after values. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 203,
+            "end": 206,
+            "sha256": "2b49aa0b67016cf09f3c051f1c0a707cb5ee4764c8a76260e9e10e32954c457e"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "read-historical-tombstone",
+      "title": "Read historical tombstone",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "GET snapshot deleted revision",
+        "GET snapshot undone revision",
+        "GET snapshot wrong historical epoch",
+        "GET snapshot read-historical-tombstone",
+        "GET events read-historical-tombstone"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Historical sequence two returns only Ending plus empty-data Opening tombstone at version two; sequence three returns recovered Opening v3 and Ending v1; wrong requested epoch is rejected. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 207,
+            "end": 211,
+            "sha256": "416e39bf6d2e79f44f3df74acb00e2d578002174b4ba6663deda4c0862afba29"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 282,
+            "end": 282,
+            "sha256": "9a2ff57b6b3c09eaf56dfaaa3e6ff43ed66b1cec8e423e92c218bceb2e29ef54"
+          },
+          "expectation": "observed",
+          "why": "Explicit wrong historical epoch rejected for valid sequence Candidate only; independent review required."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 283,
+            "end": 285,
+            "sha256": "d37f95934a6c7357d01f323a13b572caa3018923489f47cfee7fd47e80422566"
+          },
+          "expectation": "observed",
+          "why": "Small historical pages recover exact deleted/live versions, hide tombstone data and return final-page cursor; byte and pagination boundaries excluded Candidate only; independent review required."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 287,
+            "end": 287,
+            "sha256": "c70bc13058442596f1eb0314d820e2b85c538d70b8e2ca73aa56254b4b120c41"
+          },
+          "expectation": "observed",
+          "why": "Small historical pages recover exact deleted/live versions, hide tombstone data and return final-page cursor; byte and pagination boundaries excluded Candidate only; independent review required."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 289,
+            "end": 290,
+            "sha256": "70a4987f73dae6120ffbe16cdc5a8f10d35d021879e0c271a6a0a4cdaebbba03"
+          },
+          "expectation": "observed",
+          "why": "Small historical pages recover exact deleted/live versions, hide tombstone data and return final-page cursor; byte and pagination boundaries excluded Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "restore-original-revision",
+      "title": "Restore original revision",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST restore original revision",
+        "GET leases after restore",
+        "GET snapshot restore-original-revision",
+        "GET events restore-original-revision"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Restore sequence one resurrects Ending at v3, returns Opening at v4, tombstones later scene at v2, advances epoch to two/timing one, and invalidates active leases. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 213,
+            "end": 216,
+            "sha256": "f9aff17b9533af09a9de181e627441ddbb8161815a02040240de690c2ebde595"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 298,
+            "end": 299,
+            "sha256": "2f85672ca6b6ea6f27c396982adfb37f38ec8879aaab7574e774416721163e0d"
+          },
+          "expectation": "observed",
+          "why": "Historical restore covers changed live item, resurrection of tombstone and tombstoning post-target item; already-deleted skip excluded Candidate only; independent review required."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 301,
+            "end": 301,
+            "sha256": "3e8ea83f8cc47f2d058e3461d96a33e353975de5c95016a97dd3d2017ed16c36"
+          },
+          "expectation": "observed",
+          "why": "Historical restore covers changed live item, resurrection of tombstone and tombstoning post-target item; already-deleted skip excluded Candidate only; independent review required."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 303,
+            "end": 305,
+            "sha256": "87c28a944b98034d945eaa2c02d7291947087afffa093d8d6eb41eab571fd6ec"
+          },
+          "expectation": "observed",
+          "why": "Restore increments head/epoch/timing and invalidates active leases, with exact public restore event Candidate only; independent review required."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 307,
+            "end": 308,
+            "sha256": "cbe706e12b2b582f76651ad22e22b618efc00b4d4f5b2d68b203573b499295a3"
+          },
+          "expectation": "observed",
+          "why": "Restore returns snapshot-required empty-items receipt and journal event Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "replay-after-epoch-change",
+      "title": "Replay after epoch change",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST commands replay old delete",
+        "POST commands changed old delete",
+        "POST restore replay original",
+        "GET snapshot replay-after-epoch-change",
+        "GET events replay-after-epoch-change"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exact old delete request returns original sequence-two receipt after restoration without mutating epoch-two document or events; modified replay is command_reused. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 217,
+            "end": 221,
+            "sha256": "6f0319f7451b30975156cc7c7b10d8ad5967d511dd64e6eb9fcde7b652a44a46"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 357,
+            "end": 358,
+            "sha256": "e52ece1894b46e571a983f1d1b79bcc80e37f751870a3b1f5e31500b22a8d73e"
+          },
+          "expectation": "observed",
+          "why": "HTTP cached command receipt precedes stale epoch/lease checks, and changed retry refuses reuse Candidate only; independent review required."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 366,
+            "end": 367,
+            "sha256": "852178b64099cd17ed7d09369c0c4576757b6dec8557b7e8124e04b34c3aa360"
+          },
+          "expectation": "observed",
+          "why": "HTTP restore receipt replay returns exact previous epoch-changing result without another restore Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "reject-stale-epoch",
+      "title": "Reject stale epoch",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST commands old epoch",
+        "GET snapshot reject-stale-epoch",
+        "GET events reject-stale-epoch"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Fresh command with old epoch is rejected before editing restored content. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 222,
+            "end": 224,
+            "sha256": "c24b8966985223ba6f85b2dd771cc0f4324b6d72ecb2f003c330111946fcc0e7"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 232,
+            "end": 232,
+            "sha256": "a0f3ee21298cfbfd0c26a7b33e6813be971d1530b41f533909c3495bd20b60e7"
+          },
+          "expectation": "observed",
+          "why": "Fresh old epoch command rejected; cached replay is separately intercepted Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "reject-invalidated-proof",
+      "title": "Reject invalidated proof",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST commands old lease current epoch",
+        "GET leases remain invalidated",
+        "GET snapshot reject-invalidated-proof",
+        "GET events reject-invalidated-proof"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Current epoch and correct version with the pre-restore lease fails lease_required. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 225,
+            "end": 228,
+            "sha256": "8b4739d884117bfbad892bbf863535dcb1b13b6b9e013ba1559e1d04a1c3c528"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reacquire-after-restore",
+      "title": "Reacquire after restore",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST leases after restore",
+        "POST commands stale item version",
+        "GET leases after version refusal",
+        "GET snapshot reacquire-after-restore",
+        "GET events reacquire-after-restore"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "New epoch lease advances fence to three; stale item version is version_conflict despite fresh valid lease. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 230,
+            "end": 234,
+            "sha256": "32dd8032717e1c0cac5927de09e3ed45f0f38825b57d2a64ae7b839400ddb9e9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 239,
+            "end": 239,
+            "sha256": "91055b8241e5c58f1ec18ccada1522ee461ec435b9dbaf2f063cfac93ddb2bdb"
+          },
+          "expectation": "observed",
+          "why": "Fresh command with stale item version refuses before lease validation Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "reject-invalid-restores",
+      "title": "Reject invalid restores",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST restore beyond head",
+        "POST restore stale epoch",
+        "GET snapshot reject-invalid-restores",
+        "GET events reject-invalid-restores"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Fresh restore beyond head rejects invalid_sequence; old epoch restore rejects stale_epoch; both leave tombstones/history intact. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 235,
+            "end": 238,
+            "sha256": "1de3edf0ed7adc93aa3ebaa5a83483374e4608fbac2550d8130e8527d6cc521d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 297,
+            "end": 297,
+            "sha256": "f3780a47c2a9a93375a2d8002b7935a71d3b253754e3d7b3e9143e4a719070a6"
+          },
+          "expectation": "observed",
+          "why": "Fresh owner restore rejects future sequence or stale epoch; replay has different outer path Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "read-ordered-history",
+      "title": "Read ordered history",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "GET history first page",
+        "GET history terminal page",
+        "GET snapshot read-ordered-history",
+        "GET events read-ordered-history"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "History pagination after sequence three returns exact command four then restore five, hasMore true then false; before/after changes and restore snapshotRequired are asserted. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 239,
+            "end": 242,
+            "sha256": "48ea0f513c8c32828bf0aba763b105e83052540de5a0a92d1511489ce83cdf48"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 119,
+            "end": 119,
+            "sha256": "229d5f1d71c8381b745c779b3878e70b9a9e6ec32c2cacac31c030b57d891014"
+          },
+          "expectation": "observed",
+          "why": "Small event/history pages select strictly after sequence in ascending order with limit one Candidate only; independent review required."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 128,
+            "end": 128,
+            "sha256": "2d1e5a14371fb7fccc21ef233f5ce34640d3f51bd2a1c1e487e3ca86abe4fd94"
+          },
+          "expectation": "observed",
+          "why": "Small page event ordering and hasMore transition true to false; byte-cap branches excluded Candidate only; independent review required."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 130,
+            "end": 130,
+            "sha256": "e146dbdc8fd7c5bd4957f3e105c5ec855ebfcd9cb52bc98c98f532905f13a884"
+          },
+          "expectation": "observed",
+          "why": "Small page event ordering and hasMore transition true to false; byte-cap branches excluded Candidate only; independent review required."
+        }
+      ]
+    },
+    {
+      "id": "expire-lease-naturally",
+      "title": "Expire lease naturally",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "Wait until lease expiration",
+        "POST commands expired proof",
+        "GET leases after natural expiry",
+        "GET snapshot expire-lease-naturally",
+        "GET events expire-lease-naturally"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Wait until actual lease expiry without clock or storage injection; old proof is refused and active lease list empties. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 243,
+            "end": 247,
+            "sha256": "a184a3c4b194a10d2c1e4a527f1bbc0d1c046756aab79bc1fe9ed9a058626302"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "save-after-recovery",
+      "title": "Save after recovery",
+      "preconditions": [
+        "Unchanged bundled Worker, local Miniflare loopback HTTP, owned synthetic D1 identities/sessions/paid team only. No direct DO state mutation.",
+        "Ordered prior steps establish exact authored scene state, receipts, tombstones and lease ownership.",
+        "Only public snapshot, HTTP event/history, lease and receipt behavior is asserted; no race, websocket, internal SQL durability, native UI or provider claims."
+      ],
+      "actions": [
+        "POST leases after expiry",
+        "POST commands recovered edit",
+        "GET snapshot save-after-recovery",
+        "GET events save-after-recovery"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Reacquire expired lease at fence four, save correct version in epoch two, and preserve unrelated restored Ending and later-scene tombstone. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations. Reuse the refused version-conflict command ID with corrected bytes: failed attempts did not reserve a successful receipt.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 249,
+            "end": 252,
+            "sha256": "39337eed3ddb7030fe37beb6d5d194e6900847c8330f7bf42ea13666836d8484"
+          }
+        }
+      ],
+      "mappings": []
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "revision-safety",
+      "title": "Recover document revisions through lease handover and restore",
+      "steps": [
+        "create-revision-base",
+        "acquire-and-renew",
+        "release-owned-lease",
+        "reacquire-new-fence",
+        "reject-wrong-session",
+        "delete-opening",
+        "undo-deletion",
+        "prepare-restore-divergence",
+        "read-historical-tombstone",
+        "restore-original-revision",
+        "replay-after-epoch-change",
+        "reject-stale-epoch",
+        "reject-invalidated-proof",
+        "reacquire-after-restore",
+        "reject-invalid-restores",
+        "read-ordered-history",
+        "expire-lease-naturally",
+        "save-after-recovery"
+      ]
+    }
+  ]
+}

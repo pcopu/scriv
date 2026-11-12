@@ -1,6 +1,7 @@
 import UIKit
 import UniformTypeIdentifiers
 import QuickLook
+import ScrivCore
 
 @MainActor
 enum UIKitPresentation {
@@ -36,6 +37,32 @@ final class UIKitFileAccess: NSObject, UIDocumentPickerDelegate {
     static let shared = UIKitFileAccess()
     private var selection: ((URL?) -> Void)?
     private var exportCompletion: (() -> Void)?
+#if SCRIV_CLI_AUTOMATION
+    private struct CLIExportFailure: LocalizedError {
+        var errorDescription: String? { "Synthetic export handoff was not completed exactly once." }
+    }
+    private final class CLIExportCapture {
+        let observe: (URL) throws -> Void
+        var handoffs = 0
+        var completions = 0
+        var failure: Error?
+        init(observe: @escaping (URL) throws -> Void) { self.observe = observe }
+    }
+    private var cliExportCapture: CLIExportCapture?
+
+    /// Synchronous one-shot observation of the production export handoff.
+    /// The capture stays armed through failure/cleanup, so no picker fallback
+    /// occurs. Only the automation adapter may supply the bounded observer.
+    func captureExportForCLI(_ operation: () -> Void, observe: @escaping (URL) throws -> Void) throws {
+        guard cliExportCapture == nil, selection == nil, exportCompletion == nil else { throw CLIExportFailure() }
+        let capture = CLIExportCapture(observe: observe)
+        cliExportCapture = capture
+        defer { cliExportCapture = nil }
+        operation()
+        guard capture.handoffs == 1, capture.completions == 1 else { throw CLIExportFailure() }
+        if let failure = capture.failure { throw failure }
+    }
+#endif
     private var retainedScopes: [String:URL] = [:]
     private let bookmarksKey = "ScrivUIKitProjectBookmarks.v1"
 #if targetEnvironment(macCatalyst)
@@ -48,7 +75,7 @@ final class UIKitFileAccess: NSObject, UIDocumentPickerDelegate {
     private static let bookmarkResolutionOptions: URL.BookmarkResolutionOptions = []
 #endif
     private let defaults: UserDefaults
-    init(defaults: UserDefaults = .standard) { self.defaults = defaults; super.init() }
+    init(defaults: UserDefaults = ScrivPreferences.standard) { self.defaults = defaults; super.init() }
     static let projectType = UTType(exportedAs: "app.scriv.project", conformingTo: .package)
 
     func choose(types: [UTType], directory: URL? = nil, from: UIViewController? = nil, completion: @escaping (URL?) -> Void) {
@@ -59,6 +86,20 @@ final class UIKitFileAccess: NSObject, UIDocumentPickerDelegate {
         presenter.present(picker, animated: true)
     }
     func export(url: URL, from: UIViewController? = nil, completion: @escaping () -> Void = {}) {
+#if SCRIV_CLI_AUTOMATION
+        if let capture = cliExportCapture {
+            capture.handoffs += 1
+            if capture.handoffs == 1 {
+                do { try capture.observe(url) }
+                catch { capture.failure = error }
+            } else { capture.failure = CLIExportFailure() }
+            // Invoke the existing caller-supplied cleanup, not a replacement
+            // deletion path. This also runs if bounded observation rejects.
+            completion()
+            capture.completions += 1
+            return
+        }
+#endif
         guard selection == nil, exportCompletion == nil, let presenter = from ?? UIKitPresentation.presenter else { completion(); return }
         exportCompletion = completion
         let picker = UIDocumentPickerViewController(forExporting: [url], asCopy: true)

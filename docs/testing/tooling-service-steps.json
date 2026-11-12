@@ -1,0 +1,434 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "inspect-owned-workspace",
+      "title": "Inspect owned workspace fixtures",
+      "preconditions": [
+        "Fresh synthetic private workspace, symlink, marker, lock and mode fixtures; no native host is launched."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Valid fixture returns the exact non-resumable inspection; malformed ownership fixtures reject and all original filenames and bytes remain unchanged.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 238,
+            "end": 267,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 16,
+            "end": 26,
+            "sha256": "263c8b9a2e7393f20c21af28d2bcc19817548fba2c9fedee43bdc52c26a9a2a1"
+          },
+          "expectation": "asserted",
+          "why": "Retaining an inspect-only host handle validates absolute canonical UUID-named root, private directory mode and stable identity, then validates owned files. Symlink-root and unsafe-root fixtures reject; valid fixture yields the exact non-resumable inspection. No retained live application lease or concurrent root swap is established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        },
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 166,
+            "end": 168,
+            "sha256": "7b7f87c90ad72047fa13188b9bab73150ea539ec56a32b44fe521db073bd7bce"
+          },
+          "expectation": "asserted",
+          "why": "Workspace routing accepts only inspect with its exact arity and emits the host inspection JSON. Resume/reset/delete are rejected without changing fixture bytes. Other malformed arities are not independently asserted. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        },
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 51,
+            "end": 56,
+            "sha256": "8d7f68ec8eee147383cb94e230d72c4df09e8c1bfe2ef6c4bb0463356c85fc57"
+          },
+          "expectation": "asserted",
+          "why": "Successful validation confirms named file/root identity and returns the inspected file set; scenario verifies original filenames and file bytes remain unchanged. This is the successful read-only path, not concurrent replacement detection or guaranteed descriptor cleanup under all failures. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        },
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 31,
+            "end": 43,
+            "sha256": "f9be17cfe57fd4559e86c35c683d3ef9da3506e8521039b4c5b069f0aec8abcf"
+          },
+          "expectation": "asserted",
+          "why": "Validation reads the opened/named root and each marker/lock, checks private regular-file ownership/link count/mode and obtains stable file identities. Hard-linked/mode-0400 marker and absent-lock fixtures reject. No identity-change race, file-symlink race, device mismatch or revalidation of an existing lease.files set is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        },
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 5,
+            "end": 11,
+            "sha256": "bc93dcb64afeda3c3f45d6fa363a16819e147df5c72416be3b8c07d5ba1cb547"
+          },
+          "expectation": "asserted",
+          "why": "Ownership helper predicates accept the synthetic private directory/files and reject tested directory-mode, file-mode and hard-link cases. Error helper returns the asserted owned-workspace-unavailable. Device/inode sameness is checked on successful access; no replacement race, wrong uid or special-file injection is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        },
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 62,
+            "end": 69,
+            "sha256": "12f8df5211832f829dbf6408c2e686b36020e816b30f3e3335fb34ab9feceb3a"
+          },
+          "expectation": "asserted",
+          "why": "The public inspector rejects non-owned naming, invokes host validation, returns the exact object explicitly denying native validation and resume authority, and normalizes tested validation failures. Non-string input and native ownership are not established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        },
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 44,
+            "end": 50,
+            "sha256": "a2f7aea83663a96079bce5c765598f80f2590683ebdcac272ce766c87a473dbf"
+          },
+          "expectation": "asserted",
+          "why": "Valid marker size/content and empty lock pass; the deliberately wrong-length marker rejects at the size guard. Same-length corrupt marker, short read, lock nonzero size and unexpected read failure are not rejection-tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "compare-tracer-wrapper",
+      "title": "Compare direct and wrapped discovery",
+      "preconditions": [
+        "The explicit absolute trusted Tracer executable is available."
+      ],
+      "actions": [
+        "node scripts/tracer-cli.mjs actions",
+        "tracer actions"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Wrapper discovery exits successfully and matches direct Tracer discovery output.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 224,
+            "end": 230,
+            "sha256": "cd102efbe736f66834785a26abc39543d9c93a24533ed7a36de9f9f1e917e6ef"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/tracer-cli.mjs",
+            "start": 13,
+            "end": 17,
+            "sha256": "55f74282a74b4a69cbbcc223e7e48b681c46e6ca95d8c42b3ed5e2b9cc03ccca"
+          },
+          "expectation": "asserted",
+          "why": "With the trusted configured Tracer, the npm wrapper forwards actions and output matches direct discovery. Signal behavior and other forwarded commands are not covered by this witness."
+        },
+        {
+          "source": {
+            "path": "scripts/tracer-cli.mjs",
+            "start": 22,
+            "end": 24,
+            "sha256": "50f9fcb6166b4696c41a1a082e8938b7da38e7859e673d7dc97ea04d231749e6"
+          },
+          "expectation": "asserted",
+          "why": "Wrapper records child completion, removes signal listeners and propagates successful exit code, witnessed by direct-wrapper versus Tracer actions equality. SIGINT/other signal fallback and cancellation forwarding remain untested. Preconditions and limits: The trusted configured Tracer runs through the npm wrapper, returns exit 0 and identical actions output. Signal forwarding and failed/terminated process exit alternatives are not exercised. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "reject-relative-tracer",
+      "title": "Reject relative Tracer selection",
+      "preconditions": [
+        "SCRIV_TRACER_CLI selects the relative string relative-tool."
+      ],
+      "actions": [
+        "SCRIV_TRACER_CLI=relative-tool node scripts/tracer-cli.mjs actions"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Wrapper exits 2 and refuses the relative executable selection.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 231,
+            "end": 233,
+            "sha256": "fbd6f2b87f14b45c33d755a5cbbdcf2afb642c65afcb474b1a72c79abeb84bb9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/tracer-cli.mjs",
+            "start": 7,
+            "end": 10,
+            "sha256": "a03207d3589a18d5f7b9cbb4666ac7b583c06aaf0c8f8a77c92ed92ec911043c"
+          },
+          "expectation": "asserted",
+          "why": "The public wrapper refuses a relative executable selection with exit 2; only executable-selection rejection is asserted."
+        }
+      ]
+    },
+    {
+      "id": "reject-missing-tracer",
+      "title": "Reject missing Tracer executable",
+      "preconditions": [
+        "The selected absolute path is absent in an owned temporary directory."
+      ],
+      "actions": [
+        "SCRIV_TRACER_CLI=<owned-temporary-directory>/NotPresentTracer node scripts/tracer-cli.mjs actions"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Wrapper exits 2 with the expected setup error.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 234,
+            "end": 236,
+            "sha256": "51d4865cab067848a45c97eb9d43d6b29b6afea090587607f6a6017be2841be9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/tracer-cli.mjs",
+            "start": 21,
+            "end": 21,
+            "sha256": "4d1b5075685e6f1ce2e0419af9ff58f3873708cfa8ab74fdbe61b2b82475669f"
+          },
+          "expectation": "asserted",
+          "why": "The public wrapper reports a missing explicitly selected executable as exit 2 with the setup error. This witness does not exercise successful child exit or signal propagation."
+        }
+      ]
+    },
+    {
+      "id": "reject-service-targets",
+      "title": "Reject arbitrary service targets",
+      "preconditions": [
+        "Fixed eleven-scenario catalog is available; no service process is needed for discovery or argument validation."
+      ],
+      "actions": [
+        "tracer app -- test services --list",
+        "tracer app -- test services ../outside",
+        "tracer app -- test services unknown",
+        "tracer app -- test services cloud updates",
+        "tracer app -- test services --list cloud",
+        "tracer app -- test services --help --unknown"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Exact catalog is returned; unknown and malformed selections fail with empty stdout and invalid-service-scenario.",
+          "witness": {
+            "path": "tests/tracer/service-discovery.mjs",
+            "start": 5,
+            "end": 28,
+            "sha256": "b2f8bea5002a60f889162d5dd8dd1c41c89f142bed10dc22677cba81af82c4fa"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-service-journeys.mjs",
+            "start": 15,
+            "end": 19,
+            "sha256": "43371114fff1f2d189935a4cb6aca2175b56a394caab921cf06dbcce467c2e48"
+          },
+          "expectation": "asserted",
+          "why": "The exact catalog is asserted, then malformed/unknown combinations fail before execution with empty stdout and invalid-service-scenario. This does not assert successful service execution or cancellation."
+        }
+      ]
+    },
+    {
+      "id": "discover-service-catalog",
+      "title": "Discover seven service journeys",
+      "preconditions": [
+        "Fixed service definitions are loaded without starting any service."
+      ],
+      "actions": [
+        "tracer app -- test services --list"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Catalog returns exactly cloud, updates, collaboration, discussions-assets, atomic-batch, billing and generation with their fixed paths.",
+          "witness": {
+            "path": "tests/tracer/service-discovery.mjs",
+            "start": 5,
+            "end": 21,
+            "sha256": "d08f33a051a13fcd8bcf616d0eacae7a3258307ccf1e7c90a100a2472a485fe4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 176,
+            "end": 178,
+            "sha256": "c91f8e510844568a4785909f7090466790f910fea3df9583d474551c76ffaa87"
+          },
+          "expectation": "asserted",
+          "why": "Dispatch the public services route to its fixed local service catalog. The assertion checks exact IDs/paths; this is CLI discovery, not service execution or native acceptance."
+        },
+        {
+          "source": {
+            "path": "scripts/service-catalog.mjs",
+            "start": 3,
+            "end": 15,
+            "sha256": "0e9c691f2a58b73700c06bd000b9fbb4f96e27d5c2d984417e9e60c4a4b4cf02"
+          },
+          "expectation": "asserted",
+          "why": "The public service catalog exposes exactly cloud, updates, collaboration, discussions-assets, atomic-batch, billing and generation with their fixed scenario paths. No arbitrary runner path may be supplied. This association covers discovery, not service execution."
+        }
+      ]
+    },
+    {
+      "id": "compare-public-help",
+      "title": "Compare public CLI help",
+      "preconditions": [
+        "Public discovery and explicit help are read-only."
+      ],
+      "actions": [
+        "tracer actions",
+        "tracer app -- --help"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Discovery and explicit help outputs are equal and advertise the required routes; no route execution is asserted.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 34,
+            "end": 41,
+            "sha256": "df5ce58e9b332626b4655208a60bc6afe186e74a832913a1c3feb37790b8c3ed"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 192,
+            "end": 194,
+            "sha256": "931490e4957c2bc7d2b2db39ceacd76466f7323685ca3125668812c076b557d7"
+          },
+          "expectation": "asserted",
+          "why": "Public discovery and explicit help have identical advertised output; discovery exposes native and tooling routes. This asserts help only, not successful native JSON control. The v68 help string additionally advertises persistent workspace inspection and relaunch. This witness checks advertised help equality only; it does not dispatch those routes. The current help also advertises stored portrait menu-action dispatch. This association covers help text only, not portrait execution, native menu interaction or the newly added guard paths. The help now includes collaboration, discussions-assets, atomic-batch, billing and generation in the service selector; the same discovery/help equality assertions still apply."
+        }
+      ]
+    },
+    {
+      "id": "describe-service-scope",
+      "title": "Describe service test scope",
+      "preconditions": [
+        "Service help and discovery run without launching a native app."
+      ],
+      "actions": [
+        "tracer app -- test services --help"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Service help identifies local checks as not native acceptance and discovery exposes the service route.",
+          "witness": {
+            "path": "tests/tracer/service-discovery.mjs",
+            "start": 22,
+            "end": 23,
+            "sha256": "fe795ccf77f1cc76aeeba16e4dba2692d086a00225207d82af7e64e7b76201f9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-service-journeys.mjs",
+            "start": 11,
+            "end": 13,
+            "sha256": "7fa079fde8d385d05d8537e6a95bd09d36af60631bb3e75300184a24346212e9"
+          },
+          "expectation": "asserted",
+          "why": "Service help labels these as local integration checks, not native acceptance, and discovery exposes the route."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "inspect-owned-workspace",
+      "title": "Inspect owned workspace fixtures",
+      "steps": [
+        "inspect-owned-workspace"
+      ]
+    },
+    {
+      "id": "compare-tracer-wrapper",
+      "title": "Compare direct and wrapped discovery",
+      "steps": [
+        "compare-tracer-wrapper"
+      ]
+    },
+    {
+      "id": "reject-relative-tracer",
+      "title": "Reject relative Tracer selection",
+      "steps": [
+        "reject-relative-tracer"
+      ]
+    },
+    {
+      "id": "reject-missing-tracer",
+      "title": "Reject missing Tracer executable",
+      "steps": [
+        "reject-missing-tracer"
+      ]
+    },
+    {
+      "id": "reject-service-targets",
+      "title": "Reject arbitrary service targets",
+      "steps": [
+        "reject-service-targets"
+      ]
+    },
+    {
+      "id": "discover-service-catalog",
+      "title": "Discover seven service journeys",
+      "steps": [
+        "discover-service-catalog"
+      ]
+    },
+    {
+      "id": "compare-public-help",
+      "title": "Compare public CLI help",
+      "steps": [
+        "compare-public-help"
+      ]
+    },
+    {
+      "id": "describe-service-scope",
+      "title": "Describe service test scope",
+      "steps": [
+        "describe-service-scope"
+      ]
+    }
+  ]
+}

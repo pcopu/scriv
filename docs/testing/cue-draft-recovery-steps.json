@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "cue-draft-recovery-v88",
+      "title": "Recover retained cue direction",
+      "preconditions": [
+        "Prepared native journey; readiness blocked pending verified macOS automation bundle. Native execution NOT RUN; no measured coverage.",
+        "SCRIV_E2E_APP identifies the verified bundle; real native session launches with persistent:true, owned private synthetic root, network disabled, no account or provider. No user workspace, injected journal, fault hook, private method or denied alert fallback.",
+        "The whole public journey creates the YAM MAN sentinel and imports the independent generation-review fixture. It awaits mounted editable optional direction, uses bounded public snapshot/scroll discovery, and sends each text mutation once.",
+        "Oversized input is 29999 ASCII x plus 🎬: 30001 UTF-16 units and 30003 UTF-8 bytes. Wait actual refusal before each relaunch; never race the 300 ms autosave timer.",
+        "Ordered journey: initial refusal and retained checks; owned relaunch/open/retained checks twice; correction to Cafe combining acute + emoji recovery corrected; await save and journal clear; third relaunch/open/clean checks; finally close.",
+        "Read-only host journal bytes are distinct from native loaded-project/persisted-projects/UI outcomes. Preservation baseline is complete captured canonical model; intended correction changes prompt and one revision only, allowing observed finite nondecreasing modifiedAt.",
+        "No pending-save, script draft, CAS, stale epoch, 64-KiB, malformed journal, crash durability, physical keyboard or provider coverage."
+      ],
+      "actions": [
+        "tracer app -- test --scenario journeys/cue-draft-recovery"
+      ],
+      "expectations": [
+        {
+          "id": "retained",
+          "description": "Actual oversized text and exact refusal appear; complete loaded model/date bits and both saved projects stay unchanged; one exact journal retains scope, text, sourcePrompt and unchanged bytes across two owned relaunches; no alerts or jobs.",
+          "witness": {
+            "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+            "start": 71,
+            "end": 85,
+            "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
+          }
+        },
+        {
+          "id": "refusal-and-correction",
+          "description": "Retained refusal observations discriminate oversize rejection before mutation. Corrected text changes only target prompt, exactly one revision and permitted modification timestamp; journal clears after persisted save and stays absent after third reopen, with entire loaded and saved models equal expected.",
+          "witness": {
+            "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+            "start": 71,
+            "end": 131,
+            "sha256": "975a89aa462498ace3f4bac60c1bd8a0784f1f8e969afa3c569a275083b8d7b2"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 60,
+            "end": 64,
+            "sha256": "ad2ba27a284f997eef7e49321d47622a9b4cf73d9654e16ab62e71d3dc5c519a"
+          },
+          "expectation": "refusal-and-correction",
+          "why": "Exact over-limit rejection plus unchanged canonical state and retained exact text; successful correction assertion is separately at 110-125. Do not include identity/epoch/64-KiB rejection branches. Prepared association only; native NOT RUN. No branch-complete claim."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 271,
+            "end": 277,
+            "sha256": "57719e23f1e75a295d1159e002578e2cd4ee8fdc56ac85a1db83325c49ae4b23"
+          },
+          "expectation": "retained",
+          "why": "Repeated owned native cold open must rediscover exact journal text and reproduce refusal while canonical state stays unchanged. Native not run. Prepared association only; native NOT RUN. No branch-complete claim."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 418,
+            "end": 422,
+            "sha256": "696abae4eeffb0e0e8343f3ea65cca4c471fcf3d36f04902e651066a6cb64212"
+          },
+          "expectation": "retained",
+          "why": "Matching active draft application error must surface the exact public refusal; cancellation/stale-draft branches not asserted. Prepared association only; native NOT RUN. No branch-complete claim."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "cue-draft-recovery-v88",
+      "title": "Recover cue draft across owned relaunches",
+      "steps": [
+        "cue-draft-recovery-v88"
+      ]
+    }
+  ]
+}

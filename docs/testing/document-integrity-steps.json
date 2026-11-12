@@ -1,0 +1,871 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "create-graph",
+      "title": "Create graph",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST synthetic project",
+        "POST commands complete typed graph",
+        "GET snapshot typed graph",
+        "GET events typed graph"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exact five-item independently authored typed graph and event after-items persist at version one, head/epoch/timing one; snapshot deletedItems is empty.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 153,
+            "end": 153,
+            "sha256": "481dd9995d88e929044312aa55dcf51e3346cdbf7a30e232c11141ba7f011837"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 29,
+            "end": 34,
+            "sha256": "bd16a8a5ad40aeeb320ffd206e332b2c87308d52ca1ea4d5f44f4557cf555e56"
+          },
+          "expectation": "observed",
+          "why": "Canonical character ID and exact typed text link round-trip in authored graph. Malformed link ID/count/duplicate variants excluded. Local public HTTP only; proposed association awaiting independent review."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 58,
+            "end": 58,
+            "sha256": "5447ad238f2bf0a44a5168b8ce293e98d4ea7a3475f5db67d8fbeefa85cfb89a"
+          },
+          "expectation": "observed",
+          "why": "Selected portrait image UUID persists in typed character. Local public HTTP only; proposed association awaiting independent review."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 177,
+            "end": 177,
+            "sha256": "7b65a5c4640dba10d50e88604abf7cf54bc02b304b04c9bb8b0165467375928e"
+          },
+          "expectation": "observed",
+          "why": "Cue references available scene and image in same typed graph; absence cases excluded. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "acquire-edit-leases",
+      "title": "Acquire edit leases",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST leases entry",
+        "POST leases image",
+        "POST leases character",
+        "POST leases cue"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Four owned leases return fence one. Synthetic lease tokens are retained by the runner in memory and by the Worker in owned temporary server storage; the journey does not intentionally log them.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 158,
+            "end": 158,
+            "sha256": "1a45fe4e84b55f81634547388785a0fdccb0d654256619de2a207fb98d0086f7"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "dangling-character-link",
+      "title": "Dangling character link",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands dangling-character-link",
+        "GET snapshot dangling-character-link",
+        "GET events dangling-character-link"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "dangling-character-link: HTTP 400 invalid_reference; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 174,
+            "end": 174,
+            "sha256": "34877ba87d8b7361ee0bccb38e65817e0311e8d4a8fb29e5ba2c57b500392548"
+          },
+          "expectation": "observed",
+          "why": "Syntactically valid nonexistent character link rejects only after current version/lease/timing preconditions pass. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "duplicate-project-word",
+      "title": "Duplicate project word",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands duplicate-project-word",
+        "GET snapshot duplicate-project-word",
+        "GET events duplicate-project-word"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "duplicate-project-word: HTTP 400 duplicate_word; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 175,
+            "end": 175,
+            "sha256": "6b553ee87ff5d670c25d055f98ed904da1f2524c9c06e63ec9dd4ba129536a55"
+          },
+          "expectation": "observed",
+          "why": "New valid dialogue entry reusing a word ID from another entry rejects; one-word entries avoid within-line duplicate interception. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "stale-analysis",
+      "title": "Stale analysis",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands stale-analysis",
+        "GET snapshot stale-analysis",
+        "GET events stale-analysis"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "stale-analysis: HTTP 400 stale_character_analysis; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/character-image-validation.ts",
+            "start": 17,
+            "end": 18,
+            "sha256": "efc538a6f172415ffe463f11b72b774392ae72018d2d643280dafa8e44b57a1e"
+          },
+          "expectation": "observed",
+          "why": "Version mismatch is rejected against exact saved digest/version. Digest mismatch itself is not independently varied. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "invalid-analysis-region",
+      "title": "Invalid analysis region",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands invalid-analysis-region",
+        "GET snapshot invalid-analysis-region",
+        "GET events invalid-analysis-region"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "invalid-analysis-region: HTTP 400 invalid_character_region; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/character-image-validation.ts",
+            "start": 3,
+            "end": 8,
+            "sha256": "748eda50d4f01d1629b5520e40e4716b4fcd0b3c583c039a3e9d5e12e8fc9341"
+          },
+          "expectation": "observed",
+          "why": "Valid normalized crops round-trip; overflowing region rejected with complete graph/event nonmutation. Finite-number failure variants are excluded. Local public HTTP only; proposed association awaiting independent review."
+        },
+        {
+          "source": {
+            "path": "cloud/src/character-image-validation.ts",
+            "start": 27,
+            "end": 27,
+            "sha256": "d008716b93250e8ab1521ceb4559c118e10c0d52cfd6afaeb13eafa761b601b4"
+          },
+          "expectation": "observed",
+          "why": "Annotation region validation reaches the overflowing width; portrait region retains valid normalized coordinates. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "invalid-analysis-decision",
+      "title": "Invalid analysis decision",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands invalid-analysis-decision",
+        "GET snapshot invalid-analysis-decision",
+        "GET events invalid-analysis-decision"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "invalid-analysis-decision: HTTP 400 invalid_character_analysis; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/character-image-validation.ts",
+            "start": 29,
+            "end": 29,
+            "sha256": "f5eeb9026a5a8e7315ac399c183995c6d2b9985c50e8740f59eee8aa2fcc102d"
+          },
+          "expectation": "observed",
+          "why": "Unknown approved decision rejects; confirmed with canonical identity persists. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "accepted-region-needs-identity",
+      "title": "Accepted region needs identity",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands accepted-region-needs-identity",
+        "GET snapshot accepted-region-needs-identity",
+        "GET events accepted-region-needs-identity"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "accepted-region-needs-identity: HTTP 400 invalid_character_analysis; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/character-image-validation.ts",
+            "start": 30,
+            "end": 31,
+            "sha256": "a88a65f80f475091fe9d007d289cd73bfad474c0f77284321095a8219f90a816"
+          },
+          "expectation": "observed",
+          "why": "Confirmed region without canonical character identity rejects. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "duplicate-analysis-identity",
+      "title": "Duplicate analysis identity",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands duplicate-analysis-identity",
+        "GET snapshot duplicate-analysis-identity",
+        "GET events duplicate-analysis-identity"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "duplicate-analysis-identity: HTTP 400 invalid_character_analysis; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/character-image-validation.ts",
+            "start": 9,
+            "end": 14,
+            "sha256": "3fa8a760dff10fada55b931eaabc5e17fb2b8c23b73d97c077d04751d3e5b120"
+          },
+          "expectation": "observed",
+          "why": "Duplicate manual identity is rejected; valid singleton accepted. Count maxima and malformed IDs are excluded. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "duplicate-region-id",
+      "title": "Duplicate region id",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands duplicate-region-id",
+        "GET snapshot duplicate-region-id",
+        "GET events duplicate-region-id"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "duplicate-region-id: HTTP 400 invalid_character_analysis; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/character-image-validation.ts",
+            "start": 23,
+            "end": 26,
+            "sha256": "ed290b90cebf125a09a35c0e7adc8ab6efb58fe6c5282b38ace4ed0b00f7d8a0"
+          },
+          "expectation": "observed",
+          "why": "Duplicated region identity is rejected with otherwise valid analysis. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "invalid-region-confidence",
+      "title": "Invalid region confidence",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands invalid-region-confidence",
+        "GET snapshot invalid-region-confidence",
+        "GET events invalid-region-confidence"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "invalid-region-confidence: HTTP 400 invalid_character_analysis; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/character-image-validation.ts",
+            "start": 32,
+            "end": 32,
+            "sha256": "a9bd5eaf602a5e215f027f53b67b61eed416c1359edda274cf2722cfefb1895e"
+          },
+          "expectation": "observed",
+          "why": "Confidence above one rejects; 0.8 persists. Other numeric boundaries excluded. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "dangling-analysis-identity",
+      "title": "Dangling analysis identity",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands dangling-analysis-identity",
+        "GET snapshot dangling-analysis-identity",
+        "GET events dangling-analysis-identity"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "dangling-analysis-identity: HTTP 400 invalid_reference; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 180,
+            "end": 180,
+            "sha256": "331f27ad0da95834fa234a125e783f8f6d1e7b6590e854fe8a4aa1acf39265ae"
+          },
+          "expectation": "observed",
+          "why": "Nonexistent manual analysis identity rejects; confirmed region and manual singleton point to available character in positive graph. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "portrait-selected-image-mismatch",
+      "title": "Portrait selected image mismatch",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands portrait-selected-image-mismatch",
+        "GET snapshot portrait-selected-image-mismatch",
+        "GET events portrait-selected-image-mismatch"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "portrait-selected-image-mismatch: HTTP 400 invalid_character_portrait; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/character-image-validation.ts",
+            "start": 39,
+            "end": 40,
+            "sha256": "074772e79206ab4d2cfe7ee27068ae16e37b3b93a3f36bd28fc4dfdd31cfb0c6"
+          },
+          "expectation": "observed",
+          "why": "Portrait crop must reference its selected image; mismatched valid UUID rejects. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "portrait-stale-digest",
+      "title": "Portrait stale digest",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands portrait-stale-digest",
+        "GET snapshot portrait-stale-digest",
+        "GET events portrait-stale-digest"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "portrait-stale-digest: HTTP 400 stale_character_portrait; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 184,
+            "end": 185,
+            "sha256": "c3c7a0d0a86efd89fa8e0b17496a9f6272863b12bd7118ead605400548e10174"
+          },
+          "expectation": "observed",
+          "why": "Valid selected image persists; exact crop digest mismatch rejects after typed crop validation. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "portrait-invalid-provenance",
+      "title": "Portrait invalid provenance",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands portrait-invalid-provenance",
+        "GET snapshot portrait-invalid-provenance",
+        "GET events portrait-invalid-provenance"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "portrait-invalid-provenance: HTTP 400 invalid_character_portrait; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/character-image-validation.ts",
+            "start": 42,
+            "end": 43,
+            "sha256": "1233cba18b59095d6e32bb47688f6ef5569827f41a9f38c2623d29fdb295d9bf"
+          },
+          "expectation": "observed",
+          "why": "String provenance rejects; boolean false and normalized region persist. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "immutable-image-bytes",
+      "title": "Immutable image bytes",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands immutable-image-bytes",
+        "GET snapshot immutable-image-bytes",
+        "GET events immutable-image-bytes"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "immutable-image-bytes: HTTP 409 immutable_image; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 260,
+            "end": 260,
+            "sha256": "d76d89aa4b39ce44484913464dccd8abb15319490315fd15a3e406d20920b982"
+          },
+          "expectation": "observed",
+          "why": "Existing image byteCount change rejects while editable prompt change succeeds; no actual image bytes/pixels or provider output is inspected. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "immutable-generation-prompt",
+      "title": "Immutable generation prompt",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands immutable-generation-prompt",
+        "GET snapshot immutable-generation-prompt",
+        "GET events immutable-generation-prompt"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "immutable-generation-prompt: HTTP 409 immutable_image; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "preserve-character-links",
+      "title": "Preserve character links",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands preserve-character-links",
+        "GET snapshot preserve-character-links",
+        "GET events preserve-character-links"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "preserve-character-links: HTTP 409 schema_upgrade_required; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 254,
+            "end": 254,
+            "sha256": "48c528f5f88cb89d28bd1852c8978e52f3a95e7419565553d6cb68dde897a85e"
+          },
+          "expectation": "observed",
+          "why": "Current leased entry update omitting saved links rejects schema downgrade; valid color edit preserves links. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "preserve-cue-anchor",
+      "title": "Preserve cue anchor",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands preserve-cue-anchor",
+        "GET snapshot preserve-cue-anchor",
+        "GET events preserve-cue-anchor"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "preserve-cue-anchor: HTTP 409 schema_upgrade_required; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 255,
+            "end": 255,
+            "sha256": "27ac1302a1428579031269cf338a10fdd1d736cd61eb342d7a0a90a8954d9afb"
+          },
+          "expectation": "observed",
+          "why": "Current leased cue update omitting both anchor and authored duration passes standalone legacy validation, then rejects schema downgrade. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "preserve-word-provenance",
+      "title": "Preserve word provenance",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands preserve-word-provenance",
+        "GET snapshot preserve-word-provenance",
+        "GET events preserve-word-provenance"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "preserve-word-provenance: HTTP 409 schema_upgrade_required; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 256,
+            "end": 259,
+            "sha256": "578f514e22b4d5dba83f6c213798173d3271026db0ad9db3cfbcc40c511b18ab"
+          },
+          "expectation": "observed",
+          "why": "Existing authored word retained by ID cannot omit timingSource; leased valid metadata update preserves provenance. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "referenced-image-delete",
+      "title": "Referenced image delete",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands referenced-image-delete",
+        "GET snapshot referenced-image-delete",
+        "GET events referenced-image-delete"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "referenced-image-delete: HTTP 409 item_in_use; exact active items, deletedItems, item versions, sequence, epoch, timing and full event stream remain unchanged. This observes public document snapshot/event/version state, not internal indexes, receipts, leases, transients or crash/restart durability.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "e1ec2b8a024be53eb140330d7fa2a4947cbc2f4d4bd424439d3d9f0309d7f5f3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 190,
+            "end": 190,
+            "sha256": "5adf3938920b57b655f607debc7306068595784a0fb41ecac0fff7cb54d466f7"
+          },
+          "expectation": "observed",
+          "why": "Referenced image delete rejects with existing cue and portrait references. Does not distinguish which of those two is sufficient or revision-lineage branch. Local public HTTP only; proposed association awaiting independent review."
+        }
+      ]
+    },
+    {
+      "id": "save-valid-metadata",
+      "title": "Save valid metadata",
+      "preconditions": [
+        "Real unchanged Worker with local synthetic paid team; loopback HTTP only.",
+        "Complete typed graph exists after create-graph; current epoch/version/timing and owned item leases are retained.",
+        "No internal index/receipt/lease-table, transient-state, race, durability, provider or pixel behavior is inferred from document snapshot/event readbacks."
+      ],
+      "actions": [
+        "POST commands valid editable metadata",
+        "GET snapshot edited graph",
+        "GET events edited graph"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Editable metadata changes persist exactly with four versions two, scene version one, head two, timing one and empty deletedItems; final event after-items and receipt items each separately equal independently authored expected changed items after ID normalization; first event remains unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-integrity-journey.mjs",
+            "start": 192,
+            "end": 192,
+            "sha256": "c7a6d719cc05ca6219c12c98057c1ace6d22e203d4476fe197b0034e733698cc"
+          }
+        }
+      ],
+      "mappings": []
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "document-integrity",
+      "title": "Preserve a typed document graph through rejected edits",
+      "steps": [
+        "create-graph",
+        "acquire-edit-leases",
+        "dangling-character-link",
+        "duplicate-project-word",
+        "stale-analysis",
+        "invalid-analysis-region",
+        "invalid-analysis-decision",
+        "accepted-region-needs-identity",
+        "duplicate-analysis-identity",
+        "duplicate-region-id",
+        "invalid-region-confidence",
+        "dangling-analysis-identity",
+        "portrait-selected-image-mismatch",
+        "portrait-stale-digest",
+        "portrait-invalid-provenance",
+        "immutable-image-bytes",
+        "immutable-generation-prompt",
+        "preserve-character-links",
+        "preserve-cue-anchor",
+        "preserve-word-provenance",
+        "referenced-image-delete",
+        "save-valid-metadata"
+      ]
+    }
+  ]
+}

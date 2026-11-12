@@ -1,0 +1,697 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "editor-ui-script-structure",
+      "title": "Inspect existing script-structure UI witnesses",
+      "preconditions": [
+        "Native NOT RUN; readiness blocked pending matching provenance-verified automation-enabled Catalyst bundle and macOS. Static associations only, not measured execution.",
+        "Exact public whole-journey boundary; default source-ordered groups and fresh synthetic sessions as authored. Dynamic IDs, polling and scroll actions remain inside the existing journey, not fabricated flattened runtime traces.",
+        "Normal isolated signed-out local state. CLI target uniqueness, presentation, hittability and supported action-scope guards apply before callbacks. Included guard lines do not assert rejecting arms; no colors, geometry, lifecycle races, stale-state defenses or physical keyboard coverage."
+      ],
+      "actions": [
+        "test --scenario journeys/script-structure"
+      ],
+      "expectations": [
+        {
+          "id": "witness-1",
+          "description": "Scene-menu navigation updates the mounted row identity set, removes old scene rows, constructs missing rows and presents the current scene membership. The witness compares exact native line identities/text and full unchanged model/packages; empty-scene creation also calls this helper at line 107. No layout performance or scrub cancellation behavior is claimed.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 66,
+            "end": 79,
+            "sha256": "4ab5ce2a0d61b4936d40c8aca804d99d301f0cd1c2b4a5119410d15f6170c76d"
+          }
+        },
+        {
+          "id": "witness-2",
+          "description": "An Add direction action sets requested editing, then pendingCaret is resolved only for the active session/current navigation. setEditing receives offset zero and selectAll; the witness requires the new native editor select the entire Direction placeholder and subsequently exact authored text. afterWordID playback resolution is not exercised.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 117,
+            "end": 135,
+            "sha256": "755061bacc268bd882c4e6f2994dac40d8b16306b95971594e292b06538e9461"
+          }
+        },
+        {
+          "id": "witness-3",
+          "description": "Requested new-entry editing is consumed once and forwarded to beginEditing; actual new identity, placeholder selection, edited text and complete saved model are asserted. No stale request rejection or scroll geometry claim.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 117,
+            "end": 135,
+            "sha256": "755061bacc268bd882c4e6f2994dac40d8b16306b95971594e292b06538e9461"
+          }
+        },
+        {
+          "id": "witness-4",
+          "description": "The normal new-entry path captures current navigation and pending caret, selects the entry and begins the draft session, then refreshes mounted controls. preservingPlayhead is false; that conditional branch and playback restoration are excluded.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 117,
+            "end": 135,
+            "sha256": "755061bacc268bd882c4e6f2994dac40d8b16306b95971594e292b06538e9461"
+          }
+        },
+        {
+          "id": "witness-5",
+          "description": "Stored scene menu exposes ordered scene choices with current selection state and New/Rename/Delete titles. Only selection and New scene callbacks dispatch: the semantic CLI scope rejects Rename/Delete before callbacks. Their construction is associated with asserted menu content, never their alert handlers or stale-context defenses.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 48,
+            "end": 64,
+            "sha256": "84c65ab0d8ff61f477ced8f674ffc076deb5e954b0a12bd29683601b3137505d"
+          }
+        },
+        {
+          "id": "witness-6",
+          "description": "Row installs the editor delegate and editor/display identifiers; the actual new editor is editable/focused and text is observed through its stable identifier. No display delegate gesture, display editing/selectability/data-detector configuration or visual styling claim.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 117,
+            "end": 135,
+            "sha256": "755061bacc268bd882c4e6f2994dac40d8b16306b95971594e292b06538e9461"
+          }
+        },
+        {
+          "id": "witness-7",
+          "description": "New row enters editing, hides display, exposes editor and installs exact placeholder text before selecting all. Subsequent authored text is independently checked. No marked-text rejection, paragraph styling or sizing claim; these statements are support context only.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 117,
+            "end": 135,
+            "sha256": "755061bacc268bd882c4e6f2994dac40d8b16306b95971594e292b06538e9461"
+          }
+        },
+        {
+          "id": "witness-8",
+          "description": "Native idle row text comes from attributed-text construction and is assigned to the displayed UITextView; scene navigation compares exact text for each expected identity. Attributes and intrinsic-size invalidation are not asserted.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 66,
+            "end": 79,
+            "sha256": "4ab5ce2a0d61b4936d40c8aca804d99d301f0cd1c2b4a5119410d15f6170c76d"
+          }
+        },
+        {
+          "id": "witness-9",
+          "description": "Attributed string preserves each nonempty source entry text; assertion reads exact native row text. Empty placeholders, font/color/paragraph attributes and mention/highlight styling are excluded.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 66,
+            "end": 79,
+            "sha256": "4ab5ce2a0d61b4936d40c8aca804d99d301f0cd1c2b4a5119410d15f6170c76d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 259,
+            "end": 260,
+            "sha256": "403ba330b7562b3680b43f982f6db0ee1b478950aebd8f62f523bfd19bf03aa1"
+          },
+          "expectation": "witness-1",
+          "why": "Scene-menu navigation updates the mounted row identity set, removes old scene rows, constructs missing rows and presents the current scene membership. The witness compares exact native line identities/text and full unchanged model/packages; empty-scene creation also calls this helper at line 107. No layout performance or scrub cancellation behavior is claimed. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 262,
+            "end": 267,
+            "sha256": "24ab2646e1b369447043e9dd4a8992e506a70bf17a0d16bdaa0773067fd79841"
+          },
+          "expectation": "witness-1",
+          "why": "Scene-menu navigation updates the mounted row identity set, removes old scene rows, constructs missing rows and presents the current scene membership. The witness compares exact native line identities/text and full unchanged model/packages; empty-scene creation also calls this helper at line 107. No layout performance or scrub cancellation behavior is claimed. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 290,
+            "end": 296,
+            "sha256": "274069d4861e9ced9c151624fbda0d669598eab629e15a3455c0a7218db355d7"
+          },
+          "expectation": "witness-2",
+          "why": "An Add direction action sets requested editing, then pendingCaret is resolved only for the active session/current navigation. setEditing receives offset zero and selectAll; the witness requires the new native editor select the entire Direction placeholder and subsequently exact authored text. afterWordID playback resolution is not exercised. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 331,
+            "end": 334,
+            "sha256": "32410a41cf10e6c733a230d9974b7c308800275682921144d233eac0896c8089"
+          },
+          "expectation": "witness-3",
+          "why": "Requested new-entry editing is consumed once and forwarded to beginEditing; actual new identity, placeholder selection, edited text and complete saved model are asserted. No stale request rejection or scroll geometry claim. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 75,
+            "end": 77,
+            "sha256": "b36c73ac53697c911ddc6d597dc34ffe5e4284e7729fffdd24aed577fc71ca0b"
+          },
+          "expectation": "witness-4",
+          "why": "The normal new-entry path captures current navigation and pending caret, selects the entry and begins the draft session, then refreshes mounted controls. preservingPlayhead is false; that conditional branch and playback restoration are excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 80,
+            "end": 80,
+            "sha256": "9e31f8a27f243c60a1e60aae0dee1f5a86b851f55118826b39d1c2c6101e2c9f"
+          },
+          "expectation": "witness-4",
+          "why": "The normal new-entry path captures current navigation and pending caret, selects the entry and begins the draft session, then refreshes mounted controls. preservingPlayhead is false; that conditional branch and playback restoration are excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 82,
+            "end": 83,
+            "sha256": "2e4d031f6031363029893998acb4f62a6e21e3f1b8178010960e2b428e117805"
+          },
+          "expectation": "witness-4",
+          "why": "The normal new-entry path captures current navigation and pending caret, selects the entry and begins the draft session, then refreshes mounted controls. preservingPlayhead is false; that conditional branch and playback restoration are excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 441,
+            "end": 450,
+            "sha256": "ac7c6c0bc28d9eda9342158dcfed1572679a2d149ab596db354d56a2c0a19f2c"
+          },
+          "expectation": "witness-5",
+          "why": "Stored scene menu exposes ordered scene choices with current selection state and New/Rename/Delete titles. Only selection and New scene callbacks dispatch: the semantic CLI scope rejects Rename/Delete before callbacks. Their construction is associated with asserted menu content, never their alert handlers or stale-context defenses. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 141,
+            "end": 141,
+            "sha256": "c07840a1fd16335f4cbc6fa29c4985c377db316f43a9aabeef992ce6b3605e5e"
+          },
+          "expectation": "witness-6",
+          "why": "Row installs the editor delegate and editor/display identifiers; the actual new editor is editable/focused and text is observed through its stable identifier. No display delegate gesture, display editing/selectability/data-detector configuration or visual styling claim. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 143,
+            "end": 145,
+            "sha256": "5c0a4f73810d11504ad2ed5b46cb7165b28b6478183dadf29cff8cb9f90a330e"
+          },
+          "expectation": "witness-6",
+          "why": "Row installs the editor delegate and editor/display identifiers; the actual new editor is editable/focused and text is observed through its stable identifier. No display delegate gesture, display editing/selectability/data-detector configuration or visual styling claim. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 227,
+            "end": 237,
+            "sha256": "e07dc69757def65e532966e9257897704516a423462e4868e09b850ff64e9118"
+          },
+          "expectation": "witness-7",
+          "why": "New row enters editing, hides display, exposes editor and installs exact placeholder text before selecting all. Subsequent authored text is independently checked. No marked-text rejection, paragraph styling or sizing claim; these statements are support context only. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 239,
+            "end": 241,
+            "sha256": "587e5b7a794bd786fabf4b12560e50172b3c462a7a5e79eb34318c89de4ca893"
+          },
+          "expectation": "witness-7",
+          "why": "New row enters editing, hides display, exposes editor and installs exact placeholder text before selecting all. Subsequent authored text is independently checked. No marked-text rejection, paragraph styling or sizing claim; these statements are support context only. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 217,
+            "end": 218,
+            "sha256": "a0010b5db746ed1b76386bd4dd81e3c4a0712a91f2a64ad142c92b363db27cc8"
+          },
+          "expectation": "witness-8",
+          "why": "Native idle row text comes from attributed-text construction and is assigned to the displayed UITextView; scene navigation compares exact text for each expected identity. Attributes and intrinsic-size invalidation are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 298,
+            "end": 300,
+            "sha256": "86f182ccfd0b85a7100816e1a10c0b33a3e3e9602bbecabddb41e9a02ae4d5f5"
+          },
+          "expectation": "witness-9",
+          "why": "Attributed string preserves each nonempty source entry text; assertion reads exact native row text. Empty placeholders, font/color/paragraph attributes and mention/highlight styling are excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        }
+      ]
+    },
+    {
+      "id": "editor-ui-script-merge",
+      "title": "Inspect existing script-merge UI witnesses",
+      "preconditions": [
+        "Native NOT RUN; readiness blocked pending matching provenance-verified automation-enabled Catalyst bundle and macOS. Static associations only, not measured execution.",
+        "Exact public whole-journey boundary; default source-ordered groups and fresh synthetic sessions as authored. Dynamic IDs, polling and scroll actions remain inside the existing journey, not fabricated flattened runtime traces.",
+        "Normal isolated signed-out local state. CLI target uniqueness, presentation, hittability and supported action-scope guards apply before callbacks. Included guard lines do not assert rejecting arms; no colors, geometry, lifecycle races, stale-state defenses or physical keyboard coverage."
+      ],
+      "actions": [
+        "test --scenario journeys/script-merge"
+      ],
+      "expectations": [
+        {
+          "id": "witness-1",
+          "description": "Public delete-backward reaches mounted ScriptTextView.mergeAtStart then changeBoundary. Normal local path checks active session and unmarked editor, finishes text, captures scene/navigation and previous entry, acquires editing access and verifies unchanged source before mutation. Witness demands exact previous identity/caret, removed native row and one callback. Rejecting race, lease-denial, cancellation and stale-source arms are not witnessed.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-merge.mjs",
+            "start": 42,
+            "end": 61,
+            "sha256": "3b7f07de4943c3dc3b593ae6104c6d288d07ff3d9a48c34050f58207e463b139"
+          }
+        },
+        {
+          "id": "witness-2",
+          "description": "Successful merge uses real store boundary operation, releases edit ownership and reopens returned previous identity at original UTF-16 caret. The witness requires that focus/caret without repair and exact removed native row, plus independent saved-model oracle. Split variants in this journey are setup; failure fallback is not claimed.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-merge.mjs",
+            "start": 42,
+            "end": 61,
+            "sha256": "3b7f07de4943c3dc3b593ae6104c6d288d07ff3d9a48c34050f58207e463b139"
+          }
+        },
+        {
+          "id": "witness-3",
+          "description": "Installed Command-Return resolves the normal nonmodal selected-entry path and begins editing; witness checks actual focused editable native entry and unchanged loaded baseline. Modal/boundary denial and active-session Finish branch are excluded.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-merge-steps.mjs",
+            "start": 99,
+            "end": 109,
+            "sha256": "11bb3aea170e78a66bd6be5b7af014f40eada183466b0320061ccd0d5076761d"
+          }
+        },
+        {
+          "id": "witness-4",
+          "description": "Native Unicode selected-deletion case explicitly checks smartInsertDeleteDisabled on the actual mounted editor before deletion and zero merge callbacks. Only that configuration value is asserted; other autocorrection flags and accessibility styling on these shared physical lines are excluded.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-merge.mjs",
+            "start": 79,
+            "end": 92,
+            "sha256": "75d6d9b96bd7fd0fcc9f582b0f27a2530e6c38f77b47dd487cf6034cca1abd7b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 129,
+            "end": 148,
+            "sha256": "d93ca85d59e93d64f7fffe43c0102e6c29dead26246f2738eb51e7fd80e14f07"
+          },
+          "expectation": "witness-1",
+          "why": "Public delete-backward reaches mounted ScriptTextView.mergeAtStart then changeBoundary. Normal local path checks active session and unmarked editor, finishes text, captures scene/navigation and previous entry, acquires editing access and verifies unchanged source before mutation. Witness demands exact previous identity/caret, removed native row and one callback. Rejecting race, lease-denial, cancellation and stale-source arms are not witnessed. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 152,
+            "end": 152,
+            "sha256": "0d223339ff3bf012a25cd30d3c1b2de869652c87cf7b26fd18d72c882703d822"
+          },
+          "expectation": "witness-2",
+          "why": "Successful merge uses real store boundary operation, releases edit ownership and reopens returned previous identity at original UTF-16 caret. The witness requires that focus/caret without repair and exact removed native row, plus independent saved-model oracle. Split variants in this journey are setup; failure fallback is not claimed. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 155,
+            "end": 158,
+            "sha256": "f6b712bd925e6030a094f9e7831e0b25cd52a09977566adcf0b46217018f1991"
+          },
+          "expectation": "witness-2",
+          "why": "Successful merge uses real store boundary operation, releases edit ownership and reopens returned previous identity at original UTF-16 caret. The witness requires that focus/caret without repair and exact removed native row, plus independent saved-model oracle. Split variants in this journey are setup; failure fallback is not claimed. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 70,
+            "end": 71,
+            "sha256": "f8f374654c4b744d0b80181ec3eb537a08e626f37f832f7992582e67d3770a25"
+          },
+          "expectation": "witness-3",
+          "why": "Installed Command-Return resolves the normal nonmodal selected-entry path and begins editing; witness checks actual focused editable native entry and unchanged loaded baseline. Modal/boundary denial and active-session Finish branch are excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 73,
+            "end": 74,
+            "sha256": "c0f2c0f79f2b2ba54d93db6897ff959ab5f447462f337bb63bef4950d767c831"
+          },
+          "expectation": "witness-3",
+          "why": "Installed Command-Return resolves the normal nonmodal selected-entry path and begins editing; witness checks actual focused editable native entry and unchanged loaded baseline. Modal/boundary denial and active-session Finish branch are excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 64,
+            "end": 64,
+            "sha256": "02d627fa49aa9951abc09514e05a22cd3df6c4d9f38266953c96a1b9b60948d7"
+          },
+          "expectation": "witness-4",
+          "why": "Native Unicode selected-deletion case explicitly checks smartInsertDeleteDisabled on the actual mounted editor before deletion and zero merge callbacks. Only that configuration value is asserted; other autocorrection flags and accessibility styling on these shared physical lines are excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        }
+      ]
+    },
+    {
+      "id": "editor-ui-project-history",
+      "title": "Inspect existing project-history UI witnesses",
+      "preconditions": [
+        "Native NOT RUN; readiness blocked pending matching provenance-verified automation-enabled Catalyst bundle and macOS. Static associations only, not measured execution.",
+        "Exact public whole-journey boundary; default source-ordered groups and fresh synthetic sessions as authored. Dynamic IDs, polling and scroll actions remain inside the existing journey, not fabricated flattened runtime traces.",
+        "Normal isolated signed-out local state. CLI target uniqueness, presentation, hittability and supported action-scope guards apply before callbacks. Included guard lines do not assert rejecting arms; no colors, geometry, lifecycle races, stale-state defenses or physical keyboard coverage."
+      ],
+      "actions": [
+        "test --scenario journeys/project-history"
+      ],
+      "expectations": [
+        {
+          "id": "witness-1",
+          "description": "Opening History chooses the default prior local revision after reloadEvents. choose reads event.snapshot asynchronously and installs preview only for current selection/context. Prior entry card asserts original added text and exact technical JSON; repeated new sheets start collapsed; this does not isolate choose clearing an already expanded disclosure. No nil selection, cloud fetch, task cancellation or stale response rejection claim.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+            "start": 79,
+            "end": 119,
+            "sha256": "bfb34dbb62b19332c072474abb2c04745e64a1314ccfa99f226a9ebcac38e7f7"
+          }
+        },
+        {
+          "id": "witness-2",
+          "description": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+            "start": 137,
+            "end": 154,
+            "sha256": "ffa4a660ab80353310420da1533ef764323c08fb164008c0f4ae04e06c34d4d5"
+          }
+        },
+        {
+          "id": "witness-3",
+          "description": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+            "start": 95,
+            "end": 106,
+            "sha256": "a0bf24320f77853d56663470ab8ca9e867c48a29a7f210bda32d457be75093dc"
+          }
+        },
+        {
+          "id": "witness-4",
+          "description": "Technical details UIAction toggles the selected entry card JSON while readable columns expose the prior original value. Witness parses exact saved entry fields, checks noneditable payload and its removal on collapse. Fonts, colors and layout geometry are excluded.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+            "start": 111,
+            "end": 128,
+            "sha256": "76a2fc40e37a45ab84a6b7d7f7dc74cd607681360caf77657a167f9ea2ebf40a"
+          }
+        },
+        {
+          "id": "witness-5",
+          "description": "Technical JSON is produced with the project encoder and parsed back against the complete saved original entry. Only successful bounded small payload encoding is witnessed; encoding-failure and 40k truncation branches are excluded.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+            "start": 111,
+            "end": 119,
+            "sha256": "9b6154c0015a45c2442baf132ffcee3850546dc811a9016a5110d536493c99c1"
+          }
+        },
+        {
+          "id": "witness-6",
+          "description": "Revision preview constructs summary, scene and entry text from the selected prior snapshot. Witness scopes title/scene/original read-only text to summary subtree and excludes working text. Time labels, layout and multi-scene ordering are not asserted.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+            "start": 137,
+            "end": 150,
+            "sha256": "36e81d15c6c32c56af086e1c9051e867e878936e762367f912567d0e9447c50e"
+          }
+        },
+        {
+          "id": "witness-7",
+          "description": "History payload uses ScriptTextView configured noneditable/selectable with exact text. Witness explicitly checks read-only technical JSON and complete field equality; font/monospace/color are not asserted.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+            "start": 111,
+            "end": 119,
+            "sha256": "9b6154c0015a45c2442baf132ffcee3850546dc811a9016a5110d536493c99c1"
+          }
+        },
+        {
+          "id": "witness-8",
+          "description": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+            "start": 166,
+            "end": 178,
+            "sha256": "50ff5cc67915c8cda703d08148fe0246db2f8616cba13877b93d97bb3db9b44d"
+          }
+        },
+        {
+          "id": "witness-9",
+          "description": "Normal local summary load reads current package summaries and reloads footer metadata; exact project title/scene-count footer precedes real Open project and full loaded-model comparison. No cancellation, stale-generation rejection, metadata failure or thumbnail behavior claim.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+            "start": 166,
+            "end": 178,
+            "sha256": "50ff5cc67915c8cda703d08148fe0246db2f8616cba13877b93d97bb3db9b44d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 114,
+            "end": 125,
+            "sha256": "15e5453e83e61a2db0b60f59c6b18a0892c2215f4ac6e48ec9e5491a92a80a9e"
+          },
+          "expectation": "witness-1",
+          "why": "Opening History chooses the default prior local revision after reloadEvents. choose reads event.snapshot asynchronously and installs preview only for current selection/context. Prior entry card asserts original added text and exact technical JSON; repeated new sheets start collapsed; this does not isolate choose clearing an already expanded disclosure. No nil selection, cloud fetch, task cancellation or stale response rejection claim. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 149,
+            "end": 151,
+            "sha256": "c031b95b0ab0f2fbbc612a0cf2c0559971e9f140379343b1d2094715218e2275"
+          },
+          "expectation": "witness-2",
+          "why": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 154,
+            "end": 154,
+            "sha256": "9eaafdad9bf0b45897ea328b4ae6d5a2f69bb503fb5621a78adb7479da2e3107"
+          },
+          "expectation": "witness-2",
+          "why": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 157,
+            "end": 159,
+            "sha256": "6b0502e1bd5f98e26942d15d97292ddcd463d4c963c4693db569533f6de4da37"
+          },
+          "expectation": "witness-2",
+          "why": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 161,
+            "end": 164,
+            "sha256": "c7614e7f3a84e729a04d4e6be7e6ef47717c1c7082b46a8fa85643f65bc9208c"
+          },
+          "expectation": "witness-2",
+          "why": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 185,
+            "end": 186,
+            "sha256": "8652c3022980870d6a7de03d9addef0d414c21579c13937e82d05e45234617ce"
+          },
+          "expectation": "witness-3",
+          "why": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 188,
+            "end": 188,
+            "sha256": "b93e47836aae4f33ca6c25f9d922784dc705f434ef7c5fe5f38dd65e50ef8a38"
+          },
+          "expectation": "witness-3",
+          "why": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 190,
+            "end": 190,
+            "sha256": "5bddb4941edcad6d7d4b51bc45232307702ef0d688b97024326ac3a6a3769a4a"
+          },
+          "expectation": "witness-3",
+          "why": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 192,
+            "end": 192,
+            "sha256": "694747857974029aec69fbcde42636ccb1669917f1ab1ccf638d8a1b8208c8fa"
+          },
+          "expectation": "witness-3",
+          "why": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 194,
+            "end": 194,
+            "sha256": "0ad7a5ce3ac0de20f1673fc340b046af6968eed49ffb694139d6f53b6a0f6ef4"
+          },
+          "expectation": "witness-3",
+          "why": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 233,
+            "end": 241,
+            "sha256": "b7f29e2e1ab9a62cd77c1d56d5e3cb03b0d12d9194822ef00b5b7a916a13fb63"
+          },
+          "expectation": "witness-4",
+          "why": "Technical details UIAction toggles the selected entry card JSON while readable columns expose the prior original value. Witness parses exact saved entry fields, checks noneditable payload and its removal on collapse. Fonts, colors and layout geometry are excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 287,
+            "end": 290,
+            "sha256": "4c69317f31988b33557a730fab60e077f542bb2a58e36a850c402f72099b34bc"
+          },
+          "expectation": "witness-5",
+          "why": "Technical JSON is produced with the project encoder and parsed back against the complete saved original entry. Only successful bounded small payload encoding is witnessed; encoding-failure and 40k truncation branches are excluded. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 245,
+            "end": 250,
+            "sha256": "6a5d931d682eb4ac975c92f76710395e692cc75c15363f2c8c954d85d4125207"
+          },
+          "expectation": "witness-6",
+          "why": "Revision preview constructs summary, scene and entry text from the selected prior snapshot. Witness scopes title/scene/original read-only text to summary subtree and excludes working text. Time labels, layout and multi-scene ordering are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 252,
+            "end": 254,
+            "sha256": "f29671fb43a6d6eee1c38f29471269ce12167aae8f03429f0c12854e8d0b0b6a"
+          },
+          "expectation": "witness-6",
+          "why": "Revision preview constructs summary, scene and entry text from the selected prior snapshot. Witness scopes title/scene/original read-only text to summary subtree and excludes working text. Time labels, layout and multi-scene ordering are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+            "start": 283,
+            "end": 286,
+            "sha256": "dbbd65dc6834b8a30a2a8adcaec6db5b958e157133f4e7e5536ef1ab8c713cf5"
+          },
+          "expectation": "witness-7",
+          "why": "History payload uses ScriptTextView configured noneditable/selectable with exact text. Witness explicitly checks read-only technical JSON and complete field equality; font/monospace/color are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 106,
+            "end": 107,
+            "sha256": "78b5f9c7a9129d988936a35e3ff35409e71b0aabe79fc26017ee87e137a14421"
+          },
+          "expectation": "witness-8",
+          "why": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 111,
+            "end": 111,
+            "sha256": "5413a2d573c1574158c3c7a16f4bf2c24fc0b6346e4fcab0fc7f4b78f31d4259"
+          },
+          "expectation": "witness-8",
+          "why": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 113,
+            "end": 116,
+            "sha256": "8f36e1defaace21b97c66e2d71c3b9c471cdd7c7a0902cb6b23e4d3bdee1ce45"
+          },
+          "expectation": "witness-8",
+          "why": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 119,
+            "end": 120,
+            "sha256": "fed4ad8714efbbc0cc104f79d50d954e30f7b1e83894f467ae3b0770e56ec817"
+          },
+          "expectation": "witness-8",
+          "why": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 151,
+            "end": 160,
+            "sha256": "e02337895329b71b2cbd39234763423132ff298befba129d8775f147c96fd218"
+          },
+          "expectation": "witness-9",
+          "why": "Normal local summary load reads current package summaries and reloads footer metadata; exact project title/scene-count footer precedes real Open project and full loaded-model comparison. No cancellation, stale-generation rejection, metadata failure or thumbnail behavior claim. Static reviewed candidate only; native execution remains NOT RUN."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "editor-ui-script-structure",
+      "title": "Existing script-structure whole journey",
+      "steps": [
+        "editor-ui-script-structure"
+      ]
+    },
+    {
+      "id": "editor-ui-script-merge",
+      "title": "Existing script-merge whole journey",
+      "steps": [
+        "editor-ui-script-merge"
+      ]
+    },
+    {
+      "id": "editor-ui-project-history",
+      "title": "Existing project-history whole journey",
+      "steps": [
+        "editor-ui-project-history"
+      ]
+    }
+  ]
+}

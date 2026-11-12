@@ -1,0 +1,225 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "media-formats-v91",
+      "title": "Store and reread two media signatures",
+      "preconditions": [
+        "Run the entire existing public command tracer app -- test services discussions-assets. The original 40 HTTP checks execute first in the same isolated Miniflare Worker; four synthetic actors have hashed sessions and the owner/member/viewer belong to a synthetic paid team. No native app, provider login or external account is used.",
+        "The existing owner process confines homes/storage, applies the three production D1 migrations, bundles the real Worker and denies unexpected outbound requests. ASSET_MAX_BYTES is the ordinary service setting configured to 12 for this local fixture only. The original PNG is exactly 12 bytes and is deleted before the new chapter.",
+        "Before the appended chapter, reset only this synthetic team billing fixture to active for one hour. The member session remains authorized, under the 120/hour upload rate limit. Requests use actual loopback HTTP, no production-function calls or HTTP response stubs.",
+        "JPEG and WebP are inert 3-byte and 12-byte signature fixtures, not decoded images. Only the asset table and R2 keys/content bytes/contentType/customMetadata are compared for nonmutation. Security rate counters may change; there is no entire-database, all-R2-metadata, quota-counter, race, reconciliation, provider, native or measured-line-coverage claim."
+      ],
+      "actions": [
+        "Complete the existing discussions/assets journey assertions, including deletion of the original PNG and the synthetic subscription-lapse discussion checks; then reactivate that fixture team.",
+        "PUT the 3-byte JPEG and exact-12-byte WebP signatures with valid distinct asset IDs and parameterized Content-Type, retry each with bare Content-Type, then viewer GET and HEAD both.",
+        "Capture and validate exactly two ready asset rows plus their matching R2 keys, bytes, contentType and sha256/projectId/teamId metadata."
+      ],
+      "expectations": [
+        {
+          "id": "formats",
+          "description": "Both distinct media signatures are created once, retry successfully, and viewer GET/HEAD return exact bytes, MIME type, length and digest headers; HEAD has no body.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 230,
+            "end": 244,
+            "sha256": "daa63db0d86c346b098c0604931cce1c4f90f0985190dd1b1bebe1598afa9aa2"
+          }
+        },
+        {
+          "id": "metadata",
+          "description": "Exactly two ready rows retain valid supplied asset IDs, project/team/uploader, MIME and byte count, and match the two R2 contents and specified metadata.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 258,
+            "end": 267,
+            "sha256": "079778b3d57144761e51bec45b5d765798debdc39353ecebe3dd1e4d7e44385f"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 8,
+            "end": 9,
+            "sha256": "bac1bb5757bb2658c9d485adf1a088571ab8655f078a9fff0d5797d0872ae110"
+          },
+          "expectation": "formats",
+          "why": "The JPEG and RIFF/WEBP signature branches select the persisted and returned media types. This is signature recognition, not codec decoding or every malformed signature alternative."
+        }
+      ]
+    },
+    {
+      "id": "media-refusals-v91",
+      "title": "Refuse malformed and oversized media without orphan storage",
+      "preconditions": [
+        "Run the entire existing public command tracer app -- test services discussions-assets. The original 40 HTTP checks execute first in the same isolated Miniflare Worker; four synthetic actors have hashed sessions and the owner/member/viewer belong to a synthetic paid team. No native app, provider login or external account is used.",
+        "The existing owner process confines homes/storage, applies the three production D1 migrations, bundles the real Worker and denies unexpected outbound requests. ASSET_MAX_BYTES is the ordinary service setting configured to 12 for this local fixture only. The original PNG is exactly 12 bytes and is deleted before the new chapter.",
+        "Before the appended chapter, reset only this synthetic team billing fixture to active for one hour. The member session remains authorized, under the 120/hour upload rate limit. Requests use actual loopback HTTP, no production-function calls or HTTP response stubs.",
+        "JPEG and WebP are inert 3-byte and 12-byte signature fixtures, not decoded images. Only the asset table and R2 keys/content bytes/contentType/customMetadata are compared for nonmutation. Security rate counters may change; there is no entire-database, all-R2-metadata, quota-counter, race, reconciliation, provider, native or measured-line-coverage claim.",
+        "The original PNG has been deleted, so invalid-asset-id targets a missing replica and reaches id validation rather than existing-ready retry. JPEG/WebP sentinels remain ready. All refusal inputs are at most 13 bytes; only the two size cases exceed the configured 12-byte cap."
+      ],
+      "actions": [
+        "PUT empty bytes; PUT a three-byte truncated PNG signature; PUT JPEG bytes declared WebP; PUT JPEG at an incorrect all-zero digest; PUT the deleted valid PNG with an invalid space-containing asset ID.",
+        "PUT a valid PNG signature plus one extra byte, first as a known-length 13-byte Buffer and then as a two-chunk ReadableStream with no supplied Content-Length.",
+        "POST the deleted valid PNG to the asset route; after each of all eight refusals compare every asset row and the R2 keys/content bytes/contentType/customMetadata with the two-sentinel baseline.",
+        "After all refusals, viewer GET both original media signatures and compare exact bytes."
+      ],
+      "expectations": [
+        {
+          "id": "refusals",
+          "description": "The eight named inputs return exact status/code/message and standard JSON/no-store/nosniff headers. Every refusal leaves all asset rows and R2 keys/content bytes/contentType/customMetadata unchanged, and both sentinel media remain readable.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 269,
+            "end": 283,
+            "sha256": "2703360b230fb9d8e4caa856f808e96060543b7f6a4830b662ce1b30f188abcd"
+          }
+        },
+        {
+          "id": "error-envelope",
+          "description": "For each named refusal the HTTP body is exactly {error:{code,message}}, with its independently specified status and JSON/no-store/nosniff headers; no details or internal-error behavior is claimed.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 214,
+            "end": 222,
+            "sha256": "8188ba049092ab3904189b5c1f72d3de2581991aa2c78073a20b26bda9d6865b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 10,
+            "end": 10,
+            "sha256": "43d8869cba222e0003b0f25ba18313b5777a55091d7ff1860996d88776592488"
+          },
+          "expectation": "refusals",
+          "why": "Truncated PNG matches none of the signature branches and receives invalid_media before any asset reservation."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 49,
+            "end": 52,
+            "sha256": "2acc0b03c325a981ca04ede334855d424ee8ebd644f7a22c66bb20dd73fa02fa"
+          },
+          "expectation": "refusals",
+          "why": "The configured 12-byte cap, empty bytes, MIME disagreement and digest disagreement are exercised through authorized PUT. Default/max limits, quota and racing authorization changes are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 57,
+            "end": 57,
+            "sha256": "99561a631103a23f988804573da776eb77d12802b382b33f4986b63d55779ad0"
+          },
+          "expectation": "refusals",
+          "why": "The deleted PNG has no existing-ready row, so its invalid supplied asset ID reaches validation. The successful prior uploads retain valid IDs."
+        },
+        {
+          "source": {
+            "path": "cloud/src/http.ts",
+            "start": 29,
+            "end": 33,
+            "sha256": "d54ec90a4f6c7c23aab56b9dc749445f0373a427bdb2ddaec52e0138a99df57a"
+          },
+          "expectation": "refusals",
+          "why": "The known-length 13-byte request exceeds this fixture limit of 12 and returns the exact public 413 response. Invalid/negative Content-Length values are not claimed."
+        },
+        {
+          "source": {
+            "path": "cloud/src/http.ts",
+            "start": 36,
+            "end": 41,
+            "sha256": "d7ccd99e009c2accf184550de2ef62359972b2737fe5dc6cd77aae422b58f425"
+          },
+          "expectation": "refusals",
+          "why": "The streamed 13-byte request is sent without a supplied length; bounded stream accumulation supports rejection with unchanged media storage. No transport-chunk segmentation or cancellation side-effect claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/http.ts",
+            "start": 53,
+            "end": 55,
+            "sha256": "d9eab0941e7857329bac1225003785d6e9a65723ccab92018a530ef4c04f0148"
+          },
+          "expectation": "refusals",
+          "why": "A space in an otherwise bounded string asset ID is rejected, whereas the punctuation-bearing valid asset IDs are retained in ready rows. Full ID/type/length matrix excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/http.ts",
+            "start": 3,
+            "end": 6,
+            "sha256": "bfc76ca0a1985a73f1c924b70e7a5d65865c0bb49258009cfb45c2f2bbc964eb"
+          },
+          "expectation": "error-envelope",
+          "why": "APIError and assertion support preserving exact named error status/code/message through the public HTTP route. Optional details and unexpected internal errors are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/http.ts",
+            "start": 16,
+            "end": 17,
+            "sha256": "336a0c879fab78ab73c0d9c5b9270270cd45174476403eddee10773b023571a7"
+          },
+          "expectation": "error-envelope",
+          "why": "The APIError response arm serializes exactly the requested code/message and status with details absent. The unrelated internal-error arm is excluded."
+        }
+      ]
+    },
+    {
+      "id": "media-selective-delete-v91",
+      "title": "Delete only the selected replica and retry safely",
+      "preconditions": [
+        "Run the entire existing public command tracer app -- test services discussions-assets. The original 40 HTTP checks execute first in the same isolated Miniflare Worker; four synthetic actors have hashed sessions and the owner/member/viewer belong to a synthetic paid team. No native app, provider login or external account is used.",
+        "The existing owner process confines homes/storage, applies the three production D1 migrations, bundles the real Worker and denies unexpected outbound requests. ASSET_MAX_BYTES is the ordinary service setting configured to 12 for this local fixture only. The original PNG is exactly 12 bytes and is deleted before the new chapter.",
+        "Before the appended chapter, reset only this synthetic team billing fixture to active for one hour. The member session remains authorized, under the 120/hour upload rate limit. Requests use actual loopback HTTP, no production-function calls or HTTP response stubs.",
+        "JPEG and WebP are inert 3-byte and 12-byte signature fixtures, not decoded images. Only the asset table and R2 keys/content bytes/contentType/customMetadata are compared for nonmutation. Security rate counters may change; there is no entire-database, all-R2-metadata, quota-counter, race, reconciliation, provider, native or measured-line-coverage claim."
+      ],
+      "actions": [
+        "Owner DELETE the JPEG and verify public missing-asset response, exact surviving WebP GET, and full remaining asset/R2 state equals only its captured sentinel.",
+        "Owner DELETE WebP twice, require both responses successful, and assert empty assets table/R2 listing. Require all twelve new mutation/refusal labels and zero unexpected outbound attempts before owned process/state cleanup."
+      ],
+      "expectations": [
+        {
+          "id": "selected-only",
+          "description": "Removing JPEG preserves the complete WebP row and specified R2 content/metadata; removing WebP then repeating DELETE leaves no rows or objects.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 284,
+            "end": 293,
+            "sha256": "9f1cc8e457b0fc7193b7f4b80f1b60bdd3c130d9ffddcdc529bc601cdcd1f260"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 42,
+            "end": 44,
+            "sha256": "e07d9389344c940d53eb30fd11c70ba12ef527716fee253668a0a10e6081d849"
+          },
+          "expectation": "selected-only",
+          "why": "Successful owner deletion removes only the selected object key and matching deleting row. The independently retained WebP sentinel distinguishes indiscriminate cleanup. No stale-delete or concurrent replacement claim."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "media-boundaries-v91",
+      "title": "Preserve hosted media across format and refusal boundaries",
+      "steps": [
+        "media-formats-v91",
+        "media-refusals-v91",
+        "media-selective-delete-v91"
+      ]
+    }
+  ]
+}

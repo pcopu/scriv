@@ -1,0 +1,525 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "workspace-model-document",
+      "title": "Exercise model-document workspace behavior",
+      "featureId": "workspace-local-journeys",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs"
+      ],
+      "plannedActions": [
+        "test --scenario journeys/model-document"
+      ],
+      "expectedOutcomes": [
+        "Import complete local model; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "id": "workspace-script-structure",
+      "title": "Exercise script-structure workspace behavior",
+      "featureId": "workspace-local-journeys",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/script-structure.mjs"
+      ],
+      "plannedActions": [
+        "test --scenario journeys/script-structure"
+      ],
+      "expectedOutcomes": [
+        "Create scene and author direction; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "id": "workspace-character-catalog",
+      "title": "Exercise character-catalog workspace behavior",
+      "featureId": "workspace-local-journeys",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/character-catalog.mjs"
+      ],
+      "plannedActions": [
+        "test --scenario journeys/character-catalog"
+      ],
+      "expectedOutcomes": [
+        "Persist character profile fields; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "id": "workspace-audio-library",
+      "title": "Exercise audio-library workspace behavior",
+      "featureId": "workspace-local-journeys",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/audio-library.mjs"
+      ],
+      "plannedActions": [
+        "test --scenario journeys/audio-library"
+      ],
+      "expectedOutcomes": [
+        "Import scene and dialogue audio; all assertion statements in this witness are required.",
+        "Preserve master mix and unmute volume; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "id": "workspace-local-images",
+      "title": "Exercise local-images workspace behavior",
+      "featureId": "workspace-local-journeys",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/local-images.mjs"
+      ],
+      "plannedActions": [
+        "test --scenario journeys/local-images"
+      ],
+      "expectedOutcomes": [
+        "Import immutable image successors; all assertion statements in this witness are required."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "workspace-v86-1",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 770,
+        "end": 772,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "cda28027f7bbb3d312db5a65b2d49f6e5a9d325f0ddb8c1596ab67e8f8cf4205",
+        "sha256": "4f8657544ccd0b3c3e381eab359977f8677662226ad3d121093e90fecbe337cc"
+      },
+      "scenarioIds": [
+        "workspace-model-document"
+      ],
+      "rationale": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import complete local model; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-2",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 784,
+        "end": 785,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "e31180aedb3a9db6c0d1791f7502d8648ca5c6fac265c8cf18c7609081241292",
+        "sha256": "340850c45e57ffe05fe82ba6d94437b9bb74f279fa67cd85a8bf29765b83cb39"
+      },
+      "scenarioIds": [
+        "workspace-model-document"
+      ],
+      "rationale": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import complete local model; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-3",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 791,
+        "end": 797,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "38e99b72a7ca3a8c0c1316d1438bdd2d42c581de96d553473fd25e3e836394a7",
+        "sha256": "ae4f2f0588b59732431d9c47e883705120138a8b3ae91668c8d3ec819bad8cde"
+      },
+      "scenarioIds": [
+        "workspace-model-document"
+      ],
+      "rationale": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import complete local model; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-4",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 877,
+        "end": 890,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "371c16139dd5e7f4ca578a9b90625617d5012e272580f6ba06b0774551331405",
+        "sha256": "8a3ee76fcd075f6fa63e439ac7b611db4fd2c6fb06e1cfbdfe18fd931f45cc98"
+      },
+      "scenarioIds": [
+        "workspace-model-document"
+      ],
+      "rationale": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import complete local model; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-5",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 893,
+        "end": 894,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "d5cb4d48d1432dc5d4d5fb0a48cc55e1b15c02a5be83702f271b569478ffee2b",
+        "sha256": "f4a646969cfff77df7572e4baee25f8a5cf34f30e72e7bd48f219853eaa470ac"
+      },
+      "scenarioIds": [
+        "workspace-model-document"
+      ],
+      "rationale": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import complete local model; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-6",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1824,
+        "end": 1826,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "e01d5bec46050420d755d8c33d46af6afac17921dcb84294f2a9c83777cad11d",
+        "sha256": "fd5da44f133c4dad6d3ff4fd67fa123233da48d26757a63d3aec75b3310a2f11"
+      },
+      "scenarioIds": [
+        "workspace-model-document"
+      ],
+      "rationale": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import complete local model; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-7",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1832,
+        "end": 1833,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "c5f48e82d48e27f585c988ff38f566c56b3f0b9ebdc35c494534ee57235dd17b",
+        "sha256": "2a2577f48b642219932a599f853fded75913d07ca375fdb7c99cdbb14cef011b"
+      },
+      "scenarioIds": [
+        "workspace-model-document"
+      ],
+      "rationale": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import complete local model; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-8",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1839,
+        "end": 1839,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "cd7ee927e59afdfb54330d0402ad42ba4c4ff0ef2df6df7dd0481c8b37834e50",
+        "sha256": "a1ee5631c36e4406792295d4973eecb0f9ec4fe6b3547d9799ff31133e10b483"
+      },
+      "scenarioIds": [
+        "workspace-model-document"
+      ],
+      "rationale": "After a valid local import is installed, queueSave(value,label:\"Create project\") publishes its complete metadata to the owned project package. The model-document witness compares the entire persisted project, loaded project and package set. Only queueSave publication on line 1839 is associated; the co-located onProjectChanged callback and navigation, history, playback and discussion reset semantics are not asserted.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import complete local model; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-9",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 845,
+        "end": 866,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "4d1d8808d305aafb3567b875018dc094db08e89ca59f3a4cd9dedc5879914861",
+        "sha256": "31041c441ec285e8805e6af44d46c69868d817fe2548dc68e5f0bf05d5305a11"
+      },
+      "scenarioIds": [
+        "workspace-script-structure"
+      ],
+      "rationale": "The stored script-scenes New scene action and real Add direction control reach addScene/addEntry then change. savedMutation compares complete content to explicit independent expected models, exact revision increments, loaded state and all packages. Scope is accepted local mutation and its undo/redo support, not independent HistoryEntry labels, history insertion or persisted history-record semantics; bootstrapping refusal, lease conflicts, revision overflow, no-op, cloud commit and errors are not established.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Create scene and author direction; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-10",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1171,
+        "end": 1174,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "65d78dc3df0dd5ab0d0d0dc4f9169f40b51ace4e9796c5784f6232b2a655aba3",
+        "sha256": "3f3b8deaa36f3fed0417458c6f66ea5b9fd73fc4e410065bc338735cb4cf429d"
+      },
+      "scenarioIds": [
+        "workspace-script-structure"
+      ],
+      "rationale": "The stored script-scenes New scene action and real Add direction control reach addScene/addEntry then change. savedMutation compares complete content to explicit independent expected models, exact revision increments, loaded state and all packages. Scope is accepted local mutation and its undo/redo support, not independent HistoryEntry labels, history insertion or persisted history-record semantics; bootstrapping refusal, lease conflicts, revision overflow, no-op, cloud commit and errors are not established.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Create scene and author direction; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-11",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1124,
+        "end": 1128,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "e9aed30609066ebae83bdd067a56f0d6936d53ff7ba6b4ace371e5bc9488a788",
+        "sha256": "fde19084a5cc305bc1f7f4be1b96548412f62e2027c075803421d4d2d895ecf3"
+      },
+      "scenarioIds": [
+        "workspace-script-structure"
+      ],
+      "rationale": "The stored script-scenes New scene action and real Add direction control reach addScene/addEntry then change. savedMutation compares complete content to explicit independent expected models, exact revision increments, loaded state and all packages. Scope is accepted local mutation and its undo/redo support, not independent HistoryEntry labels, history insertion or persisted history-record semantics; bootstrapping refusal, lease conflicts, revision overflow, no-op, cloud commit and errors are not established.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Create scene and author direction; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-12",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1230,
+        "end": 1233,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "82dae32658e0bab830619670b60f4275821336e006ce5d138d95220d4edd168e",
+        "sha256": "942489fa9c463d5a788383874e615b59a830c3b4682c1a3a6a9b59ec7df097e5"
+      },
+      "scenarioIds": [
+        "workspace-character-catalog"
+      ],
+      "rationale": "CharacterEditorController Save validates the form then invokes updateCharacter. editProfile calls persisted for changed biography/appearance/color, clear/restore, repeated saves and canonical-only Unicode edits. The oracle compares the complete character list and unchanged entries. Name/alias-change bootstrap at 1234-1235, missing ID, form validation interception and concurrent edit refusal are deliberately excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Persist character profile fields; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-13",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1236,
+        "end": 1239,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "a34526120c90cedd74b8ec1433055f32d88a6cb1907b3d44ab8321760b5726e7",
+        "sha256": "e3ba5921c19b9fba89f1556dd7c5a60ca7fdbc25eaef7d325e05e061d626fc24"
+      },
+      "scenarioIds": [
+        "workspace-character-catalog"
+      ],
+      "rationale": "CharacterEditorController Save validates the form then invokes updateCharacter. editProfile calls persisted for changed biography/appearance/color, clear/restore, repeated saves and canonical-only Unicode edits. The oracle compares the complete character list and unchanged entries. Name/alias-change bootstrap at 1234-1235, missing ID, form validation interception and concurrent edit refusal are deliberately excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Persist character profile fields; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-14",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1311,
+        "end": 1316,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "910eac1ca89866915d4c32f7d890dfbf65133ae4f529763a5ee4c28c8e590e9e",
+        "sha256": "5f97563eeedafadaacc9d154351f326da8f1a62c56487ea29778b4901c9ab919"
+      },
+      "scenarioIds": [
+        "workspace-audio-library"
+      ],
+      "rationale": "ScrivCLIAudioImport validates an owned synthetic WAV and awaits importAudio. Default import group invokes selected-dialogue then scene-silence import after playhead 3500. verifyImportedAsset checks measured asset and bytes; expectedClip checks placement and clipping to available scene time; mutation checks complete project preservation and one revision. Passing preconditions and stable navigation only. Invalid front-door payloads never witness WorkspaceStore guard failures; picker, security-scope grant, decoder failure and navigation races excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import scene and dialogue audio; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-15",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1319,
+        "end": 1321,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "182e70681210d8ff9fed11a8f1f55a6e832b63bffeed5e5807b9b6d14a28df90",
+        "sha256": "21b8b519fc4823fdc7503d00af6e7cd3651d8b7812ef9b174a0caacc2b5ba7d4"
+      },
+      "scenarioIds": [
+        "workspace-audio-library"
+      ],
+      "rationale": "ScrivCLIAudioImport validates an owned synthetic WAV and awaits importAudio. Default import group invokes selected-dialogue then scene-silence import after playhead 3500. verifyImportedAsset checks measured asset and bytes; expectedClip checks placement and clipping to available scene time; mutation checks complete project preservation and one revision. Passing preconditions and stable navigation only. Invalid front-door payloads never witness WorkspaceStore guard failures; picker, security-scope grant, decoder failure and navigation races excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import scene and dialogue audio; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-16",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1324,
+        "end": 1332,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "a18534f1c34d4c1aa15d9caa2394041cebf83a00fd58c8c6c9ee26865580760d",
+        "sha256": "d957af39f3e5afb6fbdcd93b3d7eafd5b71fe843506b86ecf0e3a446fa33bad5"
+      },
+      "scenarioIds": [
+        "workspace-audio-library"
+      ],
+      "rationale": "ScrivCLIAudioImport validates an owned synthetic WAV and awaits importAudio. Default import group invokes selected-dialogue then scene-silence import after playhead 3500. verifyImportedAsset checks measured asset and bytes; expectedClip checks placement and clipping to available scene time; mutation checks complete project preservation and one revision. Passing preconditions and stable navigation only. Invalid front-door payloads never witness WorkspaceStore guard failures; picker, security-scope grant, decoder failure and navigation races excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import scene and dialogue audio; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-17",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1340,
+        "end": 1347,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "00f6556015d61db6fffa0213365626823daed0d13b8ce449f86549012f6c3f9e",
+        "sha256": "00eef968f7786f5e236fe7166c0619374f91c423bf4cdfe35e4f8a2564f403d5"
+      },
+      "scenarioIds": [
+        "workspace-audio-library"
+      ],
+      "rationale": "Actual volume slider callback invokes setAudioVolume(0.25); mute/unmute controls invoke toggleAudioMute. Explicit saved full-model oracles require 0.25, then 0, then restored 0.25. This is finite in-range remembered-volume behavior; NaN, clamp extremes, missing remembered volume and cross-project volume scope isolation are not asserted.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Preserve master mix and unmute volume; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-18",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1398,
+        "end": 1404,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "21a038c88162ee529659c36f24a60fb81ff660451b45d3c27d26e791d6f8eb93",
+        "sha256": "1c590da0edb812fc673bd7798be58be60292d9a00d54d06e7bfd0353b4bf52b3"
+      },
+      "scenarioIds": [
+        "workspace-local-images"
+      ],
+      "rationale": "ScrivCLILocalImageImport post-picker semantic route awaits importImage then attachImage for finite coral/blue PNGs. importVersion independently asserts known hashes, size/type, immutable metadata, version increment and previousVersionId, exact changed attachment and complete other content; visible checks decoded dimensions and displayed preview. Only local nonstale import and version success are associated: invalid CLI payloads are intercepted, 25MiB/decoder/overflow failures, stale generation, cloud upload, AppKit and picker not witnessed.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import immutable image successors; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-19",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1407,
+        "end": 1410,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "da6ea8a00716e57a91dc6e096ffc4f56fd0cfc4a74ffc8f6162c80af31614bde",
+        "sha256": "29a804c7e7c0307f2b8b13942cfac337a60b57b49b834202aca22a8f7647321e"
+      },
+      "scenarioIds": [
+        "workspace-local-images"
+      ],
+      "rationale": "ScrivCLILocalImageImport post-picker semantic route awaits importImage then attachImage for finite coral/blue PNGs. importVersion independently asserts known hashes, size/type, immutable metadata, version increment and previousVersionId, exact changed attachment and complete other content; visible checks decoded dimensions and displayed preview. Only local nonstale import and version success are associated: invalid CLI payloads are intercepted, 25MiB/decoder/overflow failures, stale generation, cloud upload, AppKit and picker not witnessed.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import immutable image successors; all assertion statements in this witness are required."
+      ]
+    },
+    {
+      "rangeId": "workspace-v86-20",
+      "featureId": "workspace-local-journeys",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1414,
+        "end": 1425,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "b3dfecbe3d6dcbc00651f14dd54d04bdc1331c0e04e48c14a60185a7ce37b06c",
+        "sha256": "5a80a24c7becd9f1d744f5d0a1f664037ca4f8bf4fa86f3caa2ad69fa5ea5404"
+      },
+      "scenarioIds": [
+        "workspace-local-images"
+      ],
+      "rationale": "ScrivCLILocalImageImport post-picker semantic route awaits importImage then attachImage for finite coral/blue PNGs. importVersion independently asserts known hashes, size/type, immutable metadata, version increment and previousVersionId, exact changed attachment and complete other content; visible checks decoded dimensions and displayed preview. Only local nonstale import and version success are associated: invalid CLI payloads are intercepted, 25MiB/decoder/overflow failures, stale generation, cloud upload, AppKit and picker not witnessed.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN; semantic review pending. Passing guards do not certify refusal branches. Whole-journey declared action boundary.",
+      "proposedAssertions": [
+        "Import immutable image successors; all assertion statements in this witness are required."
+      ]
+    }
+  ]
+}

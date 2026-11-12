@@ -1,0 +1,374 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "notice": "Incremental scoped proposal only. Not reviewed links or measured source execution.",
+  "scenarios": [
+    {
+      "id": "email-session-contract",
+      "title": "Local synthetic email session lifecycle",
+      "featureId": "authentication",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/email-auth-journey.mjs"
+      ],
+      "plannedActions": [
+        "Run through Tracer with the reviewed local runtime and an in-process synthetic email RPC mailbox, real loopback Worker and original D1 migrations.",
+        "POST /auth/email/request synthetic address and proof challenge",
+        "POST /auth/email/request same address and proof during cooldown",
+        "POST /auth/email/verify incorrect code",
+        "POST /auth/email/verify correct code incorrect proof",
+        "POST /auth/email/verify correct code and proof",
+        "POST /auth/email/verify replay consumed code",
+        "GET /v1/me using issued session",
+        "GET /auth/sessions using issued session",
+        "POST /auth/email/request same synthetic account second device proof",
+        "POST /auth/email/verify second device proof and code",
+        "GET /auth/sessions with two authenticated devices",
+        "DELETE /auth/sessions second device from first device",
+        "GET /v1/me using revoked second session",
+        "GET /auth/sessions after second device revocation",
+        "POST /auth/logout using issued session",
+        "GET /v1/me using logged-out session"
+      ],
+      "expectedOutcomes": [
+        "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code.",
+        "Enforces resend cooldown without a second delivery.",
+        "Rejects an incorrect six-digit code.",
+        "Rejects the correct code with a mismatched proof key.",
+        "Issues a session for the normalized synthetic email after successful proof.",
+        "Rejects reuse of the consumed challenge.",
+        "Reads the issued identity and empty initial team and project lists.",
+        "Lists the active session and device name.",
+        "Issues a second challenge for the same synthetic account and another proof key.",
+        "Issues a second device session for the existing user.",
+        "Lists both device sessions and identifies the current session.",
+        "Revokes the second device session from the first.",
+        "Rejects the revoked second session.",
+        "Lists only the still-active first session after revocation.",
+        "Logs out the first session.",
+        "Rejects the logged-out first session."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "v85-email-email-auth-ts-11-18",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 11,
+        "end": 18,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "89c7612beb68c655c994feb3f84fe99fb21e185841afd2a96ca8574c70493b1e",
+        "sha256": "88828f861047398450be20fc4ace347e7976bb4bc2eaaf5ac66fd8557683d278"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code."
+      ]
+    },
+    {
+      "rangeId": "v85-email-email-auth-ts-33-39",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 33,
+        "end": 39,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "d50720693b4fbe0b65561f444a2b345bf872d87864963f687f3002cc2ae18113",
+        "sha256": "adf6a8477aa09605bb15f6feb7f7d127538ae7abae21a0155589ba684d31d5bd"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code."
+      ]
+    },
+    {
+      "rangeId": "v85-email-email-auth-ts-43-44",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 43,
+        "end": 44,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "4bdcf3a05271c461d1479c444c0081eb69a43ed3293252dde78077314fd67f26",
+        "sha256": "11406b1464c2bb1dc22fb546efc36d85f48c330f9a940e592267af75df034168"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code."
+      ]
+    },
+    {
+      "rangeId": "v85-email-email-auth-ts-48-60",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 48,
+        "end": 60,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "d5030d04ed53e324f0c928fe1e053b516133d3e85d596b6a580f60d76b9de701",
+        "sha256": "5c9500a7b4c87030ec912109e6d39cda4cda45876619951cf16f536e4812fb5f"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Enforces resend cooldown without a second delivery.",
+        "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code."
+      ]
+    },
+    {
+      "rangeId": "v85-email-email-auth-ts-68-68",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 68,
+        "end": 68,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "8da55bdc7e60e37d164f99de831a59def41369d1183da0d7897aee6e2ab82e9d",
+        "sha256": "1dd13f389a0c68b733f18872aded8c6b264d92f993227a1afdf4cc3ffdd9fd77"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code."
+      ]
+    },
+    {
+      "rangeId": "v85-email-email-auth-ts-90-95",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 90,
+        "end": 95,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "e2da4fb2027f69dbbc19e7c8834573f2db4a9edae5d24658a9b715496facb50d",
+        "sha256": "31c1ba0f61539a47f62fdf7ab87969cfbaa0427f99816179f311510fbd4629c1"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Issues a session for the normalized synthetic email after successful proof.",
+        "Rejects an incorrect six-digit code.",
+        "Rejects reuse of the consumed challenge.",
+        "Rejects the correct code with a mismatched proof key."
+      ]
+    },
+    {
+      "rangeId": "v85-email-email-auth-ts-96-109",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 96,
+        "end": 109,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "2d397d588e088084e44a43177e73ce29b90f713133aaef965f4a611cebc6f126",
+        "sha256": "0b16fa6a4012d2fb0dbbc4ce1ec9ce85cb3d7ad5b8940cee2a75cecbe4130223"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Issues a second device session for the existing user.",
+        "Issues a session for the normalized synthetic email after successful proof."
+      ]
+    },
+    {
+      "rangeId": "v85-email-email-auth-ts-111-113",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 111,
+        "end": 113,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "2318043274d3d69c9d10f84cf3b921e847ec253df465c0acecdc2bb63ba2c33f",
+        "sha256": "96944eae9d3cd8578adf32629e126c63dc4d480fc355d081f7d09d10bb3afe33"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Issues a session for the normalized synthetic email after successful proof.",
+        "Rejects reuse of the consumed challenge."
+      ]
+    },
+    {
+      "rangeId": "v85-email-email-ts-5-11",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email.ts",
+        "start": 5,
+        "end": 11,
+        "fileSha256": "3ab6f2b0092b8b40b0d3b2c03365d3926336cca10a22983f4246c4fc9801888a",
+        "spanSha256": "eca963aefb847a4d10fa858658f4916651f37f0f59c7d3bf27097e472f3cae02",
+        "sha256": "ee5b31b13bda8e16db4d817e8e056a1fb09716f9b097d05dc8085b4e1c21e3dc"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code."
+      ]
+    },
+    {
+      "rangeId": "v85-email-access-ts-3-10",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 3,
+        "end": 10,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "6327d3e66c31e2c667b8b74f8f10da7bef17ca4acab00108f34164521c422cf9",
+        "sha256": "290ed7a5f269798092cd015ee24a83739092bad7fdc6ffb57229ec57355e28b3"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Reads the issued identity and empty initial team and project lists.",
+        "Rejects the logged-out first session.",
+        "Rejects the revoked second session."
+      ]
+    },
+    {
+      "rangeId": "v85-email-teams-ts-29-29",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 29,
+        "end": 29,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "4dedeabc7ff715bc9d6d00f19da7a6a99966f3305c917b02f8bb49aa39853c3c",
+        "sha256": "a9061c19ab69f08660b262640a703852c81b607727ba400308ddf27622079386"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Reads the issued identity and empty initial team and project lists."
+      ]
+    },
+    {
+      "rangeId": "v85-email-auth-ts-75-78",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 75,
+        "end": 78,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "74a46947559f127ddf1fc0cfa08afd07d56001d41e8f6f71d6a32bca3a335898",
+        "sha256": "6133c51be5597cb7e00569ae7cd564161eb6eb7dff47653b9a3dd2151c9b7594"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Logs out the first session."
+      ]
+    },
+    {
+      "rangeId": "v85-email-auth-ts-80-83",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 80,
+        "end": 83,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "32f8e21843e10d1fc8d5166d19ed70712298cce0857ec5ca569969a9f136e32a",
+        "sha256": "6ac017592eb9916296f84c0b6bad520ac366809d7f6f8a87c186c30afb56062d"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Lists both device sessions and identifies the current session.",
+        "Lists only the still-active first session after revocation.",
+        "Lists the active session and device name."
+      ]
+    },
+    {
+      "rangeId": "v85-email-auth-ts-85-89",
+      "featureId": "authentication",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 85,
+        "end": 89,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "afcc5177bb55f32b7f6d3f3911a0ab6941230c9bef37d75f74c497bd3bd189cf",
+        "sha256": "59ecab0b9f5876f918f75c6f60fa81120d638cd08272d65d3a8b72a53a778dab"
+      },
+      "scenarioIds": [
+        "email-session-contract"
+      ],
+      "rationale": "A scoped local email-auth or session assertion is associated with this source range. Review the complete caller, SQL guards, fixture and named witness before any manual linkage.",
+      "confidence": "medium",
+      "uncertainty": "Synthetic local RPC only; no real provider, native UI, race, failure injection, expiry, attempt exhaustion, precise lifetime or measured execution. Some source internals are associated support, not directly distinguished by the HTTP assertion.",
+      "proposedAssertions": [
+        "Revokes the second device session from the first."
+      ]
+    }
+  ]
+}

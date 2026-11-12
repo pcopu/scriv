@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "v83-runtime-atomic-batch",
+      "title": "Use the published runtime for atomic-batch",
+      "featureId": "testing-infrastructure",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/atomic-batch-journey.mjs"
+      ],
+      "plannedActions": [
+        "Set SCRIV_TRACER_RUNTIME to the verified canonical runtime from the published tree identified by v83-runtime-pin-manifest.json",
+        "tracer app -- test services atomic-batch"
+      ],
+      "expectedOutcomes": [
+        "With SCRIV_TRACER_RUNTIME set to the exact canonical scenario-runtime.mjs entrypoint from the explicitly trusted published tree, all five listed module byte pins match, the real local service journey completes, and its explicit named action/assertion callbacks report passed separately from source mapping and measured coverage."
+      ]
+    },
+    {
+      "id": "v83-runtime-billing",
+      "title": "Use the published runtime for billing",
+      "featureId": "testing-infrastructure",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/billing-journey.mjs"
+      ],
+      "plannedActions": [
+        "Set SCRIV_TRACER_RUNTIME to the verified canonical runtime from the published tree identified by v83-runtime-pin-manifest.json",
+        "tracer app -- test services billing"
+      ],
+      "expectedOutcomes": [
+        "With SCRIV_TRACER_RUNTIME set to the exact canonical scenario-runtime.mjs entrypoint from the explicitly trusted published tree, all five listed module byte pins match, the real local service journey completes, and its explicit named action/assertion callbacks report passed separately from source mapping and measured coverage."
+      ]
+    },
+    {
+      "id": "v83-runtime-generation",
+      "title": "Use the published runtime for generation",
+      "featureId": "testing-infrastructure",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/generation-journey.mjs"
+      ],
+      "plannedActions": [
+        "Set SCRIV_TRACER_RUNTIME to the verified canonical runtime from the published tree identified by v83-runtime-pin-manifest.json",
+        "tracer app -- test services generation"
+      ],
+      "expectedOutcomes": [
+        "With SCRIV_TRACER_RUNTIME set to the exact canonical scenario-runtime.mjs entrypoint from the explicitly trusted published tree, all five listed module byte pins match, the real local service journey completes, and its explicit named action/assertion callbacks report passed separately from source mapping and measured coverage."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "v83-runtime-atomic-batch",
+      "source": {
+        "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+        "start": 116,
+        "end": 129,
+        "sha256": "066b039807c507938ecefa8d470f3b3bd6a96c404d382bf41f41dc24629fa9a1",
+        "spanSha256": "2d2b19bf57c67d1c9178b9c24a4ccbbf13cf3db6efa6ef45921534d7554d3c83",
+        "fileSha256": "54acfb2ca6ec576f43c3491eaf95b70a7820598d560d9ee39dc453e21f2138fe"
+      },
+      "scenarioIds": [
+        "v83-runtime-atomic-batch"
+      ],
+      "featureId": "testing-infrastructure",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Upgrade runtime pins to the exact published CLI module chain while retaining isolated real service execution.",
+      "confidence": "medium",
+      "uncertainty": "This adoption scenario uses only the known-valid trusted runtime. Missing/relative/noncanonical/wrong-basename runtime paths and changed or symlinked modules are not exercised here; their unchanged rejection guards remain unverified by this scenario. No native/provider execution or measured source hits are claimed.",
+      "proposedAssertions": [
+        "With SCRIV_TRACER_RUNTIME set to the exact canonical scenario-runtime.mjs entrypoint from the explicitly trusted published tree, all five listed module byte pins match, the real local service journey completes, and its explicit named action/assertion callbacks report passed separately from source mapping and measured coverage."
+      ]
+    },
+    {
+      "rangeId": "v83-runtime-billing",
+      "source": {
+        "path": "cloud/tests-e2e/billing-journey.mjs",
+        "start": 115,
+        "end": 128,
+        "sha256": "066b039807c507938ecefa8d470f3b3bd6a96c404d382bf41f41dc24629fa9a1",
+        "spanSha256": "2d2b19bf57c67d1c9178b9c24a4ccbbf13cf3db6efa6ef45921534d7554d3c83",
+        "fileSha256": "9d826c15bc66b0e4fafd652542f8bc634feb3f8d4472090c459e33e828266d61"
+      },
+      "scenarioIds": [
+        "v83-runtime-billing"
+      ],
+      "featureId": "testing-infrastructure",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Upgrade runtime pins to the exact published CLI module chain while retaining isolated real service execution.",
+      "confidence": "medium",
+      "uncertainty": "This adoption scenario uses only the known-valid trusted runtime. Missing/relative/noncanonical/wrong-basename runtime paths and changed or symlinked modules are not exercised here; their unchanged rejection guards remain unverified by this scenario. No native/provider execution or measured source hits are claimed.",
+      "proposedAssertions": [
+        "With SCRIV_TRACER_RUNTIME set to the exact canonical scenario-runtime.mjs entrypoint from the explicitly trusted published tree, all five listed module byte pins match, the real local service journey completes, and its explicit named action/assertion callbacks report passed separately from source mapping and measured coverage."
+      ]
+    },
+    {
+      "rangeId": "v83-runtime-generation",
+      "source": {
+        "path": "cloud/tests-e2e/generation-journey.mjs",
+        "start": 118,
+        "end": 131,
+        "sha256": "066b039807c507938ecefa8d470f3b3bd6a96c404d382bf41f41dc24629fa9a1",
+        "spanSha256": "2d2b19bf57c67d1c9178b9c24a4ccbbf13cf3db6efa6ef45921534d7554d3c83",
+        "fileSha256": "333b0edc3e3fc3d17e45c0fb43c327316236f49bd9615ea190c2088c8f7cb080"
+      },
+      "scenarioIds": [
+        "v83-runtime-generation"
+      ],
+      "featureId": "testing-infrastructure",
+      "status": "model-proposed-unreviewed",
+      "rationale": "Upgrade runtime pins to the exact published CLI module chain while retaining isolated real service execution.",
+      "confidence": "medium",
+      "uncertainty": "This adoption scenario uses only the known-valid trusted runtime. Missing/relative/noncanonical/wrong-basename runtime paths and changed or symlinked modules are not exercised here; their unchanged rejection guards remain unverified by this scenario. No native/provider execution or measured source hits are claimed.",
+      "proposedAssertions": [
+        "With SCRIV_TRACER_RUNTIME set to the exact canonical scenario-runtime.mjs entrypoint from the explicitly trusted published tree, all five listed module byte pins match, the real local service journey completes, and its explicit named action/assertion callbacks report passed separately from source mapping and measured coverage."
+      ]
+    }
+  ]
+}

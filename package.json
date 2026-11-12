@@ -6,17 +6,15 @@
   "scripts": {
     "setup": "npm --prefix cloud ci",
     "check": "npm --prefix cloud run typecheck && node scripts/check-repo.mjs",
-    "test": "npm --prefix cloud test && node --test tests/*.test.mjs",
+    "test": "node scripts/tracer-cli.mjs app -- test tooling",
     "dev:cloud": "npm --prefix cloud run dev",
-    "build:mac": "bash scripts/build-mac.sh",
-    "test:mac": "swift test --package-path apps/mac",
+    "build:mac": "bash scripts/build-catalyst.sh",
     "verify": "bash scripts/verify.sh",
-    "test:peer": "node --test tests/peer-transfer.browser.mjs"
+    "test:e2e": "node scripts/tracer-cli.mjs app -- test",
+    "test:inventory": "python3 scripts/inventory-cli-migration.py --check",
+    "test:services": "node scripts/tracer-cli.mjs app -- test services"
   },
   "engines": {
     "node": ">=22.0.0"
-  },
-  "devDependencies": {
-    "playwright": "1.56.1"
   }
 }

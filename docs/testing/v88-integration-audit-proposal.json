@@ -1,0 +1,312 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "wave81-1-S131",
+      "title": "Fixed twelve-scenario selection and isolated service process execution, including billing and generation with explicit local runtime capture",
+      "featureId": "testing-infrastructure",
+      "state": "needs-extension",
+      "existingPaths": [
+        "tests/tracer/cli-front-door.mjs"
+      ],
+      "plannedActions": [
+        "Invoke the journey selector with one supported name and an unknown name using isolated stub processes, including one failing process."
+      ],
+      "expectedOutcomes": [
+        "Only the requested fixed service journey is launched in an isolated process; unsupported names fail and process failures propagate."
+      ]
+    },
+    {
+      "id": "wave81-3-s048",
+      "title": "Launch an isolated automation app session with a specified executable and invalid launch options",
+      "featureId": "cli-automation",
+      "state": "needs-extension",
+      "existingPaths": [
+        "tests/tracer/cli-front-door.mjs"
+      ],
+      "plannedActions": [
+        "Launch an isolated automation app session with a specified executable and invalid launch options."
+      ],
+      "expectedOutcomes": [
+        "A valid launch yields an isolated session and invalid launch parameters fail without controlling another app."
+      ]
+    },
+    {
+      "id": "wave81-3-s049",
+      "title": "Start an automation session with the optional coverage observer enabled and disabled",
+      "featureId": "instrumentation",
+      "state": "needs-extension",
+      "existingPaths": [
+        "tests/tracer/cli-front-door.mjs"
+      ],
+      "plannedActions": [
+        "Start an automation session with the optional coverage observer enabled and disabled."
+      ],
+      "expectedOutcomes": [
+        "The observer attaches only when requested and its absence does not block launch."
+      ]
+    },
+    {
+      "id": "wave81-3-s050",
+      "title": "Complete session launch and send an automation command",
+      "featureId": "cli-automation",
+      "state": "needs-extension",
+      "existingPaths": [
+        "tests/tracer/cli-front-door.mjs"
+      ],
+      "plannedActions": [
+        "Complete session launch and send an automation command."
+      ],
+      "expectedOutcomes": [
+        "The command routes to the launched session after readiness."
+      ]
+    },
+    {
+      "id": "wave81-3-s054",
+      "title": "Invoke CLI help, a valid journey and invalid app paths, then terminate the session",
+      "featureId": "cli-automation",
+      "state": "needs-extension",
+      "existingPaths": [
+        "tests/tracer/cli-front-door.mjs",
+        "tests/tracer/source-provenance-journey.mjs"
+      ],
+      "plannedActions": [
+        "Invoke CLI help, a valid journey and invalid app paths, then terminate the session.",
+        "Invoke test provenance on its synthetic fixture; separately invoke it with one extra argument and with SCRIV_CLI_TOOLING_ACTIVE=1. Observe supported completion versus exact rejection before a fixture runs.",
+        "Discover the fixed service catalog and verify team-lifecycle and oauth appear among the twelve supported routes; arbitrary routes remain rejected.",
+        "Discover the fixed service catalog and verify document-integrity appears among the twelve supported routes; arbitrary routes remain rejected."
+      ],
+      "expectedOutcomes": [
+        "Help includes service journeys, invalid paths are rejected and owned processes are terminated.",
+        "The supported provenance route is advertised and runs its portable journey; malformed or nested provenance invocations return exit2, empty stdout and exactly the fixed refusal message.",
+        "Public help and service discovery consistently advertise both added local journeys without claiming native or live provider execution.",
+        "Public help and service discovery consistently advertise the added document-integrity local journey without claiming native or live provider execution."
+      ]
+    },
+    {
+      "id": "audit-v82-2fc73300d0e39b6f1bc8",
+      "title": "Finish coverage before terminating a session",
+      "featureId": "instrumentation",
+      "state": "needs-extension",
+      "existingPaths": [
+        "tests/tracer/cli-front-door.mjs"
+      ],
+      "plannedActions": [
+        "Close an owned coverage-observed CLI session while recording collector and process events; repeat with a forced finish failure."
+      ],
+      "expectedOutcomes": [
+        "A coverage finish is attempted before termination. The owned process still terminates on finish failure and that failure is not described as a successful profile."
+      ]
+    },
+    {
+      "id": "audit-v82-39c6d26917325d822857",
+      "title": "Relaunch a live persistent session before closing",
+      "featureId": "cli-automation",
+      "state": "needs-extension",
+      "existingPaths": [
+        "tests/tracer/cli-front-door.mjs"
+      ],
+      "plannedActions": [
+        "Launch an owned persistent session, settle all commands, relaunch while live and inspect persisted state, then close. Attempt relaunch after close and separately wait for an unmet condition."
+      ],
+      "expectedOutcomes": [
+        "Live settled relaunch preserves the intended workspace, post-close relaunch is refused, and an unmet wait times out."
+      ]
+    },
+    {
+      "id": "audit-v82-ce4f7f2d54b9226ad5b2",
+      "title": "Record observed command completion",
+      "featureId": "cli-automation",
+      "state": "needs-extension",
+      "existingPaths": [
+        "tests/tracer/cli-front-door.mjs"
+      ],
+      "plannedActions": [
+        "Enable owned coverage observation, issue one successful command, one failing command and one timed-out command; inspect recorded completion metadata and the actual state separately."
+      ],
+      "expectedOutcomes": [
+        "Observation records returned success versus failure or uncertainty. A timeout does not prove that a mutation failed to occur."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "ee2298857385532f0380",
+      "scenarioIds": [
+        "wave81-3-s048"
+      ],
+      "rationale": "Launches and controls isolated automation-enabled app sessions. Proposed scenario exercises this responsibility.",
+      "confidence": "medium",
+      "uncertainty": "Existing tooling files are a plausible starting point; precise witness support and edge cases need audit.",
+      "proposedAssertions": [
+        "A valid launch yields an isolated session and invalid launch parameters fail without controlling another app."
+      ],
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cli/scriv.mjs",
+        "start": 1,
+        "end": 94,
+        "fileSha256": "fb9506417ccdcaa98938323770390e6331e53bcd6d83a29d3cf7be07a01b01f8",
+        "spanSha256": "07be84ed2cd671b56e4764f5c70ca4faf44c7e0a599122fd01c9d5e14475d552",
+        "sha256": "53d3e4375a1f39f122b259ee1c63e2b04ca227f4ae0cac799128be4afe821b4d"
+      }
+    },
+    {
+      "rangeId": "d47bb8f89fce7281171e",
+      "scenarioIds": [
+        "wave81-3-s049"
+      ],
+      "rationale": "Attaches the optional session coverage observer. Proposed scenario exercises this responsibility.",
+      "confidence": "medium",
+      "uncertainty": "Existing tooling files are a plausible starting point; precise witness support and edge cases need audit.",
+      "proposedAssertions": [
+        "The observer attaches only when requested and its absence does not block launch."
+      ],
+      "featureId": "instrumentation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cli/scriv.mjs",
+        "start": 95,
+        "end": 98,
+        "fileSha256": "fb9506417ccdcaa98938323770390e6331e53bcd6d83a29d3cf7be07a01b01f8",
+        "spanSha256": "4c8732ec5194e97bdf0500c36ed272552979e58050b8b6fa10fce7c00c05ffb4",
+        "sha256": "9b149d5cd46ccb7ae5cb9c23228d8d54e20cf241e69784757dd152bc98298c2c"
+      }
+    },
+    {
+      "rangeId": "eacd33687d9a5ca7126f",
+      "scenarioIds": [
+        "wave81-3-s050"
+      ],
+      "rationale": "Completes session launch and routes automation commands. Proposed scenario exercises this responsibility.",
+      "confidence": "medium",
+      "uncertainty": "Existing tooling files are a plausible starting point; precise witness support and edge cases need audit.",
+      "proposedAssertions": [
+        "The command routes to the launched session after readiness."
+      ],
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cli/scriv.mjs",
+        "start": 99,
+        "end": 108,
+        "fileSha256": "fb9506417ccdcaa98938323770390e6331e53bcd6d83a29d3cf7be07a01b01f8",
+        "spanSha256": "5eafebdef75661d4c67af2064ea03fbc2392a9aada49cd91c41f8cebd924abb4",
+        "sha256": "833fb006832d8d4e591439127a0d3b4147277cd1a083964b5f5d547d1ba36ba7"
+      }
+    },
+    {
+      "rangeId": "ce4f7f2d54b9226ad5b2",
+      "scenarioIds": [
+        "audit-v82-ce4f7f2d54b9226ad5b2"
+      ],
+      "rationale": "Dispatches commands and records their completion or uncertainty. Proposed scenario exercises this responsibility. The replacement specifies the triggering fixture and observable result.",
+      "confidence": "medium",
+      "uncertainty": "Implementation, required public CLI fixture and control routes, execution, and unplanned variants remain unverified.",
+      "proposedAssertions": [
+        "Observation records returned success versus failure or uncertainty. A timeout does not prove that a mutation failed to occur."
+      ],
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cli/scriv.mjs",
+        "start": 109,
+        "end": 116,
+        "fileSha256": "fb9506417ccdcaa98938323770390e6331e53bcd6d83a29d3cf7be07a01b01f8",
+        "spanSha256": "ef9af8758eb271ae6c411594d99f3aa65d7c5731e003f2bbf81f032fb8bbd203",
+        "sha256": "a8d82a343a536c4d4128216e715bc9f5115c64f6995cf2e03389d3c5fcd2efd8"
+      }
+    },
+    {
+      "rangeId": "39c6d26917325d822857",
+      "scenarioIds": [
+        "audit-v82-39c6d26917325d822857"
+      ],
+      "rationale": "Waits for UI conditions and manages session close and persistent relaunch. Proposed scenario exercises this responsibility. The replacement specifies the triggering fixture and observable result.",
+      "confidence": "medium",
+      "uncertainty": "Implementation, required public CLI fixture and control routes, execution, and unplanned variants remain unverified.",
+      "proposedAssertions": [
+        "Live settled relaunch preserves the intended workspace, post-close relaunch is refused, and an unmet wait times out."
+      ],
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cli/scriv.mjs",
+        "start": 117,
+        "end": 150,
+        "fileSha256": "fb9506417ccdcaa98938323770390e6331e53bcd6d83a29d3cf7be07a01b01f8",
+        "spanSha256": "3b0a0b2a7dd7b9f161ecab8b4374f598e478daf8a094945cae65f7215b9068a0",
+        "sha256": "2ca222be1194f111fed41fee7b4a1a1ca847b47b30e58fa5a40c6a3a8a057e72"
+      }
+    },
+    {
+      "rangeId": "2fc73300d0e39b6f1bc8",
+      "scenarioIds": [
+        "audit-v82-2fc73300d0e39b6f1bc8"
+      ],
+      "rationale": "Finalizes optional coverage collection before terminating the session. Proposed scenario exercises this responsibility. The replacement specifies the triggering fixture and observable result.",
+      "confidence": "medium",
+      "uncertainty": "Implementation, required public CLI fixture and control routes, execution, and unplanned variants remain unverified.",
+      "proposedAssertions": [
+        "A coverage finish is attempted before termination. The owned process still terminates on finish failure and that failure is not described as a successful profile."
+      ],
+      "featureId": "instrumentation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cli/scriv.mjs",
+        "start": 151,
+        "end": 154,
+        "fileSha256": "fb9506417ccdcaa98938323770390e6331e53bcd6d83a29d3cf7be07a01b01f8",
+        "spanSha256": "f4de6bd8f4ce855aff0ecefd33e8f9c0a1cf9a3c02e7c1d033efa9780623f53d",
+        "sha256": "d99ffb3c1cda9ba8fa2bf433980906cdb2d3367fa8fc756d19e35e2a308f2fc0"
+      }
+    },
+    {
+      "rangeId": "fcd0bc7f104ecb5311f2",
+      "scenarioIds": [
+        "wave81-3-s054"
+      ],
+      "rationale": "Terminates app processes and exposes CLI command/journey entry points; help includes billing and generation as the sixth and seventh service scenarios. Proposed scenario exercises this responsibility.",
+      "confidence": "medium",
+      "uncertainty": "Existing tooling files are a plausible starting point; precise witness support and edge cases need audit.",
+      "proposedAssertions": [
+        "Help includes service journeys, invalid paths are rejected and owned processes are terminated."
+      ],
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cli/scriv.mjs",
+        "start": 155,
+        "end": 213,
+        "fileSha256": "fb9506417ccdcaa98938323770390e6331e53bcd6d83a29d3cf7be07a01b01f8",
+        "spanSha256": "76ccb6ce66b59d0a99894100d0db1273fbf1248a7a235a2f61948d0115a9cf27",
+        "sha256": "9f7e6579078b9c02dafd50e3cc4a558424e3576128c95634fa78d52b7321761e"
+      }
+    },
+    {
+      "rangeId": "c5dc8041ff99830395d8",
+      "scenarioIds": [
+        "wave81-1-S131"
+      ],
+      "rationale": "The proposed exercise targets fixed twelve-scenario selection and isolated service process execution, including billing and generation with explicit local runtime capture.",
+      "confidence": "medium",
+      "uncertainty": "Proposed association only; exact witness, branch coverage and assertions require source and test audit. Existing paths, when present, are candidate family files only.",
+      "proposedAssertions": [
+        "Only the requested fixed service journey is launched in an isolated process; unsupported names fail and process failures propagate."
+      ],
+      "featureId": "testing-infrastructure",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "scripts/run-service-journeys.mjs",
+        "start": 1,
+        "end": 56,
+        "fileSha256": "4ed0091f57675462d52e78608ab2a39997300a7a15db1a5ba25fd2174905875d",
+        "spanSha256": "b55601bb44fad9a55dd4fb1e2faf2dad6d008357b9b5264a1e4461e3cb5b8f80",
+        "sha256": "4ed0091f57675462d52e78608ab2a39997300a7a15db1a5ba25fd2174905875d"
+      }
+    }
+  ]
+}

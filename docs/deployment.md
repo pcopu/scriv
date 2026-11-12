@@ -1,5 +1,7 @@
 # Deployment-agent handoff
 
+> Testing update, 2026-11-09: legacy test suites and runners referenced below were removed. Prior results remain historical, not current commands or proof of replacement coverage. See [current CLI-only testing](testing/cli-only-tests.md).
+
 The Cloudflare backend is deployed at **https://scriv-api.muddy-recipe-a722.workers.dev** with D1, private R2, SQLite Durable Objects and restricted login email from `login@scriv.why-not.work`. See [deployment verification](verification/cloud-deployment-20261029.md) for the exact Worker version, resource read-backs and email/session acceptance outcome. Stripe and multiplayer acceptance are explicitly deferred for the current single-user delivery. This is not a claim of a native production release: the [final integration record](verification/final-integration-20261029.md) separates passed Linux/cloud checks, actual failures and unrun Mac/signing gates. The remaining runbook below is for later authorized acceptance and distribution.
 
 ## 1. Inputs to collect
@@ -27,18 +29,16 @@ npm ci
 npm --prefix cloud ci
 npm run check
 npm test
-npm --prefix cloud run test:load
-npx playwright install chromium
-npm run test:peer
+npm run test:services
+npm run test:e2e -- --list
 npm --prefix cloud run build
 ```
 
 On a Mac:
 
 ```sh
-swift test --package-path apps/mac
-bash scripts/build-mac.sh
-open build/Scriv.app
+bash scripts/verify-native.sh --native
+open build/catalyst/Build/Products/Release-maccatalyst/Scriv.app
 ```
 
 `cloud build` is a dry run. It does not provision infrastructure. Review native screenshots from the matching commit's GitHub Actions artifacts, then operate the app to check editing/dragging as well as its appearance. A screenshot cannot verify interactive behavior.
@@ -129,29 +129,32 @@ Make sure the hourly maintenance trigger is active. It expires auth/rate-limit s
 
 ## 8. Produce the public Mac build
 
-From the repository root on a Mac with a Developer ID identity in Keychain:
+The current application is UIKit with Mac Catalyst. The old AppKit target and
+its packaging/notarization scripts are retired; see the
+[retirement and recovery record](verification/appkit-retirement-20261109.md).
 
-```sh
-SCRIV_RELEASE=1 \
-SCRIV_UNIVERSAL=1 \
-SCRIV_CLOUD_URL=https://YOUR_API_ORIGIN \
-SCRIV_SIGN_IDENTITY='Developer ID Application: YOUR NAME (TEAMID)' \
-SCRIV_VERSION=0.1.0 \
-SCRIV_BUILD_NUMBER=1 \
-bash scripts/build-mac.sh
-```
+On a Mac with the required Xcode SDK, `bash scripts/build-catalyst.sh` creates a
+development candidate at
+`build/catalyst/Build/Products/Release-maccatalyst/Scriv.app`.
+`SCRIV_UNIVERSAL=1` requests both architectures. The GitHub workflow packages this
+Catalyst development app; it does not run native CLI acceptance or publish a
+release. An additional Apple Silicon build remains a separate CI runner choice.
 
-The script builds both Apple Silicon and Intel, creates a universal executable, embeds the resource bundle and icon, writes release metadata, signs with the hardened runtime, verifies the signature and creates `build/Scriv-macOS.zip`. Release mode refuses a missing HTTPS API origin or signing identity.
+For an authorized public release, use `scripts/archive-catalyst-release.sh` with
+the existing Apple team/signing setup, pinned public update key, new build and
+marketing versions, and existing notary Keychain profile. The script archives
+Catalyst, exports Developer ID signing, submits notarization, staples and checks
+the bundle. It does not publish. Follow [the update release policy](app-updates.md)
+and [signed update acceptance](signed-update-acceptance.md) for exact configuration
+and `updates/scripts/release.py` artifact/feed verification and publication.
+Do not substitute the development app for a signed release or weaken helper and
+Sparkle signature checks. Credentials remain outside the repository.
 
-Create a notary Keychain profile using `xcrun notarytool store-credentials` with the intended Apple team, then run:
-
-```sh
-SCRIV_NOTARY_PROFILE=scriv-notary bash scripts/notarize-mac.sh
-```
-
-The script submits the signed ZIP, waits for acceptance, staples and validates the ticket, checks Gatekeeper and rebuilds the final archive. Test that exact ZIP on a different Mac/account after downloading it through the intended distribution channel. Confirm `.scriv` file opening, invitation deep links, email login/cancellation, optional OAuth return, embedded images and local Codex launching.
-
-CI artifacts are development builds and ad-hoc signed. The required Intel Mac job compiles both architectures, produces a universal app and runs the native runtime checks on Intel. The manual workflow's `apple_silicon_runtime` input adds execution on an Apple Silicon runner when available. They are useful for review; the Developer ID/notarized universal archive is the public release artifact. Do not publish a development build with the loopback default as the production app.
+Test the exact authorized release on a different Mac/account after downloading
+it through the intended distribution channel. Confirm project opening, deep
+links, email sign-in/cancellation, embedded media, local runtime startup and
+signed update installation. Source retirement and CI packaging are not evidence
+that these acceptance checks passed.
 
 ## 9. Acceptance on two real Macs
 

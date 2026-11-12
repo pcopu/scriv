@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "oauth-session-isolation-v99",
+      "title": "Reuse OAuth identity and isolate session revocation",
+      "featureId": "oauth-session-isolation",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/oauth-journey.mjs"
+      ],
+      "plannedActions": [
+        "Finish original 24 HTTP steps and capture original revoked user/session and empty state/code/verified-identity rows. Add one isolated unrelated user/session fixture.",
+        "Start a fresh OAuth flow; observe the stored opaque-state hash, client state, fresh PKCE challenge and request-bounded ten-minute expiry without user/session writes.",
+        "Dispatch two identical callback fetches together. Require one redirect and one exact oauth_expired refusal, a single provider exchange, unchanged user/session rows and one correctly hashed two-minute exchange code.",
+        "Exchange the first code and proof once; require exactly one session for the existing user, exact token hash, requested device and default expiry.",
+        "Repeat with a second fresh state and proof for the same GitHub identity; after its callback dispatch two correct exchanges together and require one success and one invalid_code refusal with only one additional session.",
+        "List sessions using the second token and require exactly the two new active sessions. Attempt deletion of the unrelated session ID and require ok with complete declared auth state unchanged.",
+        "Read current identity, revoke the first session using the second, and check only the target timestamp changed. Require the first token refused and the second still able to list its sole session.",
+        "Log out the second session; require its token refused and only its revocation timestamp changed. Preserve original and unrelated rows, empty state/code/identity rows, 40 total HTTP requests, 14 simulated provider requests and zero denied outbound."
+      ],
+      "expectedOutcomes": [
+        "Two callback fetches for one real OAuth state are dispatched before either result is awaited; exactly one redirects with a code and one returns exact 400/oauth_expired. Only one synthetic provider exchange occurs. Separately, two correct code-exchange fetches are dispatched together; exactly one returns 200 and one exact 401/invalid_code, the exchange code disappears and exactly one new session is added. No particular internal transaction overlap is forced.",
+        "Two complete fresh OAuth starts and provider callbacks reuse the existing GitHub identity, preserve its complete user row including ID and original creation time, and create no new user or verified email identity. Both states and exchange codes have exact declared row shape, SHA-256 opaque-value hashes, independent PKCE binding and real default expiry fields. Each issued session stores only the returned bearer token hash in its token_hash field, links to the existing user, and uses the requested device name and default 30-day expiry.",
+        "The public session list contains exactly the two new active sessions and identifies the current session; it omits the original revoked session and an unrelated synthetic user session. Deleting the unrelated session ID reports ok with all declared auth rows unchanged. Deleting the sibling session changes only its revocation timestamp; the sibling token is refused while the current token still lists its own session. Logout changes only the current session revocation timestamp and its token is then refused. Original and unrelated user/session rows remain exact."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "oauth-session-isolation-v99-1",
+      "featureId": "oauth-session-isolation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 15,
+        "end": 18,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "357eb7d64f4ac6fc0dad809f171bf97800bf9284b6bdb602927a6a29c64073c8",
+        "sha256": "1c0a15605da869ccaf2ba2cea2e5b9a1f5be5e5904312e9f8090fafaea8b929e"
+      },
+      "scenarioIds": [
+        "oauth-session-isolation-v99"
+      ],
+      "rationale": "Fresh real OAuth starts persist the returned opaque state hash, independent client state, fresh proof challenge and default expiry; no random distribution or expiry rejection claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Synthetic local HTTP/provider; no forced internal overlap, arbitrary race/fault, live provider/native, expiry/configuration/profile-change or notification-delivery proof. Manual mapping is not measured execution.",
+      "proposedAssertions": [
+        "Real starts store exactly one new OAuth state with the SHA-256 of the returned opaque state, distinct client state, correct fresh PKCE challenge and ten-minute expiry bounded by actual request time; users/sessions remain exact and auth codes empty."
+      ]
+    },
+    {
+      "rangeId": "oauth-session-isolation-v99-2",
+      "featureId": "oauth-session-isolation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 27,
+        "end": 30,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "62b5263b655d9c04fdcbd5456a2b2be51a6f267b6508c64a8d6a18ef0eac8514",
+        "sha256": "59b317e7f5d213e8eb6f2688322cfdd557ac1bd39dccaf479f5d44ae6b8924d9"
+      },
+      "scenarioIds": [
+        "oauth-session-isolation-v99"
+      ],
+      "rationale": "Two callback requests for the same real state produce one successful consumption and one exact stale-state refusal, with one provider exchange; no forced internal concurrency or arbitrary race proof.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Synthetic local HTTP/provider; no forced internal overlap, arbitrary race/fault, live provider/native, expiry/configuration/profile-change or notification-delivery proof. Manual mapping is not measured execution.",
+      "proposedAssertions": [
+        "Two callback fetches for one real OAuth state are dispatched before either result is awaited; exactly one redirects with a code and one returns exact 400/oauth_expired. Only one synthetic provider exchange occurs. Separately, two correct code-exchange fetches are dispatched together; exactly one returns 200 and one exact 401/invalid_code, the exchange code disappears and exactly one new session is added. No particular internal transaction overlap is forced."
+      ]
+    },
+    {
+      "rangeId": "oauth-session-isolation-v99-3",
+      "featureId": "oauth-session-isolation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 50,
+        "end": 53,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "5ebec9cbaede493c34fd947585560c047394ed31b75e5712c2c11c9f03f71768",
+        "sha256": "4b050c14143666379f9e8bb6ad2175cabed2dc9c1b69c48bbec52db823f14ece"
+      },
+      "scenarioIds": [
+        "oauth-session-isolation-v99"
+      ],
+      "rationale": "The existing GitHub ID conflict retains the original user ID/creation time and unchanged profile without duplicate user creation. Changed profile-field updates are not exercised.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Synthetic local HTTP/provider; no forced internal overlap, arbitrary race/fault, live provider/native, expiry/configuration/profile-change or notification-delivery proof. Manual mapping is not measured execution.",
+      "proposedAssertions": [
+        "Repeated successful callbacks for the same simulated GitHub account preserve every user row including the preexisting ID/creation time, do not create a second user, and do not create a verified email identity. The provider profile is deliberately unchanged; profile-field update behavior is not tested."
+      ]
+    },
+    {
+      "rangeId": "oauth-session-isolation-v99-4",
+      "featureId": "oauth-session-isolation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 54,
+        "end": 58,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "03afcaaeb8221160ad3f99e5bd17545c35dbfa34ed921f325f11c49c263ae79c",
+        "sha256": "bc80e349419740734776ce0d84f0b5050155fa5f262847b042cb4d79a643a362"
+      },
+      "scenarioIds": [
+        "oauth-session-isolation-v99"
+      ],
+      "rationale": "Successful callbacks insert one correctly hashed exchange code with the existing user and fresh proof, then return that opaque code and client state.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Synthetic local HTTP/provider; no forced internal overlap, arbitrary race/fault, live provider/native, expiry/configuration/profile-change or notification-delivery proof. Manual mapping is not measured execution.",
+      "proposedAssertions": [
+        "Each successful callback consumes its OAuth state and stores exactly one two-minute exchange-code row containing the SHA-256 of the returned code, the existing user ID and the fresh proof challenge. No sessions are created until exchange."
+      ]
+    },
+    {
+      "rangeId": "oauth-session-isolation-v99-5",
+      "featureId": "oauth-session-isolation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 65,
+        "end": 67,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "d211bcdd972955d4f17f4de2f15626b3054a4d257a65506abaca1a7fa6cf794f",
+        "sha256": "ca52f7250fd0eb10bd10a626c45176b61273142d9e799cd55ce351060bfa640e"
+      },
+      "scenarioIds": [
+        "oauth-session-isolation-v99"
+      ],
+      "rationale": "Two valid exchanges of one real code yield exactly one session and one exact invalid-code refusal; the code row is removed. Storage faults and particular internal interleavings are not tested.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Synthetic local HTTP/provider; no forced internal overlap, arbitrary race/fault, live provider/native, expiry/configuration/profile-change or notification-delivery proof. Manual mapping is not measured execution.",
+      "proposedAssertions": [
+        "Two callback fetches for one real OAuth state are dispatched before either result is awaited; exactly one redirects with a code and one returns exact 400/oauth_expired. Only one synthetic provider exchange occurs. Separately, two correct code-exchange fetches are dispatched together; exactly one returns 200 and one exact 401/invalid_code, the exchange code disappears and exactly one new session is added. No particular internal transaction overlap is forced."
+      ]
+    },
+    {
+      "rangeId": "oauth-session-isolation-v99-6",
+      "featureId": "oauth-session-isolation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 68,
+        "end": 71,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "5527fa637b401210acacadb636488ea8b603983c9a24dfdd8d01cc0a83cac9cb",
+        "sha256": "745eec5b66034bb433d4f7ee4ce4d7e34b9c05242e773801f610747baa42169f"
+      },
+      "scenarioIds": [
+        "oauth-session-isolation-v99"
+      ],
+      "rationale": "New sessions independently reproduce the returned token hash and requested device name with the default duration. Other duration settings and device truncation are not claimed.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Synthetic local HTTP/provider; no forced internal overlap, arbitrary race/fault, live provider/native, expiry/configuration/profile-change or notification-delivery proof. Manual mapping is not measured execution.",
+      "proposedAssertions": [
+        "Each successful exchange adds exactly one session with SHA-256 of its returned 64-character bearer, unique session ID, existing user ID, requested device name, request-bounded creation timestamp, default 30-day expiry and null revocation. Existing sessions remain byte-for-byte equal."
+      ]
+    },
+    {
+      "rangeId": "oauth-session-isolation-v99-7",
+      "featureId": "oauth-session-isolation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 72,
+        "end": 73,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "80852e0e87f9736f132e6129e96dad01a913babdffcec2b4a510065db153e630",
+        "sha256": "af012ced647769e4fe8cb467b7469958a0bfdbc7fdb5a7d717165797c08e8e7f"
+      },
+      "scenarioIds": [
+        "oauth-session-isolation-v99"
+      ],
+      "rationale": "Successful exchange returns the existing user and the issued token/expiry, agreeing with complete owned-D1 observations.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Synthetic local HTTP/provider; no forced internal overlap, arbitrary race/fault, live provider/native, expiry/configuration/profile-change or notification-delivery proof. Manual mapping is not measured execution.",
+      "proposedAssertions": [
+        "Each successful exchange adds exactly one session with SHA-256 of its returned 64-character bearer, unique session ID, existing user ID, requested device name, request-bounded creation timestamp, default 30-day expiry and null revocation. Existing sessions remain byte-for-byte equal."
+      ]
+    },
+    {
+      "rangeId": "oauth-session-isolation-v99-8",
+      "featureId": "oauth-session-isolation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 80,
+        "end": 83,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "32f8e21843e10d1fc8d5166d19ed70712298cce0857ec5ca569969a9f136e32a",
+        "sha256": "6ac017592eb9916296f84c0b6bad520ac366809d7f6f8a87c186c30afb56062d"
+      },
+      "scenarioIds": [
+        "oauth-session-isolation-v99"
+      ],
+      "rationale": "Two same-user active sessions are listed without the original revoked or unrelated-user session; currentSessionId and post-revocation list are exact.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Synthetic local HTTP/provider; no forced internal overlap, arbitrary race/fault, live provider/native, expiry/configuration/profile-change or notification-delivery proof. Manual mapping is not measured execution.",
+      "proposedAssertions": [
+        "Public session reads return exactly the two new active sessions and the correct current ID, omitting the original revoked and unrelated active session. After sibling revocation only the current session remains."
+      ]
+    },
+    {
+      "rangeId": "oauth-session-isolation-v99-9",
+      "featureId": "oauth-session-isolation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 85,
+        "end": 89,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "afcc5177bb55f32b7f6d3f3911a0ab6941230c9bef37d75f74c497bd3bd189cf",
+        "sha256": "59ecab0b9f5876f918f75c6f60fa81120d638cd08272d65d3a8b72a53a778dab"
+      },
+      "scenarioIds": [
+        "oauth-session-isolation-v99"
+      ],
+      "rationale": "The same authenticated DELETE route cannot change an existing foreign-user session, but does revoke its own sibling session. Notification delivery itself is not asserted.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Synthetic local HTTP/provider; no forced internal overlap, arbitrary race/fault, live provider/native, expiry/configuration/profile-change or notification-delivery proof. Manual mapping is not measured execution.",
+      "proposedAssertions": [
+        "The public session list contains exactly the two new active sessions and identifies the current session; it omits the original revoked session and an unrelated synthetic user session. Deleting the unrelated session ID reports ok with all declared auth rows unchanged. Deleting the sibling session changes only its revocation timestamp; the sibling token is refused while the current token still lists its own session. Logout changes only the current session revocation timestamp and its token is then refused. Original and unrelated user/session rows remain exact."
+      ]
+    },
+    {
+      "rangeId": "oauth-session-isolation-v99-10",
+      "featureId": "oauth-session-isolation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 75,
+        "end": 78,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "74a46947559f127ddf1fc0cfa08afd07d56001d41e8f6f71d6a32bca3a335898",
+        "sha256": "6133c51be5597cb7e00569ae7cd564161eb6eb7dff47653b9a3dd2151c9b7594"
+      },
+      "scenarioIds": [
+        "oauth-session-isolation-v99"
+      ],
+      "rationale": "Public logout revokes only the authenticated current session and subsequent identity authentication fails. Notification delivery is outside the stated oracle.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Synthetic local HTTP/provider; no forced internal overlap, arbitrary race/fault, live provider/native, expiry/configuration/profile-change or notification-delivery proof. Manual mapping is not measured execution.",
+      "proposedAssertions": [
+        "Logout of the remaining current session changes only its revocation timestamp within real request time. Its next identity read is exact 401/session_expired. Prior revoked and unrelated sessions stay unchanged."
+      ]
+    },
+    {
+      "rangeId": "oauth-session-isolation-v99-11",
+      "featureId": "oauth-session-isolation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 6,
+        "end": 10,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "6fd0dd6d077f71f9b5d0fa819de210897958b39f7cc9696b4a595a6df6318956",
+        "sha256": "c6d23def340398a64725363c16742a3f4e94c8696ec68c59f6e7e786c434bc84"
+      },
+      "scenarioIds": [
+        "oauth-session-isolation-v99"
+      ],
+      "rationale": "Correct issued bearer authenticates the existing user until its own revocation; revoking a sibling does not revoke the current bearer. Other header/expiry inputs are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Synthetic local HTTP/provider; no forced internal overlap, arbitrary race/fault, live provider/native, expiry/configuration/profile-change or notification-delivery proof. Manual mapping is not measured execution.",
+      "proposedAssertions": [
+        "The current OAuth bearer successfully reads the existing user and empty teams/projects. Revoking the sibling session makes the sibling bearer fail with exact 401/session_expired while the current bearer still lists its own session. After current logout the current bearer is also refused."
+      ]
+    }
+  ]
+}

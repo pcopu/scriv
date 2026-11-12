@@ -1,5 +1,7 @@
 # Scriv Cloud
 
+Current tests enter through `tracer app -- test services` from the repository root. Legacy Vitest, Node unit and Python unit suites are removed; historical results below do not establish full replacement coverage. See [CLI-only testing](../docs/testing/cli-only-tests.md).
+
 Cloudflare Workers API for the native Scriv Mac app. The service uses the existing
 Workers Paid plan, D1, SQLite Durable Objects and a private R2 bucket. A separate
 Redis service is not required: project Durable Objects provide the serialized
@@ -21,7 +23,6 @@ Node 22.14 or later is required. Dependencies and their lockfile are pinned.
 npm ci
 npm run check
 npm test
-npm run test:load
 npm run build
 ```
 

@@ -1,0 +1,629 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "package-fixture-invariants-v86",
+      "title": "Stage literal image package",
+      "featureId": "cli-automation",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/package-image-invariants.mjs"
+      ],
+      "plannedActions": [
+        "Prepared contract only: native execution NOT RUN in this lane. Use the real isolated automation-enabled Catalyst app on macOS; fresh process and synthetic workspace per scenario. No app fallback, production user data, provider calls or saved grants.",
+        "ScrivSession.launch performs capabilities handshake and validates run/session/root. Every command carries a new transport id; session.command emits {...parameters,id,command}. Never blindly repeat timed-out mutations.",
+        "Every waitFor polls snapshot every 50ms up to 15s. reveal performs up to 8 attempts, each finding exactly one target, conditionally scrolls its deepest hittable ancestor, rejects covered controls, and requires enabled+hittable before activation.",
+        "tab(name): snapshot until ready workspace-tabs; select {target:workspace-tabs,index:segments.indexOf(name)} only if not selected; snapshot until selected ready. Open(project): activate workspace-project; reveal Find a project; text {target:search.path,text:project.title}; snapshot until exact title and scene count; activate enabled Open project; snapshot until workspace-project title+hittable; loaded-project and assert exact project id.",
+        "waitForSavedProject polls persisted-projects every 75ms up to 15s and retries only the explicit initial-publication-pending read error; no mutation retry. saved sorts the entire persisted-projects array by id.",
+        "No --with-prompts or --with-semantic-prompts in package scenario. Do not retry denied character-aliases AppKit fallback, introduce native alert actions, use private dispatch, run a provider, widen observers into review modal, or infer physical input/retirement credit.",
+        "Existing validatePackageImageFixture() compares the whole Swift literal to independent JS expected input before launching the native journey; source-reconciliation assertion only.",
+        "Launch via tracer app -- test --scenario journeys/package-image-invariants --app /authorized/ScrivAutomation.app (not executed here).",
+        "Launch handshake capabilities, then journey capabilities; require declared commands and cloudIsolation.network=disabled.",
+        "tab(Script); key {input:s,modifiers:[command]}; poll persisted-projects for YAM MAN; capture sample and loaded-project.",
+        "In this exact order call stage-package-fixture with {}, {fixture:null}, {fixture:../image-inspector-invariants-v1}, {fixture:image-inspector-invariants-v1,path:/tmp/other.scriv}, {fixture:image-inspector-invariants-v1,text:{}}, {fixture:image-inspector-invariants-v1,projectID:sample.id}; after EACH require fixed error then persisted-projects=[sample] and loaded-project=initial.",
+        "stage-package-fixture {fixture:image-inspector-invariants-v1}; assert exact result keys/token/title and UUID distinct from sample; construct independent packageImageFixture() replacing id only. loaded-project unchanged; persisted-projects exactly sorted [sample,fixture]. Repeat same stage command ONCE expecting rejection; persisted-projects remains exact.",
+        "Open(fixture); assert opened.project equals complete independent fixture; tab(Script); Invariant: persisted-projects equals sorted [sample,current]; loaded-project.project equals current; presented-alerts equals []; package journey also requires absent entry characterLinks.",
+        "seek(1500,Foreground,2): reveal scene-playback-position, require maximum=3000; slider {target:path,value:1500}; snapshot until exact slider value and Foreground · Version 2.",
+        "Gallery: activate preview-version; snapshot until image-picker-use-selection plus exactly two hittable labels containing newline Version; assert latest-first [2,1] and no Not on this Mac. Activate enabled Cancel; snapshot until picker disappears; invariant.",
+        "selectVersion(foreground,1): loaded-project and immutable Date-bit precheck; Gallery; activate cell whose label contains newline Version 1; activate image-picker-use-selection; snapshot until picker absent and preview-version hittable; poll saved project until revision increases; require exactly +1, finite nondecreasing modifiedAt and complete stable model differs ONLY foreground.imageId=v1; invariant; loaded-project and unchanged project/image creation Date bits. Poll local-image-evidence up to 60 times at 100ms: on EVERY observation require project id, 0 jobs, not scanning, both independently expected hashes, 73 bytes, decoded=true, 2x2; stop only when v1 visiblePreviewCount>0, otherwise fail.",
+        "Repeat full selectVersion(foreground,2), including Gallery, mutation and date assertions, invariant and bounded local-image-evidence poll for visible v2.",
+        "seek(500,Background,1); repeat full selectVersion(background,2), including all assertions and bounded visible-v2 poll.",
+        "In order seek(500,Background,2), invariant; seek(1500,Foreground,2), invariant; seek(2500,Background,2), invariant. Require exactly two cues with authored durations [3000,1000].",
+        "loaded-project before; Open(sample); Open(current) equals complete before including Date bits; invariant. Require completed case list exactly selectedCases. Finally close session even on failure."
+      ],
+      "expectedOutcomes": [
+        "Six invalid payloads reject with fixed error while all saved packages and loaded observation remain unchanged.",
+        "Stage returns exact keys/token/title and a new UUID; full independently specified package is persisted; staging preserves loaded model; repeated stage rejects without extra package; browser open returns the exact complete expected project.",
+        "Existing portable preflight compares the parsed Swift input literal with the independently defined JS fixture, including its fixed template-id marker. This is source reconciliation, not a native UUID-value assertion."
+      ]
+    },
+    {
+      "id": "package-fixture-review-v86",
+      "title": "Stage seeded review package",
+      "featureId": "cli-automation",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/character-image-review.mjs"
+      ],
+      "plannedActions": [
+        "Prepared contract only: native execution NOT RUN in this lane. Use the real isolated automation-enabled Catalyst app on macOS; fresh process and synthetic workspace per scenario. No app fallback, production user data, provider calls or saved grants.",
+        "ScrivSession.launch performs capabilities handshake and validates run/session/root. Every command carries a new transport id; session.command emits {...parameters,id,command}. Never blindly repeat timed-out mutations.",
+        "Every waitFor polls snapshot every 50ms up to 15s. reveal performs up to 8 attempts, each finding exactly one target, conditionally scrolls its deepest hittable ancestor, rejects covered controls, and requires enabled+hittable before activation.",
+        "tab(name): snapshot until ready workspace-tabs; select {target:workspace-tabs,index:segments.indexOf(name)} only if not selected; snapshot until selected ready. Open(project): activate workspace-project; reveal Find a project; text {target:search.path,text:project.title}; snapshot until exact title and scene count; activate enabled Open project; snapshot until workspace-project title+hittable; loaded-project and assert exact project id.",
+        "waitForSavedProject polls persisted-projects every 75ms up to 15s and retries only the explicit initial-publication-pending read error; no mutation retry. saved sorts the entire persisted-projects array by id.",
+        "No --with-prompts or --with-semantic-prompts in package scenario. Do not retry denied character-aliases AppKit fallback, introduce native alert actions, use private dispatch, run a provider, widen observers into review modal, or infer physical input/retirement credit.",
+        "Existing validateCharacterReviewFixture() compares the whole Swift review literal to independent JS expected input before launching the native journey; source-reconciliation assertion only.",
+        "Launch via tracer app -- test --scenario journeys/character-image-review --app /authorized/ScrivAutomation.app (not executed here).",
+        "Launch handshake capabilities, then journey capabilities; require declared commands and cloudIsolation.network=disabled.",
+        "tab(Script); key {input:s,modifiers:[command]}; poll persisted-projects for YAM MAN; capture sample and loaded-project.",
+        "stage-package-fixture {fixture:character-review-seeded-v1}; exact keys/token/title and UUID distinct from sample; independently construct characterReviewFixture(), replace id only; loaded-project unchanged; persisted-projects exactly [sample,current]. Repeat same stage ONCE requiring fixed error; persisted-projects and loaded-project unchanged. Open(current); initialLoaded.project equals complete independent current; loadedInvariant.",
+        "loadedInvariant = persisted-projects exact sorted [sample,current]; loaded-project.project exact current; project/image created Date bits equal initialLoaded; presented-alerts=[]; return entire loaded observation.",
+        "verifySourceImagePixels: loadedInvariant before; tab(Script); for (0,v1) then (1500,v2): reveal scene-playback-position; slider to time; poll local-image-evidence at most 60 times, 100ms apart. Each sample requires correct project, 0 jobs, not scanning, exactly two assets with independently expected hashes, 73 bytes, decoded=true, 2x2. Break only on selected asset visiblePreviewCount>0; require visible, then loadedInvariant exactly equals before.",
+        "loadedInvariant before; tab(Characters); activate enabled Review 1; snapshot candidate1 reason, 3 to review · Background · v1, disabled character-review-save. activate disabled save path and require Target is disabled. persisted-projects exact; activate Skip for now; snapshot candidate2/count2/disabled save; persisted-projects exact; activate Done; snapshot no review-save and hittable workspace-tabs; loadedInvariant equals before.",
+        "Reopen Review 1, snapshot candidate1/count3/disabled save; persisted-projects exact; Done and loadedInvariant equals same before.",
+        "Open review candidate1/count3 again; activate Synthetic Avery label excluding ribbon; snapshot save enabled; persisted-projects exact; activate character-review-save; snapshot candidate2/count2/disabled save; poll revision and require exactly +1, finite nondecreasing modifiedAt; complete stable model delta only confirmed annotation1.characterID, decision, image.characterIds and automatic character portraitImageId/portraitRegion with fixed half-image rectangle. Successor image unchanged and persisted-projects exact. Done; loadedInvariant; repeat entire verifySourceImagePixels including both times/polls.",
+        "Open review candidate2/count2; activate character-review-ignore; snapshot candidate3/count1/disabled save; poll revision +1 and compare complete stable model with ONLY annotation2.decision=ignored; successor and persisted-projects exact. Done; loadedInvariant; repeat entire verifySourceImagePixels including both times/polls.",
+        "loadedInvariant before; open review candidate3/count1; Skip for now; snapshot Nothing else to review and Skipped candidates remain in Characters, ready when you are.; persisted-projects exact; Done; loadedInvariant equals before; Open(sample); Open(current) equals entire before; open review candidate3/count1; persisted-projects exact; Done; loadedInvariant equals before. Require exact six completed cases; finally close session even on failure."
+      ],
+      "expectedOutcomes": [
+        "Seeded staging preserves current loaded state, persists the complete independently expected fixture, rejects restaging unchanged, and production browser opening yields the exact full expected project.",
+        "For both fixed image ids outside the review modal, actual file digest/73-byte/decoded-2x2 observations match independent constants and bounded polling must find the chosen visible Script preview; complete loaded observation remains unchanged.",
+        "Existing portable preflight compares the parsed Swift review input with independently constructed characterReviewFixture, including its fixed template-id marker. This is source reconciliation, not provider/native execution."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "package-fixture-invariants-v86-01",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 9,
+        "end": 10,
+        "sha256": "2c848fb29bd8c6db0bce6c5c742ad5c04816b1acc277668d752ea51430ecf8c8",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "d10ab7cbe49e5578a21e8aa7c4cbe4687ca22fe5d53e887cebb8f1fd5a3db81f"
+      },
+      "scenarioIds": [
+        "package-fixture-invariants-v86"
+      ],
+      "rationale": "Fixed error description observed for six explicitly enumerated invalid request shapes; no filesystem or gate-failure distinction claimed. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Six invalid payloads reject with fixed error while all saved packages and loaded observation remain unchanged."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-invariants-v86-02",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 40,
+        "end": 40,
+        "sha256": "0f9fbfd95131adb62ce5386538de1764ee75a661ec867d6a60d215075b270f7d",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "cc33f502dadc236d26e34b42e44f3b95e8b9115b9efe95962df592b13cbee116"
+      },
+      "scenarioIds": [
+        "package-fixture-invariants-v86"
+      ],
+      "rationale": "Stage catch translates those request-validation failures only; not evidence that internal filesystem failures were induced. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Six invalid payloads reject with fixed error while all saved packages and loaded observation remain unchanged."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-invariants-v86-03",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 12,
+        "end": 12,
+        "sha256": "e6b1754ce21f2cb187e452f5f8e989152cade2e02153e35587f3172cb0e02c06",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "ed8609889cbf5c1f2a6b32fe4e23855a6512d0f3af9c07e016858f7ddb8d12db"
+      },
+      "scenarioIds": [
+        "package-fixture-invariants-v86"
+      ],
+      "rationale": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Stage returns exact keys/token/title and a new UUID; full independently specified package is persisted; staging preserves loaded model; repeated stage rejects without extra package; browser open returns the exact complete expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-invariants-v86-04",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 14,
+        "end": 14,
+        "sha256": "0413462ca02718455b2059156ab5d4e3e7de29002b9b402a206a5c94f5e8c28e",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "d89ab8e0b898c0fb8f5a56da288dcd797d402fc63197d4b0ad58c02931cccebd"
+      },
+      "scenarioIds": [
+        "package-fixture-invariants-v86"
+      ],
+      "rationale": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Stage returns exact keys/token/title and a new UUID; full independently specified package is persisted; staging preserves loaded model; repeated stage rejects without extra package; browser open returns the exact complete expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-invariants-v86-05",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 104,
+        "end": 104,
+        "sha256": "697d8708666c361dfd43b2b8e2064fb29858837142f5dab8352fcf92fa299a24",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "6fea5539d4e4e469b4452d4a39a3dab712c1762aee9101ec5e5d28c2593e4d9b"
+      },
+      "scenarioIds": [
+        "package-fixture-invariants-v86"
+      ],
+      "rationale": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). This branch is fixture==token only; alternate branch separately covered by seeded contract. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Stage returns exact keys/token/title and a new UUID; full independently specified package is persisted; staging preserves loaded model; repeated stage rejects without extra package; browser open returns the exact complete expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-invariants-v86-06",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 181,
+        "end": 183,
+        "sha256": "53163ed68395bc902b609d8ee62648383d269825376b07760f17e0cb340700a8",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "0fb1f7bcaa694d44b10467ee5717ce38e811a53db5bba990ecacdda8b1c1be2d"
+      },
+      "scenarioIds": [
+        "package-fixture-invariants-v86"
+      ],
+      "rationale": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Semantic group: literal envelope and schema. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Stage returns exact keys/token/title and a new UUID; full independently specified package is persisted; staging preserves loaded model; repeated stage rejects without extra package; browser open returns the exact complete expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-invariants-v86-07",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 185,
+        "end": 195,
+        "sha256": "5695b0d78dfee1e133d89fc3b83d2c506373635cf2f25ee2381c99ad24b00157",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "d0d85682c1a5119fe51286b1c058500bc51508b332eb641b5ec5df73d5cefc41"
+      },
+      "scenarioIds": [
+        "package-fixture-invariants-v86"
+      ],
+      "rationale": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Semantic group: title, fixed dates/revision and scene. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Stage returns exact keys/token/title and a new UUID; full independently specified package is persisted; staging preserves loaded model; repeated stage rejects without extra package; browser open returns the exact complete expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-invariants-v86-08",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 196,
+        "end": 246,
+        "sha256": "22afd9888ec35c074a801d64b499d737821e017905705a5df7654df1859499a9",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "09f4807ced50ce585bcce8d1a7e731cdcf4d493aad4a552d29c4c0b99a878201"
+      },
+      "scenarioIds": [
+        "package-fixture-invariants-v86"
+      ],
+      "rationale": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Semantic group: entries, exact word timings, absent links and empty characters. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Stage returns exact keys/token/title and a new UUID; full independently specified package is persisted; staging preserves loaded model; repeated stage rejects without extra package; browser open returns the exact complete expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-invariants-v86-09",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 247,
+        "end": 272,
+        "sha256": "c3b1c1e1d4d3f594a2839db43cbac07bdeb28c85e0c42bb5ccb5cdfa73b37449",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "814670ea70040fa971e2e7bf78c7acce4c1454b0560abd1b80dc75b643b97195"
+      },
+      "scenarioIds": [
+        "package-fixture-invariants-v86"
+      ],
+      "rationale": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Semantic group: two versioned image records, exact prompts and absent successor generationPrompt. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Stage returns exact keys/token/title and a new UUID; full independently specified package is persisted; staging preserves loaded model; repeated stage rejects without extra package; browser open returns the exact complete expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-invariants-v86-10",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 273,
+        "end": 307,
+        "sha256": "197e4b842cc6025bf8f2df97528f0fa897eb2232df4ef55c3b1d13a3ce4b3353",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "c785eb1bd088d42cdc94abd3bb59eb959ad90593225dad4b1fe55afeb63d46e9"
+      },
+      "scenarioIds": [
+        "package-fixture-invariants-v86"
+      ],
+      "rationale": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Semantic group: anchored overlapping cues and empty audio collections. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Stage returns exact keys/token/title and a new UUID; full independently specified package is persisted; staging preserves loaded model; repeated stage rejects without extra package; browser open returns the exact complete expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-invariants-v86-11",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 184,
+        "end": 184,
+        "sha256": "912101355c21aa69b05648b4cbe38c27f859d52be59ae3b310badc220585fe39",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "258ae1282bdf840d7ff5270c53b162dd85172f1c514e1bd2afa6b8dfbde3dc3a"
+      },
+      "scenarioIds": [
+        "package-fixture-invariants-v86"
+      ],
+      "rationale": "The literal template marker is checked only by existing source-reconciliation preflight; native stage substitutes a generated UUID whose precise value is not independently predicted. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Existing portable preflight compares the parsed Swift input literal with the independently defined JS fixture, including its fixed template-id marker. This is source reconciliation, not a native UUID-value assertion."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-01",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 15,
+        "end": 16,
+        "sha256": "2aa02a982103d5419f1ec170b037af0360943b9d1bedd7d9acdce219b0ad22e5",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "aea23fe127af90947f28ad69844f87951ccd1a01e6714f596d6d02a406ddd009"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Independent JavaScript characterReviewFixture builds from a literal JS package plus explicit synthetic character/analysis definitions, never from Swift JSON or observed model. Full persisted/loaded equality checks the seeded literal before any review mutation. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Seeded staging preserves current loaded state, persists the complete independently expected fixture, rejects restaging unchanged, and production browser opening yields the exact full expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-02",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 309,
+        "end": 311,
+        "sha256": "fad16cc44acb0fc8c561cee26ac01e216282b304621f9588900f9dcba202e837",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "9791258b4b6c4a00a963da84619fe4fe7e8ab295648f3fb8a840ec4e3b31f923"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Independent JavaScript characterReviewFixture builds from a literal JS package plus explicit synthetic character/analysis definitions, never from Swift JSON or observed model. Full persisted/loaded equality checks the seeded literal before any review mutation. Semantic group: literal envelope and schema. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Seeded staging preserves current loaded state, persists the complete independently expected fixture, rejects restaging unchanged, and production browser opening yields the exact full expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-03",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 313,
+        "end": 323,
+        "sha256": "5e416ad86e343fc7ed9d22d8cc9ce80590b75d7716a09a814ed6fce8f79bd7ee",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "73870e06b0ef50cd6515c49c6695b407b8a34e8d4a298171f76174a9974fe22c"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Independent JavaScript characterReviewFixture builds from a literal JS package plus explicit synthetic character/analysis definitions, never from Swift JSON or observed model. Full persisted/loaded equality checks the seeded literal before any review mutation. Semantic group: title, fixed dates/revision and scene. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Seeded staging preserves current loaded state, persists the complete independently expected fixture, rejects restaging unchanged, and production browser opening yields the exact full expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-04",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 324,
+        "end": 373,
+        "sha256": "f5cc987f6210bfb526061d6cc5997987cebecf4a777338131c7d7bf3df9a5d8f",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "66d455542fa8037599a0947e7a1b65f26510b050f95040934d785785f136e268"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Independent JavaScript characterReviewFixture builds from a literal JS package plus explicit synthetic character/analysis definitions, never from Swift JSON or observed model. Full persisted/loaded equality checks the seeded literal before any review mutation. Semantic group: literal dialogue entries and exact timings. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Seeded staging preserves current loaded state, persists the complete independently expected fixture, rejects restaging unchanged, and production browser opening yields the exact full expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-05",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 374,
+        "end": 383,
+        "sha256": "f2906ea19055b88b29688e4a735073ffe12ade1b7c4727d3a6ebd5f10142e079",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "ec4d4f4777765b3ce7dc9dbe6ffee3a776dbbe5a8d8dabdad8e20568fb0d50a3"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Independent JavaScript characterReviewFixture builds from a literal JS package plus explicit synthetic character/analysis definitions, never from Swift JSON or observed model. Full persisted/loaded equality checks the seeded literal before any review mutation. Semantic group: existing synthetic character. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Seeded staging preserves current loaded state, persists the complete independently expected fixture, rejects restaging unchanged, and production browser opening yields the exact full expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-06",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 384,
+        "end": 395,
+        "sha256": "0cbcaef3c17f4647f0b7db851bf62ae99f824a2193551a6e063e32908da1af38",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "9a839f7ee00c52e44eedaa003808a880f628f017027b43b1d6070b5ae05d6e5a"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Independent JavaScript characterReviewFixture builds from a literal JS package plus explicit synthetic character/analysis definitions, never from Swift JSON or observed model. Full persisted/loaded equality checks the seeded literal before any review mutation. Semantic group: base image metadata and prompts. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Seeded staging preserves current loaded state, persists the complete independently expected fixture, rejects restaging unchanged, and production browser opening yields the exact full expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-07",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 396,
+        "end": 463,
+        "sha256": "b83a77964ba7bb3fe83dfdac5d187da06ee6e0d97e77433e0fef40f5bc77c05e",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "cea30644e1702b1534a06da5df0afdfde44f44f4b51d056bc3abeab4cbedd49b"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Independent JavaScript characterReviewFixture builds from a literal JS package plus explicit synthetic character/analysis definitions, never from Swift JSON or observed model. Full persisted/loaded equality checks the seeded literal before any review mutation. Semantic group: three seeded annotations with exact regions, provenance and needsReview decisions. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Seeded staging preserves current loaded state, persists the complete independently expected fixture, rejects restaging unchanged, and production browser opening yields the exact full expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-08",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 464,
+        "end": 476,
+        "sha256": "f634ba87e3c59baeeb946c29a9279a2893975a7b0439cdff85a700d374a56280",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "e89a12aebbc2f227ae3c59be85a2ff8f37e55d8a237c102f54ecd48009a34043"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Independent JavaScript characterReviewFixture builds from a literal JS package plus explicit synthetic character/analysis definitions, never from Swift JSON or observed model. Full persisted/loaded equality checks the seeded literal before any review mutation. Semantic group: untouched successor image lineage. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Seeded staging preserves current loaded state, persists the complete independently expected fixture, rejects restaging unchanged, and production browser opening yields the exact full expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-09",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 477,
+        "end": 511,
+        "sha256": "197e4b842cc6025bf8f2df97528f0fa897eb2232df4ef55c3b1d13a3ce4b3353",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "c785eb1bd088d42cdc94abd3bb59eb959ad90593225dad4b1fe55afeb63d46e9"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Independent JavaScript characterReviewFixture builds from a literal JS package plus explicit synthetic character/analysis definitions, never from Swift JSON or observed model. Full persisted/loaded equality checks the seeded literal before any review mutation. Semantic group: anchored cues and empty audio collections. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Seeded staging preserves current loaded state, persists the complete independently expected fixture, rejects restaging unchanged, and production browser opening yields the exact full expected project."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-10",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 105,
+        "end": 105,
+        "sha256": "9cbae8b037c7fb04ea8a6e2c2bc6c42078c9bb101287d66463322cd58986a65c",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "3a3b578803e5ec617d396fd1a8bad30ee4002a7794e0a67984f780d5c325a293"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Positive fixed coral/blue fixture supply and allowlist membership only. Independent JS SHA256 constants are compared with actual run-owned file digests, byte counts, ImageIO decode/dimensions and visible Script preview evidence; never arbitrary-token rejection, malformed-base64 failure or exhaustive matching negatives. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "For both fixed image ids outside the review modal, actual file digest/73-byte/decoded-2x2 observations match independent constants and bounded polling must find the chosen visible Script preview; complete loaded observation remains unchanged."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-11",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageFixtures.swift",
+        "start": 8,
+        "end": 12,
+        "sha256": "19280f4fa67dde80e637e83ea8d97a4b49dd90278ceb95e825d1d7cfecca9285",
+        "fileSha256": "7bd9faea77cd37f0d4e027ddd1635deac2b01fbf31d1a4d9d37cf37e2f27ba5a",
+        "spanSha256": "c3c9acd58795fb2ef93716b0236e711d5d34652717a04bebc4a95d417f75c382"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Positive fixed coral/blue fixture supply and allowlist membership only. Independent JS SHA256 constants are compared with actual run-owned file digests, byte counts, ImageIO decode/dimensions and visible Script preview evidence; never arbitrary-token rejection, malformed-base64 failure or exhaustive matching negatives. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "For both fixed image ids outside the review modal, actual file digest/73-byte/decoded-2x2 observations match independent constants and bounded polling must find the chosen visible Script preview; complete loaded observation remains unchanged."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-12",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageFixtures.swift",
+        "start": 15,
+        "end": 16,
+        "sha256": "14ee09f4c94c1fda668ed17946e545ab857943d44fe5e47c849ff56be0308fa4",
+        "fileSha256": "7bd9faea77cd37f0d4e027ddd1635deac2b01fbf31d1a4d9d37cf37e2f27ba5a",
+        "spanSha256": "5b1ab0bcf0c0ec5568b1a4329a4f8b24c25a4b9e746a914080b4e9196d0e2c2f"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Positive fixed coral/blue fixture supply and allowlist membership only. Independent JS SHA256 constants are compared with actual run-owned file digests, byte counts, ImageIO decode/dimensions and visible Script preview evidence; never arbitrary-token rejection, malformed-base64 failure or exhaustive matching negatives. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "For both fixed image ids outside the review modal, actual file digest/73-byte/decoded-2x2 observations match independent constants and bounded polling must find the chosen visible Script preview; complete loaded observation remains unchanged."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-13",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILocalImageFixtures.swift",
+        "start": 19,
+        "end": 20,
+        "sha256": "70c40e3ef74fe011ecb6e1408ddf88fda5097f35eec8c9e3d5d80fd54fd0a57d",
+        "fileSha256": "7bd9faea77cd37f0d4e027ddd1635deac2b01fbf31d1a4d9d37cf37e2f27ba5a",
+        "spanSha256": "401c9099e122cf3e01b047ae718ac0b7bb91c24467408c4cbea6b26bb739ed5c"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "Positive fixed coral/blue fixture supply and allowlist membership only. Independent JS SHA256 constants are compared with actual run-owned file digests, byte counts, ImageIO decode/dimensions and visible Script preview evidence; never arbitrary-token rejection, malformed-base64 failure or exhaustive matching negatives. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "For both fixed image ids outside the review modal, actual file digest/73-byte/decoded-2x2 observations match independent constants and bounded polling must find the chosen visible Script preview; complete loaded observation remains unchanged."
+      ]
+    },
+    {
+      "rangeId": "package-fixture-review-v86-14",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIPackageFixture.swift",
+        "start": 312,
+        "end": 312,
+        "sha256": "912101355c21aa69b05648b4cbe38c27f859d52be59ae3b310badc220585fe39",
+        "fileSha256": "bc289dc4431f053c9f1aa41d9547d2757f0ff7ff1b5f9f883a677a65cb6f812b",
+        "spanSha256": "258ae1282bdf840d7ff5270c53b162dd85172f1c514e1bd2afa6b8dfbde3dc3a"
+      },
+      "scenarioIds": [
+        "package-fixture-review-v86"
+      ],
+      "rationale": "The fixed marker is checked by existing source-reconciliation preflight only; native checks use returned random id, validate its format/distinctness and require consistent persistence/opening. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution.",
+      "confidence": "high",
+      "uncertainty": "Prepared, not run on native app. Positive fixture/encoding support only; no exhaustive safety or failure-path credit. Independent semantic audit pending.",
+      "proposedAssertions": [
+        "Existing portable preflight compares the parsed Swift review input with independently constructed characterReviewFixture, including its fixed template-id marker. This is source reconciliation, not provider/native execution."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "cue-draft-recovery",
+      "title": "Retain rejected cue direction across owned relaunches",
+      "featureId": "cue-recovery",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/cue-draft-recovery.mjs"
+      ],
+      "plannedActions": [
+        "Save YAM MAN sentinel; import generation-review fixture under Synthetic cue recovery title.",
+        "Wait public snapshot for mounted editable generation-optional-direction, then reveal its hittable control and enter 29,999 x characters plus 🎬 once. Await exact canonical refusal.",
+        "Relaunch owned persistent session twice; use normal Projects browser to open target each time.",
+        "Replace text with Café 🎬 recovery corrected; await persistence and cleared recovery status; relaunch and reopen once more.",
+        "Close owned session in finally; preserve synthetic workspace."
+      ],
+      "expectedOutcomes": [
+        "Exact 30,001 UTF-16-unit text and refusal appear while complete loaded and both saved models remain unchanged.",
+        "Two cold opens preserve exact journal bytes and revision and reproduce refusal without provider jobs or alerts.",
+        "Correction changes only prompt, one revision and modification date; journal clears after persistence.",
+        "Final cold open retains corrected model and empty recovery journal without provider jobs."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "cue-recovery-1",
+      "featureId": "cue-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+        "start": 60,
+        "end": 64,
+        "fileSha256": "754bbaec2c7045b3d88ceab6aaf0fd32b73bb51fa17c8c54f8582f8206fdd6e9",
+        "spanSha256": "2749f6c9ab379a591b104f42719e047d702d906452c9490de986a5302d347167",
+        "sha256": "ad2ba27a284f997eef7e49321d47622a9b4cf73d9654e16ab62e71d3dc5c519a"
+      },
+      "scenarioIds": [
+        "cue-draft-recovery"
+      ],
+      "rationale": "Exact over-limit rejection plus unchanged canonical state and retained exact text; successful correction assertion is separately at 110-125. Do not include identity/epoch/64-KiB rejection branches.",
+      "confidence": "medium",
+      "uncertainty": "Native readiness blocked: matching macOS automation bundle and actual viewport/long-text/process behavior unverified. Initial public mounted-editable wait is authored in v2. No crash, script-draft, pending-save, CAS, epoch or journal-limit claim.",
+      "proposedAssertions": [
+        "Exact over-limit rejection plus unchanged canonical state and retained exact text; successful correction assertion is separately at 110-125. Do not include identity/epoch/64-KiB rejection branches."
+      ]
+    },
+    {
+      "rangeId": "cue-recovery-2",
+      "featureId": "cue-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 271,
+        "end": 277,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "8635f026c7b9ad060a44851c0592403d5ede1a8f935e76e37753630a894707a7",
+        "sha256": "57719e23f1e75a295d1159e002578e2cd4ee8fdc56ac85a1db83325c49ae4b23"
+      },
+      "scenarioIds": [
+        "cue-draft-recovery"
+      ],
+      "rationale": "Repeated owned native cold open must rediscover exact journal text and reproduce refusal while canonical state stays unchanged. Native not run.",
+      "confidence": "medium",
+      "uncertainty": "Native readiness blocked: matching macOS automation bundle and actual viewport/long-text/process behavior unverified. Initial public mounted-editable wait is authored in v2. No crash, script-draft, pending-save, CAS, epoch or journal-limit claim.",
+      "proposedAssertions": [
+        "Repeated owned native cold open must rediscover exact journal text and reproduce refusal while canonical state stays unchanged. Native not run."
+      ]
+    },
+    {
+      "rangeId": "cue-recovery-3",
+      "featureId": "cue-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 418,
+        "end": 422,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "bb30fc4396f4863777ef70fbb72a905ecbd0d394c7156b8fb943d910e6920ab9",
+        "sha256": "696abae4eeffb0e0e8343f3ea65cca4c471fcf3d36f04902e651066a6cb64212"
+      },
+      "scenarioIds": [
+        "cue-draft-recovery"
+      ],
+      "rationale": "Matching active draft application error must surface the exact public refusal; cancellation/stale-draft branches not asserted.",
+      "confidence": "medium",
+      "uncertainty": "Native readiness blocked: matching macOS automation bundle and actual viewport/long-text/process behavior unverified. Initial public mounted-editable wait is authored in v2. No crash, script-draft, pending-save, CAS, epoch or journal-limit claim.",
+      "proposedAssertions": [
+        "Matching active draft application error must surface the exact public refusal; cancellation/stale-draft branches not asserted."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "features": [
+    {
+      "id": "project-model",
+      "title": "Project document models and validation"
+    },
+    {
+      "id": "project-lifecycle",
+      "title": "Create, open, select and manage projects"
+    },
+    {
+      "id": "project-persistence",
+      "title": "Save, load, export and durable project recovery"
+    },
+    {
+      "id": "script-editing",
+      "title": "Script text editing and structural operations"
+    },
+    {
+      "id": "script-format",
+      "title": "Fountain and script serialization"
+    },
+    {
+      "id": "script-search",
+      "title": "Script search and selection"
+    },
+    {
+      "id": "script-recovery",
+      "title": "Unsaved draft recovery and reconciliation"
+    },
+    {
+      "id": "character-catalog",
+      "title": "Character profiles, identity and mentions"
+    },
+    {
+      "id": "character-analysis",
+      "title": "Character image analysis and results"
+    },
+    {
+      "id": "image-library",
+      "title": "Import, store and place local pictures"
+    },
+    {
+      "id": "image-generation",
+      "title": "Image generation requests and context"
+    },
+    {
+      "id": "image-review",
+      "title": "Generated image review and selection"
+    },
+    {
+      "id": "audio-library",
+      "title": "Audio tracks and local audio storage"
+    },
+    {
+      "id": "playback",
+      "title": "Playback position and transport"
+    },
+    {
+      "id": "timing",
+      "title": "Line, word and cue timing"
+    },
+    {
+      "id": "storyboard",
+      "title": "Storyboard display and cue anchoring"
+    },
+    {
+      "id": "layers",
+      "title": "Layer editing and presentation"
+    },
+    {
+      "id": "authentication",
+      "title": "Sign-in, session and authorization"
+    },
+    {
+      "id": "account-billing",
+      "title": "Billing, quotas and account entitlements"
+    },
+    {
+      "id": "teams",
+      "title": "Teams, memberships and invitations"
+    },
+    {
+      "id": "discussions",
+      "title": "Comments, threads and discussion state"
+    },
+    {
+      "id": "collaboration",
+      "title": "Cloud snapshots, operations, revisions and reconciliation"
+    },
+    {
+      "id": "media-sync",
+      "title": "Media transfer, discovery and cloud storage"
+    },
+    {
+      "id": "runtime-integration",
+      "title": "Runtime bridge, companion and bootstrap protocols"
+    },
+    {
+      "id": "codex-connection",
+      "title": "Codex connection, readiness and protocol setup"
+    },
+    {
+      "id": "generation-recovery",
+      "title": "Generation lifecycle and durable job recovery"
+    },
+    {
+      "id": "app-shell",
+      "title": "Application navigation and lifecycle"
+    },
+    {
+      "id": "cli-automation",
+      "title": "App CLI automation and scenario execution"
+    },
+    {
+      "id": "instrumentation",
+      "title": "Measured coverage capture and provenance"
+    },
+    {
+      "id": "build-release",
+      "title": "Build, packaging and release delivery"
+    },
+    {
+      "id": "testing-infrastructure",
+      "title": "CLI test and repository integrity support"
+    },
+    {
+      "id": "security-validation",
+      "title": "Shared request and input validation"
+    },
+    {
+      "id": "styling-layout",
+      "title": "Layout, geometry and visual presentation"
+    },
+    {
+      "id": "diagnostics",
+      "title": "Startup tracing and diagnostics"
+    },
+    {
+      "id": "shared-infrastructure",
+      "title": "Shared hashing, durable directory and utility infrastructure"
+    },
+    {
+      "id": "image-direction-recovery",
+      "title": "Recover image-direction and prompt drafts"
+    }
+  ]
+}

@@ -16,7 +16,7 @@ extension TimingEngine {
             throw ScrivError.invalid("Word timing cannot add or remove script words.")
         }
         for (before, after) in zip(expectedWords, updatedWords) {
-            guard before.id == after.id, before.text == after.text else {
+            guard before.id == after.id, before.text.utf16.elementsEqual(after.text.utf16) else {
                 throw ScrivError.invalid("Word timing must preserve every word and its identity.")
             }
             let moved = before.startMs != after.startMs || before.endMs != after.endMs
@@ -93,7 +93,12 @@ extension TimingEngine {
         var result = retimeWords(text: text, durationMs: durationMs, preserving: old)
         let oldByID = Dictionary(old.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         for index in result.indices {
-            if let prior = oldByID[result[index].id], prior.timingSource == .authored { result[index] = prior }
+            if let prior = oldByID[result[index].id], prior.timingSource == .authored {
+                // The matched token owns its newly authored spelling. Preserve
+                // only timing metadata, not the old canonically equal text.
+                result[index].startMs = prior.startMs; result[index].endMs = prior.endMs
+                result[index].timingSource = prior.timingSource
+            }
         }
         let pins = result.indices.filter { result[$0].timingSource == .authored }
         guard !pins.isEmpty else { return result }

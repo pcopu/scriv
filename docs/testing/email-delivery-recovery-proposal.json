@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "email-delivery-recovery-v107",
+      "title": "Recover safely after email delivery failure",
+      "featureId": "email-delivery-recovery",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/email-auth-journey.mjs"
+      ],
+      "plannedActions": [
+        "Complete prior chapters and freeze existing identity/challenge rows. Switch only the local mailbox fixture and verify that observed state survives.",
+        "Send text/plain and foreign-origin JSON sign-in requests. Require exact errors, no mailbox attempt and unchanged identity/challenge/security-limit state.",
+        "Request a code with a fresh synthetic email/proof. The mailbox records the code then throws. Require exact sanitized 503, one failed challenge with nulled digest/send time and send_failed marker, and no new identity/session.",
+        "Retry immediately with the same email/proof. Require exact cooldown 429, unchanged failed challenge and no additional mailbox attempt.",
+        "Wait out the real one-minute cooldown without altering clock/storage. Request again with the same email/proof and require exact new challenge/code digest, bounded timestamps and replacement of the failed row.",
+        "Verify the successful replacement code/proof, check exact new user/identity/session/consumption rows, then read public identity.",
+        "Log out, require only bounded revocation of the new session, then require exact expired-session denial. Preserve all old rows, two send attempts, empty mailbox and zero outbound."
+      ],
+      "expectedOutcomes": [
+        "A text/plain request and a JSON request with a foreign Origin return the exact 415/unsupported_media_type and 403/invalid_origin error objects before any mailbox attempt. All security-limit rows, users, verified identities, sessions and existing challenges remain exact after these two requests. This is one disallowed media type and one foreign origin, not every header normalization or browser behavior.",
+        "The local mailbox accepts and stores a correctly addressed six-digit code, then fails its first send response. The public request returns only the exact 503/email_unavailable error. One new failed challenge has a request-bounded creation time, ten-minute expiry, null code_hash/sent_at, zero attempts and consumed_by send_failed; no identity or session is created. Immediate same-email/same-proof resend returns the exact cooldown 429 with that row unchanged and no second send attempt. After the actual one-minute cooldown elapses, the same request succeeds with a new challenge ID/hash, independently expected code digest, bounded creation/send times, reset consumption/attempt state and exact expiry/resend timestamps. The row replaces the failed row without increasing the challenge count. No clock override or direct challenge write is used.",
+        "Successful verification of the replacement code/proof creates exactly one expected email-namespace user, verified identity and session. Exact row checks cover returned user, independently hashed session token, bounded creation time, named device and default thirty-day expiry. The replacement challenge is consumed exactly once with one attempt. Public identity read agrees; logout changes only this session revocation timestamp, bounded by its request, and the next identity read returns the exact expired-session error. All earlier users, identities, sessions and challenges are preserved. The local mailbox has exactly two attempts and ends empty; outbound attempts remain zero. No verification of the unavailable failed challenge ID, rollback fault, concurrent resend, process restart, native UI or real email delivery is asserted."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "email-delivery-recovery-v107-1",
+      "featureId": "email-delivery-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 121,
+        "end": 125,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "4b19b2bc3e85536911ba3211bbd11eef4c3052b820920dbbe2a31ad5a4b033ae",
+        "sha256": "dde1398ab9e9b20459435d5d38bc25e6f6ccf062d87eafb55bc4657c9c14a396"
+      },
+      "scenarioIds": [
+        "email-delivery-recovery-v107"
+      ],
+      "rationale": "Content-type and Origin guards run before requestCode and its rate-limit/provider work. The two concrete refusals preserve counters and challenge state.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic mailbox only; no failed-challenge-ID verification, exact cooldown edge, expired challenge, concurrent resend, transaction fault, process restart, native or live provider claim.",
+      "proposedAssertions": [
+        "A text/plain request and a JSON request with a foreign Origin return the exact 415/unsupported_media_type and 403/invalid_origin error objects before any mailbox attempt. All security-limit rows, users, verified identities, sessions and existing challenges remain exact after these two requests. This is one disallowed media type and one foreign origin, not every header normalization or browser behavior."
+      ]
+    },
+    {
+      "rangeId": "email-delivery-recovery-v107-2",
+      "featureId": "email-delivery-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 49,
+        "end": 56,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "d298b9f8f9a1cc4127e76d9c7aa4e3c16e09b850144e0808c0b66fb52a5683a6",
+        "sha256": "5a3d80c30bcbc8e96c0dd175ef45c1e2490061875f9ac3291cdc1c3ed4913a95"
+      },
+      "scenarioIds": [
+        "email-delivery-recovery-v107"
+      ],
+      "rationale": "Same email/proof upsert retains the failed reservation during cooldown, then replaces it only after real elapsed time. No exact edge or parallel reservation claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic mailbox only; no failed-challenge-ID verification, exact cooldown edge, expired challenge, concurrent resend, transaction fault, process restart, native or live provider claim.",
+      "proposedAssertions": [
+        "The local mailbox accepts and stores a correctly addressed six-digit code, then fails its first send response. The public request returns only the exact 503/email_unavailable error. One new failed challenge has a request-bounded creation time, ten-minute expiry, null code_hash/sent_at, zero attempts and consumed_by send_failed; no identity or session is created. Immediate same-email/same-proof resend returns the exact cooldown 429 with that row unchanged and no second send attempt. After the actual one-minute cooldown elapses, the same request succeeds with a new challenge ID/hash, independently expected code digest, bounded creation/send times, reset consumption/attempt state and exact expiry/resend timestamps. The row replaces the failed row without increasing the challenge count. No clock override or direct challenge write is used."
+      ]
+    },
+    {
+      "rangeId": "email-delivery-recovery-v107-3",
+      "featureId": "email-delivery-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 58,
+        "end": 60,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "fc1f8314124fc1fcfba46ce9da0ae4a37fc3a9d8da5fc8c67011d8daa9c2846b",
+        "sha256": "3018eb085659ec994df0ab8aeff2529d6cc2c1d3e2f2d41659503d8ea274deb3"
+      },
+      "scenarioIds": [
+        "email-delivery-recovery-v107"
+      ],
+      "rationale": "Successful local delivery marks the replacement sent; first response failure skips this mark. Read-only rows distinguish sent and failed states.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic mailbox only; no failed-challenge-ID verification, exact cooldown edge, expired challenge, concurrent resend, transaction fault, process restart, native or live provider claim.",
+      "proposedAssertions": [
+        "The local mailbox accepts and stores a correctly addressed six-digit code, then fails its first send response. The public request returns only the exact 503/email_unavailable error. One new failed challenge has a request-bounded creation time, ten-minute expiry, null code_hash/sent_at, zero attempts and consumed_by send_failed; no identity or session is created. Immediate same-email/same-proof resend returns the exact cooldown 429 with that row unchanged and no second send attempt. After the actual one-minute cooldown elapses, the same request succeeds with a new challenge ID/hash, independently expected code digest, bounded creation/send times, reset consumption/attempt state and exact expiry/resend timestamps. The row replaces the failed row without increasing the challenge count. No clock override or direct challenge write is used."
+      ]
+    },
+    {
+      "rangeId": "email-delivery-recovery-v107-4",
+      "featureId": "email-delivery-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 61,
+        "end": 68,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "1bc0e7e4a51baef688272293c00d89f8f59d4146c0a3e03fe826228c4631cd22",
+        "sha256": "e55377be60fe7f3f1f9c8d426b279f21661d5a23f4dc585cc395ddda4604fb5b"
+      },
+      "scenarioIds": [
+        "email-delivery-recovery-v107"
+      ],
+      "rationale": "Provider-response failure nulls the digest and marks send_failed while preserving cooldown; public error is exact and contains no provider details, code or challenge ID.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic mailbox only; no failed-challenge-ID verification, exact cooldown edge, expired challenge, concurrent resend, transaction fault, process restart, native or live provider claim.",
+      "proposedAssertions": [
+        "The local mailbox accepts and stores a correctly addressed six-digit code, then fails its first send response. The public request returns only the exact 503/email_unavailable error. One new failed challenge has a request-bounded creation time, ten-minute expiry, null code_hash/sent_at, zero attempts and consumed_by send_failed; no identity or session is created. Immediate same-email/same-proof resend returns the exact cooldown 429 with that row unchanged and no second send attempt. After the actual one-minute cooldown elapses, the same request succeeds with a new challenge ID/hash, independently expected code digest, bounded creation/send times, reset consumption/attempt state and exact expiry/resend timestamps. The row replaces the failed row without increasing the challenge count. No clock override or direct challenge write is used."
+      ]
+    },
+    {
+      "rangeId": "email-delivery-recovery-v107-5",
+      "featureId": "email-delivery-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 91,
+        "end": 103,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "cdd03d0620bffbb19085824afb240bf7599541adb6ad73e380c9efac3a46e4d5",
+        "sha256": "7fd9e0c2ffabc834b61b6c9e02f0f6be208997669c3341aa2902418d23463db9"
+      },
+      "scenarioIds": [
+        "email-delivery-recovery-v107"
+      ],
+      "rationale": "Replacement consumption gates one newly verified user and email identity. Exact observed rows and one-attempt marker distinguish this successful retry from the failed reservation.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic mailbox only; no failed-challenge-ID verification, exact cooldown edge, expired challenge, concurrent resend, transaction fault, process restart, native or live provider claim.",
+      "proposedAssertions": [
+        "Successful verification of the replacement code/proof creates exactly one expected email-namespace user, verified identity and session. Exact row checks cover returned user, independently hashed session token, bounded creation time, named device and default thirty-day expiry. The replacement challenge is consumed exactly once with one attempt. Public identity read agrees; logout changes only this session revocation timestamp, bounded by its request, and the next identity read returns the exact expired-session error. All earlier users, identities, sessions and challenges are preserved. The local mailbox has exactly two attempts and ends empty; outbound attempts remain zero. No verification of the unavailable failed challenge ID, rollback fault, concurrent resend, process restart, native UI or real email delivery is asserted."
+      ]
+    },
+    {
+      "rangeId": "email-delivery-recovery-v107-6",
+      "featureId": "email-delivery-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 104,
+        "end": 113,
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "e1da7f32483eaf4b9b9f69baa0cee45b0e11cf6f524e367236b0b29f6d366250",
+        "sha256": "dd5595516c33f04c18ae6e47ed5266f221d4d36ddd30107b16976685b26d626c"
+      },
+      "scenarioIds": [
+        "email-delivery-recovery-v107"
+      ],
+      "rationale": "The verified replacement issues one session with independent token digest, exact device/expiry and current public user, then public authentication/logout confirms its lifecycle.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic mailbox only; no failed-challenge-ID verification, exact cooldown edge, expired challenge, concurrent resend, transaction fault, process restart, native or live provider claim.",
+      "proposedAssertions": [
+        "Successful verification of the replacement code/proof creates exactly one expected email-namespace user, verified identity and session. Exact row checks cover returned user, independently hashed session token, bounded creation time, named device and default thirty-day expiry. The replacement challenge is consumed exactly once with one attempt. Public identity read agrees; logout changes only this session revocation timestamp, bounded by its request, and the next identity read returns the exact expired-session error. All earlier users, identities, sessions and challenges are preserved. The local mailbox has exactly two attempts and ends empty; outbound attempts remain zero. No verification of the unavailable failed challenge ID, rollback fault, concurrent resend, process restart, native UI or real email delivery is asserted."
+      ]
+    },
+    {
+      "rangeId": "email-delivery-recovery-v107-7",
+      "featureId": "email-delivery-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email.ts",
+        "start": 6,
+        "end": 11,
+        "fileSha256": "3ab6f2b0092b8b40b0d3b2c03365d3926336cca10a22983f4246c4fc9801888a",
+        "spanSha256": "3f06643b3ec2a9ac54126744b22cb578cebb9204a7d905459a4bb402982a7df8",
+        "sha256": "f40cb3e6f9a11c8333272362c508679240a295b4381c40ffa24b6473e35f8945"
+      },
+      "scenarioIds": [
+        "email-delivery-recovery-v107"
+      ],
+      "rationale": "Structured email binding sends the synthetic address, sender, subject and code-bearing text accepted by the local mailbox; its accepted-then-failed response exercises caller invalidation. No HTML/deliverability claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic mailbox only; no failed-challenge-ID verification, exact cooldown edge, expired challenge, concurrent resend, transaction fault, process restart, native or live provider claim.",
+      "proposedAssertions": [
+        "The local mailbox accepts and stores a correctly addressed six-digit code, then fails its first send response. The public request returns only the exact 503/email_unavailable error. One new failed challenge has a request-bounded creation time, ten-minute expiry, null code_hash/sent_at, zero attempts and consumed_by send_failed; no identity or session is created. Immediate same-email/same-proof resend returns the exact cooldown 429 with that row unchanged and no second send attempt. After the actual one-minute cooldown elapses, the same request succeeds with a new challenge ID/hash, independently expected code digest, bounded creation/send times, reset consumption/attempt state and exact expiry/resend timestamps. The row replaces the failed row without increasing the challenge count. No clock override or direct challenge write is used."
+      ]
+    }
+  ]
+}

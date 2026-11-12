@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "save-failure-recovery-v90-r2",
+      "title": "Recover public save refusal",
+      "featureId": "local-save-recovery",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/save-failure-recovery.mjs"
+      ],
+      "plannedActions": [
+        "Only a persistent session-created synthetic workspace, unprivileged matching real/effective uid, no symlinks or foreign-owned descendants. Read/search remain; remove only owner-write on existing history via verified descriptor, require W_OK EACCES, restore exact mode in finally before resume. No journal/capability injection.",
+        "Save sentinel, import independent generation fixture, edit Mara biography via Characters and Save character once. No script/cue draft or provider action.",
+        "Require the actual Scriv save-error alert for the synthetic title and failure-status state. Observe but never dismiss the alert. Keep all package bytes unchanged and one naturally written pending record. Repair history permissions, verify the same alert remains, then relaunch only the owned process. Require exact retained record and original canonical bytes BEFORE normal Projects open, or fail without recovery credit. The existing relaunch may use SIGTERM or SIGKILL; no graceful-exit or lifecycle-callback claim.",
+        "Normal open recovers; independently expect only biography, one revision and finite nondecreasing modifiedAt. Verify original history/sentinel and all other package content; repeat cold open with no new writes."
+      ],
+      "expectedOutcomes": [
+        "Expected real save-error alert and failure-status state, accepted biography-only model and one local journal, with all saved package bytes unchanged before and after repaired owned-process relaunch; the alert is never dismissed and termination mode is not claimed.",
+        "Normal Projects open loads the exact accepted model/date witnesses, acknowledges pending record and writes one exact expected history revision while preserving prior history and sentinel bytes; repeated cold open changes nothing."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "save-failure-v90-r2-1",
+      "featureId": "local-save-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+        "start": 99,
+        "end": 101,
+        "fileSha256": "b007f1a4fc5922968d1686fd6638992334e0ed58a5d6222b6cb1e71d53bd2a80",
+        "spanSha256": "24c0b61080318e0a2b515517ec284789142d14b7f8728ae86511f7ed91f28718",
+        "sha256": "755ed0f07126c636fe075f14ac644334a61893458d0121961fdae7eef2c287c1"
+      },
+      "scenarioIds": [
+        "save-failure-recovery-v90-r2"
+      ],
+      "rationale": "A real public accepted mutation creates one retained record before canonical save refusal; capacity-limit branches excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Actual status visibility, permission refusal, filesystem atomic-save behavior, before-open nonmutation, Date witnesses and normal-open timing need matching macOS execution. Prepared association only; no branch-complete/crash claim.",
+      "proposedAssertions": [
+        "Expected real save-error alert and failure-status state, accepted biography-only model and one local journal, with all saved package bytes unchanged before and after repaired owned-process relaunch; the alert is never dismissed and termination mode is not claimed."
+      ]
+    },
+    {
+      "rangeId": "save-failure-v90-r2-2",
+      "featureId": "local-save-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+        "start": 130,
+        "end": 132,
+        "fileSha256": "b007f1a4fc5922968d1686fd6638992334e0ed58a5d6222b6cb1e71d53bd2a80",
+        "spanSha256": "824e807abd4b8106fb26dab26d00270f8b6b971d12eb0e529775bac9c1271b28",
+        "sha256": "8c88a586f8a593c6cd2c49e050360bca67a4c7cfd764212dc6708edce3ba780b"
+      },
+      "scenarioIds": [
+        "save-failure-recovery-v90-r2"
+      ],
+      "rationale": "Exact pending record disappears only following observed normal-open canonical/history save; no competing replacement or fsync-failure assertion.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Actual status visibility, permission refusal, filesystem atomic-save behavior, before-open nonmutation, Date witnesses and normal-open timing need matching macOS execution. Prepared association only; no branch-complete/crash claim.",
+      "proposedAssertions": [
+        "Normal Projects open loads the exact accepted model/date witnesses, acknowledges pending record and writes one exact expected history revision while preserving prior history and sentinel bytes; repeated cold open changes nothing."
+      ]
+    },
+    {
+      "rangeId": "save-failure-v90-r2-3",
+      "featureId": "local-save-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+        "start": 173,
+        "end": 175,
+        "fileSha256": "b007f1a4fc5922968d1686fd6638992334e0ed58a5d6222b6cb1e71d53bd2a80",
+        "spanSha256": "eed678a5b43c3b5c5b07cb361257e0e3f0e73029dafb9940a5345f3816198743",
+        "sha256": "3b70b15987ca589457eadc4de156e89af4002fd7cd9c9a90f063111d6870a8b5"
+      },
+      "scenarioIds": [
+        "save-failure-recovery-v90-r2"
+      ],
+      "rationale": "Normal open replays the single contiguous source revision into the independently expected target; rejection branches excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Actual status visibility, permission refusal, filesystem atomic-save behavior, before-open nonmutation, Date witnesses and normal-open timing need matching macOS execution. Prepared association only; no branch-complete/crash claim.",
+      "proposedAssertions": [
+        "Normal Projects open loads the exact accepted model/date witnesses, acknowledges pending record and writes one exact expected history revision while preserving prior history and sentinel bytes; repeated cold open changes nothing."
+      ]
+    },
+    {
+      "rangeId": "save-failure-v90-r2-4",
+      "featureId": "local-save-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+        "start": 179,
+        "end": 181,
+        "fileSha256": "b007f1a4fc5922968d1686fd6638992334e0ed58a5d6222b6cb1e71d53bd2a80",
+        "spanSha256": "3e7d4f385de81ce53f98430748e3703943aacd6daadfd4f8d54bafede262c49c",
+        "sha256": "26239a7fa4172053a2622530bb8538f6e7cea43fe2870464c46c724329fa4481"
+      },
+      "scenarioIds": [
+        "save-failure-recovery-v90-r2"
+      ],
+      "rationale": "Single valid continuation yields public recovery outcome; initial-save and alreadySaved paths excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Actual status visibility, permission refusal, filesystem atomic-save behavior, before-open nonmutation, Date witnesses and normal-open timing need matching macOS execution. Prepared association only; no branch-complete/crash claim.",
+      "proposedAssertions": [
+        "Normal Projects open loads the exact accepted model/date witnesses, acknowledges pending record and writes one exact expected history revision while preserving prior history and sentinel bytes; repeated cold open changes nothing."
+      ]
+    },
+    {
+      "rangeId": "save-failure-v90-r2-5",
+      "featureId": "local-save-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 821,
+        "end": 824,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "5fb67c3968ffe54770ff0497bff25fa36afd51db75332639bb9bb332981ed733",
+        "sha256": "e0c169de2a8ca04568031165ff3e07e3d3300fc82b9dff018ed3a1873f3de169"
+      },
+      "scenarioIds": [
+        "save-failure-recovery-v90-r2"
+      ],
+      "rationale": "Normal open replays and acknowledges one authorized local pending continuation, with no assertion of account or CAS rejection.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Actual status visibility, permission refusal, filesystem atomic-save behavior, before-open nonmutation, Date witnesses and normal-open timing need matching macOS execution. Prepared association only; no branch-complete/crash claim.",
+      "proposedAssertions": [
+        "Normal Projects open loads the exact accepted model/date witnesses, acknowledges pending record and writes one exact expected history revision while preserving prior history and sentinel bytes; repeated cold open changes nothing."
+      ]
+    },
+    {
+      "rangeId": "save-failure-v90-r2-6",
+      "featureId": "local-save-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 903,
+        "end": 905,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "955c6ef0fd6595176b1c7b9549cb2511ffb9fb5a6b762ee4269fb03465ff5fa0",
+        "sha256": "1c2d372268131cc8b9baf9c202d3c11290805b0b2c930169dc9e7c891e23664e"
+      },
+      "scenarioIds": [
+        "save-failure-recovery-v90-r2"
+      ],
+      "rationale": "Canonical save failure surfaces status while accepted journal/model remain and saved package does not mutate.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Actual status visibility, permission refusal, filesystem atomic-save behavior, before-open nonmutation, Date witnesses and normal-open timing need matching macOS execution. Prepared association only; no branch-complete/crash claim.",
+      "proposedAssertions": [
+        "Expected real save-error alert and failure-status state, accepted biography-only model and one local journal, with all saved package bytes unchanged before and after repaired owned-process relaunch; the alert is never dismissed and termination mode is not claimed."
+      ]
+    },
+    {
+      "rangeId": "save-failure-v90-r2-7",
+      "featureId": "local-save-recovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1794,
+        "end": 1800,
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "a6295bae2173858db507043736ed7549a63b68685e4e538894b71afc07c5d971",
+        "sha256": "e558969d931487e4db270e5ff79c24f94c69515aa11d68528167bcc92ce76976"
+      },
+      "scenarioIds": [
+        "save-failure-recovery-v90-r2"
+      ],
+      "rationale": "Exact retained journal and original package are checked before normal Projects open, then recovered loaded model is checked. No startup/crash claim.",
+      "confidence": "medium",
+      "uncertainty": "Native NOT RUN. Actual status visibility, permission refusal, filesystem atomic-save behavior, before-open nonmutation, Date witnesses and normal-open timing need matching macOS execution. Prepared association only; no branch-complete/crash claim.",
+      "proposedAssertions": [
+        "Normal Projects open loads the exact accepted model/date witnesses, acknowledges pending record and writes one exact expected history revision while preserving prior history and sentinel bytes; repeated cold open changes nothing."
+      ]
+    }
+  ]
+}

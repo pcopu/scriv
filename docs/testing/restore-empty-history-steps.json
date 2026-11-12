@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "restore-empty-history-v104",
+      "title": "Restore empty content without losing discussion or history",
+      "preconditions": [
+        "Run the complete public tracer app -- test services revision-safety command. The original 18 runtime callbacks and 74 HTTP checks are preserved, with stronger repeated-event and historical timestamp equality assertions; the appendix adds 49 requests for 123 total under the original 200-request cap and 90-second process deadline.",
+        "Original fixture provisions four synthetic users/sessions and one active team. Original real HTTP mutations leave two live scenes and one tombstone at head six, epoch two, timing one, with a fresh member lease. No new direct fixture writes are added; new thread/message, restores and refused import use public HTTP.",
+        "Create one project-level discussion and authored message, independently checking exact metadata and two journal events at sequences seven/eight. Keep all six original journal events exact. The owner, member and viewer remain live and entitled; no permission transition is simulated.",
+        "Capture current snapshot, journal, thread and message list using viewer requests between mutations. Those four read requests are dispatched together but no mutation runs concurrently with them. Equality excludes time-sensitive leases except successful restores explicitly require an empty lease list.",
+        "Historical pagination uses the three existing small scene identities and limit one. No large page/byte boundary, malformed cursor, private DO tables, process restart, forced storage fault/race, websocket delivery, live provider or native app is claimed. Restoring does not erase retained historical content."
+      ],
+      "actions": [
+        "Complete the original journey, capture its exact final snapshot/journal, and create a project-level discussion plus a single authored message through member HTTP routes.",
+        "Refuse fresh member and viewer restore requests to sequence six. Verify unchanged nonlease snapshot, complete journal, thread and messages.",
+        "As owner, restore sequence six using epoch two. Require one new restore event/receipt, unchanged live/tombstone item versions and exact retained discussion, with no active leases.",
+        "Restore sequence zero in epoch three. Require no live items, three exact metadata-only tombstones, false canImport, exact retained discussion and one new restore event.",
+        "Submit a valid fresh owner import in epoch four. Require project_not_empty and unchanged public state/history/discussion.",
+        "Restore sequence zero again in epoch four. Require one epoch/head/timing increment but identical tombstone versions. Replay all three prior restore requests exactly and require original receipts without another mutation.",
+        "Read exact empty sequence-zero history, then sequence-six history in three limit-one ID-cursor pages. Require original live/tombstone data and event metadata despite current empty content.",
+        "Confirm current observations remain exact, users/sessions unchanged, R2 empty, zero outbound and 123 total HTTP checks; dispose owned temporary process/state."
+      ],
+      "expectations": [
+        {
+          "id": "restore",
+          "description": "Three fresh owner restores each append exactly one snapshotRequired receipt/event and increment head, epoch and timing once. Restoring the current content at sequence six preserves both live item versions and the existing tombstone; restoring sequence zero tombstones only the two live scenes with one version increase each; another empty restore leaves all three tombstone versions fixed. Each resulting current snapshot has no active leases and retains the exact discussion thread/message. This is visible state evidence, not raw change-table equality or a fault/race proof.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 258,
+            "end": 301,
+            "sha256": "e9f9fc83949c8bd8144a2b11cc237ba6952a663f5b9b9271c27aae483aef4f7b"
+          }
+        },
+        {
+          "id": "safety",
+          "description": "Fresh member and viewer restores are exact 403/not_allowed and preserve nonlease snapshot, full journal, thread and message list. After restoring empty, canImport is false and a valid fresh owner import is exact 409/project_not_empty with those observations unchanged. Three exact owner restore retries return their original receipts despite later epochs and leave current public state/history unchanged. Users and sessions remain exact, R2 empty and outbound zero.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 275,
+            "end": 301,
+            "sha256": "f8fb3bbbb1cedcabf199359f1902a37fd99f6fddae901bc8f30a94c200e93da7"
+          }
+        },
+        {
+          "id": "history",
+          "description": "After all three restores, sequence zero has the exact empty historical snapshot and null historyEvent. Sequence six still returns the original two live scenes and metadata-only tombstone across exactly three limit-one ID-cursor pages, with expected versions/data, epoch two, timing one, cursor/hasMore boundaries and original event metadata. Current discussion data remains readable through its own routes; historical snapshots deliberately have empty thread/lease projections. All six original events and two new discussion events remain byte-equivalent values in the current journal before the three exact restore events.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-safety-journey.mjs",
+            "start": 258,
+            "end": 301,
+            "sha256": "e9f9fc83949c8bd8144a2b11cc237ba6952a663f5b9b9271c27aae483aef4f7b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 275,
+            "end": 277,
+            "sha256": "f9de6589e0036688a52c51af2ec796a968e1ea975b5da6d6d3344fdebe5f39d6"
+          },
+          "expectation": "history",
+          "why": "Historical lookup reconstructs latest changes at or before the selected sequence and applies the ID cursor. Three limit-one pages recover the exact pre-restore state; private changes rows are not directly read."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 279,
+            "end": 285,
+            "sha256": "d1274dde95b8382524fbf758d02d9cbcbe5e08326f7fd66107ec50c057383660"
+          },
+          "expectation": "history",
+          "why": "Valid sequence/epoch/cursor inputs reach historical page selection and metadata-only tombstone projection. Zero history has no event; malformed input and large-byte cap branches are not newly tested."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 287,
+            "end": 290,
+            "sha256": "0334e3b14beaef38b992a62215c3ed9d459b642521fb72760aebdd5f2ededb6a"
+          },
+          "expectation": "history",
+          "why": "Exact one-item pages distinguish cursor/hasMore boundaries, live/deleted projections and stable historical event metadata. The preceding byte-size break is intentionally excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 297,
+            "end": 301,
+            "sha256": "bd72e9817b8be14cb5aa5b750d45e9f50bbe0614c8d83414ed59c9f0ce475e59"
+          },
+          "expectation": "restore",
+          "why": "Fresh current-epoch restores target known current or empty history. Unchanged live content and already-deleted items skip version changes; live items absent from empty history become exact versioned tombstones. Invalid epoch/sequence variants remain in the original chapter."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 303,
+            "end": 308,
+            "sha256": "4a95e177c8ff54ff22844d67ddda908b2893e228e501098c16ca6a2a3a75dbc0"
+          },
+          "expectation": "restore",
+          "why": "Each fresh restore advances metadata once, clears active public leases and appends an exact snapshotRequired event/receipt while preserving discussion. No raw change-table or lease-token storage inspection."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 329,
+            "end": 335,
+            "sha256": "1fd211a8560a682e785076b08f4a451b278b4a6d3553995d7e7d621b5a1bbfb3"
+          },
+          "expectation": "restore",
+          "why": "Current snapshot exposes exact live/tombstone metadata, retained thread and empty active leases after restore. Empty live content remains non-importable because tombstones persist."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 346,
+            "end": 352,
+            "sha256": "2ec1a730b58fbc4b79073c241e366a5f4321796692442f33a2aff6913311f9c2"
+          },
+          "expectation": "safety",
+          "why": "A syntactically valid fresh owner import after empty restore reaches the nonempty-item guard, returning project_not_empty without new items/events/discussion changes. Cached import and all size limits are not newly exercised."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 363,
+            "end": 369,
+            "sha256": "42e925a8bf59f14424d463bf5674ef808e28f3dac4406116239ad442a1c24b23"
+          },
+          "expectation": "safety",
+          "why": "Fresh member/viewer restore requests are refused while authorized owner requests succeed. Exact owner retries are intercepted by the route receipt lookup and return original results despite later epochs; inner cached restore branch is not claimed."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "restore-empty-history-v104",
+      "title": "Restore empty content without losing discussion or history",
+      "steps": [
+        "restore-empty-history-v104"
+      ]
+    }
+  ]
+}

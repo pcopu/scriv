@@ -149,6 +149,49 @@ final class AudioClipEditorController: ScrivScreenController {
             else { showNotice(store.errorMessage ?? "This clip could not be changed. Review its source and attachment, then try again.") }
         } catch { showNotice(error.localizedDescription) }
     }
+    #if SCRIV_CLI_AUTOMATION
+    /// Boolean-only witnesses keep the editor's private snapshot private. The
+    /// observer permits changed clip values so full-model comparisons expose
+    /// unintended mutations; dispatch additionally requires the original value.
+    func cliMatchesTrimContext(store expectedStore: WorkspaceStore, clipID: String,
+                               sceneID: String, requiresUnchangedClip: Bool) -> Bool {
+        guard store === expectedStore, scopeToProject,
+              initialNavigationContext == store.navigationContext,
+              draft.original.id == clipID, draft.original.sceneId == sceneID,
+              store.selectedSceneID == sceneID,
+              store.project.scenes.filter({ $0.id == sceneID }).count == 1 else { return false }
+        let clips = store.project.audioClips.filter { $0.id == draft.original.id }
+        let assets = store.project.audioAssets.filter { $0.id == draft.original.assetId }
+        guard clips.count == 1, let clip = clips.first,
+              clip.sceneId == draft.original.sceneId, clip.assetId == draft.original.assetId,
+              assets.count == 1, let asset = assets.first else { return false }
+        return !requiresUnchangedClip || (clip == draft.original && asset.durationMs == assetDurationMs)
+    }
+
+    /// Checks the exact stored primary menu without resolving a provider or
+    /// exposing the draft, original button, actions or their handlers.
+    func cliOwnsAttachmentMenu(_ button: UIButton) -> Bool {
+        guard button === attachment, button.showsMenuAsPrimaryAction,
+              ScrivSecondaryMenu.menu(of: button) == nil,
+              let menu = button.menu, menu.title.isEmpty, menu.options.isEmpty else { return false }
+        let entries = store.project.entries(in: draft.original.sceneId)
+        guard draft.entryID == nil || entries.contains(where: { $0.id == draft.entryID }),
+              Set(entries.map(\.id)).count == entries.count else { return false }
+        let titles = ["Scene time"] + entries.map { title(for: $0) }
+        let states: [UIMenuElement.State] = [draft.entryID == nil ? .on : .off]
+            + entries.map { draft.entryID == $0.id ? .on : .off }
+        let actions = menu.children.compactMap { $0 as? UIAction }
+        guard Set(titles).count == titles.count, actions.count == titles.count,
+              menu.children.count == titles.count, actions.map({ $0.title }) == titles,
+              actions.allSatisfy({ $0.attributes.isEmpty }),
+              actions.map({ $0.state }) == states,
+              states.filter({ $0 == .on }).count == 1,
+              let selected = actions.first(where: { $0.state == .on }),
+              button.configuration?.title == selected.title else { return false }
+        return true
+    }
+    #endif
+
     override var keyCommands: [UIKeyCommand]? {
         [UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(cancelDraft)), UIKeyCommand(input: "\r", modifierFlags: .command, action: #selector(applyDraft))]
     }

@@ -26,6 +26,10 @@ public struct TimedWord: Identifiable, Codable, Hashable, Sendable {
     /// Nil is an editorial estimate; authored timings are preserved during later edits.
     public var timingSource: WordTimingSource?
     public init(id: String = UUID().uuidString, text: String, startMs: Int, endMs: Int, timingSource: WordTimingSource? = nil) { self.id = id; self.text = text; self.startMs = startMs; self.endMs = endMs; self.timingSource = timingSource }
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id && lhs.text.utf16.elementsEqual(rhs.text.utf16)
+            && lhs.startMs == rhs.startMs && lhs.endMs == rhs.endMs && lhs.timingSource == rhs.timingSource
+    }
 }
 public struct ScriptEntry: Identifiable, Codable, Hashable, Sendable {
     public var id: String
@@ -47,6 +51,15 @@ public struct ScriptEntry: Identifiable, Codable, Hashable, Sendable {
         self.color = color; self.words = words; self.characterLinks = characterLinks
         if kind == .dialogue && words.isEmpty { self.words = TimingEngine.retimeWords(text: text, durationMs: self.ownedDurationMs) }
     }
+    /// Authored source is exact UTF-16, not Swift's canonical String equality.
+    /// Project no-op checks, undo/history, save fences, cloud item diffs and row
+    /// render caches must all observe a normalization-only edit as a change.
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id && lhs.sceneId == rhs.sceneId && lhs.order == rhs.order && lhs.kind == rhs.kind
+            && lhs.text.utf16.elementsEqual(rhs.text.utf16) && lhs.characterId == rhs.characterId
+            && lhs.ownedDurationMs == rhs.ownedDurationMs && lhs.coverageDurationMs == rhs.coverageDurationMs
+            && lhs.color == rhs.color && lhs.words == rhs.words && lhs.characterLinks == rhs.characterLinks
+    }
 }
 public struct ScriptCharacter: Identifiable, Codable, Hashable, Sendable {
     public var id: String
@@ -59,6 +72,17 @@ public struct ScriptCharacter: Identifiable, Codable, Hashable, Sendable {
     public var portraitRegion: CharacterPortraitRegion?
     public init(id: String = UUID().uuidString, name: String, aliases: [String] = [], biography: String = "", appearance: String = "", color: String = "blue", portraitImageId: String? = nil, portraitRegion: CharacterPortraitRegion? = nil) {
         self.id = id; self.name = name; self.aliases = aliases; self.biography = biography; self.appearance = appearance; self.color = color; self.portraitImageId = portraitImageId; self.portraitRegion = portraitRegion
+    }
+    /// Authored profile spelling is exact UTF-16. Canonically equivalent edits
+    /// must reach dirty/conflict checks, project history and durable saves.
+    /// Alias matching and deduplication retain their separate comparison rules.
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id && lhs.name.utf16.elementsEqual(rhs.name.utf16)
+            && lhs.aliases.elementsEqual(rhs.aliases, by: { $0.utf16.elementsEqual($1.utf16) })
+            && lhs.biography.utf16.elementsEqual(rhs.biography.utf16)
+            && lhs.appearance.utf16.elementsEqual(rhs.appearance.utf16)
+            && lhs.color == rhs.color && lhs.portraitImageId == rhs.portraitImageId
+            && lhs.portraitRegion == rhs.portraitRegion
     }
 }
 public struct ImageAsset: Identifiable, Codable, Hashable, Sendable {
@@ -100,6 +124,14 @@ public struct ImageCue: Identifiable, Codable, Hashable, Sendable {
     public var durationMs: Int { endMs - startMs }
     public init(id: String = UUID().uuidString, sceneId: String, imageId: String? = nil, label: String = "", startMs: Int, endMs: Int, prompt: String = "", startAnchor: ScriptTimeAnchor? = nil, authoredDurationMs: Int? = nil) {
         self.id = id; self.sceneId = sceneId; self.imageId = imageId; self.label = label; self.startMs = startMs; self.endMs = endMs; self.prompt = prompt; self.startAnchor = startAnchor; self.authoredDurationMs = authoredDurationMs
+    }
+    /// Canonically equivalent visual-direction edits still carry different
+    /// authored code units and must reach dirty checks, history and saves.
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id && lhs.sceneId == rhs.sceneId && lhs.imageId == rhs.imageId
+            && lhs.label == rhs.label && lhs.startMs == rhs.startMs && lhs.endMs == rhs.endMs
+            && lhs.prompt.utf16.elementsEqual(rhs.prompt.utf16)
+            && lhs.startAnchor == rhs.startAnchor && lhs.authoredDurationMs == rhs.authoredDurationMs
     }
 }
 public struct ScrivProject: Identifiable, Codable, Hashable, Sendable {

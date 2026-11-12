@@ -19,3 +19,4 @@ typedef void (^ScrivUpdatePreparation)(BOOL willRelaunch, void (^completion)(NSE
 - (void)disconnect;
 @end
 NS_ASSUME_NONNULL_END
+#import "../AutomationNative/ScrivCLIAccessibility.h"

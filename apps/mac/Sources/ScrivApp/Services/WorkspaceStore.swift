@@ -25,7 +25,7 @@ final class WorkspaceStore: ObservableObject {
     @Published var isPlaying = false { didSet { synchronizeAudio() } }
     @Published var followPlayback = true
     @Published private(set) var scriptZoom: Double = {
-        let saved = UserDefaults.standard.object(forKey:"ScrivScriptZoom.v1") as? NSNumber
+        let saved = ScrivPreferences.standard.object(forKey:"ScrivScriptZoom.v1") as? NSNumber
         let value = saved?.doubleValue ?? 1
         return value.isFinite ? min(2,max(0.7,value)) : 1
     }()
@@ -34,7 +34,7 @@ final class WorkspaceStore: ObservableObject {
         guard value.isFinite else { return }
         let next = (min(2,max(0.7,value)) * 100).rounded() / 100
         guard next != scriptZoom else { return }
-        scriptZoom = next; UserDefaults.standard.set(next,forKey:"ScrivScriptZoom.v1")
+        scriptZoom = next; ScrivPreferences.standard.set(next,forKey:"ScrivScriptZoom.v1")
     }
     func adjustScriptZoom(by delta: Double) { setScriptZoom(scriptZoom + delta) }
 #if targetEnvironment(macCatalyst)
@@ -555,32 +555,17 @@ final class WorkspaceStore: ObservableObject {
     private var editingIntents = LocalEditIntents()
     private var rootURL: URL
     private let verificationMode = ProcessInfo.processInfo.arguments.contains("--screenshots") || ProcessInfo.processInfo.arguments.contains("--peer-smoke")
-#if targetEnvironment(macCatalyst) && DEBUG
-    private var startupTestHarness: WorkspaceStartupTestHarness?
-#endif
     private var startupTrace: StartupTrace {
-#if targetEnvironment(macCatalyst) && DEBUG
-        if let startupTestHarness { return startupTestHarness.trace }
-#endif
         return .process
     }
 #if targetEnvironment(macCatalyst)
     private var skipStartupRecovery: Bool {
-#if DEBUG
-        if startupTestHarness != nil { return false }
-#endif
         return verificationMode
     }
     private var startupDefaults: UserDefaults {
-#if DEBUG
-        if let startupTestHarness { return startupTestHarness.defaults }
-#endif
-        return .standard
+        return ScrivPreferences.standard
     }
     private var projectFileAccess: UIKitFileAccess {
-#if DEBUG
-        if let startupTestHarness { return startupTestHarness.fileAccess }
-#endif
         return .shared
     }
 #endif
@@ -658,11 +643,6 @@ final class WorkspaceStore: ObservableObject {
         startupTrace.record(.projectStorageEnd)
         projectURL = rootURL.appendingPathComponent(example.id).appendingPathExtension("scriv")
         $errorMessage.compactMap { $0 }.receive(on: RunLoop.main).sink { [weak self] message in
-#if targetEnvironment(macCatalyst) && DEBUG
-            // Synthetic bootstrap tests observe errorMessage without displaying
-            // a fixture alert above the XCTest host's unrelated window.
-            if self?.startupTestHarness != nil { return }
-#endif
             self?.errorPresenter.enqueue(message) { [weak self] in
                 // An earlier alert must not clear a newer queued error.
                 if self?.errorMessage == message { self?.errorMessage = nil }
@@ -717,18 +697,6 @@ final class WorkspaceStore: ObservableObject {
             }
         }
     }
-#if targetEnvironment(macCatalyst) && DEBUG
-    /// The capability is factory-created by the isolated XCTest host only.
-    /// MainActor construction has no suspension: configure before the already
-    /// scheduled bootstrap task can run. Production init() is unchanged.
-    convenience init(startupTestHarness harness: WorkspaceStartupTestHarness) throws {
-        self.init()
-        startupTestHarness = harness
-        rootURL = harness.root.appendingPathComponent("Projects", isDirectory: true)
-        repository = try ProjectRepository(root: rootURL)
-        projectURL = rootURL.appendingPathComponent(project.id).appendingPathExtension("scriv")
-    }
-#endif
     deinit {
         for worker in promptReadWorkers.values { worker.cancel() }
         for task in promptReadTasks.values { task.cancel() }
@@ -758,12 +726,7 @@ final class WorkspaceStore: ObservableObject {
         // Account identity is restored before replaying account-bound cloud drafts.
         // Local-only pending packages do not require a network account.
         startupTrace.record(.accountRestoreBegin)
-#if DEBUG
-        if let startupTestHarness { await startupTestHarness.restoreAccount() }
-        else { await cloud.restoreSession() }
-#else
         await cloud.restoreSession()
-#endif
         startupTrace.record(.accountRestoreEnd)
         do {
             startupTrace.record(.pendingInventoryBegin)
@@ -792,7 +755,7 @@ final class WorkspaceStore: ObservableObject {
         isBootstrapping = false
 #else
         if verificationMode { return }
-        if let path = UserDefaults.standard.string(forKey:"lastProjectURL"), FileManager.default.fileExists(atPath:path) {
+        if let path = ScrivPreferences.standard.string(forKey:"lastProjectURL"), FileManager.default.fileExists(atPath:path) {
             do { try await open(URL(fileURLWithPath:path)) } catch { errorMessage = "The last project could not open: \(error.localizedDescription)" }
         } else { saveProject() }
         await cloud.restoreSession()
@@ -935,7 +898,7 @@ final class WorkspaceStore: ObservableObject {
                 onSuccess?()
                 if self.project.id == snapshot.id, self.projectURL == package {
                     if self.project.revision == snapshot.revision { self.statusMessage = "Saved on this Mac" }
-                    if !self.verificationMode { UserDefaults.standard.set(package.path,forKey:"lastProjectURL") }
+                    if !self.verificationMode { ScrivPreferences.standard.set(package.path,forKey:"lastProjectURL") }
                 }
             } catch {
                 self.errorMessage = "Could not save \(snapshot.title): \(error.localizedDescription)"
@@ -1056,7 +1019,7 @@ final class WorkspaceStore: ObservableObject {
             throw ScrivError.conflict("The editing lease expired. Your draft remains saved on this Mac. Retry to reacquire the line before applying it.")
         }
         let savedDraft = try editorJournal().load(draft.scope)
-        guard savedDraft?.revisionID == draft.revisionID || (savedDraft == nil && draft.text == draft.sourceEntry.text) else {
+        guard savedDraft?.revisionID == draft.revisionID || (savedDraft == nil && draft.text.utf16.elementsEqual(draft.sourceEntry.text.utf16)) else {
             throw ScrivError.conflict("This draft was replaced or discarded in another editor. Reopen the line before applying it.")
         }
         let completed = { [weak self] in
@@ -1268,7 +1231,8 @@ final class WorkspaceStore: ObservableObject {
         if project.characters.first(where: { $0.id == character.id }) == character { return true }
         return change("Edit character") { p in
             if let i = p.characters.firstIndex(where: { $0.id == character.id }) {
-                if p.characters[i].name != character.name || p.characters[i].aliases != character.aliases { CharacterMentions.bootstrap(&p) }
+                if !p.characters[i].name.utf16.elementsEqual(character.name.utf16)
+                    || !p.characters[i].aliases.elementsEqual(character.aliases, by: { $0.utf16.elementsEqual($1.utf16) }) { CharacterMentions.bootstrap(&p) }
                 p.characters[i] = character
             }
         }
@@ -1806,9 +1770,6 @@ final class WorkspaceStore: ObservableObject {
     private func loadProjectForOpening(at package: URL) async throws -> ScrivProject {
         startupTrace.record(.metadataReadBegin)
         do {
-#if DEBUG
-            try startupTestHarness?.beforeMetadataRead(package)
-#endif
             let value = try await repo().load(at:package)
             startupTrace.record(.metadataReadEnd)
             return value
@@ -1819,17 +1780,11 @@ final class WorkspaceStore: ObservableObject {
         startupTrace.record(.projectOpenBegin)
         defer { startupTrace.record(.projectOpenEnd) }
 #if targetEnvironment(macCatalyst)
-#if DEBUG
-        try startupTestHarness?.validatePackage(requestedURL)
-#endif
         let url: URL
         startupTrace.record(.accessRestoreBegin)
         do { url = try projectFileAccess.restoreProjectAccess(requestedURL) }
         catch { startupTrace.record(.accessRestoreFailed, error: error); throw ProjectOpeningFailure.annotating(error, stage: .restoreAccess) }
         startupTrace.record(.accessRestoreEnd)
-#if DEBUG
-        try startupTestHarness?.validatePackage(url)
-#endif
 #else
         let url = requestedURL
 #endif
@@ -1863,7 +1818,7 @@ final class WorkspaceStore: ObservableObject {
         selectedCueID = sourceCue(for: selectedEntryID)?.id; selectedCharacterID = loaded.characters.first?.id; selectedWordIDs = []; editingIntents = LocalEditIntents()
         history = savedHistory; undoStack = []; redoStack = []; isPlaying = false; playheadMs = 0
         activeThread = nil; messages = []; discussionItemID = nil; cloudHistory = []; showDiscussion = false; discussionGeneration += 1; discussionLoading = false
-        if !verificationMode { UserDefaults.standard.set(url.path,forKey:"lastProjectURL") }; refreshPeerAuthorization(); onProjectChanged?(project,projectURL)
+        if !verificationMode { ScrivPreferences.standard.set(url.path,forKey:"lastProjectURL") }; refreshPeerAuthorization(); onProjectChanged?(project,projectURL)
         if loaded.cloudProjectId != nil, account != nil { syncProject() }
     }
     private func install(_ value: ScrivProject) {
@@ -1876,7 +1831,7 @@ final class WorkspaceStore: ObservableObject {
         cloud.disconnect(); canonicalCheckpoint = nil; dirtyItems = [:]; hasConflicts = false
         project = value; projectURL = rootURL.appendingPathComponent(value.id).appendingPathExtension("scriv")
 #if targetEnvironment(macCatalyst)
-        if !verificationMode { UserDefaults.standard.set(projectURL?.path,forKey:"lastProjectURL") }
+        if !verificationMode { ScrivPreferences.standard.set(projectURL?.path,forKey:"lastProjectURL") }
 #endif
         selectedSceneID = value.scenes.first?.id ?? ""
         selectedEntryID = value.entries(in:selectedSceneID).first?.id; selectedCueID = sourceCue(for: selectedEntryID)?.id; selectedCharacterID = value.characters.first?.id
@@ -2320,7 +2275,7 @@ final class WorkspaceStore: ObservableObject {
         let scope = DiscussionState.draftKey(server:cloud.baseURL.absoluteString,account:account?.id,project:project.id,item:nil)
         guard mentionScope != scope else { return }
         mentionScope = scope; mentionMessages = []; discussionMembers = []; discussionMembersError = nil; memberRequestGeneration += 1; discussionMembersLoading = false
-        readMentionIDs = verificationMode ? [] : Set(UserDefaults.standard.stringArray(forKey:"readMentions." + scope) ?? [])
+        readMentionIDs = verificationMode ? [] : Set(ScrivPreferences.standard.stringArray(forKey:"readMentions." + scope) ?? [])
     }
     func discussionMemberName(_ id: String) -> String {
         discussionMembers.first { $0.id == id }?.name ?? discussionMentionDrafts[discussionDraftKey]?.first { $0.id == id }?.name ?? (id == account?.id ? "You" : "Former member")
@@ -2383,7 +2338,7 @@ final class WorkspaceStore: ObservableObject {
     func isDiscussionMentionUnread(_ message: DiscussionMessage) -> Bool { !readMentionIDs.contains(message.id) }
     private func markDiscussionMentionsRead(threadID: String) {
         readMentionIDs.formUnion(mentionMessages.filter { $0.threadId == threadID }.map(\.id))
-        if !verificationMode { UserDefaults.standard.set(Array(readMentionIDs).sorted(),forKey:"readMentions." + mentionScope) }
+        if !verificationMode { ScrivPreferences.standard.set(Array(readMentionIDs).sorted(),forKey:"readMentions." + mentionScope) }
     }
     func openDiscussionMention(_ message: DiscussionMessage) {
         guard let thread = cloud.threads[message.threadId] else { errorMessage = "This discussion is not loaded. Reconnect the project to recover it."; return }
@@ -2540,6 +2495,10 @@ final class WorkspaceStore: ObservableObject {
     private func configurePeers() {
         peerConfigurationGeneration += 1; let generation = peerConfigurationGeneration
         peerTask?.cancel(); peerMedia.disconnect(); peerDiscoveries = [:]; peerTransferStarted = []; mediaRequests = [:]; automaticMediaAttempts = []; peerProjectId = cloud.projectId
+#if SCRIV_CLI_AUTOMATION
+        // WK peer transport has its own ICE/STUN networking, outside CloudClient.
+        guard cloud.allowsPeerTransport else { peerTransferStatus = "Peer transport disabled for isolated CLI"; return }
+#endif
         guard let projectID = cloud.projectId, let deviceID = cloud.deviceId else { return }
         peerTask = Task { [weak self] in
             guard let self else { return }

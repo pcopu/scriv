@@ -1,0 +1,345 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "checkout-safety-v94",
+      "title": "Validate synthetic billing checkout and portal lifecycle",
+      "featureId": "checkout-safety",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/billing-journey.mjs"
+      ],
+      "plannedActions": [
+        "Complete the existing entitlement journey and freeze unrelated database rows. Configure the strict queued local provider and seed a new synthetic owner team.",
+        "POST checkout with wrong amount, provider 503, invalid JSON and array price replies; verify exact status/error, full new team preservation and zero customer/session creates.",
+        "During a valid price response change the fixture role to member; require 403 before customer/subscription/session requests, then restore the owner role.",
+        "POST first checkout with adversarial price, quantity, currency and success URL body fields; expect price, customer, subscription inventory and checkout creation in exact order.",
+        "Compare the exact customer/checkout forms, synthetic idempotency headers, full new team row and bounded synchronization times; require one customer and one checkout create.",
+        "Wait only until the actual saved expiresAt has elapsed, then POST checkout with provider-open response carrying a different safe URL; reuse that authoritative URL without another create.",
+        "Return complete cached receipt without matching terminal history and require billing_processing with no create. Supply matching canceled history and permit one replacement, then return expired second receipt and permit a third.",
+        "Require exactly three distinct successful checkout keys; use only the same synthetic customer.",
+        "Reject one cached customer mismatch and five unsafe URL forms, then supply a valid cached lookup to prove the retained receipt is still usable with no extra create.",
+        "Supply an active matching subscription and require already_subscribed before cache/creation; supply an unrelated-price past-due subscription and require subscription_exists before cache/creation.",
+        "Open portal with the exact synthetic customer and return URL; then reject a wrong-host portal URL.",
+        "Revoke the synthetic owner session during the portal response and require 401 before URL release; verify unchanged new team row, restore the session, and assert final provider queue/count/R2 invariants."
+      ],
+      "expectedOutcomes": [
+        "Wrong fixed amount returns 503 invalid_team_price; provider HTTP failure, malformed JSON and array replies return 502 billing_provider_error. Each consumes only its price request and leaves the complete new team row and customer/session create counts unchanged. Role changed during the price response produces 403 not_allowed before customer, subscription or checkout requests; the new team row remains exact and the role is restored for later cases. Exact configured customer and fixed USD/price/quantity/return forms are sent despite adversarial client fields. First safe receipt is returned, one customer/session is created, and the new team row differs only by expected customer, free synchronization values and bounded timestamps.",
+        "After real saved expiresAt elapses, a provider-open cached lookup returns its different authoritative safe URL without another customer or checkout create. Complete/unconfirmed receipt blocks replacement. Matching terminal history and expired cached status allow replacements, producing exactly three total creates with distinct keys and one total customer. Cached customer mismatch and HTTP, wrong-host, userinfo, nondefault-port and malformed URLs each return 502 billing_provider_error without creating a checkout. A following valid lookup returns the third receipt URL; customer and create counts remain one and three.",
+        "Active matching entitlement returns 409 already_subscribed, and a nonterminal unrelated-price past-due record returns 409 subscription_exists. Queues contain no cached lookup or checkout create; expected active/free team statuses are observed. Portal sends exact customer/return fields and returns only the safe expected URL. Wrong-host response yields 502; session revocation during a completed provider call yields 401 session_expired without releasing its URL. No provider rollback is claimed. Every case consumes its exact provider queue and preserves the original team, project and event rows. Final totals are 22 checkout cases, one customer, three creates and zero unexpected requests, with empty ASSETS."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "checkout-safety-v94-1",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 22,
+        "end": 26,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "d83779e036784d6bb1ae3fc6662985dd462625073ac3b88a7bc0b681f4eca0fd",
+        "sha256": "1b38126d4fb9e4f1fad89d6e861e893ca3ed50aff4f2030a8a0d7bb310b83d83"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "HTTP status, JSON parsing and top-level object validation are independently distinguished using the price endpoint; no transport exception or null/primitive variant claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Wrong fixed amount returns 503 invalid_team_price; provider HTTP failure, malformed JSON and array replies return 502 billing_provider_error. Each consumes only its price request and leaves the complete new team row and customer/session create counts unchanged."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-2",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 41,
+        "end": 43,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "ed2043d98639c54074f2053bf31000ff3f43ce13a712187f125b06b59052603b",
+        "sha256": "f4c39bc0fe101e2dedef1181ecef7192fd084845647e0932e224439b6160f958"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "Known-valid fixed price is distinguished from unit_amount 1000. Other predicate fields are held valid, not exhaustively varied.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Wrong fixed amount returns 503 invalid_team_price; provider HTTP failure, malformed JSON and array replies return 502 billing_provider_error. Each consumes only its price request and leaves the complete new team row and customer/session create counts unchanged."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-3",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 105,
+        "end": 106,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "711ffdb16923c1864b993f3ef2f879a324ff40c24731f2ebd4555a63015db033",
+        "sha256": "819a086852982fbc68f76a67bdb6c45bdd384a9bca8a454af52842ede20ab6ba"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "Public owner authentication and the recheck helper re-read current role/session state; initial setup is valid and only named callbacks change it.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Role changed during the price response produces 403 not_allowed before customer, subscription or checkout requests; the new team row remains exact and the role is restored for later cases."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-4",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 117,
+        "end": 119,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "d5d08f34d7692d9a17da53194d53017efeab20385525abb0d6ad4cd29d2e111e",
+        "sha256": "5dc5e86adc5a9aa590eaeaaa568ae12133c3203ea624e6cd184dda4fe098150f"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "The configured price is fetched and validated before the owner is rechecked; valid-price role loss prevents creation.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Role changed during the price response produces 403 not_allowed before customer, subscription or checkout requests; the new team row remains exact and the role is restored for later cases."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-5",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 16,
+        "end": 20,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "a31838d73e666b117923b1f9ae4a4ed286ddf4da8886858a50b84843ed752f91",
+        "sha256": "302fa40de09d5908872578d7bcaf5537eb37996ba1754ada0f330305ef8175d1"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "Outgoing provider method/path, version/auth headers, optional form encoding and idempotency headers are checked by the strict interceptor. Transport exception handling is excluded.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Exact configured customer and fixed USD/price/quantity/return forms are sent despite adversarial client fields. First safe receipt is returned, one customer/session is created, and the new team row differs only by expected customer, free synchronization values and bounded timestamps."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-6",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 120,
+        "end": 124,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "2862c7c935096644e8ddb713df866b7fd0987053056fb45334864bea97afa333",
+        "sha256": "47686f75e98e5f6f4c1c7162092049d2198b675efa3165303d5c671e76f28649"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "No-customer fixture triggers one exact customer request, persists its synthetic ID, and later calls reuse it; no customer race or invalid-ID claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Exact configured customer and fixed USD/price/quantity/return forms are sent despite adversarial client fields. First safe receipt is returned, one customer/session is created, and the new team row differs only by expected customer, free synchronization values and bounded timestamps."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-7",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 131,
+        "end": 136,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "2b8ede8277d15ecfdc6b3da47746b3849c30b22426eb4a4c142ad88b5790cbf0",
+        "sha256": "26ee793a96b91bc093159c77b58b559d040825ccabaa002f68f5c28e36894c50"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "Cached receipt is retrieved and authoritatively verified; open status is reused despite elapsed local expiry. Later customer mismatch and unsafe URL cases guard the same route.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "After real saved expiresAt elapses, a provider-open cached lookup returns its different authoritative safe URL without another customer or checkout create."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-8",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 143,
+        "end": 148,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "046920a5b9e8ff0df205463adca08c9606bd1f35580c77bc7a29b02b632b4b3d",
+        "sha256": "95f8f7f6ae4fa62a595988d8e00ad5cd6b5662dbc286d00c87d2271888c44e94"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "Successful create requests use the exact fixed form and new per-attempt keys. Failed-create key reuse is not tested.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Exact configured customer and fixed USD/price/quantity/return forms are sent despite adversarial client fields. First safe receipt is returned, one customer/session is created, and the new team row differs only by expected customer, free synchronization values and bounded timestamps."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-9",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 36,
+        "end": 39,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "db1eac8b51463ec60bfb39acd807b96813726b3684503bc9946e5d17bb4d6d3b",
+        "sha256": "7aa328bd42675ee56c1a1e9311cbcc94cbe2a0906ddcd62eab305a67f97fb4f1"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "Provider URL parsing and fixed HTTPS host/userinfo/nondefault-port rejection are exercised, plus malformed input. Explicit default HTTPS port and other normalization are not negative cases.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Cached customer mismatch and HTTP, wrong-host, userinfo, nondefault-port and malformed URLs each return 502 billing_provider_error without creating a checkout. A following valid lookup returns the third receipt URL; customer and create counts remain one and three."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-10",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 137,
+        "end": 142,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "a043d7e4708a355349928771935bf38c4555c77c86fe538b4d8df9075e94b2fc",
+        "sha256": "24762db0a1f02eefc3cb7c2d41ac3cf163e591471028923c0715fcade88b6a4c"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "Complete cached status requires matching terminal history; expired status retires the prior receipt. No invalid-status variant or storage-error claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Complete/unconfirmed receipt blocks replacement. Matching terminal history and expired cached status allow replacements, producing exactly three total creates with distinct keys and one total customer."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-11",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 149,
+        "end": 154,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "c961f35bf6cd169dfd6df21cfc87ce666be9d9ab9a191c720e43a3b4c037af40",
+        "sha256": "591403678deb04625791eeb79b023da70184547f88aface1185917a38158f57c"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "Valid create response is stored and its attempt retired, observable through later lookup and fresh keys. This is the successful path, not transactional rollback, malformed response, or final-checkout owner-loss coverage.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Complete/unconfirmed receipt blocks replacement. Matching terminal history and expired cached status allow replacements, producing exactly three total creates with distinct keys and one total customer."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-12",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 127,
+        "end": 130,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "215710366891ee0e6e479585b3ef82cc1933638b97d2d627b6f1f186d1a27b5d",
+        "sha256": "a35dbd2c1d837acda183436a5134f6fcd8c0625a13ce0b9447bdde7b12de2b63"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "Current provider synchronization precedes active and any-nonterminal subscription guards, which stop before cached lookup or creation.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Active matching entitlement returns 409 already_subscribed, and a nonterminal unrelated-price past-due record returns 409 subscription_exists. Queues contain no cached lookup or checkout create; expected active/free team statuses are observed."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-13",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 109,
+        "end": 114,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "87f5420d7918dc59c46738beb3ebecc71b90d3f559963f49ba7c20a301d41b0d",
+        "sha256": "e26ef4a67a48c289dcfc0e51255b72895132aad0fc6e7dc64f6db2c4f82baa8d"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "Portal posts exact customer/return form, reauthenticates after its provider call, and validates the allowed returned URL.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Portal sends exact customer/return fields and returns only the safe expected URL. Wrong-host response yields 502; session revocation during a completed provider call yields 401 session_expired without releasing its URL. No provider rollback is claimed."
+      ]
+    },
+    {
+      "rangeId": "checkout-safety-v94-14",
+      "featureId": "checkout-safety",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 192,
+        "end": 196,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "aba1f99a8a7183a6620a35152321a36cba40c74118621488aa8423ad2b592610",
+        "sha256": "d3a253a5302908b83f055edd9995c21d1cf0f63780de66b283216da12c2ac41b"
+      },
+      "scenarioIds": [
+        "checkout-safety-v94"
+      ],
+      "rationale": "Public owner/rate/body routing enters the serialized coordinator with client body drained; fixed-form checks in the earlier create step show adversarial fields are ignored. No rate/body-limit or malformed-route boundary claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent frozen review required. Real local HTTP with strict synthetic provider responses. No live billing, concurrency, rollback, provider idempotency enforcement, failed-create retry, native or measured execution claim.",
+      "proposedAssertions": [
+        "Portal sends exact customer/return fields and returns only the safe expected URL. Wrong-host response yields 502; session revocation during a completed provider call yields 401 session_expired without releasing its URL. No provider rollback is claimed."
+      ]
+    }
+  ]
+}

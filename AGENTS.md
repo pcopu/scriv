@@ -1,5 +1,15 @@
 # Scriv Agent Guidance
 
+## Tracer
+
+Use the Tracer skill and CLI for testing and source/action/journey mapping;
+maintain the reviewed links as code and journeys change. Run real app journeys
+through `tracer app -- test`; keep mapping, tooling checks and native results
+distinct. Do not add new implementation-level test suites. Legacy implementation suites were removed at the user’s explicit request on
+2026-11-09. Keep CLI journeys only, including black-box local service journeys
+through the Scriv CLI. Preserve the frozen baseline ledger and unverified gaps;
+removal is not evidence of behavioral parity. See docs/testing/cli-only-tests.md.
+
 ## CLI-Only Apple Builds
 
 The user wants to keep Xcode.app and simulator runtimes uninstalled on this
@@ -7,8 +17,11 @@ Mac. Reuse the standalone Command Line Tools and separately retained Apple
 SDKs. Do not reinstall Xcode or simulators as an automatic response to a build
 failure. Running `xcodebuild` from a terminal still requires Xcode.
 
-Scriv's current application is UIKit with Mac Catalyst. Preserve that target;
-the legacy AppKit/SwiftUI app under `apps/mac` is not a replacement for it.
+Scriv's application is UIKit with Mac Catalyst. The old AppKit/SwiftUI target
+and its packaging path were retired on 2026-11-09. `apps/mac` still contains
+live ScrivCore, shared services and resources required by Catalyst; do not
+delete that directory. Preserve the cloud server, updater and runtime helper.
+See docs/verification/appkit-retirement-20261109.md for scope and recovery.
 `scripts/build-catalyst.sh` currently calls `xcodebuild`, so it does not yet
 provide a complete Xcode-free build.
 

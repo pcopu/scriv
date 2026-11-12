@@ -1,5 +1,7 @@
 # UIKit migration contract
 
+> Testing update, 2026-11-09: legacy test suites and runners referenced below were removed. Prior results remain historical, not current commands or proof of replacement coverage. See [current CLI-only testing](../../docs/testing/cli-only-tests.md).
+
 The preserved SwiftUI checkpoint is `979388b4da4af6904c55c28c7b03797fe46a1703`. Its native rebuild remains pending on available Mac disk space; do not label it native-passed.
 
 The new application target is **UIKit + Mac Catalyst only**. Do not compile SwiftUI views, hosting controllers, NSViewRepresentable, or the legacy `App.swift` into this target. Existing domain models, cloud authorization, private recovery and immutable image-version behavior must remain intact.

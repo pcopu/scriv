@@ -1,0 +1,953 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "editor-ui-script-structure",
+      "title": "Existing script-structure whole journey",
+      "featureId": "editor-ui",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/script-structure.mjs"
+      ],
+      "plannedActions": [
+        "test --scenario journeys/script-structure"
+      ],
+      "expectedOutcomes": [
+        "Scene-menu navigation updates the mounted row identity set, removes old scene rows, constructs missing rows and presents the current scene membership. The witness compares exact native line identities/text and full unchanged model/packages; empty-scene creation also calls this helper at line 107. No layout performance or scrub cancellation behavior is claimed.",
+        "An Add direction action sets requested editing, then pendingCaret is resolved only for the active session/current navigation. setEditing receives offset zero and selectAll; the witness requires the new native editor select the entire Direction placeholder and subsequently exact authored text. afterWordID playback resolution is not exercised.",
+        "Requested new-entry editing is consumed once and forwarded to beginEditing; actual new identity, placeholder selection, edited text and complete saved model are asserted. No stale request rejection or scroll geometry claim.",
+        "The normal new-entry path captures current navigation and pending caret, selects the entry and begins the draft session, then refreshes mounted controls. preservingPlayhead is false; that conditional branch and playback restoration are excluded.",
+        "Stored scene menu exposes ordered scene choices with current selection state and New/Rename/Delete titles. Only selection and New scene callbacks dispatch: the semantic CLI scope rejects Rename/Delete before callbacks. Their construction is associated with asserted menu content, never their alert handlers or stale-context defenses.",
+        "Row installs the editor delegate and editor/display identifiers; the actual new editor is editable/focused and text is observed through its stable identifier. No display delegate gesture, display editing/selectability/data-detector configuration or visual styling claim.",
+        "New row enters editing, hides display, exposes editor and installs exact placeholder text before selecting all. Subsequent authored text is independently checked. No marked-text rejection, paragraph styling or sizing claim; these statements are support context only.",
+        "Native idle row text comes from attributed-text construction and is assigned to the displayed UITextView; scene navigation compares exact text for each expected identity. Attributes and intrinsic-size invalidation are not asserted.",
+        "Attributed string preserves each nonempty source entry text; assertion reads exact native row text. Empty placeholders, font/color/paragraph attributes and mention/highlight styling are excluded."
+      ]
+    },
+    {
+      "id": "editor-ui-script-merge",
+      "title": "Existing script-merge whole journey",
+      "featureId": "editor-ui",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/script-merge.mjs"
+      ],
+      "plannedActions": [
+        "test --scenario journeys/script-merge"
+      ],
+      "expectedOutcomes": [
+        "Public delete-backward reaches mounted ScriptTextView.mergeAtStart then changeBoundary. Normal local path checks active session and unmarked editor, finishes text, captures scene/navigation and previous entry, acquires editing access and verifies unchanged source before mutation. Witness demands exact previous identity/caret, removed native row and one callback. Rejecting race, lease-denial, cancellation and stale-source arms are not witnessed.",
+        "Successful merge uses real store boundary operation, releases edit ownership and reopens returned previous identity at original UTF-16 caret. The witness requires that focus/caret without repair and exact removed native row, plus independent saved-model oracle. Split variants in this journey are setup; failure fallback is not claimed.",
+        "Installed Command-Return resolves the normal nonmodal selected-entry path and begins editing; witness checks actual focused editable native entry and unchanged loaded baseline. Modal/boundary denial and active-session Finish branch are excluded.",
+        "Native Unicode selected-deletion case explicitly checks smartInsertDeleteDisabled on the actual mounted editor before deletion and zero merge callbacks. Only that configuration value is asserted; other autocorrection flags and accessibility styling on these shared physical lines are excluded."
+      ]
+    },
+    {
+      "id": "editor-ui-project-history",
+      "title": "Existing project-history whole journey",
+      "featureId": "editor-ui",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/project-history.mjs"
+      ],
+      "plannedActions": [
+        "test --scenario journeys/project-history"
+      ],
+      "expectedOutcomes": [
+        "Opening History chooses the default prior local revision after reloadEvents. choose reads event.snapshot asynchronously and installs preview only for current selection/context. Prior entry card asserts original added text and exact technical JSON; repeated new sheets start collapsed; this does not isolate choose clearing an already expanded disclosure. No nil selection, cloud fetch, task cancellation or stale response rejection claim.",
+        "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded.",
+        "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed.",
+        "Technical details UIAction toggles the selected entry card JSON while readable columns expose the prior original value. Witness parses exact saved entry fields, checks noneditable payload and its removal on collapse. Fonts, colors and layout geometry are excluded.",
+        "Technical JSON is produced with the project encoder and parsed back against the complete saved original entry. Only successful bounded small payload encoding is witnessed; encoding-failure and 40k truncation branches are excluded.",
+        "Revision preview constructs summary, scene and entry text from the selected prior snapshot. Witness scopes title/scene/original read-only text to summary subtree and excludes working text. Time labels, layout and multi-scene ordering are not asserted.",
+        "History payload uses ScriptTextView configured noneditable/selectable with exact text. Witness explicitly checks read-only technical JSON and complete field equality; font/monospace/color are not asserted.",
+        "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted.",
+        "Normal local summary load reads current package summaries and reloads footer metadata; exact project title/scene-count footer precedes real Open project and full loaded-model comparison. No cancellation, stale-generation rejection, metadata failure or thumbnail behavior claim."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "editor-ui-v2-1",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 259,
+        "end": 260,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "3b1b82075d066b97ae439137b1549f7f8bb5261cd2cbeab3c8d165a21b885ca5",
+        "sha256": "403ba330b7562b3680b43f982f6db0ee1b478950aebd8f62f523bfd19bf03aa1"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "Scene-menu navigation updates the mounted row identity set, removes old scene rows, constructs missing rows and presents the current scene membership. The witness compares exact native line identities/text and full unchanged model/packages; empty-scene creation also calls this helper at line 107. No layout performance or scrub cancellation behavior is claimed. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Scene-menu navigation updates the mounted row identity set, removes old scene rows, constructs missing rows and presents the current scene membership. The witness compares exact native line identities/text and full unchanged model/packages; empty-scene creation also calls this helper at line 107. No layout performance or scrub cancellation behavior is claimed."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-2",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 262,
+        "end": 267,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "3a281f31aeed7bd211baca913fdf1fdfbdf292f1c66c74c76f69bfd6620896cc",
+        "sha256": "24ab2646e1b369447043e9dd4a8992e506a70bf17a0d16bdaa0773067fd79841"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "Scene-menu navigation updates the mounted row identity set, removes old scene rows, constructs missing rows and presents the current scene membership. The witness compares exact native line identities/text and full unchanged model/packages; empty-scene creation also calls this helper at line 107. No layout performance or scrub cancellation behavior is claimed. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Scene-menu navigation updates the mounted row identity set, removes old scene rows, constructs missing rows and presents the current scene membership. The witness compares exact native line identities/text and full unchanged model/packages; empty-scene creation also calls this helper at line 107. No layout performance or scrub cancellation behavior is claimed."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-3",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 290,
+        "end": 296,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "9302bfda69ac348bd6f333aa4515d703908a27bed5d3eb470742076040e84610",
+        "sha256": "274069d4861e9ced9c151624fbda0d669598eab629e15a3455c0a7218db355d7"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "An Add direction action sets requested editing, then pendingCaret is resolved only for the active session/current navigation. setEditing receives offset zero and selectAll; the witness requires the new native editor select the entire Direction placeholder and subsequently exact authored text. afterWordID playback resolution is not exercised. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "An Add direction action sets requested editing, then pendingCaret is resolved only for the active session/current navigation. setEditing receives offset zero and selectAll; the witness requires the new native editor select the entire Direction placeholder and subsequently exact authored text. afterWordID playback resolution is not exercised."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-4",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 331,
+        "end": 334,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "1ef76ebe75d22f58e02ae097e00831f1c479d183f3fc793ae289f6463c0ff5e6",
+        "sha256": "32410a41cf10e6c733a230d9974b7c308800275682921144d233eac0896c8089"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "Requested new-entry editing is consumed once and forwarded to beginEditing; actual new identity, placeholder selection, edited text and complete saved model are asserted. No stale request rejection or scroll geometry claim. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Requested new-entry editing is consumed once and forwarded to beginEditing; actual new identity, placeholder selection, edited text and complete saved model are asserted. No stale request rejection or scroll geometry claim."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-5",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 75,
+        "end": 77,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "df5a2719620686d166e70736147372f2cba34a17fe65c4233bac7d6885562ca4",
+        "sha256": "b36c73ac53697c911ddc6d597dc34ffe5e4284e7729fffdd24aed577fc71ca0b"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "The normal new-entry path captures current navigation and pending caret, selects the entry and begins the draft session, then refreshes mounted controls. preservingPlayhead is false; that conditional branch and playback restoration are excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "The normal new-entry path captures current navigation and pending caret, selects the entry and begins the draft session, then refreshes mounted controls. preservingPlayhead is false; that conditional branch and playback restoration are excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-6",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 80,
+        "end": 80,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "45479b7863cb0c0d68fb14160e7770ea4d85ee17f2f8e8cc0eee03b6a2c4d16e",
+        "sha256": "9e31f8a27f243c60a1e60aae0dee1f5a86b851f55118826b39d1c2c6101e2c9f"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "The normal new-entry path captures current navigation and pending caret, selects the entry and begins the draft session, then refreshes mounted controls. preservingPlayhead is false; that conditional branch and playback restoration are excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "The normal new-entry path captures current navigation and pending caret, selects the entry and begins the draft session, then refreshes mounted controls. preservingPlayhead is false; that conditional branch and playback restoration are excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-7",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 82,
+        "end": 83,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "4eafe87afb2c1cd22a6994871cdbe089505416f4c72a6df8244e45b40e1e91ac",
+        "sha256": "2e4d031f6031363029893998acb4f62a6e21e3f1b8178010960e2b428e117805"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "The normal new-entry path captures current navigation and pending caret, selects the entry and begins the draft session, then refreshes mounted controls. preservingPlayhead is false; that conditional branch and playback restoration are excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "The normal new-entry path captures current navigation and pending caret, selects the entry and begins the draft session, then refreshes mounted controls. preservingPlayhead is false; that conditional branch and playback restoration are excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-8",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 441,
+        "end": 450,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "15359d4c8ace1683d17c03f5029b4176ef353f031d4f393d1d2aeeebe4cf7fe0",
+        "sha256": "ac7c6c0bc28d9eda9342158dcfed1572679a2d149ab596db354d56a2c0a19f2c"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "Stored scene menu exposes ordered scene choices with current selection state and New/Rename/Delete titles. Only selection and New scene callbacks dispatch: the semantic CLI scope rejects Rename/Delete before callbacks. Their construction is associated with asserted menu content, never their alert handlers or stale-context defenses. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Stored scene menu exposes ordered scene choices with current selection state and New/Rename/Delete titles. Only selection and New scene callbacks dispatch: the semantic CLI scope rejects Rename/Delete before callbacks. Their construction is associated with asserted menu content, never their alert handlers or stale-context defenses."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-9",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+        "start": 141,
+        "end": 141,
+        "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d",
+        "spanSha256": "308d90849f12f6b26bae863880e60bd68eaebff7569eb639d5d78046eb657f95",
+        "sha256": "c07840a1fd16335f4cbc6fa29c4985c377db316f43a9aabeef992ce6b3605e5e"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "Row installs the editor delegate and editor/display identifiers; the actual new editor is editable/focused and text is observed through its stable identifier. No display delegate gesture, display editing/selectability/data-detector configuration or visual styling claim. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Row installs the editor delegate and editor/display identifiers; the actual new editor is editable/focused and text is observed through its stable identifier. No display delegate gesture, display editing/selectability/data-detector configuration or visual styling claim."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-10",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+        "start": 143,
+        "end": 145,
+        "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d",
+        "spanSha256": "226d6dcf03096bb9db3a34db91616ee924840d46e5201337d66d4d8d186f654e",
+        "sha256": "5c0a4f73810d11504ad2ed5b46cb7165b28b6478183dadf29cff8cb9f90a330e"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "Row installs the editor delegate and editor/display identifiers; the actual new editor is editable/focused and text is observed through its stable identifier. No display delegate gesture, display editing/selectability/data-detector configuration or visual styling claim. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Row installs the editor delegate and editor/display identifiers; the actual new editor is editable/focused and text is observed through its stable identifier. No display delegate gesture, display editing/selectability/data-detector configuration or visual styling claim."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-11",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+        "start": 227,
+        "end": 237,
+        "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d",
+        "spanSha256": "a83c70dc2ad306ee19c85cb982d4765cb8d01943beb46604e8485805afff83ec",
+        "sha256": "e07dc69757def65e532966e9257897704516a423462e4868e09b850ff64e9118"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "New row enters editing, hides display, exposes editor and installs exact placeholder text before selecting all. Subsequent authored text is independently checked. No marked-text rejection, paragraph styling or sizing claim; these statements are support context only. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "New row enters editing, hides display, exposes editor and installs exact placeholder text before selecting all. Subsequent authored text is independently checked. No marked-text rejection, paragraph styling or sizing claim; these statements are support context only."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-12",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+        "start": 239,
+        "end": 241,
+        "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d",
+        "spanSha256": "32189ef199413a05e811a8e337df856e529f916c58dedc82e30bd25a4fa6b2f6",
+        "sha256": "587e5b7a794bd786fabf4b12560e50172b3c462a7a5e79eb34318c89de4ca893"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "New row enters editing, hides display, exposes editor and installs exact placeholder text before selecting all. Subsequent authored text is independently checked. No marked-text rejection, paragraph styling or sizing claim; these statements are support context only. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "New row enters editing, hides display, exposes editor and installs exact placeholder text before selecting all. Subsequent authored text is independently checked. No marked-text rejection, paragraph styling or sizing claim; these statements are support context only."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-13",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+        "start": 217,
+        "end": 218,
+        "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d",
+        "spanSha256": "58358f7e835e7bd5d6252c810a882bc3f56b3f1dc9835e14268408bf18c25e28",
+        "sha256": "a0010b5db746ed1b76386bd4dd81e3c4a0712a91f2a64ad142c92b363db27cc8"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "Native idle row text comes from attributed-text construction and is assigned to the displayed UITextView; scene navigation compares exact text for each expected identity. Attributes and intrinsic-size invalidation are not asserted. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Native idle row text comes from attributed-text construction and is assigned to the displayed UITextView; scene navigation compares exact text for each expected identity. Attributes and intrinsic-size invalidation are not asserted."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-14",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+        "start": 298,
+        "end": 300,
+        "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d",
+        "spanSha256": "5275b7c8269f1318f94d34f7b2d6679c3e114bbeb9a1b2e9bd3ab75f32d1d1a2",
+        "sha256": "86f182ccfd0b85a7100816e1a10c0b33a3e3e9602bbecabddb41e9a02ae4d5f5"
+      },
+      "scenarioIds": [
+        "editor-ui-script-structure"
+      ],
+      "rationale": "Attributed string preserves each nonempty source entry text; assertion reads exact native row text. Empty placeholders, font/color/paragraph attributes and mention/highlight styling are excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Attributed string preserves each nonempty source entry text; assertion reads exact native row text. Empty placeholders, font/color/paragraph attributes and mention/highlight styling are excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-15",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 129,
+        "end": 148,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "8eda0c14a7f46f55d9213555c29608ffb52914457264ac776d0abf2d3d170ace",
+        "sha256": "d93ca85d59e93d64f7fffe43c0102e6c29dead26246f2738eb51e7fd80e14f07"
+      },
+      "scenarioIds": [
+        "editor-ui-script-merge"
+      ],
+      "rationale": "Public delete-backward reaches mounted ScriptTextView.mergeAtStart then changeBoundary. Normal local path checks active session and unmarked editor, finishes text, captures scene/navigation and previous entry, acquires editing access and verifies unchanged source before mutation. Witness demands exact previous identity/caret, removed native row and one callback. Rejecting race, lease-denial, cancellation and stale-source arms are not witnessed. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Public delete-backward reaches mounted ScriptTextView.mergeAtStart then changeBoundary. Normal local path checks active session and unmarked editor, finishes text, captures scene/navigation and previous entry, acquires editing access and verifies unchanged source before mutation. Witness demands exact previous identity/caret, removed native row and one callback. Rejecting race, lease-denial, cancellation and stale-source arms are not witnessed."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-16",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 152,
+        "end": 152,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "c78410b4fd0f1d017d5122ee60c662136aae39da6e2b63d5c97a82897f2a524d",
+        "sha256": "0d223339ff3bf012a25cd30d3c1b2de869652c87cf7b26fd18d72c882703d822"
+      },
+      "scenarioIds": [
+        "editor-ui-script-merge"
+      ],
+      "rationale": "Successful merge uses real store boundary operation, releases edit ownership and reopens returned previous identity at original UTF-16 caret. The witness requires that focus/caret without repair and exact removed native row, plus independent saved-model oracle. Split variants in this journey are setup; failure fallback is not claimed. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Successful merge uses real store boundary operation, releases edit ownership and reopens returned previous identity at original UTF-16 caret. The witness requires that focus/caret without repair and exact removed native row, plus independent saved-model oracle. Split variants in this journey are setup; failure fallback is not claimed."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-17",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 155,
+        "end": 158,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "45784e1207ee26b5df7dfaed4e9f8d88d984f9c149207bf89a44a4df3561ee24",
+        "sha256": "f6b712bd925e6030a094f9e7831e0b25cd52a09977566adcf0b46217018f1991"
+      },
+      "scenarioIds": [
+        "editor-ui-script-merge"
+      ],
+      "rationale": "Successful merge uses real store boundary operation, releases edit ownership and reopens returned previous identity at original UTF-16 caret. The witness requires that focus/caret without repair and exact removed native row, plus independent saved-model oracle. Split variants in this journey are setup; failure fallback is not claimed. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Successful merge uses real store boundary operation, releases edit ownership and reopens returned previous identity at original UTF-16 caret. The witness requires that focus/caret without repair and exact removed native row, plus independent saved-model oracle. Split variants in this journey are setup; failure fallback is not claimed."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-18",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 70,
+        "end": 71,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "d22768edd95c4bae2ff1158c85bf35298395f6634c4fcaa38f96811780e311f4",
+        "sha256": "f8f374654c4b744d0b80181ec3eb537a08e626f37f832f7992582e67d3770a25"
+      },
+      "scenarioIds": [
+        "editor-ui-script-merge"
+      ],
+      "rationale": "Installed Command-Return resolves the normal nonmodal selected-entry path and begins editing; witness checks actual focused editable native entry and unchanged loaded baseline. Modal/boundary denial and active-session Finish branch are excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Installed Command-Return resolves the normal nonmodal selected-entry path and begins editing; witness checks actual focused editable native entry and unchanged loaded baseline. Modal/boundary denial and active-session Finish branch are excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-19",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 73,
+        "end": 74,
+        "fileSha256": "a93221685fce6fdb9c671c16293855b404cdefa7c5c600a8618d2efc72f8957e",
+        "spanSha256": "4179bb1214e8294edfc36031d1049f4e8de19a8a8de0840c358e2383066c9acf",
+        "sha256": "c0f2c0f79f2b2ba54d93db6897ff959ab5f447462f337bb63bef4950d767c831"
+      },
+      "scenarioIds": [
+        "editor-ui-script-merge"
+      ],
+      "rationale": "Installed Command-Return resolves the normal nonmodal selected-entry path and begins editing; witness checks actual focused editable native entry and unchanged loaded baseline. Modal/boundary denial and active-session Finish branch are excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Installed Command-Return resolves the normal nonmodal selected-entry path and begins editing; witness checks actual focused editable native entry and unchanged loaded baseline. Modal/boundary denial and active-session Finish branch are excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-20",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+        "start": 64,
+        "end": 64,
+        "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d",
+        "spanSha256": "28e36230868ff507ecf4745dabb2b8d0832ad7adbc198b5ed8b810bd7fb39b77",
+        "sha256": "02d627fa49aa9951abc09514e05a22cd3df6c4d9f38266953c96a1b9b60948d7"
+      },
+      "scenarioIds": [
+        "editor-ui-script-merge"
+      ],
+      "rationale": "Native Unicode selected-deletion case explicitly checks smartInsertDeleteDisabled on the actual mounted editor before deletion and zero merge callbacks. Only that configuration value is asserted; other autocorrection flags and accessibility styling on these shared physical lines are excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Native Unicode selected-deletion case explicitly checks smartInsertDeleteDisabled on the actual mounted editor before deletion and zero merge callbacks. Only that configuration value is asserted; other autocorrection flags and accessibility styling on these shared physical lines are excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-21",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 114,
+        "end": 125,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "660e294a8bf7b21c56cf3442f383ec4d51621880bd36a083a527159821570498",
+        "sha256": "15e5453e83e61a2db0b60f59c6b18a0892c2215f4ac6e48ec9e5491a92a80a9e"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Opening History chooses the default prior local revision after reloadEvents. choose reads event.snapshot asynchronously and installs preview only for current selection/context. Prior entry card asserts original added text and exact technical JSON; repeated new sheets start collapsed; this does not isolate choose clearing an already expanded disclosure. No nil selection, cloud fetch, task cancellation or stale response rejection claim. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Opening History chooses the default prior local revision after reloadEvents. choose reads event.snapshot asynchronously and installs preview only for current selection/context. Prior entry card asserts original added text and exact technical JSON; repeated new sheets start collapsed; this does not isolate choose clearing an already expanded disclosure. No nil selection, cloud fetch, task cancellation or stale response rejection claim."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-22",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 149,
+        "end": 151,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "5892b490f416a3b7a4a9fe7f0d42d31090bc2d21d12044a066a3b176e9a63545",
+        "sha256": "c031b95b0ab0f2fbbc612a0cf2c0559971e9f140379343b1d2094715218e2275"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-23",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 154,
+        "end": 154,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "c7f717c4f221be20db7710c7c6eb83a220aea541b56c8a6ad9dcd8631bc54338",
+        "sha256": "9eaafdad9bf0b45897ea328b4ae6d5a2f69bb503fb5621a78adb7479da2e3107"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-24",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 157,
+        "end": 159,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "6acd8fedb67b13fc467da06a90bc9087b481b3406b4332f632a5aef370c69f23",
+        "sha256": "6b0502e1bd5f98e26942d15d97292ddcd463d4c963c4693db569533f6de4da37"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-25",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 161,
+        "end": 164,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "95d60b17f6333bbfa95281851283ac068c0787ba766a33c12b4ea7699a8d309d",
+        "sha256": "c7614e7f3a84e729a04d4e6be7e6ef47717c1c7082b46a8fa85643f65bc9208c"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-26",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 185,
+        "end": 186,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "2be2a654541b69462200ec5ef518712be602cc9848c4b595dc16ce536b21718c",
+        "sha256": "8652c3022980870d6a7de03d9addef0d414c21579c13937e82d05e45234617ce"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-27",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 188,
+        "end": 188,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "173abddfe1617aa22b7dd1ca5d54ee8d6d799492e4dcbc39213aa5378c5b8caf",
+        "sha256": "b93e47836aae4f33ca6c25f9d922784dc705f434ef7c5fe5f38dd65e50ef8a38"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-28",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 190,
+        "end": 190,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "0c8af47b835f8b46d18c8ad9a5b84e629a01a409230cb0184b25a4937dbaf6b2",
+        "sha256": "5bddb4941edcad6d7d4b51bc45232307702ef0d688b97024326ac3a6a3769a4a"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-29",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 192,
+        "end": 192,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "ad87eb2b6d71edcd4b92e3362cf8a55db33546774749005cc64ab0eb2dbb530c",
+        "sha256": "694747857974029aec69fbcde42636ccb1669917f1ab1ccf638d8a1b8208c8fa"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-30",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 194,
+        "end": 194,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "75c48dc6ef93bc2712f8cff82402bf391784424038826f6f686890fd1c11e4ce",
+        "sha256": "0ad7a5ce3ac0de20f1673fc340b046af6968eed49ffb694139d6f53b6a0f6ef4"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-31",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 233,
+        "end": 241,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "a863ec7124bc495a613a733b42a3df86f197dfa30f8d0da3f4a254bc60d5ca52",
+        "sha256": "b7f29e2e1ab9a62cd77c1d56d5e3cb03b0d12d9194822ef00b5b7a916a13fb63"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Technical details UIAction toggles the selected entry card JSON while readable columns expose the prior original value. Witness parses exact saved entry fields, checks noneditable payload and its removal on collapse. Fonts, colors and layout geometry are excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Technical details UIAction toggles the selected entry card JSON while readable columns expose the prior original value. Witness parses exact saved entry fields, checks noneditable payload and its removal on collapse. Fonts, colors and layout geometry are excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-32",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 287,
+        "end": 290,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "864e77ef84b9eeb5548a55ff11af819802ed564d4f784806d0bd37a2e2fc41fd",
+        "sha256": "4c69317f31988b33557a730fab60e077f542bb2a58e36a850c402f72099b34bc"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Technical JSON is produced with the project encoder and parsed back against the complete saved original entry. Only successful bounded small payload encoding is witnessed; encoding-failure and 40k truncation branches are excluded. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Technical JSON is produced with the project encoder and parsed back against the complete saved original entry. Only successful bounded small payload encoding is witnessed; encoding-failure and 40k truncation branches are excluded."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-33",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 245,
+        "end": 250,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "8f6ee605c4e19b9d111f5ab1f704d17d2b4ec3eccc993987fcfe583bda51b2fb",
+        "sha256": "6a5d931d682eb4ac975c92f76710395e692cc75c15363f2c8c954d85d4125207"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Revision preview constructs summary, scene and entry text from the selected prior snapshot. Witness scopes title/scene/original read-only text to summary subtree and excludes working text. Time labels, layout and multi-scene ordering are not asserted. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Revision preview constructs summary, scene and entry text from the selected prior snapshot. Witness scopes title/scene/original read-only text to summary subtree and excludes working text. Time labels, layout and multi-scene ordering are not asserted."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-34",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 252,
+        "end": 254,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "ce61c2430236fd64261558e75d217398a6a14d3cc839baf6d3102c898e25c0bc",
+        "sha256": "f29671fb43a6d6eee1c38f29471269ce12167aae8f03429f0c12854e8d0b0b6a"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Revision preview constructs summary, scene and entry text from the selected prior snapshot. Witness scopes title/scene/original read-only text to summary subtree and excludes working text. Time labels, layout and multi-scene ordering are not asserted. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Revision preview constructs summary, scene and entry text from the selected prior snapshot. Witness scopes title/scene/original read-only text to summary subtree and excludes working text. Time labels, layout and multi-scene ordering are not asserted."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-35",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 283,
+        "end": 286,
+        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
+        "spanSha256": "7f0f1f51191cd9bcb3c70074505fadaafd2259cd3767df17ca78ae720a02b357",
+        "sha256": "dbbd65dc6834b8a30a2a8adcaec6db5b958e157133f4e7e5536ef1ab8c713cf5"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "History payload uses ScriptTextView configured noneditable/selectable with exact text. Witness explicitly checks read-only technical JSON and complete field equality; font/monospace/color are not asserted. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "History payload uses ScriptTextView configured noneditable/selectable with exact text. Witness explicitly checks read-only technical JSON and complete field equality; font/monospace/color are not asserted."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-36",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+        "start": 106,
+        "end": 107,
+        "fileSha256": "9d390ffdf0503054665f55c6371e472fc1ca5855f72223494b433c418d77bf06",
+        "spanSha256": "1d17c95c972147907b3cbcff860018b5a064a46bb566bcdb808190fee8512eaa",
+        "sha256": "78b5f9c7a9129d988936a35e3ff35409e71b0aabe79fc26017ee87e137a14421"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-37",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+        "start": 111,
+        "end": 111,
+        "fileSha256": "9d390ffdf0503054665f55c6371e472fc1ca5855f72223494b433c418d77bf06",
+        "spanSha256": "df0f88449e7e29567caae4daf02346d371cebd2be672359c0912ea1048a90a19",
+        "sha256": "5413a2d573c1574158c3c7a16f4bf2c24fc0b6346e4fcab0fc7f4b78f31d4259"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-38",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+        "start": 113,
+        "end": 116,
+        "fileSha256": "9d390ffdf0503054665f55c6371e472fc1ca5855f72223494b433c418d77bf06",
+        "spanSha256": "f7b03e2d560bc967fdace1d3629959685b357fabe915608ed1cc40258df1195b",
+        "sha256": "8f36e1defaace21b97c66e2d71c3b9c471cdd7c7a0902cb6b23e4d3bdee1ce45"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-39",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+        "start": 119,
+        "end": 120,
+        "fileSha256": "9d390ffdf0503054665f55c6371e472fc1ca5855f72223494b433c418d77bf06",
+        "spanSha256": "385d80567a530847bf0f47748ddb0a9406a7e8a0d73705d4d343957299d53b59",
+        "sha256": "fed4ad8714efbbc0cc104f79d50d954e30f7b1e83894f467ae3b0770e56ec817"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted."
+      ]
+    },
+    {
+      "rangeId": "editor-ui-v2-40",
+      "featureId": "editor-ui",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+        "start": 151,
+        "end": 160,
+        "fileSha256": "9d390ffdf0503054665f55c6371e472fc1ca5855f72223494b433c418d77bf06",
+        "spanSha256": "6d401caef2162ef905010d8c95cac9e9defc3141d72519182983a2b720ecac32",
+        "sha256": "e02337895329b71b2cbd39234763423132ff298befba129d8775f147c96fd218"
+      },
+      "scenarioIds": [
+        "editor-ui-project-history"
+      ],
+      "rationale": "Normal local summary load reads current package summaries and reloads footer metadata; exact project title/scene-count footer precedes real Open project and full loaded-model comparison. No cancellation, stale-generation rejection, metadata failure or thumbnail behavior claim. Static reviewed candidate only; native execution remains NOT RUN.",
+      "confidence": "high",
+      "uncertainty": "Native NOT RUN; guards and mixed physical statements support only the precise witness. No independent branch, appearance, ordering or disclosure-reset causality claim.",
+      "proposedAssertions": [
+        "Normal local summary load reads current package summaries and reloads footer metadata; exact project title/scene-count footer precedes real Open project and full loaded-model comparison. No cancellation, stale-generation rejection, metadata failure or thumbnail behavior claim."
+      ]
+    }
+  ]
+}

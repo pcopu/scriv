@@ -501,6 +501,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         statusDot.isAccessibilityElement = true
         statusDot.contentMode = .scaleAspectFit; statusDot.widthAnchor.constraint(equalToConstant: 13).isActive = true
         followSwitch.transform = CGAffineTransform(scaleX: 0.7, y: 0.7); followSwitch.addTarget(self, action: #selector(followChanged), for: .valueChanged)
+        zoomButton.accessibilityIdentifier = "script-zoom"
         zoomButton.titleLabel?.font = .systemFont(ofSize: 11); zoomButton.showsMenuAsPrimaryAction = true
         let row = ScrivUIKitTheme.stack([statusDot, footerLabel, UIView(), zoomButton, ScrivUIKitTheme.label("Follow playback", size: 12, color: ScrivUIKitTheme.secondary), followSwitch], axis: .horizontal, spacing: 10); row.alignment = .center
         let container = UIView(); container.addSubview(row); row.scrivPinEdges(to: container, insets: NSDirectionalEdgeInsets(top: 8, leading: 18, bottom: 8, trailing: 12)); return container
@@ -538,3 +539,30 @@ extension ScrivUIKitFeatures {
         router.register(.history) { _, store in HistoryController(store: store) }
     }
 }
+
+#if SCRIV_CLI_AUTOMATION
+extension ScriptScreenController {
+    /// Read-only catalog mutation fence. Never finishes, saves or discards a draft.
+    /// boundaryPending tracks work; a completed boundaryTask handle may stay cached.
+    func cliAllowsCatalogMutation() -> Bool {
+        contextIsCurrent && store.tab == .characters && presentedViewController == nil &&
+        !session.active && !session.acquiring && !session.applying && !session.pending &&
+        !session.requiresReview && session.issue == nil &&
+        boundaryPending == nil && pendingCaret == nil
+    }
+    /// Read-only membership/readiness check. No closure, draft, private state,
+    /// or action is exported; insertion still uses the real public delegate.
+    func cliOwnsReadyInsertion(editor: ScriptTextView, row: ScriptEntryRow) -> Bool {
+        guard store.tab == .script, contextIsCurrent, presentedViewController == nil,
+              rows[row.entryID] === row, row.editor === editor,
+              store.selectedEntryID == row.entryID, session.entryID == row.entryID,
+              session.active, !session.acquiring, !session.applying,
+              !session.requiresReview, session.issue == nil, !session.needsRebase,
+              session.navigation == store.navigationContext,
+              boundaryPending == nil, boundaryTask == nil, pendingCaret == nil,
+              let surface = viewIfLoaded, row.isDescendant(of: surface),
+              session.text.utf16.elementsEqual((editor.text ?? "").utf16) else { return false }
+        return true
+    }
+}
+#endif

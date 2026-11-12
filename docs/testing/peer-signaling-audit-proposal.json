@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "notice": "Incremental executable contracts for independent immutable audit. Not reviewed mappings or source-line execution coverage.",
+  "scenarios": [
+    {
+      "id": "peer-routing-contract",
+      "title": "Peer routing contract",
+      "featureId": "media-sync",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/peer-signaling-journey.mjs"
+      ],
+      "plannedActions": [
+        "Run tracer app -- test services peer-signaling with the pinned published full Tracer runtime and isolated synthetic paid-team identities. The following describes its ordered relevant phases; content validation runs during the real signal TTL interval, as recorded in the complete catalog.",
+        "POST /v1/projects synthetic signaling team project",
+        "Connect three authenticated loopback project WebSockets",
+        "POST offer from A to B with forged sender fields",
+        "Wait for B signal and synchronize A and C sockets with ping watermarks",
+        "Read B inbox, C own inbox and C forged B inbox",
+        "Send binary JSON answer from B to A over WebSocket",
+        "Wait for A answer and synchronize B and C watermark barriers",
+        "Read A durable signaling inbox",
+        "POST exactly 50000 UTF-8 payload bytes as ICE",
+        "Read B inbox after initial offer cursor",
+        "Read complete B inbox as rejection baseline",
+        "POST signaling variant reject-large-payload",
+        "Read B inbox to verify rejected signal was not persisted",
+        "POST signaling variant reject-invalid-signal-type",
+        "Read B inbox to verify rejected signal was not persisted",
+        "POST signaling variant reject-nonobject-payload",
+        "Read B inbox to verify rejected signal was not persisted",
+        "POST signaling variant reject-invalid-recipient",
+        "Read B inbox to verify rejected signal was not persisted",
+        "POST signaling variant reject-expired-recipient",
+        "Read B inbox to verify rejected signal was not persisted",
+        "POST signaling variant reject-outsider-recipient",
+        "Read B inbox to verify rejected signal was not persisted",
+        "POST signaling variant reject-oversized-envelope",
+        "Read B inbox to verify rejected signal was not persisted",
+        "Send unsupported signalType over authenticated WebSocket",
+        "Read B inbox after rejected WebSocket signal",
+        "POST asset-request and asset-available signals from A to B",
+        "Read B inbox with explicit authenticated deviceId",
+        "GET B current authenticated session inventory before revocation",
+        "DELETE B secondary session through public auth route",
+        "Attempt revoked sender, revoked recipient and expired sender access",
+        "Read B pre-expiry inbox and wait past actual stored signal TTL",
+        "Read B inbox after actual 120-second expiry without clock manipulation",
+        "POST B logout then wait for its authenticated WebSocket close",
+        "Attempt B inbox access and A send to revoked B",
+        "Read final owner snapshot and isolated R2 object inventory"
+      ],
+      "expectedOutcomes": [
+        "HTTP 201 returns a synthetic project owned by the team owner.",
+        "Each authenticated socket receives hello for its own session and the empty project.",
+        "B receives exactly the A-authored offer through HTTP and WebSocket; sender fields cannot be forged; C own inbox and socket receive none; C reading B inbox returns 403 not_allowed.",
+        "Binary JSON WebSocket answer reaches A with exactly B authenticated device/user identity and payload in both live and durable envelopes; after B and C watermark barriers, B retains only its original offer and C has no signals.",
+        "Exactly 50000 UTF-8 payload bytes are accepted as ICE and returned exactly after the offer cursor; the complete B inbox is exactly the original offer plus accepted ICE and is saved as the rejection baseline.",
+        "The specific reject-large-payload input returns HTTP 413 signal_too_large; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+        "The specific reject-invalid-signal-type input returns HTTP 400 invalid_signal; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+        "The specific reject-nonobject-payload input returns HTTP 400 invalid_field; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+        "The specific reject-invalid-recipient input returns HTTP 400 invalid_id; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+        "The specific reject-expired-recipient input returns HTTP 404 peer_unavailable; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+        "The specific reject-outsider-recipient input returns HTTP 404 not_found; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+        "The specific reject-oversized-envelope input returns HTTP 413 body_too_large; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
+        "Unsupported signalType receives invalid_signal on the still-open authenticated sender socket; the entire B inbox, including IDs, timestamps, sender identity and payload, remains identical to the saved baseline.",
+        "Both supported asset notification types are accepted and returned with exact hash payloads in the intended explicit-device inbox.",
+        "Before revocation B sees its main and secondary live sessions, while its already-expired session is absent.",
+        "Public session revocation succeeds; revoked and already-expired senders receive session_expired and a revoked recipient receives peer_unavailable.",
+        "B inbox contains all four signals at an observation before the earliest stored at-plus-120000 deadline, and is empty at a later observation beyond the latest deadline; no continuous timing observation, clock or storage manipulation is claimed.",
+        "Public B logout closes its existing WebSocket with 4001; subsequent B inbox access returns session_expired and sending to B returns peer_unavailable.",
+        "Owner retains sequence seven and eleven items, R2 stays empty, outbound attempts and socket errors stay zero, and C has never received a signal."
+      ]
+    },
+    {
+      "id": "script-validation-contract",
+      "title": "Script validation contract",
+      "featureId": "project-model",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/peer-signaling-journey.mjs"
+      ],
+      "plannedActions": [
+        "Run tracer app -- test services peer-signaling with the pinned published full Tracer runtime and isolated synthetic paid-team identities. The following describes its ordered relevant phases; content validation runs during the real signal TTL interval, as recorded in the complete catalog.",
+        "POST fresh command with valid scene character dialogue image and anchored cue",
+        "GET viewer snapshot after valid model command",
+        "POST fresh public item command reject-item-identity",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-item-byte-limit",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-scene-order",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-entry-word-order",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-entry-surrogate-link",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-unconfirmed-link",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-direction-words",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-word-timing-source",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-empty-character-name",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-character-alias-bound",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-image-filename",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-image-digest",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-image-media",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-image-duplicate-tags",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-unpaired-cue-anchor",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-cue-offset-bound",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh public item command reject-missing-scene-reference",
+        "GET viewer snapshot after rejected item command",
+        "POST fresh dialogue command accept-nel-words",
+        "GET viewer snapshot for exact saved Unicode dialogue",
+        "POST fresh dialogue command accept-bom-word",
+        "GET viewer snapshot for exact saved Unicode dialogue",
+        "POST fresh dialogue command accept-combining-whitespace",
+        "GET viewer snapshot for exact saved Unicode dialogue",
+        "POST fresh dialogue command accept-emoji-word",
+        "GET viewer snapshot for exact saved Unicode dialogue",
+        "POST fresh dialogue command accept-empty-dialogue",
+        "GET viewer snapshot for exact saved Unicode dialogue",
+        "POST fresh dialogue command accept-whitespace-dialogue",
+        "GET viewer snapshot for exact saved Unicode dialogue"
+      ],
+      "expectedOutcomes": [
+        "One public command durably stores all five exact item kinds and authored fields, including word timings, Unicode links, image metadata and anchored cue, then the viewer snapshot has five version-one items, head sequence one and timing version one.",
+        "The fresh reject-item-identity item command returns HTTP 400 item_identity; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-item-byte-limit item command returns HTTP 413 item_too_large; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-scene-order item command returns HTTP 400 invalid_order; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-entry-word-order item command returns HTTP 400 word_order; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-entry-surrogate-link item command returns HTTP 400 invalid_character_links; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-unconfirmed-link item command returns HTTP 400 invalid_character_links; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-direction-words item command returns HTTP 400 direction_timing; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-word-timing-source item command returns HTTP 400 invalid_word_timing_source; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-empty-character-name item command returns HTTP 400 invalid_name; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-character-alias-bound item command returns HTTP 400 invalid_field; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-image-filename item command returns HTTP 400 invalid_filename; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-image-digest item command returns HTTP 400 invalid_hash; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-image-media item command returns HTTP 400 invalid_media; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-image-duplicate-tags item command returns HTTP 400 duplicate_character; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-unpaired-cue-anchor item command returns HTTP 400 invalid_cue_anchor; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-cue-offset-bound item command returns HTTP 400 invalid_field; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The fresh reject-missing-scene-reference item command returns HTTP 400 invalid_reference; exact viewer snapshot items, head sequence and timing version remain unchanged.",
+        "The independently specified accept-nel-words dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
+        "The independently specified accept-bom-word dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
+        "The independently specified accept-combining-whitespace dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
+        "The independently specified accept-emoji-word dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
+        "The independently specified accept-empty-dialogue dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
+        "The independently specified accept-whitespace-dialogue dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "v83-peer-routing",
+      "featureId": "media-sync",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 588,
+        "end": 600,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "d4d526f7fb470769eedccd2efb97b188d42dec4787233a69831fd3e7df9c727d",
+        "sha256": "467c2dfcd2984a649a4a96648ef50ee76370dc692b92816ec6195893afb1e11b"
+      },
+      "scenarioIds": [
+        "peer-routing-contract"
+      ],
+      "rationale": "The public CLI journey exercises production HTTP/WebSocket routes and uses exact response and persisted-state assertions. The complete witness, fixture setup, production callers, guards and validators are included for independent audit.",
+      "confidence": "medium",
+      "uncertainty": "No race/interleaving claim, nonpremium cross-user denial, 100-row inbox pagination, physical asset transfer or production provider/network execution. TTL filtering is observed; expired-row physical deletion is not separately inspected.",
+      "proposedAssertions": [
+        "Authenticated A offer is persisted only for B, reaches only B live socket, and ignores forged sender identity; C own inbox/socket stay empty and naming B deviceId fails with 403 not_allowed.",
+        "An exact 50000-byte UTF-8 payload succeeds and 50001 bytes fails signal_too_large; unsupported type, nonobject payload, malformed recipient and outer 65537-byte envelope fail their distinct guards. After each rejected HTTP or WebSocket signaling variant, the entire B inbox equals the saved original offer-plus-ICE baseline, including IDs, timestamps, sender identities and payload.",
+        "Expired and publicly revoked target sessions fail peer_unavailable; an outsider target fails project access. The binary-WebSocket answer has exactly B authenticated device/user identity and answer payload in both A live and durable envelopes. After B and C watermark barriers, B retains only its initial offer and C has no signals.",
+        "All four B signals are present at an observation before the earliest stored at-plus-120000 deadline, and B inbox is empty at an observation beyond the latest deadline. No continuous timing observation, clock manipulation or direct signal-store mutation is claimed."
+      ]
+    },
+    {
+      "rangeId": "v83-script-fields",
+      "featureId": "project-model",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/validation.ts",
+        "start": 5,
+        "end": 51,
+        "fileSha256": "47a7dc97b0b4711ba4d16ecd060d53193fa527e2f410888f1c6d63ee6f93bf2f",
+        "spanSha256": "cef2d6ba989e613349a83be8cafc1f3f0427f981b53e910b8b6c1157c9af20d6",
+        "sha256": "43468bc5aca0581d13789155fac2a7f7aa6204e75c93cbc67080d39a7e91c449"
+      },
+      "scenarioIds": [
+        "script-validation-contract"
+      ],
+      "rationale": "The public CLI journey exercises production HTTP/WebSocket routes and uses exact response and persisted-state assertions. The complete witness, fixture setup, production callers, guards and validators are included for independent audit.",
+      "confidence": "medium",
+      "uncertainty": "Bounded public-input contract, not exhaustive field/cartesian coverage. No native timing runtime, all word-order permutations, duplicate link IDs, every integer boundary or direct validation export is tested.",
+      "proposedAssertions": [
+        "Fresh public commands accept independently specified NEL, BOM, combining-whitespace, emoji, empty and whitespace-only dialogue word arrays and exact snapshots preserve them; no native execution is inferred.",
+        "Exact identity, item-byte, finite-order, script-word, surrogate-boundary, unconfirmed-link, direction-word and authored-timing-source negatives return their specific errors without changing item state, head sequence or timing version.",
+        "A field-valid entry with an absent scene fails the separate ProjectRoom reference validation; field validation does not establish reference existence."
+      ]
+    },
+    {
+      "rangeId": "v83-model-metadata-fields",
+      "featureId": "project-model",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/validation.ts",
+        "start": 52,
+        "end": 75,
+        "fileSha256": "47a7dc97b0b4711ba4d16ecd060d53193fa527e2f410888f1c6d63ee6f93bf2f",
+        "spanSha256": "f549fac60fc607c2845ca0ea5997e64ba5ac77d08534c57fe65ba844a165d869",
+        "sha256": "2c86b1818ae6a4d96efc90fc42a08923fdb7d08a65b3a72327d8a905d268a25e"
+      },
+      "scenarioIds": [
+        "script-validation-contract"
+      ],
+      "rationale": "The public CLI journey exercises production HTTP/WebSocket routes and uses exact response and persisted-state assertions. The complete witness, fixture setup, production callers, guards and validators are included for independent audit.",
+      "confidence": "medium",
+      "uncertainty": "No image bytes uploaded, image decoding, character-image-analysis or portrait geometry behavior, previous-version graph/cycle behavior, every timestamp/byte-count/ID boundary, or native UI execution is claimed.",
+      "proposedAssertions": [
+        "One fresh public command accepts a coherent character, image metadata and anchored cue together with their referenced scene and entry; exact viewer snapshot fields match the submitted model, and viewer head sequence and timing version both equal one.",
+        "Whitespace/zero-width-only name, excessive aliases, unsafe filename, malformed digest, unsupported media, duplicate character tags, unpaired cue anchor and out-of-range cue offset fail with their specific errors and unchanged persisted state."
+      ]
+    }
+  ],
+  "correctionMilestone": 3,
+  "correctionNotice": "Completes prior independent review corrections; this milestone requires new independent review and separate real execution. Earlier receipts and execution results are preserved, not carried forward as acceptance."
+}

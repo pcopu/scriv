@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "media-boundaries-v91",
+      "title": "Preserve hosted media across format and refusal boundaries",
+      "featureId": "media-boundaries",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/discussions-assets-journey.mjs"
+      ],
+      "plannedActions": [
+        "Complete the existing discussions/assets journey assertions, including deletion of the original PNG and the synthetic subscription-lapse discussion checks; then reactivate that fixture team.",
+        "PUT the 3-byte JPEG and exact-12-byte WebP signatures with valid distinct asset IDs and parameterized Content-Type, retry each with bare Content-Type, then viewer GET and HEAD both.",
+        "Capture and validate exactly two ready asset rows plus their matching R2 keys, bytes, contentType and sha256/projectId/teamId metadata.",
+        "PUT empty bytes; PUT a three-byte truncated PNG signature; PUT JPEG bytes declared WebP; PUT JPEG at an incorrect all-zero digest; PUT the deleted valid PNG with an invalid space-containing asset ID.",
+        "PUT a valid PNG signature plus one extra byte, first as a known-length 13-byte Buffer and then as a two-chunk ReadableStream with no supplied Content-Length.",
+        "POST the deleted valid PNG to the asset route; after each of all eight refusals compare every asset row and the R2 keys/content bytes/contentType/customMetadata with the two-sentinel baseline.",
+        "After all refusals, viewer GET both original media signatures and compare exact bytes.",
+        "Owner DELETE the JPEG and verify public missing-asset response, exact surviving WebP GET, and full remaining asset/R2 state equals only its captured sentinel.",
+        "Owner DELETE WebP twice, require both responses successful, and assert empty assets table/R2 listing. Require all twelve new mutation/refusal labels and zero unexpected outbound attempts before owned process/state cleanup."
+      ],
+      "expectedOutcomes": [
+        "Both distinct media signatures are created once, retry successfully, and viewer GET/HEAD return exact bytes, MIME type, length and digest headers; HEAD has no body. Exactly two ready rows retain valid supplied asset IDs, project/team/uploader, MIME and byte count, and match the two R2 contents and specified metadata.",
+        "The eight named inputs return exact status/code/message and standard JSON/no-store/nosniff headers. Every refusal leaves all asset rows and R2 keys/content bytes/contentType/customMetadata unchanged, and both sentinel media remain readable.",
+        "Removing JPEG preserves the complete WebP row and specified R2 content/metadata; removing WebP then repeating DELETE leaves no rows or objects."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "media-boundaries-v91-1",
+      "featureId": "media-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/media.ts",
+        "start": 8,
+        "end": 9,
+        "fileSha256": "c22cef9d48bc3570918a31e26882f32df2dcbc6dfd258817a4f33761f865d43d",
+        "spanSha256": "b9df2fbf7a1e628587908a19f9d42716aeb5518b9fc8f3caa7b4b9fae4165877",
+        "sha256": "bac1bb5757bb2658c9d485adf1a088571ab8655f078a9fff0d5797d0872ae110"
+      },
+      "scenarioIds": [
+        "media-boundaries-v91"
+      ],
+      "rationale": "The JPEG and RIFF/WEBP signature branches select the persisted and returned media types. This is signature recognition, not codec decoding or every malformed signature alternative.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only current local synthetic HTTP behavior is asserted; no native, live provider, full-decoder, all-database, quota-counter, race or reconciliation acceptance. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Both distinct media signatures are created once, retry successfully, and viewer GET/HEAD return exact bytes, MIME type, length and digest headers; HEAD has no body."
+      ]
+    },
+    {
+      "rangeId": "media-boundaries-v91-2",
+      "featureId": "media-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/media.ts",
+        "start": 10,
+        "end": 10,
+        "fileSha256": "c22cef9d48bc3570918a31e26882f32df2dcbc6dfd258817a4f33761f865d43d",
+        "spanSha256": "8de110f1847c3739404cbd69e4d47da5d71b6c82a1326d25a4cff48caaa53d60",
+        "sha256": "43d8869cba222e0003b0f25ba18313b5777a55091d7ff1860996d88776592488"
+      },
+      "scenarioIds": [
+        "media-boundaries-v91"
+      ],
+      "rationale": "Truncated PNG matches none of the signature branches and receives invalid_media before any asset reservation.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only current local synthetic HTTP behavior is asserted; no native, live provider, full-decoder, all-database, quota-counter, race or reconciliation acceptance. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "The eight named inputs return exact status/code/message and standard JSON/no-store/nosniff headers. Every refusal leaves all asset rows and R2 keys/content bytes/contentType/customMetadata unchanged, and both sentinel media remain readable."
+      ]
+    },
+    {
+      "rangeId": "media-boundaries-v91-3",
+      "featureId": "media-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/media.ts",
+        "start": 49,
+        "end": 52,
+        "fileSha256": "c22cef9d48bc3570918a31e26882f32df2dcbc6dfd258817a4f33761f865d43d",
+        "spanSha256": "e264aa7d97cca3ef2c750faee4299554d94bab558d87733481fbd45cdb8fd410",
+        "sha256": "2acc0b03c325a981ca04ede334855d424ee8ebd644f7a22c66bb20dd73fa02fa"
+      },
+      "scenarioIds": [
+        "media-boundaries-v91"
+      ],
+      "rationale": "The configured 12-byte cap, empty bytes, MIME disagreement and digest disagreement are exercised through authorized PUT. Default/max limits, quota and racing authorization changes are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only current local synthetic HTTP behavior is asserted; no native, live provider, full-decoder, all-database, quota-counter, race or reconciliation acceptance. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "The eight named inputs return exact status/code/message and standard JSON/no-store/nosniff headers. Every refusal leaves all asset rows and R2 keys/content bytes/contentType/customMetadata unchanged, and both sentinel media remain readable."
+      ]
+    },
+    {
+      "rangeId": "media-boundaries-v91-4",
+      "featureId": "media-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/media.ts",
+        "start": 57,
+        "end": 57,
+        "fileSha256": "c22cef9d48bc3570918a31e26882f32df2dcbc6dfd258817a4f33761f865d43d",
+        "spanSha256": "e006707c3aed9b33a34ee6657c19a68c3066876c189fe27a96a702efd41b1a7c",
+        "sha256": "99561a631103a23f988804573da776eb77d12802b382b33f4986b63d55779ad0"
+      },
+      "scenarioIds": [
+        "media-boundaries-v91"
+      ],
+      "rationale": "The deleted PNG has no existing-ready row, so its invalid supplied asset ID reaches validation. The successful prior uploads retain valid IDs.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only current local synthetic HTTP behavior is asserted; no native, live provider, full-decoder, all-database, quota-counter, race or reconciliation acceptance. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "The eight named inputs return exact status/code/message and standard JSON/no-store/nosniff headers. Every refusal leaves all asset rows and R2 keys/content bytes/contentType/customMetadata unchanged, and both sentinel media remain readable."
+      ]
+    },
+    {
+      "rangeId": "media-boundaries-v91-5",
+      "featureId": "media-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/http.ts",
+        "start": 29,
+        "end": 33,
+        "fileSha256": "5eb8762cc12bfea165d1343bceee2a25bebb684bd69f5b5626c68a9b40140fc2",
+        "spanSha256": "3ecf4b876db2824ec463b634cd962687e411e393b4b95c6b4aa1fd7c0b9a230e",
+        "sha256": "d54ec90a4f6c7c23aab56b9dc749445f0373a427bdb2ddaec52e0138a99df57a"
+      },
+      "scenarioIds": [
+        "media-boundaries-v91"
+      ],
+      "rationale": "The known-length 13-byte request exceeds this fixture limit of 12 and returns the exact public 413 response. Invalid/negative Content-Length values are not claimed.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only current local synthetic HTTP behavior is asserted; no native, live provider, full-decoder, all-database, quota-counter, race or reconciliation acceptance. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "The eight named inputs return exact status/code/message and standard JSON/no-store/nosniff headers. Every refusal leaves all asset rows and R2 keys/content bytes/contentType/customMetadata unchanged, and both sentinel media remain readable."
+      ]
+    },
+    {
+      "rangeId": "media-boundaries-v91-6",
+      "featureId": "media-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/http.ts",
+        "start": 36,
+        "end": 41,
+        "fileSha256": "5eb8762cc12bfea165d1343bceee2a25bebb684bd69f5b5626c68a9b40140fc2",
+        "spanSha256": "6132f95f4c06033b25cd56172a6d009552d11bb4b458eeec2c71b1942c2c104a",
+        "sha256": "d7ccd99e009c2accf184550de2ef62359972b2737fe5dc6cd77aae422b58f425"
+      },
+      "scenarioIds": [
+        "media-boundaries-v91"
+      ],
+      "rationale": "The streamed 13-byte request is sent without a supplied length; bounded stream accumulation supports rejection with unchanged media storage. No transport-chunk segmentation or cancellation side-effect claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only current local synthetic HTTP behavior is asserted; no native, live provider, full-decoder, all-database, quota-counter, race or reconciliation acceptance. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "The eight named inputs return exact status/code/message and standard JSON/no-store/nosniff headers. Every refusal leaves all asset rows and R2 keys/content bytes/contentType/customMetadata unchanged, and both sentinel media remain readable."
+      ]
+    },
+    {
+      "rangeId": "media-boundaries-v91-7",
+      "featureId": "media-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/http.ts",
+        "start": 53,
+        "end": 55,
+        "fileSha256": "5eb8762cc12bfea165d1343bceee2a25bebb684bd69f5b5626c68a9b40140fc2",
+        "spanSha256": "c47393be22fe09123b41f275c3900058b49c92c227539bf4689e9185dfd73d0a",
+        "sha256": "d9eab0941e7857329bac1225003785d6e9a65723ccab92018a530ef4c04f0148"
+      },
+      "scenarioIds": [
+        "media-boundaries-v91"
+      ],
+      "rationale": "A space in an otherwise bounded string asset ID is rejected, whereas the punctuation-bearing valid asset IDs are retained in ready rows. Full ID/type/length matrix excluded.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only current local synthetic HTTP behavior is asserted; no native, live provider, full-decoder, all-database, quota-counter, race or reconciliation acceptance. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "The eight named inputs return exact status/code/message and standard JSON/no-store/nosniff headers. Every refusal leaves all asset rows and R2 keys/content bytes/contentType/customMetadata unchanged, and both sentinel media remain readable."
+      ]
+    },
+    {
+      "rangeId": "media-boundaries-v91-8",
+      "featureId": "media-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/http.ts",
+        "start": 3,
+        "end": 6,
+        "fileSha256": "5eb8762cc12bfea165d1343bceee2a25bebb684bd69f5b5626c68a9b40140fc2",
+        "spanSha256": "a76e6178b2951fe4026ff577feff14949d457a6ddd7167571ba0e69b2a460f01",
+        "sha256": "bfc76ca0a1985a73f1c924b70e7a5d65865c0bb49258009cfb45c2f2bbc964eb"
+      },
+      "scenarioIds": [
+        "media-boundaries-v91"
+      ],
+      "rationale": "APIError and assertion support preserving exact named error status/code/message through the public HTTP route. Optional details and unexpected internal errors are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only current local synthetic HTTP behavior is asserted; no native, live provider, full-decoder, all-database, quota-counter, race or reconciliation acceptance. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "For each named refusal the HTTP body is exactly {error:{code,message}}, with its independently specified status and JSON/no-store/nosniff headers; no details or internal-error behavior is claimed."
+      ]
+    },
+    {
+      "rangeId": "media-boundaries-v91-9",
+      "featureId": "media-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/http.ts",
+        "start": 16,
+        "end": 17,
+        "fileSha256": "5eb8762cc12bfea165d1343bceee2a25bebb684bd69f5b5626c68a9b40140fc2",
+        "spanSha256": "9a2fee9edabf64b82caa7c07053d8c4e63e1ff220775b6f80a0f5549567bf1d6",
+        "sha256": "336a0c879fab78ab73c0d9c5b9270270cd45174476403eddee10773b023571a7"
+      },
+      "scenarioIds": [
+        "media-boundaries-v91"
+      ],
+      "rationale": "The APIError response arm serializes exactly the requested code/message and status with details absent. The unrelated internal-error arm is excluded.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only current local synthetic HTTP behavior is asserted; no native, live provider, full-decoder, all-database, quota-counter, race or reconciliation acceptance. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "For each named refusal the HTTP body is exactly {error:{code,message}}, with its independently specified status and JSON/no-store/nosniff headers; no details or internal-error behavior is claimed."
+      ]
+    },
+    {
+      "rangeId": "media-boundaries-v91-10",
+      "featureId": "media-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/media.ts",
+        "start": 42,
+        "end": 44,
+        "fileSha256": "c22cef9d48bc3570918a31e26882f32df2dcbc6dfd258817a4f33761f865d43d",
+        "spanSha256": "f5d4dd2f580977387658c06dce300c14a38130bb67d6e7cca53cb81b6fef9fba",
+        "sha256": "e07d9389344c940d53eb30fd11c70ba12ef527716fee253668a0a10e6081d849"
+      },
+      "scenarioIds": [
+        "media-boundaries-v91"
+      ],
+      "rationale": "Successful owner deletion removes only the selected object key and matching deleting row. The independently retained WebP sentinel distinguishes indiscriminate cleanup. No stale-delete or concurrent replacement claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only current local synthetic HTTP behavior is asserted; no native, live provider, full-decoder, all-database, quota-counter, race or reconciliation acceptance. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Removing JPEG preserves the complete WebP row and specified R2 content/metadata; removing WebP then repeating DELETE leaves no rows or objects."
+      ]
+    }
+  ]
+}

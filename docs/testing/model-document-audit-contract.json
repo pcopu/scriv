@@ -1,0 +1,960 @@
+{
+  "status": "prepared-not-run; pending-independent-semantic-audit",
+  "scope": "model import/full loaded/saved state/browser reopen/rejection",
+  "catalog": "docs/testing/model-document-steps.json",
+  "callerContexts": [
+    {
+      "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+      "start": 1,
+      "end": 241,
+      "sha256": "9d390ffdf0503054665f55c6371e472fc1ca5855f72223494b433c418d77bf06"
+    },
+    {
+      "path": "apps/catalyst/ScrivUIKit/Shared/WorkspaceErrorPresenter.swift",
+      "start": 1,
+      "end": 41,
+      "sha256": "cf991d1dcecfcb3d73edcc57411dcb7d7f06313de5128abe67a51378f6dd26bc"
+    },
+    {
+      "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+      "start": 1,
+      "end": 816,
+      "sha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+    },
+    {
+      "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIImport.swift",
+      "start": 1,
+      "end": 151,
+      "sha256": "b91538030c5f9cea3de008d5f87654bb1bf274180aa99db7ec31ac77ce2d3ef8"
+    },
+    {
+      "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLILoadedProject.swift",
+      "start": 1,
+      "end": 141,
+      "sha256": "790202e3fad0deeae52510234d55e932e843f918ed7fb91891f7a0a847af68f2"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+      "start": 1,
+      "end": 2614,
+      "sha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/Models.swift",
+      "start": 1,
+      "end": 215,
+      "sha256": "e422c0ff5e876f60436bf375f491c66ee11b9f3159a90b50d968e36a6f21545b"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+      "start": 1,
+      "end": 140,
+      "sha256": "43cbc789d41d4768e1a97ea21aae866e2ce6a6d12378e4a6974b6b8100cb72eb"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+      "start": 1,
+      "end": 245,
+      "sha256": "e58037c54d6af7e3002b4ef183e428232298083cbc49f4c770b52424f5a8e2b6"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+      "start": 1,
+      "end": 269,
+      "sha256": "f8c784fb76061700304a9c27ca6aed2c8a1217d7097e24d2000c2dfdd0388049"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/CueAnchoring.swift",
+      "start": 1,
+      "end": 80,
+      "sha256": "4ea6d713335af417933c395fd08128199e1593be2c4e2e49cf87ee6c04e33093"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/CharacterMentions.swift",
+      "start": 1,
+      "end": 182,
+      "sha256": "6c73ff4650e90dd606cd4655883ae76d0bc6fe91ed2f75e4fa9dca61251376d5"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/CharacterImageAnalysis.swift",
+      "start": 1,
+      "end": 200,
+      "sha256": "7549f8f1446d1838e9b11cc7c43a547d523a447ba94bb7f62da81e6d23dc87f0"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/GenerationPrompt.swift",
+      "start": 1,
+      "end": 45,
+      "sha256": "d66db12124f09b9c33f8bf7aa1c268e502f65af6befc38db8b566b6e6fc40c49"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivCore/CloudModels.swift",
+      "start": 1,
+      "end": 131,
+      "sha256": "60ec0c1d5a9c0a5a5591cd77385108ebb7ceb6ad0ddf732606c63d6cd84ed3e2"
+    },
+    {
+      "path": "tests/e2e/journeys/model-document.mjs",
+      "start": 1,
+      "end": 18,
+      "sha256": "da98854044170349c9c506f7d0b8f14e75e8eaf3d43bfb747ad445f05815a564"
+    },
+    {
+      "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+      "start": 1,
+      "end": 105,
+      "sha256": "04021d52ce80a1efdf4ef85d5e30f542c5e414a6e447b1b6b956242d940da196"
+    },
+    {
+      "path": "tests/e2e/journeys/support/model-document-cases.mjs",
+      "start": 1,
+      "end": 104,
+      "sha256": "cae904b25fe0c4b874b67d0512cdab450eabc6aec47905c464eda1906b0397e4"
+    },
+    {
+      "path": "tests/e2e/support/saved-projects.mjs",
+      "start": 1,
+      "end": 18,
+      "sha256": "f59cd9b6cb4c0e9e5c6987401aeee01a805c0219d06222aad3097aa0d669352b"
+    },
+    {
+      "path": "tests/e2e/support/presented-error.mjs",
+      "start": 1,
+      "end": 22,
+      "sha256": "f410f2cee6c1cadc40ecd391a52eab82a4cd4fdf8937fa95159ede2a4f635c04"
+    },
+    {
+      "path": "cli/scriv.mjs",
+      "start": 1,
+      "end": 208,
+      "sha256": "29b68315ca2ed4b99db03b2506ab89554e2541f67dac5028c3eb444fb85d95c3"
+    },
+    {
+      "path": "docs/testing/model-document-fixtures.json",
+      "start": 1,
+      "end": 14262,
+      "sha256": "97570994dd860f6ea895c0dd4460f30764d18a0247814e45698ea0230fcc610d"
+    }
+  ],
+  "browserHelper": {
+    "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+    "start": 11,
+    "end": 22,
+    "sha256": "7df5ac4cbca9cdff6ef80c795139163ea75ceaf58f6cc1a8706c36568305db80"
+  },
+  "exactAssertions": [
+    {
+      "line": 20,
+      "text": "  assert.deepEqual(loaded.project, project, 'Browser opened the complete expected saved model');"
+    },
+    {
+      "line": 21,
+      "text": "  assert.deepEqual(await session.command('presented-alerts'), []);"
+    },
+    {
+      "line": 40,
+      "text": "    assert.equal(typeof session.root, 'string'); assert.ok(!roots.has(session.root)); roots.add(session.root);"
+    },
+    {
+      "line": 45,
+      "text": "      assert.ok(capabilities.commands.includes(name), `Requires ${name}`);"
+    },
+    {
+      "line": 50,
+      "text": "    assert.deepEqual(await session.command('persisted-projects'), [sample]);"
+    },
+    {
+      "line": 51,
+      "text": "    assert.deepEqual(await session.command('presented-alerts'), []);"
+    },
+    {
+      "line": 56,
+      "text": "    assert.deepEqual(await session.command('import-json', { text: JSON.stringify(input) }), { dispatched: true, projectChanged: true });"
+    },
+    {
+      "line": 61,
+      "text": "    assert.notEqual(actual.id, input.id); assert.match(actual.id, /^[0-9a-f-]{36}$/i);"
+    },
+    {
+      "line": 62,
+      "text": "    assert.equal(actual.revision, 0); assert.equal(Object.hasOwn(actual, 'cloudProjectId'), false);"
+    },
+    {
+      "line": 63,
+      "text": "    assert.equal(actual.createdAt, actual.modifiedAt);"
+    },
+    {
+      "line": 64,
+      "text": "    assert.ok(actual.createdAt >= start - 1 && actual.createdAt <= finish + 1, 'Import reset date lies inside the actual call window');"
+    },
+    {
+      "line": 65,
+      "text": "    assert.deepEqual(payload(actual), test.expected ? test.expected(input) : payload(input), 'Every authored field and only declared legacy defaults survive');"
+    },
+    {
+      "line": 66,
+      "text": "    assert.match(before.dateReferenceTimeBits.createdAt, /^\\d+$/);"
+    },
+    {
+      "line": 67,
+      "text": "    assert.equal(before.dateReferenceTimeBits.modifiedAt, before.dateReferenceTimeBits.createdAt);"
+    },
+    {
+      "line": 68,
+      "text": "    assert.deepEqual(before.dateReferenceTimeBits.images.map(x => x.id), actual.images.map(x => x.id));"
+    },
+    {
+      "line": 69,
+      "text": "    for (const image of before.dateReferenceTimeBits.images) assert.match(image.createdAt, /^\\d+$/);"
+    },
+    {
+      "line": 71,
+      "text": "    assert.deepEqual(saved, actual);"
+    },
+    {
+      "line": 73,
+      "text": "    assert.deepEqual(packages, sorted([sample, actual]), 'Only the accepted model was added; the complete startup project metadata is unchanged');"
+    },
+    {
+      "line": 74,
+      "text": "    assert.deepEqual(await session.command('loaded-project'), before);"
+    },
+    {
+      "line": 75,
+      "text": "    assert.deepEqual(await session.command('presented-alerts'), []);"
+    },
+    {
+      "line": 80,
+      "text": "      assert.deepEqual(await waitForSavedProject(session, p => p.id === actual.id), actual);"
+    },
+    {
+      "line": 82,
+      "text": "      assert.deepEqual(await openModelDocument(session, actual), before, 'All fields and exact Date storage bits survive real save, switch away and reopen');"
+    },
+    {
+      "line": 83,
+      "text": "      assert.deepEqual(sorted(await session.command('persisted-projects')), packages);"
+    },
+    {
+      "line": 84,
+      "text": "      assert.deepEqual(await session.command('loaded-project'), before);"
+    },
+    {
+      "line": 89,
+      "text": "      assert.notDeepEqual(invalid, input);"
+    },
+    {
+      "line": 90,
+      "text": "      assert.deepEqual(await session.command('import-json', { text: JSON.stringify(invalid) }), { dispatched: true, projectChanged: false });"
+    },
+    {
+      "line": 92,
+      "text": "      assert.equal(typeof message, 'string'); assert.ok(message.length > 0);"
+    },
+    {
+      "line": 95,
+      "text": "      assert.equal(mounted.length, 1); assert.equal(mounted[0].title, actual.title); assert.equal(mounted[0].hittable, false);"
+    },
+    {
+      "line": 96,
+      "text": "      assert.deepEqual(await session.command('loaded-project'), before);"
+    },
+    {
+      "line": 97,
+      "text": "      assert.deepEqual(sorted(await session.command('persisted-projects')), packages);"
+    },
+    {
+      "line": 99,
+      "text": "      assert.deepEqual(await session.command('loaded-project'), before, 'Rejected document leaves every loaded field and Date bit unchanged');"
+    },
+    {
+      "line": 100,
+      "text": "      assert.deepEqual(sorted(await session.command('persisted-projects')), packages, 'Repeated public reads prove no persisted project metadata mutation');"
+    }
+  ],
+  "associations": [
+    {
+      "step": "model-import-complete",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 64,
+        "end": 72,
+        "sha256": "ffb6f64bf8363b98ae6a7f41e4648447be83a5387c94c51acfde437ebb47bac6"
+      },
+      "expectation": "state",
+      "why": "Complete fixture preserves all character fields and populated portrait/crop semantics through synthesized Codable; declaration support only, not convenience initializer/equality coverage."
+    },
+    {
+      "step": "model-import-complete",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 88,
+        "end": 97,
+        "sha256": "20d18691177faf6cc3e8fdfaa66bd423739939461e3def2018479afe5b67462e"
+      },
+      "expectation": "state",
+      "why": "Complete exact image fields plus absent characterAnalysis preserve synthesized Codable metadata; no image bytes or analysis-provider execution."
+    },
+    {
+      "step": "model-import-complete",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 100,
+        "end": 102,
+        "sha256": "3aa90dadbcbcd79d7213200214bb8e0c637bbbddd312c8f039147ddc72767419"
+      },
+      "expectation": "state",
+      "why": "Captured prompt, millisecond nested dates and previous version survive in this complete fixture."
+    },
+    {
+      "step": "model-import-complete",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 157,
+        "end": 165,
+        "sha256": "27b1c1c097281151adaf981056794ad5976166885e2097885a9fa497eda1b9ef"
+      },
+      "expectation": "state",
+      "why": "Required project fields and present audio collections/volume decode; envelope identity/revision/dates are subsequently reset by import, never falsely preserved."
+    },
+    {
+      "step": "model-import-complete",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 36,
+        "end": 43,
+        "sha256": "89bda39dfc102e04d24ad628caf07f1b8ee3d714c274b9aad12971cc9b1b94ff"
+      },
+      "expectation": "state",
+      "why": "Accepted document traverses audio-first validation, schema, valid identity/revision/date, unique heterogeneous IDs and valid scene/character guard success. Negative schema/revision are separate assertions."
+    },
+    {
+      "step": "model-import-complete",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 46,
+        "end": 61,
+        "sha256": "36a14fb331fb08e16a5ec40e6666d261bbc600e17f3ac3c63d21e31a67bfa64d"
+      },
+      "expectation": "state",
+      "why": "Accepted dialogue preserves authored timing with gaps and unowned trailing time, source links and speaker; zero-owned direction preserves coverage. This asserts successful validation, not editing or every rejected timing variant."
+    },
+    {
+      "step": "model-import-complete",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 63,
+        "end": 77,
+        "sha256": "b2c6e453b26bd15d77e832b2114d17b41034c4cfd25d1bdae99a66828e7fe36b"
+      },
+      "expectation": "state",
+      "why": "Two immutable image metadata versions, generation prompt and portrait crop validate and preserve exact values; no bytes/file checks, failed crop, provider or generation claim."
+    },
+    {
+      "step": "model-import-complete",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 80,
+        "end": 95,
+        "sha256": "4bea3944e9a7705ab059bc2db84b9063a3df7a59ddee4a00a80bca882579821d"
+      },
+      "expectation": "state",
+      "why": "1000ms scene plus empty scene validate; anchored cue preserves authored1500ms while resolved end is scene1000ms. No overlap-negative claim."
+    },
+    {
+      "step": "model-import-complete",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 97,
+        "end": 123,
+        "sha256": "41f757270359fc8b4bc3dffc111c77a4affc1a010a12e3f8f8222b2fbd8df557"
+      },
+      "expectation": "state",
+      "why": "Complete fixture preserves typed metadata, relative/nil entry IDs, silent/muted states and lower sample/channel/byte bounds; upper audio boundaries, playback and placement calculations are not asserted by this case."
+    },
+    {
+      "step": "model-import-complete",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1924,
+        "end": 1927,
+        "sha256": "a8a2c5579238035752af411c51b7db44077e9041421bf9f1027cb8079bd6b854"
+      },
+      "expectation": "state",
+      "why": "Import validates source envelope before fresh UUID, nil cloud ID, revision0 and equal reset dates within call window; every authored field remains exact."
+    },
+    {
+      "step": "model-import-complete",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1932,
+        "end": 1932,
+        "sha256": "a85cc3a6ed86635885a4d548792e312eaccc3a91fc5d295d05010fe04c6c339f"
+      },
+      "expectation": "state",
+      "why": "Complete accepted document installs through second validation; no rejection branch is claimed by this accepted case."
+    },
+    {
+      "step": "model-reopen-complete",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 79,
+        "end": 84,
+        "sha256": "8f6e773f0417badd8ffbac37750d04ac2a6752b3847afc152e8abff262fb3e65"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+        "start": 127,
+        "end": 132,
+        "sha256": "0cdadf413ad6de7eb05c578d22498fcfd578306fd6e8ca76df5f0e1304b5aeb1"
+      },
+      "expectation": "state",
+      "why": "Real project browser switch-away/reopen invokes repository decode and validation; whole model and exact Date storage bits match previously observed accepted baseline. No direct repository invocation or package corruption claim."
+    },
+    {
+      "step": "model-import-minimal-legacy",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 157,
+        "end": 165,
+        "sha256": "27b1c1c097281151adaf981056794ad5976166885e2097885a9fa497eda1b9ef"
+      },
+      "expectation": "state",
+      "why": "This exact minimal-legacy fixture decodes required empty project collections and omitted audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted."
+    },
+    {
+      "step": "model-reopen-minimal-legacy",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 79,
+        "end": 84,
+        "sha256": "8f6e773f0417badd8ffbac37750d04ac2a6752b3847afc152e8abff262fb3e65"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+        "start": 127,
+        "end": 132,
+        "sha256": "0cdadf413ad6de7eb05c578d22498fcfd578306fd6e8ca76df5f0e1304b5aeb1"
+      },
+      "expectation": "state",
+      "why": "Real project browser switch-away/reopen invokes repository decode and validation; whole model and exact Date storage bits match previously observed accepted baseline. No direct repository invocation or package corruption claim."
+    },
+    {
+      "step": "model-import-explicit-null-defaults",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 157,
+        "end": 165,
+        "sha256": "27b1c1c097281151adaf981056794ad5976166885e2097885a9fa497eda1b9ef"
+      },
+      "expectation": "state",
+      "why": "This exact explicit-null-defaults fixture decodes required empty project collections and explicit null audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted."
+    },
+    {
+      "step": "model-reopen-explicit-null-defaults",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 79,
+        "end": 84,
+        "sha256": "8f6e773f0417badd8ffbac37750d04ac2a6752b3847afc152e8abff262fb3e65"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+        "start": 127,
+        "end": 132,
+        "sha256": "0cdadf413ad6de7eb05c578d22498fcfd578306fd6e8ca76df5f0e1304b5aeb1"
+      },
+      "expectation": "state",
+      "why": "Real project browser switch-away/reopen invokes repository decode and validation; whole model and exact Date storage bits match previously observed accepted baseline. No direct repository invocation or package corruption claim."
+    },
+    {
+      "step": "model-import-nested-null-optionals",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 64,
+        "end": 72,
+        "sha256": "ffb6f64bf8363b98ae6a7f41e4648447be83a5387c94c51acfde437ebb47bac6"
+      },
+      "expectation": "state",
+      "why": "Explicit null portrait ID and crop decode to omitted optional fields; all remaining character fields retain exact input."
+    },
+    {
+      "step": "model-import-nested-null-optionals",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 100,
+        "end": 102,
+        "sha256": "3aa90dadbcbcd79d7213200214bb8e0c637bbbddd312c8f039147ddc72767419"
+      },
+      "expectation": "state",
+      "why": "Explicit null generationPrompt and previousVersionId become omitted optional fields; nested image date is retained."
+    },
+    {
+      "step": "model-import-nested-null-optionals",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 80,
+        "end": 95,
+        "sha256": "4bea3944e9a7705ab059bc2db84b9063a3df7a59ddee4a00a80bca882579821d"
+      },
+      "expectation": "state",
+      "why": "Explicit null cue anchor and authored extent decode to absent fields; legacy nonanchored 0..1000 cue validates inside1000ms scene. No anchored or overlap-negative claim."
+    },
+    {
+      "step": "model-reopen-nested-null-optionals",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 79,
+        "end": 84,
+        "sha256": "8f6e773f0417badd8ffbac37750d04ac2a6752b3847afc152e8abff262fb3e65"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+        "start": 127,
+        "end": 132,
+        "sha256": "0cdadf413ad6de7eb05c578d22498fcfd578306fd6e8ca76df5f0e1304b5aeb1"
+      },
+      "expectation": "state",
+      "why": "Real project browser switch-away/reopen invokes repository decode and validation; whole model and exact Date storage bits match previously observed accepted baseline. No direct repository invocation or package corruption claim."
+    },
+    {
+      "step": "model-import-audio-upper-bounds",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 54,
+        "end": 75,
+        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 97,
+        "end": 123,
+        "sha256": "41f757270359fc8b4bc3dffc111c77a4affc1a010a12e3f8f8222b2fbd8df557"
+      },
+      "expectation": "state",
+      "why": "This accepted fixture preserves exact maximum file bytes, duration, sample rate, channels, waveform count and originalName length; whole authored payload equality excludes normalization. No media bytes or playback claim."
+    },
+    {
+      "step": "model-reopen-audio-upper-bounds",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 79,
+        "end": 84,
+        "sha256": "8f6e773f0417badd8ffbac37750d04ac2a6752b3847afc152e8abff262fb3e65"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+        "start": 127,
+        "end": 132,
+        "sha256": "0cdadf413ad6de7eb05c578d22498fcfd578306fd6e8ca76df5f0e1304b5aeb1"
+      },
+      "expectation": "state",
+      "why": "Real project browser switch-away/reopen invokes repository decode and validation; whole model and exact Date storage bits match previously observed accepted baseline. No direct repository invocation or package corruption claim."
+    },
+    {
+      "step": "model-reject-audio-volume-high",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 97,
+        "end": 100,
+        "sha256": "172dffcdd8f7a8d820a0b06c76c9e2dc98bf25d7139b90e9b5f1a1d33256d7ff"
+      },
+      "expectation": "state",
+      "why": "Exact audio-volume-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-audio-duplicate-asset",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 97,
+        "end": 100,
+        "sha256": "172dffcdd8f7a8d820a0b06c76c9e2dc98bf25d7139b90e9b5f1a1d33256d7ff"
+      },
+      "expectation": "state",
+      "why": "Exact audio-duplicate-asset mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-audio-duplicate-clip",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 97,
+        "end": 100,
+        "sha256": "172dffcdd8f7a8d820a0b06c76c9e2dc98bf25d7139b90e9b5f1a1d33256d7ff"
+      },
+      "expectation": "state",
+      "why": "Exact audio-duplicate-clip mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-audio-sample-rate-high",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 102,
+        "end": 111,
+        "sha256": "5943c2da9197bde72e39bf6fbb57839726947a0eb472247d38e176f40d59af00"
+      },
+      "expectation": "state",
+      "why": "Exact audio-sample-rate-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-audio-waveform-negative",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 102,
+        "end": 111,
+        "sha256": "5943c2da9197bde72e39bf6fbb57839726947a0eb472247d38e176f40d59af00"
+      },
+      "expectation": "state",
+      "why": "Exact audio-waveform-negative mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-audio-waveform-too-many",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 102,
+        "end": 111,
+        "sha256": "5943c2da9197bde72e39bf6fbb57839726947a0eb472247d38e176f40d59af00"
+      },
+      "expectation": "state",
+      "why": "Exact audio-waveform-too-many mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-audio-byte-count-high",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 102,
+        "end": 111,
+        "sha256": "5943c2da9197bde72e39bf6fbb57839726947a0eb472247d38e176f40d59af00"
+      },
+      "expectation": "state",
+      "why": "Exact audio-byte-count-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-audio-clip-duration-high",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 114,
+        "end": 121,
+        "sha256": "59f6f154f84092d7cfc8e3fde7317990cc4b99ed3ace8c97f255f19e73f807c0"
+      },
+      "expectation": "state",
+      "why": "Exact audio-clip-duration-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-audio-cross-scene-entry",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 114,
+        "end": 121,
+        "sha256": "59f6f154f84092d7cfc8e3fde7317990cc4b99ed3ace8c97f255f19e73f807c0"
+      },
+      "expectation": "state",
+      "why": "Exact audio-cross-scene-entry mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-audio-start-high",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 114,
+        "end": 121,
+        "sha256": "59f6f154f84092d7cfc8e3fde7317990cc4b99ed3ace8c97f255f19e73f807c0"
+      },
+      "expectation": "state",
+      "why": "Exact audio-start-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-word-id-cross-entry-duplicate",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 44,
+        "end": 45,
+        "sha256": "446ddc7ab5cfcb237a0b839445dc218c2b6c3ecac3fcf37625382e8781b22eb1"
+      },
+      "expectation": "state",
+      "why": "Exact word-id-cross-entry-duplicate mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-speaker-missing",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 50,
+        "end": 50,
+        "sha256": "008080c4baffa2aef67c56cf3e71949378f411c5a3b8866b7f3e0793c4c9bf43"
+      },
+      "expectation": "state",
+      "why": "Exact speaker-missing mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-schema-future",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 38,
+        "end": 38,
+        "sha256": "24f89cd92c54cf6706025749a6baf5ccd781dc89712f9d6d298cd4f6c8d51a67"
+      },
+      "expectation": "state",
+      "why": "Exact schema-future mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-revision-negative-before-reset",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 39,
+        "end": 40,
+        "sha256": "ab9c06b958153e7bb588ab70ec3864a3248d2929473691792035feacd8aacd86"
+      },
+      "expectation": "state",
+      "why": "Exact revision-negative-before-reset mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+    },
+    {
+      "step": "model-reject-missing-required-scenes",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 162,
+        "end": 162,
+        "sha256": "47bb4619b6d8e4ff572313efd6775962b52064e5d53a55fe8f6dc146b19dc44f"
+      },
+      "expectation": "state",
+      "why": "Exact missing-required-scenes mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is intentionally locale-independent; only nonempty stable public decoder error is asserted."
+    },
+    {
+      "step": "model-reject-null-required-date",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 161,
+        "end": 161,
+        "sha256": "920167af64820945985348ace434b11f46fcec204c8544133759282a43a974ec"
+      },
+      "expectation": "state",
+      "why": "Exact null-required-date mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is intentionally locale-independent; only nonempty stable public decoder error is asserted."
+    },
+    {
+      "step": "model-reject-wrong-audio-array-type",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 164,
+        "end": 164,
+        "sha256": "7ca07669d2245c59f79b2b06bffeb4d103f4b429563f07d6268e809d352d0edc"
+      },
+      "expectation": "state",
+      "why": "Exact wrong-audio-array-type mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is intentionally locale-independent; only nonempty stable public decoder error is asserted."
+    },
+    {
+      "step": "model-reject-unknown-word-timing-enum",
+      "witness": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 88,
+        "end": 100,
+        "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
+      },
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 18,
+        "end": 27,
+        "sha256": "a703d120eb0fc088712e4c92bc0193e5079fa1c060ffd212682386585e80b3f4"
+      },
+      "expectation": "state",
+      "why": "Exact unknown-word-timing-enum mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is intentionally locale-independent; only nonempty stable public decoder error is asserted."
+    }
+  ],
+  "limitations": [
+    "No JSON export route exists. Saved-package JSON observation plus real browser reopen is the scope; no package export, file picker, image/audio bytes, playback, cloud upload, field initializer execution, measured coverage or physical UI claim."
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "generation-callback-concurrency-v105",
+      "title": "Resolve duplicate and competing generation callbacks",
+      "preconditions": [
+        "Run the complete tracer app -- test services generation command. Original lines 1–390, original 34 runtime callbacks and 30 recovery requests are unchanged; the new appendix adds 16 requests for 80 total within the original 80-request cap.",
+        "Use only the already-live member2 auth session for the existing synthetic member user. The first member session remains revoked by the preceding recovery chapter. No new identity/session, direct fixture write, clock override or production helper call is introduced.",
+        "Create one fresh metadata job through HTTP with sourceRevision 21 and the existing target ID. New operation IDs and two distinct completion output IDs are random synthetic values. There is no actual output artifact or engine invocation.",
+        "Each pair uses Promise.all to dispatch two real loopback HTTP requests and waits for both before observing or sending later mutations. The test does not force an internal transaction overlap or select which distinct payload wins.",
+        "Public job payloads and viewer GETs are combined with read-only D1 row/receipt observations. Hash expectations are independently computed for the concrete flat request objects, not through production exports. No storage-fault, transaction-interruption, restart/crash, lease-expiry or cross-auth-session concurrency guarantee."
+      ],
+      "actions": [
+        "Complete both existing chapters; capture exact business, user and session baselines. Create one fresh job from the retained session.",
+        "Dispatch two identical claim requests with the same operation ID and expectedVersion one. Require both 200, identical running version-two job and exactly one exact receipt.",
+        "Dispatch distinct progress operations at version two. Require exactly one winner, one conflict, matching winning payload/version three and one receipt. Read as viewer.",
+        "Retry the loser at its old version and require exact refusal/no writes. Correct only its expectedVersion to three and require that same previously refused operation ID to succeed at version four.",
+        "Dispatch two completion operations with distinct output IDs at version four. Require exactly one winner, completed version five with its exact output ID and one receipt.",
+        "Replay the old claim and winning progress operation and require current terminal state rather than a stale running grant. Refuse the losing completion and read terminal state as viewer.",
+        "Refuse fresh cancel and recover requests at correct version five. Preserve all old business/identity state, exactly one new job/four receipts, empty unchanged R2 and zero outbound."
+      ],
+      "expectations": [
+        {
+          "id": "pairs",
+          "description": "Two identical same-session claim requests dispatched together both return 200 with the same running version-two job, while exactly one operation receipt exists. Two distinct progress requests at expectedVersion two have exactly one 200 winner and one exact 409/job_conflict loser; two distinct completion requests at expectedVersion four likewise have exactly one winner. Each winning payload determines exact progress/output and one version increment. This is concurrent client dispatch, not verified internal SQL overlap or fault-injected atomicity.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 392,
+            "end": 425,
+            "sha256": "6b33405f1493dd03856ca596b231dee026ccdea0ae36fcc892d6990d5fc5b3bf"
+          }
+        },
+        {
+          "id": "recovery",
+          "description": "The losing progress operation at its old version remains 409 with all observed business rows unchanged, then the same operation ID with corrected expectedVersion three succeeds once at version four. After completion at version five, replaying the original claim and winning progress operation returns the current completed job with replayed true, without new writes. The losing completion remains refused; fresh cancel and recover attempts at the correct terminal version also fail and preserve all observed business state.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 407,
+            "end": 425,
+            "sha256": "be50e52e02a27496f31e9349c4592ab6cb1ff76e3a20220ddc4dc1783d28f8f8"
+          }
+        },
+        {
+          "id": "persistence",
+          "description": "The chapter adds exactly one metadata job and four exact operation receipts. Receipt request hashes are independently computed from sorted flat request fields plus action; actor session, operation ID, resulting version and timestamp match the expected successful mutation. Job timestamps/90-second leases are bounded by request intervals, and completed lease is zero. All five previous jobs, prior receipts, projects, teams, memberships, users, sessions, assets and R2 inventory remain exact. Output image IDs are synthetic metadata only, with no generated image/provider/native execution.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 392,
+            "end": 425,
+            "sha256": "6b33405f1493dd03856ca596b231dee026ccdea0ae36fcc892d6990d5fc5b3bf"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 52,
+            "end": 58,
+            "sha256": "3c5d1dbd9f9b0184e7cd35699817c22093a676c8e070925f318bb2cf96e153fd"
+          },
+          "expectation": "recovery",
+          "why": "Accepted operation IDs are hash/session scoped. Same-session exact old operations replay without a new mutation; negative cross-session/hash cases remain in the unchanged earlier chapter, not this new pair test."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 97,
+            "end": 109,
+            "sha256": "ae22983b4fda875071b0fd3addc2fa975f3d492f5fa978fd3b00aa4719e51f49"
+          },
+          "expectation": "recovery",
+          "why": "Live owner and route/body checks reach prior receipt lookup. Old claim/progress retries return current completed state with replayed true; this is not a stale execution grant or new claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 126,
+            "end": 134,
+            "sha256": "c4ed3e950ace81dfc72b3b41a6ad824f1d4fe5470a9652f66884ce8eca562afc"
+          },
+          "expectation": "pairs",
+          "why": "Queued claim and live owning-session update gates combine with version checks. Completed jobs refuse fresh cancel/recover even at current version. Lease-expiry and cross-device races are not newly varied."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 135,
+            "end": 141,
+            "sha256": "f345b7dbe4a081bf2f4ae4bc30adafe7c69a9066e22c286b92ad244112be50e6"
+          },
+          "expectation": "pairs",
+          "why": "CAS predicates and operation-ID nonexistence allow one distinct progress/completion winner at the shared expected version. Identical claim retries do not increment twice. Actual internal overlap is not measured."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 142,
+            "end": 146,
+            "sha256": "c7a39721850febd717cfa8b80c6615e3f21660d6004a30e038aa22e2d96e9f54"
+          },
+          "expectation": "persistence",
+          "why": "Each accepted change has one exact operation receipt with independently expected request hash, session, resulting version and timestamp; refused operations leave no receipt. No partial-write fault is injected."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 147,
+            "end": 150,
+            "sha256": "6fcf2ea0d184e4e7fe0779c539de7fd7b1178bb0958359b83d1d89da0ca3786e"
+          },
+          "expectation": "persistence",
+          "why": "After the mutation batch, missing loser receipt yields exact conflict; accepted receipt yields the current job. Read-only final state proves one new job/four receipts and preservation of all prior observed rows."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "generation-callback-concurrency-v105",
+      "title": "Resolve duplicate and competing generation callbacks",
+      "steps": [
+        "generation-callback-concurrency-v105"
+      ]
+    }
+  ]
+}

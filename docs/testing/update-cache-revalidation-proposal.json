@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "update-cache-revalidation-v103",
+      "title": "Revalidate update bytes before cache shortcuts",
+      "featureId": "update-cache-revalidation",
+      "state": "existing",
+      "existingPaths": [
+        "updates/tests-e2e/update-journey.mjs"
+      ],
+      "plannedActions": [
+        "Finish the original 42-request publication and acceptance-namespace journey; send a matching filename-digest validator to the known metadata-mismatched artifact by GET and HEAD.",
+        "Delete only that synthetic object, verify its absence, and send the same matching validator by GET.",
+        "Send the now-stale validator to the intact signed synthetic artifact; verify full downloaded bytes and signature. Send its correct validator by HEAD and check 304 body/header behavior.",
+        "Restore the original valid stable pointer and GET its feed with the exact matching feed ETag; verify fresh 200 byte-identical signed payload and no-store headers.",
+        "Finish at exactly 48 requests, zero outbound attempts and unchanged production Worker source; dispose the owned process and temporary R2 state."
+      ],
+      "expectedOutcomes": [
+        "A matching filename-digest If-None-Match must not bypass R2 metadata or existence checks: metadata-mismatched GET and HEAD return 503 with no ETag and no-store, then the deleted object returns exact 404/Not found with no ETag and no-store. The GET error is exact Release artifact unavailable.; HEAD has no bytes. The corrupt object exists before its first two requests. These are origin revalidation checks, not revocation of previously cached bytes.",
+        "A mismatching validator on the valid inert artifact returns 200 with exact downloaded bytes, ephemeral Ed25519 verification and exact size. Matching HEAD returns bodyless 304 with no Content-Length. Both responses retain exact artifact ETag, application/zip, immutable one-year cache policy, attachment filename and no Retry-After. Conditional list, weak, wildcard, Range and CDN behavior are not covered.",
+        "After synthetic restoration of the valid stable pointer, a matching feed validator still returns 200 with the exact signed feed bytes, digest ETag, XML content type and no-store. The matching feed validator does not produce a conditional 304; the complete payload is still returned. GET transport Content-Length is not asserted; byte equality is the oracle. No live signing identity, publisher, CDN, native install or Sparkle is involved."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "update-cache-revalidation-v103-1",
+      "featureId": "update-cache-revalidation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "updates/src/worker.mjs",
+        "start": 27,
+        "end": 36,
+        "fileSha256": "0d9fa6c95f30f444cc1874ce135b95609d258a465154497cc3bbbd834389374d",
+        "spanSha256": "9356f1429b4686b10df85221cb336f6c259e02e2558ef82e1499c61a9025b132",
+        "sha256": "3bd609c1a6acf5639f497ce95f1b567f12aed7b634dc6a71962557458c96b6bc"
+      },
+      "scenarioIds": [
+        "update-cache-revalidation-v103"
+      ],
+      "rationale": "The valid stable pointer resolves to its hash-checked feed before the response ignores conditional caching and returns exact signed bytes with no-store. Existing malformed-pointer coverage is retained, not newly claimed.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only sequential origin HTTP with isolated synthetic R2 is exercised; no live publisher/CDN, general conditional-header semantics, streamed archive hashing, native install, storage faults or measured coverage.",
+      "proposedAssertions": [
+        "After synthetic restoration of the valid stable pointer, a matching feed validator still returns 200 with the exact signed feed bytes, digest ETag, XML content type and no-store. The matching feed validator does not produce a conditional 304; the complete payload is still returned. GET transport Content-Length is not asserted; byte equality is the oracle. No live signing identity, publisher, CDN, native install or Sparkle is involved."
+      ]
+    },
+    {
+      "rangeId": "update-cache-revalidation-v103-2",
+      "featureId": "update-cache-revalidation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "updates/src/worker.mjs",
+        "start": 38,
+        "end": 43,
+        "fileSha256": "0d9fa6c95f30f444cc1874ce135b95609d258a465154497cc3bbbd834389374d",
+        "spanSha256": "a2dc147be37c48efe9d2715af20b49a63a626a0d5fe40cbab33f857e4a0d7437",
+        "sha256": "c2c144f225ac63be358e0967e6b4bd588d93727cb1cb376f1927e04f31cf95d1"
+      },
+      "scenarioIds": [
+        "update-cache-revalidation-v103"
+      ],
+      "rationale": "Only a valid artifact route reaches object lookup and metadata matching. Matching validators cannot shortcut missing/mismatched objects because these guards run first; both R2 head and get paths are exercised.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only sequential origin HTTP with isolated synthetic R2 is exercised; no live publisher/CDN, general conditional-header semantics, streamed archive hashing, native install, storage faults or measured coverage.",
+      "proposedAssertions": [
+        "A matching filename-digest If-None-Match must not bypass R2 metadata or existence checks: metadata-mismatched GET and HEAD return 503 with no ETag and no-store, then the deleted object returns exact 404/Not found with no ETag and no-store. The GET error is exact Release artifact unavailable.; HEAD has no bytes. The corrupt object exists before its first two requests. These are origin revalidation checks, not revocation of previously cached bytes."
+      ]
+    },
+    {
+      "rangeId": "update-cache-revalidation-v103-3",
+      "featureId": "update-cache-revalidation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "updates/src/worker.mjs",
+        "start": 44,
+        "end": 45,
+        "fileSha256": "0d9fa6c95f30f444cc1874ce135b95609d258a465154497cc3bbbd834389374d",
+        "spanSha256": "67aa11f6e538da2e827810ca9c6a61b9eaff3e7c0ec9b34c86f53033246a05e0",
+        "sha256": "47fa920c311a748346c94f1c9f57d79de9fcf6ad0a3458f092b97a6889699092"
+      },
+      "scenarioIds": [
+        "update-cache-revalidation-v103"
+      ],
+      "rationale": "Valid artifact responses carry immutable-cache headers. Mismatching GET returns full bytes; exact matching HEAD returns 304 after validation, with Content-Length removed.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only sequential origin HTTP with isolated synthetic R2 is exercised; no live publisher/CDN, general conditional-header semantics, streamed archive hashing, native install, storage faults or measured coverage.",
+      "proposedAssertions": [
+        "A mismatching validator on the valid inert artifact returns 200 with exact downloaded bytes, ephemeral Ed25519 verification and exact size. Matching HEAD returns bodyless 304 with no Content-Length. Both responses retain exact artifact ETag, application/zip, immutable one-year cache policy, attachment filename and no Retry-After. Conditional list, weak, wildcard, Range and CDN behavior are not covered."
+      ]
+    },
+    {
+      "rangeId": "update-cache-revalidation-v103-4",
+      "featureId": "update-cache-revalidation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "updates/src/worker.mjs",
+        "start": 46,
+        "end": 47,
+        "fileSha256": "0d9fa6c95f30f444cc1874ce135b95609d258a465154497cc3bbbd834389374d",
+        "spanSha256": "4110e04146afe769d2cbfb453a4c9e4765fce169017fd544ac4204e8caf695c9",
+        "sha256": "1dd68bcef1f10f92a397b009a1b5d5a16a6f09ce5466b8b9c0c7914b40138956"
+      },
+      "scenarioIds": [
+        "update-cache-revalidation-v103"
+      ],
+      "rationale": "The valid artifact response exposes exact streamed body bytes for a mismatching validator; matching HEAD is intercepted above. No large-file memory bound or arbitrary Range behavior is proven.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Only sequential origin HTTP with isolated synthetic R2 is exercised; no live publisher/CDN, general conditional-header semantics, streamed archive hashing, native install, storage faults or measured coverage.",
+      "proposedAssertions": [
+        "A mismatching validator on the valid inert artifact returns 200 with exact downloaded bytes, ephemeral Ed25519 verification and exact size. Matching HEAD returns bodyless 304 with no Content-Length. Both responses retain exact artifact ETag, application/zip, immutable one-year cache policy, attachment filename and no Retry-After. Conditional list, weak, wildcard, Range and CDN behavior are not covered."
+      ]
+    }
+  ]
+}

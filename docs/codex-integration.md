@@ -1,5 +1,7 @@
 # Codex integration contract
 
+> Testing update, 2026-11-09: legacy test suites and runners referenced below were removed. Prior results remain historical, not current commands or proof of replacement coverage. See [current CLI-only testing](testing/cli-only-tests.md).
+
 Scriv runs the user's installed Codex app-server locally. The managed connection starts `codex app-server` over newline-delimited JSON on standard input/output. An optional connection attaches to a loopback WebSocket server. Scriv creates ordinary Codex threads and turns, then imports a real generated image into the project. ChatGPT authentication stays in the local Codex runtime and is separate from the Scriv cloud account.
 
 **Connect requires no address.** The compact Codex popup shows connection status and a **Connect** action. Account and model controls appear when applicable. Its **Advanced…** action opens the Codex pane in the existing native Settings window rather than another setup sheet. Manual executable, WebSocket, companion-pairing and recovery controls live in that pane.
@@ -18,7 +20,7 @@ The **Terra 6.1 / xhigh audit agent** reproduced and fixed unrelated-thread canc
 
 Live testing also caught external package bookmark creation failing. Catalyst now creates and resolves explicit security-scoped bookmarks with the app-scope entitlement. The same external synthetic package opened through the document picker and reopened after a clean app replacement/relaunch; failed bookmark operations still throw instead of silently dropping the grant.
 
-`scripts/rebuild-catalyst-cli.py` rebuilds the Catalyst Swift app/Core and native runtime XPC with the selected standalone macOS SDK. It requires an existing verified Scriv bundle as `--template` for the unchanged compiled assets, icon, native update adapter and Sparkle components; it is not a clean asset build or an xtool migration. The November 4 build passed the existing icon check, nested signature verification and native launch/connection checks. Intel hardware, other macOS versions, clean installation on another Mac, updater installation and notarization were not exercised.
+`scripts/rebuild-catalyst-cli.py` now rebuilds the Catalyst Swift app/Core, native update adapter and native runtime XPC with the selected standalone macOS SDK. It requires an approved verified Scriv bundle as `--template` and a matching signed Sparkle 2.10.1 development framework via `--sparkle-framework`. Compiled assets, icon, third-party Sparkle and remaining template metadata/resources are retained; it is not a clean asset build or an xtool migration. See [the current incremental build boundary](verification/clt-native-build-20261111.md). The November 4 build passed the existing icon check, nested signature verification and native launch/connection checks. Intel hardware, other macOS versions, clean installation on another Mac, updater installation and notarization were not exercised.
 
 ## Verified runtime and evidence
 

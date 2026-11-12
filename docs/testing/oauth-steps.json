@@ -1,0 +1,697 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "reject-malformed-challenge",
+      "title": "Reject malformed challenge",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET OAuth start malformed challenge"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET OAuth start malformed challenge has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 188,
+            "end": 188,
+            "sha256": "e648f665e4683e791e442ba9c457ef39e1a241579ad10d99e03bfb88f1aac880"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 13,
+            "end": 14,
+            "sha256": "400297ec9851b29f824fc3de4a306a4e9c4f5fb21bb57b5928b7a7783c2e04d7"
+          },
+          "expectation": "observed",
+          "why": "Exact-length unsupported PKCE challenge is rejected. Local simulated-provider HTTP only, not real login or measured execution."
+        }
+      ]
+    },
+    {
+      "id": "start-sign-in",
+      "title": "Start sign in",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET OAuth start valid challenge and client state"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET OAuth start valid challenge and client state has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 192,
+            "end": 192,
+            "sha256": "219789117af8dfceef6ac7324a8af12798b5bbadf942815145e7d25be82de771"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 15,
+            "end": 23,
+            "sha256": "f24bf34003d27b282c130a8aa626b4267be29e1392479d0ed13c95d702cff082"
+          },
+          "expectation": "observed",
+          "why": "Public redirect preserves safe provider scope and opaque server state. Local simulated-provider HTTP only, not real login or measured execution."
+        }
+      ]
+    },
+    {
+      "id": "complete-provider-callback",
+      "title": "Complete provider callback",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET callback synthetic GitHub authorization"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback synthetic GitHub authorization has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 196,
+            "end": 196,
+            "sha256": "bc92fd2d31acba4a8fd36f7688e3ce29ace10df5540c528a21f82c127b2d2ea5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 25,
+            "end": 26,
+            "sha256": "77562501be7ee26ad53a2757899103911c0217698789b20f2b4cceed33c5c26b"
+          },
+          "expectation": "observed",
+          "why": "Callback consumes started state and returns original client state. Local simulated-provider HTTP only, not real login or measured execution."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 30,
+            "end": 30,
+            "sha256": "39062f2708fda774ba1db08aa0dda03593c031412a9461acc2b99ab4e26b50bf"
+          },
+          "expectation": "observed",
+          "why": "Successful callback returns the exact client state and scriv callback destination."
+        }
+      ]
+    },
+    {
+      "id": "reject-state-replay",
+      "title": "Reject state replay",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET callback consumed state replay"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback consumed state replay has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 200,
+            "end": 200,
+            "sha256": "f5be804d432109d411a2bfaf8eefdda4e25bebd7d44ce3974c686fc43c5e4889"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 27,
+            "end": 29,
+            "sha256": "f866661e80b3cae09923e3346d2ddbded2923bdf01a60c50bd0fdcaf3b7f0fbd"
+          },
+          "expectation": "observed",
+          "why": "Callback replay after success rejects consumed state with oauth_expired and no additional local provider interceptions. No external request is forwarded."
+        }
+      ]
+    },
+    {
+      "id": "reject-verifier-characters",
+      "title": "Reject verifier characters",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "POST exchange malformed verifier"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "POST exchange malformed verifier has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 204,
+            "end": 204,
+            "sha256": "7d06a47cfc48fec821f3776f9bdfa418d491f5c287521436d0845a34ee82f1a5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 60,
+            "end": 64,
+            "sha256": "b00da6318b93372b72e92a7b64f6ff49782875abacabb3cd1ee10360a0bb5538"
+          },
+          "expectation": "observed",
+          "why": "Malformed verifier rejected before code consumption. Local simulated-provider HTTP only, not real login or measured execution."
+        }
+      ]
+    },
+    {
+      "id": "reject-wrong-verifier",
+      "title": "Reject wrong verifier",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "POST exchange wrong valid verifier"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "POST exchange wrong valid verifier has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 208,
+            "end": 208,
+            "sha256": "a5a4dd3fff22396a6decfa77d9494f30159183ea0575eb01e7447295a92fa783"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "exchange-correct-proof",
+      "title": "Exchange correct proof",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "POST exchange correct verifier after failures"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "After a wrong verifier failed without consumption, correct proof returns a session with the exact persisted synthetic identity and the verified primary email chosen from competing fixture addresses.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 212,
+            "end": 212,
+            "sha256": "86281022f7aa626b6efa87fce0b14d65920be522946fa300378112db23de802b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 32,
+            "end": 49,
+            "sha256": "d37e1f41b8c76d05bc33ffec20ac606831e16a505f85a040df91d35d84ee1d04"
+          },
+          "expectation": "observed",
+          "why": "The exact local token/profile/email requests return competing unverified-primary and verified-secondary addresses; subsequent exchange asserts only the verified primary email is selected. All behavior is simulated, not live GitHub."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 50,
+            "end": 58,
+            "sha256": "f077b0d80327315b034dd9dcf17728c51bb8526592fd14eefcefaf5b96b0d8b7"
+          },
+          "expectation": "observed",
+          "why": "The returned exchange code is accepted by the next correct-proof exchange; its response independently asserts the persisted synthetic name, selected email, null avatar and usable user identity. No existing-account upsert or storage-error branch is claimed."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 65,
+            "end": 74,
+            "sha256": "de1860cedeb7c4b7bc8167b5b6eb7e7c1fca94d448221b77eb9826864056c787"
+          },
+          "expectation": "observed",
+          "why": "Correct proof succeeds after the immediately preceding wrong proof returns invalid_code, independently proving wrong proof did not consume this code. Issued session has exact synthetic identity; no real GitHub login."
+        }
+      ]
+    },
+    {
+      "id": "reject-code-replay",
+      "title": "Reject code replay",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "POST exchange consumed code replay"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "POST exchange consumed code replay has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 216,
+            "end": 216,
+            "sha256": "a5a4dd3fff22396a6decfa77d9494f30159183ea0575eb01e7447295a92fa783"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "read-oauth-identity",
+      "title": "Read oauth identity",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET identity using OAuth session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET identity using OAuth session has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 220,
+            "end": 220,
+            "sha256": "67ea92623f25a34afc751755f5f77b913d4d23c677a5708b1ac897560bd36c76"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "read-oauth-session",
+      "title": "Read oauth session",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET sessions using OAuth session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET sessions using OAuth session has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 224,
+            "end": 224,
+            "sha256": "e2084f107b5d2c67cbaa84ca2762ff83d4ac05c9b3d679a80b35994b1f76b2f0"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "start-cancellation",
+      "title": "Start cancellation",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET OAuth start cancellation fixture"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET OAuth start cancellation fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 228,
+            "end": 228,
+            "sha256": "a7707495b521d7a11f03fbcc3d74ef1c82c6b2ebaa4ad9f51e930fb9210227c2"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "cancel-callback",
+      "title": "Cancel callback",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET callback provider cancellation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback provider cancellation has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 232,
+            "end": 232,
+            "sha256": "4388c5bbefcd4afc9222350e4ed477267201dfe8734663b822a6b06c01b7fff3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 31,
+            "end": 31,
+            "sha256": "42ee58b241f3591f66b0b871d73f8054cdae21038f057c951f935bf288a4e0a6"
+          },
+          "expectation": "observed",
+          "why": "Cancellation returns denial and no exchange code without calling provider. Local simulated-provider HTTP only, not real login or measured execution."
+        }
+      ]
+    },
+    {
+      "id": "reject-cancelled-state",
+      "title": "Reject cancelled state",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET callback cancelled state replay"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback cancelled state replay has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 236,
+            "end": 236,
+            "sha256": "51bb4c5fce63ebc9a3a01f7ac69c339f08d2e8273c1dffa0c1a9a3ede0f2b41c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "start-token-error",
+      "title": "Start token error",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET OAuth start token-error fixture"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET OAuth start token-error fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 240,
+            "end": 240,
+            "sha256": "2244126c264201cf16d6f17a164dc94426e07ad642a108dbeda7e97a9a2d74ac"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-token-error",
+      "title": "Reject token error",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET callback simulated token-error"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback simulated token-error has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 244,
+            "end": 244,
+            "sha256": "f51db6946b5914e9a2605df6822992369c51e4ba13421755a0dcbe2b459c5d88"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "replay-token-error",
+      "title": "Replay token error",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET callback token-error consumed state"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback token-error consumed state has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 248,
+            "end": 248,
+            "sha256": "761e5addbd812cb35d335466e491231ee7f65ca94f5d3134b5b286caa5750da3"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "start-profile-error",
+      "title": "Start profile error",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET OAuth start profile-error fixture"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET OAuth start profile-error fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 252,
+            "end": 252,
+            "sha256": "d8415446c7380da18481143ec84c023cf4e65b771faa532ee24e8e91643bde3f"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-profile-error",
+      "title": "Reject profile error",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET callback simulated profile-error"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback simulated profile-error has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 256,
+            "end": 256,
+            "sha256": "4c8fd573e7e6f3ab41f40e7fde05be0464a57dad4926c1152d76668262641d4a"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "replay-profile-error",
+      "title": "Replay profile error",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET callback profile-error consumed state"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback profile-error consumed state has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 260,
+            "end": 260,
+            "sha256": "a4acec8fc68c603b0162b18e97679815a7e17aa28cca3b717f9fb5932c78af35"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "start-invalid-profile",
+      "title": "Start invalid profile",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET OAuth start invalid-profile fixture"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET OAuth start invalid-profile fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 264,
+            "end": 264,
+            "sha256": "46d59196cf23dfc90fa74432d74763e8520235bedc83b6d0d0cea9e782197e24"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-invalid-profile",
+      "title": "Reject invalid profile",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET callback simulated invalid-profile"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback simulated invalid-profile has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 268,
+            "end": 268,
+            "sha256": "b32f56f852189e97c2fa83f233c8d6b43d412b02ce55549aebd4d61d64b4a2d8"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "replay-invalid-profile",
+      "title": "Replay invalid profile",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET callback invalid-profile consumed state"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback invalid-profile consumed state has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 272,
+            "end": 272,
+            "sha256": "5c30a9450830cd7ebb3e23dd108e401616bf2a57dc2c4ec2876ef929edea8d25"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "logout-oauth",
+      "title": "Logout oauth",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "POST logout OAuth session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "POST logout OAuth session has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 276,
+            "end": 276,
+            "sha256": "73454176e4b843a69ff6754487fc3f563fd44a23abd9b7919e5854daa1bdc947"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-logged-out-oauth",
+      "title": "Reject logged out oauth",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed."
+      ],
+      "actions": [
+        "GET identity after OAuth logout"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET identity after OAuth logout has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 280,
+            "end": 280,
+            "sha256": "3a198e4469e9f09171f5fd4af68208f07c612e9d72adb5080d9ea542e4172bef"
+          }
+        }
+      ],
+      "mappings": []
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "local-github-oauth-pkce",
+      "title": "Synthetic GitHub OAuth and PKCE lifecycle",
+      "steps": [
+        "reject-malformed-challenge",
+        "start-sign-in",
+        "complete-provider-callback",
+        "reject-state-replay",
+        "reject-verifier-characters",
+        "reject-wrong-verifier",
+        "exchange-correct-proof",
+        "reject-code-replay",
+        "read-oauth-identity",
+        "read-oauth-session",
+        "start-cancellation",
+        "cancel-callback",
+        "reject-cancelled-state",
+        "start-token-error",
+        "reject-token-error",
+        "replay-token-error",
+        "start-profile-error",
+        "reject-profile-error",
+        "replay-profile-error",
+        "start-invalid-profile",
+        "reject-invalid-profile",
+        "replay-invalid-profile",
+        "logout-oauth",
+        "reject-logged-out-oauth"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Scriv Runtime Companion — explicit local bridge
 
+> Testing update, 2026-11-09: legacy test suites and runners referenced below were removed. Prior results remain historical, not current commands or proof of replacement coverage. See [current CLI-only testing](../../docs/testing/cli-only-tests.md).
+
 This is a **separate, headless macOS executable/app bundle**, not UI in the Catalyst app. Its sources import Foundation, Network, Security and CoreServices; no AppKit, SwiftUI, hosting view, privileged helper, launch agent or automatic installer. Catalyst cannot call `Process.run`; the ordinary same-user companion owns only the Codex process requested by a paired Scriv connection.
 
 ## Installation / launch gate

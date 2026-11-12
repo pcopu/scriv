@@ -1,5 +1,7 @@
 # Local startup evidence and isolated native recovery tests
 
+> Testing update, 2026-11-09: legacy test suites and runners referenced below were removed. Prior results remain historical, not current commands or proof of replacement coverage. See [current CLI-only testing](testing/cli-only-tests.md).
+
 This slice observes startup; it does **not** change normal storage, account restoration, bookmark grants, replay, journal locking, window order, or timeout policy. A UI-control binding timeout alone is not evidence of a Scriv hang, absent window, or journal contention.
 
 ## Opt-in local trace

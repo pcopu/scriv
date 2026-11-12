@@ -1,0 +1,260 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "recover-generation-v96",
+      "title": "Keep generation metadata private and recover safely across devices",
+      "preconditions": [
+        "Run tracer app -- test services generation. All original 34 named action/assertion callbacks finish unchanged at source line 278 before this appended chapter. Four synthetic users, five sessions and one active synthetic team/project exist; no new fixture rows are inserted by this chapter.",
+        "The original three jobs are completed, cancelled and queued. Both member sessions initially remain live, the first on Synthetic CLI device and the second on Synthetic second device. Synthetic job IDs, operation IDs and output references are not credentials or real content.",
+        "All mutations and logout use real loopback HTTP to the bundled production Worker. Read-only D1/R2 observations capture exact declared business tables, ordered by rowid. Sessions and security-limit counters legitimately change and are excluded from equality.",
+        "Unchanged 80-request cap, five-second requests, 90-second process watchdog, sanitized owned child environment, denied unexpected outbound traffic and cleanup apply. No lease-time manipulation or real lease expiry, provider execution, native run, concurrent interleaving, storage failure, telemetry or OS-wide network sandbox claim."
+      ],
+      "actions": [
+        "Complete original 34 named steps; capture original job/receipt and business state.",
+        "Refuse extra prompt on create, then create job A. Refuse extra credential and string recover on its first claim; then claim with the same fresh operation ID.",
+        "Refuse newline and 161-character progress, output on running, error on running, invalid error-code syntax and extra localPath on update. Succeed with 160-character progress using the same fresh operation ID.",
+        "Explicitly wait with user_paused; reject second-device claim without recover, then recover with true. Retry first-device original claim and require current second-device version 5; reject cross-device receipt and former-device completion.",
+        "Complete A from the second device. Retry its original creation and require completed version 6 without writes.",
+        "Create and claim B from first device. Capture raw future-lease state. Publicly log out the first session and verify revocation and the second session remaining live.",
+        "Read B and list all five jobs as viewer. Require B and original queued job to project waiting without stored-state writes; check B lease still future.",
+        "Refuse revoked-token update and second-device recovery omission; recover B explicitly, replay that recovery without writes, then complete from second device.",
+        "Compare final original rows and business state, exactly two additional jobs and eight new receipts, 30 requests, 14 refusals and zero unexpected outbound attempts."
+      ],
+      "expectations": [
+        {
+          "id": "metadata",
+          "description": "Nine metadata refusals use exact error JSON and unchanged complete generation jobs/receipts, projects, teams, memberships, assets and empty R2 listing. Inputs are extra prompt/credential/localPath fields on create/claim/update, string recover, newline progress, 161-character progress, output on running, error on running, and invalid error-code syntax. The same fresh operation IDs subsequently succeed with permitted inputs, including 160-character progress.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 306,
+            "end": 343,
+            "sha256": "b5e66ebc19a2550581676370f9623b1f8446647ad24e19085143b90174fb6437"
+          }
+        },
+        {
+          "id": "shape",
+          "description": "Checked job responses contain exactly the 16 declared public metadata fields, with public values equal to explicit expected status/device/version/progress/output/error and corresponding stored identity/timestamps/lease/revision. Internal last-operation and owner-liveness fields are not emitted.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 289,
+            "end": 304,
+            "sha256": "9b28064b205a26d25576e3ec90f3a90b5e098f2321196da45c8ecb96a2634f54"
+          }
+        },
+        {
+          "id": "waiting",
+          "description": "After actual logout, a future-lease running job is returned as waiting by single and list HTTP reads, and an original queued job also appears waiting. Underlying rows and receipts remain exact; the lease-expiry branch is not exercised.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 362,
+            "end": 374,
+            "sha256": "5281c74e8293e1224eee3c1ff13bb03262f5bcc3889c726d2117f602df1242f3"
+          }
+        },
+        {
+          "id": "replay",
+          "description": "Explicit waiting requires recover:true on the second device. A replay of the first device claim returns the current second-device running job at version 5 without writes. The same receipt on another device conflicts, and the former live device cannot complete the job. The second device completes it, and duplicate original create returns the completed version 6 without reset.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 344,
+            "end": 357,
+            "sha256": "8a4a5af67d7e9a7ac2ff072c6b19c78e56dc0845a129addbf80fac2ec2a7951a"
+          }
+        },
+        {
+          "id": "receipts",
+          "description": "Each of eight successful claim/update transitions has one newly appended receipt with exact project, job, operation, actor session, resulting version and update timestamp, plus a 64-hex request hash. Running leases are bounded against real request time at 90 seconds; terminal/waiting leases are zero. No transactional failure injection or exhaustive hash correctness claim.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 311,
+            "end": 323,
+            "sha256": "b56fb0a1f56f5da18afc91a78f3124316d325049f8921c0f755c9abb30a660bf"
+          }
+        },
+        {
+          "id": "recover-flag",
+          "description": "String recover is rejected without state change; omission of recover on waiting and revoked-owner running jobs conflicts; explicit true recovery succeeds only after the demonstrated permitted state change.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 332,
+            "end": 379,
+            "sha256": "ed878cd5d120ebba9b022ffd3292c377f6051b5ee2efbccb5f890d061df990f5"
+          }
+        },
+        {
+          "id": "progress",
+          "description": "An actual newline and 161-character progress fail without writes, while 160 characters succeed with a new version and receipt; no claim covers every control code or Unicode length boundary.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 335,
+            "end": 343,
+            "sha256": "31aae28dca9a00c676b5eaf5860ce10ccd0dd8ac947dbae23c0359555fca9b23"
+          }
+        },
+        {
+          "id": "output-error",
+          "description": "A running output image, error on running, and provider-style error string are refused without writes. Explicit waiting accepts user_paused, recovery clears it and completion stores its output reference. No image-generation or image-existence check is claimed.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 338,
+            "end": 354,
+            "sha256": "6f0162dea5aae80c68dcdbb5440895954663a6ccc66311d59f56c766dd3e6d62"
+          }
+        },
+        {
+          "id": "revocation",
+          "description": "Public logout revokes the unexpired first session while the retained second session remains live. Single/list reads project the original queued job and a new running job to waiting without changing their raw rows or business state. The running lease remains future, and recovery omission fails; explicit second-device recovery succeeds, identical recovery replays without writes, and completion succeeds. Revoked-token update fails in outer authentication.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 362,
+            "end": 383,
+            "sha256": "1be8e1d247c14043dde51d9028ba50e3fa0bdb82ccc6e514e39fb9813d11f797"
+          }
+        },
+        {
+          "id": "preserve",
+          "description": "Final state has exactly two additional jobs and eight appended receipts, preserves all three original job rows and every original receipt, project, team, membership, asset and empty R2 listing, and records 30 added HTTP requests, 14 refusals and zero outbound attempts.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 384,
+            "end": 390,
+            "sha256": "8f1b2207b2a12e8e40e1ba4f0a3a4a72676a6bab20d8c7a4f121688e8c86e6e1"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 16,
+            "end": 18,
+            "sha256": "2c6b3ac576d650c5c69c15259851f803a9bcf598f9a262565cba2bc7e9cafe46"
+          },
+          "expectation": "waiting",
+          "why": "The owner-session existence query responds to real public revocation while expiry remains future. No expired or mismatched-user session branch claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 37,
+            "end": 39,
+            "sha256": "6d15462fbdaa6b550ccd80f4febb60a7d9436befaa2e05bffd10564463e50c8c"
+          },
+          "expectation": "metadata",
+          "why": "Unknown metadata fields are independently supplied on create, claim and update with otherwise valid identities/state; no secret data is transmitted."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 40,
+            "end": 46,
+            "sha256": "14ba05d4256d3aec56686200128fa9330bdc2eb4dd35482f0e30bcbf969120ef"
+          },
+          "expectation": "shape",
+          "why": "Exact job keys and values are checked for normal and projected waiting views; no claim of native rendering or every timestamp/input boundary."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 56,
+            "end": 58,
+            "sha256": "0a653b85677ad28cd66293f34bf057367f3d6c38b6c80778a70d5e19bd8e7c38"
+          },
+          "expectation": "replay",
+          "why": "The same operation and unchanged payload on a different session causes operation_conflict; original-session replay returns current state without mutation."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 87,
+            "end": 93,
+            "sha256": "f597da186f42599f56cfb6ebed1a7ac9e16a5c57bc15fd60cadf1edccd7134ae"
+          },
+          "expectation": "replay",
+          "why": "Completed job creation is replayed by the original still-live creator, returning completed version and second-device owner without a reset. No revoked or changed-rights mid-request branch claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 103,
+            "end": 109,
+            "sha256": "b532d041fdf3e2b806983355c8aa7bd04d15b02e6e04b17be06f3f60f5d35104"
+          },
+          "expectation": "replay",
+          "why": "The original claim receipt is replayed after another device recovered; current owner/version are returned. Session and project checks remain valid in that positive path."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 114,
+            "end": 115,
+            "sha256": "9ca723fa87823460b68a41dc17b3bb19b769c5afb0900388086e50c65b06aae8"
+          },
+          "expectation": "recover-flag",
+          "why": "A string recover reaches field validation with fresh receipt-free operation ID and is rejected; the valid claim with the same ID then succeeds."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 119,
+            "end": 120,
+            "sha256": "0dddf987dab7b99f6a762e47f60c333fd9a890394af4665bab3ee912448f6b5f"
+          },
+          "expectation": "progress",
+          "why": "Fresh receipt-free updates discriminate newline and 161-character rejection from accepted 160-character text. Other control characters are not independently tested."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 121,
+            "end": 124,
+            "sha256": "ae8c6b3590ca6f8d3a499650b4294aebee0226a724eee7d19ca3e303bca9d345"
+          },
+          "expectation": "output-error",
+          "why": "Running-output and running-error combinations plus invalid error syntax are rejected; waiting error and completed output references are positively exercised."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 128,
+            "end": 134,
+            "sha256": "0b11936bc2b8249e9ccdc0263fd8b994f3752b84f5088a61058977631ba9463f"
+          },
+          "expectation": "revocation",
+          "why": "Both explicit waiting and revoked-owner running states need recover:true for second-device takeover. Future running lease discriminates owner-session revocation from expiry. Former-device completion is fenced; no arbitrary concurrency claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 135,
+            "end": 141,
+            "sha256": "f345b7dbe4a081bf2f4ae4bc30adafe7c69a9066e22c286b92ad244112be50e6"
+          },
+          "expectation": "receipts",
+          "why": "Successful public transitions persist expected device/status/version/progress/output/error and real bounded leases; refusal state equality checks the declared business scope. No claim that all authorization arms are varied."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 143,
+            "end": 150,
+            "sha256": "4885d95875a220dbabe62c2e2ae9f616dd61035f42f84cf188dd8fa8256c9a4c"
+          },
+          "expectation": "receipts",
+          "why": "Every successful transition appends one matching receipt; rejected attempts and three replays append none. These observations are not a transactional failure or crash-recovery test."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "generation-recovery-v96",
+      "title": "Recover local generation with metadata and device safeguards",
+      "steps": [
+        "recover-generation-v96"
+      ]
+    }
+  ]
+}

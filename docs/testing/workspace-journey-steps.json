@@ -1,0 +1,383 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "workspace-model-document",
+      "title": "Exercise model-document workspace behavior",
+      "preconditions": [
+        "Native NOT RUN; readiness blocked: matching provenance-verified automation-enabled Catalyst build and macOS are required. No provider, user data or native actions were used in preparing this candidate.",
+        "Action boundary is the exact public whole-journey CLI invocation. SCRIV_E2E_APP supplies the authorized isolated automation bundle. This is a declared whole-journey association, not a recorded or deterministically flattened internal command trace. Each journey runs its existing default groups in source order, with fresh owned sessions as authored.",
+        "All source ranges claim only the normal local success path identified by the specific witness. Guards within a span are association context, not evidence their rejecting branch ran. No blanket branch-completeness, recovery durability, crash, callback-race, cloud or UI-gesture claim."
+      ],
+      "actions": [
+        "test --scenario journeys/model-document"
+      ],
+      "expectations": [
+        {
+          "id": "oracle-1",
+          "description": "Import complete local model; all assertion statements in this witness are required.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+            "start": 54,
+            "end": 75,
+            "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 770,
+            "end": 772,
+            "sha256": "4f8657544ccd0b3c3e381eab359977f8677662226ad3d121093e90fecbe337cc"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 784,
+            "end": 785,
+            "sha256": "340850c45e57ffe05fe82ba6d94437b9bb74f279fa67cd85a8bf29765b83cb39"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 791,
+            "end": 797,
+            "sha256": "ae4f2f0588b59732431d9c47e883705120138a8b3ae91668c8d3ec819bad8cde"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 877,
+            "end": 890,
+            "sha256": "8a3ee76fcd075f6fa63e439ac7b611db4fd2c6fb06e1cfbdfe18fd931f45cc98"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 893,
+            "end": 894,
+            "sha256": "f4a646969cfff77df7572e4baee25f8a5cf34f30e72e7bd48f219853eaa470ac"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1824,
+            "end": 1826,
+            "sha256": "fd5da44f133c4dad6d3ff4fd67fa123233da48d26757a63d3aec75b3310a2f11"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1832,
+            "end": 1833,
+            "sha256": "2a2577f48b642219932a599f853fded75913d07ca375fdb7c99cdbb14cef011b"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1839,
+            "end": 1839,
+            "sha256": "a1ee5631c36e4406792295d4973eecb0f9ec4fe6b3547d9799ff31133e10b483"
+          },
+          "expectation": "oracle-1",
+          "why": "After a valid local import is installed, queueSave(value,label:\"Create project\") publishes its complete metadata to the owned project package. The model-document witness compares the entire persisted project, loaded project and package set. Only queueSave publication on line 1839 is associated; the co-located onProjectChanged callback and navigation, history, playback and discussion reset semantics are not asserted."
+        }
+      ]
+    },
+    {
+      "id": "workspace-script-structure",
+      "title": "Exercise script-structure workspace behavior",
+      "preconditions": [
+        "Native NOT RUN; readiness blocked: matching provenance-verified automation-enabled Catalyst build and macOS are required. No provider, user data or native actions were used in preparing this candidate.",
+        "Action boundary is the exact public whole-journey CLI invocation. SCRIV_E2E_APP supplies the authorized isolated automation bundle. This is a declared whole-journey association, not a recorded or deterministically flattened internal command trace. Each journey runs its existing default groups in source order, with fresh owned sessions as authored.",
+        "All source ranges claim only the normal local success path identified by the specific witness. Guards within a span are association context, not evidence their rejecting branch ran. No blanket branch-completeness, recovery durability, crash, callback-race, cloud or UI-gesture claim."
+      ],
+      "actions": [
+        "test --scenario journeys/script-structure"
+      ],
+      "expectations": [
+        {
+          "id": "oracle-1",
+          "description": "Create scene and author direction; all assertion statements in this witness are required.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 100,
+            "end": 138,
+            "sha256": "b605220afe761d18f8ced97e0a5fc221185f6eb00c5375544c4d2ca47202ae74"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 845,
+            "end": 866,
+            "sha256": "31041c441ec285e8805e6af44d46c69868d817fe2548dc68e5f0bf05d5305a11"
+          },
+          "expectation": "oracle-1",
+          "why": "The stored script-scenes New scene action and real Add direction control reach addScene/addEntry then change. savedMutation compares complete content to explicit independent expected models, exact revision increments, loaded state and all packages. Scope is accepted local mutation and its undo/redo support, not independent HistoryEntry labels, history insertion or persisted history-record semantics; bootstrapping refusal, lease conflicts, revision overflow, no-op, cloud commit and errors are not established."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1171,
+            "end": 1174,
+            "sha256": "3f3b8deaa36f3fed0417458c6f66ea5b9fd73fc4e410065bc338735cb4cf429d"
+          },
+          "expectation": "oracle-1",
+          "why": "The stored script-scenes New scene action and real Add direction control reach addScene/addEntry then change. savedMutation compares complete content to explicit independent expected models, exact revision increments, loaded state and all packages. Scope is accepted local mutation and its undo/redo support, not independent HistoryEntry labels, history insertion or persisted history-record semantics; bootstrapping refusal, lease conflicts, revision overflow, no-op, cloud commit and errors are not established."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1124,
+            "end": 1128,
+            "sha256": "fde19084a5cc305bc1f7f4be1b96548412f62e2027c075803421d4d2d895ecf3"
+          },
+          "expectation": "oracle-1",
+          "why": "The stored script-scenes New scene action and real Add direction control reach addScene/addEntry then change. savedMutation compares complete content to explicit independent expected models, exact revision increments, loaded state and all packages. Scope is accepted local mutation and its undo/redo support, not independent HistoryEntry labels, history insertion or persisted history-record semantics; bootstrapping refusal, lease conflicts, revision overflow, no-op, cloud commit and errors are not established."
+        }
+      ]
+    },
+    {
+      "id": "workspace-character-catalog",
+      "title": "Exercise character-catalog workspace behavior",
+      "preconditions": [
+        "Native NOT RUN; readiness blocked: matching provenance-verified automation-enabled Catalyst build and macOS are required. No provider, user data or native actions were used in preparing this candidate.",
+        "Action boundary is the exact public whole-journey CLI invocation. SCRIV_E2E_APP supplies the authorized isolated automation bundle. This is a declared whole-journey association, not a recorded or deterministically flattened internal command trace. Each journey runs its existing default groups in source order, with fresh owned sessions as authored.",
+        "All source ranges claim only the normal local success path identified by the specific witness. Guards within a span are association context, not evidence their rejecting branch ran. No blanket branch-completeness, recovery durability, crash, callback-race, cloud or UI-gesture claim."
+      ],
+      "actions": [
+        "test --scenario journeys/character-catalog"
+      ],
+      "expectations": [
+        {
+          "id": "oracle-1",
+          "description": "Persist character profile fields; all assertion statements in this witness are required.",
+          "witness": {
+            "path": "tests/e2e/journeys/character-catalog.mjs",
+            "start": 122,
+            "end": 129,
+            "sha256": "c76d93963e9c7358c9b02e09cb9dd21907e3ddf2bbcd1cb8cef54261c9dc8d38"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1230,
+            "end": 1233,
+            "sha256": "942489fa9c463d5a788383874e615b59a830c3b4682c1a3a6a9b59ec7df097e5"
+          },
+          "expectation": "oracle-1",
+          "why": "CharacterEditorController Save validates the form then invokes updateCharacter. editProfile calls persisted for changed biography/appearance/color, clear/restore, repeated saves and canonical-only Unicode edits. The oracle compares the complete character list and unchanged entries. Name/alias-change bootstrap at 1234-1235, missing ID, form validation interception and concurrent edit refusal are deliberately excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1236,
+            "end": 1239,
+            "sha256": "e3ba5921c19b9fba89f1556dd7c5a60ca7fdbc25eaef7d325e05e061d626fc24"
+          },
+          "expectation": "oracle-1",
+          "why": "CharacterEditorController Save validates the form then invokes updateCharacter. editProfile calls persisted for changed biography/appearance/color, clear/restore, repeated saves and canonical-only Unicode edits. The oracle compares the complete character list and unchanged entries. Name/alias-change bootstrap at 1234-1235, missing ID, form validation interception and concurrent edit refusal are deliberately excluded."
+        }
+      ]
+    },
+    {
+      "id": "workspace-audio-library",
+      "title": "Exercise audio-library workspace behavior",
+      "preconditions": [
+        "Native NOT RUN; readiness blocked: matching provenance-verified automation-enabled Catalyst build and macOS are required. No provider, user data or native actions were used in preparing this candidate.",
+        "Action boundary is the exact public whole-journey CLI invocation. SCRIV_E2E_APP supplies the authorized isolated automation bundle. This is a declared whole-journey association, not a recorded or deterministically flattened internal command trace. Each journey runs its existing default groups in source order, with fresh owned sessions as authored.",
+        "All source ranges claim only the normal local success path identified by the specific witness. Guards within a span are association context, not evidence their rejecting branch ran. No blanket branch-completeness, recovery durability, crash, callback-race, cloud or UI-gesture claim."
+      ],
+      "actions": [
+        "test --scenario journeys/audio-library"
+      ],
+      "expectations": [
+        {
+          "id": "oracle-1",
+          "description": "Import scene and dialogue audio; all assertion statements in this witness are required.",
+          "witness": {
+            "path": "tests/e2e/journeys/audio-library.mjs",
+            "start": 70,
+            "end": 88,
+            "sha256": "d897fed3ec755ec7e19708b6a935ed9fd231ab0a622cf990c21c42d786f2ee54"
+          }
+        },
+        {
+          "id": "oracle-2",
+          "description": "Preserve master mix and unmute volume; all assertion statements in this witness are required.",
+          "witness": {
+            "path": "tests/e2e/journeys/audio-library.mjs",
+            "start": 175,
+            "end": 186,
+            "sha256": "21856bc50b75847fdc35eeddc4ae97097ccca804aaeddb7361fb744dd5b7b332"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1311,
+            "end": 1316,
+            "sha256": "5f97563eeedafadaacc9d154351f326da8f1a62c56487ea29778b4901c9ab919"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLIAudioImport validates an owned synthetic WAV and awaits importAudio. Default import group invokes selected-dialogue then scene-silence import after playhead 3500. verifyImportedAsset checks measured asset and bytes; expectedClip checks placement and clipping to available scene time; mutation checks complete project preservation and one revision. Passing preconditions and stable navigation only. Invalid front-door payloads never witness WorkspaceStore guard failures; picker, security-scope grant, decoder failure and navigation races excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1319,
+            "end": 1321,
+            "sha256": "21b8b519fc4823fdc7503d00af6e7cd3651d8b7812ef9b174a0caacc2b5ba7d4"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLIAudioImport validates an owned synthetic WAV and awaits importAudio. Default import group invokes selected-dialogue then scene-silence import after playhead 3500. verifyImportedAsset checks measured asset and bytes; expectedClip checks placement and clipping to available scene time; mutation checks complete project preservation and one revision. Passing preconditions and stable navigation only. Invalid front-door payloads never witness WorkspaceStore guard failures; picker, security-scope grant, decoder failure and navigation races excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1324,
+            "end": 1332,
+            "sha256": "d957af39f3e5afb6fbdcd93b3d7eafd5b71fe843506b86ecf0e3a446fa33bad5"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLIAudioImport validates an owned synthetic WAV and awaits importAudio. Default import group invokes selected-dialogue then scene-silence import after playhead 3500. verifyImportedAsset checks measured asset and bytes; expectedClip checks placement and clipping to available scene time; mutation checks complete project preservation and one revision. Passing preconditions and stable navigation only. Invalid front-door payloads never witness WorkspaceStore guard failures; picker, security-scope grant, decoder failure and navigation races excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1340,
+            "end": 1347,
+            "sha256": "00eef968f7786f5e236fe7166c0619374f91c423bf4cdfe35e4f8a2564f403d5"
+          },
+          "expectation": "oracle-2",
+          "why": "Actual volume slider callback invokes setAudioVolume(0.25); mute/unmute controls invoke toggleAudioMute. Explicit saved full-model oracles require 0.25, then 0, then restored 0.25. This is finite in-range remembered-volume behavior; NaN, clamp extremes, missing remembered volume and cross-project volume scope isolation are not asserted."
+        }
+      ]
+    },
+    {
+      "id": "workspace-local-images",
+      "title": "Exercise local-images workspace behavior",
+      "preconditions": [
+        "Native NOT RUN; readiness blocked: matching provenance-verified automation-enabled Catalyst build and macOS are required. No provider, user data or native actions were used in preparing this candidate.",
+        "Action boundary is the exact public whole-journey CLI invocation. SCRIV_E2E_APP supplies the authorized isolated automation bundle. This is a declared whole-journey association, not a recorded or deterministically flattened internal command trace. Each journey runs its existing default groups in source order, with fresh owned sessions as authored.",
+        "All source ranges claim only the normal local success path identified by the specific witness. Guards within a span are association context, not evidence their rejecting branch ran. No blanket branch-completeness, recovery durability, crash, callback-race, cloud or UI-gesture claim."
+      ],
+      "actions": [
+        "test --scenario journeys/local-images"
+      ],
+      "expectations": [
+        {
+          "id": "oracle-1",
+          "description": "Import immutable image successors; all assertion statements in this witness are required.",
+          "witness": {
+            "path": "tests/e2e/journeys/local-images.mjs",
+            "start": 86,
+            "end": 107,
+            "sha256": "8cb849006b4ae488bb4eee69cb064d8cfba779351f54e9be888213673c1ce932"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1398,
+            "end": 1404,
+            "sha256": "1c590da0edb812fc673bd7798be58be60292d9a00d54d06e7bfd0353b4bf52b3"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLILocalImageImport post-picker semantic route awaits importImage then attachImage for finite coral/blue PNGs. importVersion independently asserts known hashes, size/type, immutable metadata, version increment and previousVersionId, exact changed attachment and complete other content; visible checks decoded dimensions and displayed preview. Only local nonstale import and version success are associated: invalid CLI payloads are intercepted, 25MiB/decoder/overflow failures, stale generation, cloud upload, AppKit and picker not witnessed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1407,
+            "end": 1410,
+            "sha256": "29a804c7e7c0307f2b8b13942cfac337a60b57b49b834202aca22a8f7647321e"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLILocalImageImport post-picker semantic route awaits importImage then attachImage for finite coral/blue PNGs. importVersion independently asserts known hashes, size/type, immutable metadata, version increment and previousVersionId, exact changed attachment and complete other content; visible checks decoded dimensions and displayed preview. Only local nonstale import and version success are associated: invalid CLI payloads are intercepted, 25MiB/decoder/overflow failures, stale generation, cloud upload, AppKit and picker not witnessed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1414,
+            "end": 1425,
+            "sha256": "5a80a24c7becd9f1d744f5d0a1f664037ca4f8bf4fa86f3caa2ad69fa5ea5404"
+          },
+          "expectation": "oracle-1",
+          "why": "ScrivCLILocalImageImport post-picker semantic route awaits importImage then attachImage for finite coral/blue PNGs. importVersion independently asserts known hashes, size/type, immutable metadata, version increment and previousVersionId, exact changed attachment and complete other content; visible checks decoded dimensions and displayed preview. Only local nonstale import and version success are associated: invalid CLI payloads are intercepted, 25MiB/decoder/overflow failures, stale generation, cloud upload, AppKit and picker not witnessed."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "workspace-model-document",
+      "title": "Exercise model-document workspace behavior",
+      "steps": [
+        "workspace-model-document"
+      ]
+    },
+    {
+      "id": "workspace-script-structure",
+      "title": "Exercise script-structure workspace behavior",
+      "steps": [
+        "workspace-script-structure"
+      ]
+    },
+    {
+      "id": "workspace-character-catalog",
+      "title": "Exercise character-catalog workspace behavior",
+      "steps": [
+        "workspace-character-catalog"
+      ]
+    },
+    {
+      "id": "workspace-audio-library",
+      "title": "Exercise audio-library workspace behavior",
+      "steps": [
+        "workspace-audio-library"
+      ]
+    },
+    {
+      "id": "workspace-local-images",
+      "title": "Exercise local-images workspace behavior",
+      "steps": [
+        "workspace-local-images"
+      ]
+    }
+  ]
+}

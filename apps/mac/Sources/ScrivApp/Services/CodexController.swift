@@ -76,8 +76,8 @@ final class CodexController: ObservableObject {
     private var receivedProtocolReply = false
     @Published private(set) var lastError: String?
     @Published private(set) var log = ""
-    @Published var executablePath: String { didSet { UserDefaults.standard.set(executablePath, forKey: "codexExecutable") } }
-    @Published var endpoint: String { didSet { UserDefaults.standard.set(endpoint, forKey: "codexEndpoint") } }
+    @Published var executablePath: String { didSet { ScrivPreferences.standard.set(executablePath, forKey: "codexExecutable") } }
+    @Published var endpoint: String { didSet { ScrivPreferences.standard.set(endpoint, forKey: "codexEndpoint") } }
     @Published var selectedModel = "" { didSet { if selectedModel != oldValue { onChange?() } } }
     @Published private(set) var availableModels: [String] = []
     @Published private(set) var jobs: [LocalGenerationJob] = []
@@ -115,8 +115,8 @@ final class CodexController: ObservableObject {
             let saved = try JSONEncoder().encode(SavedGenerationLocation(bookmark: bookmark, installationID: owner))
             scopedGenerationRoot?.stopAccessingSecurityScopedResource(); scopedGenerationRoot = url
             generationRootIssue = nil; installationID = owner; journal = candidate; jobs = loaded.jobs
-            UserDefaults.standard.set(saved, forKey: "ScrivUIKitGenerationLocation.v1")
-            UserDefaults.standard.set(owner, forKey: "generationInstallationID")
+            ScrivPreferences.standard.set(saved, forKey: "ScrivUIKitGenerationLocation.v1")
+            ScrivPreferences.standard.set(owner, forKey: "generationInstallationID")
             journalError = loaded.unreadable > 0 ? "\(loaded.unreadable) unreadable generation records were preserved on disk, not discarded." : nil
             for var job in loaded.jobs where job.status == .running || job.status == .queued {
                 job.recoverAfterRestart()
@@ -177,8 +177,8 @@ final class CodexController: ObservableObject {
         let startupTrace = StartupTrace.process
         startupTrace.record(.codexInitializationBegin)
         defer { startupTrace.record(.codexInitializationEnd) }
-        executablePath = UserDefaults.standard.string(forKey: "codexExecutable") ?? Self.locateExecutable() ?? CodexLocalSetup.automaticExecutable
-        endpoint = UserDefaults.standard.string(forKey: "codexEndpoint") ?? CodexLocalSetup.defaultEndpoint
+        executablePath = ScrivPreferences.standard.string(forKey: "codexExecutable") ?? Self.locateExecutable() ?? CodexLocalSetup.automaticExecutable
+        endpoint = ScrivPreferences.standard.string(forKey: "codexEndpoint") ?? CodexLocalSetup.defaultEndpoint
         let verification = ProcessInfo.processInfo.arguments.contains("--screenshots") || ProcessInfo.processInfo.arguments.contains("--peer-smoke")
         #if targetEnvironment(macCatalyst)
         // Native synthetic verification must not query an existing pairing
@@ -187,11 +187,11 @@ final class CodexController: ObservableObject {
         if !verification { bridgePaired = MacRuntimeBridge.isPaired }
         if !verification { startupTrace.record(.pairingReadEnd) }
         #endif
-        installationID = verification ? UUID().uuidString : UserDefaults.standard.string(forKey: "generationInstallationID") ?? UUID().uuidString
+        installationID = verification ? UUID().uuidString : ScrivPreferences.standard.string(forKey: "generationInstallationID") ?? UUID().uuidString
         if UUID(uuidString: installationID) == nil { installationID = UUID().uuidString }
-        if !verification { UserDefaults.standard.set(installationID, forKey: "generationInstallationID") }
+        if !verification { ScrivPreferences.standard.set(installationID, forKey: "generationInstallationID") }
         #if targetEnvironment(macCatalyst)
-        if !verification, let data = UserDefaults.standard.data(forKey: "ScrivUIKitGenerationLocation.v1") {
+        if !verification, let data = ScrivPreferences.standard.data(forKey: "ScrivUIKitGenerationLocation.v1") {
             startupTrace.record(.generationBookmarkBegin)
             defer { startupTrace.record(.generationBookmarkEnd) }
             do {
@@ -200,7 +200,7 @@ final class CodexController: ObservableObject {
                 var stale = false
                 let url = try URL(resolvingBookmarkData: saved.bookmark, options: [], relativeTo: nil, bookmarkDataIsStale: &stale)
                 _ = url.startAccessingSecurityScopedResource(); scopedGenerationRoot = url; installationID = saved.installationID
-                if stale { let updated = try url.bookmarkData(options: .minimalBookmark, includingResourceValuesForKeys: nil, relativeTo: nil); UserDefaults.standard.set(try JSONEncoder().encode(SavedGenerationLocation(bookmark: updated, installationID: installationID)), forKey: "ScrivUIKitGenerationLocation.v1") }
+                if stale { let updated = try url.bookmarkData(options: .minimalBookmark, includingResourceValuesForKeys: nil, relativeTo: nil); ScrivPreferences.standard.set(try JSONEncoder().encode(SavedGenerationLocation(bookmark: updated, installationID: installationID)), forKey: "ScrivUIKitGenerationLocation.v1") }
             } catch { startupTrace.record(.generationBookmarkFailed, error: error); generationRootIssue = "Existing generation history needs access again. Choose its original folder in Settings. " + error.localizedDescription }
         }
         #endif

@@ -38,9 +38,9 @@ final class CharacterAnalysisController {
     }
     var availability: String? { allowsAnalysis ? provider.availability : "Image analysis is disabled in verification mode." }
     var autoTagEnabled: Bool {
-        get { guard let store else { return false }; return UserDefaults.standard.object(forKey:preferenceKey(store.project.id)) as? Bool ?? true }
+        get { guard let store else { return false }; return ScrivPreferences.standard.object(forKey:preferenceKey(store.project.id)) as? Bool ?? true }
         set {
-            guard let store else { return }; UserDefaults.standard.set(newValue,forKey:preferenceKey(store.project.id))
+            guard let store else { return }; ScrivPreferences.standard.set(newValue,forKey:preferenceKey(store.project.id))
             if newValue { paused = false; refresh() } else { cancel(); publish("Auto-tagging is paused. Your existing tags are kept.") }
         }
     }
@@ -79,7 +79,7 @@ final class CharacterAnalysisController {
             previousAvailability = unavailable
         }
         if let unavailable { cancel(); publish(unavailable); return }
-        if let reason = UserDefaults.standard.string(forKey: interruptionKey(store.project.id)) {
+        if let reason = ScrivPreferences.standard.string(forKey: interruptionKey(store.project.id)) {
             paused = true; publish("Character scan paused. " + reason); return
         }
         if task == nil, FileManager.default.fileExists(atPath:pendingFile(store.project.id).path) {
@@ -104,7 +104,7 @@ final class CharacterAnalysisController {
             let pending = pendingFile(store.project.id)
             if FileManager.default.fileExists(atPath:pending.path) { try FileManager.default.removeItem(at:pending) }
         } catch { paused = true; publish("The previous analysis marker could not be cleared. " + error.localizedDescription); return }
-        UserDefaults.standard.removeObject(forKey: interruptionKey(store.project.id))
+        ScrivPreferences.standard.removeObject(forKey: interruptionKey(store.project.id))
         forced = Set(store.project.images.map { CharacterImageAnalysis.workKey(projectID:store.project.id,image:$0) })
         if let availability { publish(availability); return }
         start()
@@ -160,7 +160,7 @@ final class CharacterAnalysisController {
                     // A cancelled predecessor must not pause a replacement scan;
                     // its unresolved pending marker remains available for recovery.
                     guard self.generation == currentGeneration else { return }
-                    UserDefaults.standard.set(interruption.reason, forKey: self.interruptionKey(expectedProject))
+                    ScrivPreferences.standard.set(interruption.reason, forKey: self.interruptionKey(expectedProject))
                     guard store.project.id == expectedProject, store.navigationContext == navigation else { return }
                     self.failed[key] = interruption.reason; self.paused = true
                     self.publish("Character scan paused. " + interruption.reason)
@@ -204,6 +204,10 @@ final class CharacterAnalysisController {
 /// ImageIO applies orientation before the top-left crop. The original is read-only.
 enum CharacterPortraitCache {
     static func thumbnail(source: URL, sha256: String, region: NormalizedCharacterRegion) async throws -> URL {
+        #if SCRIV_CLI_AUTOMATION
+        // Fail closed for every caller, including future automation call sites.
+        throw ScrivError.unavailable("Disk portrait caching is disabled in verification mode.")
+        #else
         guard region.isValid else { throw ScrivError.invalid("The portrait crop is outside this image.") }
         return try await Task.detached(priority:.utility) {
             // A cache key must be deterministic: JSONEncoder's key order is not
@@ -227,5 +231,6 @@ enum CharacterPortraitCache {
             do { try FileManager.default.moveItem(at:temporary,to:output) } catch { guard FileManager.default.fileExists(atPath:output.path) else { throw error } }
             return output
         }.value
+        #endif
     }
 }

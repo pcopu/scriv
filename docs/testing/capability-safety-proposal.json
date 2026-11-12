@@ -1,0 +1,681 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "capability-safety-v89",
+      "title": "Exercise owned capability safety",
+      "featureId": "cli-automation",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/capability-safety.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(app,{persistent:true}); capabilities verifies protocol, driver, isolation object, workspace flags, UUID identities, root suffix, unique command list and declared supported/absent commands.",
+        "Select Script; key command-s; wait for saved YAM MAN sentinel. import-json exact one-direction fixture from witness lines 55-61; read persisted-projects and loaded-project.",
+        "Compare every fixture field, allowing only generated UUID and finite createdAt/modifiedAt; packages exactly [sample,current], loaded project exact, presented-alerts empty.",
+        "For install-token, authorize-origin, outbox-write, resume, reset and delete-workspace send target workspace-tabs and require exact Unknown command response. These are deliberately unsupported commands, not credential/network/outbox calls.",
+        "After EACH refusal compare entire sorted packages, full loaded-project including dates, and presented-alerts=[].",
+        "Reject activate without target and with absent target; select indices -1, segment count and string 0; text on noneditor workspace-tabs; key without modifiers. Require each exact error and invariant.",
+        "Reject extra path parameter on loaded-project, local-image-evidence, script-interaction-counts and presented-alerts; exact error and invariant after each.",
+        "import-json valid current project JSON padded to exactly 65,537 ASCII bytes (under 1 MiB transport); assert JSON parses identically, exact refusal and full unchanged invariant.",
+        "Reject relaunch({root:session.root}); require full capabilities unchanged, package/model/alert invariant and same selected tab.",
+        "Repeat twice: previous=session; session=await previous.relaunch(); capabilities asserts persistent/resumed, same root/run and new never-seen session UUID.",
+        "Read packages before Save; use Projects UI openProject(current), with public search text and Open project activation; compare full expectedLoaded and package/alert invariant.",
+        "Reject previous.command(snapshot) with Session is closing or relaunching and previous.relaunch with exact live persistent requirement; verify new session invariant after both refusals. Require three unique session IDs.",
+        "Close owner, launch default nonpersistent app, assert new root/run with sessionID=runID and same advertised isolation.",
+        "Select Script, Save fresh sample, observe exactly that one package and distinct sample IDs.",
+        "Reject fresh.relaunch; assert package and loaded model unchanged, no alerts; require exact four completed chapters; finally close owned sessions without deleting data."
+      ],
+      "expectedOutcomes": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input.",
+        "Independent fixture and unchanged package/model/alert invariants.",
+        "Every invalid public request receives exact error followed by full nonmutation assertions.",
+        "Argument-bearing relaunch retains full capability and selected tab.",
+        "Two process rotations preserve root/run and exact saved/loaded document while old sessions refuse use.",
+        "New root contains only new saved sample; nonpersistent relaunch rejection is nonmutating."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "cap-v89-0",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 37,
+        "end": 40,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "a8f1e9194247c429b235355a5ad2afb80a55f5602f3ebdd83e3255bf5aff526d",
+        "sha256": "fbdad3b191acd5363afd36e8c47cf3fcce15a137c10cb62504d67dd449c17ac1"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-1",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 47,
+        "end": 48,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "2c7557e1cb125316bb5424b808a9e7ca228e53232c78b77694f23f921901085e",
+        "sha256": "669898de4c4e2f5f5e30b45c3edd072c31ffdcf325f23db12dc4c3f4aff268e0"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-2",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 53,
+        "end": 60,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "a94f7eb930f7c99944e38f828db979de6f6fcdfa14dd0d0da735875bf6f5a61a",
+        "sha256": "a489d12b7be97527198f64bb04436eedddec17e54fe3adb4beb2caf8743fc611"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-3",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 67,
+        "end": 67,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "829974c5797cb99db02e2a01e4a29384a00d6cea83cf15a4873436a9e56608c5",
+        "sha256": "97643b4e317e77b52040a051798ebdb69b1557fca247220269b350f5fe2856fb"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "The persistent flag is derived from fresh-persistent or resumed launch mode. The public fresh capability assertion verifies persistent=true; the host always supplies the session variable, so the absent-session fallback is not claimed. Static association only; native execution is recorded separately. Guard-failure, tamper, contention and unobserved OS metadata/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-4",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 83,
+        "end": 86,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "720980774813879cdac00ce3c4f0c9c76916c1338d471963ba73b702ee6cbbb6",
+        "sha256": "489ad49273062351fdcd0aacc1bb5ab458dc89aee1ff713184bdc0281cd30044"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Fresh preparation derives the temporary parent, deterministic run-specific root name, root URL and resolved named-root URL. The fresh public capability assertion checks the run-specific root identity and the saved fixture uses that workspace. Resume-descriptor operations are outside this narrowed source range. Static association only; native execution is recorded separately.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-5",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 97,
+        "end": 100,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "f8b57b52c40eaf5572ebef4dc3fa3138da997b1969405992f38f7ca9791fbca2",
+        "sha256": "98f655a9b281aefdc039e3c6794263a2a6a8814b1f67806d641ab088cc1d1928"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Fresh launch creates and opens the exclusive owned root and creates its Outbox. The fresh public capability and saved fixture assertions depend on this admitted setup. Resumed-only root validation is not the source of this fresh-workspace observation. Static association only; native execution is recorded separately. Guard-failure, tamper, contention and unobserved OS metadata/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-6",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 101,
+        "end": 105,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "53b3434a59d7baf969e8762ee39fddbb052ecd2ef060afb59bd2d907654c253a",
+        "sha256": "5f264cb50a355e89106ea1975020bb1483b6f61aa03baa5e51f772c0073c40ea"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Successful fresh preparation opens the created Outbox and opens a new session-lock file with the declared fresh flags. The public capability/fixture assertions depend on this admitted setup; open failure, exclusive-lock rejection and OS metadata/security properties are not established. Static association only; native execution is recorded separately.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-7",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 106,
+        "end": 122,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "ddeb1308bccc7075138da7690d2f14edb97b8d2b5c289d244a43cc1ba00a3ac0",
+        "sha256": "9c991119eb4ad56779418bb1a39c8906af6b202646355cd63f203ba9121e16fe"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-8",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 124,
+        "end": 133,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "32a51868b6e915c050abca667419b4570a73029225744453a746985de0255e5d",
+        "sha256": "fb5e06fb89119c378ebf11836b500e3a0bafe9bee5f449fec4971f9c33d29dac"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-9",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 155,
+        "end": 157,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "f715b52eebca362e3add73275716c19e9f5b8c2839866f8b128e74697ec9526e",
+        "sha256": "0e22056d2e7d81d2a021bfe114084de9b6c976255b3a570745a79a12531c0c59"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-10",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 160,
+        "end": 174,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "609e9fed19f41c0099ee63f272f371e79c4ea59eb78920d07c4a860d721c2268",
+        "sha256": "9eba3bd9f8f015772b28b4b62a2a932f445926d52eab1a9e362647c05316db78"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-11",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 225,
+        "end": 247,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "f1e00899f73f6d41481fe27aad4e517525c304ca5ab329bf3b4c9753d6ff59ad",
+        "sha256": "df17deb3e89e6c27fc5c52a797129cb8ed1397777cb7be7676893442ca1f5b1e"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-12",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 258,
+        "end": 260,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "f9b6c58675657ff0e4add8e9dfddc6535f6b38bd13425809bbbf762fa8d10a12",
+        "sha256": "d581fc50a032bb58bd6a2f4794a078c119ef03409b55c94149cfc58b3067bd7c"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-13",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 425,
+        "end": 443,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "c82dead157474e83a2a45ff34d1a8729de779e228efe2993a82f822bde1fcde4",
+        "sha256": "d54ac44efca050cb851745b8bd3ecfdd98953768cfab6d6b6439c7140702c1a7"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Successful fresh/resumed preparation supports public identity and owned workspace observations. Only the admitted path through checks is associated Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Fresh persistent capability contract has expected identities and advertised policy, and saved fixture matches independent input."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-14",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 286,
+        "end": 289,
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "73efe14662f9a9d98ba859bce999a3efe1ac5b39c92607305971cc8a30c37483",
+        "sha256": "75f35ed14262dd5313e36336b0b41fc4397a8fc9d4003e1c34450e150fad0d60"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Every invalid public request receives exact error followed by full nonmutation assertions."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-15",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 293,
+        "end": 296,
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "c446ccd97015f0035cfb35e6d498802b91dac3687a6e506ecf1a0c5e56dcc27c",
+        "sha256": "fd1208ec29481b3c0d6e820b8d3f96b24a68d9c97b1cce3368de8ecc24087688"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Every invalid public request receives exact error followed by full nonmutation assertions."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-16",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 300,
+        "end": 303,
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "1bf6127e8b91ff9a59f5f3579dee2634aa078e53ed1e9722099ffca4374ee4cc",
+        "sha256": "be53340637c0733a61c336310c1452479c5ef1b02038be1f08dacd3fcf7c1325"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Every invalid public request receives exact error followed by full nonmutation assertions."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-17",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 309,
+        "end": 310,
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "9c5285ee3f32e1056b2ab065b652ad51306693257e74d854b1601efccad44033",
+        "sha256": "390308ff98727586d6b0a3bb0587bfeeaa57fba2528d0817f1c3df41538bcc61"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Every invalid public request receives exact error followed by full nonmutation assertions."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-18",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 408,
+        "end": 409,
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "6a52ea823d9c3c70dfd6f9bd4d353c60513ce7a10f102256b27df0d7e82c9d01",
+        "sha256": "b117780eb4da7c07ec66eda97fc40b69084ab5a63c4347d6311e483add47d76f"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "A public key request without modifiers reaches the input/modifier shape guard and returns the exact Expected input and modifier names error. The refusal helper independently checks every saved package, the complete loaded model including dates, and no presented alerts. Static association only; native execution is recorded separately. Other guard failures, tamper, contention and unobserved OS metadata/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Every invalid public request receives exact error followed by full nonmutation assertions."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-19",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 518,
+        "end": 520,
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "43e60858e8ddaa6883a64e7a281aaae6a0b5d389e2c723e030a27e483e07d934",
+        "sha256": "42012bb069693254b4836adeccce4487cac4e7915e8af932cba052184d7d1e3e"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Every invalid public request receives exact error followed by full nonmutation assertions."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-20",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 798,
+        "end": 801,
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "b91b9c078bdf57fdf464584e9e75343b91d6c1d8e868d76717557e86a0fff669",
+        "sha256": "6ccdd6df77ace49b02338e035534ba74df09e5c4910fb1989ac197764d5da3a6"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Every invalid public request receives exact error followed by full nonmutation assertions."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-21",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 811,
+        "end": 811,
+        "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7",
+        "spanSha256": "331f0c9d55eb4a79527c1dfc984e82ccc38621ab13003eb70937652daf8f38f2",
+        "sha256": "df4993a2dcd9414ca54bdbd35a37dc670f2ee5363b7c978a0f8effe92f47fa3e"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Concrete invalid input reaches this specified outer public guard/dispatcher rejection; invariant is checked independently after each refusal Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Every invalid public request receives exact error followed by full nonmutation assertions."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-22",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIImport.swift",
+        "start": 27,
+        "end": 27,
+        "fileSha256": "b91538030c5f9cea3de008d5f87654bb1bf274180aa99db7ec31ac77ce2d3ef8",
+        "spanSha256": "56110ea28e718ea884b565134d2f955fb81a5f1dc5f38378649477dfcfefef30",
+        "sha256": "2a6cbb1c86f875055aff28a4100251e82f603a03ac2c817b1d1f0fc12d30b39d"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Valid JSON padded over the 64 KiB semantic import limit is rejected without a new package or model change Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Every invalid public request receives exact error followed by full nonmutation assertions."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-23",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cli/scriv.mjs",
+        "start": 138,
+        "end": 138,
+        "fileSha256": "89f7e8922384771f060c5ee0c008e972792b73eaa92230dedf6e149b3220eaac",
+        "spanSha256": "c35ec3f15c4258ce7758c998c06f47e4651348c1c18c9bf8532b16ab3349f570",
+        "sha256": "3692cf79f66c111c228c823b5f2cc4332c72b8d34dc64e7e74f4d31765b34cd9"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Host rejects argument-bearing relaunch before stopping the owner Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Argument-bearing relaunch retains full capability and selected tab."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-24",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 78,
+        "end": 82,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "fba68ba4e6ff665515bf2d7bace209526f1923acf86f82b622111bd3c00b9d1d",
+        "sha256": "17487d961c07de3e546d73cd63fb7da5cf7b7445cf026ae49b49512791aa7b09"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Both real persistent process rotations duplicate the inherited owned descriptor and close the original inherited descriptor before opening other files. The public capabilities and cold-open model assertions depend on this admitted resume path; failure cleanup is not claimed. Static association only; native execution is recorded separately. Guard-failure, tamper, contention and unobserved OS metadata/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Two process rotations preserve root/run and exact saved/loaded document while old sessions refuse use."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-25",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 87,
+        "end": 91,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "76ffc70c1e9b3d93ae128edda7c99df5fe68a7be441f38d6e028ea3c7e65b546",
+        "sha256": "6eca048a8741c5b39db946ec1c199438c7ee70c251907019b6ffb24f016fbf43"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Preparation opens the resolved temporary parent, checks the successful open, arranges its close and selects the resumed branch. The two public rotations rely on this parent setup. The following fstat/privateDirectory/childMatches checks are outside this exact range and are not attributed to it. Static association only; native execution is recorded separately. Guard-failure, tamper, contention and unobserved OS metadata/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Two process rotations preserve root/run and exact saved/loaded document while old sessions refuse use."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-26",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 134,
+        "end": 153,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "22ac1edba340ad024cc84bf3f3c5e680336ead677b9b9fcad2c6530fcd1f16db",
+        "sha256": "c208eeb788d539116d1aac821308b97258486242d81afabd19ed23237a33383d"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Inherited owned descriptor and successful bounded retained-tree validation admit a real cold reopen without changing persisted models. No tamper, bounds rejection or lock contention claim Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Two process rotations preserve root/run and exact saved/loaded document while old sessions refuse use."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-27",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 176,
+        "end": 204,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "a121b102bcff4e62ef54163d9785b94710d85b5509ba748fa6e8488f9348ffe0",
+        "sha256": "8a8aed9132a2729d6334e0bf81a38598a345bd6409431016bf22597a95b97db0"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Inherited owned descriptor and successful bounded retained-tree validation admit a real cold reopen without changing persisted models. No tamper, bounds rejection or lock contention claim Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Two process rotations preserve root/run and exact saved/loaded document while old sessions refuse use."
+      ]
+    },
+    {
+      "rangeId": "cap-v89-28",
+      "featureId": "cli-automation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift",
+        "start": 207,
+        "end": 211,
+        "fileSha256": "5311f15f2bcf8ede8e42dc1d7ce5082b781f39955576243db64d6b403093749b",
+        "spanSha256": "40470037882eeabb3fe77aa14e1c8dee573ce7c5773c278c441fac6bda613bb4",
+        "sha256": "905acbc0c21f2c81499f427849869f8b32d10ffe52d3b799f1d5167446c50dc9"
+      },
+      "scenarioIds": [
+        "capability-safety-v89"
+      ],
+      "rationale": "Inherited owned descriptor and successful bounded retained-tree validation admit a real cold reopen without changing persisted models. No tamper, bounds rejection or lock contention claim Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Native not run; independent semantic review pending. Positive lifecycle links do not assert guard failure branches or OS-level metadata/security properties.",
+      "proposedAssertions": [
+        "Two process rotations preserve root/run and exact saved/loaded document while old sessions refuse use."
+      ]
+    }
+  ]
+}

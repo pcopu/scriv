@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "billing-webhook-boundary-v106",
+      "title": "Validate signed billing webhook boundaries",
+      "featureId": "billing-webhook-boundary",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/billing-journey.mjs"
+      ],
+      "plannedActions": [
+        "Finish original entitlement and checkout chapters. Preserve observed state and restore the original provider fixture configuration.",
+        "Send eight invalid signature/header/body combinations and require exact error, zero provider requests and exact state preservation.",
+        "Send ignored events with a valid second signature and whitespace-trimmed fields; require authenticated ignored responses with no provider or state change.",
+        "Sign nine invalid envelope/value variants and malformed raw JSON independently. Require exact validation responses and unchanged observed state.",
+        "Send an expanded unknown customer and reuse an accepted event ID for the distinct checkout customer. Require ignored and retryable-error responses respectively, with no provider calls or state change.",
+        "Send a fresh invoice event during a synthetic provider outage, require one failed attempt and exact state preservation, then retry it successfully and require exact team and receipt changes.",
+        "Change only the synthetic provider fixture to canceled, replay the accepted event, and require no provider call or state change. Read the retained active entitlement as viewer. Preserve all prior observed business/identity rows and receipts."
+      ],
+      "expectedOutcomes": [
+        "Eight requests with missing signature, missing or fractional timestamp, ten-minute future or stale timestamp, wrong digest, unsupported signature version or tampered body return exact 400 invalid_signature. A valid second v1 signature after an invalid one and trimmed signature fields each authenticate an ignored event. All these public webhook requests omit Authorization. Every case preserves all observed business rows and R2 inventory and makes zero provider attempts. This does not test the exact 300-second tolerance edge or secret rotation.",
+        "Nine validly signed invalid JSON values/event envelopes and one validly signed malformed JSON body fail with the exact status, code and message. An expanded unknown customer object is ignored. Reusing an accepted event ID for the distinct existing checkout customer returns exact retryable 502 without provider access or changes to observed state. These cases retain their distinct validation reachability: malformed signatures do not stand in for signed malformed payloads, and recognized event types reach object/customer/created-time validation.",
+        "A fresh recognized event during a synthetic provider outage returns exact 502 with one expected provider attempt and no changes to observed D1 business rows or R2 inventory. Retrying the same event after recovery commits exactly one expected billing receipt and updates only the original team billing fields: active sub_synthetic, expected end/paid-until, null canceled-at and request-bounded billing_checked_at. Receipt event time is the signed value converted to milliseconds and processed_at equals that bounded update time. A further replay after the provider fixture changes to canceled makes no provider request and preserves accepted state, which an authenticated viewer reads as active Team entitlement. Prior receipts and all other observed rows remain exact. No transaction fault, propagation failure, concurrent webhook, full process restart, live provider or native execution is asserted."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "billing-webhook-boundary-v106-1",
+      "featureId": "billing-webhook-boundary",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 159,
+        "end": 163,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "86b85388fb551feeff9b52410be9031eaacae95fab37b2b0fa6093384a660160",
+        "sha256": "da4dce6dfcdec1b63d1bb4bc14f128cb061051f0f0c679c76d6ce946b423dff7"
+      },
+      "scenarioIds": [
+        "billing-webhook-boundary-v106"
+      ],
+      "rationale": "Timestamp and signature-field parsing reject the concrete missing, fractional, stale/future and unsupported-version variants. Exact tolerance boundary is not varied.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic HMAC/provider only; exact signature tolerance edge, provider secret rotation, pagination, propagation failure, concurrent webhook, storage/crash fault and native/provider execution are not covered. Read-only state scope excludes security limits and internal room state.",
+      "proposedAssertions": [
+        "Eight requests with missing signature, missing or fractional timestamp, ten-minute future or stale timestamp, wrong digest, unsupported signature version or tampered body return exact 400 invalid_signature. A valid second v1 signature after an invalid one and trimmed signature fields each authenticate an ignored event. All these public webhook requests omit Authorization. Every case preserves all observed business rows and R2 inventory and makes zero provider attempts. This does not test the exact 300-second tolerance edge or secret rotation."
+      ]
+    },
+    {
+      "rangeId": "billing-webhook-boundary-v106-2",
+      "featureId": "billing-webhook-boundary",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 164,
+        "end": 167,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "fd9d50ee5df4c65a65770cae6ddc6fd83ad3cc6ecff3e9546ca8aa9cf127aa02",
+        "sha256": "5849981460f7b52fdcf6f353597bedd0e9647f86456a8eff165fe880582725a6"
+      },
+      "scenarioIds": [
+        "billing-webhook-boundary-v106"
+      ],
+      "rationale": "Real HMAC verification binds the raw body and accepts a valid secondary signature. The test independently signs raw bodies without calling production signature helpers.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic HMAC/provider only; exact signature tolerance edge, provider secret rotation, pagination, propagation failure, concurrent webhook, storage/crash fault and native/provider execution are not covered. Read-only state scope excludes security limits and internal room state.",
+      "proposedAssertions": [
+        "Eight requests with missing signature, missing or fractional timestamp, ten-minute future or stale timestamp, wrong digest, unsupported signature version or tampered body return exact 400 invalid_signature. A valid second v1 signature after an invalid one and trimmed signature fields each authenticate an ignored event. All these public webhook requests omit Authorization. Every case preserves all observed business rows and R2 inventory and makes zero provider attempts. This does not test the exact 300-second tolerance edge or secret rotation."
+      ]
+    },
+    {
+      "rangeId": "billing-webhook-boundary-v106-3",
+      "featureId": "billing-webhook-boundary",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 169,
+        "end": 174,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "4a4a9ce9f14c0310a3579dc147ab8b54fff8499b6df58a9333b37d8f58cccbb0",
+        "sha256": "c09404c500aba7fe3af4c79e7ce52018390e1f27cf0deb792521f2f1a891534b"
+      },
+      "scenarioIds": [
+        "billing-webhook-boundary-v106"
+      ],
+      "rationale": "Authentication precedes JSON parsing and event record/id/type validation. Signed malformed raw JSON and signed null/array/missing-id/empty-type values reach their exact errors.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic HMAC/provider only; exact signature tolerance edge, provider secret rotation, pagination, propagation failure, concurrent webhook, storage/crash fault and native/provider execution are not covered. Read-only state scope excludes security limits and internal room state.",
+      "proposedAssertions": [
+        "Nine validly signed invalid JSON values/event envelopes and one validly signed malformed JSON body fail with the exact status, code and message. An expanded unknown customer object is ignored. Reusing an accepted event ID for the distinct existing checkout customer returns exact retryable 502 without provider access or changes to observed state. These cases retain their distinct validation reachability: malformed signatures do not stand in for signed malformed payloads, and recognized event types reach object/customer/created-time validation."
+      ]
+    },
+    {
+      "rangeId": "billing-webhook-boundary-v106-4",
+      "featureId": "billing-webhook-boundary",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 175,
+        "end": 180,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "267d4be630f06f049aa1304d0f8a089f2e044d418a30ae075a73e7d771cf1ab6",
+        "sha256": "0dd0aa2320fd5446c3b6401d4e77f04a33d5fe91568d23906c84a5f09c098eed"
+      },
+      "scenarioIds": [
+        "billing-webhook-boundary-v106"
+      ],
+      "rationale": "Unknown types are ignored only after signature validation. Recognized signed events reach object, customer and positive safe millisecond creation-time checks.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic HMAC/provider only; exact signature tolerance edge, provider secret rotation, pagination, propagation failure, concurrent webhook, storage/crash fault and native/provider execution are not covered. Read-only state scope excludes security limits and internal room state.",
+      "proposedAssertions": [
+        "Nine validly signed invalid JSON values/event envelopes and one validly signed malformed JSON body fail with the exact status, code and message. An expanded unknown customer object is ignored. Reusing an accepted event ID for the distinct existing checkout customer returns exact retryable 502 without provider access or changes to observed state. These cases retain their distinct validation reachability: malformed signatures do not stand in for signed malformed payloads, and recognized event types reach object/customer/created-time validation."
+      ]
+    },
+    {
+      "rangeId": "billing-webhook-boundary-v106-5",
+      "featureId": "billing-webhook-boundary",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 181,
+        "end": 188,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "fff70219b61389f44473316d9f1bc05509a839da236661b29ea553c8327adde8",
+        "sha256": "7d0b17ee87cc15fddee23e5b4f005f00c81671ee996759a55d8085dfe3d57f50"
+      },
+      "scenarioIds": [
+        "billing-webhook-boundary-v106"
+      ],
+      "rationale": "Expanded unknown customer IDs are ignored; known customer dispatch uses the coordinator. Its cross-team event refusal is translated to the exact retryable webhook response.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic HMAC/provider only; exact signature tolerance edge, provider secret rotation, pagination, propagation failure, concurrent webhook, storage/crash fault and native/provider execution are not covered. Read-only state scope excludes security limits and internal room state.",
+      "proposedAssertions": [
+        "Nine validly signed invalid JSON values/event envelopes and one validly signed malformed JSON body fail with the exact status, code and message. An expanded unknown customer object is ignored. Reusing an accepted event ID for the distinct existing checkout customer returns exact retryable 502 without provider access or changes to observed state. These cases retain their distinct validation reachability: malformed signatures do not stand in for signed malformed payloads, and recognized event types reach object/customer/created-time validation."
+      ]
+    },
+    {
+      "rangeId": "billing-webhook-boundary-v106-6",
+      "featureId": "billing-webhook-boundary",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 57,
+        "end": 63,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "9436d9a213afd248a5679a8de03a2542c0be1185261de670e41cb357526cd4d3",
+        "sha256": "8facfddb3ea4f18a7a3374746418da3ac723c1a85df1e4e17d6378f2835be578"
+      },
+      "scenarioIds": [
+        "billing-webhook-boundary-v106"
+      ],
+      "rationale": "Accepted receipt IDs are team-bound. Same-team replay refreshes access without rereading the changed provider snapshot; a cross-team reuse is refused without provider traffic.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic HMAC/provider only; exact signature tolerance edge, provider secret rotation, pagination, propagation failure, concurrent webhook, storage/crash fault and native/provider execution are not covered. Read-only state scope excludes security limits and internal room state.",
+      "proposedAssertions": [
+        "A fresh recognized event during a synthetic provider outage returns exact 502 with one expected provider attempt and no changes to observed D1 business rows or R2 inventory. Retrying the same event after recovery commits exactly one expected billing receipt and updates only the original team billing fields: active sub_synthetic, expected end/paid-until, null canceled-at and request-bounded billing_checked_at. Receipt event time is the signed value converted to milliseconds and processed_at equals that bounded update time. A further replay after the provider fixture changes to canceled makes no provider request and preserves accepted state, which an authenticated viewer reads as active Team entitlement. Prior receipts and all other observed rows remain exact. No transaction fault, propagation failure, concurrent webhook, full process restart, live provider or native execution is asserted."
+      ]
+    },
+    {
+      "rangeId": "billing-webhook-boundary-v106-7",
+      "featureId": "billing-webhook-boundary",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 66,
+        "end": 72,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "aa3c38c96262c572e9768a3d79324e05ee96af88135d325dd65e8dce70d0680d",
+        "sha256": "99fe6524bbd640a32813f3ea48da7f97710a409ef696c9c073543ed015339876"
+      },
+      "scenarioIds": [
+        "billing-webhook-boundary-v106"
+      ],
+      "rationale": "A provider failure is returned as retry-required data across the RPC boundary, preserving retryability. The same event succeeds once the synthetic provider recovers.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic HMAC/provider only; exact signature tolerance edge, provider secret rotation, pagination, propagation failure, concurrent webhook, storage/crash fault and native/provider execution are not covered. Read-only state scope excludes security limits and internal room state.",
+      "proposedAssertions": [
+        "A fresh recognized event during a synthetic provider outage returns exact 502 with one expected provider attempt and no changes to observed D1 business rows or R2 inventory. Retrying the same event after recovery commits exactly one expected billing receipt and updates only the original team billing fields: active sub_synthetic, expected end/paid-until, null canceled-at and request-bounded billing_checked_at. Receipt event time is the signed value converted to milliseconds and processed_at equals that bounded update time. A further replay after the provider fixture changes to canceled makes no provider request and preserves accepted state, which an authenticated viewer reads as active Team entitlement. Prior receipts and all other observed rows remain exact. No transaction fault, propagation failure, concurrent webhook, full process restart, live provider or native execution is asserted."
+      ]
+    },
+    {
+      "rangeId": "billing-webhook-boundary-v106-8",
+      "featureId": "billing-webhook-boundary",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/billing.ts",
+        "start": 88,
+        "end": 98,
+        "fileSha256": "6711a4ee8951d8d4f3e1e729b44981cfb5092e8877c23abcdc14740e9a596334",
+        "spanSha256": "e8e62b37880da647a85ebb1da419fe14e3d538d85e5d5a2d824b7c75b84710be",
+        "sha256": "5f01cb425af7c2b05e049c7d9963530f008d51386f4374b7f870b2cad169f1e4"
+      },
+      "scenarioIds": [
+        "billing-webhook-boundary-v106"
+      ],
+      "rationale": "Matching active subscription selection yields exact entitlement fields, bounded checking time and one expected receipt in the successful retry. Read-only state comparisons do not assert fault-injected transaction atomicity.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Synthetic HMAC/provider only; exact signature tolerance edge, provider secret rotation, pagination, propagation failure, concurrent webhook, storage/crash fault and native/provider execution are not covered. Read-only state scope excludes security limits and internal room state.",
+      "proposedAssertions": [
+        "A fresh recognized event during a synthetic provider outage returns exact 502 with one expected provider attempt and no changes to observed D1 business rows or R2 inventory. Retrying the same event after recovery commits exactly one expected billing receipt and updates only the original team billing fields: active sub_synthetic, expected end/paid-until, null canceled-at and request-bounded billing_checked_at. Receipt event time is the signed value converted to milliseconds and processed_at equals that bounded update time. A further replay after the provider fixture changes to canceled makes no provider request and preserves accepted state, which an authenticated viewer reads as active Team entitlement. Prior receipts and all other observed rows remain exact. No transaction fault, propagation failure, concurrent webhook, full process restart, live provider or native execution is asserted."
+      ]
+    }
+  ]
+}

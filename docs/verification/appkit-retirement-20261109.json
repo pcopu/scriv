@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "kind": "retired-appkit-target",
+  "retiredAt": "2026-11-09",
+  "recoveryCommit": "4d14b29f4fb49891e850fa9a8e5742dc878603c8",
+  "files": [
+    {
+      "path": "apps/mac/Sources/ScrivApp/App.swift",
+      "sha256": "57072c89214e9b7228cb91ff266cba8edc614d6ac5ef3f9e43bbb08c465f6918"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceErrorPresenter.swift",
+      "sha256": "bd4340162ba331f9d520f64068842af5e98997cfb6b8b645a0d32823fb350043"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/AccountAndCodexViews.swift",
+      "sha256": "d746accfd56a2e1c854c557ca3d93e6540e1d8449b2c48b7da69bd70f0a99c47"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/AudioViews.swift",
+      "sha256": "f6e67faec2e0623393835ce7679514bab4d04fd3bf537446a6f405787b9c8e35"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/CharacterEditor.swift",
+      "sha256": "710ffea334eaf930bb18113f489b1448fa07e0320e690c57f4cc23685eb16dce"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/CharacterLinksEditor.swift",
+      "sha256": "dd65bd8aed68bc83ec22bb72e63bcd749b0518223bfd9812fb49fd721c84ded1"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/CharactersView.swift",
+      "sha256": "a955278427096edf9e82a0cc5094b94dd7e3ff6889b14dbf0c403413f1ba1352"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/CueAnchorEditor.swift",
+      "sha256": "7c8dfb167e0d8beed8fb8d625fcbac7da48b92eaeb606e23ddb7a6880bc869fe"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/DiscussionPanel.swift",
+      "sha256": "f128f29216f27cb7992e2031ef195012ede73dcb0b458869093940fba2dc0602"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/GenerationJobsView.swift",
+      "sha256": "81445cff3be0cd77b2f0579d11c6b194b00fe971cc8bba4206ff358aa3aaa699"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/ImageInspectors.swift",
+      "sha256": "5c7566e0899709de4ec84b6673cf57819d5efdfcd485e096e3ebd083025ed34e"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/LayerTimelineView.swift",
+      "sha256": "78ff3816014833c7d7e1a3531ef27107b18310afe02b5455cfdef65fac527824"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/LiveScriptTextEditor.swift",
+      "sha256": "388613ac22d398c6633e7e5604eb5a6022cee4e403a048f61ab567c4f09b3c56"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/MediaComponents.swift",
+      "sha256": "ada34740b7d1e7d7d59c1a97439fa2a5ae9ca78c557d7d35523843db7f42a5ec"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/PreciseTimingControls.swift",
+      "sha256": "b343437533cb2f83f9615cda330ffc27331bb18080693879f1a6be1cf6a31150"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/PreviewPane.swift",
+      "sha256": "fe5bad7fb7fcbdd6c394ac9919c8a80ccc59e6679af8f3a54df256363bf17933"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/ProjectAndHistoryViews.swift",
+      "sha256": "76479fac618926959acc00bb574c91882752be8abcc6b45d233d3fda09c26eec"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/RecoveredDraftView.swift",
+      "sha256": "816afa64a5e84e56ff1116bfde691453dc24133eb6a92faaa770c500aa7354bc"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/ScriptEditorView.swift",
+      "sha256": "936bbf3c67b8877310857a6b86bad4711521a453e735f3241b3c36dca808ccf6"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/ScrivAuthenticationView.swift",
+      "sha256": "19cf591020a12a0995ccf6d9ba66164bbde9b7b4828e87db8f763293c7819175"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/ScrivSettingsView.swift",
+      "sha256": "277d3d62561542cb711d8e3e300b3bd37c4c2821acb0808caf1250f174ada8b8"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/StoryboardView.swift",
+      "sha256": "d633a5d270de7871933a9f70ea209d874c3336dce7ecd88fa5dede78cf5c32c1"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/TeamSheet.swift",
+      "sha256": "707d655bc33f110e6dffa14684a9e9db515932cefeb07ab80d41d1dc7ffd70ed"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/Theme.swift",
+      "sha256": "53ba7f99db90292d5a58a60758a03496a3f3bd142a183307fe1b0cfa2dcbb70b"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/WordTimingEditor.swift",
+      "sha256": "6e68bcd55066fe759a576e9968a84cdea0060c2c8b9aa10d4e7837b6a8e6db26"
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Views/WorkspaceView.swift",
+      "sha256": "bcf106b92d6406c6ecaecd0e04f4b50924305aa39b28302c5d213db7ce8db8ea"
+    },
+    {
+      "path": "apps/mac/Info.plist",
+      "sha256": "598a99f66b770b08faafed9016241869f3ffb0b193c60defa83de38bfd90cb0f"
+    },
+    {
+      "path": "apps/mac/Scriv.entitlements",
+      "sha256": "55a9c3dbd2e3925788619684eace456de8fcbdd4e0afb681237cdcff36d6bda9"
+    },
+    {
+      "path": "scripts/build-mac.sh",
+      "sha256": "feff70d09d1659f1464a6099f441e71b8ac0ce49cd32b775878980945bc5cd3a"
+    },
+    {
+      "path": "scripts/make-icon.swift",
+      "sha256": "e8c4f722f7e464b5655f1641a758f82c2b8a553818b1ddfd4d72ea238bd08390"
+    },
+    {
+      "path": "scripts/notarize-mac.sh",
+      "sha256": "21832b6a90f7af13ca451737b2dd38de0bebcce458c82961b5b7a19f7a1d5299"
+    }
+  ],
+  "preserved": [
+    "apps/catalyst/",
+    "apps/mac/Sources/ScrivCore/",
+    "apps/mac/Sources/ScrivApp/Services/ except WorkspaceErrorPresenter.swift",
+    "apps/mac/Sources/ScrivApp/Views/ProjectHistoryPresentation.swift",
+    "apps/mac/Sources/ScrivApp/Resources/",
+    "apps/runtime-bridge/",
+    "cloud/",
+    "updates/"
+  ],
+  "note": "Only the former AppKit app and its packaging path are retired. Shared code, current Catalyst app, server, updater and data formats remain. The file hashes identify the last public main baseline. Removal does not establish native parity or coverage."
+}

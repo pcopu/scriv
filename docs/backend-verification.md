@@ -1,5 +1,7 @@
 # Backend verification
 
+> Testing update, 2026-11-09: legacy test suites and runners referenced below were removed. Prior results remain historical, not current commands or proof of replacement coverage. See [current CLI-only testing](testing/cli-only-tests.md).
+
 Verified locally on 2026-10-29. This report covers `cloud/` and the native-facing
 API contract in `docs/cloud-api.md`. No Cloudflare infrastructure was provisioned
 or deployed, and no live subscription or provider account was modified.

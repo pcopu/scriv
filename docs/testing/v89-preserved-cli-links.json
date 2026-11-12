@@ -1,0 +1,1858 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "preserve-v89-0036bf75f3baca63",
+      "title": "Preserve reviewed CLI association 0036bf75f3baca63",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "git ls-files --others --exclude-standard -z",
+        "node scripts/export-cli-source-manifest.mjs --output ${manifest} ${includes.flatMap(path=>[--include,path])}",
+        "tracer app -- test --coverage --scenario workspace --source-manifest ${manifest} --source-manifest-sha256 ${digest} --coverage-build-record ${output}/AbsentBuildRecord.json --output-dir ${output}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Opt-in coverage initializes explicit not-run status, zero imported records and empty intervals; these exact fields remain in final preflight-failed evidence. No collector import or app instrumentation runs. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 200,
+            "end": 221,
+            "sha256": "c0f7763f4ca78fe77d27041fbea8f1024610b95038650c638a1ef075e88f20ff"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 185,
+            "end": 185,
+            "sha256": "2eee146c7f11991ffabccbcb02ecd812a1816104fce4814ba13453206029bf09"
+          },
+          "expectation": "observed",
+          "why": "Opt-in coverage initializes explicit not-run status, zero imported records and empty intervals; these exact fields remain in final preflight-failed evidence. No collector import or app instrumentation runs. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-12a54407c217f98a",
+      "title": "Preserve reviewed CLI association 12a54407c217f98a",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --scenario ../outside",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"../outside\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"/tmp/outside\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"${catalog.scenarios[0].id}.mjs\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"unknown_scenario\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"; touch NEVER\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"$(touch NEVER)\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"line\\nbreak\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"${catalog.scenarios[0].id}\", \"--scenario\", \"${catalog.scenarios[0].id}\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"99\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"3600001\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"1e3\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"120000\", \"--timeout-ms\", \"1000\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"--list\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--app\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--source-manifest\", \"/tmp/missing-source.json\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--source-manifest-sha256\", \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--unknown\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--help\", \"--unknown\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--help\", \"--list\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--list\"]",
+        "tracer app -- test tooling --unknown"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The parser records list/help switches and rejects unknown arguments; combined help/list or list plus output is rejected by later exclusivity guards. No assumption that all branches fail at this line. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 70,
+            "end": 88,
+            "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 153,
+            "end": 155,
+            "sha256": "56ecb13fc0c593e911da71cf2ff10047a5613206ed4b0e41d93f8a0e4404a2f9"
+          },
+          "expectation": "observed",
+          "why": "The parser records list/help switches and rejects unknown arguments; combined help/list or list plus output is rejected by later exclusivity guards. No assumption that all branches fail at this line. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-1baf47f54454b714",
+      "title": "Preserve reviewed CLI association 1baf47f54454b714",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --output-dir ${output}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Preflight error becomes the recorded macos-required blocker, status not-run, and reason for eligible not-started scenarios while preserving explicit restriction reasons. No started scenario, generic unexpected error or collector failure is tested. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 89,
+            "end": 108,
+            "sha256": "1a299b8bcac0c324c66d692e3f78ec82a816968274a55ae7ee61c02c5e03e72b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 240,
+            "end": 244,
+            "sha256": "a5fd2e11de59dca2fa37b60da3803c7140151859aa4eb9e79bf7d1a001cdc78f"
+          },
+          "expectation": "observed",
+          "why": "Preflight error becomes the recorded macos-required blocker, status not-run, and reason for eligible not-started scenarios while preserving explicit restriction reasons. No started scenario, generic unexpected error or collector failure is tested. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-2b56c0409054a523",
+      "title": "Preserve reviewed CLI association 2b56c0409054a523",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --llvm-cov relative-tool"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Reject relative tool selection at the public CLI boundary without executing a tool.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 175,
+            "end": 185,
+            "sha256": "315cf694dc7b8ffdb5f9c7425d5f46efd328e894ca8251dd47a5c8b5a33980fe"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 139,
+            "end": 141,
+            "sha256": "72f1b6d99d9a4d4c97bb8bacabf926cacaeb2c0d56b5d24c555268ec2a179302"
+          },
+          "expectation": "observed",
+          "why": "Reject relative tool selection at the public CLI boundary without executing a tool."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-38e1894ede9a612b",
+      "title": "Preserve reviewed CLI association 38e1894ede9a612b",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --scenario ../outside",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"../outside\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"/tmp/outside\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"${catalog.scenarios[0].id}.mjs\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"unknown_scenario\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"; touch NEVER\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"$(touch NEVER)\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"line\\nbreak\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"${catalog.scenarios[0].id}\", \"--scenario\", \"${catalog.scenarios[0].id}\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"99\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"3600001\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"1e3\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"120000\", \"--timeout-ms\", \"1000\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"--list\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--app\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--source-manifest\", \"/tmp/missing-source.json\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--source-manifest-sha256\", \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--unknown\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--help\", \"--unknown\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--help\", \"--list\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--list\"]",
+        "tracer app -- test tooling --unknown"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Incomplete manifest/digest pairs and timeout values below 100 or above 3600000 are rejected without creating evidence. Neither manifest byte integrity nor successful timeout enforcement is asserted by these invalid-input cases. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 70,
+            "end": 88,
+            "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 157,
+            "end": 159,
+            "sha256": "a6912d66c983665ce6ffc1cf0d24956a93db7a302a00dfc155079082c66600c1"
+          },
+          "expectation": "observed",
+          "why": "Incomplete manifest/digest pairs and timeout values below 100 or above 3600000 are rejected without creating evidence. Neither manifest byte integrity nor successful timeout enforcement is asserted by these invalid-input cases. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-6309699a01ddfbaa",
+      "title": "Preserve reviewed CLI association 6309699a01ddfbaa",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --scenario ../outside"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Reject traversal as an invalid scenario ID through the actual public Tracer boundary, with no evidence summary.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 72,
+            "end": 74,
+            "sha256": "f5af6348d2ca564269f117485e13ad854cac4a4a75ba197b4a35d010367aa351"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 148,
+            "end": 149,
+            "sha256": "ed17746d631a4bfffdce23eeb12ebf1fdca88d966ee0e55cf51a0c1eb61ef679"
+          },
+          "expectation": "observed",
+          "why": "Reject traversal as an invalid scenario ID through the actual public Tracer boundary, with no evidence summary."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-809b34421d570f00",
+      "title": "Preserve reviewed CLI association 809b34421d570f00",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --list",
+        "tracer app -- test --list --scenario workspace --scenario character-aliases"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The current first/last catalog IDs select exactly two real entrypoints in catalog order with explicit subset and total counts. Discovery only, no native execution. The catalog now carries restriction metadata on blocked entries. This existing first/last-selection witness credits ordering and counts only, not execution eligibility or the new restriction branches.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 62,
+            "end": 69,
+            "sha256": "29aa39cf179819076f23f7017877fc9962e03cefb6a769ed15dd1d2fd361e329"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 167,
+            "end": 174,
+            "sha256": "dec859eb86863e4b91d8f87447a745f5d00988cfaefd4e40c917280e157d14f8"
+          },
+          "expectation": "observed",
+          "why": "The current first/last catalog IDs select exactly two real entrypoints in catalog order with explicit subset and total counts. Discovery only, no native execution. The catalog now carries restriction metadata on blocked entries. This existing first/last-selection witness credits ordering and counts only, not execution eligibility or the new restriction branches."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-87a50061d18ffa71",
+      "title": "Preserve reviewed CLI association 87a50061d18ffa71",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "git ls-files --others --exclude-standard -z",
+        "node scripts/export-cli-source-manifest.mjs --output ${manifest} ${includes.flatMap(path=>[--include,path])}",
+        "tracer app -- test --coverage --scenario workspace --source-manifest ${manifest} --source-manifest-sha256 ${digest} --coverage-build-record ${output}/AbsentBuildRecord.json --output-dir ${output}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Source identity delegates to manifest verification for the supplied manifest/digest; final evidence says verified-exported-source-manifest. This positive case does not test stale/malformed source-manifest rejection or native source-to-build match. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 200,
+            "end": 221,
+            "sha256": "c0f7763f4ca78fe77d27041fbea8f1024610b95038650c638a1ef075e88f20ff"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 189,
+            "end": 189,
+            "sha256": "5dad5827ad70c283195e105f6805d9a73a68bde4c32ec27cc6fb37bb9a613b98"
+          },
+          "expectation": "observed",
+          "why": "Source identity delegates to manifest verification for the supplied manifest/digest; final evidence says verified-exported-source-manifest. This positive case does not test stale/malformed source-manifest rejection or native source-to-build match. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-9dd37192035b7814",
+      "title": "Preserve reviewed CLI association 9dd37192035b7814",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --list",
+        "node scripts/run-cli-e2e.mjs --list"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Discover regular native entrypoint files in the transitional and journey directories, excluding support and opt-in live-account routes.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 42,
+            "end": 60,
+            "sha256": "318a8414a83274876a07322757b9ad2b20adf2bba4503f526bcc1f1c2dd5971d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 109,
+            "end": 116,
+            "sha256": "36da1655c9ac5dd106c8327bf691ca3767b9736b85ba1858c2d149eed7466839"
+          },
+          "expectation": "observed",
+          "why": "Discover regular native entrypoint files in the transitional and journey directories, excluding support and opt-in live-account routes."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-a5a3c848b064278f",
+      "title": "Preserve reviewed CLI association a5a3c848b064278f",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --coverage",
+        "tracer app -- test --coverage --scenario workspace"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Actual Tracer invocations reject coverage without an explicit scenario and pinned build/source. This is argument gating, not native coverage.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 175,
+            "end": 185,
+            "sha256": "315cf694dc7b8ffdb5f9c7425d5f46efd328e894ca8251dd47a5c8b5a33980fe"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 160,
+            "end": 161,
+            "sha256": "ad3d84aedfe9ac2699c0884c5cddfa3f82fe5e9d49cc62c94d3b6f0291423133"
+          },
+          "expectation": "observed",
+          "why": "Actual Tracer invocations reject coverage without an explicit scenario and pinned build/source. This is argument gating, not native coverage."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-ab298761b444cf05",
+      "title": "Preserve reviewed CLI association ab298761b444cf05",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "git ls-files --others --exclude-standard -z",
+        "node scripts/export-cli-source-manifest.mjs --output ${manifest} ${includes.flatMap(path=>[--include,path])}",
+        "tracer app -- test --coverage --scenario workspace --source-manifest ${manifest} --source-manifest-sha256 ${digest} --coverage-build-record ${output}/AbsentBuildRecord.json --output-dir ${output}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Evidence serialization writes then renames its temporary file. The witness sees only evidence.json in the final output directory. Crash-atomicity, fsync durability and interrupted rename are not tested. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 200,
+            "end": 221,
+            "sha256": "c0f7763f4ca78fe77d27041fbea8f1024610b95038650c638a1ef075e88f20ff"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 187,
+            "end": 187,
+            "sha256": "635722f828162803f7415bffb896eeca61f597233ad2ae2b1a228a1b3820da9e"
+          },
+          "expectation": "observed",
+          "why": "Evidence serialization writes then renames its temporary file. The witness sees only evidence.json in the final output directory. Crash-atomicity, fsync durability and interrupted rename are not tested. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-ae101e5bca1e0b94",
+      "title": "Preserve reviewed CLI association ae101e5bca1e0b94",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "git ls-files --others --exclude-standard -z",
+        "node scripts/export-cli-source-manifest.mjs --output ${manifest} ${includes.flatMap(path=>[--include,path])}",
+        "tracer app -- test --coverage --scenario workspace --source-manifest ${manifest} --source-manifest-sha256 ${digest} --coverage-build-record ${output}/AbsentBuildRecord.json --output-dir ${output}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The runner records provided source manifest/digest/output location and enabled coverage option. Build-record path storage on line 138 remains outside this accepted range. The later not-run report identifies verified exported source and empty coverage; valid native build provenance is not established. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 200,
+            "end": 221,
+            "sha256": "c0f7763f4ca78fe77d27041fbea8f1024610b95038650c638a1ef075e88f20ff"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 134,
+            "end": 137,
+            "sha256": "33db45876f99cdf9e2550b39845934921f8dc66fcde8f2145523224716999bdb"
+          },
+          "expectation": "observed",
+          "why": "The runner records provided source manifest/digest/output location and enabled coverage option. Build-record path storage on line 138 remains outside this accepted range. The later not-run report identifies verified exported source and empty coverage; valid native build provenance is not established. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-ce860bfaa264cb36",
+      "title": "Preserve reviewed CLI association ce860bfaa264cb36",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --scenario ../outside",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"../outside\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"/tmp/outside\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"${catalog.scenarios[0].id}.mjs\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"unknown_scenario\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"; touch NEVER\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"$(touch NEVER)\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"line\\nbreak\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"${catalog.scenarios[0].id}\", \"--scenario\", \"${catalog.scenarios[0].id}\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"99\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"3600001\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"1e3\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"120000\", \"--timeout-ms\", \"1000\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"--list\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--app\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--source-manifest\", \"/tmp/missing-source.json\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--source-manifest-sha256\", \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--unknown\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--help\", \"--unknown\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--help\", \"--list\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--list\"]",
+        "tracer app -- test tooling --unknown"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Timeout parsing rejects exponent notation and passes numeric strings to the later range guard. The 99 and 3600001 bounds are separately rejected later; no actual timeout duration is exercised. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 70,
+            "end": 88,
+            "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 147,
+            "end": 147,
+            "sha256": "30030c597bb8d222fa5708425ec863c8d63fdfb4ba9620fae5fa53a58f39468c"
+          },
+          "expectation": "observed",
+          "why": "Timeout parsing rejects exponent notation and passes numeric strings to the later range guard. The 99 and 3600001 bounds are separately rejected later; no actual timeout duration is exercised. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-d1b9fac26a537191",
+      "title": "Preserve reviewed CLI association d1b9fac26a537191",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --scenario ../outside",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"../outside\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"/tmp/outside\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"${catalog.scenarios[0].id}.mjs\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"unknown_scenario\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"; touch NEVER\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"$(touch NEVER)\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"line\\nbreak\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"${catalog.scenarios[0].id}\", \"--scenario\", \"${catalog.scenarios[0].id}\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"99\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"3600001\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"1e3\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"120000\", \"--timeout-ms\", \"1000\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"--list\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--app\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--source-manifest\", \"/tmp/missing-source.json\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--source-manifest-sha256\", \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--unknown\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--help\", \"--unknown\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--help\", \"--list\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--list\"]",
+        "tracer app -- test tooling --unknown"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Argument iteration detects repeated non-scenario options and missing/control-character option values before evidence creation. The witness includes repeated timeout, missing scenario/app/timeout and newline scenario value. Other value flags are not all tested negatively. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 70,
+            "end": 88,
+            "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 123,
+            "end": 131,
+            "sha256": "52b5078ad59e1c3f2de14a0c18a08ddced011b3a6242de33473449312283e9a3"
+          },
+          "expectation": "observed",
+          "why": "Argument iteration detects repeated non-scenario options and missing/control-character option values before evidence creation. The witness includes repeated timeout, missing scenario/app/timeout and newline scenario value. Other value flags are not all tested negatively. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-d4e5ba88bc932f3c",
+      "title": "Preserve reviewed CLI association d4e5ba88bc932f3c",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --output-dir ${output}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "On Linux the runner rejects native execution as macos-required before launching app, preparing coverage or entering runScenario. macOS missing-app behavior on the following line is not credited as executed. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 89,
+            "end": 108,
+            "sha256": "1a299b8bcac0c324c66d692e3f78ec82a816968274a55ae7ee61c02c5e03e72b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 195,
+            "end": 195,
+            "sha256": "2001e995fa2f490b3c7b10d4666b7f82f6f7cac1d5d440eecf1db9a34562d8d5"
+          },
+          "expectation": "observed",
+          "why": "On Linux the runner rejects native execution as macos-required before launching app, preparing coverage or entering runScenario. macOS missing-app behavior on the following line is not credited as executed. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-da0f33da4b41c41e",
+      "title": "Preserve reviewed CLI association da0f33da4b41c41e",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer actions",
+        "tracer app -- --help",
+        "tracer app -- test --help"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Expose the real native-runner help through Tracer, including explicit no-simulation and not-run boundaries. The expanded help mentions known blocked scenarios; this existing witness checks help output only, not native route execution or restriction enforcement.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 34,
+            "end": 41,
+            "sha256": "df5ce58e9b332626b4655208a60bc6afe186e74a832913a1c3feb37790b8c3ed"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 162,
+            "end": 165,
+            "sha256": "5a82e8688515127822e721301c0a9fa9eeeef30247df80fd54f0bdceb6dda029"
+          },
+          "expectation": "observed",
+          "why": "Expose the real native-runner help through Tracer, including explicit no-simulation and not-run boundaries. The expanded help mentions known blocked scenarios; this existing witness checks help output only, not native route execution or restriction enforcement."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-daa27ea62a20e452",
+      "title": "Preserve reviewed CLI association daa27ea62a20e452",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --output-dir ${output}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Runner creates one owned output directory and initial actual-app evidence with false fullSuitePassed/baselineMigrated, null app/build provenance and not-run scenario rows. The witness checks these fields after platform preflight. Coverage initialization on line185 is not taken by this noncoverage request; excluded from accepted range. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 89,
+            "end": 108,
+            "sha256": "1a299b8bcac0c324c66d692e3f78ec82a816968274a55ae7ee61c02c5e03e72b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 181,
+            "end": 184,
+            "sha256": "8f2d331ca3a48f718effeb1fdda493956ca6112098c822d5cca4d4e30a9c858d"
+          },
+          "expectation": "observed",
+          "why": "Runner creates one owned output directory and initial actual-app evidence with false fullSuitePassed/baselineMigrated, null app/build provenance and not-run scenario rows. The witness checks these fields after platform preflight. Coverage initialization on line185 is not taken by this noncoverage request; excluded from accepted range. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-deffe4d4e6dd45e7",
+      "title": "Preserve reviewed CLI association deffe4d4e6dd45e7",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --scenario ${catalog.scenarios.find(row=>!row.restriction).id} --output-dir ${output}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Subset preflight failure retains false fullSuitePassed, finalizes evidence, emits subset summary and returns status 2. Passing/full native suite and runtime-failed exit alternatives are not established. Preconditions and limits: One eligible native scenario ID is selected, but no app is provided; platform-specific preflight produces not-run. Selection metadata, one scenario, false fullSuitePassed and honest blocker are asserted, not native behavior. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 141,
+            "end": 154,
+            "sha256": "a8f0090e4a744bd6f6431442f81732f81ba6e2baa7fb823ad36ce3a0bb5d6bc1"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 251,
+            "end": 254,
+            "sha256": "2c812b3746a3626aeef8210fc9651bf318dbc82c96d91b8e0ad85c7475ede9be"
+          },
+          "expectation": "observed",
+          "why": "Subset preflight failure retains false fullSuitePassed, finalizes evidence, emits subset summary and returns status 2. Passing/full native suite and runtime-failed exit alternatives are not established. Preconditions and limits: One eligible native scenario ID is selected, but no app is provided; platform-specific preflight produces not-run. Selection metadata, one scenario, false fullSuitePassed and honest blocker are asserted, not native behavior. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-e42aaeb19301ddb9",
+      "title": "Preserve reviewed CLI association e42aaeb19301ddb9",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --scenario ../outside",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"../outside\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"/tmp/outside\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"${catalog.scenarios[0].id}.mjs\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"unknown_scenario\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"; touch NEVER\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"$(touch NEVER)\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"line\\nbreak\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\", \"${catalog.scenarios[0].id}\", \"--scenario\", \"${catalog.scenarios[0].id}\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--scenario\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"99\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"3600001\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"1e3\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"120000\", \"--timeout-ms\", \"1000\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--timeout-ms\", \"--list\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--app\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--source-manifest\", \"/tmp/missing-source.json\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--source-manifest-sha256\", \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--unknown\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--help\", \"--unknown\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--help\", \"--list\"]",
+        "tracer argv=[\"app\", \"--\", \"test\", \"--output-dir\", \"${output}\", \"--list\"]",
+        "tracer app -- test tooling --unknown"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Repeated exact scenario ID is rejected before evidence generation. Valid selection collection is used in normal listing/subset paths; this witness does not establish scenario execution. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 70,
+            "end": 88,
+            "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 150,
+            "end": 151,
+            "sha256": "9f42f39113593acce58361794626f20f4a741404f9ed9f435e49c65e6bcba4bf"
+          },
+          "expectation": "observed",
+          "why": "Repeated exact scenario ID is rejected before evidence generation. Valid selection collection is used in normal listing/subset paths; this witness does not establish scenario execution. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-f770f7c178743dfa",
+      "title": "Preserve reviewed CLI association f770f7c178743dfa",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "python3 scripts/rebuild-catalyst-cli.py --help"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Tracer tooling journey drives the actual builder help and verifies advertised source pin and build-record requirements. Compilation remains unverified.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 187,
+            "end": 191,
+            "sha256": "f2b6bc72b9ebb2249aeec33bc5359dac552b8895616430f2a47cf0e2b18538ca"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/rebuild-catalyst-cli.py",
+            "start": 117,
+            "end": 119,
+            "sha256": "3d9aad26d764c60350758de96d39199e6330c24527cc29968be1534ee2289943"
+          },
+          "expectation": "observed",
+          "why": "Tracer tooling journey drives the actual builder help and verifies advertised source pin and build-record requirements. Compilation remains unverified."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-fa14f545ea76ed15",
+      "title": "Preserve reviewed CLI association fa14f545ea76ed15",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --coverage --coverage-max-sessions 0",
+        "tracer app -- test --coverage --coverage-max-sessions 65"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Real public CLI rejects invalid session capture bounds before launch; does not verify native slot enforcement.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 175,
+            "end": 185,
+            "sha256": "315cf694dc7b8ffdb5f9c7425d5f46efd328e894ca8251dd47a5c8b5a33980fe"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 143,
+            "end": 145,
+            "sha256": "9038120b7ee4960c8676af3a6ea4557ab73afde4ab9061965173cf3fec2a3681"
+          },
+          "expectation": "observed",
+          "why": "Real public CLI rejects invalid session capture bounds before launch; does not verify native slot enforcement."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-4698f89ee78c57c9",
+      "title": "Preserve reviewed CLI association 4698f89ee78c57c9",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --scenario ../outside"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The public test dispatcher preserves invalid-input exit status 2 and the bounded validation reason.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 72,
+            "end": 74,
+            "sha256": "f5af6348d2ca564269f117485e13ad854cac4a4a75ba197b4a35d010367aa351"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 214,
+            "end": 214,
+            "sha256": "d295eb9c29f5d18ed5454114c35a84d25571d1f97cc000501a0f70d830f310e9"
+          },
+          "expectation": "observed",
+          "why": "The public test dispatcher preserves invalid-input exit status 2 and the bounded validation reason."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-940268d55da0dfd6",
+      "title": "Preserve reviewed CLI association 940268d55da0dfd6",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "SCRIV_CLI_TOOLING_ACTIVE=1 tracer app -- test tooling"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A nested public tooling request fails with the recursion refusal before any child suite starts. No successful native launch is implied.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 169,
+            "end": 174,
+            "sha256": "ce3baef71321bb58e2d3b5f88d28acc72ab4ca697b67285f06f52d14f7f20572"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 180,
+            "end": 181,
+            "sha256": "76cdc684774783f5641fa8937bfd750cfdce351dd1b6474b490c9a30a208b2e9"
+          },
+          "expectation": "observed",
+          "why": "A nested public tooling request fails with the recursion refusal before any child suite starts. No successful native launch is implied."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-fa3482d2669e0b7a",
+      "title": "Preserve reviewed CLI association fa3482d2669e0b7a",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test --list",
+        "node scripts/run-cli-e2e.mjs --list"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The Tracer test front door delegates catalog discovery to the existing native runner; catalog and direct compatibility outputs match, with no app launched.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 42,
+            "end": 60,
+            "sha256": "318a8414a83274876a07322757b9ad2b20adf2bba4503f526bcc1f1c2dd5971d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 186,
+            "end": 190,
+            "sha256": "026faed339518643ae3725d95098d9bc93be4ce3d162d8647cdd7f3a51e6fedf"
+          },
+          "expectation": "observed",
+          "why": "The Tracer test front door delegates catalog discovery to the existing native runner; catalog and direct compatibility outputs match, with no app launched."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-09a60bb1bb94bf85",
+      "title": "Preserve reviewed CLI association 09a60bb1bb94bf85",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "node scripts/tracer-cli.mjs actions",
+        "tracer actions"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "With the trusted configured Tracer, the npm wrapper forwards actions and output matches direct discovery. Signal behavior and other forwarded commands are not covered by this witness.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 224,
+            "end": 230,
+            "sha256": "cd102efbe736f66834785a26abc39543d9c93a24533ed7a36de9f9f1e917e6ef"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/tracer-cli.mjs",
+            "start": 13,
+            "end": 17,
+            "sha256": "55f74282a74b4a69cbbcc223e7e48b681c46e6ca95d8c42b3ed5e2b9cc03ccca"
+          },
+          "expectation": "observed",
+          "why": "With the trusted configured Tracer, the npm wrapper forwards actions and output matches direct discovery. Signal behavior and other forwarded commands are not covered by this witness."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-0a3f623aed767699",
+      "title": "Preserve reviewed CLI association 0a3f623aed767699",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "SCRIV_TRACER_CLI=<owned-temporary-directory>/NotPresentTracer node scripts/tracer-cli.mjs actions"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The public wrapper reports a missing explicitly selected executable as exit 2 with the setup error. This witness does not exercise successful child exit or signal propagation.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 234,
+            "end": 236,
+            "sha256": "51d4865cab067848a45c97eb9d43d6b29b6afea090587607f6a6017be2841be9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/tracer-cli.mjs",
+            "start": 21,
+            "end": 21,
+            "sha256": "4d1b5075685e6f1ce2e0419af9ff58f3873708cfa8ab74fdbe61b2b82475669f"
+          },
+          "expectation": "observed",
+          "why": "The public wrapper reports a missing explicitly selected executable as exit 2 with the setup error. This witness does not exercise successful child exit or signal propagation."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-2024a176ee172229",
+      "title": "Preserve reviewed CLI association 2024a176ee172229",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "SCRIV_TRACER_CLI=relative-tool node scripts/tracer-cli.mjs actions"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The public wrapper refuses a relative executable selection with exit 2; only executable-selection rejection is asserted.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 231,
+            "end": 233,
+            "sha256": "fbd6f2b87f14b45c33d755a5cbbdcf2afb642c65afcb474b1a72c79abeb84bb9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/tracer-cli.mjs",
+            "start": 7,
+            "end": 10,
+            "sha256": "a03207d3589a18d5f7b9cbb4666ac7b583c06aaf0c8f8a77c92ed92ec911043c"
+          },
+          "expectation": "observed",
+          "why": "The public wrapper refuses a relative executable selection with exit 2; only executable-selection rejection is asserted."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-26e2e4307b3207cc",
+      "title": "Preserve reviewed CLI association 26e2e4307b3207cc",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The public inspector rejects non-owned naming, invokes host validation, returns the exact object explicitly denying native validation and resume authority, and normalizes tested validation failures. Non-string input and native ownership are not established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 238,
+            "end": 267,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 62,
+            "end": 69,
+            "sha256": "12f8df5211832f829dbf6408c2e686b36020e816b30f3e3335fb34ab9feceb3a"
+          },
+          "expectation": "observed",
+          "why": "The public inspector rejects non-owned naming, invokes host validation, returns the exact object explicitly denying native validation and resume authority, and normalizes tested validation failures. Non-string input and native ownership are not established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-3120e8d41a80166c",
+      "title": "Preserve reviewed CLI association 3120e8d41a80166c",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test services --help"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Service help labels these as local integration checks, not native acceptance, and discovery exposes the route. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged. The v85 public help additionally advertises provenance, and the fixed service catalog assertion includes the ninth email-auth route; this preserves the same discovery-only scope. The v87 fixed service discovery additionally lists team-lifecycle and oauth, eleven routes total; the exact assertion verifies this discovery-only scope, not service execution. The v88 fixed service discovery additionally lists document-integrity, twelve routes total; the exact assertion verifies this discovery-only scope, not service execution. V89 reviewed extraction: Unchanged help dispatch now prints the isolated serviceHelp constant. Same help/actions assertions moved verbatim except indentation into the independent discovery helper. Service discovery now lists thirteen routes; this remains discovery evidence, not native/service execution.",
+          "witness": {
+            "path": "tests/tracer/service-discovery.mjs",
+            "start": 22,
+            "end": 23,
+            "sha256": "fe795ccf77f1cc76aeeba16e4dba2692d086a00225207d82af7e64e7b76201f9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-service-journeys.mjs",
+            "start": 11,
+            "end": 13,
+            "sha256": "7fa079fde8d385d05d8537e6a95bd09d36af60631bb3e75300184a24346212e9"
+          },
+          "expectation": "observed",
+          "why": "Service help labels these as local integration checks, not native acceptance, and discovery exposes the route. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged. The v85 public help additionally advertises provenance, and the fixed service catalog assertion includes the ninth email-auth route; this preserves the same discovery-only scope. The v87 fixed service discovery additionally lists team-lifecycle and oauth, eleven routes total; the exact assertion verifies this discovery-only scope, not service execution. The v88 fixed service discovery additionally lists document-integrity, twelve routes total; the exact assertion verifies this discovery-only scope, not service execution. V89 reviewed extraction: Unchanged help dispatch now prints the isolated serviceHelp constant. Same help/actions assertions moved verbatim except indentation into the independent discovery helper. Service discovery now lists thirteen routes; this remains discovery evidence, not native/service execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-503d33df4bc93062",
+      "title": "Preserve reviewed CLI association 503d33df4bc93062",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Ownership helper predicates accept the synthetic private directory/files and reject tested directory-mode, file-mode and hard-link cases. Error helper returns the asserted owned-workspace-unavailable. Device/inode sameness is checked on successful access; no replacement race, wrong uid or special-file injection is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 238,
+            "end": 267,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 5,
+            "end": 11,
+            "sha256": "bc93dcb64afeda3c3f45d6fa363a16819e147df5c72416be3b8c07d5ba1cb547"
+          },
+          "expectation": "observed",
+          "why": "Ownership helper predicates accept the synthetic private directory/files and reject tested directory-mode, file-mode and hard-link cases. Error helper returns the asserted owned-workspace-unavailable. Device/inode sameness is checked on successful access; no replacement race, wrong uid or special-file injection is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-65e6d269688397b6",
+      "title": "Preserve reviewed CLI association 65e6d269688397b6",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer actions",
+        "tracer app -- --help"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Public discovery and explicit help have identical advertised output; discovery exposes native and tooling routes. This asserts help only, not successful native JSON control. The v68 help string additionally advertises persistent workspace inspection and relaunch. This witness checks advertised help equality only; it does not dispatch those routes. The current help also advertises stored portrait menu-action dispatch. This association covers help text only, not portrait execution, native menu interaction or the newly added guard paths. The help now includes collaboration, discussions-assets, atomic-batch, billing and generation in the service selector; the same discovery/help equality assertions still apply. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged. The v85 public help additionally advertises provenance, and the fixed service catalog assertion includes the ninth email-auth route; this preserves the same discovery-only scope. The v87 fixed service discovery additionally lists team-lifecycle and oauth, eleven routes total; the exact assertion verifies this discovery-only scope, not service execution. The v88 fixed service discovery additionally lists document-integrity, twelve routes total; the exact assertion verifies this discovery-only scope, not service execution. V89 reviewed extraction: Help orchestration now interpolates the independently defined service usage. No native implementation behavior changed. Service discovery now lists thirteen routes; this remains discovery evidence, not native/service execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 34,
+            "end": 41,
+            "sha256": "df5ce58e9b332626b4655208a60bc6afe186e74a832913a1c3feb37790b8c3ed"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 192,
+            "end": 194,
+            "sha256": "931490e4957c2bc7d2b2db39ceacd76466f7323685ca3125668812c076b557d7"
+          },
+          "expectation": "observed",
+          "why": "Public discovery and explicit help have identical advertised output; discovery exposes native and tooling routes. This asserts help only, not successful native JSON control. The v68 help string additionally advertises persistent workspace inspection and relaunch. This witness checks advertised help equality only; it does not dispatch those routes. The current help also advertises stored portrait menu-action dispatch. This association covers help text only, not portrait execution, native menu interaction or the newly added guard paths. The help now includes collaboration, discussions-assets, atomic-batch, billing and generation in the service selector; the same discovery/help equality assertions still apply. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged. The v85 public help additionally advertises provenance, and the fixed service catalog assertion includes the ninth email-auth route; this preserves the same discovery-only scope. The v87 fixed service discovery additionally lists team-lifecycle and oauth, eleven routes total; the exact assertion verifies this discovery-only scope, not service execution. The v88 fixed service discovery additionally lists document-integrity, twelve routes total; the exact assertion verifies this discovery-only scope, not service execution. V89 reviewed extraction: Help orchestration now interpolates the independently defined service usage. No native implementation behavior changed. Service discovery now lists thirteen routes; this remains discovery evidence, not native/service execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-73d9eec1f6777282",
+      "title": "Preserve reviewed CLI association 73d9eec1f6777282",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test services --list"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Dispatch the public services route to its fixed local service catalog. The assertion checks exact IDs/paths; this is CLI discovery, not service execution or native acceptance. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged. The v85 public help additionally advertises provenance, and the fixed service catalog assertion includes the ninth email-auth route; this preserves the same discovery-only scope. The v87 fixed service discovery additionally lists team-lifecycle and oauth, eleven routes total; the exact assertion verifies this discovery-only scope, not service execution. The v88 fixed service discovery additionally lists document-integrity, twelve routes total; the exact assertion verifies this discovery-only scope, not service execution. V89 reviewed extraction: Exact assertion body moved to the independent discovery helper, with the appended revision-safety row. Original front-door journey calls this helper with its unchanged public run wrapper. Service discovery now lists thirteen routes; this remains discovery evidence, not native/service execution.",
+          "witness": {
+            "path": "tests/tracer/service-discovery.mjs",
+            "start": 5,
+            "end": 21,
+            "sha256": "d08f33a051a13fcd8bcf616d0eacae7a3258307ccf1e7c90a100a2472a485fe4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 176,
+            "end": 178,
+            "sha256": "c91f8e510844568a4785909f7090466790f910fea3df9583d474551c76ffaa87"
+          },
+          "expectation": "observed",
+          "why": "Dispatch the public services route to its fixed local service catalog. The assertion checks exact IDs/paths; this is CLI discovery, not service execution or native acceptance. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged. The v85 public help additionally advertises provenance, and the fixed service catalog assertion includes the ninth email-auth route; this preserves the same discovery-only scope. The v87 fixed service discovery additionally lists team-lifecycle and oauth, eleven routes total; the exact assertion verifies this discovery-only scope, not service execution. The v88 fixed service discovery additionally lists document-integrity, twelve routes total; the exact assertion verifies this discovery-only scope, not service execution. V89 reviewed extraction: Exact assertion body moved to the independent discovery helper, with the appended revision-safety row. Original front-door journey calls this helper with its unchanged public run wrapper. Service discovery now lists thirteen routes; this remains discovery evidence, not native/service execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-78f24495a86f1566",
+      "title": "Preserve reviewed CLI association 78f24495a86f1566",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test services --list",
+        "tracer app -- test services ../outside",
+        "tracer app -- test services unknown",
+        "tracer app -- test services cloud updates",
+        "tracer app -- test services --list cloud",
+        "tracer app -- test services --help --unknown"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The exact catalog is asserted, then malformed/unknown combinations fail before execution with empty stdout and invalid-service-scenario. This does not assert successful service execution or cancellation. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged. The v85 public help additionally advertises provenance, and the fixed service catalog assertion includes the ninth email-auth route; this preserves the same discovery-only scope. The v87 fixed service discovery additionally lists team-lifecycle and oauth, eleven routes total; the exact assertion verifies this discovery-only scope, not service execution. The v88 fixed service discovery additionally lists document-integrity, twelve routes total; the exact assertion verifies this discovery-only scope, not service execution. V89 reviewed extraction: Exact assertion body moved to the independent discovery helper, with the appended revision-safety row. Original front-door journey calls this helper with its unchanged public run wrapper. Service discovery now lists thirteen routes; this remains discovery evidence, not native/service execution.",
+          "witness": {
+            "path": "tests/tracer/service-discovery.mjs",
+            "start": 5,
+            "end": 28,
+            "sha256": "b2f8bea5002a60f889162d5dd8dd1c41c89f142bed10dc22677cba81af82c4fa"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-service-journeys.mjs",
+            "start": 15,
+            "end": 19,
+            "sha256": "43371114fff1f2d189935a4cb6aca2175b56a394caab921cf06dbcce467c2e48"
+          },
+          "expectation": "observed",
+          "why": "The exact catalog is asserted, then malformed/unknown combinations fail before execution with empty stdout and invalid-service-scenario. This does not assert successful service execution or cancellation. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged. The v85 public help additionally advertises provenance, and the fixed service catalog assertion includes the ninth email-auth route; this preserves the same discovery-only scope. The v87 fixed service discovery additionally lists team-lifecycle and oauth, eleven routes total; the exact assertion verifies this discovery-only scope, not service execution. The v88 fixed service discovery additionally lists document-integrity, twelve routes total; the exact assertion verifies this discovery-only scope, not service execution. V89 reviewed extraction: Exact assertion body moved to the independent discovery helper, with the appended revision-safety row. Original front-door journey calls this helper with its unchanged public run wrapper. Service discovery now lists thirteen routes; this remains discovery evidence, not native/service execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-9adad80324b62b83",
+      "title": "Preserve reviewed CLI association 9adad80324b62b83",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "node scripts/tracer-cli.mjs actions",
+        "tracer actions"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Wrapper records child completion, removes signal listeners and propagates successful exit code, witnessed by direct-wrapper versus Tracer actions equality. SIGINT/other signal fallback and cancellation forwarding remain untested. Preconditions and limits: The trusted configured Tracer runs through the npm wrapper, returns exit 0 and identical actions output. Signal forwarding and failed/terminated process exit alternatives are not exercised. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 224,
+            "end": 230,
+            "sha256": "cd102efbe736f66834785a26abc39543d9c93a24533ed7a36de9f9f1e917e6ef"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/tracer-cli.mjs",
+            "start": 22,
+            "end": 24,
+            "sha256": "50f9fcb6166b4696c41a1a082e8938b7da38e7859e673d7dc97ea04d231749e6"
+          },
+          "expectation": "observed",
+          "why": "Wrapper records child completion, removes signal listeners and propagates successful exit code, witnessed by direct-wrapper versus Tracer actions equality. SIGINT/other signal fallback and cancellation forwarding remain untested. Preconditions and limits: The trusted configured Tracer runs through the npm wrapper, returns exit 0 and identical actions output. Signal forwarding and failed/terminated process exit alternatives are not exercised. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-afb83d062f833652",
+      "title": "Preserve reviewed CLI association afb83d062f833652",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Workspace routing accepts only inspect with its exact arity and emits the host inspection JSON. Resume/reset/delete are rejected without changing fixture bytes. Other malformed arities are not independently asserted. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 238,
+            "end": 267,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 166,
+            "end": 168,
+            "sha256": "7b7f87c90ad72047fa13188b9bab73150ea539ec56a32b44fe521db073bd7bce"
+          },
+          "expectation": "observed",
+          "why": "Workspace routing accepts only inspect with its exact arity and emits the host inspection JSON. Resume/reset/delete are rejected without changing fixture bytes. Other malformed arities are not independently asserted. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-d8631f5b75e8d78b",
+      "title": "Preserve reviewed CLI association d8631f5b75e8d78b",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Valid marker size/content and empty lock pass; the deliberately wrong-length marker rejects at the size guard. Same-length corrupt marker, short read, lock nonzero size and unexpected read failure are not rejection-tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 238,
+            "end": 267,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 44,
+            "end": 50,
+            "sha256": "a2f7aea83663a96079bce5c765598f80f2590683ebdcac272ce766c87a473dbf"
+          },
+          "expectation": "observed",
+          "why": "Valid marker size/content and empty lock pass; the deliberately wrong-length marker rejects at the size guard. Same-length corrupt marker, short read, lock nonzero size and unexpected read failure are not rejection-tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-e21881a84a530c8e",
+      "title": "Preserve reviewed CLI association e21881a84a530c8e",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Validation reads the opened/named root and each marker/lock, checks private regular-file ownership/link count/mode and obtains stable file identities. Hard-linked/mode-0400 marker and absent-lock fixtures reject. No identity-change race, file-symlink race, device mismatch or revalidation of an existing lease.files set is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 238,
+            "end": 267,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 31,
+            "end": 43,
+            "sha256": "f9be17cfe57fd4559e86c35c683d3ef9da3506e8521039b4c5b069f0aec8abcf"
+          },
+          "expectation": "observed",
+          "why": "Validation reads the opened/named root and each marker/lock, checks private regular-file ownership/link count/mode and obtains stable file identities. Hard-linked/mode-0400 marker and absent-lock fixtures reject. No identity-change race, file-symlink race, device mismatch or revalidation of an existing lease.files set is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-e645e0c55bc4cf0a",
+      "title": "Preserve reviewed CLI association e645e0c55bc4cf0a",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- test services --list"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The public service catalog exposes exactly cloud, updates, collaboration, discussions-assets, atomic-batch, billing and generation with their fixed scenario paths. No arbitrary runner path may be supplied. This association covers discovery, not service execution. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged. The v85 public help additionally advertises provenance, and the fixed service catalog assertion includes the ninth email-auth route; this preserves the same discovery-only scope. The v87 fixed service discovery additionally lists team-lifecycle and oauth, eleven routes total; the exact assertion verifies this discovery-only scope, not service execution. The v88 fixed service discovery additionally lists document-integrity, twelve routes total; the exact assertion verifies this discovery-only scope, not service execution. V89 reviewed extraction: Only thirteen literal route rows are mapped. Object.freeze wrapper/deep-freeze statements deliberately excluded; output equality does not prove immutability. Exact assertion body moved to the independent discovery helper, with the appended revision-safety row. Original front-door journey calls this helper with its unchanged public run wrapper. Service discovery now lists thirteen routes; this remains discovery evidence, not native/service execution.",
+          "witness": {
+            "path": "tests/tracer/service-discovery.mjs",
+            "start": 5,
+            "end": 21,
+            "sha256": "d08f33a051a13fcd8bcf616d0eacae7a3258307ccf1e7c90a100a2472a485fe4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/service-catalog.mjs",
+            "start": 3,
+            "end": 15,
+            "sha256": "0e9c691f2a58b73700c06bd000b9fbb4f96e27d5c2d984417e9e60c4a4b4cf02"
+          },
+          "expectation": "observed",
+          "why": "The public service catalog exposes exactly cloud, updates, collaboration, discussions-assets, atomic-batch, billing and generation with their fixed scenario paths. No arbitrary runner path may be supplied. This association covers discovery, not service execution. The v83 CLI discovery list and help now include peer-signaling; the exact catalog assertion was extended with that one fixed route. All older route semantics remain unchanged. The v85 public help additionally advertises provenance, and the fixed service catalog assertion includes the ninth email-auth route; this preserves the same discovery-only scope. The v87 fixed service discovery additionally lists team-lifecycle and oauth, eleven routes total; the exact assertion verifies this discovery-only scope, not service execution. The v88 fixed service discovery additionally lists document-integrity, twelve routes total; the exact assertion verifies this discovery-only scope, not service execution. V89 reviewed extraction: Only thirteen literal route rows are mapped. Object.freeze wrapper/deep-freeze statements deliberately excluded; output equality does not prove immutability. Exact assertion body moved to the independent discovery helper, with the appended revision-safety row. Original front-door journey calls this helper with its unchanged public run wrapper. Service discovery now lists thirteen routes; this remains discovery evidence, not native/service execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-f0ef0e4501ebdaa9",
+      "title": "Preserve reviewed CLI association f0ef0e4501ebdaa9",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Retaining an inspect-only host handle validates absolute canonical UUID-named root, private directory mode and stable identity, then validates owned files. Symlink-root and unsafe-root fixtures reject; valid fixture yields the exact non-resumable inspection. No retained live application lease or concurrent root swap is established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 238,
+            "end": 267,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 16,
+            "end": 26,
+            "sha256": "263c8b9a2e7393f20c21af28d2bcc19817548fba2c9fedee43bdc52c26a9a2a1"
+          },
+          "expectation": "observed",
+          "why": "Retaining an inspect-only host handle validates absolute canonical UUID-named root, private directory mode and stable identity, then validates owned files. Symlink-root and unsafe-root fixtures reject; valid fixture yields the exact non-resumable inspection. No retained live application lease or concurrent root swap is established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    },
+    {
+      "id": "preserve-v89-f77dac2c48e838e1",
+      "title": "Preserve reviewed CLI association f77dac2c48e838e1",
+      "preconditions": [
+        "Same complete original action sequence, synthetic fixtures and public run wrapper; only reviewed source/witness relocation and one explicit discovery-row extension."
+      ],
+      "actions": [
+        "tracer app -- workspace inspect ${valid}",
+        "tracer app -- workspace inspect ${symbolic}",
+        "tracer app -- workspace inspect ${hardLinked}",
+        "tracer app -- workspace inspect ${fixture-markerMode-0400}",
+        "tracer app -- workspace inspect ${fixture-invalid-marker-text}",
+        "tracer app -- workspace inspect ${fixture-missing-lock}",
+        "tracer app -- workspace inspect ${fixture-rootMode-0755}",
+        "tracer app -- workspace inspect ${output}/NotOwned",
+        "tracer app -- workspace inspect ../outside",
+        "tracer app -- workspace resume ${valid}",
+        "tracer app -- workspace reset ${valid}",
+        "tracer app -- workspace delete ${valid}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Successful validation confirms named file/root identity and returns the inspected file set; scenario verifies original filenames and file bytes remain unchanged. This is the successful read-only path, not concurrent replacement detection or guaranteed descriptor cleanup under all failures. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 238,
+            "end": 267,
+            "sha256": "0c209d45792c0e57959cd9aca5c074f2b2c4f7f144ba402959c1f55ec1210c17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/owned-workspace.mjs",
+            "start": 51,
+            "end": 56,
+            "sha256": "8d7f68ec8eee147383cb94e230d72c4df09e8c1bfe2ef6c4bb0463356c85fc57"
+          },
+          "expectation": "observed",
+          "why": "Successful validation confirms named file/root identity and returns the inspected file set; scenario verifies original filenames and file bytes remain unchanged. This is the successful read-only path, not concurrent replacement detection or guaranteed descriptor cleanup under all failures. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "preserve-v89-0036bf75f3baca63",
+      "title": "Preserve reviewed CLI association 0036bf75f3baca63",
+      "steps": [
+        "preserve-v89-0036bf75f3baca63"
+      ]
+    },
+    {
+      "id": "preserve-v89-12a54407c217f98a",
+      "title": "Preserve reviewed CLI association 12a54407c217f98a",
+      "steps": [
+        "preserve-v89-12a54407c217f98a"
+      ]
+    },
+    {
+      "id": "preserve-v89-1baf47f54454b714",
+      "title": "Preserve reviewed CLI association 1baf47f54454b714",
+      "steps": [
+        "preserve-v89-1baf47f54454b714"
+      ]
+    },
+    {
+      "id": "preserve-v89-2b56c0409054a523",
+      "title": "Preserve reviewed CLI association 2b56c0409054a523",
+      "steps": [
+        "preserve-v89-2b56c0409054a523"
+      ]
+    },
+    {
+      "id": "preserve-v89-38e1894ede9a612b",
+      "title": "Preserve reviewed CLI association 38e1894ede9a612b",
+      "steps": [
+        "preserve-v89-38e1894ede9a612b"
+      ]
+    },
+    {
+      "id": "preserve-v89-6309699a01ddfbaa",
+      "title": "Preserve reviewed CLI association 6309699a01ddfbaa",
+      "steps": [
+        "preserve-v89-6309699a01ddfbaa"
+      ]
+    },
+    {
+      "id": "preserve-v89-809b34421d570f00",
+      "title": "Preserve reviewed CLI association 809b34421d570f00",
+      "steps": [
+        "preserve-v89-809b34421d570f00"
+      ]
+    },
+    {
+      "id": "preserve-v89-87a50061d18ffa71",
+      "title": "Preserve reviewed CLI association 87a50061d18ffa71",
+      "steps": [
+        "preserve-v89-87a50061d18ffa71"
+      ]
+    },
+    {
+      "id": "preserve-v89-9dd37192035b7814",
+      "title": "Preserve reviewed CLI association 9dd37192035b7814",
+      "steps": [
+        "preserve-v89-9dd37192035b7814"
+      ]
+    },
+    {
+      "id": "preserve-v89-a5a3c848b064278f",
+      "title": "Preserve reviewed CLI association a5a3c848b064278f",
+      "steps": [
+        "preserve-v89-a5a3c848b064278f"
+      ]
+    },
+    {
+      "id": "preserve-v89-ab298761b444cf05",
+      "title": "Preserve reviewed CLI association ab298761b444cf05",
+      "steps": [
+        "preserve-v89-ab298761b444cf05"
+      ]
+    },
+    {
+      "id": "preserve-v89-ae101e5bca1e0b94",
+      "title": "Preserve reviewed CLI association ae101e5bca1e0b94",
+      "steps": [
+        "preserve-v89-ae101e5bca1e0b94"
+      ]
+    },
+    {
+      "id": "preserve-v89-ce860bfaa264cb36",
+      "title": "Preserve reviewed CLI association ce860bfaa264cb36",
+      "steps": [
+        "preserve-v89-ce860bfaa264cb36"
+      ]
+    },
+    {
+      "id": "preserve-v89-d1b9fac26a537191",
+      "title": "Preserve reviewed CLI association d1b9fac26a537191",
+      "steps": [
+        "preserve-v89-d1b9fac26a537191"
+      ]
+    },
+    {
+      "id": "preserve-v89-d4e5ba88bc932f3c",
+      "title": "Preserve reviewed CLI association d4e5ba88bc932f3c",
+      "steps": [
+        "preserve-v89-d4e5ba88bc932f3c"
+      ]
+    },
+    {
+      "id": "preserve-v89-da0f33da4b41c41e",
+      "title": "Preserve reviewed CLI association da0f33da4b41c41e",
+      "steps": [
+        "preserve-v89-da0f33da4b41c41e"
+      ]
+    },
+    {
+      "id": "preserve-v89-daa27ea62a20e452",
+      "title": "Preserve reviewed CLI association daa27ea62a20e452",
+      "steps": [
+        "preserve-v89-daa27ea62a20e452"
+      ]
+    },
+    {
+      "id": "preserve-v89-deffe4d4e6dd45e7",
+      "title": "Preserve reviewed CLI association deffe4d4e6dd45e7",
+      "steps": [
+        "preserve-v89-deffe4d4e6dd45e7"
+      ]
+    },
+    {
+      "id": "preserve-v89-e42aaeb19301ddb9",
+      "title": "Preserve reviewed CLI association e42aaeb19301ddb9",
+      "steps": [
+        "preserve-v89-e42aaeb19301ddb9"
+      ]
+    },
+    {
+      "id": "preserve-v89-f770f7c178743dfa",
+      "title": "Preserve reviewed CLI association f770f7c178743dfa",
+      "steps": [
+        "preserve-v89-f770f7c178743dfa"
+      ]
+    },
+    {
+      "id": "preserve-v89-fa14f545ea76ed15",
+      "title": "Preserve reviewed CLI association fa14f545ea76ed15",
+      "steps": [
+        "preserve-v89-fa14f545ea76ed15"
+      ]
+    },
+    {
+      "id": "preserve-v89-4698f89ee78c57c9",
+      "title": "Preserve reviewed CLI association 4698f89ee78c57c9",
+      "steps": [
+        "preserve-v89-4698f89ee78c57c9"
+      ]
+    },
+    {
+      "id": "preserve-v89-940268d55da0dfd6",
+      "title": "Preserve reviewed CLI association 940268d55da0dfd6",
+      "steps": [
+        "preserve-v89-940268d55da0dfd6"
+      ]
+    },
+    {
+      "id": "preserve-v89-fa3482d2669e0b7a",
+      "title": "Preserve reviewed CLI association fa3482d2669e0b7a",
+      "steps": [
+        "preserve-v89-fa3482d2669e0b7a"
+      ]
+    },
+    {
+      "id": "preserve-v89-09a60bb1bb94bf85",
+      "title": "Preserve reviewed CLI association 09a60bb1bb94bf85",
+      "steps": [
+        "preserve-v89-09a60bb1bb94bf85"
+      ]
+    },
+    {
+      "id": "preserve-v89-0a3f623aed767699",
+      "title": "Preserve reviewed CLI association 0a3f623aed767699",
+      "steps": [
+        "preserve-v89-0a3f623aed767699"
+      ]
+    },
+    {
+      "id": "preserve-v89-2024a176ee172229",
+      "title": "Preserve reviewed CLI association 2024a176ee172229",
+      "steps": [
+        "preserve-v89-2024a176ee172229"
+      ]
+    },
+    {
+      "id": "preserve-v89-26e2e4307b3207cc",
+      "title": "Preserve reviewed CLI association 26e2e4307b3207cc",
+      "steps": [
+        "preserve-v89-26e2e4307b3207cc"
+      ]
+    },
+    {
+      "id": "preserve-v89-3120e8d41a80166c",
+      "title": "Preserve reviewed CLI association 3120e8d41a80166c",
+      "steps": [
+        "preserve-v89-3120e8d41a80166c"
+      ]
+    },
+    {
+      "id": "preserve-v89-503d33df4bc93062",
+      "title": "Preserve reviewed CLI association 503d33df4bc93062",
+      "steps": [
+        "preserve-v89-503d33df4bc93062"
+      ]
+    },
+    {
+      "id": "preserve-v89-65e6d269688397b6",
+      "title": "Preserve reviewed CLI association 65e6d269688397b6",
+      "steps": [
+        "preserve-v89-65e6d269688397b6"
+      ]
+    },
+    {
+      "id": "preserve-v89-73d9eec1f6777282",
+      "title": "Preserve reviewed CLI association 73d9eec1f6777282",
+      "steps": [
+        "preserve-v89-73d9eec1f6777282"
+      ]
+    },
+    {
+      "id": "preserve-v89-78f24495a86f1566",
+      "title": "Preserve reviewed CLI association 78f24495a86f1566",
+      "steps": [
+        "preserve-v89-78f24495a86f1566"
+      ]
+    },
+    {
+      "id": "preserve-v89-9adad80324b62b83",
+      "title": "Preserve reviewed CLI association 9adad80324b62b83",
+      "steps": [
+        "preserve-v89-9adad80324b62b83"
+      ]
+    },
+    {
+      "id": "preserve-v89-afb83d062f833652",
+      "title": "Preserve reviewed CLI association afb83d062f833652",
+      "steps": [
+        "preserve-v89-afb83d062f833652"
+      ]
+    },
+    {
+      "id": "preserve-v89-d8631f5b75e8d78b",
+      "title": "Preserve reviewed CLI association d8631f5b75e8d78b",
+      "steps": [
+        "preserve-v89-d8631f5b75e8d78b"
+      ]
+    },
+    {
+      "id": "preserve-v89-e21881a84a530c8e",
+      "title": "Preserve reviewed CLI association e21881a84a530c8e",
+      "steps": [
+        "preserve-v89-e21881a84a530c8e"
+      ]
+    },
+    {
+      "id": "preserve-v89-e645e0c55bc4cf0a",
+      "title": "Preserve reviewed CLI association e645e0c55bc4cf0a",
+      "steps": [
+        "preserve-v89-e645e0c55bc4cf0a"
+      ]
+    },
+    {
+      "id": "preserve-v89-f0ef0e4501ebdaa9",
+      "title": "Preserve reviewed CLI association f0ef0e4501ebdaa9",
+      "steps": [
+        "preserve-v89-f0ef0e4501ebdaa9"
+      ]
+    },
+    {
+      "id": "preserve-v89-f77dac2c48e838e1",
+      "title": "Preserve reviewed CLI association f77dac2c48e838e1",
+      "steps": [
+        "preserve-v89-f77dac2c48e838e1"
+      ]
+    }
+  ]
+}

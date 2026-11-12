@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "peer-discovery-v92",
+      "title": "Discover scoped devices and obtain relay configuration",
+      "featureId": "peer-discovery",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/collaboration-journey.mjs"
+      ],
+      "plannedActions": [
+        "Complete the existing collaboration journey, then provision the distinct synthetic device descriptors and restore member membership.",
+        "Create and open a separate personal project with the second member session; read exact paid-team device inventories as owner and member. Refuse outsider, revoked viewer and absent-project access.",
+        "Apply a synthetic canceled-within-grace entitlement and read each actor's own-only devices; reactivate the fixture and require all eligible sessions again.",
+        "Publicly log out the second member session, observe its exclusion and authentication failure; publicly remove membership and require owner-only devices while the member retains their personal project.",
+        "Read zero initial TURN quota for two owner sessions. Try outsider and revoked-viewer ICE configuration and verify those guards leave their TURN counters absent.",
+        "Issue20 owner ICE configuration GETs with TURN bindings absent, asserting the exact STUN list, relayAvailable false and expiry between request-time bounds plus one hour.",
+        "Issue request21 and require the exact429 envelope/count21. Make one valid request with the other session of the same owner and require its own count1; confirm the same real bucket.",
+        "Enable only the synthetic TURN provider fixture. Return a fixed iceServers array and require exact relayAvailable true configuration plus bounded one-hour expiry.",
+        "Return providerHTTP503 with a private fixture body, then a successful JSON response with non-array iceServers; require exact distinct502 error envelopes without provider-body leakage.",
+        "Require exactly3 controlled provider calls, separate-session count4, unchanged complete restored document, empty R2, all7 inventory checkpoints and zero unexpected outbound attempts; finish owned cleanup."
+      ],
+      "expectedOutcomes": [
+        "Exact full device payloads contain independently specified descriptors sorted by descending distinct createdAt, the authenticated currentDeviceId, and onlineStatus unknown. Paid visibility includes four eligible own/teammate sessions despite one using another project; expired/revoked/outsider sessions are absent. Read-grace exposes only each actor's own sessions and reactivation restores the eligible set.",
+        "Public logout returns ok, removes only that device from subsequent inventory and makes that session401. Public member removal removes the teammate, rejects their team inventory404, and preserves their personal-project read access.",
+        "Unconfigured authorized responses have exactly expiresAt,iceServers,relayAvailable with the fixed STUN fallback and a bounded one-hour expiry. Unauthorized requests do not consume TURN quota. In one real bucket the same session succeeds20times and then receives the exact429/count21; another session of that user independently succeeds/count1.",
+        "The controlled callback receives the exact encoded URL,POST,fake Bearer token and ttl3600 JSON. The valid array is returned with relayAvailable true and bounded expiry. ProviderHTTP failure and non-array data each produce their exact502 envelope; the503 body is not exposed. Three controlled calls occur; the restored document remains exact and R2 empty."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "peer-discovery-v92-1",
+      "featureId": "peer-discovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/media.ts",
+        "start": 104,
+        "end": 109,
+        "fileSha256": "c22cef9d48bc3570918a31e26882f32df2dcbc6dfd258817a4f33761f865d43d",
+        "spanSha256": "e7a40d8c402220fda28c0d36f7d6ef7554f3d6b23b6f16f2b9b9d543c2c2ef20",
+        "sha256": "41931425901a015c0c86cf8f2fd5ad86708f13c16312620b51e2253a4a55b882"
+      },
+      "scenarioIds": [
+        "peer-discovery-v92"
+      ],
+      "rationale": "The access-conditioned query constructs the exact filtered, ordered public descriptor list with current session and unknown online status. No1000-row cutoff or online detection claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Public local HTTP with synthetic identity/entitlement/provider fixtures only; no native or live TURN/transport result. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Exact full device payloads contain independently specified descriptors sorted by descending distinct createdAt, the authenticated currentDeviceId, and onlineStatus unknown. Paid visibility includes four eligible own/teammate sessions despite one using another project; expired/revoked/outsider sessions are absent. Read-grace exposes only each actor's own sessions and reactivation restores the eligible set."
+      ]
+    },
+    {
+      "rangeId": "peer-discovery-v92-2",
+      "featureId": "peer-discovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 12,
+        "end": 13,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "72e6ac9a36a2ab3aaece774409f208714a94b9b0d435737892fd4aaa10eac512",
+        "sha256": "9eb97708ba5e797677886f1d9ef028c6449d31bc24deb5c8e90d9720195738e9"
+      },
+      "scenarioIds": [
+        "peer-discovery-v92"
+      ],
+      "rationale": "Active paid and canceled/grace fixture variants distinguish the premium boolean consumed by device filtering. Trialing and every expiry edge are not claimed.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Public local HTTP with synthetic identity/entitlement/provider fixtures only; no native or live TURN/transport result. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Exact full device payloads contain independently specified descriptors sorted by descending distinct createdAt, the authenticated currentDeviceId, and onlineStatus unknown. Paid visibility includes four eligible own/teammate sessions despite one using another project; expired/revoked/outsider sessions are absent. Read-grace exposes only each actor's own sessions and reactivation restores the eligible set."
+      ]
+    },
+    {
+      "rangeId": "peer-discovery-v92-3",
+      "featureId": "peer-discovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 40,
+        "end": 46,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "a38865155b205ab980c34d3a83b462132bb82f1deda92bcab488a9546da9720d",
+        "sha256": "c82254330e96219a4968678ad3c07cd1f8e8f889dfd9e8e4c53e0995bea4bac1"
+      },
+      "scenarioIds": [
+        "peer-discovery-v92"
+      ],
+      "rationale": "Team ownership, current membership and read grace admit the named readers, while removed/outsider users are refused. Supports own-only versus paid peer visibility, not write/manage permissions or grace expiration.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Public local HTTP with synthetic identity/entitlement/provider fixtures only; no native or live TURN/transport result. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Exact full device payloads contain independently specified descriptors sorted by descending distinct createdAt, the authenticated currentDeviceId, and onlineStatus unknown. Paid visibility includes four eligible own/teammate sessions despite one using another project; expired/revoked/outsider sessions are absent. Read-grace exposes only each actor's own sessions and reactivation restores the eligible set."
+      ]
+    },
+    {
+      "rangeId": "peer-discovery-v92-4",
+      "featureId": "peer-discovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 75,
+        "end": 78,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "74a46947559f127ddf1fc0cfa08afd07d56001d41e8f6f71d6a32bca3a335898",
+        "sha256": "6133c51be5597cb7e00569ae7cd564161eb6eb7dff47653b9a3dd2151c9b7594"
+      },
+      "scenarioIds": [
+        "peer-discovery-v92"
+      ],
+      "rationale": "Public logout revokes only the authenticated synthetic session and refreshes access before returning ok; its next request401 and device exclusion distinguish successful revocation. No websocket close or racing command claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Public local HTTP with synthetic identity/entitlement/provider fixtures only; no native or live TURN/transport result. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Public logout returns ok, removes only that device from subsequent inventory and makes that session401. Public member removal removes the teammate, rejects their team inventory404, and preserves their personal-project read access."
+      ]
+    },
+    {
+      "rangeId": "peer-discovery-v92-5",
+      "featureId": "peer-discovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/media.ts",
+        "start": 94,
+        "end": 98,
+        "fileSha256": "c22cef9d48bc3570918a31e26882f32df2dcbc6dfd258817a4f33761f865d43d",
+        "spanSha256": "9cfeab836fb272a9d7857daad95ae7f443ce59228f5391ae7d278d568b2174d1",
+        "sha256": "cc87446c77ec0c1e9467817c69613f3570f60cde84903f280562fd056b24fb30"
+      },
+      "scenarioIds": [
+        "peer-discovery-v92"
+      ],
+      "rationale": "Public project access is checked before the per-session TURN quota and absent-configuration fallback. No actual STUN traffic or real clock-reset proof.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Public local HTTP with synthetic identity/entitlement/provider fixtures only; no native or live TURN/transport result. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Unconfigured authorized responses have exactly expiresAt,iceServers,relayAvailable with the fixed STUN fallback and a bounded one-hour expiry. Unauthorized requests do not consume TURN quota. In one real bucket the same session succeeds20times and then receives the exact429/count21; another session of that user independently succeeds/count1."
+      ]
+    },
+    {
+      "rangeId": "peer-discovery-v92-6",
+      "featureId": "peer-discovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/http.ts",
+        "start": 79,
+        "end": 82,
+        "fileSha256": "5eb8762cc12bfea165d1343bceee2a25bebb684bd69f5b5626c68a9b40140fc2",
+        "spanSha256": "e2706112d5ba8ed870eab61aba0ae8a0c3cc05c3d68849bb17cd01f1b195f731",
+        "sha256": "f4de4d6e59ebbdf48e9686d5295d261d6887c2c20f87b6ae766b0173965ea4d2"
+      },
+      "scenarioIds": [
+        "peer-discovery-v92"
+      ],
+      "rationale": "The existing security-limit key includes the real hourly bucket and increments persisted attempts through the twenty-first refusal. expires_at is cleanup retention; no reset-time claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Public local HTTP with synthetic identity/entitlement/provider fixtures only; no native or live TURN/transport result. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Unconfigured authorized responses have exactly expiresAt,iceServers,relayAvailable with the fixed STUN fallback and a bounded one-hour expiry. Unauthorized requests do not consume TURN quota. In one real bucket the same session succeeds20times and then receives the exact429/count21; another session of that user independently succeeds/count1."
+      ]
+    },
+    {
+      "rangeId": "peer-discovery-v92-7",
+      "featureId": "peer-discovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/index.ts",
+        "start": 33,
+        "end": 34,
+        "fileSha256": "c93c52239eede54d0ae8efef31cc3b1c1d4fd24ca750d248f5c21fd4b3afd6c4",
+        "spanSha256": "37a194df44076bda774a8cccfb0546c71dc0bb9278f201330196b8c2236fbe09",
+        "sha256": "84db90a4f426c370fd222c403ea94ac0b2161c7702fc4e3e6e0628ab35fe7357"
+      },
+      "scenarioIds": [
+        "peer-discovery-v92"
+      ],
+      "rationale": "After the frozen authentication and dispatch guards decline interception, public project ice-servers/devices routes reach the respective production helpers. The entire ordered scenario also asserts exact device inventories.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Public local HTTP with synthetic identity/entitlement/provider fixtures only; no native or live TURN/transport result. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Unconfigured authorized responses have exactly expiresAt,iceServers,relayAvailable with the fixed STUN fallback and a bounded one-hour expiry. Unauthorized requests do not consume TURN quota. In one real bucket the same session succeeds20times and then receives the exact429/count21; another session of that user independently succeeds/count1."
+      ]
+    },
+    {
+      "rangeId": "peer-discovery-v92-8",
+      "featureId": "peer-discovery",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/media.ts",
+        "start": 99,
+        "end": 102,
+        "fileSha256": "c22cef9d48bc3570918a31e26882f32df2dcbc6dfd258817a4f33761f865d43d",
+        "spanSha256": "83fcd4db61418820d93205e7b54d416777bd076d22664fb025f2a08dc00acccc",
+        "sha256": "9d5db77360c0fb41c765f9217a23869a2223bcbf967d00f82e7a10a620f0a348"
+      },
+      "scenarioIds": [
+        "peer-discovery-v92"
+      ],
+      "rationale": "The configured fetch contract, response.ok guard, array guard and success serialization are exercised by three controlled provider responses through real public HTTP. No live provider,timeout,malformed JSON or server validation of individual ICE entries is claimed.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Public local HTTP with synthetic identity/entitlement/provider fixtures only; no native or live TURN/transport result. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "The controlled callback receives the exact encoded URL,POST,fake Bearer token and ttl3600 JSON. The valid array is returned with relayAvailable true and bounded expiry. ProviderHTTP failure and non-array data each produce their exact502 envelope; the503 body is not exposed. Three controlled calls occur; the restored document remains exact and R2 empty."
+      ]
+    }
+  ]
+}

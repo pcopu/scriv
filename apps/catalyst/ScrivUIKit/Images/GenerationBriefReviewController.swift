@@ -108,6 +108,9 @@ import ScrivCore
         let close = GenerationReviewUI.button("", symbol: "xmark", action: onClose)
         close.configuration?.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
         close.accessibilityLabel = "Close image brief review"
+        close.accessibilityIdentifier = "generation-review-close"
+        header.accessibilityIdentifier = "generation-review-header"
+        footer.accessibilityIdentifier = "generation-review-footer"
         close.widthAnchor.constraint(equalToConstant: 42).isActive = true
         close.heightAnchor.constraint(equalToConstant: 42).isActive = true
         header.addArrangedSubview(ImageUI.row([ImageUI.label("Review image brief", size: 32, weight: .semibold), ImageUI.spacer(), close]))
@@ -297,7 +300,9 @@ import ScrivCore
         if snapshot.context.portraits.isEmpty { body.addArrangedSubview(GenerationReviewUI.caption("No local portrait images are attached. Use text identity only.")) }
         if !snapshot.context.unreferencedCharacters.isEmpty { body.addArrangedSubview(GenerationReviewUI.caption("Without an attached portrait, saved names, aliases and profiles stay included. No substitute image is attached.")) }
         body.addArrangedSubview(GenerationReviewUI.caption("Only available local portraits are attached. Identical image bytes are sent once."))
-        body.addArrangedSubview(GenerationReviewUI.button("View exact request…") { [weak self] in self?.select(.exactRequest) })
+        let exactLink = GenerationReviewUI.button("View exact request…") { [weak self] in self?.select(.exactRequest) }
+        exactLink.accessibilityIdentifier = "generation-review-exact-link"
+        body.addArrangedSubview(exactLink)
         body.addArrangedSubview(GenerationReviewUI.caption(GenerationBriefSnapshot.storageDisclosure))
     }
     private func profileRow(_ label: String, _ value: String, note: String? = nil) -> UIView {

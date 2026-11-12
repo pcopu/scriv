@@ -1,0 +1,1052 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-09",
+  "kind": "user-requested-legacy-test-removal",
+  "reason": "Explicit request to remove old tests entirely and retain only Tracer-driven CLI scenarios.",
+  "baselineCommit": "eaadee8dca97f4006e2dd377619eb21a2794f490",
+  "recoveryCheckpoint": {
+    "name": "scriv-cli-full-source-v61.tar.gz",
+    "sha256": "609edeb0268d5aff74b0571aace6a4ec9b200b5a05f1f1f5d9f7cc0e256b095c",
+    "manifestSHA256": "852fe224745c1449ad95f422e4bd502ee364fa9dc98dc5ababc3db3cd15971fe",
+    "fileCount": 697
+  },
+  "deletedFileCount": 169,
+  "deletedBytes": 1306066,
+  "deletedLines": 18325,
+  "removedFiles": [
+    {
+      "path": "apps/catalyst/ScrivUIKit/Shared/WorkspaceStartupTestHarness.swift",
+      "sha256": "d5b15c82dbf8b907f1bffacc72226ceb398724ab843cd97efba14b6f8f91f289",
+      "bytes": 3206,
+      "lines": 60
+    },
+    {
+      "path": "apps/catalyst/Tests/AudioTimingDraftTests.swift",
+      "sha256": "52b0175c308e208d67f5dd5e6729859b54dee1dc0f2e02f773b2b95fef04585b",
+      "bytes": 7539,
+      "lines": 109
+    },
+    {
+      "path": "apps/catalyst/Tests/ScriptUIKitTests.swift",
+      "sha256": "0514ea90eaf378e3642275d3d270533d377746cfd5af729e5bf7fb74dedd4f05",
+      "bytes": 18320,
+      "lines": 242
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/AppIconUIKitTests.swift",
+      "sha256": "c7988666baa4a0a2564b4efadfc1b0a0ae2ff1890abf5ac7a3fb1b7073e60877",
+      "bytes": 1375,
+      "lines": 26
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/ApplicationUpdateMenuTests.swift",
+      "sha256": "7bf0ac87eca6cc4ff37cc9beab445069100a54f65eed1947f9171fac77c76702",
+      "bytes": 2537,
+      "lines": 44
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/CharacterImageReviewTests.swift",
+      "sha256": "ec2bc485954c9761156087b722941245b49d2bca949ddc4c5b2db8d50237c09f",
+      "bytes": 14518,
+      "lines": 195
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/CharacterLinkVisualRegressionTests.swift",
+      "sha256": "3679a8b39612fa4504ca9f649d1a958520d595337a404680c838a11e53c60f46",
+      "bytes": 5802,
+      "lines": 94
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/CharacterReviewLayoutLifetimeTests.swift",
+      "sha256": "d360fbf19e1e86607fca171b212e3cf68c9934b494777874cd650a829f2951e2",
+      "bytes": 6196,
+      "lines": 101
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/CharacterTeamTests.swift",
+      "sha256": "43b372703babd778c1112dcea4e9f8ce98f543cda9ea3fc14bbcfd12e8a6b80d",
+      "bytes": 7499,
+      "lines": 102
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/CodexNativeModalParityTests.swift",
+      "sha256": "2e4a0684c096b13d66e6501850be559607fada68f5fdc7c1a58cb169e4977841",
+      "bytes": 10945,
+      "lines": 178
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/CodexSetupUIKitTests.swift",
+      "sha256": "c05bc371e0da9d7723362e59c44d0219723e8f9dabd6ac383551dd236656ff20",
+      "bytes": 13796,
+      "lines": 215
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/CueAnchorOffsetTests.swift",
+      "sha256": "307f8a63bd3f6a6521f25594e528457ecf87f44daa31f7cad34cfccd9307bc3f",
+      "bytes": 7812,
+      "lines": 131
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/DiscussionVisualLayoutTests.swift",
+      "sha256": "72cfb5b36078677021e3d603a155e7b0a5ce047963ab41e8339fe43d81fa182d",
+      "bytes": 2614,
+      "lines": 56
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/EditorRepairTests.swift",
+      "sha256": "b9171dec1a137bcf39cd2bce385b68908059d70024f674eac91859a1b2936079",
+      "bytes": 7845,
+      "lines": 109
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/GenerationBriefReviewTests.swift",
+      "sha256": "86fb704bd9217962579a3d036224ee6573a6fbd524f946bc6c1e30762a5dae12",
+      "bytes": 50701,
+      "lines": 702
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/GenerationPersonNavigationTests.swift",
+      "sha256": "f797971b15d1ef909b4ac65930458314936316ef5631fccd850a2106423cbe3b",
+      "bytes": 7710,
+      "lines": 129
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/HistoryAccessibilityTests.swift",
+      "sha256": "3f87beba1b8dd7687ff8180858c5d74bcb95f4b096a115eb55b2832ba156ecc0",
+      "bytes": 2581,
+      "lines": 48
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/ImageInspectorDigestTests.swift",
+      "sha256": "680da2567554c271b7e92ffcb4ef3351ca7bc1cca596447e89c29e8b1178a0e7",
+      "bytes": 8837,
+      "lines": 127
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/ImageInteractionPolicyTests.swift",
+      "sha256": "4e5219e197c4b4991753ddf108fe8db2599f1d4d2dfa77b89a64b5d3bd9f5bd0",
+      "bytes": 6613,
+      "lines": 75
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/ImagePickerDigestTests.swift",
+      "sha256": "b9d0a7aea35162d3cf676a7ef1c70be5d7c0bfdce565335cbaba61c59156bee8",
+      "bytes": 8335,
+      "lines": 128
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/ImagePickerSelectionAppearanceTests.swift",
+      "sha256": "8acfdf74b303be68c8a38cbfc30c37382143f9ce6f07238d64ee7db6fcc22ed2",
+      "bytes": 12169,
+      "lines": 167
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/ImageTimelineDragTests.swift",
+      "sha256": "1b2518dc52bd67903c70e129f92d82b07812d9e6abe4c0d4813507d9cdb7b8e6",
+      "bytes": 8840,
+      "lines": 82
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/ImageUIKitTests.swift",
+      "sha256": "125b0f0dd01101e899bafa7b8c79e3e4add768ec647b3fc6e3907418d23e32dc",
+      "bytes": 7444,
+      "lines": 79
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/ImageVisualLayoutTests.swift",
+      "sha256": "a9322a4693a9dac0c64920c813d9ef88e5ae627bb6a059c4f6ba9824e4d044f7",
+      "bytes": 3430,
+      "lines": 61
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/LayoutWrapTests.swift",
+      "sha256": "6695bed08dc487067e075bf4c442e43b1ed312197938922db3be5ea374f686af",
+      "bytes": 12582,
+      "lines": 161
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/LocalSaveStatusTests.swift",
+      "sha256": "94a39d69a575fd747001874e28955878b83142dc35c556a6ef696e2ee1db8d97",
+      "bytes": 3862,
+      "lines": 64
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/PlaybackResponsivenessTests.swift",
+      "sha256": "0001c1df71f0fbd58bb6fc5051e3f4b403cd06a9d0d3f8ed2dc34129e1cb3110",
+      "bytes": 14627,
+      "lines": 255
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/ProjectPackageOpeningTests.swift",
+      "sha256": "f882eee1138f2fa4953d1a3cbe97e89067b081114aa5ec43433006d934a639ea",
+      "bytes": 5372,
+      "lines": 80
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/PromptRecoveryPresentationTests.swift",
+      "sha256": "6d9f3195cb174d1c1453251d455bb71090c093f7e2b2cafde77c0fb1058ff93a",
+      "bytes": 18119,
+      "lines": 284
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/RemainingImageDigestTests.swift",
+      "sha256": "ea7cdf95989c7ba25a48793af22b81d31ca79504d90f78f03dc88f1618b8b47e",
+      "bytes": 15699,
+      "lines": 207
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/RuntimeBootstrapConsentTests.swift",
+      "sha256": "1cbd184892edb77be1f9b5cf3b6ff13f956ea4b91d622b3ee08347b509e3c23b",
+      "bytes": 5921,
+      "lines": 115
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/ScriptCharacterParityTests.swift",
+      "sha256": "6e96b2d3966d2af804062c82aeee1a7711d15f72eccae8b64369b42d11d978d6",
+      "bytes": 6808,
+      "lines": 113
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/ScrivPlaybackKeyboardPolicyTests.swift",
+      "sha256": "4ba13698b9d594c43add88a5d2351da5cd64ccf42bc1b5e68f62dcc30ed56731",
+      "bytes": 7402,
+      "lines": 137
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/ScrivPlaybackKeyboardResponderTests.swift",
+      "sha256": "a76cced0e585af5bbec234fcad98a285aa0d9c38c1474c4860a2553c809b3e48",
+      "bytes": 11300,
+      "lines": 194
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/SecondaryLayoutTests.swift",
+      "sha256": "5f8050d0ace4168b407a82188fe19fda06249bcda150314ebd1f70d1beeab627",
+      "bytes": 3827,
+      "lines": 72
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/SettingsPanelTests.swift",
+      "sha256": "39788d4eaae54dd7a654d013ea2f3a7281d5bedc6293065a6bdf2545ec2d21d1",
+      "bytes": 9730,
+      "lines": 144
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/SheetFittingTests.swift",
+      "sha256": "38263e77f69d7467006136f25c11a7efba3e241eca2261ec39be350a2734dcae",
+      "bytes": 4566,
+      "lines": 65
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/StoryboardInlineScriptTests.swift",
+      "sha256": "3f4c89f1c5b16dfcdeeb62f0d187c24eb8ced62e9d7f1afd3c11e855ae79cc48",
+      "bytes": 11169,
+      "lines": 163
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/TimelineTileMountTests.swift",
+      "sha256": "003c7061ff3d5e2b1ebb47d828d514cb7e03d7a3463b7f0b370a2a9c84a1c5ee",
+      "bytes": 16913,
+      "lines": 238
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/UpdateDurabilityTests.swift",
+      "sha256": "4e1fb863fa27fa83a167b783b4ed538af7619e2ef5b4b8ad81e537f0171d0d54",
+      "bytes": 2232,
+      "lines": 37
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/UpdateKeyboardTests.swift",
+      "sha256": "ef1dfe9440bd675597f1fc472fb9820cfdf1d150dca65d7f4bf4814abf5badd2",
+      "bytes": 10305,
+      "lines": 190
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/UpdateModalHandoffTests.swift",
+      "sha256": "d076865e7bb91961977dce4ff87005a20e9fd84653ce43a6da1d8981f4e27c94",
+      "bytes": 4082,
+      "lines": 77
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/UpdatePhysicalEscapeAcceptanceTests.swift",
+      "sha256": "12ed908922da3db72fcfc40997192e00eb3e6ab6acd98fc34f0626e7df87b763",
+      "bytes": 12669,
+      "lines": 202
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/UpdatePresentationTests.swift",
+      "sha256": "452f783ef2c10bdb18a6ac45085bbc1bcf8188571d9e307540879811d42eda86",
+      "bytes": 2066,
+      "lines": 38
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/WorkspaceEndToEndTests.swift",
+      "sha256": "9945a9cb039eb99436e33c9c23f60bcb582c5399eeeec5a3a7a06a0d22ed845a",
+      "bytes": 58485,
+      "lines": 792
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/WorkspaceStartupDiagnosticsTests.swift",
+      "sha256": "923ba7b535883b140374e48f4f2aeae2dc355ab9c6835a2431f262e18ce5e9b4",
+      "bytes": 12189,
+      "lines": 187
+    },
+    {
+      "path": "apps/catalyst/Tests/ScrivUIKitTests/WorkspaceVisualLayoutTests.swift",
+      "sha256": "536bdef28377fc68f6448d291d926f833369cfba7ecf9b1f9c94778d28eb88a7",
+      "bytes": 7323,
+      "lines": 122
+    },
+    {
+      "path": "apps/catalyst/Tests/WorkspaceDurabilityTests.swift",
+      "sha256": "7a0c28c7101670500ce0be739a98bfbcbe87a868072e23c6489afb9e091b9232",
+      "bytes": 4916,
+      "lines": 80
+    },
+    {
+      "path": "apps/mac/Sources/ScrivApp/Services/NativePeerSmoke.swift",
+      "sha256": "e09e8dc33329d530f7fb181bc982921482dc701b0369358f1ced6ed2df3cadc4",
+      "bytes": 8572,
+      "lines": 156
+    },
+    {
+      "path": "apps/mac/Tests/ScrivAppTests/CharacterFormTests.swift",
+      "sha256": "8d951589f92bf63da49aaee76e09ab2308c1e146706a7f80e2ec8cfc3d3b3d63",
+      "bytes": 4575,
+      "lines": 78
+    },
+    {
+      "path": "apps/mac/Tests/ScrivAppTests/ImageInspectorTests.swift",
+      "sha256": "389b7149caf5fa830bd65d2a24d7e63df7011abf853bb84eabf3d2fd6d286a01",
+      "bytes": 2851,
+      "lines": 46
+    },
+    {
+      "path": "apps/mac/Tests/ScrivAppTests/ProjectHistoryPresentationTests.swift",
+      "sha256": "7d94aa4f2ff377865a2f47ab887d88e44a86ad56fade3f3dacfcd05769c7c1af",
+      "bytes": 7759,
+      "lines": 105
+    },
+    {
+      "path": "apps/mac/Tests/ScrivAppTests/TextPresentationTests.swift",
+      "sha256": "e979800907ffd24b6218a721e971ac80ab29fb2c8825243ddfc1c049238ac19e",
+      "bytes": 6077,
+      "lines": 112
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/AudioTrackTests.swift",
+      "sha256": "7833a7cfa3ebbeaf182e7c7f1cd79d19ac49860a889ac697d022e9855a134057",
+      "bytes": 5388,
+      "lines": 71
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CharacterImageAnalysisTests.swift",
+      "sha256": "14017135442a44b6fcd331e2a4373e26f44d5a4622bd87f30e3e6469fb24ba9a",
+      "bytes": 10068,
+      "lines": 128
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CharacterMentionTests.swift",
+      "sha256": "9bc9cccdb64dfb103f3ea1bcc10675598438ba958a4e2472332c61bf6a32d393",
+      "bytes": 8962,
+      "lines": 129
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CloudAtomicBatchTests.swift",
+      "sha256": "433c862983adaf76102ea3c233f2866c2f1597db2f4eb1878faee5a58d72a6e7",
+      "bytes": 4882,
+      "lines": 65
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CloudChangedItemsTests.swift",
+      "sha256": "ca7fbdbbd1fd4f07f365f849cb3cf7633084a33075d40131bac2db0b85242b31",
+      "bytes": 2255,
+      "lines": 39
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CloudCommitBarrierTests.swift",
+      "sha256": "af2ff655f685dfdf7214cb7b66fbfc66e0cd82cfaf0858dc3e9fe0c8e69e98b2",
+      "bytes": 2545,
+      "lines": 52
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CloudEndpointTests.swift",
+      "sha256": "7d7c395fd309bf549c9708ab23c02e1448234fbfe2206237d6c2fc1dea2ced82",
+      "bytes": 1740,
+      "lines": 20
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CloudSnapshotFenceTests.swift",
+      "sha256": "ba360f854ce1878b42d5f567f1e7dfb7f102f099ce0a23bed409f67bd14065b4",
+      "bytes": 3076,
+      "lines": 45
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CodexCharacterAnalysisProtocolTests.swift",
+      "sha256": "1351bc94686295ee868ad0817e420f194ce6d53d4dbe7c3fc5b5e730bea7c0fb",
+      "bytes": 4665,
+      "lines": 53
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CodexCharacterTurnStateTests.swift",
+      "sha256": "48823fb48165bde1abf6264afed8ba079f920f665b1ecbde4f8b6c3f1d9b450b",
+      "bytes": 5686,
+      "lines": 86
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CodexConnectionCheckTests.swift",
+      "sha256": "cf04b8abbe0ea7b475ba5ab8c22549dfdd171f0d208606aee3370b857f7af5ad",
+      "bytes": 6078,
+      "lines": 85
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CodexConnectionReadinessTests.swift",
+      "sha256": "c1dd2cee219f07848ad5933e397aa510d22e3bcbd93a1a8e655646b2423157f4",
+      "bytes": 1315,
+      "lines": 23
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CodexGenerationTests.swift",
+      "sha256": "00017df21e6e764de106e090f7adc111ff56b9023368e3f5e385cbb36aa21ef4",
+      "bytes": 6505,
+      "lines": 94
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CueAnchoringTests.swift",
+      "sha256": "18cfd7966bc5429d550ee74aac3edbb427c9d251893f2f5f157dcf208d1ebd89",
+      "bytes": 8832,
+      "lines": 121
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CuePromptDraftJournalTests.swift",
+      "sha256": "0dff6d2c988be73555b33d80033d1d47a94b817965951aa141f0f07a506295a0",
+      "bytes": 15827,
+      "lines": 250
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/CuePromptDraftNonblockingTests.swift",
+      "sha256": "b3c8ff137f27e9dc96035abf7372f6d5dcfd4958937fc5a16080270d1f61357e",
+      "bytes": 4259,
+      "lines": 78
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/DigestTests.swift",
+      "sha256": "3cf74ae5456844c6e05cf27ecd3808c2567b67aba130218351889a2546f876ea",
+      "bytes": 1577,
+      "lines": 28
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/DiscussionStateTests.swift",
+      "sha256": "1d7ff6888bf8cf128d8400cdfccd0e05fb8078895bf898c2dac71656cf15f4da",
+      "bytes": 4306,
+      "lines": 56
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/EditingTests.swift",
+      "sha256": "2c678144af2576dfab47efe4fc6d5dda976d59d22f8fab9761b1afe1ec9c1032",
+      "bytes": 9690,
+      "lines": 141
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/EditorDraftJournalTests.swift",
+      "sha256": "f33a328b1493555e4225ea2642a05ce079c60c7689184276a6b64144a2567339",
+      "bytes": 12341,
+      "lines": 191
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/EmailSignInFlowTests.swift",
+      "sha256": "9525584a603812c1c31a30fd0e83d00a5861952cc6597ac8ce4979755d715167",
+      "bytes": 4826,
+      "lines": 62
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/GenerationContextTests.swift",
+      "sha256": "f5e13a7c6b76a465405e655ff9d18f9b4284a39f67341722c16364158ff10fd7",
+      "bytes": 9380,
+      "lines": 138
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/GenerationJournalTests.swift",
+      "sha256": "f13964c9bc9cb2d3076d9748a5161d4210ad0ee3ee09bc3ec0a83d35c5e2d559",
+      "bytes": 7367,
+      "lines": 107
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/GenerationPromptTests.swift",
+      "sha256": "8267ff803438b95004efc43d3576e856064e239930caf454ca13e31dd074cc91",
+      "bytes": 11517,
+      "lines": 130
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/ImageImportPlacementTests.swift",
+      "sha256": "6697ecabe04329e49f9c84328408a130281dbe62895711dbcead6ea75bbc9e4a",
+      "bytes": 4768,
+      "lines": 63
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/ImageInspectorInvariantTests.swift",
+      "sha256": "74511e8b258583a9c4771f6ea40862ea16d70fd93583d7cd5f6e356b06ed047d",
+      "bytes": 1420,
+      "lines": 24
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/LeaseLifecycleTests.swift",
+      "sha256": "1bbf4ad93dac8f105617b59e15e1f273e4f214545ee39691910e46a68e6340f6",
+      "bytes": 2462,
+      "lines": 43
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/LocalEditIntentTests.swift",
+      "sha256": "e7617d613f3a7766a84e9bf71ea53807996168d37af2468d96bcf2826aee997c",
+      "bytes": 1287,
+      "lines": 27
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/PeerAssetDiscoveryTests.swift",
+      "sha256": "6afb7b4e0dedadebf1e832bf79fe9dddfe9eb2b9002363901658827c16a5736e",
+      "bytes": 1694,
+      "lines": 32
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/PendingProjectSaveJournalTests.swift",
+      "sha256": "a1b7bd0ca8cf179bb8f9d86415ef9d16805cc994e90fb0e563778424f6e81d7e",
+      "bytes": 20582,
+      "lines": 239
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/PendingSaveRepositoryTests.swift",
+      "sha256": "c3b10a94bfc0aad5f05979283ed9dfd8bdc0c31eb90de3ada1ba02c9f3852fec",
+      "bytes": 5617,
+      "lines": 75
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/PersistenceTests.swift",
+      "sha256": "890de3fb4791e91e54e267ed65e0c94faeedc8fa0e3e73df0e996c29c53ea413",
+      "bytes": 13635,
+      "lines": 194
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/PlaybackTests.swift",
+      "sha256": "aca5a06bca4430afea859c8b1a4b3d53674641b286dd7b43fae999649fb87486",
+      "bytes": 1091,
+      "lines": 25
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/PresentationGeometryTests.swift",
+      "sha256": "1735b07aa122130c3507ed16bef6781578a1c3d94b41aa19174a77231e9fdec7",
+      "bytes": 4679,
+      "lines": 67
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/ReconciliationTests.swift",
+      "sha256": "a80479c60ce8f4fcf54a635ffbdcc3386288275c376ca27b824159512d52ce18",
+      "bytes": 7419,
+      "lines": 105
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/RuntimeBridgeBootstrapTests.swift",
+      "sha256": "0c8e0f58cccd5f1879d056e0e94cd845e54f546a51117d042559d6571316e516",
+      "bytes": 3533,
+      "lines": 51
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/RuntimeBridgeEnvelopeTests.swift",
+      "sha256": "d52bca0f86a74f9e47244ebcf9629bae2b88dbab77b472f8b12b4dc2628b52cd",
+      "bytes": 9853,
+      "lines": 106
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/RuntimeBridgeSessionGrantTests.swift",
+      "sha256": "c22f80f4c7a97923c178181ca6dfcfb5d2895aeff7dd6f3589890b845fba9228",
+      "bytes": 15072,
+      "lines": 254
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/ScriptBoundaryEditingTests.swift",
+      "sha256": "d9634efc5a4a53f8d5e846fac45c07e7b2dc56b331a596f813e0035169ebaa67",
+      "bytes": 2510,
+      "lines": 33
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/StartupTraceTests.swift",
+      "sha256": "4b57c5d7a95e1a5db651d8ee1fc221392d1766b0861f20703bf1afa3d5bde6e6",
+      "bytes": 3826,
+      "lines": 61
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/TeamInvitationTests.swift",
+      "sha256": "3ae76ea534009db0c13a4887ed211c10c81b12af0c142a7b9c96c84d2845e98d",
+      "bytes": 2054,
+      "lines": 30
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/TimingTests.swift",
+      "sha256": "372347ff263f3350ad72d7f150fdaf3dfd62ccba6c9f092b41de1deaae3ee4fc",
+      "bytes": 4445,
+      "lines": 69
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/VerificationScratchTests.swift",
+      "sha256": "17f05e6cd425651635d5b0b65b355171a096e16171d897fddf5b8181023c11a8",
+      "bytes": 3776,
+      "lines": 58
+    },
+    {
+      "path": "apps/mac/Tests/ScrivCoreTests/WordTimingEditingTests.swift",
+      "sha256": "8b42506aa9f010ce053a6ff950b4c758b39e7f16c0a965c035607eb5b78f2334",
+      "bytes": 8782,
+      "lines": 126
+    },
+    {
+      "path": "apps/runtime-bridge/Integration/Tests/ConsentTests.swift",
+      "sha256": "32506fdc8a0242b9ca5f1cbf76343d95bdc9c313f52363e774cdcce5eb4b3331",
+      "bytes": 444,
+      "lines": 13
+    },
+    {
+      "path": "cloud/tests/atomic-batch.test.ts",
+      "sha256": "b77224359d16465f07673f89a824edf5cade7fe23276d4de6750dd518a0ccccf",
+      "bytes": 21118,
+      "lines": 155
+    },
+    {
+      "path": "cloud/tests/authored-validation.test.ts",
+      "sha256": "1018f6f2d802ab4129daabd94d34ec944a13b621cf2e4564156dca49219c4f32",
+      "bytes": 2113,
+      "lines": 20
+    },
+    {
+      "path": "cloud/tests/backend.test.ts",
+      "sha256": "99c7033dea8b128955753904f2924e848cb4bab80fd2287c83a7f9e60d577e39",
+      "bytes": 24630,
+      "lines": 81
+    },
+    {
+      "path": "cloud/tests/billing-teams.test.ts",
+      "sha256": "d9e116f4e3849a84d6fa70218904764c74f5784d9ac2f927cb50fe7177efc490",
+      "bytes": 32954,
+      "lines": 212
+    },
+    {
+      "path": "cloud/tests/character-image-analysis.test.ts",
+      "sha256": "2e720a3626947cfc9bdbecc06991bcc4366b096ebc85597d2130964cc940a167",
+      "bytes": 3081,
+      "lines": 28
+    },
+    {
+      "path": "cloud/tests/collaboration.test.ts",
+      "sha256": "fe414e44c43a4d143ece1459d102f34e63f3dba7ee25871fc07a50de7f6a166f",
+      "bytes": 50144,
+      "lines": 476
+    },
+    {
+      "path": "cloud/tests/email-auth.test.ts",
+      "sha256": "a15e227659ffe446fee4b2f626473536e068552150bb99f47f47076654fb2986",
+      "bytes": 18412,
+      "lines": 245
+    },
+    {
+      "path": "cloud/tests/generation.test.ts",
+      "sha256": "c70db1d96f47635ab953020a4ee94339b08262ff2687be1d3daf96297dda0dc7",
+      "bytes": 13560,
+      "lines": 97
+    },
+    {
+      "path": "cloud/tests/image-prompts.test.ts",
+      "sha256": "1b9272ab48c93a1dab29b7b7bc07190b53e5f40276a6c366c57fc343ef4c22fb",
+      "bytes": 11854,
+      "lines": 122
+    },
+    {
+      "path": "cloud/tests/load.test.ts",
+      "sha256": "99da2a97902fdcde262a41f003abd5adbd685b0469f1bc442555a718781c902b",
+      "bytes": 6116,
+      "lines": 46
+    },
+    {
+      "path": "cloud/tests/presence-stream.test.ts",
+      "sha256": "01ffc5fd12179c3e3cdd9445f2bc1d6aafa753714d003afb7e44f6b2bfd479d8",
+      "bytes": 7733,
+      "lines": 85
+    },
+    {
+      "path": "cloud/vitest.config.ts",
+      "sha256": "97aff4cd2f21cd84cda4494aea82693eda98d436447d07ac9d0794225e21ef26",
+      "bytes": 677,
+      "lines": 9
+    },
+    {
+      "path": "scripts/check-codex-cancellation.py",
+      "sha256": "13ecf31e8e9146e298db11a9f0441f694758f56c7a1c051eaafabbcb25422e78",
+      "bytes": 3859,
+      "lines": 52
+    },
+    {
+      "path": "scripts/check-codex-contract.py",
+      "sha256": "b634eae28abdcc72878e047d75ada2d59ffe3237e12d629857855fe61056e517",
+      "bytes": 4285,
+      "lines": 94
+    },
+    {
+      "path": "scripts/code-e2e-map.mjs",
+      "sha256": "bbcbae63249e4bc8803f0067aa65b3531d80a791600673ff289bd3938c0258d0",
+      "bytes": 16778,
+      "lines": 251
+    },
+    {
+      "path": "scripts/profile-playback-render-work.mjs",
+      "sha256": "74dd6d8bfd886c218ee2218e891a6423a5935a442071378e78e1aaf688cccf0b",
+      "bytes": 4047,
+      "lines": 88
+    },
+    {
+      "path": "scripts/smoke-codex-runtime.py",
+      "sha256": "439a8be2d399cec813d10643b5ded5b29c2ed432d711ff12012ebc4aa89eb7a5",
+      "bytes": 6408,
+      "lines": 132
+    },
+    {
+      "path": "scripts/test-update-plugin-policy.m",
+      "sha256": "d7df6319ea69c62494794d7c1b821c56e1580dc665973dda1dcbd0f41d0a44a3",
+      "bytes": 13049,
+      "lines": 251
+    },
+    {
+      "path": "scripts/test-update-plugin-policy.sh",
+      "sha256": "17da0f427d0b4ec990596c4ba8ae97847c466c7052ed2fd7536f4ed311bdaef8",
+      "bytes": 1480,
+      "lines": 28
+    },
+    {
+      "path": "scripts/verify-native-runtime.mjs",
+      "sha256": "3efd3ef76170f4dde02238fa8b7235862bd5ed7e47e4a37482b25665935b5ce1",
+      "bytes": 11064,
+      "lines": 159
+    },
+    {
+      "path": "tests/app-updates.test.mjs",
+      "sha256": "454627bbad92e2a7739f9ecb8cd7cdd5c12fa092a404ab69645cac08eccd1235",
+      "bytes": 3477,
+      "lines": 40
+    },
+    {
+      "path": "tests/catalyst-icon.test.mjs",
+      "sha256": "1169024ce5cb472c59c8a0359d012f9daf6075225e86c88a37af3606c13ffd13",
+      "bytes": 3021,
+      "lines": 43
+    },
+    {
+      "path": "tests/character-image-analysis.test.mjs",
+      "sha256": "f04464471ebb0daf4308f918058a2487cb720f81e37dc744ba44223e2d727d54",
+      "bytes": 4168,
+      "lines": 54
+    },
+    {
+      "path": "tests/character-link-visual-regression.test.mjs",
+      "sha256": "4924c7f968b1d7e0b8e1841a73bb7263c86a8d228321fb61975c7383e55a53c4",
+      "bytes": 2582,
+      "lines": 42
+    },
+    {
+      "path": "tests/character-review-layout-lifetime.test.mjs",
+      "sha256": "fd8dbcbc73aedb862ce5f922be5e5e3ab474ee1999119ebb1d441aa87b1107a3",
+      "bytes": 3162,
+      "lines": 43
+    },
+    {
+      "path": "tests/codex-account-refresh.selfcheck.swift",
+      "sha256": "800994210de964cae75da94a2065cfda980171330b48111ad2388378bec37f16",
+      "bytes": 1230,
+      "lines": 25
+    },
+    {
+      "path": "tests/codex-cancellation.selfcheck.swift",
+      "sha256": "4fd582979bfcd632a87937a77653731022b2db22e2283fe35ecdddbe032479bd",
+      "bytes": 2927,
+      "lines": 46
+    },
+    {
+      "path": "tests/codex-character-protocol.test.mjs",
+      "sha256": "c1338992421e1ce90ea9ca4aea5f668f2e796c09afe7173dcfa605fa1cff5aa8",
+      "bytes": 3184,
+      "lines": 31
+    },
+    {
+      "path": "tests/codex-native-modal-parity.test.mjs",
+      "sha256": "b037c35ef1e84192955aa631ff89fe0a7fbb76dcca0eb318d8f25b0a8d0d54d2",
+      "bytes": 3579,
+      "lines": 49
+    },
+    {
+      "path": "tests/codex-smoke.test.mjs",
+      "sha256": "16ac5c29e57eb43e1549e8502d36ce851d3f5124afd6d5562d6c38c0ab53f4d6",
+      "bytes": 3076,
+      "lines": 47
+    },
+    {
+      "path": "tests/cue-anchor-offset.test.mjs",
+      "sha256": "57b79990e3e6a6cfa0132147457f4f5d0ea0b49378e9ffd721469438cd385306",
+      "bytes": 3534,
+      "lines": 50
+    },
+    {
+      "path": "tests/design-fixture.test.mjs",
+      "sha256": "26fa604dbde858b68266a002137ae33a38a4761a9fc33ce0b43a06bda7970837",
+      "bytes": 1972,
+      "lines": 35
+    },
+    {
+      "path": "tests/fixtures/codex-0.165.0.json",
+      "sha256": "81997a27db04c210583d77530141acdc3bb6ea2989fe7f1295f7a613b3f1d80e",
+      "bytes": 5640,
+      "lines": 241
+    },
+    {
+      "path": "tests/fixtures/fake-codex-account-refresh.py",
+      "sha256": "8b3ee88da8c591d473ef68acab912b9751422865cc277ee618350dd8b34e7cac",
+      "bytes": 1709,
+      "lines": 41
+    },
+    {
+      "path": "tests/fixtures/fake-codex-cancellation.py",
+      "sha256": "0cc4198de3c369dd89ebb80b933c3a49b88d69457e3b09c4096d7e5ba521aebb",
+      "bytes": 2236,
+      "lines": 44
+    },
+    {
+      "path": "tests/image-inspector-digest.test.mjs",
+      "sha256": "8a71dfeddad6846b76fdfa69118378397af184bd5f26acf10e5484841a6e82d1",
+      "bytes": 3279,
+      "lines": 41
+    },
+    {
+      "path": "tests/image-picker-digest.test.mjs",
+      "sha256": "4a640434b25f20caef457a69aa3f1e4cfa4993aaedbd6995652354dcfae9b9ec",
+      "bytes": 2877,
+      "lines": 43
+    },
+    {
+      "path": "tests/image-picker-selection-appearance.test.mjs",
+      "sha256": "c823ff2e552ee2f794ab7b2eb5bd7df30cc150620f432a425480ad6b05987f75",
+      "bytes": 3056,
+      "lines": 39
+    },
+    {
+      "path": "tests/native-packaging-regression.test.mjs",
+      "sha256": "128b2c22552330bb4edaae8469ce1ba71af922c495d27628f318c6d996e42c84",
+      "bytes": 4533,
+      "lines": 56
+    },
+    {
+      "path": "tests/native-runtime.test.mjs",
+      "sha256": "51c67e862b138ab0c6d9a2c18d7364919a4da6397a4bda64092346ca87d14a1a",
+      "bytes": 6831,
+      "lines": 120
+    },
+    {
+      "path": "tests/native-verification.test.mjs",
+      "sha256": "df6c3dd1654325eb8f0542373917a452088c25020071cb215e9a99963affbaa0",
+      "bytes": 4225,
+      "lines": 87
+    },
+    {
+      "path": "tests/peer-transfer.browser.mjs",
+      "sha256": "446eec8c96ca1174680fdd90cc2889b12b9295e79a450c4a5813aa2e04447874",
+      "bytes": 17353,
+      "lines": 254
+    },
+    {
+      "path": "tests/peer-transfer.test.mjs",
+      "sha256": "f3bcec4db9634133818fb20061b28e90e22c8b463e0857b5511c4abbcdb451cb",
+      "bytes": 6384,
+      "lines": 115
+    },
+    {
+      "path": "tests/playback-render-work.test.mjs",
+      "sha256": "eecefff519ca4987b4a3e98fea97765e736703b7593357c159699c3f6ca5ed34",
+      "bytes": 7948,
+      "lines": 115
+    },
+    {
+      "path": "tests/project-package-opening.test.mjs",
+      "sha256": "42902f61010c8561d8162a5ae6234a9f31a98c501e1673ba400f0d125ebd3213",
+      "bytes": 7356,
+      "lines": 99
+    },
+    {
+      "path": "tests/prompt-recovery-render.test.mjs",
+      "sha256": "b13e611108201b032b2889421f33f0cd3bae422b995a4c49f053b76c2d4cd718",
+      "bytes": 11131,
+      "lines": 181
+    },
+    {
+      "path": "tests/remaining-image-digests.test.mjs",
+      "sha256": "e316e022dfdf73caf327e4ae8bb37f94c2c9c8e04538ac32522cb67ac6e90d23",
+      "bytes": 5640,
+      "lines": 72
+    },
+    {
+      "path": "tests/runtime-bootstrap-integration.test.mjs",
+      "sha256": "e90389c4531868ffa6ea8863ed9fd4a8ccf09ad56e3065d76b8563b618d0e5a7",
+      "bytes": 8393,
+      "lines": 102
+    },
+    {
+      "path": "tests/runtime-bootstrap.selfcheck.swift",
+      "sha256": "880b42ccb35ff7eeae5bff20eabbf11d0043ce7524372af63b172787cf69f43a",
+      "bytes": 2643,
+      "lines": 45
+    },
+    {
+      "path": "tests/runtime-session-grant.selfcheck.swift",
+      "sha256": "4f54d7ee29519685c7599758afc899ecc4a4dac002d6a418f710536f8f54ef9e",
+      "bytes": 3402,
+      "lines": 68
+    },
+    {
+      "path": "tests/shared-jobs-refresh-fence.test.mjs",
+      "sha256": "cbe58ce36f5cfd9da5871b35d8a4000df70b468a5381c2fc49e1d01aba4100fc",
+      "bytes": 6856,
+      "lines": 120
+    },
+    {
+      "path": "tests/sheet-escape-policy.test.mjs",
+      "sha256": "51e3eb5dad4e5d6e28a8567669635d084cf1d62ee3d77c5f4d9ae270c4fb9172",
+      "bytes": 1792,
+      "lines": 23
+    },
+    {
+      "path": "tests/signed-update-acceptance.test.mjs",
+      "sha256": "127aebca470b0ff8b76b1cff97c3fe2c6157618924f261c594f36a5c2971e13a",
+      "bytes": 3591,
+      "lines": 46
+    },
+    {
+      "path": "tests/startup-diagnostics.test.mjs",
+      "sha256": "e0b51ad67549cc26f82db5e55920ebcf08e02421612e86a3fc345a297a654407",
+      "bytes": 11767,
+      "lines": 132
+    },
+    {
+      "path": "tests/timeline-tile-mount.test.mjs",
+      "sha256": "450088d595357fde375ba5b00d8b67a1ca28aabdcec32bfc024cc508db622107",
+      "bytes": 4729,
+      "lines": 67
+    },
+    {
+      "path": "tests/uikit-codex-setup.test.mjs",
+      "sha256": "0e1781ee3d6f0745531820eb1ee76ce070fe6c5ee4a4ee8e0bd43ed57e6e3ed9",
+      "bytes": 6478,
+      "lines": 85
+    },
+    {
+      "path": "tests/uikit-editor-repair.test.mjs",
+      "sha256": "f26e55b9f5f320b45bb9b90f4daab57532506c6c111f1d9057559bb3f746e931",
+      "bytes": 5299,
+      "lines": 82
+    },
+    {
+      "path": "tests/uikit-generation-navigation.test.mjs",
+      "sha256": "dfd1bc5daa71482032ca087721b0dc20ea68d961c812251209784676149b6ecf",
+      "bytes": 2019,
+      "lines": 36
+    },
+    {
+      "path": "tests/uikit-generation-review.test.mjs",
+      "sha256": "313629ab4b99bb31e562b846a9851d90ee93c2ac63734b7ae23569f1ef96b7f8",
+      "bytes": 9730,
+      "lines": 151
+    },
+    {
+      "path": "tests/uikit-script-character-parity.test.mjs",
+      "sha256": "1fd5b3e6f4294639e9b9e24a9258d5a787679098b7b3ae65c9f7023900a6e63d",
+      "bytes": 4533,
+      "lines": 70
+    },
+    {
+      "path": "tests/uikit-secondary-parity.test.mjs",
+      "sha256": "bfcd9c0acc921adcdf7dfb8ea2eae74b95b9e6dd71bdfb3c90cbd74edab874a8",
+      "bytes": 6423,
+      "lines": 95
+    },
+    {
+      "path": "tests/uikit-shell-parity.test.mjs",
+      "sha256": "f6a0af13c373bf354e9e85ba029a8f28ff9f7758e475d4c07e228565d9a3159b",
+      "bytes": 3307,
+      "lines": 56
+    },
+    {
+      "path": "tests/uikit-storyboard-inline-script.test.mjs",
+      "sha256": "c509e0fe78d969c16678a96e10d05ae4eda242b2f40bbc69223ed12c446946ec",
+      "bytes": 5589,
+      "lines": 84
+    },
+    {
+      "path": "tests/update-cancel-policy.test.mjs",
+      "sha256": "64130b790c5ee6b45c6d9e4115b6ff7a011bcebdd15fdea74da1389f074785a4",
+      "bytes": 1657,
+      "lines": 24
+    },
+    {
+      "path": "tests/update-modal-handoff.test.mjs",
+      "sha256": "c9db160820fb89ee0fe907a943d2f47d409d55abf41fbcf6c17e7dcab972122c",
+      "bytes": 7823,
+      "lines": 106
+    },
+    {
+      "path": "tests/update-physical-escape-fixture.test.mjs",
+      "sha256": "b460dbcfeb83829e08d7541e63177bd323d53469163dea6fd5b58be40a3a7719",
+      "bytes": 5006,
+      "lines": 73
+    },
+    {
+      "path": "updates/tests/acceptance_test.py",
+      "sha256": "8a4831b3192383047219579f66b9ebffeaccef4b233588e217d5afc48e944582",
+      "bytes": 2529,
+      "lines": 35
+    },
+    {
+      "path": "updates/tests/failure_paths_test.py",
+      "sha256": "c26ccc4dea71a90a1a0ae12dc9d899bc1917f8072bb7fe3ece86829c7e0ae52c",
+      "bytes": 8418,
+      "lines": 132
+    },
+    {
+      "path": "updates/tests/feed.test.mjs",
+      "sha256": "b7510883f78f17ecb59ff1b16817c41163e21eb1dca6e5e72787cdf77ab26640",
+      "bytes": 686,
+      "lines": 11
+    },
+    {
+      "path": "updates/tests/release_test.py",
+      "sha256": "ae3cd46e428b40ae0cfc7e87047e7d2760d5904f705bde126d0e163aa7dc005a",
+      "bytes": 14207,
+      "lines": 200
+    },
+    {
+      "path": "updates/tests/staged_test.py",
+      "sha256": "76f0527b72f7f8dbd5311b181bb4ad7afa7e1c14cc47eb5607d43ef68ba24d88",
+      "bytes": 9019,
+      "lines": 137
+    }
+  ],
+  "nativeExecutionDuringRemoval": false,
+  "behavioralParityEstablishedByRemoval": false,
+  "baselineAcceptanceUnchanged": {
+    "acceptedEntries": 65,
+    "native": 58,
+    "service": 7,
+    "unacceptedEntries": 1064,
+    "total": 1129
+  },
+  "retainedBuildIntegrityTools": [
+    "scripts/check-repo.mjs",
+    "scripts/verify-catalyst-icon.py",
+    "updates/scripts/verify_staged.py"
+  ],
+  "limitations": [
+    "100% source/behavior/execution coverage is not established.",
+    "Native Catalyst scenarios and native builds were not run on this assistant Linux machine.",
+    "Historical baseline/oracle documents describe removed suites; they remain gap and recovery evidence, not runnable current tests.",
+    "No Git history rewrite, remote commit/push, workflow dispatch, or deployment performed."
+  ]
+}

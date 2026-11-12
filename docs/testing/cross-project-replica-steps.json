@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "cross-project-replica-v108",
+      "title": "Isolate identical hosted media across projects",
+      "preconditions": [
+        "Run complete tracer app -- test services discussions-assets. Preserve original lines 1–399 and footer, including all 83 previous HTTP checks. Add 24 for 107 total under the unchanged 110-request ceiling; earlier 80-request helpers are unchanged.",
+        "Reuse original synthetic owner/member/viewer/outsider sessions and active team after prior quota/held-body chapters finish. Start with no asset rows/objects and original storage quota restored. New setup is one public team-project creation, not a direct D1 fixture write.",
+        "Use the existing independent twelve-byte PNG-signature fixture and its independently computed SHA-256. It is not a complete decoded image. Equal content must remain separate per-project replicas under the existing data model.",
+        "Read exact D1 asset, team, project, user, session and membership rows and actual R2 bytes/metadata. No direct new storage writes, production helper calls or external providers. Security-limit counters and internal project-room state are outside preservation assertions.",
+        "All HTTP requests are sequential. Known ETag values are supplied only in the named outsider and replacement reads; no general conditional-cache semantics, forced overlap, stale worker response, storage fault or reconciliation execution is asserted."
+      ],
+      "actions": [
+        "Finish old chapters and capture existing projects, teams and identity rows. Create one fresh team project through public HTTP and bound its exact creation metadata.",
+        "Upload identical bytes to the original project as owner and new project as member; inspect distinct exact replicas and quota twelve then twenty-four. Retry the first upload as member and require no mutation; read public quota.",
+        "Read both replicas as viewer through GET and HEAD. Refuse outsider reads with a known validator and viewer/member deletes while preserving all hosted state.",
+        "Delete only the original-project replica, require missing read there and unchanged readable survivor. Repeat the delete and retry the survivor upload without changes.",
+        "Reupload original content in the original project, require a new object key and preserved survivor, then read using the known validator.",
+        "Delete the second and replacement replicas sequentially, requiring exact quota release and empty storage. Archive only the newly created project, verify its bounded metadata and owner denial, and preserve all original project/team/identity rows."
+      ],
+      "expectations": [
+        {
+          "id": "isolation",
+          "description": "The same independently known 12-byte PNG-signature fixture is uploaded through public HTTP to the existing project and one newly created team project. Two exact ready rows share the hash but have different project-scoped object keys, expected uploader IDs, bounded creation times and exact R2 bytes/content type/project-team metadata. Team quota rises from zero to twelve to twenty-four bytes; public team read agrees. Duplicate uploads by another allowed writer return 200 and preserve complete rows, objects, uploader attribution and quota. No decoding of a complete image, simultaneous upload or quota race is asserted.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 400,
+            "end": 449,
+            "sha256": "cf83ad6a331fdf449278b765eff6cd65f03440d0d5ce4981cf098c107578a201"
+          }
+        },
+        {
+          "id": "privacy",
+          "description": "Viewer GET and HEAD for each replica return exact content type, length, private/no-store, ETag and hash headers; GET bodies equal the independent fixture and HEAD bodies are empty. Outsider GET and HEAD with the known matching validator return 404, JSON/no-store headers and no asset ETag/hash headers; GET has the exact Project not found error and HEAD is empty. Viewer and ordinary member deletion attempts return the exact permission error. All these reads/refusals preserve both replicas and quota.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 400,
+            "end": 449,
+            "sha256": "cf83ad6a331fdf449278b765eff6cd65f03440d0d5ce4981cf098c107578a201"
+          }
+        },
+        {
+          "id": "lifecycle",
+          "description": "Deleting the first replica removes only its row/object and releases exactly twelve bytes; its public read becomes missing while the other remains byte-exact/readable. Repeated deletion and duplicate upload of the survivor change nothing. Reuploading the first project uses a new object key while the other remains exact; the old key is absent. A known-validator GET returns the replacement bytes and expected headers. Sequentially deleting both leaves zero stored bytes and no asset rows/objects. Only the newly created project is then archived through the public route, with bounded equal archive/update timestamps and subsequent owner GET denial. Original projects, all team rows and all users/sessions/memberships are preserved. This is sequential replica isolation, not forced internal interleaving, delayed-delete race, R2 failure or scheduled reconciliation.",
+          "witness": {
+            "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
+            "start": 400,
+            "end": 449,
+            "sha256": "cf83ad6a331fdf449278b765eff6cd65f03440d0d5ce4981cf098c107578a201"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 14,
+            "end": 22,
+            "sha256": "4ad93b0a3723002b6e2907f014658b559bb781f3a2eb3fb2fd5bfb0a127b135b"
+          },
+          "expectation": "privacy",
+          "why": "Project access precedes project/hash-specific row/object lookup and exact binary GET/HEAD response headers. Known validators do not bypass the observed access guard."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 24,
+            "end": 27,
+            "sha256": "018d245320762ac386357c7212c15f2142aba7d2045f7fa2a5e298aba156d1f9"
+          },
+          "expectation": "lifecycle",
+          "why": "Only managing roles delete hosted copies; missing-row deletion is idempotent. Explicit viewer/member refusals and repeated deletion distinguish these paths."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 31,
+            "end": 44,
+            "sha256": "9f60d829494c2f190a970b3a3a7244d3c1045bd3703e76f20973a715fa51a4c3"
+          },
+          "expectation": "lifecycle",
+          "why": "Deletion claims and removes the exact project/hash/object key. Sequential observations prove sibling-project preservation, not a forced late-delete race."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 55,
+            "end": 60,
+            "sha256": "31181e1ac977f3e9e0caed670173b6b5481897cce5797e03f563dfc305da33d4"
+          },
+          "expectation": "isolation",
+          "why": "Existing lookup is scoped to project and hash; allowed-writer retries preserve attribution and quota. Fresh reservations use distinct project-scoped keys, including after deletion/reupload."
+        },
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 65,
+            "end": 77,
+            "sha256": "6cbb9cae646582102edb0201bb197115072a0a0232f4e71c86c9979398553d8f"
+          },
+          "expectation": "isolation",
+          "why": "Public authorized reservations and finalized R2 writes create exact independent replicas for the same content in two projects. No authorization-interruption or write-fault path is newly varied."
+        },
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 84,
+            "end": 96,
+            "sha256": "e723e43733956f1ec630309bfee3a74ad0aafb07d9ff387582f7dde535830ee8"
+          },
+          "expectation": "isolation",
+          "why": "The composite project/hash identity allows two project replicas with equal hashes and distinct unique object keys. The test does not force a database uniqueness conflict directly."
+        },
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 108,
+            "end": 113,
+            "sha256": "f4981383b80b463f15069b88c1592d2d8f489bb7914e9a5e8a0d92c0c2fa4807"
+          },
+          "expectation": "lifecycle",
+          "why": "Insertion/deletion triggers charge and release each observed replica independently, with exact team row and public quota checks. Concurrent quota enforcement is not asserted."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 34,
+            "end": 46,
+            "sha256": "baad3317f5fbf25372a879fe50aebe531f0aea7099ce0f3ad44d7c7231841d8c"
+          },
+          "expectation": "privacy",
+          "why": "Existing active-team viewers can read, outsiders are hidden, and only managing roles can delete. Archived new project is hidden afterward; subscription grace boundaries are not newly varied."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "cross-project-replica-v108",
+      "title": "Isolate identical hosted media across projects",
+      "steps": [
+        "cross-project-replica-v108"
+      ]
+    }
+  ]
+}

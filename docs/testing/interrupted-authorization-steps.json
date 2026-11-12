@@ -1,0 +1,241 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "interrupt-writes-v95",
+      "title": "Log out after authentication before completing each write body",
+      "preconditions": [
+        "Run the entire public command tracer app -- test services cloud. Original 72 initial checks and 16 scheduled-maintenance checks run unchanged before the appended 32 HTTP requests. Original source lines 1–363 remain exact; the new chapter uses only synthetic fixtures, real loopback HTTP and read-only state observation.",
+        "Each held mutation uses a new synthetic session for the existing owner and a unique request:<sessionId>: prefix with no prior counters. Send only the first JSON byte under exact Content-Length, keep the remaining bytes unsent, and poll for one row with count 1. Since index.ts awaits authenticate before rateLimit, this proves authentication finished, not that body() was reached.",
+        "No other /v1 request uses the attempt session before its barrier. Require no early response and no body release. Await public /auth/logout 200 with exact ok:true, observe revocation while expiry remains future, and confirm the retained owner session remains live. Only then finish the held JSON body.",
+        "Compare complete ordered business tables and media before/after refusal. Session revocation and legitimate security-limit changes are excluded. After an old-token 401 read, replay the identical payload through the retained owner session and verify an actual persisted change. Fresh IDs and changed names/roles prevent no-op success.",
+        "Owned loopback/process group, isolated state, bounded body/response sizes, five-second read-only barrier polling, ten-second raw request deadline, explicit request destruction and the existing 90-second process watchdog apply. No outbound request, native run, arbitrary race, other mutation routes, expiry boundary, role/entitlement race, transaction failure or socket propagation claim."
+      ],
+      "actions": [
+        "Complete original cloud and scheduled-maintenance checks. Seed the declared synthetic target member; capture original media and storage state.",
+        "For each of the following eight cases, seed a fresh attempt session, verify absent counters, send one JSON byte, observe the post-authentication counter, publicly log out, verify revocation and retained-owner liveness, then release the remaining body.",
+        "Interrupt team creation named Recovered synthetic team; require 401/session_expired, exact unchanged business state, old-token 401 and successful identical retained-owner creation with exact owner membership.",
+        "Interrupt existing team rename to Recovered team rename; require 409/access_changed, exact unchanged state, old-token 401 and persisted retained-owner rename.",
+        "Interrupt a viewer join-link creation with one-day expiry; require 409/access_changed, exact unchanged state, old-token 401 and retry with exact stored token hash, creator and expiry.",
+        "Interrupt target member role change from member to viewer; require 409/membership_changed, exact unchanged state, old-token 401 and persisted viewer role on retry.",
+        "Interrupt new personal project creation, then new active-team project creation; require 409/access_changed and exact unchanged state for each, followed by old-token 401 and retries with exact ID/title/owner/null-or-team scope.",
+        "Interrupt renaming each newly created personal and team project; require 409/access_changed and exact unchanged state, followed by old-token 401 and persisted exact titles on retained-owner retries.",
+        "After all eight flows, compare original assets, R2 bytes/specified metadata and original team storage counters, require zero outbound attempts and finish owned cleanup."
+      ],
+      "expectations": [
+        {
+          "id": "barrier",
+          "description": "For each fresh attempt session, one newly observed request counter at count 1 proves initial authentication completed while the body is incomplete and no response started. Public logout succeeds, that unexpired session is revoked, the retained owner session stays live, and only then is the remaining body released.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 386,
+            "end": 428,
+            "sha256": "b2cfbf6a2fed03b6b04060fbd8bea43e8c7907e4338d5b8f9960c7bbae20652b"
+          }
+        },
+        {
+          "id": "refusal",
+          "description": "All eight interrupted writes return their exact mutation-specific refusal and preserve complete ordered teams, team_members, join_links, projects and billing_events plus assets/R2 specified bytes/metadata and storage counters. A later old-token identity read is 401/session_expired and leaves the observed request marker unchanged; session and rate-limit writes are expected exclusions.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 429,
+            "end": 436,
+            "sha256": "c8d4ece9a6644fff90eaef6a047ea926afcf77e80758ce719debcf952eacb82d"
+          }
+        },
+        {
+          "id": "team-create",
+          "description": "Interrupted team creation returns 401/session_expired without a team or owner-membership insertion; retained-owner retry creates exactly one returned team with its owner membership while all other team/member rows remain exact.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 443,
+            "end": 449,
+            "sha256": "74188c5855929b3429f65ff265716a6ee6f1004b03416af43017723a98d3724f"
+          }
+        },
+        {
+          "id": "team-rename",
+          "description": "Interrupted team rename returns 409/access_changed with exact business-state preservation; the identical retained-owner retry persists the new team name.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 450,
+            "end": 453,
+            "sha256": "c18f7fbfda5283d6c7915e98e24bf4115d8b9b99128ad509796498d5ee5d0290"
+          }
+        },
+        {
+          "id": "join-link",
+          "description": "Interrupted join-link creation returns 409/access_changed without a link insertion; retry creates the desired viewer link with the returned token hash, creator and exact one-day stored expiry.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 454,
+            "end": 459,
+            "sha256": "e3c07fbe4be52bb535e2b6c7a60e102302685e5509cad4d706bdd3383d02b381"
+          }
+        },
+        {
+          "id": "membership",
+          "description": "Interrupted owner membership-role PATCH returns 409/membership_changed without altering rows; retry persists the desired viewer role.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 460,
+            "end": 462,
+            "sha256": "b9a3025e34c3dc5ba6dfe5e3c0e86978b763483a0cff920bca3d1bb09ff57b26"
+          }
+        },
+        {
+          "id": "project-create",
+          "description": "Both personal and team project creation reject 409/access_changed without inserting a project; retries persist the specified new IDs/titles with exact owner and null-or-team scope.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 463,
+            "end": 471,
+            "sha256": "6c6020b45b21c47c8f4c351a31fde38de12ded74cd91ba362bf338f9ee2947a8"
+          }
+        },
+        {
+          "id": "project-rename",
+          "description": "Both personal and team project rename reject 409/access_changed without changing rows; retries persist the specified titles for those exact projects.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 472,
+            "end": 477,
+            "sha256": "ffe93c0e916848fcf3a102995722e63a7d273ff55fcf6c354595c975349fb8b2"
+          }
+        },
+        {
+          "id": "recovery",
+          "description": "Every identical payload succeeds through the retained owner session and verifies its intended persisted name, role, membership, link identity/expiry or project identity/owner/team/title. Original media and team quotas remain unchanged, all eight cases finish and zero outbound requests occur.",
+          "witness": {
+            "path": "cloud/tests-e2e/service-journey.mjs",
+            "start": 437,
+            "end": 480,
+            "sha256": "7ff6b638237c1f47ce21fc9aecf35c9280f8d30d81fe08c4006538a3007b5485"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/index.ts",
+            "start": 23,
+            "end": 25,
+            "sha256": "f1e8d34e28baefa2418a759c60ff191fe8ebeef0b8aa320f87d7d621aae10120"
+          },
+          "expectation": "barrier",
+          "why": "The dispatcher awaits authentication before its session-specific rate-limit mutation. The config branch is not a scenario target; all named mutation paths reach the counter."
+        },
+        {
+          "source": {
+            "path": "cloud/src/http.ts",
+            "start": 80,
+            "end": 82,
+            "sha256": "d3d1991dfa812f3aeba31bd23dc1f1bd7facb6ec31b96893762492b15a38651b"
+          },
+          "expectation": "barrier",
+          "why": "A fresh counter insertion at count 1 is the observable authentication-order marker; quota exhaustion and boundary timing are not claimed."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 75,
+            "end": 78,
+            "sha256": "6133c51be5597cb7e00569ae7cd564161eb6eb7dff47653b9a3dd2151c9b7594"
+          },
+          "expectation": "barrier",
+          "why": "Real authenticated logout persists token-scoped session revocation and returns ok. Notification propagation to live rooms/sockets is not asserted."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 6,
+            "end": 9,
+            "sha256": "c45cafa274f42112e3b849ff73df7d3c9718ce683984550c0b692b2a24d20cc6"
+          },
+          "expectation": "refusal",
+          "why": "After revocation, a new old-token identity request fails the session lookup with session_expired before reaching its request counter; no token-expiry or malformed-header boundary claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 25,
+            "end": 26,
+            "sha256": "ac850fb7e89f297afcb9d34ee1e308de330b3ff974e5cfef2e3fb9c93d422e6f"
+          },
+          "expectation": "refusal",
+          "why": "The shared live-session SQL predicate uses the cached identity and fresh time at each write. Revocation, not token expiry or different identity, is the varied guard."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 36,
+            "end": 41,
+            "sha256": "9047a71004810218b361f959dafec60bce6f326fe44ed919da69f1258caa055b"
+          },
+          "expectation": "team-create",
+          "why": "Guarded team insertion and dependent owner-membership insertion produce no partial team after logout; identical live retry creates the exact team/membership. No batch infrastructure failure claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 55,
+            "end": 57,
+            "sha256": "4dc4fe41e83b97882a74abb125fda2f7a6934f83e67a5325fba8b9f84937820e"
+          },
+          "expectation": "team-rename",
+          "why": "Guarded rename checks live session in its mutation and reports access_changed after logout. Role remains owner throughout."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 67,
+            "end": 70,
+            "sha256": "29b04dbaf71749c4e905a74a5643b51aa0aebe38b9231056a95f8141fdc0ab23"
+          },
+          "expectation": "join-link",
+          "why": "Guarded link insertion refuses the revoked session and later creates the expected link under the retained owner. No invite-consumption or role-change race claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 102,
+            "end": 107,
+            "sha256": "16c90c2e0dcedfa52c8d2a92e3e7366a8c977e42022053bc4e9adc04435e9d89"
+          },
+          "expectation": "membership",
+          "why": "Role update includes the live-session predicate; owner and target remain valid, so logout discriminates refusal. Room propagation is not observed."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 127,
+            "end": 134,
+            "sha256": "fc3e40c2ec25bcdbe9b958f2883318e95eca8a4438a1d78778b87186b96a9521"
+          },
+          "expectation": "project-create",
+          "why": "Both personal and team insertion paths enforce live session in SQL, with valid entitlement/membership unchanged. Exact retries distinguish genuine guards from invalid payloads."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 142,
+            "end": 148,
+            "sha256": "fd7b73465b471c8559175f1e5aadb59ff0f89c22e1541f0d88673dab9fe5c954"
+          },
+          "expectation": "project-rename",
+          "why": "Both owned personal and owned team project rename enforce live session within the update; the owner-manager paths are valid. Admin, expiry and role-change branches are excluded."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "interrupted-authorization-v95",
+      "title": "Refuse logged-out writes after authentication and recover safely",
+      "steps": [
+        "interrupt-writes-v95"
+      ]
+    }
+  ]
+}

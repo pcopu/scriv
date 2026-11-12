@@ -1,0 +1,268 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "local-github-oauth-pkce",
+      "title": "Synthetic GitHub OAuth and PKCE lifecycle",
+      "featureId": "github-oauth",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/oauth-journey.mjs"
+      ],
+      "plannedActions": [
+        "GET OAuth start malformed challenge",
+        "GET OAuth start valid challenge and client state",
+        "GET callback synthetic GitHub authorization",
+        "GET callback consumed state replay",
+        "POST exchange malformed verifier",
+        "POST exchange wrong valid verifier",
+        "POST exchange correct verifier after failures",
+        "POST exchange consumed code replay",
+        "GET identity using OAuth session",
+        "GET sessions using OAuth session",
+        "GET OAuth start cancellation fixture",
+        "GET callback provider cancellation",
+        "GET callback cancelled state replay",
+        "GET OAuth start token-error fixture",
+        "GET callback simulated token-error",
+        "GET callback token-error consumed state",
+        "GET OAuth start profile-error fixture",
+        "GET callback simulated profile-error",
+        "GET callback profile-error consumed state",
+        "GET OAuth start invalid-profile fixture",
+        "GET callback simulated invalid-profile",
+        "GET callback invalid-profile consumed state",
+        "POST logout OAuth session",
+        "GET identity after OAuth logout"
+      ],
+      "expectedOutcomes": [
+        "Correct proof authenticates only after incorrect proof fails without consumption; exact persisted synthetic identity contains only the verified primary email.",
+        "State and exchange replay fail. Across cancellation and three simulated provider failure cases plus their replays, every persisted users, sessions and auth_codes row equals the immutable pre-cancellation baseline. Auxiliary DB reads are separate from 24 public HTTP actions."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "reject-malformed-challenge-0",
+      "featureId": "github-oauth",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 13,
+        "end": 14,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "bf84221c7566da3a722394090220ac9448c721bda983b329eb9055e7790799f9",
+        "sha256": "400297ec9851b29f824fc3de4a306a4e9c4f5fb21bb57b5928b7a7783c2e04d7"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "Exact-length unsupported PKCE challenge is rejected. Local simulated-provider HTTP only, not real login or measured execution.",
+      "confidence": "high",
+      "uncertainty": "Synthetic local provider only; no live GitHub, native, expiry or concurrent callbacks tested. Persistence equality observes final rows, not transient insert/delete within one completed request.",
+      "proposedAssertions": [
+        "GET OAuth start malformed challenge has independently asserted status and public result."
+      ]
+    },
+    {
+      "rangeId": "start-sign-in-0",
+      "featureId": "github-oauth",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 15,
+        "end": 23,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "930973bf81f681dc6cedeaaf4bfb054b60749721bf8eddb3b2bd0a5a7d57da1e",
+        "sha256": "f24bf34003d27b282c130a8aa626b4267be29e1392479d0ed13c95d702cff082"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "Public redirect preserves safe provider scope and opaque server state. Local simulated-provider HTTP only, not real login or measured execution.",
+      "confidence": "high",
+      "uncertainty": "Synthetic local provider only; no live GitHub, native, expiry or concurrent callbacks tested. Persistence equality observes final rows, not transient insert/delete within one completed request.",
+      "proposedAssertions": [
+        "GET OAuth start valid challenge and client state has independently asserted status and public result."
+      ]
+    },
+    {
+      "rangeId": "complete-provider-callback-0",
+      "featureId": "github-oauth",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 25,
+        "end": 26,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "c67b359f9ddf28d295afcee95913b233851cd05d5be01801259bcaa5bb396de7",
+        "sha256": "77562501be7ee26ad53a2757899103911c0217698789b20f2b4cceed33c5c26b"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "Callback consumes started state and returns original client state. Local simulated-provider HTTP only, not real login or measured execution.",
+      "confidence": "high",
+      "uncertainty": "Synthetic local provider only; no live GitHub, native, expiry or concurrent callbacks tested. Persistence equality observes final rows, not transient insert/delete within one completed request.",
+      "proposedAssertions": [
+        "GET callback synthetic GitHub authorization has independently asserted status and public result."
+      ]
+    },
+    {
+      "rangeId": "complete-provider-callback-1",
+      "featureId": "github-oauth",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 30,
+        "end": 30,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "11e7eb875bcd090f825629d20d37eb9e02e3f7a57fb58b486c6df3402348e51b",
+        "sha256": "39062f2708fda774ba1db08aa0dda03593c031412a9461acc2b99ab4e26b50bf"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "Successful callback returns the exact client state and scriv callback destination.",
+      "confidence": "high",
+      "uncertainty": "Synthetic local provider only; no live GitHub, native, expiry or concurrent callbacks tested. Persistence equality observes final rows, not transient insert/delete within one completed request.",
+      "proposedAssertions": [
+        "GET callback synthetic GitHub authorization has independently asserted status and public result."
+      ]
+    },
+    {
+      "rangeId": "reject-state-replay-0",
+      "featureId": "github-oauth",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 27,
+        "end": 29,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "03280c6e0c3f59fd3b18d1a29936a9eaf06c30548dc4ee01cf852cc0c8ac9e5d",
+        "sha256": "f866661e80b3cae09923e3346d2ddbded2923bdf01a60c50bd0fdcaf3b7f0fbd"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "Callback replay after success rejects consumed state with oauth_expired and no additional local provider interceptions. No external request is forwarded.",
+      "confidence": "high",
+      "uncertainty": "Synthetic local provider only; no live GitHub, native, expiry or concurrent callbacks tested. Persistence equality observes final rows, not transient insert/delete within one completed request.",
+      "proposedAssertions": [
+        "GET callback consumed state replay has independently asserted status and public result."
+      ]
+    },
+    {
+      "rangeId": "reject-verifier-characters-0",
+      "featureId": "github-oauth",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 60,
+        "end": 64,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "012f704ab1be08f4580bcf4fb5929a18fb1fe101e353a54e022cfc42d4420343",
+        "sha256": "b00da6318b93372b72e92a7b64f6ff49782875abacabb3cd1ee10360a0bb5538"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "Malformed verifier rejected before code consumption. Local simulated-provider HTTP only, not real login or measured execution.",
+      "confidence": "high",
+      "uncertainty": "Synthetic local provider only; no live GitHub, native, expiry or concurrent callbacks tested. Persistence equality observes final rows, not transient insert/delete within one completed request.",
+      "proposedAssertions": [
+        "POST exchange malformed verifier has independently asserted status and public result."
+      ]
+    },
+    {
+      "rangeId": "exchange-correct-proof-0",
+      "featureId": "github-oauth",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 32,
+        "end": 49,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "72159d63d99706244feae7e61b5502c0ab2b3536c15847393988f1ab9bb0fc33",
+        "sha256": "d37e1f41b8c76d05bc33ffec20ac606831e16a505f85a040df91d35d84ee1d04"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "The exact local token/profile/email requests return competing unverified-primary and verified-secondary addresses; subsequent exchange asserts only the verified primary email is selected. All behavior is simulated, not live GitHub.",
+      "confidence": "high",
+      "uncertainty": "Synthetic local provider only; no live GitHub, native, expiry or concurrent callbacks tested. Persistence equality observes final rows, not transient insert/delete within one completed request.",
+      "proposedAssertions": [
+        "After a wrong verifier failed without consumption, correct proof returns a session with the exact persisted synthetic identity and the verified primary email chosen from competing fixture addresses."
+      ]
+    },
+    {
+      "rangeId": "exchange-correct-proof-1",
+      "featureId": "github-oauth",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 50,
+        "end": 58,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "0f4cf56df826312993d4c34485324dd745767f55ed658e00747bb1b930d70dec",
+        "sha256": "f077b0d80327315b034dd9dcf17728c51bb8526592fd14eefcefaf5b96b0d8b7"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "The returned exchange code is accepted by the next correct-proof exchange; its response independently asserts the persisted synthetic name, selected email, null avatar and usable user identity. No existing-account upsert or storage-error branch is claimed.",
+      "confidence": "high",
+      "uncertainty": "Synthetic local provider only; no live GitHub, native, expiry or concurrent callbacks tested. Persistence equality observes final rows, not transient insert/delete within one completed request.",
+      "proposedAssertions": [
+        "After a wrong verifier failed without consumption, correct proof returns a session with the exact persisted synthetic identity and the verified primary email chosen from competing fixture addresses."
+      ]
+    },
+    {
+      "rangeId": "exchange-correct-proof-2",
+      "featureId": "github-oauth",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 65,
+        "end": 74,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "1046c2fd91f180e4f86d529c1c96ec6e6b592cba13b4b3940abd204cd75c37d8",
+        "sha256": "de1860cedeb7c4b7bc8167b5b6eb7e7c1fca94d448221b77eb9826864056c787"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "Correct proof succeeds after the immediately preceding wrong proof returns invalid_code, independently proving wrong proof did not consume this code. Issued session has exact synthetic identity; no real GitHub login.",
+      "confidence": "high",
+      "uncertainty": "Synthetic local provider only; no live GitHub, native, expiry or concurrent callbacks tested. Persistence equality observes final rows, not transient insert/delete within one completed request.",
+      "proposedAssertions": [
+        "After a wrong verifier failed without consumption, correct proof returns a session with the exact persisted synthetic identity and the verified primary email chosen from competing fixture addresses."
+      ]
+    },
+    {
+      "rangeId": "cancel-callback-0",
+      "featureId": "github-oauth",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 31,
+        "end": 31,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "90ca2dc2ed9eef64397c211c7415a52c82126c00f92f9c99c854837e3b056b3e",
+        "sha256": "42ee58b241f3591f66b0b871d73f8054cdae21038f057c951f935bf288a4e0a6"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "Cancellation returns denial and no exchange code without calling provider. Local simulated-provider HTTP only, not real login or measured execution.",
+      "confidence": "high",
+      "uncertainty": "Synthetic local provider only; no live GitHub, native, expiry or concurrent callbacks tested. Persistence equality observes final rows, not transient insert/delete within one completed request.",
+      "proposedAssertions": [
+        "GET callback provider cancellation has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed."
+      ]
+    }
+  ]
+}

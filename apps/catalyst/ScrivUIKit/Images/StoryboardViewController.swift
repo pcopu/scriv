@@ -313,6 +313,7 @@ fileprivate struct StoryboardWordReference { let word: TimedWord; let entryID: S
         let image = store.project.asset(cue.imageId); picture.configure(url: image.flatMap { store.assetURL($0) }, title: cue.label, missingText: image == nil ? "Add an image" : "Image not on this Mac", expectedDigest: image?.sha256)
         picture.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectPicture)))
         let duration = ImageUI.button(ScrivFormat.duration(cue.authoredDurationMs ?? cue.durationMs)) { [weak self] in guard let self, self.navigation == self.store.navigationContext, let owner = self.owner else { return }; ImageUI.present(ImageCoverageViewController(store: self.store, cue: self.cue), from: owner, size: CGSize(width: 430, height: 360)) }
+        duration.accessibilityIdentifier = "storyboard-duration-\(cue.id)"
         duration.configuration?.baseBackgroundColor = UIColor.black.withAlphaComponent(0.62); duration.configuration?.background.backgroundColor = UIColor.black.withAlphaComponent(0.62)
         duration.configuration?.baseForegroundColor = .white; duration.configuration?.cornerStyle = .capsule
         duration.configuration?.background.strokeColor = UIColor.white.withAlphaComponent(0.5); duration.configuration?.background.strokeWidth = 1
@@ -464,3 +465,35 @@ fileprivate struct StoryboardWordReference { let word: TimedWord; let entryID: S
         if narrow { narrowLabel.frame = CGRect(x: 8, y: 16, width: max(1, bounds.width - 16), height: ceil(textHeight)) }
     }
 }
+
+#if SCRIV_CLI_AUTOMATION
+extension StoryboardViewController {
+    /// Read-only witness for the mounted card's captured production menu context.
+    /// Never constructs actions or calls a menu handler/model operation.
+    func cliValidatedMergeCue(for button: UIButton) -> ImageCue? {
+        let currentSignature: [AnyHashable] = [store.navigationContext, store.selectedSceneID,
+            store.project.revision, store.sceneCues, store.sceneEntries, store.project.images,
+            columns, store.peerTransferStatus]
+        guard contextIsCurrent, !scopeToProject, marqueeOrigin == nil,
+              signature == currentSignature,
+              let content = viewIfLoaded, button.isDescendant(of: content) else { return nil }
+        let matches = cards.values.filter { button.isDescendant(of: $0) }
+        guard matches.count == 1, let card = matches.first,
+              cards[card.cue.id] === card, card.owner === self, card.store === store,
+              card.navigation == store.navigationContext,
+              card.window === button.window, card.isDescendant(of: content),
+              store.project.cues.first(where: { $0.id == card.cue.id }) == card.cue,
+              card.cue.sceneId == store.selectedSceneID,
+              button.accessibilityLabel == "Picture actions for " + card.cue.label,
+              button.currentTitle == nil || button.currentTitle == "",
+              button.showsMenuAsPrimaryAction,
+              let index = store.sceneCues.firstIndex(where: { $0.id == card.cue.id }),
+              index + 1 < store.sceneCues.count,
+              TimingEngine.canMoveBoundary(store.project, leftCueId: card.cue.id,
+                rightCueId: store.sceneCues[index + 1].id) else { return nil }
+        // Signature equality binds all captured neighboring cues and images to
+        // the last rebuild. A pending refresh cannot authorize a stale menu.
+        return card.cue
+    }
+}
+#endif

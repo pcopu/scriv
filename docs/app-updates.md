@@ -1,5 +1,7 @@
 # Scriv in-app updates
 
+> Testing update, 2026-11-09: legacy test suites and runners referenced below were removed. Prior results remain historical, not current commands or proof of replacement coverage. See [current CLI-only testing](testing/cli-only-tests.md).
+
 The Catalyst application uses a UIKit update sheet and a separate native macOS `ScrivUpdatePlugin.bundle` linked to the exact Sparkle 2.10.1 package. Foundation/Objective-C callbacks cross the boundary; Catalyst does not link AppKit or implement a shell installer. The app remains sandboxed; only the two app-scoped Sparkle Mach service names are permitted. Bundle identity remains `app.scriv.uikit`; the displayed/product name is Scriv.
 
 ## User control and durable saves

@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "peer-device-inventory-v92",
+      "title": "Discover only eligible synthetic devices",
+      "preconditions": [
+        "Run the entire public command tracer app -- test services collaboration. All original 36 HTTP checks execute first; the original restored project is epoch2/head3, member was removed and viewer logged out. The synthetic environment owns and cleans its process group, home and persistence state; no native app or live provider is involved.",
+        "Append only fixture preparation after original assertions: restore one synthetic member row, give eight synthetic sessions across four users independently specified names/timestamps, and mark one additional owner session expired and another revoked. Existing viewer logout stays revoked. Expected descriptors are fixture-owned JavaScript values, not copied from a response.",
+        "All behavior uses actual loopback HTTP to the production Worker bundle. D1/R2 reads are explicitly synthetic fixture evidence. Entitlement changes use local fixture writes, not billing APIs. No rate counter is seeded, cleared or reset. The same fixed hourly bucket is checked; a real wait of at most3025ms avoids starting immediately before its boundary.",
+        "Only configuration/HTTP semantics are claimed. No native UI, online reachability, WebRTC media transport, live TURN provisioning, 1000-device limit, complete role/grace boundary matrix, concurrent revocation, timeout, malformed provider JSON, quota reset/cleanup or measured branch execution claim."
+      ],
+      "actions": [
+        "Complete the existing collaboration journey, then provision the distinct synthetic device descriptors and restore member membership.",
+        "Create and open a separate personal project with the second member session; read exact paid-team device inventories as owner and member. Refuse outsider, revoked viewer and absent-project access.",
+        "Apply a synthetic canceled-within-grace entitlement and read each actor's own-only devices; reactivate the fixture and require all eligible sessions again.",
+        "Publicly log out the second member session, observe its exclusion and authentication failure; publicly remove membership and require owner-only devices while the member retains their personal project."
+      ],
+      "expectations": [
+        {
+          "id": "inventory",
+          "description": "Exact full device payloads contain independently specified descriptors sorted by descending distinct createdAt, the authenticated currentDeviceId, and onlineStatus unknown. Paid visibility includes four eligible own/teammate sessions despite one using another project; expired/revoked/outsider sessions are absent. Read-grace exposes only each actor's own sessions and reactivation restores the eligible set.",
+          "witness": {
+            "path": "cloud/tests-e2e/collaboration-journey.mjs",
+            "start": 198,
+            "end": 218,
+            "sha256": "a765f36c63e1a16e1e4ee691794ba5d702f0815dc610abd853c2d83f515ff462"
+          }
+        },
+        {
+          "id": "removal",
+          "description": "Public logout returns ok, removes only that device from subsequent inventory and makes that session401. Public member removal removes the teammate, rejects their team inventory404, and preserves their personal-project read access.",
+          "witness": {
+            "path": "cloud/tests-e2e/collaboration-journey.mjs",
+            "start": 219,
+            "end": 225,
+            "sha256": "cb7527cbbd22d104bce7879af14425016eacbc49f2e23c802c347e5e89ec57d9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 104,
+            "end": 109,
+            "sha256": "41931425901a015c0c86cf8f2fd5ad86708f13c16312620b51e2253a4a55b882"
+          },
+          "expectation": "inventory",
+          "why": "The access-conditioned query constructs the exact filtered, ordered public descriptor list with current session and unknown online status. No1000-row cutoff or online detection claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 12,
+            "end": 13,
+            "sha256": "9eb97708ba5e797677886f1d9ef028c6449d31bc24deb5c8e90d9720195738e9"
+          },
+          "expectation": "inventory",
+          "why": "Active paid and canceled/grace fixture variants distinguish the premium boolean consumed by device filtering. Trialing and every expiry edge are not claimed."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 40,
+            "end": 46,
+            "sha256": "c82254330e96219a4968678ad3c07cd1f8e8f889dfd9e8e4c53e0995bea4bac1"
+          },
+          "expectation": "inventory",
+          "why": "Team ownership, current membership and read grace admit the named readers, while removed/outsider users are refused. Supports own-only versus paid peer visibility, not write/manage permissions or grace expiration."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 75,
+            "end": 78,
+            "sha256": "6133c51be5597cb7e00569ae7cd564161eb6eb7dff47653b9a3dd2151c9b7594"
+          },
+          "expectation": "removal",
+          "why": "Public logout revokes only the authenticated synthetic session and refreshes access before returning ok; its next request401 and device exclusion distinguish successful revocation. No websocket close or racing command claim."
+        }
+      ]
+    },
+    {
+      "id": "peer-relay-quota-v92",
+      "title": "Read fallback relay configuration within a per-session quota",
+      "preconditions": [
+        "Run the entire public command tracer app -- test services collaboration. All original 36 HTTP checks execute first; the original restored project is epoch2/head3, member was removed and viewer logged out. The synthetic environment owns and cleans its process group, home and persistence state; no native app or live provider is involved.",
+        "Append only fixture preparation after original assertions: restore one synthetic member row, give eight synthetic sessions across four users independently specified names/timestamps, and mark one additional owner session expired and another revoked. Existing viewer logout stays revoked. Expected descriptors are fixture-owned JavaScript values, not copied from a response.",
+        "All behavior uses actual loopback HTTP to the production Worker bundle. D1/R2 reads are explicitly synthetic fixture evidence. Entitlement changes use local fixture writes, not billing APIs. No rate counter is seeded, cleared or reset. The same fixed hourly bucket is checked; a real wait of at most3025ms avoids starting immediately before its boundary.",
+        "Only configuration/HTTP semantics are claimed. No native UI, online reachability, WebRTC media transport, live TURN provisioning, 1000-device limit, complete role/grace boundary matrix, concurrent revocation, timeout, malformed provider JSON, quota reset/cleanup or measured branch execution claim."
+      ],
+      "actions": [
+        "Read zero initial TURN quota for two owner sessions. Try outsider and revoked-viewer ICE configuration and verify those guards leave their TURN counters absent.",
+        "Issue20 owner ICE configuration GETs with TURN bindings absent, asserting the exact STUN list, relayAvailable false and expiry between request-time bounds plus one hour.",
+        "Issue request21 and require the exact429 envelope/count21. Make one valid request with the other session of the same owner and require its own count1; confirm the same real bucket."
+      ],
+      "expectations": [
+        {
+          "id": "fallback-quota",
+          "description": "Unconfigured authorized responses have exactly expiresAt,iceServers,relayAvailable with the fixed STUN fallback and a bounded one-hour expiry. Unauthorized requests do not consume TURN quota. In one real bucket the same session succeeds20times and then receives the exact429/count21; another session of that user independently succeeds/count1.",
+          "witness": {
+            "path": "cloud/tests-e2e/collaboration-journey.mjs",
+            "start": 227,
+            "end": 251,
+            "sha256": "aedc806bc7d6ffba685e60a367834ddc531da8f03e32a7034a6ab18796b438d3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 94,
+            "end": 98,
+            "sha256": "cc87446c77ec0c1e9467817c69613f3570f60cde84903f280562fd056b24fb30"
+          },
+          "expectation": "fallback-quota",
+          "why": "Public project access is checked before the per-session TURN quota and absent-configuration fallback. No actual STUN traffic or real clock-reset proof."
+        },
+        {
+          "source": {
+            "path": "cloud/src/http.ts",
+            "start": 79,
+            "end": 82,
+            "sha256": "f4de4d6e59ebbdf48e9686d5295d261d6887c2c20f87b6ae766b0173965ea4d2"
+          },
+          "expectation": "fallback-quota",
+          "why": "The existing security-limit key includes the real hourly bucket and increments persisted attempts through the twenty-first refusal. expires_at is cleanup retention; no reset-time claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/index.ts",
+            "start": 33,
+            "end": 34,
+            "sha256": "84db90a4f426c370fd222c403ea94ac0b2161c7702fc4e3e6e0628ab35fe7357"
+          },
+          "expectation": "fallback-quota",
+          "why": "After the frozen authentication and dispatch guards decline interception, public project ice-servers/devices routes reach the respective production helpers. The entire ordered scenario also asserts exact device inventories."
+        }
+      ]
+    },
+    {
+      "id": "peer-relay-provider-v92",
+      "title": "Handle controlled relay-provider success and failures",
+      "preconditions": [
+        "Run the entire public command tracer app -- test services collaboration. All original 36 HTTP checks execute first; the original restored project is epoch2/head3, member was removed and viewer logged out. The synthetic environment owns and cleans its process group, home and persistence state; no native app or live provider is involved.",
+        "Append only fixture preparation after original assertions: restore one synthetic member row, give eight synthetic sessions across four users independently specified names/timestamps, and mark one additional owner session expired and another revoked. Existing viewer logout stays revoked. Expected descriptors are fixture-owned JavaScript values, not copied from a response.",
+        "All behavior uses actual loopback HTTP to the production Worker bundle. D1/R2 reads are explicitly synthetic fixture evidence. Entitlement changes use local fixture writes, not billing APIs. No rate counter is seeded, cleared or reset. The same fixed hourly bucket is checked; a real wait of at most3025ms avoids starting immediately before its boundary.",
+        "Only configuration/HTTP semantics are claimed. No native UI, online reachability, WebRTC media transport, live TURN provisioning, 1000-device limit, complete role/grace boundary matrix, concurrent revocation, timeout, malformed provider JSON, quota reset/cleanup or measured branch execution claim.",
+        "Miniflare reconfiguration retains the same isolated persistence and real Worker bundle, with nonfunctional synthetic TURN bindings. A strict outbound callback accepts only the exact encoded fixture URL, POST, fake authorization and ttl3600 body; every other request is denied. Provider values are not usable credentials or user data. Fresh D1/R2 handles are acquired after setOptions."
+      ],
+      "actions": [
+        "Enable only the synthetic TURN provider fixture. Return a fixed iceServers array and require exact relayAvailable true configuration plus bounded one-hour expiry.",
+        "Return providerHTTP503 with a private fixture body, then a successful JSON response with non-array iceServers; require exact distinct502 error envelopes without provider-body leakage.",
+        "Require exactly3 controlled provider calls, separate-session count4, unchanged complete restored document, empty R2, all7 inventory checkpoints and zero unexpected outbound attempts; finish owned cleanup."
+      ],
+      "expectations": [
+        {
+          "id": "provider",
+          "description": "The controlled callback receives the exact encoded URL,POST,fake Bearer token and ttl3600 JSON. The valid array is returned with relayAvailable true and bounded expiry. ProviderHTTP failure and non-array data each produce their exact502 envelope; the503 body is not exposed. Three controlled calls occur; the restored document remains exact and R2 empty.",
+          "witness": {
+            "path": "cloud/tests-e2e/collaboration-journey.mjs",
+            "start": 253,
+            "end": 289,
+            "sha256": "e5584745b6f5fa4a8e9f8128b0fe3836584f6c3b077f1602d82630aee2a590a2"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/media.ts",
+            "start": 99,
+            "end": 102,
+            "sha256": "9d5db77360c0fb41c765f9217a23869a2223bcbf967d00f82e7a10a620f0a348"
+          },
+          "expectation": "provider",
+          "why": "The configured fetch contract, response.ok guard, array guard and success serialization are exercised by three controlled provider responses through real public HTTP. No live provider,timeout,malformed JSON or server validation of individual ICE entries is claimed."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "peer-discovery-v92",
+      "title": "Discover scoped devices and obtain relay configuration",
+      "steps": [
+        "peer-device-inventory-v92",
+        "peer-relay-quota-v92",
+        "peer-relay-provider-v92"
+      ]
+    }
+  ]
+}

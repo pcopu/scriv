@@ -97,7 +97,7 @@ enum CharacterTeamUI {
         if imageURL == nil, min(size.width, size.height) < 96 {
             view = compactMissingPortrait()
         } else if let asset, let crop = character.portraitRegion, crop.imageID == asset.id, crop.imageSHA256 == asset.sha256 {
-            view = CharacterCropImageView(source:store.assetURL(asset),sha256:asset.sha256,region:crop.region,title:"Portrait of " + character.name)
+            view = CharacterCropImageView(source:store.assetURL(asset),sha256:asset.sha256,region:crop.region,title:"Portrait of " + character.name,store:store,asset:asset)
         } else {
             let image = UIKitAssetImageView()
             image.configure(url:asset.flatMap { store.assetURL($0) },title:character.name,fill:true,missingText:"No portrait on this device",expectedDigest:asset?.sha256)

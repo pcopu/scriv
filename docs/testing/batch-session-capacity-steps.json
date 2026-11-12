@@ -1,0 +1,211 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "batch-session-capacity-v102",
+      "title": "Recover staged edits without ownership or capacity leaks",
+      "preconditions": [
+        "Run the entire public tracer app -- test services atomic-batch command. Original source lines 1–274, 29 runtime callbacks and 29 HTTP requests remain unchanged. The appendix adds 45 HTTP requests for 74 total, within the unchanged 80-request cap.",
+        "Original real routes leave one pending typed-invalid-part manifest, two committed batches, and a failed-reference batch that should have been discarded. Add only one synthetic valid auth session for the existing member user in owned D1. No project-room draft/part/receipt state is seeded or read directly.",
+        "Both member auth sessions and the distinct team-owner session remain valid and entitled throughout. Manifest logical sessionId is preserved on replay; authorization session identity comes from its real bearer. There is no logout, entitlement lapse, epoch change, TTL wait or native device involved.",
+        "Fresh tiny one-part scene manifests keep room-wide count/byte budgets far below limits. Capacity probes are refused until the final probe is deliberately staged; original invalid-part draft and final probe remain pending until the owned temporary worker is disposed.",
+        "All document checks use public viewer snapshot/events. Equality excludes time-sensitive leases. Exact new scene data and event/receipt metadata are independently expected; no document tables, internal staging rows or receipt rows are inspected. Only users/sessions are compared through read-only D1 observations.",
+        "No live provider/authentication, actual image bytes, native UI, forced race/fault, crash/restart persistence, TTL/alarm execution, room-wide maximum, changed permissions or all manifest/part boundaries are claimed."
+      ],
+      "actions": [
+        "Finish the original 29 requests, add one synthetic auth session for the existing member, and capture the five-item two-event baseline through viewer reads.",
+        "Prepare a first-session scene draft beside the original invalid-part draft. Refuse a second-session draft at per-user capacity; refuse correct-byte uploads from another user and another auth session, then accept the original-session upload.",
+        "Refuse a different-user takeover prepare. Refuse same-user/different-auth-session prepare and confirm the original draft no longer accepts parts. Prepare the second-session draft and refuse a third capacity probe.",
+        "Upload and commit the second-session scene. Validate exact receipt, authored snapshot addition and one snapshotRequired event. Recover its receipt from the first session; refuse changed-user/label replay and verify unchanged public state.",
+        "Re-stage the original missing-reference batch and upload it. Refuse a third capacity probe, then refuse its invalid-reference commit and verify unchanged snapshot/events.",
+        "Re-prepare the discarded first-session draft. Require batch_incomplete before re-upload; a third probe remains refused. Re-upload and commit once, validating exact scene/event addition.",
+        "Recover both accepted receipts through the second session with no extra changes. Fill the other slot with a probe, refuse a third draft, and reuse the original invalid-part manifest at capacity; invalid part and missing-part commit remain refused.",
+        "Preserve all original users/sessions plus exactly the added fixture session, five original document items and old events, empty R2, 74 HTTP checks and zero outbound."
+      ],
+      "expectations": [
+        {
+          "id": "capacity",
+          "description": "The original invalid-part draft and a new first-session draft occupy both per-user slots. Preparing a second draft from another valid auth session of that same user returns exact 429/batch_capacity. Five quota refusals, interleaved with successful prepares/commits and cleanup, distinguish freed capacity from accidentally dropping unrelated staging. At the end a probe fills the other slot, a third draft is refused, and the original invalid-part manifest remains reusable at capacity but cannot commit without valid parts. No room-wide byte/count or expiry limit is tested.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 289,
+            "end": 335,
+            "sha256": "b15bf7b67227a3a7113232707cb9b7d70e65f81e5da82804a8b1c092204cc6b4"
+          }
+        },
+        {
+          "id": "ownership",
+          "description": "An authorized different user and a second auth session of the same user cannot upload the first-session draft: both return exact 409/batch_session_changed. Original-session upload still succeeds. A different-user prepare returns command_reused without allowing takeover; same-user/different-auth-session prepare returns batch_session_changed and the old upload then reports batch_incomplete. Re-preparing that discarded draft later cannot commit until its part is uploaded again. Internal staging rows are not read.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 294,
+            "end": 328,
+            "sha256": "0374dc6757ca2f95de1d89e42b8c31659098631712121b0a50039a6717a56df9"
+          }
+        },
+        {
+          "id": "cleanup",
+          "description": "After a cross-auth-session prepare refuses the first staged edit, its original-session upload is batch_incomplete. Re-preparing later yields batch_incomplete on commit until the same part is uploaded again, after which the scene commits once. This observes manifest/part disposal through public routes, not direct storage-row inspection.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 299,
+            "end": 329,
+            "sha256": "e57818b8a63864dd1bdca32320ea74a4a741f05587e906b88e1df784d87d0edc"
+          }
+        },
+        {
+          "id": "failure",
+          "description": "A fully staged missing-reference batch is at user capacity as demonstrated by a third-draft refusal. Its commit returns exact 400/invalid_reference and leaves nonlease snapshot/full events unchanged. A fresh subsequent prepare succeeds, while a third probe is still refused, showing cleanup frees the failed draft slot without dropping the other pending draft.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 320,
+            "end": 329,
+            "sha256": "153a34557ea9229b1cc9275acd34664d1c6c4676905b53b53c713d8de162df4d"
+          }
+        },
+        {
+          "id": "receipt",
+          "description": "A committed batch can be recovered by the other live auth session of the same user with the unchanged manifest, returning its exact original snapshotRequired receipt. Different-user and changed-label replays are exact 409/command_reused. Three successful receipt recoveries do not append events, change versions or add items.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 308,
+            "end": 335,
+            "sha256": "e58cfc45386371e600bf2d7f058db8bfbd400d27549c52db2855153141c0c242"
+          }
+        },
+        {
+          "id": "commit",
+          "description": "The two successful one-part scene batches each add exactly one authored version-one scene and one snapshotRequired event with actor, label, request-bounded timestamp and sequential head. Epoch and timing stay unchanged; every prior item/event remains exact. Receipt items and event changes are empty by contract, so actual item content is checked in the fresh snapshot.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 289,
+            "end": 335,
+            "sha256": "b15bf7b67227a3a7113232707cb9b7d70e65f81e5da82804a8b1c092204cc6b4"
+          }
+        },
+        {
+          "id": "parts",
+          "description": "Wrong-user/session uploads of otherwise correct part bytes are refused before original-session upload succeeds. Later a typed-invalid direction part remains exact 400/direction_timing; its pending manifest is still reusable at capacity and commit is batch_incomplete. No part hash/size/JSON boundary or arbitrary replacement variant is newly claimed.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 294,
+            "end": 335,
+            "sha256": "2990ee5bbdf2f64a2c24f19f9a5783b011cdc286f441c06a9a7074d46cc844de"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 377,
+            "end": 377,
+            "sha256": "7d340d95b1b4c18f76c91007736cd283910812b28f63427b97d2d2643e0e56d2"
+          },
+          "expectation": "cleanup",
+          "why": "Session mismatch and semantic commit failure use targeted draft/part disposal. Public missing-part and capacity probes distinguish cleanup from stale uploaded-part resurrection; no raw table proof."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 387,
+            "end": 391,
+            "sha256": "574a369fc53bc3521ae356af28e8d3bcce3c36e94f511e31584b4f2e0983d36e"
+          },
+          "expectation": "receipt",
+          "why": "Stored accepted results are user/hash scoped rather than auth-session scoped; successful cross-session recovery and wrong-user/changed-label refusals exercise the public oracle."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 399,
+            "end": 407,
+            "sha256": "e83a6cc9310a92b827aa263e9298526d554841eb30eeedfa52753222899a361b"
+          },
+          "expectation": "ownership",
+          "why": "Live route guards reach accepted-receipt lookup first; uncommitted staging then checks user/hash and rejects a different auth session with disposal. Entitlement/epoch change behavior is not varied."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 411,
+            "end": 417,
+            "sha256": "f9998de3ca3d13f94306a4d326c044f68251486c3981649d50ab003a9b022599"
+          },
+          "expectation": "capacity",
+          "why": "Small sequential manifests reach the two-per-user staging boundary across two auth sessions. Successful prepare/refused third-draft probes track freed slots; global room budgets and alarm execution remain outside scope."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 419,
+            "end": 424,
+            "sha256": "a9c444d3be86f7793e4231b11de07f137e91418f577965007896e73503e5f6c9"
+          },
+          "expectation": "cleanup",
+          "why": "Re-prepared discarded staging cannot commit without uploaded parts; original typed-invalid staging also remains incomplete. Positive complete one-part manifests proceed; part-count boundary variants are not added."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 427,
+            "end": 431,
+            "sha256": "632f3304e7990a64f78c1f99e6a64747efc8e5bcfa758d92479ecc7b57e01edc"
+          },
+          "expectation": "commit",
+          "why": "Successful commit and targeted disposal yield one exact snapshot/event addition and recoverable receipt for each new scene. No storage fault or concurrent transaction is injected."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 432,
+            "end": 436,
+            "sha256": "8946fedb15cf122261f3a76a06cd0f2cc8875a6380e000eb63b547098fe1949a"
+          },
+          "expectation": "failure",
+          "why": "A real semantic APIError after attempted materialization rolls back visible document state and discards rejected staging; subsequent capacity probes and successful prepare distinguish release without dropping unrelated draft capacity."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 440,
+            "end": 443,
+            "sha256": "338eaa2d4c4cf8a5e78ad2ba15d712f9f864440c7351e70101fdc7ecddbb3270"
+          },
+          "expectation": "ownership",
+          "why": "Correct part bytes from an authorized other user or another same-user auth session are refused at staging ownership; original-session upload still succeeds. Body size and method variants are not exercised."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 444,
+            "end": 448,
+            "sha256": "1d02ce8905afbc47a730f5d1f9485c78331f9c822782119e9a76078a288abc28"
+          },
+          "expectation": "parts",
+          "why": "Valid one-scene content is accepted for its manifest, while the original typed-invalid direction payload fails validation and leaves no committable parts. New hash/size/syntax boundaries are not claimed."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 449,
+            "end": 452,
+            "sha256": "46748cd399dc412d26572618bd5a1e4b700c77ea237dec40947904bdabd49071"
+          },
+          "expectation": "commit",
+          "why": "Allowed uploads stage only transport parts; successful commits expose authored scene items once. Original and renewed first-session uploads are exercised without claiming byte-level table equality."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "batch-session-capacity-v102",
+      "title": "Recover staged edits without ownership or capacity leaks",
+      "steps": [
+        "batch-session-capacity-v102"
+      ]
+    }
+  ]
+}

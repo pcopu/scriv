@@ -1,0 +1,426 @@
+{
+  "schema_version": 1,
+  "purpose": "Proposed journey architecture and current slice consolidation destinations; not coverage acceptance.",
+  "baseline_commit": "4d14b29f4fb49891e850fa9a8e5742dc878603c8",
+  "proposed_primary_journeys": 27,
+  "current_scenario_slices": 40,
+  "scoped_interaction_rows_before_global_reconciliation": 313,
+  "service_overlays_not_additional_journeys": 8,
+  "legacy_assertion_mapping_complete": false,
+  "notes": [
+    "Each existing slice has a primary consolidation destination only. Shared steps/related interaction IDs still require cross-owner mapping.",
+    "Five Fountain slices were replaced by one verified 56-case import/export journey. The remaining slice destinations are still proposed; no whole-family certification.",
+    "Two JSON slices were replaced by one verified 14-case validation journey portion with fresh app per rejection and public controller-state oracle, not pixels or dismissal.",
+    "This public registry describes source routes and planned observations; it contains no execution attestation."
+  ],
+  "journeys": [
+    {
+      "id": "AUT-J01",
+      "title": "Navigate, find and read: switch tabs → search → next/previous → close → zoom → return",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/workspace.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/workspace-zoom.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/global-shortcuts.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/script-character-parity.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/journeys/script-authoring-search.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J02",
+      "title": "Write exact source: add → edit/select → split → merge → finish → shared save/undo/reopen assertions",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/text-growth-timing.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/journeys/script-authoring-source.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/journeys/script-merge.mjs",
+          "status": "source-specification-no-public-attestation",
+          "case_count": 13,
+          "route": "Public focused ScriptTextView.deleteBackward override; no physical-key claim"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J03",
+      "title": "Restructure scene: select/create/rename scene → add/move source/change speaker → delete or cancel",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/journeys/script-authoring-boundaries.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/journeys/script-structure.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J04",
+      "title": "Author source timing: open numeric draft → accept/cancel → preview scrub/rail → release/cancel",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/journeys/line-duration.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J05",
+      "title": "Maintain character catalog: create/edit fields/colors/aliases → save → search/select → portrait → delete/cancel",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/character-aliases.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/journeys/character-catalog.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J06",
+      "title": "Review text identities: open source review → choose/confirm/unlink → find exact occurrence → save/cancel",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/journeys/text-identity-review.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J07",
+      "title": "Review pictured identities: scan setting → choose unresolved crop → existing/new character → save/ignore/skip → finish",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/journeys/character-image-review.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J08",
+      "title": "Acquire, reuse and inspect image: add/select placement → import/choose version → inspect/tags → return to source",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/storyboard-count.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/journeys/local-images.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/journeys/package-image-invariants.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J09",
+      "title": "Anchor and split picture: choose source/offset → coverage preview/save → split preview/cancel/commit",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/journeys/picture-coverage.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J10",
+      "title": "Assign words to pictures: select/range/clear words → shared-cut preview → phrase transfer/merge/delete",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [],
+      "shared_slice_reference": {
+        "path": "tests/e2e/journeys/picture-coverage.mjs",
+        "group": "follow",
+        "primary_journey": "AUT-J09"
+      }
+    },
+    {
+      "id": "AUT-J11",
+      "title": "Inspect and manipulate Layers: expand → larger sheet → zoom/snap → image/audio/word drag variant → cancel/close",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/journeys/layers-review.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J12",
+      "title": "Review then generate an image: edit visual direction → open brief → source/people/exact request → copy/close → generate",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/journeys/generation-review.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J13",
+      "title": "Import and manage local audio: open → import/cancel → select/play/mix/mute → remove/cancel → close",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/journeys/audio-library.mjs",
+          "status": "source-specification-no-public-attestation",
+          "route": "Bounded synthetic WAV production import semantic command, then actual library/timing controls; no picker or microphone permission",
+          "case_count": 64,
+          "case_count_caveat": "Includes29 test-boundary invalid-input guards, not64 legacy tests or UI interactions; three fresh app groups"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J14",
+      "title": "Trim/place audio: open draft → trim → offset/attachment → apply/cancel → direct timeline move",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": []
+    },
+    {
+      "id": "AUT-J15",
+      "title": "Author word timing: open → select two neighbors → draft ranges → save/cancel → direct shift/endpoint variant",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/journeys/word-timing.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "AUT-J16",
+      "title": "Play and follow the authored scene: play/pause → seek/boundaries → volume/mute → follow → tab round trip",
+      "source_document": "interaction-inventory-authoring.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/transport.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "IJ-01",
+      "title": "Create, locate, save and reopen local work",
+      "source_document": "interaction-inventory-integrations.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/projects.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/project-creation.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/journeys/project-roundtrip.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/journeys/capability-safety.mjs",
+          "status": "source-specification-no-public-attestation",
+          "case_count": 4,
+          "case_count_caveat": "Four ordered chapters in one prepared scenario; discovery is not execution.",
+          "route": "Public process-owned capability discovery, refused unsupported/invalid commands, two retained-workspace relaunches and ordinary Projects reopen; no private capability-file mutation.",
+          "catalog": "docs/testing/capability-safety-steps.json",
+          "proposal": "docs/testing/capability-safety-proposal.json"
+        }
+      ]
+    },
+    {
+      "id": "IJ-02",
+      "title": "Import, round-trip and export across file boundaries",
+      "source_document": "interaction-inventory-integrations.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/journeys/import-export.mjs",
+          "status": "source-specification-no-public-attestation",
+          "case_count": 56,
+          "replaces_slices": [
+            "tests/e2e/fountain-export.mjs",
+            "tests/e2e/fountain-filename-fallback.mjs",
+            "tests/e2e/fountain-forced-action-roundtrip.mjs",
+            "tests/e2e/fountain-import.mjs",
+            "tests/e2e/fountain-multiline-title.mjs"
+          ]
+        },
+        {
+          "path": "tests/e2e/journeys/json-validation.mjs",
+          "status": "source-specification-no-public-attestation",
+          "case_count": 25,
+          "replaces_slices": [
+            "tests/e2e/json-model-validation.mjs",
+            "tests/e2e/json-character-links.mjs"
+          ]
+        },
+        {
+          "path": "tests/e2e/journeys/script-document-roundtrip.mjs",
+          "status": "source-specification-no-public-attestation",
+          "case_count": 1,
+          "scope": "Prepared imported-document roundtrip, bounded parser variants, name/alias Find and cancellation; no native evidence or frozen-test retirement."
+        },
+        {
+          "path": "tests/e2e/journeys/model-document.mjs",
+          "status": "source-specification-no-public-attestation",
+          "case_count": 23,
+          "route": "Public semantic import-json, complete loaded/persisted metadata observation and ordinary browser reopen",
+          "catalog": "docs/testing/model-document-steps.json"
+        }
+      ]
+    },
+    {
+      "id": "IJ-03",
+      "title": "Review history, recover interrupted work and synchronize",
+      "source_document": "interaction-inventory-integrations.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/journeys/project-history.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/journeys/save-failure-recovery.mjs",
+          "status": "source-specification-no-public-attestation",
+          "case_count": 4,
+          "case_count_caveat": "Four ordered stages in one prepared scenario; no native run or legacy-test retirement.",
+          "route": "Public Characters edit, observed expected save-error alert, owned-process relaunch, then normal Projects open; no alert dismissal or private handler.",
+          "catalog": "docs/testing/save-failure-recovery-steps.json",
+          "proposal": "docs/testing/save-failure-recovery-proposal.json"
+        },
+        {
+          "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+          "status": "source-specification-no-public-attestation",
+          "case_count": 5,
+          "case_count_caveat": "Five ordered stages in one prepared scenario; discovery is not execution.",
+          "route": "Public optional-direction text, deterministic canonical-size refusal, retained owned-process relaunch and normal Projects reopen, correction and clean reopen; read-only synthetic journal evidence.",
+          "catalog": "docs/testing/cue-draft-recovery-steps.json",
+          "proposal": "docs/testing/cue-draft-recovery-proposal.json"
+        }
+      ]
+    },
+    {
+      "id": "IJ-04",
+      "title": "Scriv identity, service selection and account lifecycle",
+      "source_document": "interaction-inventory-integrations.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/settings-navigation.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "IJ-05",
+      "title": "Discover, connect, disconnect and reconnect Codex",
+      "source_document": "interaction-inventory-integrations.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/codex-endpoint-validation.mjs",
+          "status": "source-specification-no-public-attestation"
+        },
+        {
+          "path": "tests/e2e/codex-setup-instructions.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "IJ-06",
+      "title": "Isolated Codex account, pairing and history ownership",
+      "source_document": "interaction-inventory-integrations.md",
+      "current_scenario_slices": []
+    },
+    {
+      "id": "IJ-07",
+      "title": "One real generation through durable job review and recovery",
+      "source_document": "interaction-inventory-integrations.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/image-evidence-isolation.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    },
+    {
+      "id": "IJ-08",
+      "title": "Team access, invitation lifecycle and billing handoff",
+      "source_document": "interaction-inventory-integrations.md",
+      "current_scenario_slices": []
+    },
+    {
+      "id": "IJ-09",
+      "title": "Scoped conversations with replies, attachments and mentions",
+      "source_document": "interaction-inventory-integrations.md",
+      "current_scenario_slices": []
+    },
+    {
+      "id": "IJ-10",
+      "title": "Explicit signed update with save and modal handoff",
+      "source_document": "interaction-inventory-integrations.md",
+      "current_scenario_slices": []
+    },
+    {
+      "id": "FILM-J01",
+      "title": "Make and revise a short film: one continuous app/project story ending in exact save and reopen",
+      "source_document": "short-film-journey.md",
+      "current_scenario_slices": [
+        {
+          "path": "tests/e2e/journeys/short-film.mjs",
+          "status": "source-specification-no-public-attestation"
+        }
+      ]
+    }
+  ],
+  "confirmed_cross_scope_aliases": [
+    {
+      "alias": "INT-ACC-004",
+      "canonical": "AUD-028",
+      "reason": "Settings and Script toggle the same shared Follow playback preference; preserve route-specific tests."
+    },
+    {
+      "alias": "NAV-02",
+      "canonical": "INT-SHR-004",
+      "reason": "Authoring scrolling is a surface variant of the shared scroll interaction; horizontal/vertical routes remain distinct cases."
+    }
+  ],
+  "canonical_interaction_groups_after_known_aliases": 311,
+  "global_interaction_reconciliation_complete": false,
+  "legacy_test_entry_disposition_complete": true,
+  "case_disposition_summary": {
+    "proposed_behavioral_contracts": 1077,
+    "implementation_or_system_requirements": 52,
+    "family_only_test_buckets": 0,
+    "verified_equivalence_inferred": false,
+    "remaining_mapping_work": "Expand shared-helper and parameter ownership and bind every exact predicate to independent observable case evidence."
+  }
+}

@@ -1,0 +1,660 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "export-source",
+      "title": "Export source",
+      "preconditions": [
+        "Fresh synthetic Git repository containing exact copied current CLI/scripts/tests bytes, a tracked retired.txt deleted after commit, and explicitly included extra/included.txt.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "node scripts/export-cli-source-manifest.mjs --output ${externalManifest} --include extra"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exporter returns the exact output-byte digest and file count, records the tracked deletion and explicit untracked include, and preserves source names, types, modes and bytes.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 94,
+            "end": 103,
+            "sha256": "5a238cc75e40989d986cc3b185d94f1051306b4e42d4ddc4f8119c73193222e5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 89,
+            "end": 105,
+            "sha256": "9f8ec71f4f2c9b5290648b6ba98887b44ee6abbca71ec30d5d6c7ed02704f17b"
+          },
+          "expectation": "observed",
+          "why": "Exporter returns the exact output-byte digest and file count, records the tracked deletion and explicit untracked include, and preserves source names, types, modes and bytes. Bounded association only; no exhaustive branch or measured execution claim."
+        },
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 109,
+            "end": 111,
+            "sha256": "0440aa1b2d6579716fb5381202e0bf3ea8d2532043f6dcf58d9d1befcb5a91cf"
+          },
+          "expectation": "observed",
+          "why": "Exporter returns the exact output-byte digest and file count, records the tracked deletion and explicit untracked include, and preserves source names, types, modes and bytes. Bounded association only; no exhaustive branch or measured execution claim."
+        },
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 115,
+            "end": 115,
+            "sha256": "3b62b47b27b5c3a7d4e39c508d91cdc437b78f21b6c1f911f7346849c0b42ef9"
+          },
+          "expectation": "observed",
+          "why": "Exporter returns the exact output-byte digest and file count, records the tracked deletion and explicit untracked include, and preserves source names, types, modes and bytes. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "valid-readback",
+      "title": "Valid readback",
+      "preconditions": [
+        "The immediately preceding exported manifest remains outside source and its digest is unchanged. Only the already blocked character-aliases scenario is selected.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 105,
+            "end": 105,
+            "sha256": "2f55d1da50696199b4221c161ca5241c398402fd4283c90ffe08fe37311520e3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 48,
+            "end": 59,
+            "sha256": "a8c09189e9430f84d351e6ba1fb449e5c7b388e85e02ed15db69bbd2f7e53b91"
+          },
+          "expectation": "observed",
+          "why": "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest. Bounded association only; no exhaustive branch or measured execution claim."
+        },
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 64,
+            "end": 78,
+            "sha256": "d51f1cd1e5ba9c677746d7278c11f307c05a1644ac45b4fa6c3ba9ed01f67e13"
+          },
+          "expectation": "observed",
+          "why": "Public test runner verifies exact manifest identity, file count, sorted-entry digest and producer-declared base commit; returns selected-scenarios-blocked, not-run and no app identity, preserving source and manifest. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "refuse-overwrite",
+      "title": "Refuse overwrite",
+      "preconditions": [
+        "The exporter output already exists with known exact bytes.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "node scripts/export-cli-source-manifest.mjs --output ${externalManifest} --include extra"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A repeated export exits 2 with fixed safe error and preserves existing manifest and all source names, modes and bytes.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 107,
+            "end": 110,
+            "sha256": "652e99db8e2891412c28b63f4f5e5bb9c9af4078531b0e2c09373f2a9dd2dccc"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 104,
+            "end": 104,
+            "sha256": "972b30e70a8a2949a4d787fed7d5ef55b3f5bae9e6909f78c7bebc9126eef154"
+          },
+          "expectation": "observed",
+          "why": "A repeated export exits 2 with fixed safe error and preserves existing manifest and all source names, modes and bytes. Bounded association only; no exhaustive branch or measured execution claim."
+        },
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 118,
+            "end": 118,
+            "sha256": "3e803edba2d173b7f15e8441ed55b885da11612f80d55cad0436070f9d0e1707"
+          },
+          "expectation": "observed",
+          "why": "A repeated export exits 2 with fixed safe error and preserves existing manifest and all source names, modes and bytes. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "reject-digest",
+      "title": "Reject digest",
+      "preconditions": [
+        "Valid manifest bytes paired with a different syntactically valid all-zero SHA256.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${wrongDigest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Runner reports source-manifest-digest-mismatch, null source identity and not-run; source and manifest remain unchanged.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 112,
+            "end": 112,
+            "sha256": "52a3912c50cd80bf169b2134098c157205a8603c2b79d6df4fde77ea30b06bdb"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 51,
+            "end": 54,
+            "sha256": "dc06b041be222e46cf8577723427e9c13a3e209e509d303ae29fc87d28b1a31a"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-digest-mismatch, null source identity and not-run; source and manifest remain unchanged. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "reject-content",
+      "title": "Reject content",
+      "preconditions": [
+        "Only synthetic/story.txt content differs from the exported manifest; source file set is unchanged.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Runner reports source-manifest-content-mismatch, null source identity and not-run; modified source and manifest remain unchanged.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 114,
+            "end": 116,
+            "sha256": "c8515ad39af068889b4698963be04184e1507053390ad009c1392e840babb405"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 33,
+            "end": 43,
+            "sha256": "c5a5ccc9a886b0d0aef7b628e18db61b08d39bb002893430157ca99f4a2d57a1"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-content-mismatch, null source identity and not-run; modified source and manifest remain unchanged. Bounded association only; no exhaustive branch or measured execution claim."
+        },
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 71,
+            "end": 74,
+            "sha256": "7f9d5aaaa95ef9519ef783d323e5c1f69364bde1ef6c50f5b5256395ccad95c7"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-content-mismatch, null source identity and not-run; modified source and manifest remain unchanged. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "reject-extra-file",
+      "title": "Reject extra file",
+      "preconditions": [
+        "Original content restored, then extra/unlisted.txt added after export.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Runner reports source-manifest-file-set-mismatch, null source identity and not-run; original plus extra file and manifest remain unchanged.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 118,
+            "end": 120,
+            "sha256": "4fd57fee96d9edae7d528edb981b52cc68d97f70f4dfe0b302b716dc2cd5a5d0"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 19,
+            "end": 29,
+            "sha256": "d57e586255043e006942cdf891b474d546770e69a03900eb026b5d91091d35ff"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-file-set-mismatch, null source identity and not-run; original plus extra file and manifest remain unchanged. Bounded association only; no exhaustive branch or measured execution claim."
+        },
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 75,
+            "end": 75,
+            "sha256": "4aa08d7d2eba74878d6c0e6c82f12b39a86c4cd9eb06cc8c8913202a77f3612d"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-file-set-mismatch, null source identity and not-run; original plus extra file and manifest remain unchanged. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "reject-missing-file",
+      "title": "Reject missing file",
+      "preconditions": [
+        "Unlisted file removed; tracked synthetic/story.txt moved outside source.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Runner reports source-manifest-missing-file, null source identity and not-run; missing-file fixture and manifest remain unchanged.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 122,
+            "end": 124,
+            "sha256": "a4ab26959c6b14b0365920a8c1b6cc144b156edb73bda3c9bba997dee68eb3bf"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 33,
+            "end": 40,
+            "sha256": "06f66cf717f96cae72c0a1ab1907262a0adb5febe380fb5b97ffda70be7f67d0"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-missing-file, null source identity and not-run; missing-file fixture and manifest remain unchanged. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "reject-ancestor-symlink",
+      "title": "Reject ancestor symlink",
+      "preconditions": [
+        "Missing file restored, then synthetic directory moved outside source and replaced with symlink to that same directory, so referenced content still matches.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Runner reports source-manifest-symlink, null source identity and not-run; source readlink target string and manifest remain unchanged; external target contents are not asserted.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 126,
+            "end": 129,
+            "sha256": "481503ea65625c0a77ae512cf14bc242b51f77d6b1598faf53f550743a348214"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 33,
+            "end": 41,
+            "sha256": "157963de795ddcd6ec50e32903a0c99055c6589bd8596850589ef81acbd01515"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-symlink, null source identity and not-run; source readlink target string and manifest remain unchanged; external target contents are not asserted. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "reject-malformed-json",
+      "title": "Reject malformed json",
+      "preconditions": [
+        "Original source restored. New external manifest contains exactly a single opening brace and the CLI receives its correct digest.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${malformedManifest} --source-manifest-sha256 ${matchingDigest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Runner reports source-manifest-invalid, null source and not-run for malformed JSON with a matching outer digest, preserving source and variant manifest.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 131,
+            "end": 131,
+            "sha256": "18370f81b27fa04e112373b77bf7a8d273ddbed396f25f442449c2bb1537752e"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 55,
+            "end": 56,
+            "sha256": "dbef6493cf00560fa4ff9b5574775c52d8c6367d3f45d25aa6948f752687f192"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-invalid, null source and not-run for malformed JSON with a matching outer digest, preserving source and variant manifest. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "reject-schema",
+      "title": "Reject schema",
+      "preconditions": [
+        "Original source and manifest cloned into a new external variant; only schemaVersion becomes 2; outer digest recomputed.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${schemaManifest} --source-manifest-sha256 ${matchingDigest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Runner reports source-manifest-invalid, null source and not-run for the unsupported schema version with matching outer digest, preserving source and variant manifest.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 133,
+            "end": 133,
+            "sha256": "1ddab9beb6756fffa41d5d2e3ff0f9ec842042415fab08642319ae60d4637b04"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 57,
+            "end": 58,
+            "sha256": "76c160f3296af0b37a15575bcc56bf8e652ab8670766296a5f7326de88ab3e42"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-invalid, null source and not-run for the unsupported schema version with matching outer digest, preserving source and variant manifest. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "reject-unsafe-path",
+      "title": "Reject unsafe path",
+      "preconditions": [
+        "Valid original manifest cloned externally; only first path becomes ../outside.txt; outer digest recomputed. The unsafe-path guard precedes sorting and entry reads.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${unsafePathManifest} --source-manifest-sha256 ${matchingDigest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Runner reports source-manifest-unsafe-path, null source and not-run for traversal path with matching outer digest, preserving source and variant manifest.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 135,
+            "end": 138,
+            "sha256": "c152d99cfa41fe4f9ba13a3fa2a2302b6469574a94e98ad3b610144720e6406e"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 68,
+            "end": 69,
+            "sha256": "debb3a022dac2b67e28d66e52b3249bb5f44ff77a2e9180ccc6655d8253b9c14"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-unsafe-path, null source and not-run for traversal path with matching outer digest, preserving source and variant manifest. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "reject-duplicate-path",
+      "title": "Reject duplicate path",
+      "preconditions": [
+        "Valid original manifest cloned externally; its first entry is duplicated adjacent to itself so paths remain sorted; outer digest recomputed.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${duplicatePathManifest} --source-manifest-sha256 ${matchingDigest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Runner reports source-manifest-invalid, null source and not-run for sorted duplicate paths with matching outer digest, preserving source and variant manifest.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 140,
+            "end": 143,
+            "sha256": "a5a1b36a50ab9d7c5cee439fbd9d6790c40595aa5614fa301381b7ba2f448e5d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 70,
+            "end": 70,
+            "sha256": "fae08be32b91ff80008326a67f7f34cdcbfcd30720aac6c618da73c33b1201f5"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-invalid, null source and not-run for sorted duplicate paths with matching outer digest, preserving source and variant manifest. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "reject-entry-hash-format",
+      "title": "Reject entry hash format",
+      "preconditions": [
+        "Valid original manifest cloned externally; only first entry sha256 becomes invalid-hash; outer digest recomputed.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${invalidEntryHashManifest} --source-manifest-sha256 ${matchingDigest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Runner reports source-manifest-invalid, null source and not-run for malformed entry hash with matching outer digest, preserving source and variant manifest.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 145,
+            "end": 148,
+            "sha256": "f283e265f5ec14e7bac935c422128e93683a0c90803a68942e2e96390e67b961"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 71,
+            "end": 72,
+            "sha256": "21ff1906c9984ecada2e9e36e020b4a1fc4886a941ba30e508393a5b3c9cce31"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-invalid, null source and not-run for malformed entry hash with matching outer digest, preserving source and variant manifest. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "reject-entry-hash-mismatch",
+      "title": "Reject entry hash mismatch",
+      "preconditions": [
+        "Valid original manifest cloned externally; only first entry sha256 becomes 64 zeroes; source bytes unchanged and outer digest recomputed.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${wrongEntryHashManifest} --source-manifest-sha256 ${matchingDigest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Runner reports source-manifest-content-mismatch, null source and not-run for a well-formed wrong entry hash with matching outer digest, preserving source and variant manifest.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 150,
+            "end": 153,
+            "sha256": "a474463d8c524b07d0793882847bfcb0d6f7cf6461e55537a77000eccc4d1fbb"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 73,
+            "end": 73,
+            "sha256": "b18043f278801151313c77dc35e22ec9f5c9e350e0791f53e501fa7b9647b5e8"
+          },
+          "expectation": "observed",
+          "why": "Runner reports source-manifest-content-mismatch, null source and not-run for a well-formed wrong entry hash with matching outer digest, preserving source and variant manifest. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "refuse-inside-output",
+      "title": "Refuse inside output",
+      "preconditions": [
+        "Original source restored; selected output inside-manifest.json is nonexistent inside source; original external manifest remains unchanged.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "node scripts/export-cli-source-manifest.mjs --output ${sourceRoot}/inside-manifest.json --include extra"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exporter exits 2 with fixed safe error; inside output remains absent, source snapshot is unchanged and original external manifest bytes are unchanged. Error text is intentionally generic; no claim that text alone distinguishes the internal guard.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 155,
+            "end": 159,
+            "sha256": "5dba9b6fc0f3a5f242e38529b3d23b42dfbd5a16d5818e909dcd17ab8ce07a98"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 80,
+            "end": 83,
+            "sha256": "15999a07359dd99023f0553e004ae8736b78bfbe0361919cb6b59c1e889d2d85"
+          },
+          "expectation": "observed",
+          "why": "Exporter exits 2 with fixed safe error; inside output remains absent, source snapshot is unchanged and original external manifest bytes are unchanged. Error text is intentionally generic; no claim that text alone distinguishes the internal guard. Bounded association only; no exhaustive branch or measured execution claim."
+        },
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 118,
+            "end": 118,
+            "sha256": "3e803edba2d173b7f15e8441ed55b885da11612f80d55cad0436070f9d0e1707"
+          },
+          "expectation": "observed",
+          "why": "Exporter exits 2 with fixed safe error; inside output remains absent, source snapshot is unchanged and original external manifest bytes are unchanged. Error text is intentionally generic; no claim that text alone distinguishes the internal guard. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    },
+    {
+      "id": "recover-readback",
+      "title": "Recover readback",
+      "preconditions": [
+        "Symlink removed and original synthetic directory restored; original exported bytes and digest reused.",
+        "Synthetic fixture only. Known blocked native selection cannot launch; no Mac, app substitute or live data used."
+      ],
+      "actions": [
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Restored source verifies with original file count, worktree hash, base commit and manifest digest, still returns blocked/not-run with no app identity; source and manifest remain unchanged.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 161,
+            "end": 161,
+            "sha256": "8e9a559b881936cdfa3d1a38ff6c4f26b8142e2cd3c8253d54af64749d7c6ad8"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 71,
+            "end": 78,
+            "sha256": "98bcac7ab63ec28404be5c964c59ace084636eaee74f78fffbcd587777f55ae2"
+          },
+          "expectation": "observed",
+          "why": "Restored source verifies with original file count, worktree hash, base commit and manifest digest, still returns blocked/not-run with no app identity; source and manifest remain unchanged. Bounded association only; no exhaustive branch or measured execution claim."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "source-provenance-recovery",
+      "title": "Export, reject altered source and recover original provenance",
+      "steps": [
+        "export-source",
+        "valid-readback",
+        "refuse-overwrite",
+        "reject-digest",
+        "reject-content",
+        "reject-extra-file",
+        "reject-missing-file",
+        "reject-ancestor-symlink",
+        "reject-malformed-json",
+        "reject-schema",
+        "reject-unsafe-path",
+        "reject-duplicate-path",
+        "reject-entry-hash-format",
+        "reject-entry-hash-mismatch",
+        "refuse-inside-output",
+        "recover-readback"
+      ]
+    }
+  ]
+}

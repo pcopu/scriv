@@ -2,7 +2,7 @@
 
 A native Mac workspace for writing a script, timing its words and directions, and playing it as a visual storyboard.
 
-Scriv’s new application target is **UIKit with Mac Catalyst**, with no SwiftUI hosting or legacy SwiftUI views compiled into it. The prior SwiftUI/AppKit implementation is preserved at checkpoint `979388b4` and under `apps/mac`; shared domain/cloud services remain in use. The cloud service runs on Cloudflare Workers, D1, SQLite Durable Objects and private R2 storage. All original design assets and project data formats are retained.
+Scriv’s application target is **UIKit with Mac Catalyst**, with no SwiftUI hosting or legacy SwiftUI views compiled into it. The old SwiftUI/AppKit target and its packaging path are retired; their exact source remains recoverable from Git history. `apps/mac` still contains shared Core, domain/cloud services and resources used by the current app. See the [retirement scope and recovery record](docs/verification/appkit-retirement-20261109.md). The cloud service runs on Cloudflare Workers, D1, SQLite Durable Objects and private R2 storage. All original design assets and project data formats are retained.
 
 **UIKit migration:** [implementation and verification boundary](docs/verification/uikit-migration-20261030.md). The UIKit source and portable tests are implemented; the native SDK build, real interaction, companion launch/pairing and screenshot audit remain explicit gates, not implied by Linux checks.
 
@@ -47,6 +47,24 @@ The subscription is **one recurring $9.99 USD payment per team, quantity one**. 
 
 Cloudflare's Workers Paid plan is the infrastructure starting point. Its $5 base fee is not a promise that all storage, requests, Durable Object work and optional TURN traffic will fit within $5. See [deployment and capacity notes](docs/deployment.md).
 
+## Test through Tracer
+
+Use `tracer actions` to discover Scriv's CLI and `tracer app -- test --list`
+to list the real native scenarios. Run them on macOS with
+`tracer app -- test --app /path/to/ScrivAutomation.app`; use
+`--scenario journeys/project-roundtrip` for an explicitly labeled subset.
+The front door delegates to the existing actual-app runner, with no mock fallback.
+
+`tracer app -- test tooling` checks the public Tracer/CLI boundary without
+launching a native app. It is not native coverage. See the
+[front-door workflow and verification limits](docs/testing/tracer-front-door.md)
+and [native run evidence contract](docs/testing/cli-run-evidence.md).
+Optional [per-session LLVM coverage](docs/testing/cli-scenario-coverage.md) runs
+through the same Tracer front door with a pinned coverage build, separate
+cumulative profile pairs and real LCOV import. Native verification remains pending.
+Legacy test suites were removed at the user's request. Their frozen ledger and
+unverified gaps remain; neither test nor old-app retirement certifies native parity.
+
 ## Build the UIKit Mac app
 
 Use macOS 14+ with **Xcode 26.2 or newer** for the current UIKit SDK APIs (availability guards retain the older deployment target). Codex is optional for writing and playback.
@@ -59,7 +77,7 @@ bash scripts/build-catalyst.sh
 # Debugger build: SCRIV_CONFIGURATION=Debug bash scripts/build-catalyst.sh
 ```
 
-`apps/catalyst/ScrivUIKit.xcodeproj` contains the UIKit app/test targets, native adapter and bundled on-demand runtime XPC service. Its deterministic generator requires only Python 3, not XcodeGen. `scripts/verify-catalyst.sh` checks source/target integrity and, with a Swift toolchain installed, syntax on Linux; it does **not** type-check UIKit. Compilation, actual native interaction and signed installation/relaunch are separate verification gates. The preserved legacy app can still be built with `scripts/build-mac.sh`; do not confuse its historical screenshots with the UIKit target.
+`apps/catalyst/ScrivUIKit.xcodeproj` contains the UIKit app target, native adapter and bundled on-demand runtime XPC service. Its deterministic generator requires only Python 3, not XcodeGen. `scripts/verify-catalyst.sh` checks source/target integrity and, with a Swift toolchain installed, syntax on Linux; it does **not** type-check UIKit. Compilation, actual native interaction and signed installation/relaunch are separate verification gates. `npm run build:mac` builds this Catalyst target. The old AppKit build is retired; its historical screenshots do not show the current UIKit target.
 
 Local writing, timing, playback and `.scriv` packages do not require sign-in. Use Projects → Open to explicitly grant access to an existing package; the Catalyst app does not assume access to the legacy app’s storage. Accepted mutations enter a private, account-scoped write-ahead journal before publication. Recovery refuses changed sources rather than overwriting them. Script and Characters share the smaller text baseline and one persisted Cmd+/Cmd− zoom preference. Space plays/pauses outside text editing; normal spaces and IME composition remain text input. Cmd+Enter toggles script editing.
 
@@ -73,11 +91,11 @@ Open **Codex…** from the workspace's three-dot menu for a compact connection p
 
 **Scriv account:** the account control sends a six-digit email code and verifies it in the app to access hosted scripts and teams. Codes are short-lived, single-use and bound to the requesting sign-in flow. Scriv session tokens are stored in Keychain and scoped to the API origin. Existing GitHub identities remain supported separately; matching contact emails do not silently merge accounts.
 
-**Codex on this Mac:** In UIKit, a user-authorized bundled helper or explicitly paired, same-user Runtime Companion launches the installed `codex app-server`; the preserved legacy macOS target launches its own child directly. The separate **Connect to this address** action in Settings attaches to an explicitly configured loopback WebSocket endpoint. Sign in with ChatGPT is handled by Codex. Stop terminates only the child Scriv started; disconnecting an external server leaves that server running. No ChatGPT credential is sent to Scriv's cloud.
+**Codex on this Mac:** A user-authorized bundled helper or explicitly paired, same-user Runtime Companion launches the installed `codex app-server`. The separate **Connect to this address** action in Settings attaches to an explicitly configured loopback WebSocket endpoint. Sign in with ChatGPT is handled by Codex. Stop terminates only the child Scriv started; disconnecting an external server leaves that server running. No ChatGPT credential is sent to Scriv's cloud.
 
 Image generation requests a real image file in an isolated local generation directory. The installed Codex runtime, selected model and account must support image generation. Scriv reports an actual missing-capability or missing-file error instead of substituting an image. This integration still requires the live-account release smoke test described in the handoff.
 
-The protocol is checked against the official Codex **0.165.0** generated schema, with 21 passing contract checks. See [Codex integration](docs/codex-integration.md) for the tested version and reproducible validation.
+The former Codex **0.165.0** contract-check results are historical. The old contract suite has been removed; retained live CLI journeys remain separately gated. See [current testing](docs/testing/cli-only-tests.md).
 
 ## Run the backend locally
 
@@ -91,29 +109,29 @@ npm --prefix cloud run db:migrate:local
 npm run dev:cloud
 ```
 
-The isolated email-auth tests inject a fake sender and never send live mail. Interactive email sign-in requires a configured Email Sending binding and verified sender, or point the app at the deployed HTTPS service. Optional legacy GitHub OAuth needs a separate development OAuth app. There is no local authentication bypass. Stripe and TURN remain separate optional integrations; see [cloud setup](cloud/README.md).
+The isolated service CLI journey forbids outbound delivery and never sends live mail. Interactive email sign-in requires a configured Email Sending binding and verified sender, or point the app at the deployed HTTPS service. Optional legacy GitHub OAuth needs a separate development OAuth app. There is no local authentication bypass. Stripe and TURN remain separate optional integrations; see [cloud setup](cloud/README.md).
 
-## Verify
+## Verify through Tracer
 
 ```sh
 npm run check
-npm test
-npm --prefix cloud run test:load
-npx playwright install chromium
-npm run test:peer
-# Linux or macOS with an official Swift toolchain:
-bash scripts/verify-native.sh --portable
-# macOS only, for actual native app compilation and packaging:
-bash scripts/verify-native.sh --native
+npm test                         # Public CLI behavior through Tracer
+npm run test:services             # Isolated real Worker HTTP journeys
+npm run test:e2e -- --list        # Native CLI catalog; no app launch
+# Explicit native selection requires a matching automation Catalyst app:
+tracer app -- test --scenario journeys/project-roundtrip --app /path/ScrivAutomation.app
 ```
 
-The Cloudflare tests run inside the real Workers runtime with local D1, Durable Objects and R2 bindings. The peer tests use real Chromium WebRTC data channels. Swift core tests and optimized core builds run on Linux using the portable verification wrapper, which uses project-local caches. `npm run verify` now requires Swift rather than skipping those checks. Compiling the native interface and rendering its screenshots require macOS; parsing Swift source on Linux is not native UI type-checking. See [current local native evidence](docs/verification/doppler-linux-native.md).
-
-CI runs the backend, fixture and six real-browser peer tests plus the native Mac build. It packages a universal `.app`, checks a real multi-chunk transfer between two native WebKit bridges, then captures all three native views. The browser cases include simultaneous requests on throttled CPUs, ICE arriving before SDP, either device initiating, reconnection, and retry after lost signaling. CI does not deploy, create Stripe charges, sign with a private Developer ID certificate or log into a ChatGPT account.
+Use an installed Tracer or set `SCRIV_TRACER_CLI` to its trusted absolute
+entrypoint. Legacy test suites, targets and test-only dependencies are removed.
+Build/release integrity checks remain. [CLI-only testing](docs/testing/cli-only-tests.md)
+records exact deletion scope, recovery checkpoint, retained gaps and commands.
+A CLI/tooling pass is not native UI parity or 100% measured coverage. The workflow
+has been updated locally; no remote run was dispatched or verified here.
 
 ## Project map
 
-- [structure.md](structure.md): complete source map, runtime responsibilities and file formats.
+- [structure.md](structure.md): current runtime boundaries and the retained historical source map.
 - [Current architecture and schema](docs/architecture.md): local storage, cloud schema, collaboration and billing decisions.
 - [Cloud API](docs/cloud-api.md): the native/server protocol and error contract.
 - [Deployment handoff](docs/deployment.md): configuration, release commands, production smoke tests and rollback.

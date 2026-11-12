@@ -73,17 +73,31 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     private var connectionId: String?
     private var retryCount = 0
     private let urlSession: URLSession
+    private let credentialBackend: CloudCredentialBackend
+#if SCRIV_CLI_AUTOMATION
+    private let cliRun: ScrivCLIRunCapability?
+    var allowsPeerTransport: Bool { cliRun == nil }
+#endif
     var baseURL: URL {
         get {
-            let configured = UserDefaults.standard.string(forKey: "cloudBaseURL") ?? Bundle.main.object(forInfoDictionaryKey: "ScrivCloudURL") as? String
+#if SCRIV_CLI_AUTOMATION
+            if let cliRun { return cliRun.approvedOrigin ?? URL(string: "http://127.0.0.1:1")! }
+#endif
+            let configured = ScrivPreferences.standard.string(forKey: "cloudBaseURL") ?? Bundle.main.object(forInfoDictionaryKey: "ScrivCloudURL") as? String
             if let configured, let url = URL(string: configured), Self.validEndpoint(url) { return url }
             return URL(string: "http://127.0.0.1:8787")!
         }
         set {
+#if SCRIV_CLI_AUTOMATION
+            if let cliRun {
+                do { try cliRun.authorizeOriginChange(newValue) }
+                catch { onError?(error); return }
+            }
+#endif
             guard Self.validEndpoint(newValue), newValue != baseURL else { return }
             cancelSignIn(); disconnect(); account = nil; teams = []; projects = []; deviceId = nil
-            UserDefaults.standard.set(newValue.absoluteString, forKey: "cloudBaseURL")
-            token = try? KeychainToken.read(account: newValue.absoluteString)
+            ScrivPreferences.standard.set(newValue.absoluteString, forKey: "cloudBaseURL")
+            token = try? credentialBackend.read(account: newValue.absoluteString)
             notify()
         }
     }
@@ -92,13 +106,32 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         let startupTrace = StartupTrace.process
         startupTrace.record(.cloudInitializationBegin)
         defer { startupTrace.record(.cloudInitializationEnd) }
+#if SCRIV_CLI_AUTOMATION
+        let run = ScrivCLIRunCapability.forCloudConstruction()
+        cliRun = run
+        if let run { credentialBackend = ScrivCLIMemoryCredentials(run: run) }
+        else { credentialBackend = KeychainToken() }
+#else
+        credentialBackend = KeychainToken()
+#endif
         let configuration = URLSessionConfiguration.ephemeral
+#if SCRIV_CLI_AUTOMATION
+        if run != nil {
+            configuration.urlCredentialStorage = nil; configuration.httpCookieStorage = nil; configuration.urlCache = nil
+            configuration.connectionProxyDictionary = [:]
+        }
+#endif
         configuration.timeoutIntervalForRequest = 30; configuration.timeoutIntervalForResource = 120
-        urlSession = URLSession(configuration: configuration, delegate: CloudRedirectPolicy(), delegateQueue: nil)
+#if SCRIV_CLI_AUTOMATION
+        let redirectPolicy = CloudRedirectPolicy(isolated: run != nil)
+#else
+        let redirectPolicy = CloudRedirectPolicy()
+#endif
+        urlSession = URLSession(configuration: configuration, delegate: redirectPolicy, delegateQueue: nil)
         super.init()
         if !ProcessInfo.processInfo.arguments.contains("--screenshots"), !ProcessInfo.processInfo.arguments.contains("--peer-smoke") {
             startupTrace.record(.cloudTokenReadBegin)
-            token = try? KeychainToken.read(account:baseURL.absoluteString)
+            token = try? credentialBackend.read(account:baseURL.absoluteString)
             startupTrace.record(.cloudTokenReadEnd)
         }
     }
@@ -116,6 +149,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     }
     private func requestData(_ path: String, method: String, body: JSONValue? = nil, data: Data? = nil, headers: [String: String] = [:], authenticated: Bool = true) async throws -> Data {
         let url = try CloudEndpoint.apiURL(path:path,base:baseURL)
+        try authorizeCloudNetwork(url)
         let requestBase = baseURL, requestToken = token, requestGeneration = generation
         var request = URLRequest(url: url)
         request.httpMethod = method
@@ -132,12 +166,17 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
             let error = try? ScrivJSON.decoder.decode(JSONValue.self, from: responseData)
             let message = error?["error"]?["message"]?.string ?? "Cloud request failed (\(http.statusCode))."
             if authenticated, http.statusCode == 401 {
-                try? KeychainToken.delete(account:requestBase.absoluteString)
+                try? credentialBackend.delete(account:requestBase.absoluteString)
                 token = nil; account = nil; teams = []; projects = []; deviceId = nil; disconnect(); notify()
             }
             throw CloudRequestError(status:http.statusCode,code:error?["error"]?["code"]?.string ?? "request_failed",message:message)
         }
         return responseData.isEmpty ? Data("{}".utf8) : responseData
+    }
+    private func authorizeCloudNetwork(_ url: URL, webSocket: Bool = false) throws {
+#if SCRIV_CLI_AUTOMATION
+        try cliRun?.authorizeNetwork(url, webSocket: webSocket)
+#endif
     }
     func restoreSession() async {
         guard token != nil else { return }
@@ -168,6 +207,9 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         guard account == nil, authSession == nil, !emailSignIn.isBusy, signInOwnerID == nil || signInOwnerID == ownerID, isContextCurrent(), !Task.isCancelled else { return }
         let operation: UUID
         do {
+#if SCRIV_CLI_AUTOMATION
+            if cliRun != nil { try authorizeCloudNetwork(CloudEndpoint.apiURL(path: "/auth/email/request", base: baseURL)) }
+#endif
             if emailVerifier == nil { emailVerifier = try newSignInVerifier() }
             operation = try emailSignIn.beginRequest(email:email)
             signInOwnerID = ownerID
@@ -190,7 +232,12 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     func verifyEmailCode(_ code: String, ownerID: UUID, isContextCurrent: @MainActor () -> Bool = { true }) async {
         guard account == nil, authSession == nil, !emailSignIn.isBusy, signInOwnerID == ownerID, isContextCurrent(), !Task.isCancelled else { return }
         let operation: UUID, cleanCode: String
-        do { cleanCode = try EmailSignInFlow.normalizedCode(code); operation = try emailSignIn.beginVerification(code:cleanCode) }
+        do {
+#if SCRIV_CLI_AUTOMATION
+            if cliRun != nil { try authorizeCloudNetwork(CloudEndpoint.apiURL(path: "/auth/email/verify", base: baseURL)) }
+#endif
+            cleanCode = try EmailSignInFlow.normalizedCode(code); operation = try emailSignIn.beginVerification(code:cleanCode)
+        }
         catch { emailSignIn.showValidationError(error.localizedDescription); return }
         let server = baseURL, lifecycle = generation, previousToken = token
         guard let verifier = emailVerifier, let challengeID = emailSignIn.challengeID else { cancelEmailSignIn(); return }
@@ -202,8 +249,8 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
             guard !result.token.isEmpty, result.token.utf8.count <= 4096, !result.user.id.isEmpty, result.user.id.utf8.count <= 256,
                   result.expiresAt > Int64(Date().timeIntervalSince1970 * 1000) else { throw ScrivError.invalid("The server returned an invalid account session. Request a new code.") }
             // This MainActor section does not suspend: cancellation or a new origin
-            // cannot interleave between the scope check and the Keychain write.
-            try KeychainToken.write(result.token,account:server.absoluteString)
+            // cannot interleave between the scope check and the credential-backend write.
+            try credentialBackend.write(result.token,account:server.absoluteString)
             disconnect(); token = result.token; account = result.user; status = "Signed in"; notify()
             do { try await refreshAccount() }
             catch is CancellationError { return }
@@ -215,6 +262,10 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         }
     }
     func signInWithGitHub(ownerID: UUID, isContextCurrent: @MainActor () -> Bool = { true }) async throws {
+#if SCRIV_CLI_AUTOMATION
+        // OAuth opens a browser outside URLSession's transport policy.
+        guard cliRun == nil else { throw ScrivCLIRunCapability.Failure() }
+#endif
         guard authSession == nil else { throw ScrivError.conflict("A sign-in window is already open.") }
         guard account == nil, signInOwnerID == nil || signInOwnerID == ownerID, isContextCurrent(), !Task.isCancelled else { return }
         cancelEmailSignIn()
@@ -243,7 +294,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         struct Exchange: Decodable { var token: String; var user: CloudUser }
         let result: Exchange = try await request("/auth/exchange", method: "POST", body: .object(["code":.string(code),"codeVerifier":.string(verifier),"deviceName":.string(Self.signInDeviceLabel)]))
         guard baseURL == loginServer, generation == loginGeneration, authAttemptID == attempt, account == nil, isContextCurrent(), !Task.isCancelled else { throw CancellationError() }
-        try KeychainToken.write(result.token, account: loginServer.absoluteString)
+        try credentialBackend.write(result.token, account: loginServer.absoluteString)
         disconnect(); token = result.token; account = result.user; status = "Signed in"; notify()
         try await refreshAccount()
     }
@@ -270,13 +321,15 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     func signOut() async throws {
         cancelSignIn()
         let server = baseURL, previousToken = token
-        try KeychainToken.delete(account:server.absoluteString)
+        try credentialBackend.delete(account:server.absoluteString)
         token = nil; account = nil; teams = []; projects = []; deviceId = nil; disconnect(); notify()
         let logoutLifecycle = generation
         // Sign out locally even when offline. A slow revocation may never erase a
         // different session installed while it was in flight.
         if let previousToken {
-            var request = URLRequest(url:try CloudEndpoint.apiURL(path:"/auth/logout",base:server))
+            let url = try CloudEndpoint.apiURL(path: "/auth/logout", base: server)
+            try authorizeCloudNetwork(url)
+            var request = URLRequest(url: url)
             request.httpMethod = "POST"; request.setValue("Bearer \(previousToken)",forHTTPHeaderField:"Authorization")
             do {
                 let (_,response) = try await urlSession.data(for:request)
@@ -302,6 +355,9 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
     }
     func renameProject(_ title: String) async throws { guard let projectId else { return }; let _: JSONValue = try await request("/v1/projects/\(projectId)", method: "PATCH", body: .object(["title":.string(title)])) }
     func attach(projectId: String, realtime: Bool) async throws -> CloudSnapshot {
+#if SCRIV_CLI_AUTOMATION
+        if cliRun != nil { try authorizeCloudNetwork(CloudEndpoint.apiURL(path: "/v1/projects/\(projectId)/snapshot", base: baseURL)) }
+#endif
         disconnect(); stopped = false; self.projectId = projectId
         let operationGeneration = generation
         // Fresh sign-in can expose its account before the optional catalog
@@ -431,7 +487,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         // Persist the exact manifest AND part bytes before any network upload.
         // A retry after interruption/eviction uses the same identity and hashes.
         let pendingURL = try pendingDirectory().appendingPathComponent(commandId + ".json")
-        try ScrivJSON.encoder.encode(JSONValue.object(["projectId":.string(projectId),"createdAt":.number(Date().timeIntervalSince1970*1000),"endpoint":.string(endpoint),"payload":payload])).write(to: pendingURL, options: .atomic)
+        try writePending(ScrivJSON.encoder.encode(JSONValue.object(["projectId":.string(projectId),"createdAt":.number(Date().timeIntervalSince1970*1000),"endpoint":.string(endpoint),"payload":payload])), to: pendingURL)
         let receipt: CommandReceipt
         do { receipt = try await sendSavedCommand(projectId:projectId,endpoint:endpoint,payload:payload) }
         catch {
@@ -439,7 +495,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
                 status = "Needs attention — draft saved locally"; notify()
                 if let rejection = error as? CloudRequestError,
                    CloudAtomicBatch.isDefinitivelyUncommitted(status:rejection.status,code:rejection.code) {
-                    try FileManager.default.moveItem(at:pendingURL,to:pendingURL.deletingPathExtension().appendingPathExtension("rejected"))
+                    try movePending(pendingURL, to:pendingURL.deletingPathExtension().appendingPathExtension("rejected"))
                 }
             }
             throw error
@@ -452,7 +508,7 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         guard generation == operationGeneration, self.projectId == projectId else { throw CancellationError() }
         // Only event replay advances the cursor, including our own history entry.
         // Applying a receipt must not skip its event or an earlier remote event.
-        try? FileManager.default.removeItem(at: pendingURL)
+        try removeAcceptedPending(pendingURL)
         canImport = false; status = isConnected ? "Live" : "Cloud sync"; notify()
     }
     private struct CommandReceipt: Decodable { var seq: Int; var epoch: Int; var timingVersion: Int?; var items: [CloudItem]; var snapshotRequired: Bool? }
@@ -476,13 +532,13 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         let all = try CloudCodec.items(from: project)
         let savedURL = try pendingDirectory().appendingPathComponent("import-" + projectId + ".json")
         let payload: JSONValue
-        if FileManager.default.fileExists(atPath:savedURL.path) {
-            let record = try ScrivJSON.decoder.decode(JSONValue.self,from:Data(contentsOf:savedURL))
+        if try pendingExists(savedURL) {
+            let record = try ScrivJSON.decoder.decode(JSONValue.self,from:readPending(savedURL))
             guard record["projectId"]?.string == projectId, let previous = record["payload"] else { throw ScrivError.invalid("The saved import request is invalid.") }
             payload = previous
         } else {
             payload = .object(["commandId":.string(UUID().uuidString),"sessionId":.string(sessionId),"epoch":.number(Double(epoch)),"expectedTimingVersion":.number(Double(timingVersion)),"label":.string("Import project"),"items":try .encoded(all)])
-            try ScrivJSON.encoder.encode(JSONValue.object(["projectId":.string(projectId),"createdAt":.number(Date().timeIntervalSince1970*1000),"endpoint":.string("import"),"payload":payload])).write(to:savedURL,options:.atomic)
+            try writePending(ScrivJSON.encoder.encode(JSONValue.object(["projectId":.string(projectId),"createdAt":.number(Date().timeIntervalSince1970*1000),"endpoint":.string("import"),"payload":payload])), to: savedURL)
         }
         guard try ScrivJSON.encoder.encode(payload).count <= 16*1024*1024 else { throw ScrivError.invalid("Project metadata exceeds the 16 MiB import limit.") }
         let _: JSONValue = try await request("/v1/projects/\(projectId)/import", method: "POST", body: payload)
@@ -493,11 +549,11 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
                                             currentHead:headSeq,currentEpoch:epoch,acceptedReceiptSeq:acceptedReceiptSeq) else {
             try await replay()
             guard generation == currentGeneration, self.projectId == projectId else { throw CancellationError() }
-            try? FileManager.default.removeItem(at:savedURL)
+            try removeAcceptedPending(savedURL)
             return
         }
         items = Dictionary(uniqueKeysWithValues: snapshot.allItems.map { ($0.id,$0) }); epoch = snapshot.epoch; headSeq = snapshot.headSeq; timingVersion = snapshot.timingVersion ?? 0; canImport = snapshot.canImport ?? false
-        try? FileManager.default.removeItem(at:savedURL)
+        try removeAcceptedPending(savedURL)
         threads = Dictionary((snapshot.threads ?? []).map { ($0.id,$0) },uniquingKeysWith: { _,latest in latest })
         for thread in snapshot.threads ?? [] { onThread?(thread) }; onDiscussionRefresh?()
     }
@@ -505,43 +561,116 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
         guard let projectId else { return }
         let currentGeneration = generation
         for url in try pendingCommands(projectId:projectId) {
-            let saved = try ScrivJSON.decoder.decode(JSONValue.self, from: Data(contentsOf: url))
+            let saved = try ScrivJSON.decoder.decode(JSONValue.self, from: readPending(url))
             guard saved["projectId"]?.string == projectId, let payload = saved["payload"] else { continue }
             let endpoint = ["import","batches"].contains(saved["endpoint"]?.string ?? "") ? saved["endpoint"]!.string! : "commands"
             do {
                 let receipt = try await sendSavedCommand(projectId:projectId,endpoint:endpoint,payload:payload)
                 guard generation == currentGeneration else { throw CancellationError() }
                 acceptedReceiptSeq = max(acceptedReceiptSeq,receipt.seq)
-                try FileManager.default.removeItem(at:url)
+                try removePending(url)
             } catch let error as CloudRequestError where CloudAtomicBatch.isDefinitivelyUncommitted(status:error.status,code:error.code) {
                 // A recorded receipt is checked by the server before all these fences.
                 // This exact request is definitively uncommitted; retain its audit copy,
                 // then let three-way reconciliation decide whether a new edit is safe.
                 guard generation == currentGeneration else { throw CancellationError() }
-                try FileManager.default.moveItem(at:url,to:url.deletingPathExtension().appendingPathExtension("rejected"))
+                try movePending(url, to:url.deletingPathExtension().appendingPathExtension("rejected"))
             }
         }
         try await replay()
     }
     private func pendingCommands(projectId: String) throws -> [URL] {
-        try FileManager.default.contentsOfDirectory(at:pendingDirectory(),includingPropertiesForKeys:[.creationDateKey]).filter { url in
+        let files = try pendingFiles().filter { url in
             guard url.pathExtension == "json" else { return false }
-            let record = try ScrivJSON.decoder.decode(JSONValue.self,from:Data(contentsOf:url))
+            let record = try ScrivJSON.decoder.decode(JSONValue.self,from:readPending(url))
             return record["projectId"]?.string == projectId
-        }.sorted { ((try? $0.resourceValues(forKeys:[.creationDateKey]).creationDate) ?? .distantPast) < ((try? $1.resourceValues(forKeys:[.creationDateKey]).creationDate) ?? .distantPast) }
+        }
+#if SCRIV_CLI_AUTOMATION
+        if cliRun != nil {
+            // A tampered descriptor is a failed observation, not a sortable
+            // unknown date. Do not swallow isolated storage validation errors.
+            return try files.map { ($0, try pendingCreationDate($0)) }.sorted { $0.1 < $1.1 }.map { $0.0 }
+        }
+#endif
+        return files.sorted { ((try? pendingCreationDate($0)) ?? .distantPast) < ((try? pendingCreationDate($1)) ?? .distantPast) }
     }
     /// Opening the canonical cloud version is an explicit conflict-resolution action.
     /// Retain unsent payloads for recovery, but do not replay them over that choice later.
     func keepPendingAsLocalDrafts() throws {
         guard let projectId else { return }
-        for url in try pendingCommands(projectId:projectId) { try FileManager.default.moveItem(at:url,to:url.deletingPathExtension().appendingPathExtension("local-draft")) }
+        for url in try pendingCommands(projectId:projectId) { try movePending(url, to:url.deletingPathExtension().appendingPathExtension("local-draft")) }
     }
-    private func pendingDirectory() throws -> URL { guard let account else { throw ScrivError.unavailable("Sign in before saving cloud edits.") }; let scope = ScrivDigest.sha256(Data((baseURL.absoluteString + "/" + account.id).utf8)); let directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Scriv/Outbox").appendingPathComponent(scope); try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true); return directory }
+    private func pendingDirectory() throws -> URL {
+        guard let account else { throw ScrivError.unavailable("Sign in before saving cloud edits.") }
+        let scope = ScrivDigest.sha256(Data((baseURL.absoluteString + "/" + account.id).utf8))
+#if SCRIV_CLI_AUTOMATION
+        if let cliRun { return try cliRun.outboxDirectory(scope: scope) }
+#endif
+        let directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Scriv/Outbox").appendingPathComponent(scope)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        return directory
+    }
+    // Preserve production serialization and retry semantics. Only the storage
+    // boundary changes in a validated CLI run; no request payload is exported.
+    private func pendingFiles() throws -> [URL] {
+        let directory = try pendingDirectory()
+#if SCRIV_CLI_AUTOMATION
+        if let cliRun { return try cliRun.files(in: directory) }
+#endif
+        return try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.creationDateKey])
+    }
+    private func pendingExists(_ url: URL) throws -> Bool {
+#if SCRIV_CLI_AUTOMATION
+        if let cliRun { return try cliRun.exists(url) }
+#endif
+        return FileManager.default.fileExists(atPath: url.path)
+    }
+    private func readPending(_ url: URL) throws -> Data {
+#if SCRIV_CLI_AUTOMATION
+        if let cliRun { return try cliRun.read(url) }
+#endif
+        return try Data(contentsOf: url)
+    }
+    private func writePending(_ bytes: Data, to url: URL) throws {
+#if SCRIV_CLI_AUTOMATION
+        if let cliRun { try cliRun.write(bytes, to: url); return }
+#endif
+        try bytes.write(to: url, options: .atomic)
+    }
+    private func removeAcceptedPending(_ url: URL) throws {
+#if SCRIV_CLI_AUTOMATION
+        if cliRun != nil { try removePending(url); return }
+#endif
+        // Production historically keeps successful cloud saves best-effort when
+        // local cleanup fails. Isolated validation failures must remain failures.
+        try? removePending(url)
+    }
+    private func removePending(_ url: URL) throws {
+#if SCRIV_CLI_AUTOMATION
+        if let cliRun { try cliRun.remove(url); return }
+#endif
+        try FileManager.default.removeItem(at: url)
+    }
+    private func movePending(_ source: URL, to destination: URL) throws {
+#if SCRIV_CLI_AUTOMATION
+        if let cliRun { try cliRun.move(source, to: destination); return }
+#endif
+        try FileManager.default.moveItem(at: source, to: destination)
+    }
+    private func pendingCreationDate(_ url: URL) throws -> Date {
+#if SCRIV_CLI_AUTOMATION
+        if let cliRun { return try cliRun.creationDate(url) }
+#endif
+        return try url.resourceValues(forKeys: [.creationDateKey]).creationDate ?? .distantPast
+    }
     private func connectSocket() {
         guard let projectId, let token, !stopped else { return }
         var components = URLComponents(url: baseURL.appendingPathComponent("v1/projects/\(projectId)/socket"), resolvingAgainstBaseURL: false)!
         components.scheme = components.scheme == "https" ? "wss" : "ws"
-        var request = URLRequest(url: components.url!)
+        guard let url = components.url else { return }
+        do { try authorizeCloudNetwork(url, webSocket: true) }
+        catch { onError?(error); return }
+        var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization"); request.setValue(sessionId, forHTTPHeaderField: "X-Scriv-Device-Id")
         request.setValue("delta-v1", forHTTPHeaderField: "X-Scriv-Presence")
         let currentGeneration = generation
@@ -859,6 +988,20 @@ final class CloudClient: NSObject, ObservableObject, ASWebAuthenticationPresenta
 }
 
 private final class CloudRedirectPolicy: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+#if SCRIV_CLI_AUTOMATION
+    private let isolated: Bool
+    init(isolated: Bool = false) { self.isolated = isolated; super.init() }
+    // No OS/default credential or client-certificate challenge handling in an
+    // isolated run, even if a future approved loopback transport is enabled.
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge,
+                    completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        completionHandler(isolated ? .cancelAuthenticationChallenge : .performDefaultHandling, nil)
+    }
+    func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge,
+                    completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        completionHandler(isolated ? .cancelAuthenticationChallenge : .performDefaultHandling, nil)
+    }
+#endif
     func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) { completionHandler(nil) }
 }
 
@@ -870,9 +1013,17 @@ struct CloudRequestError: LocalizedError {
 }
 
 private extension Data { var base64URLEncoded: String { base64EncodedString().replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: "=", with: "") } }
-private enum KeychainToken {
-    static let service = "com.scriv.account"
-    static func read(account: String) throws -> String? { var result: CFTypeRef?; let status = SecItemCopyMatching([kSecClass:kSecClassGenericPassword,kSecAttrService:service,kSecAttrAccount:account,kSecReturnData:true,kSecMatchLimit:kSecMatchLimitOne] as CFDictionary,&result); if status == errSecItemNotFound { return nil }; guard status == errSecSuccess, let data = result as? Data, let token = String(data:data,encoding:.utf8) else { throw ScrivError.unavailable("Could not read the saved account from Keychain.") }; return token }
-    static func write(_ token: String, account: String) throws { try delete(account:account); let status = SecItemAdd([kSecClass:kSecClassGenericPassword,kSecAttrService:service,kSecAttrAccount:account,kSecValueData:Data(token.utf8),kSecAttrAccessible:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly] as CFDictionary,nil); guard status == errSecSuccess else { throw ScrivError.unavailable("Could not save the account in Keychain.") } }
-    static func delete(account: String) throws { let status = SecItemDelete([kSecClass:kSecClassGenericPassword,kSecAttrService:service,kSecAttrAccount:account] as CFDictionary); guard status == errSecSuccess || status == errSecItemNotFound else { throw ScrivError.unavailable("Could not remove the account from Keychain.") } }
+@MainActor
+protocol CloudCredentialBackend: AnyObject {
+    func read(account: String) throws -> String?
+    func write(_ token: String, account: String) throws
+    func delete(account: String) throws
+}
+
+@MainActor
+private final class KeychainToken: CloudCredentialBackend {
+    private let service = "com.scriv.account"
+    func read(account: String) throws -> String? { var result: CFTypeRef?; let status = SecItemCopyMatching([kSecClass:kSecClassGenericPassword,kSecAttrService:service,kSecAttrAccount:account,kSecReturnData:true,kSecMatchLimit:kSecMatchLimitOne] as CFDictionary,&result); if status == errSecItemNotFound { return nil }; guard status == errSecSuccess, let data = result as? Data, let token = String(data:data,encoding:.utf8) else { throw ScrivError.unavailable("Could not read the saved account from Keychain.") }; return token }
+    func write(_ token: String, account: String) throws { try delete(account:account); let status = SecItemAdd([kSecClass:kSecClassGenericPassword,kSecAttrService:service,kSecAttrAccount:account,kSecValueData:Data(token.utf8),kSecAttrAccessible:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly] as CFDictionary,nil); guard status == errSecSuccess else { throw ScrivError.unavailable("Could not save the account in Keychain.") } }
+    func delete(account: String) throws { let status = SecItemDelete([kSecClass:kSecClassGenericPassword,kSecAttrService:service,kSecAttrAccount:account] as CFDictionary); guard status == errSecSuccess || status == errSecItemNotFound else { throw ScrivError.unavailable("Could not remove the account from Keychain.") } }
 }

@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "document-graph-deletion-v101",
+      "title": "Delete a referenced document graph once",
+      "featureId": "document-graph-deletion",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/document-integrity-journey.mjs"
+      ],
+      "plannedActions": [
+        "Complete original typed-graph integrity checks and valid metadata edit. Acquire the scene lease and capture current snapshot plus complete two-event history; require five live edit leases.",
+        "Submit character-only deletion using current version and lease. Require exact 409/item_in_use, identical nonlease snapshot and complete event response.",
+        "Reuse the refused command ID for scene, character, image, entry and cue deletions in parent-first order with current versions, leases and timing version.",
+        "Require one successful receipt, one sequence/timing increment, five versioned tombstones and an empty live snapshot that is still not importable.",
+        "Read full events and require the two old records unchanged plus one exact five-change command event with complete before/after values, actor, label and real request-time bounds.",
+        "Replay the identical successful payload. Require identical receipt and unchanged nonlease snapshot/history, no new event or version/counter movement, empty R2, 80 HTTP checks and zero outbound."
+      ],
+      "expectedOutcomes": [
+        "With current public versions and live edit leases, deleting the referenced character alone returns exact 409/item_in_use. A fresh public snapshot excluding the time-sensitive leases field and the complete event response are unchanged. The same refused command ID is then reused with a repaired all-five-item delete payload and succeeds, showing that the refused attempt did not block this corrected retry. No internal receipt/index read or storage failure injection is performed.",
+        "One command deletes scene, character, image, entry and cue, deliberately placing parents before their dependants. The successful receipt contains exactly those five prior items in operation order, each incremented once and marked deleted, at sequence three, epoch one and timing version two. Public snapshot has no live items, five exact metadata-only tombstones with empty data, canImport false and unchanged other nonlease fields. One new event preserves each complete before/after item, actor, command ID, label and request-bounded timestamp; the two original events remain exact.",
+        "An exact replay of the successful corrected payload by the same actor returns the identical original receipt. Fresh snapshot excluding leases and the full event response remain identical to the post-delete state, with no additional sequence, timing, item-version or event change. R2 stays empty and outbound attempts remain zero. This is sequential public-state/idempotency evidence, not restart durability, hidden-store nonmutation, permanent erasure, arbitrary race or fault safety."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "document-graph-deletion-v101-1",
+      "featureId": "document-graph-deletion",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 188,
+        "end": 190,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "bc060e1f5603eb0df03df0feb33a3c88523a8bdaa16942ceb05de9bae2afa7a4",
+        "sha256": "a044e8814dae3162ec39d849113a3ce07f3e8d363d89b28f3a342e078e67ecb4"
+      },
+      "scenarioIds": [
+        "document-graph-deletion-v101"
+      ],
+      "rationale": "Character-only delete is refused by the aggregate reference guard; the complete parent-first graph delete succeeds when all dependants are deleted in the same command. Individual scene/image refusal branches are not newly isolated.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Sequential owned service HTTP and public state only; no internal receipt/index reads, forced failure/race, restart/crash, permanent erasure, live provider or native behavior. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "One command deletes scene, character, image, entry and cue, deliberately placing parents before their dependants. The successful receipt contains exactly those five prior items in operation order, each incremented once and marked deleted, at sequence three, epoch one and timing version two. Public snapshot has no live items, five exact metadata-only tombstones with empty data, canImport false and unchanged other nonlease fields. One new event preserves each complete before/after item, actor, command ID, label and request-bounded timestamp; the two original events remain exact."
+      ]
+    },
+    {
+      "rangeId": "document-graph-deletion-v101-2",
+      "featureId": "document-graph-deletion",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 228,
+        "end": 229,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "ae67a7a8996cf9a44364dbc1d7344f58de6433ec9ff965f1a81d0ec869cd033c",
+        "sha256": "302701ba36f1e756791b19546bd407326efad942cf2eb0726c431eca1dd5c1fb"
+      },
+      "scenarioIds": [
+        "document-graph-deletion-v101"
+      ],
+      "rationale": "The real transaction boundary encloses the refused post-write reference validation and subsequent repaired command. Public snapshot/history remain unchanged after refusal; no crash/fault or hidden-store proof.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Sequential owned service HTTP and public state only; no internal receipt/index reads, forced failure/race, restart/crash, permanent erasure, live provider or native behavior. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "With current public versions and live edit leases, deleting the referenced character alone returns exact 409/item_in_use. A fresh public snapshot excluding the time-sensitive leases field and the complete event response are unchanged. The same refused command ID is then reused with a repaired all-five-item delete payload and succeeds, showing that the refused attempt did not block this corrected retry. No internal receipt/index read or storage failure injection is performed."
+      ]
+    },
+    {
+      "rangeId": "document-graph-deletion-v101-3",
+      "featureId": "document-graph-deletion",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 233,
+        "end": 237,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "70c056d78a6d42c16ae8fdd63c0b0ffe9b50bb4c3e1903448407cbef14ff15d7",
+        "sha256": "85ca92634200b33fc8f3a2df147aac61271431a9bb5fb043ff81ea746535c78d"
+      },
+      "scenarioIds": [
+        "document-graph-deletion-v101"
+      ],
+      "rationale": "Entry/cue deletion participates in the current timing-version check and yields one timing increment for the whole command; metadata-only character refusal and cached replay do not advance it.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Sequential owned service HTTP and public state only; no internal receipt/index reads, forced failure/race, restart/crash, permanent erasure, live provider or native behavior. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "The all-five delete contains entry and cue deletions with the current expectedTimingVersion. It increments headSeq from two to three and timingVersion from one to two exactly once while epoch stays one; refused character-only deletion and exact replay do not change those counters."
+      ]
+    },
+    {
+      "rangeId": "document-graph-deletion-v101-4",
+      "featureId": "document-graph-deletion",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 261,
+        "end": 264,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "624e1a1809bfe7ae3877edbc193010b07cdbbb55a02b36111e4169f4521d627a",
+        "sha256": "1153e9492c82bcaa2d5a830b055ac899f27ee2894e81d36a2e3aba2542e09979"
+      },
+      "scenarioIds": [
+        "document-graph-deletion-v101"
+      ],
+      "rationale": "Each operation forms a versioned tombstone before aggregate reference validation, so submitted parent-first ordering is accepted for the complete deleted graph. Returned values and public state provide the oracle.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Sequential owned service HTTP and public state only; no internal receipt/index reads, forced failure/race, restart/crash, permanent erasure, live provider or native behavior. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "One command deletes scene, character, image, entry and cue, deliberately placing parents before their dependants. The successful receipt contains exactly those five prior items in operation order, each incremented once and marked deleted, at sequence three, epoch one and timing version two. Public snapshot has no live items, five exact metadata-only tombstones with empty data, canImport false and unchanged other nonlease fields. One new event preserves each complete before/after item, actor, command ID, label and request-bounded timestamp; the two original events remain exact."
+      ]
+    },
+    {
+      "rangeId": "document-graph-deletion-v101-5",
+      "featureId": "document-graph-deletion",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 267,
+        "end": 269,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "297d5874d3061e27c4969f730b41a3d4a029a137aa343044ae85b5aea2178625",
+        "sha256": "4b7c0ba0b29a397736b565257ccc0b93896cb9c892c5b2517b720ed0b1b77d8a"
+      },
+      "scenarioIds": [
+        "document-graph-deletion-v101"
+      ],
+      "rationale": "One successful deletion writes one command event and all five before/after changes; exact complete public history preserves the original prefix and expected actor, counters and label.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Sequential owned service HTTP and public state only; no internal receipt/index reads, forced failure/race, restart/crash, permanent erasure, live provider or native behavior. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "One new command event has exact actor, command ID, label, sequence/epoch/timing, a request-bounded timestamp and all five independently derived before/after changes ordered by item ID. Both old events are unchanged, hasMore is false, and the full page matches the expected three-event result."
+      ]
+    },
+    {
+      "rangeId": "document-graph-deletion-v101-6",
+      "featureId": "document-graph-deletion",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 270,
+        "end": 272,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "853614b54553788c5708de056932a9eb6d3d754c4ea3ab404754232d81637800",
+        "sha256": "987cbaf071c28a7f213d8d21b6ffaf1d368aee70627e68d7bbcaea0e2239bec4"
+      },
+      "scenarioIds": [
+        "document-graph-deletion-v101"
+      ],
+      "rationale": "The repaired command returns the expected operation-ordered five-item receipt; exact sequential replay returns the same public result. Internal receipt-row bytes are not read.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Sequential owned service HTTP and public state only; no internal receipt/index reads, forced failure/race, restart/crash, permanent erasure, live provider or native behavior. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "The corrected payload reuses the refused command ID and succeeds with one receipt containing exactly the five expected tombstones in submitted operation order. Each keeps the prior kind/data and increments its version once; epoch and sequence/timing fields are exact. The later identical payload returns that same receipt."
+      ]
+    },
+    {
+      "rangeId": "document-graph-deletion-v101-7",
+      "featureId": "document-graph-deletion",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 331,
+        "end": 335,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "27c78e074dd6a148ca9124cc0fa9fcad08ad3ebddf6f2ec327d0a1b48ae89494",
+        "sha256": "d3af49a290925564d1b136ff42d8c4fec01c2e653f9315a9f28e8129837a2419"
+      },
+      "scenarioIds": [
+        "document-graph-deletion-v101"
+      ],
+      "rationale": "Current snapshot projects tombstone IDs/kinds/versions with empty data and keeps canImport false; event history/receipts retain full data deliberately.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Sequential owned service HTTP and public state only; no internal receipt/index reads, forced failure/race, restart/crash, permanent erasure, live provider or native behavior. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "Snapshot after connected deletion returns no live items and exactly five tombstones with original IDs/kinds, incremented versions, deleted true and empty data. canImport remains false despite no live items. Other nonlease snapshot fields match the prior state except the declared sequence/timing changes. Historical events and receipts intentionally still contain item data; no permanent erasure or global privacy claim."
+      ]
+    },
+    {
+      "rangeId": "document-graph-deletion-v101-8",
+      "featureId": "document-graph-deletion",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 354,
+        "end": 360,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "fc088ce6d23ccbbb22ccc5830216e467c89cb21dce0b6080d8ad9f975c2bca59",
+        "sha256": "b1f02161eacc8dcd8c5244f94b300703f70919fb0e1022364de22ba1df89d049"
+      },
+      "scenarioIds": [
+        "document-graph-deletion-v101"
+      ],
+      "rationale": "The public command route allows corrected reuse after refusal and returns an exact successful receipt on identical replay before applying stale expected versions again. Cross-user/access-change replay is excluded.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Sequential owned service HTTP and public state only; no internal receipt/index reads, forced failure/race, restart/crash, permanent erasure, live provider or native behavior. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "An exact replay of the successful corrected payload by the same actor returns the identical original receipt. Fresh snapshot excluding leases and the full event response remain identical to the post-delete state, with no additional sequence, timing, item-version or event change. R2 stays empty and outbound attempts remain zero. This is sequential public-state/idempotency evidence, not restart durability, hidden-store nonmutation, permanent erasure, arbitrary race or fault safety."
+      ]
+    },
+    {
+      "rangeId": "document-graph-deletion-v101-9",
+      "featureId": "document-graph-deletion",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 113,
+        "end": 116,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "42e6aeb17787c70f600c8f9f5e0d7011752ce09f9f043dba3be823ab6b16e87a",
+        "sha256": "dbc3754daf921b4f00a69a6ef5796ed1669799ca6b9ecca2d7d2f9dffa9b4f46"
+      },
+      "scenarioIds": [
+        "document-graph-deletion-v101"
+      ],
+      "rationale": "Public event reconstruction orders complete before/after changes by item ID. Expected changes are independently derived from the previously asserted graph, not only compared to the receipt.",
+      "confidence": "medium",
+      "uncertainty": "Independent semantic review required. Sequential owned service HTTP and public state only; no internal receipt/index reads, forced failure/race, restart/crash, permanent erasure, live provider or native behavior. Mapping is not measured execution.",
+      "proposedAssertions": [
+        "One new command event has exact actor, command ID, label, sequence/epoch/timing, a request-bounded timestamp and all five independently derived before/after changes ordered by item ID. Both old events are unchanged, hasMore is false, and the full page matches the expected three-event result."
+      ]
+    }
+  ]
+}

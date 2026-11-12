@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "email-delivery-recovery-v107",
+      "title": "Recover safely after email delivery failure",
+      "preconditions": [
+        "Run complete tracer app -- test services email-auth. Preserve original lines 1–273 and footer, sixteen named runtime callbacks and fifteen consumption checks. Append nine requests for forty total within original cap 40.",
+        "Reuse existing synthetic state and verify users, identities, sessions and challenges across the Miniflare mailbox configuration switch. The replacement mailbox accepts only synthetic-recovery@example.invalid and the configured synthetic sender/subject/code shape; it stores the first code then throws a synthetic response failure, and accepts the second normally.",
+        "New challenge/auth mutations use public loopback HTTP. Mailbox RPC and D1 queries only observe fixture state; no direct new D1 fixture write, production helper call, clock override or production bypass is added.",
+        "Wait naturally until the failed row creation time plus 60000ms has elapsed, with 25ms margin. The unchanged process-group deadline remains 90 seconds; this is not exact cooldown-boundary or ten-minute expiry testing.",
+        "Assertions concern users, verified identities, sessions and challenges; the two preflight refusals also preserve security-limit rows. Other internal counters and business stores are outside the declared scope. The failed request never returns its challenge ID, so its stored invalidation is inspected rather than attempting that unavailable ID."
+      ],
+      "actions": [
+        "Complete prior chapters and freeze existing identity/challenge rows. Switch only the local mailbox fixture and verify that observed state survives.",
+        "Send text/plain and foreign-origin JSON sign-in requests. Require exact errors, no mailbox attempt and unchanged identity/challenge/security-limit state.",
+        "Request a code with a fresh synthetic email/proof. The mailbox records the code then throws. Require exact sanitized 503, one failed challenge with nulled digest/send time and send_failed marker, and no new identity/session.",
+        "Retry immediately with the same email/proof. Require exact cooldown 429, unchanged failed challenge and no additional mailbox attempt.",
+        "Wait out the real one-minute cooldown without altering clock/storage. Request again with the same email/proof and require exact new challenge/code digest, bounded timestamps and replacement of the failed row.",
+        "Verify the successful replacement code/proof, check exact new user/identity/session/consumption rows, then read public identity.",
+        "Log out, require only bounded revocation of the new session, then require exact expired-session denial. Preserve all old rows, two send attempts, empty mailbox and zero outbound."
+      ],
+      "expectations": [
+        {
+          "id": "guards",
+          "description": "A text/plain request and a JSON request with a foreign Origin return the exact 415/unsupported_media_type and 403/invalid_origin error objects before any mailbox attempt. All security-limit rows, users, verified identities, sessions and existing challenges remain exact after these two requests. This is one disallowed media type and one foreign origin, not every header normalization or browser behavior.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 274,
+            "end": 339,
+            "sha256": "25510423c3a8fe5f061195745a7f30e92ff42aa9e0325ef7166c1ffa474bea0b"
+          }
+        },
+        {
+          "id": "failure",
+          "description": "The local mailbox accepts and stores a correctly addressed six-digit code, then fails its first send response. The public request returns only the exact 503/email_unavailable error. One new failed challenge has a request-bounded creation time, ten-minute expiry, null code_hash/sent_at, zero attempts and consumed_by send_failed; no identity or session is created. Immediate same-email/same-proof resend returns the exact cooldown 429 with that row unchanged and no second send attempt. After the actual one-minute cooldown elapses, the same request succeeds with a new challenge ID/hash, independently expected code digest, bounded creation/send times, reset consumption/attempt state and exact expiry/resend timestamps. The row replaces the failed row without increasing the challenge count. No clock override or direct challenge write is used.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 274,
+            "end": 339,
+            "sha256": "25510423c3a8fe5f061195745a7f30e92ff42aa9e0325ef7166c1ffa474bea0b"
+          }
+        },
+        {
+          "id": "session",
+          "description": "Successful verification of the replacement code/proof creates exactly one expected email-namespace user, verified identity and session. Exact row checks cover returned user, independently hashed session token, bounded creation time, named device and default thirty-day expiry. The replacement challenge is consumed exactly once with one attempt. Public identity read agrees; logout changes only this session revocation timestamp, bounded by its request, and the next identity read returns the exact expired-session error. All earlier users, identities, sessions and challenges are preserved. The local mailbox has exactly two attempts and ends empty; outbound attempts remain zero. No verification of the unavailable failed challenge ID, rollback fault, concurrent resend, process restart, native UI or real email delivery is asserted.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 274,
+            "end": 339,
+            "sha256": "25510423c3a8fe5f061195745a7f30e92ff42aa9e0325ef7166c1ffa474bea0b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 121,
+            "end": 125,
+            "sha256": "dde1398ab9e9b20459435d5d38bc25e6f6ccf062d87eafb55bc4657c9c14a396"
+          },
+          "expectation": "guards",
+          "why": "Content-type and Origin guards run before requestCode and its rate-limit/provider work. The two concrete refusals preserve counters and challenge state."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 49,
+            "end": 56,
+            "sha256": "5a3d80c30bcbc8e96c0dd175ef45c1e2490061875f9ac3291cdc1c3ed4913a95"
+          },
+          "expectation": "failure",
+          "why": "Same email/proof upsert retains the failed reservation during cooldown, then replaces it only after real elapsed time. No exact edge or parallel reservation claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 58,
+            "end": 60,
+            "sha256": "3018eb085659ec994df0ab8aeff2529d6cc2c1d3e2f2d41659503d8ea274deb3"
+          },
+          "expectation": "failure",
+          "why": "Successful local delivery marks the replacement sent; first response failure skips this mark. Read-only rows distinguish sent and failed states."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 61,
+            "end": 68,
+            "sha256": "e55377be60fe7f3f1f9c8d426b279f21661d5a23f4dc585cc395ddda4604fb5b"
+          },
+          "expectation": "failure",
+          "why": "Provider-response failure nulls the digest and marks send_failed while preserving cooldown; public error is exact and contains no provider details, code or challenge ID."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 91,
+            "end": 103,
+            "sha256": "7fd9e0c2ffabc834b61b6c9e02f0f6be208997669c3341aa2902418d23463db9"
+          },
+          "expectation": "session",
+          "why": "Replacement consumption gates one newly verified user and email identity. Exact observed rows and one-attempt marker distinguish this successful retry from the failed reservation."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 104,
+            "end": 113,
+            "sha256": "dd5595516c33f04c18ae6e47ed5266f221d4d36ddd30107b16976685b26d626c"
+          },
+          "expectation": "session",
+          "why": "The verified replacement issues one session with independent token digest, exact device/expiry and current public user, then public authentication/logout confirms its lifecycle."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email.ts",
+            "start": 6,
+            "end": 11,
+            "sha256": "f40cb3e6f9a11c8333272362c508679240a295b4381c40ffa24b6473e35f8945"
+          },
+          "expectation": "failure",
+          "why": "Structured email binding sends the synthetic address, sender, subject and code-bearing text accepted by the local mailbox; its accepted-then-failed response exercises caller invalidation. No HTML/deliverability claim."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "email-delivery-recovery-v107",
+      "title": "Recover safely after email delivery failure",
+      "steps": [
+        "email-delivery-recovery-v107"
+      ]
+    }
+  ]
+}

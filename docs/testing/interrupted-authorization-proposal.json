@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "interrupted-authorization-v95",
+      "title": "Refuse logged-out writes after authentication and recover safely",
+      "featureId": "interrupted-authorization",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/service-journey.mjs"
+      ],
+      "plannedActions": [
+        "Complete original cloud and scheduled-maintenance checks. Seed the declared synthetic target member; capture original media and storage state.",
+        "For each of the following eight cases, seed a fresh attempt session, verify absent counters, send one JSON byte, observe the post-authentication counter, publicly log out, verify revocation and retained-owner liveness, then release the remaining body.",
+        "Interrupt team creation named Recovered synthetic team; require 401/session_expired, exact unchanged business state, old-token 401 and successful identical retained-owner creation with exact owner membership.",
+        "Interrupt existing team rename to Recovered team rename; require 409/access_changed, exact unchanged state, old-token 401 and persisted retained-owner rename.",
+        "Interrupt a viewer join-link creation with one-day expiry; require 409/access_changed, exact unchanged state, old-token 401 and retry with exact stored token hash, creator and expiry.",
+        "Interrupt target member role change from member to viewer; require 409/membership_changed, exact unchanged state, old-token 401 and persisted viewer role on retry.",
+        "Interrupt new personal project creation, then new active-team project creation; require 409/access_changed and exact unchanged state for each, followed by old-token 401 and retries with exact ID/title/owner/null-or-team scope.",
+        "Interrupt renaming each newly created personal and team project; require 409/access_changed and exact unchanged state, followed by old-token 401 and persisted exact titles on retained-owner retries.",
+        "After all eight flows, compare original assets, R2 bytes/specified metadata and original team storage counters, require zero outbound attempts and finish owned cleanup."
+      ],
+      "expectedOutcomes": [
+        "For each fresh attempt session, one newly observed request counter at count 1 proves initial authentication completed while the body is incomplete and no response started. Public logout succeeds, that unexpired session is revoked, the retained owner session stays live, and only then is the remaining body released.",
+        "All eight interrupted writes return their exact mutation-specific refusal and preserve complete ordered teams, team_members, join_links, projects and billing_events plus assets/R2 specified bytes/metadata and storage counters. A later old-token identity read is 401/session_expired and leaves the observed request marker unchanged; session and rate-limit writes are expected exclusions.",
+        "Every identical payload succeeds through the retained owner session and verifies its intended persisted name, role, membership, link identity/expiry or project identity/owner/team/title. Original media and team quotas remain unchanged, all eight cases finish and zero outbound requests occur."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "interrupted-authorization-v95-1",
+      "featureId": "interrupted-authorization",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/index.ts",
+        "start": 23,
+        "end": 25,
+        "fileSha256": "c93c52239eede54d0ae8efef31cc3b1c1d4fd24ca750d248f5c21fd4b3afd6c4",
+        "spanSha256": "82f808c5c79a908695bbae826da6016e1064d81ff593bbfe713883e0c0b1eeb6",
+        "sha256": "f1e8d34e28baefa2418a759c60ff191fe8ebeef0b8aa320f87d7d621aae10120"
+      },
+      "scenarioIds": [
+        "interrupted-authorization-v95"
+      ],
+      "rationale": "The dispatcher awaits authentication before its session-specific rate-limit mutation. The config branch is not a scenario target; all named mutation paths reach the counter.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Eight controlled incomplete-body interleavings via real local HTTP and synthetic sessions. No arbitrary concurrency, all mutation routes, role/entitlement changes, expiry boundary, storage failure, socket/native or measured execution claim.",
+      "proposedAssertions": [
+        "For each fresh attempt session, one newly observed request counter at count 1 proves initial authentication completed while the body is incomplete and no response started. Public logout succeeds, that unexpired session is revoked, the retained owner session stays live, and only then is the remaining body released."
+      ]
+    },
+    {
+      "rangeId": "interrupted-authorization-v95-2",
+      "featureId": "interrupted-authorization",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/http.ts",
+        "start": 80,
+        "end": 82,
+        "fileSha256": "5eb8762cc12bfea165d1343bceee2a25bebb684bd69f5b5626c68a9b40140fc2",
+        "spanSha256": "71ed61edb3e5d9d5cc98b8e10da9a5e7c94aded08b23284a83a1159884cfce76",
+        "sha256": "d3d1991dfa812f3aeba31bd23dc1f1bd7facb6ec31b96893762492b15a38651b"
+      },
+      "scenarioIds": [
+        "interrupted-authorization-v95"
+      ],
+      "rationale": "A fresh counter insertion at count 1 is the observable authentication-order marker; quota exhaustion and boundary timing are not claimed.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Eight controlled incomplete-body interleavings via real local HTTP and synthetic sessions. No arbitrary concurrency, all mutation routes, role/entitlement changes, expiry boundary, storage failure, socket/native or measured execution claim.",
+      "proposedAssertions": [
+        "For each fresh attempt session, one newly observed request counter at count 1 proves initial authentication completed while the body is incomplete and no response started. Public logout succeeds, that unexpired session is revoked, the retained owner session stays live, and only then is the remaining body released."
+      ]
+    },
+    {
+      "rangeId": "interrupted-authorization-v95-3",
+      "featureId": "interrupted-authorization",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/auth.ts",
+        "start": 75,
+        "end": 78,
+        "fileSha256": "4559ee08f82a4fd17144d42bd96cdc0e40b685f43e88a63c6286c5969d91d3ed",
+        "spanSha256": "74a46947559f127ddf1fc0cfa08afd07d56001d41e8f6f71d6a32bca3a335898",
+        "sha256": "6133c51be5597cb7e00569ae7cd564161eb6eb7dff47653b9a3dd2151c9b7594"
+      },
+      "scenarioIds": [
+        "interrupted-authorization-v95"
+      ],
+      "rationale": "Real authenticated logout persists token-scoped session revocation and returns ok. Notification propagation to live rooms/sockets is not asserted.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Eight controlled incomplete-body interleavings via real local HTTP and synthetic sessions. No arbitrary concurrency, all mutation routes, role/entitlement changes, expiry boundary, storage failure, socket/native or measured execution claim.",
+      "proposedAssertions": [
+        "For each fresh attempt session, one newly observed request counter at count 1 proves initial authentication completed while the body is incomplete and no response started. Public logout succeeds, that unexpired session is revoked, the retained owner session stays live, and only then is the remaining body released."
+      ]
+    },
+    {
+      "rangeId": "interrupted-authorization-v95-4",
+      "featureId": "interrupted-authorization",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/access.ts",
+        "start": 6,
+        "end": 9,
+        "fileSha256": "58cbdc6243938f90dfa7eb6ec643b79b8951828f748a79b3f042817c56b08649",
+        "spanSha256": "6581e627f5cb5c88e0b577cc79f6ac26f10d55a346e1274f4c7f65d3100fb252",
+        "sha256": "c45cafa274f42112e3b849ff73df7d3c9718ce683984550c0b692b2a24d20cc6"
+      },
+      "scenarioIds": [
+        "interrupted-authorization-v95"
+      ],
+      "rationale": "After revocation, a new old-token identity request fails the session lookup with session_expired before reaching its request counter; no token-expiry or malformed-header boundary claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Eight controlled incomplete-body interleavings via real local HTTP and synthetic sessions. No arbitrary concurrency, all mutation routes, role/entitlement changes, expiry boundary, storage failure, socket/native or measured execution claim.",
+      "proposedAssertions": [
+        "All eight interrupted writes return their exact mutation-specific refusal and preserve complete ordered teams, team_members, join_links, projects and billing_events plus assets/R2 specified bytes/metadata and storage counters. A later old-token identity read is 401/session_expired and leaves the observed request marker unchanged; session and rate-limit writes are expected exclusions."
+      ]
+    },
+    {
+      "rangeId": "interrupted-authorization-v95-5",
+      "featureId": "interrupted-authorization",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 25,
+        "end": 26,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "f2c34c383891f1784e44f414835a448598ed8c1deb9d4f9e8866679921b3e32f",
+        "sha256": "ac850fb7e89f297afcb9d34ee1e308de330b3ff974e5cfef2e3fb9c93d422e6f"
+      },
+      "scenarioIds": [
+        "interrupted-authorization-v95"
+      ],
+      "rationale": "The shared live-session SQL predicate uses the cached identity and fresh time at each write. Revocation, not token expiry or different identity, is the varied guard.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Eight controlled incomplete-body interleavings via real local HTTP and synthetic sessions. No arbitrary concurrency, all mutation routes, role/entitlement changes, expiry boundary, storage failure, socket/native or measured execution claim.",
+      "proposedAssertions": [
+        "All eight interrupted writes return their exact mutation-specific refusal and preserve complete ordered teams, team_members, join_links, projects and billing_events plus assets/R2 specified bytes/metadata and storage counters. A later old-token identity read is 401/session_expired and leaves the observed request marker unchanged; session and rate-limit writes are expected exclusions."
+      ]
+    },
+    {
+      "rangeId": "interrupted-authorization-v95-6",
+      "featureId": "interrupted-authorization",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 36,
+        "end": 41,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "19a473ccaeedbc7dbb6131918dead46006ad26ca14ca055897e79009a554e6d8",
+        "sha256": "9047a71004810218b361f959dafec60bce6f326fe44ed919da69f1258caa055b"
+      },
+      "scenarioIds": [
+        "interrupted-authorization-v95"
+      ],
+      "rationale": "Guarded team insertion and dependent owner-membership insertion produce no partial team after logout; identical live retry creates the exact team/membership. No batch infrastructure failure claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Eight controlled incomplete-body interleavings via real local HTTP and synthetic sessions. No arbitrary concurrency, all mutation routes, role/entitlement changes, expiry boundary, storage failure, socket/native or measured execution claim.",
+      "proposedAssertions": [
+        "Interrupted team creation returns 401/session_expired without a team or owner-membership insertion; retained-owner retry creates exactly one returned team with its owner membership while all other team/member rows remain exact."
+      ]
+    },
+    {
+      "rangeId": "interrupted-authorization-v95-7",
+      "featureId": "interrupted-authorization",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 55,
+        "end": 57,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "02695376dcfe680cfcbc941d36c5353025d963e958a1e7306bb1b74cc6e9921f",
+        "sha256": "4dc4fe41e83b97882a74abb125fda2f7a6934f83e67a5325fba8b9f84937820e"
+      },
+      "scenarioIds": [
+        "interrupted-authorization-v95"
+      ],
+      "rationale": "Guarded rename checks live session in its mutation and reports access_changed after logout. Role remains owner throughout.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Eight controlled incomplete-body interleavings via real local HTTP and synthetic sessions. No arbitrary concurrency, all mutation routes, role/entitlement changes, expiry boundary, storage failure, socket/native or measured execution claim.",
+      "proposedAssertions": [
+        "Interrupted team rename returns 409/access_changed with exact business-state preservation; the identical retained-owner retry persists the new team name."
+      ]
+    },
+    {
+      "rangeId": "interrupted-authorization-v95-8",
+      "featureId": "interrupted-authorization",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 67,
+        "end": 70,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "7db22d0c0a7732b91f1fc90bc5ccc21c2309fbc00dc1822405ca5888659e423e",
+        "sha256": "29b04dbaf71749c4e905a74a5643b51aa0aebe38b9231056a95f8141fdc0ab23"
+      },
+      "scenarioIds": [
+        "interrupted-authorization-v95"
+      ],
+      "rationale": "Guarded link insertion refuses the revoked session and later creates the expected link under the retained owner. No invite-consumption or role-change race claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Eight controlled incomplete-body interleavings via real local HTTP and synthetic sessions. No arbitrary concurrency, all mutation routes, role/entitlement changes, expiry boundary, storage failure, socket/native or measured execution claim.",
+      "proposedAssertions": [
+        "Interrupted join-link creation returns 409/access_changed without a link insertion; retry creates the desired viewer link with the returned token hash, creator and exact one-day stored expiry."
+      ]
+    },
+    {
+      "rangeId": "interrupted-authorization-v95-9",
+      "featureId": "interrupted-authorization",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 102,
+        "end": 107,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "a080902b59bdf5ecaea70f3656bfb2dd3daf4b19aa31bcdc4896247cc144c8f3",
+        "sha256": "16c90c2e0dcedfa52c8d2a92e3e7366a8c977e42022053bc4e9adc04435e9d89"
+      },
+      "scenarioIds": [
+        "interrupted-authorization-v95"
+      ],
+      "rationale": "Role update includes the live-session predicate; owner and target remain valid, so logout discriminates refusal. Room propagation is not observed.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Eight controlled incomplete-body interleavings via real local HTTP and synthetic sessions. No arbitrary concurrency, all mutation routes, role/entitlement changes, expiry boundary, storage failure, socket/native or measured execution claim.",
+      "proposedAssertions": [
+        "Interrupted owner membership-role PATCH returns 409/membership_changed without altering rows; retry persists the desired viewer role."
+      ]
+    },
+    {
+      "rangeId": "interrupted-authorization-v95-10",
+      "featureId": "interrupted-authorization",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 127,
+        "end": 134,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "cc3bbc31b9bef2fd7014f6407276ec6b605c8b3c033d32dcd9fda6a072b43f58",
+        "sha256": "fc3e40c2ec25bcdbe9b958f2883318e95eca8a4438a1d78778b87186b96a9521"
+      },
+      "scenarioIds": [
+        "interrupted-authorization-v95"
+      ],
+      "rationale": "Both personal and team insertion paths enforce live session in SQL, with valid entitlement/membership unchanged. Exact retries distinguish genuine guards from invalid payloads.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Eight controlled incomplete-body interleavings via real local HTTP and synthetic sessions. No arbitrary concurrency, all mutation routes, role/entitlement changes, expiry boundary, storage failure, socket/native or measured execution claim.",
+      "proposedAssertions": [
+        "Both personal and team project creation reject 409/access_changed without inserting a project; retries persist the specified new IDs/titles with exact owner and null-or-team scope."
+      ]
+    },
+    {
+      "rangeId": "interrupted-authorization-v95-11",
+      "featureId": "interrupted-authorization",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/teams.ts",
+        "start": 142,
+        "end": 148,
+        "fileSha256": "e8855ddffa0ebbc9207a5ed76d60c18dbea77d761569e0d4aabbba8a898b524e",
+        "spanSha256": "1f927de96fdc570802e53c69ba53108e661438c5087d1b3cc070e161158258f3",
+        "sha256": "fd7b73465b471c8559175f1e5aadb59ff0f89c22e1541f0d88673dab9fe5c954"
+      },
+      "scenarioIds": [
+        "interrupted-authorization-v95"
+      ],
+      "rationale": "Both owned personal and owned team project rename enforce live session within the update; the owner-manager paths are valid. Admin, expiry and role-change branches are excluded.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Eight controlled incomplete-body interleavings via real local HTTP and synthetic sessions. No arbitrary concurrency, all mutation routes, role/entitlement changes, expiry boundary, storage failure, socket/native or measured execution claim.",
+      "proposedAssertions": [
+        "Both personal and team project rename reject 409/access_changed without changing rows; retries persist the specified titles for those exact projects."
+      ]
+    }
+  ]
+}

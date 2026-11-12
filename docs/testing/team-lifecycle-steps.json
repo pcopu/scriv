@@ -1,0 +1,1683 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "create-free-team",
+      "title": "Create free team",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "POST /v1/teams with padded synthetic name"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Creation returns trimmed name, free plan and authenticated owner role.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 133,
+            "end": 133,
+            "sha256": "2e9e94feb63b74cfaa0d0cb9b19df9a796446a053af6d1398aa6f856c247979c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 32,
+            "end": 41,
+            "sha256": "70c8fcdd8d599146d37647e8564ab59e3bd3ced62ebfa3a605a1414f4ea8044c"
+          },
+          "expectation": "observed",
+          "why": "Creation returns trimmed name, free plan and authenticated owner role. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 12,
+            "end": 14,
+            "sha256": "b9abf80d883963cc4588dc1b735ecee52305c370f2c12fff1eab925832f653bf"
+          },
+          "expectation": "observed",
+          "why": "Creation returns trimmed name, free plan and authenticated owner role. Supporting access path; no grace-window or concurrency claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 28,
+            "end": 29,
+            "sha256": "69ee91f3ce6484fd14fe5c58b1a0d9c5fef34a69ef50dd07690cb2bb3df7a7a8"
+          },
+          "expectation": "observed",
+          "why": "Creation returns trimmed name, free plan and authenticated owner role. Supporting access path; no grace-window or concurrency claim."
+        }
+      ]
+    },
+    {
+      "id": "read-created-team",
+      "title": "Read created team",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET created team as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Readback contains exactly the owner membership and no invitations.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 137,
+            "end": 137,
+            "sha256": "3c637914ef9edeacc54bbe8a1781951626bf7a6833dae083d84338af27021ed2"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 46,
+            "end": 50,
+            "sha256": "42d83528043127347d8c0fc2b95f3ff8547ec3ab0b465fa9b9d4b897385f9d10"
+          },
+          "expectation": "observed",
+          "why": "Readback contains exactly the owner membership and no invitations. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "create-member-invite",
+      "title": "Create member invite",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "POST member invitation as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner creates a member invitation with exact one-day lifetime and local URL.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 141,
+            "end": 141,
+            "sha256": "3ea6885af796c88a03c3afb133df7f834e443285e4664d20bfa6028c8257b3c5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 60,
+            "end": 70,
+            "sha256": "548df41c578bbd5aefe532ab9c7103fb3c5bb071ed4f4449d9ab4c07a9f5b078"
+          },
+          "expectation": "observed",
+          "why": "Owner creates a member invitation with exact one-day lifetime and local URL. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "reject-unpaid-join",
+      "title": "Reject unpaid join",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "POST member invitation join while team is free"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A valid invitation cannot admit a member while the team is free.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 145,
+            "end": 145,
+            "sha256": "d55c5b5998e054ae5be84978d70d97cc1a69c0bc3523ca44d5fc61bfbbb68464"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 74,
+            "end": 79,
+            "sha256": "dde9180570bee480c12d7e22db74c05563b810915487cd3f360d274f7e47fa30"
+          },
+          "expectation": "observed",
+          "why": "A valid invitation cannot admit a member while the team is free. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "read-rejected-join",
+      "title": "Read rejected join",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET team after rejected free-plan join"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejected free-plan join leaves only the owner membership.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 149,
+            "end": 149,
+            "sha256": "51cda8bc01412e3ef69035943eedf6c74c65531e746867f9777f6d1cd13aad15"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 46,
+            "end": 50,
+            "sha256": "42d83528043127347d8c0fc2b95f3ff8547ec3ab0b465fa9b9d4b897385f9d10"
+          },
+          "expectation": "observed",
+          "why": "Rejected free-plan join leaves only the owner membership. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "seed-synthetic-entitlement",
+      "title": "Seed synthetic entitlement",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "Fixture only: seed active entitlement in owned D1"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Synthetic fixture setup updates exactly one owned team; no payment or subscription transition is asserted.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 153,
+            "end": 153,
+            "sha256": "f93c72cb7595632292017fc9b0bf898deb388609ad7e503f5505bc206bfd8db2"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "join-member",
+      "title": "Join member",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "POST valid member invitation after fixture entitlement"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Entitled team admits a member through its valid invitation.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 157,
+            "end": 157,
+            "sha256": "aa6647b91d5d86d5c3e579b7c3e433fc08b867c8fe8bf61b1275b788567368fb"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 74,
+            "end": 92,
+            "sha256": "441ad1bd14d899d8379ac0d7ad76dfb0a3cf712b849955b7a7e6beccfc6d19ec"
+          },
+          "expectation": "observed",
+          "why": "Entitled team admits a member through its valid invitation. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "join-member-again",
+      "title": "Join member again",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "POST same invitation again as existing member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A sequential duplicate join returns the existing member role.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 161,
+            "end": 161,
+            "sha256": "bf46d595172b4563e15f24b9f7a55b58bd6b13f107b28d6b462c0e8dcb734841"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 83,
+            "end": 92,
+            "sha256": "3843cf341b6c34ab2e8e5836df9fd55eb0a197686e4658ed1ddd7a397d275c74"
+          },
+          "expectation": "observed",
+          "why": "A sequential duplicate join returns the existing member role. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "read-single-membership",
+      "title": "Read single membership",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET team after duplicate member join"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Duplicate join creates no second membership in public readback.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "f6805121f617a28a8a0f722545e5c0c9091b6ef8c0dfa8c4b46bb8a59a98a823"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 46,
+            "end": 50,
+            "sha256": "42d83528043127347d8c0fc2b95f3ff8547ec3ab0b465fa9b9d4b897385f9d10"
+          },
+          "expectation": "observed",
+          "why": "Duplicate join creates no second membership in public readback. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "create-viewer-invite",
+      "title": "Create viewer invite",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "POST viewer invitation as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner creates a viewer invitation with default 30-day lifetime.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 169,
+            "end": 169,
+            "sha256": "ca76c6492d31b9ef9fff8cf8c5e021212c35ca178fea1ba2d53f892407f2e876"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 60,
+            "end": 70,
+            "sha256": "548df41c578bbd5aefe532ab9c7103fb3c5bb071ed4f4449d9ab4c07a9f5b078"
+          },
+          "expectation": "observed",
+          "why": "Owner creates a viewer invitation with default 30-day lifetime. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "join-viewer",
+      "title": "Join viewer",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "POST viewer invitation as viewer actor"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Viewer invitation admits the requested viewer role.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 173,
+            "end": 173,
+            "sha256": "77aa284fab39ed9eabd3a346f0bec8048052c42ff34587b6502002466646069e"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 83,
+            "end": 92,
+            "sha256": "3843cf341b6c34ab2e8e5836df9fd55eb0a197686e4658ed1ddd7a397d275c74"
+          },
+          "expectation": "observed",
+          "why": "Viewer invitation admits the requested viewer role. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "member-keeps-role",
+      "title": "Member keeps role",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "POST viewer invitation as existing member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "An existing member joining a viewer invitation retains its member role.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 177,
+            "end": 177,
+            "sha256": "e3e10cf3038c612e4e9bdccb2f617214e282f2caeed88adac230547fc456db1c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 83,
+            "end": 92,
+            "sha256": "3843cf341b6c34ab2e8e5836df9fd55eb0a197686e4658ed1ddd7a397d275c74"
+          },
+          "expectation": "observed",
+          "why": "An existing member joining a viewer invitation retains its member role. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "hide-invites-from-member",
+      "title": "Hide invites from member",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET team as nonmanager member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Nonmanager member sees membership list but no invitation management rows.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 181,
+            "end": 181,
+            "sha256": "c7bc831492e2b8d46ed5c71583a11018efd5e8c53de656f7b05427a5b043b74a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 46,
+            "end": 50,
+            "sha256": "42d83528043127347d8c0fc2b95f3ff8547ec3ab0b465fa9b9d4b897385f9d10"
+          },
+          "expectation": "observed",
+          "why": "Nonmanager member sees membership list but no invitation management rows. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "deny-member-invite",
+      "title": "Deny member invite",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "POST invitation as nonmanager member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A nonmanager cannot create invitations.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 185,
+            "end": 185,
+            "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 60,
+            "end": 62,
+            "sha256": "923c18b6a85dff6840f58b145084b61672da562cf0058884dc7db555fec95a3c"
+          },
+          "expectation": "observed",
+          "why": "A nonmanager cannot create invitations. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 22,
+            "end": 25,
+            "sha256": "2c842b69620fb7a1d899030bfb255100d548b778bc8cc88b3936aa32216ed91e"
+          },
+          "expectation": "observed",
+          "why": "A nonmanager cannot create invitations. Supporting access path; no grace-window or concurrency claim."
+        }
+      ]
+    },
+    {
+      "id": "deny-member-rename",
+      "title": "Deny member rename",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "PATCH team name as nonmanager member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A member cannot rename the team.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 189,
+            "end": 189,
+            "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 52,
+            "end": 53,
+            "sha256": "88250a44f8cfdaeed793a4fa62e5b52ae8ed207f125e6a623394f62612905cb2"
+          },
+          "expectation": "observed",
+          "why": "A member cannot rename the team. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "deny-owner-leave",
+      "title": "Deny owner leave",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "DELETE owner membership as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The owner cannot remove its own membership.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 193,
+            "end": 193,
+            "sha256": "7ad2b750ea8224ca606605e60a871e90b40b1f62496a03f210e868b9f510dd83"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 93,
+            "end": 97,
+            "sha256": "1eb13233c70c0feb33478a9846f24f287851cafbd6fa8edc8adce87e81191e35"
+          },
+          "expectation": "observed",
+          "why": "The owner cannot remove its own membership. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "appoint-admin",
+      "title": "Appoint admin",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "PATCH member role to admin as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner can promote a member to admin.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 197,
+            "end": 197,
+            "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 98,
+            "end": 107,
+            "sha256": "92756360048490e1e83a9f91986dea06d720618e0c99243b086dd089681cb05e"
+          },
+          "expectation": "observed",
+          "why": "Owner can promote a member to admin. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "read-admin-role",
+      "title": "Read admin role",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET team as newly appointed admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Promoted admin reads its persisted role, both invitations, and the unchanged original Synthetic team name after the denied member rename.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 201,
+            "end": 201,
+            "sha256": "b6b80ab93654a54d2b0a8aa6b2a2846b04562dba5a8ed0e446a83f8093d5dd37"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 46,
+            "end": 50,
+            "sha256": "42d83528043127347d8c0fc2b95f3ff8547ec3ab0b465fa9b9d4b897385f9d10"
+          },
+          "expectation": "observed",
+          "why": "Promoted admin reads its persisted role, both invitations, and the unchanged original Synthetic team name after the denied member rename. Sequential HTTP readback before the authorized admin rename; no race claim."
+        }
+      ]
+    },
+    {
+      "id": "admin-rename",
+      "title": "Admin rename",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "PATCH team name as admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Admin can rename the team with whitespace trimmed.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 205,
+            "end": 205,
+            "sha256": "5893a5161becc59f586b3ae7a8285e259d4bbb07efce81874f1fb222f55509b1"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 52,
+            "end": 57,
+            "sha256": "ebb941791dccbcc1ab1db0d71aa6e35f411481003f917bcaef5f5c6f9baf155a"
+          },
+          "expectation": "observed",
+          "why": "Admin can rename the team with whitespace trimmed. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "read-renamed-team-list",
+      "title": "Read renamed team list",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET viewer team list after rename"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Viewer team list reflects the admin rename and unchanged viewer membership.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 209,
+            "end": 209,
+            "sha256": "6c83d048745fb77d4d3c134d4e1fb8e99e1f364ebc6113ccf374d92efd3aa552"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 6,
+            "end": 8,
+            "sha256": "8901c6d602f274d373f10a34e60ba4fcf94b509286f093d40c9fea5366608b0e"
+          },
+          "expectation": "observed",
+          "why": "Viewer team list reflects the admin rename and unchanged viewer membership. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 30,
+            "end": 31,
+            "sha256": "562d80818b4a951d6fae8c35e64e93fb72fbbce46e0751da779b2595ecc9a3c0"
+          },
+          "expectation": "observed",
+          "why": "Viewer team list reflects the admin rename and unchanged viewer membership. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "deny-admin-appoint-admin",
+      "title": "Deny admin appoint admin",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "PATCH viewer to admin as admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "An admin cannot appoint another admin.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 213,
+            "end": 213,
+            "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 99,
+            "end": 101,
+            "sha256": "96d83d6f6f0dfe5df2bdfe153ad07ad4f3dde4cd5e13801666e88885374a3ce6"
+          },
+          "expectation": "observed",
+          "why": "An admin cannot appoint another admin. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "deny-admin-change-owner",
+      "title": "Deny admin change owner",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "PATCH owner role as admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "An admin cannot change the owner membership.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 217,
+            "end": 217,
+            "sha256": "7ad2b750ea8224ca606605e60a871e90b40b1f62496a03f210e868b9f510dd83"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 93,
+            "end": 97,
+            "sha256": "1eb13233c70c0feb33478a9846f24f287851cafbd6fa8edc8adce87e81191e35"
+          },
+          "expectation": "observed",
+          "why": "An admin cannot change the owner membership. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "create-team-project",
+      "title": "Create team project",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "POST team project as admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Admin creates a team project owned by the team owner.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 221,
+            "end": 221,
+            "sha256": "4059605311db0190b9b11386a4a262d241cfe0b9a2737712acd20d52805b270a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 119,
+            "end": 124,
+            "sha256": "2cb3eb9ff7f99d9a9e1d58ab5104e076d86f8a12d11c73e70434b96dc50a0664"
+          },
+          "expectation": "observed",
+          "why": "Admin creates a team project owned by the team owner. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 126,
+            "end": 131,
+            "sha256": "cb833b14a8f392f86b5fa68c5a0f3e66426cbcf5afdf67c8bd9f54a898388eee"
+          },
+          "expectation": "observed",
+          "why": "Admin creates a team project owned by the team owner. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 133,
+            "end": 134,
+            "sha256": "afc01f50afb550bc8f43eb8c80f840d2c54d28a609f24a168518943471d71fa0"
+          },
+          "expectation": "observed",
+          "why": "Admin creates a team project owned by the team owner. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "read-viewer-project",
+      "title": "Read viewer project",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET project as viewer"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Viewer project readback explicitly reports read-only access.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 225,
+            "end": 225,
+            "sha256": "492ed6c25937d5c6f77ad72e436e6a788f690ca852c80cc71f419bdbb7f2bf0c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 137,
+            "end": 140,
+            "sha256": "753f261b1b7853451f9b2cbdba1321a727a76d8a6466821d95a7f228d0aa832b"
+          },
+          "expectation": "observed",
+          "why": "Viewer project readback explicitly reports read-only access. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 34,
+            "end": 38,
+            "sha256": "d79784650ae79d261910ccf3f5d3aaa6428394a589e569cec17d286362eb9c47"
+          },
+          "expectation": "observed",
+          "why": "Viewer project readback explicitly reports read-only access. Supporting access path; no grace-window or concurrency claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 40,
+            "end": 42,
+            "sha256": "1abceb48d3f1fa83a63b9393b8847e23b75c023f037447d8ffee811ad90b204d"
+          },
+          "expectation": "observed",
+          "why": "Viewer project readback explicitly reports read-only access. Supporting access path; no grace-window or concurrency claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 46,
+            "end": 46,
+            "sha256": "0236a16059310bbce17d637abbb203c41a990949d05cc0290acf9bc3f5cb51bb"
+          },
+          "expectation": "observed",
+          "why": "Viewer project readback explicitly reports read-only access. Supporting access path; no grace-window or concurrency claim."
+        }
+      ]
+    },
+    {
+      "id": "admin-promote-viewer",
+      "title": "Admin promote viewer",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "PATCH viewer to member as admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Admin can promote a viewer to ordinary member.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 229,
+            "end": 229,
+            "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 98,
+            "end": 107,
+            "sha256": "92756360048490e1e83a9f91986dea06d720618e0c99243b086dd089681cb05e"
+          },
+          "expectation": "observed",
+          "why": "Admin can promote a viewer to ordinary member. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "read-promoted-project",
+      "title": "Read promoted project",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET project after viewer promotion"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "After promotion public project readback changes to member and writable.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 233,
+            "end": 233,
+            "sha256": "d77869066cafdc6d8c78d339dfe631f9192755b6a1f159b2efd20cc71a48bc47"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 137,
+            "end": 140,
+            "sha256": "753f261b1b7853451f9b2cbdba1321a727a76d8a6466821d95a7f228d0aa832b"
+          },
+          "expectation": "observed",
+          "why": "After promotion public project readback changes to member and writable. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 34,
+            "end": 38,
+            "sha256": "d79784650ae79d261910ccf3f5d3aaa6428394a589e569cec17d286362eb9c47"
+          },
+          "expectation": "observed",
+          "why": "After promotion public project readback changes to member and writable. Supporting access path; no grace-window or concurrency claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 40,
+            "end": 42,
+            "sha256": "1abceb48d3f1fa83a63b9393b8847e23b75c023f037447d8ffee811ad90b204d"
+          },
+          "expectation": "observed",
+          "why": "After promotion public project readback changes to member and writable. Supporting access path; no grace-window or concurrency claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 46,
+            "end": 46,
+            "sha256": "0236a16059310bbce17d637abbb203c41a990949d05cc0290acf9bc3f5cb51bb"
+          },
+          "expectation": "observed",
+          "why": "After promotion public project readback changes to member and writable. Supporting access path; no grace-window or concurrency claim."
+        }
+      ]
+    },
+    {
+      "id": "deny-member-archive",
+      "title": "Deny member archive",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "DELETE project as ordinary member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A writable ordinary member cannot archive the project.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 237,
+            "end": 237,
+            "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 137,
+            "end": 141,
+            "sha256": "55c9a1027a38606cd9e0c3e6b0397d9d6318c70f2c20958f9bf2e625581fc273"
+          },
+          "expectation": "observed",
+          "why": "A writable ordinary member cannot archive the project. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "member-self-leave",
+      "title": "Member self leave",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "DELETE own membership as ordinary member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A nonowner ordinary member can leave the team.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 241,
+            "end": 241,
+            "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 98,
+            "end": 98,
+            "sha256": "e10ebdc3c320af39a13fc5f0f70941fd2150621a853c945397a019a1744ff526"
+          },
+          "expectation": "observed",
+          "why": "A nonowner ordinary member can leave the team. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 109,
+            "end": 114,
+            "sha256": "fd89e6e10f3d2c43337396177cb80cf40c0170f5cf5d9d4b8554573041a4c20a"
+          },
+          "expectation": "observed",
+          "why": "A nonowner ordinary member can leave the team. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "read-after-self-leave",
+      "title": "Read after self leave",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET own identity after leaving team"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Self-leave removes the team and project from public identity lists.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 245,
+            "end": 245,
+            "sha256": "19410a4e80b95107f49871ee954a1ad7de549f3f78efa77d17bd6c3b6a599be9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 6,
+            "end": 8,
+            "sha256": "8901c6d602f274d373f10a34e60ba4fcf94b509286f093d40c9fea5366608b0e"
+          },
+          "expectation": "observed",
+          "why": "Self-leave removes the team and project from public identity lists. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 10,
+            "end": 12,
+            "sha256": "30a25377bff26225d9062646ecb9350a2a93d772922c5e32265a097c95ed32cd"
+          },
+          "expectation": "observed",
+          "why": "Self-leave removes the team and project from public identity lists. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 19,
+            "end": 19,
+            "sha256": "3a8c6033b952b90b4faf0970d30981a80966c572eafa4a5542bcbb130f44cc95"
+          },
+          "expectation": "observed",
+          "why": "Self-leave removes the team and project from public identity lists. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 29,
+            "end": 29,
+            "sha256": "a9061c19ab69f08660b262640a703852c81b607727ba400308ddf27622079386"
+          },
+          "expectation": "observed",
+          "why": "Self-leave removes the team and project from public identity lists. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "reject-left-project",
+      "title": "Reject left project",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET project after leaving team"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Departed member cannot read the former team project.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 249,
+            "end": 249,
+            "sha256": "7ec908805ab29a96887ff81e6ef14f964e5a6fa07bbbba22eabbc91a0819b054"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 137,
+            "end": 139,
+            "sha256": "18d829762a7162a6799fc077314345bc566dea4b240e2b8264de7127289ef786"
+          },
+          "expectation": "observed",
+          "why": "Departed member cannot read the former team project. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 34,
+            "end": 38,
+            "sha256": "d79784650ae79d261910ccf3f5d3aaa6428394a589e569cec17d286362eb9c47"
+          },
+          "expectation": "observed",
+          "why": "Departed member cannot read the former team project. Supporting access path; no grace-window or concurrency claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 40,
+            "end": 41,
+            "sha256": "4c255ac3d7fb1e48f88c331483a641a49e9f1c06d1eb5f5ac4c41a783240d484"
+          },
+          "expectation": "observed",
+          "why": "Departed member cannot read the former team project. Supporting access path; no grace-window or concurrency claim."
+        }
+      ]
+    },
+    {
+      "id": "revoke-viewer-invite",
+      "title": "Revoke viewer invite",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "DELETE viewer invitation as admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Admin can revoke the viewer invitation.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 253,
+            "end": 253,
+            "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 60,
+            "end": 62,
+            "sha256": "923c18b6a85dff6840f58b145084b61672da562cf0058884dc7db555fec95a3c"
+          },
+          "expectation": "observed",
+          "why": "Admin can revoke the viewer invitation. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 72,
+            "end": 72,
+            "sha256": "6795c8553a8aa9f6e1f2ccefcd2beb8f773e0f21136e944e3e7bbd103ce78402"
+          },
+          "expectation": "observed",
+          "why": "Admin can revoke the viewer invitation. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "read-revoked-invite",
+      "title": "Read revoked invite",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET team invitation list after revocation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Public manager readback marks only the selected invitation revoked.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 257,
+            "end": 257,
+            "sha256": "f8cae32d7d9fbf9d92b2d066349a49d88fbadd947f90ffd8a95b92e87fbb02c2"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 46,
+            "end": 50,
+            "sha256": "42d83528043127347d8c0fc2b95f3ff8547ec3ab0b465fa9b9d4b897385f9d10"
+          },
+          "expectation": "observed",
+          "why": "Public manager readback marks only the selected invitation revoked. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "reject-revoked-invite",
+      "title": "Reject revoked invite",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "POST revoked invitation as outsider"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A revoked invitation cannot admit a new outsider.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 261,
+            "end": 261,
+            "sha256": "d56c2e597eadbae06fddbb6e4c15452e1a8be168a8096e3b0f87ae65af111330"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 74,
+            "end": 78,
+            "sha256": "8e02a3e5fb9dc13670548bc907c4a8e8b51488d851d4e6b2778f2d7fcb0e9c0c"
+          },
+          "expectation": "observed",
+          "why": "A revoked invitation cannot admit a new outsider. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "read-no-outsider-membership",
+      "title": "Read no outsider membership",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET outsider identity after revoked join"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejected revoked invitation leaves outsider without team or project access.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 265,
+            "end": 265,
+            "sha256": "19410a4e80b95107f49871ee954a1ad7de549f3f78efa77d17bd6c3b6a599be9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 6,
+            "end": 8,
+            "sha256": "8901c6d602f274d373f10a34e60ba4fcf94b509286f093d40c9fea5366608b0e"
+          },
+          "expectation": "observed",
+          "why": "Rejected revoked invitation leaves outsider without team or project access. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 10,
+            "end": 12,
+            "sha256": "30a25377bff26225d9062646ecb9350a2a93d772922c5e32265a097c95ed32cd"
+          },
+          "expectation": "observed",
+          "why": "Rejected revoked invitation leaves outsider without team or project access. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 19,
+            "end": 19,
+            "sha256": "3a8c6033b952b90b4faf0970d30981a80966c572eafa4a5542bcbb130f44cc95"
+          },
+          "expectation": "observed",
+          "why": "Rejected revoked invitation leaves outsider without team or project access. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 29,
+            "end": 29,
+            "sha256": "a9061c19ab69f08660b262640a703852c81b607727ba400308ddf27622079386"
+          },
+          "expectation": "observed",
+          "why": "Rejected revoked invitation leaves outsider without team or project access. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "owner-removes-admin",
+      "title": "Owner removes admin",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "DELETE admin membership as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner can remove an admin membership.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 269,
+            "end": 269,
+            "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 98,
+            "end": 98,
+            "sha256": "e10ebdc3c320af39a13fc5f0f70941fd2150621a853c945397a019a1744ff526"
+          },
+          "expectation": "observed",
+          "why": "Owner can remove an admin membership. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 109,
+            "end": 114,
+            "sha256": "fd89e6e10f3d2c43337396177cb80cf40c0170f5cf5d9d4b8554573041a4c20a"
+          },
+          "expectation": "observed",
+          "why": "Owner can remove an admin membership. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "read-after-admin-removal",
+      "title": "Read after admin removal",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET team after owner removed admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner readback contains only the owner after self-leave and admin removal.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 273,
+            "end": 273,
+            "sha256": "51cda8bc01412e3ef69035943eedf6c74c65531e746867f9777f6d1cd13aad15"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 46,
+            "end": 50,
+            "sha256": "42d83528043127347d8c0fc2b95f3ff8547ec3ab0b465fa9b9d4b897385f9d10"
+          },
+          "expectation": "observed",
+          "why": "Owner readback contains only the owner after self-leave and admin removal. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        }
+      ]
+    },
+    {
+      "id": "reject-removed-admin",
+      "title": "Reject removed admin",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET team as removed admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Removed admin cannot read the team.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 277,
+            "end": 277,
+            "sha256": "7ec908805ab29a96887ff81e6ef14f964e5a6fa07bbbba22eabbc91a0819b054"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 44,
+            "end": 45,
+            "sha256": "d09377fe371f9f9c888d45a94c2d10c19c09e6258c8131109410caa5a9b43008"
+          },
+          "expectation": "observed",
+          "why": "Removed admin cannot read the team. Sequential HTTP evidence only; not race, native UI, provider, or measured branch coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 22,
+            "end": 24,
+            "sha256": "df58731cf788e2df4ec7bed2f019aead8ae01567459f0dcdcd88e748331f78d9"
+          },
+          "expectation": "observed",
+          "why": "Removed admin cannot read the team. Supporting access path; no grace-window or concurrency claim."
+        }
+      ]
+    },
+    {
+      "id": "archive-project",
+      "title": "Archive project",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "DELETE team project as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner archives the team project.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 281,
+            "end": 281,
+            "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 137,
+            "end": 143,
+            "sha256": "a13edf5ce00381c496e75e26784a236d4ac2f977f54a2f3e6c3fb238ea8f3428"
+          },
+          "expectation": "observed",
+          "why": "Owner archives the team project. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 150,
+            "end": 150,
+            "sha256": "89d50873152806fb0e65b034e7b45d9bb37e24db1a842398854d555336cad79e"
+          },
+          "expectation": "observed",
+          "why": "Owner archives the team project. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "read-archived-list",
+      "title": "Read archived list",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET owner project list after archive"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Archived project disappears from owner project list.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 285,
+            "end": 285,
+            "sha256": "191fc6db26623323414d4c0e9b231770fb95589cc61edb2833b23c854ea15623"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 10,
+            "end": 12,
+            "sha256": "30a25377bff26225d9062646ecb9350a2a93d772922c5e32265a097c95ed32cd"
+          },
+          "expectation": "observed",
+          "why": "Archived project disappears from owner project list. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 19,
+            "end": 19,
+            "sha256": "3a8c6033b952b90b4faf0970d30981a80966c572eafa4a5542bcbb130f44cc95"
+          },
+          "expectation": "observed",
+          "why": "Archived project disappears from owner project list. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 117,
+            "end": 118,
+            "sha256": "b0cebb1577e0829b62802f0fbb7038f40fb25070b21622c555af5970319c2e1b"
+          },
+          "expectation": "observed",
+          "why": "Archived project disappears from owner project list. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        }
+      ]
+    },
+    {
+      "id": "reject-archived-get",
+      "title": "Reject archived get",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged."
+      ],
+      "actions": [
+        "GET archived project as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Even its owner cannot retrieve an archived project via normal project read.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 289,
+            "end": 289,
+            "sha256": "7ec908805ab29a96887ff81e6ef14f964e5a6fa07bbbba22eabbc91a0819b054"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/teams.ts",
+            "start": 137,
+            "end": 139,
+            "sha256": "18d829762a7162a6799fc077314345bc566dea4b240e2b8264de7127289ef786"
+          },
+          "expectation": "observed",
+          "why": "Even its owner cannot retrieve an archived project via normal project read. Sequential HTTP association only. Untested alternate branches, races, entitlement expiry and connection-refresh effects are excluded."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 34,
+            "end": 36,
+            "sha256": "85d766db60d19a5425903bb886aea03183c9c95db856c60bb734bb10d3c7bc7d"
+          },
+          "expectation": "observed",
+          "why": "Even its owner cannot retrieve an archived project via normal project read. Supporting access path; no grace-window or concurrency claim."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "local-team-membership-lifecycle",
+      "title": "Local synthetic team membership lifecycle",
+      "steps": [
+        "create-free-team",
+        "read-created-team",
+        "create-member-invite",
+        "reject-unpaid-join",
+        "read-rejected-join",
+        "seed-synthetic-entitlement",
+        "join-member",
+        "join-member-again",
+        "read-single-membership",
+        "create-viewer-invite",
+        "join-viewer",
+        "member-keeps-role",
+        "hide-invites-from-member",
+        "deny-member-invite",
+        "deny-member-rename",
+        "deny-owner-leave",
+        "appoint-admin",
+        "read-admin-role",
+        "admin-rename",
+        "read-renamed-team-list",
+        "deny-admin-appoint-admin",
+        "deny-admin-change-owner",
+        "create-team-project",
+        "read-viewer-project",
+        "admin-promote-viewer",
+        "read-promoted-project",
+        "deny-member-archive",
+        "member-self-leave",
+        "read-after-self-leave",
+        "reject-left-project",
+        "revoke-viewer-invite",
+        "read-revoked-invite",
+        "reject-revoked-invite",
+        "read-no-outsider-membership",
+        "owner-removes-admin",
+        "read-after-admin-removal",
+        "reject-removed-admin",
+        "archive-project",
+        "read-archived-list",
+        "reject-archived-get"
+      ]
+    }
+  ]
+}

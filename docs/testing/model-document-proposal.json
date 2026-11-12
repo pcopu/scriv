@@ -1,0 +1,1795 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "notice": "Incremental candidate, not replacement of baseline full proposal or reviewed links. Native NOT RUN.",
+  "scenarios": [
+    {
+      "id": "model-document-complete",
+      "title": "Model document complete",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture complete */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.waitFor(hittable workspace-project,15000) [openModelDocument(sample)]",
+        "session.command(\"activate\", {target:current header.path})",
+        "session.waitFor(hittable Find a project,15000)",
+        "session.command(\"text\", {target:search.path,text:sample.title})",
+        "session.waitFor(selected footer equals sample.title + scene-count suffix,15000)",
+        "session.waitFor(enabled hittable Open project,15000)",
+        "session.command(\"activate\", {target:Open project.path})",
+        "session.waitFor(header(nodes,sample.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.waitFor(hittable workspace-project,15000) [openModelDocument(actual)]",
+        "session.command(\"activate\", {target:current header.path})",
+        "session.waitFor(hittable Find a project,15000)",
+        "session.command(\"text\", {target:search.path,text:actual.title})",
+        "session.waitFor(selected footer equals actual.title + scene-count suffix,15000)",
+        "session.waitFor(enabled hittable Open project,15000)",
+        "session.command(\"activate\", {target:Open project.path})",
+        "session.waitFor(header(nodes,actual.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect complete; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save switch away and reopen complete; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-minimal-legacy",
+      "title": "Model document minimal-legacy",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture minimal-legacy */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.waitFor(hittable workspace-project,15000) [openModelDocument(sample)]",
+        "session.command(\"activate\", {target:current header.path})",
+        "session.waitFor(hittable Find a project,15000)",
+        "session.command(\"text\", {target:search.path,text:sample.title})",
+        "session.waitFor(selected footer equals sample.title + scene-count suffix,15000)",
+        "session.waitFor(enabled hittable Open project,15000)",
+        "session.command(\"activate\", {target:Open project.path})",
+        "session.waitFor(header(nodes,sample.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.waitFor(hittable workspace-project,15000) [openModelDocument(actual)]",
+        "session.command(\"activate\", {target:current header.path})",
+        "session.waitFor(hittable Find a project,15000)",
+        "session.command(\"text\", {target:search.path,text:actual.title})",
+        "session.waitFor(selected footer equals actual.title + scene-count suffix,15000)",
+        "session.waitFor(enabled hittable Open project,15000)",
+        "session.command(\"activate\", {target:Open project.path})",
+        "session.waitFor(header(nodes,actual.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect minimal-legacy; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save switch away and reopen minimal-legacy; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-explicit-null-defaults",
+      "title": "Model document explicit-null-defaults",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture explicit-null-defaults */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.waitFor(hittable workspace-project,15000) [openModelDocument(sample)]",
+        "session.command(\"activate\", {target:current header.path})",
+        "session.waitFor(hittable Find a project,15000)",
+        "session.command(\"text\", {target:search.path,text:sample.title})",
+        "session.waitFor(selected footer equals sample.title + scene-count suffix,15000)",
+        "session.waitFor(enabled hittable Open project,15000)",
+        "session.command(\"activate\", {target:Open project.path})",
+        "session.waitFor(header(nodes,sample.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.waitFor(hittable workspace-project,15000) [openModelDocument(actual)]",
+        "session.command(\"activate\", {target:current header.path})",
+        "session.waitFor(hittable Find a project,15000)",
+        "session.command(\"text\", {target:search.path,text:actual.title})",
+        "session.waitFor(selected footer equals actual.title + scene-count suffix,15000)",
+        "session.waitFor(enabled hittable Open project,15000)",
+        "session.command(\"activate\", {target:Open project.path})",
+        "session.waitFor(header(nodes,actual.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect explicit-null-defaults; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save switch away and reopen explicit-null-defaults; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-nested-null-optionals",
+      "title": "Model document nested-null-optionals",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture nested-null-optionals */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.waitFor(hittable workspace-project,15000) [openModelDocument(sample)]",
+        "session.command(\"activate\", {target:current header.path})",
+        "session.waitFor(hittable Find a project,15000)",
+        "session.command(\"text\", {target:search.path,text:sample.title})",
+        "session.waitFor(selected footer equals sample.title + scene-count suffix,15000)",
+        "session.waitFor(enabled hittable Open project,15000)",
+        "session.command(\"activate\", {target:Open project.path})",
+        "session.waitFor(header(nodes,sample.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.waitFor(hittable workspace-project,15000) [openModelDocument(actual)]",
+        "session.command(\"activate\", {target:current header.path})",
+        "session.waitFor(hittable Find a project,15000)",
+        "session.command(\"text\", {target:search.path,text:actual.title})",
+        "session.waitFor(selected footer equals actual.title + scene-count suffix,15000)",
+        "session.waitFor(enabled hittable Open project,15000)",
+        "session.command(\"activate\", {target:Open project.path})",
+        "session.waitFor(header(nodes,actual.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect nested-null-optionals; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save switch away and reopen nested-null-optionals; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-audio-upper-bounds",
+      "title": "Model document audio-upper-bounds",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture audio-upper-bounds */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.waitFor(hittable workspace-project,15000) [openModelDocument(sample)]",
+        "session.command(\"activate\", {target:current header.path})",
+        "session.waitFor(hittable Find a project,15000)",
+        "session.command(\"text\", {target:search.path,text:sample.title})",
+        "session.waitFor(selected footer equals sample.title + scene-count suffix,15000)",
+        "session.waitFor(enabled hittable Open project,15000)",
+        "session.command(\"activate\", {target:Open project.path})",
+        "session.waitFor(header(nodes,sample.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.waitFor(hittable workspace-project,15000) [openModelDocument(actual)]",
+        "session.command(\"activate\", {target:current header.path})",
+        "session.waitFor(hittable Find a project,15000)",
+        "session.command(\"text\", {target:search.path,text:actual.title})",
+        "session.waitFor(selected footer equals actual.title + scene-count suffix,15000)",
+        "session.waitFor(enabled hittable Open project,15000)",
+        "session.command(\"activate\", {target:Open project.path})",
+        "session.waitFor(header(nodes,actual.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect audio-upper-bounds; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save switch away and reopen audio-upper-bounds; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-audio-volume-high",
+      "title": "Model document audio-volume-high",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture audio-volume-high */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture audio-volume-high mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect audio-volume-high; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation audio-volume-high; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-audio-duplicate-asset",
+      "title": "Model document audio-duplicate-asset",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture audio-duplicate-asset */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture audio-duplicate-asset mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect audio-duplicate-asset; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation audio-duplicate-asset; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-audio-duplicate-clip",
+      "title": "Model document audio-duplicate-clip",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture audio-duplicate-clip */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture audio-duplicate-clip mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect audio-duplicate-clip; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation audio-duplicate-clip; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-audio-sample-rate-high",
+      "title": "Model document audio-sample-rate-high",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture audio-sample-rate-high */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture audio-sample-rate-high mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect audio-sample-rate-high; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation audio-sample-rate-high; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-audio-waveform-negative",
+      "title": "Model document audio-waveform-negative",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture audio-waveform-negative */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture audio-waveform-negative mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect audio-waveform-negative; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation audio-waveform-negative; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-audio-waveform-too-many",
+      "title": "Model document audio-waveform-too-many",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture audio-waveform-too-many */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture audio-waveform-too-many mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect audio-waveform-too-many; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation audio-waveform-too-many; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-audio-byte-count-high",
+      "title": "Model document audio-byte-count-high",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture audio-byte-count-high */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture audio-byte-count-high mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect audio-byte-count-high; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation audio-byte-count-high; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-audio-clip-duration-high",
+      "title": "Model document audio-clip-duration-high",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture audio-clip-duration-high */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture audio-clip-duration-high mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect audio-clip-duration-high; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation audio-clip-duration-high; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-audio-cross-scene-entry",
+      "title": "Model document audio-cross-scene-entry",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture audio-cross-scene-entry */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture audio-cross-scene-entry mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect audio-cross-scene-entry; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation audio-cross-scene-entry; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-audio-start-high",
+      "title": "Model document audio-start-high",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture audio-start-high */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture audio-start-high mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect audio-start-high; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation audio-start-high; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-word-id-cross-entry-duplicate",
+      "title": "Model document word-id-cross-entry-duplicate",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture word-id-cross-entry-duplicate */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture word-id-cross-entry-duplicate mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect word-id-cross-entry-duplicate; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation word-id-cross-entry-duplicate; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-speaker-missing",
+      "title": "Model document speaker-missing",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture speaker-missing */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture speaker-missing mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect speaker-missing; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation speaker-missing; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-schema-future",
+      "title": "Model document schema-future",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture schema-future */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture schema-future mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect schema-future; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation schema-future; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-revision-negative-before-reset",
+      "title": "Model document revision-negative-before-reset",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture revision-negative-before-reset */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture revision-negative-before-reset mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect revision-negative-before-reset; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation revision-negative-before-reset; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-missing-required-scenes",
+      "title": "Model document missing-required-scenes",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture missing-required-scenes */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture missing-required-scenes mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect missing-required-scenes; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation missing-required-scenes; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-null-required-date",
+      "title": "Model document null-required-date",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture null-required-date */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture null-required-date mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect null-required-date; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation null-required-date; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-wrong-audio-array-type",
+      "title": "Model document wrong-audio-array-type",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture wrong-audio-array-type */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture wrong-audio-array-type mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect wrong-audio-array-type; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation wrong-audio-array-type; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    },
+    {
+      "id": "model-document-unknown-word-timing-enum",
+      "title": "Model document unknown-word-timing-enum",
+      "featureId": "script-import-export",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/model-document.mjs",
+        "tests/e2e/journeys/support/model-document-cases.mjs",
+        "tests/e2e/journeys/support/model-document-steps.mjs"
+      ],
+      "plannedActions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [includes capabilities handshake and owned-root verification]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(header(nodes,\"YAM MAN\"),15000)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session,p.title === \"YAM MAN\",15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(input /* exact fixture unknown-word-timing-enum */)})",
+        "session.waitFor(header(nodes,input.title),15000)",
+        "session.command(\"loaded-project\", {})",
+        "waitForSavedProject(session,p.id === actual.id,15000)",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"import-json\", {text:JSON.stringify(invalid /* exact fixture unknown-word-timing-enum mutation */)})",
+        "ONLY decoder cases: presentedMessage(session) repeats session.command(\"presented-alerts\",{},remainingDeadline) until one nonempty message or 15000ms timeout",
+        "observePresentedError(session,message) [presented-alerts then snapshot, repeated until exact attached stable alert; 15000ms deadline]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "observePresentedError(session,message) [same exact stable public alert again; no dismissal]",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.close() [finally, including failure; no successful outcome inferred]"
+      ],
+      "expectedOutcomes": [
+        "Launch unique isolated session; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Save and observe sole startup package; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Import and inspect unknown-word-timing-enum; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Reject without mutation unknown-word-timing-enum; every literal assert in the pinned witness is required, not merely the final assertion.",
+        "Close owned session; every literal assert in the pinned witness is required, not merely the final assertion."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "model-document-v85-001",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1924,
+        "end": 1927,
+        "sha256": "a8a2c5579238035752af411c51b7db44077e9041421bf9f1027cb8079bd6b854",
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "ebccc98feb61412761a87783fbf281c1f3401e7e0a510ace31c8af0a5b7b4190"
+      },
+      "scenarioIds": [
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Import validates source envelope before fresh UUID, nil cloud ID, revision0 and equal reset dates within call window; every authored field remains exact."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-002",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1932,
+        "end": 1932,
+        "sha256": "a85cc3a6ed86635885a4d548792e312eaccc3a91fc5d295d05010fe04c6c339f",
+        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
+        "spanSha256": "79beaf1fbaa4316ca830c1e38107eabc35b857869bfcbc9eb84c3819ec0ee87d"
+      },
+      "scenarioIds": [
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Complete accepted document installs through second validation; no rejection branch is claimed by this accepted case."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-003",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 97,
+        "end": 100,
+        "sha256": "172dffcdd8f7a8d820a0b06c76c9e2dc98bf25d7139b90e9b5f1a1d33256d7ff",
+        "fileSha256": "43cbc789d41d4768e1a97ea21aae866e2ce6a6d12378e4a6974b6b8100cb72eb",
+        "spanSha256": "2cb71b48530af62865b94de07707029376b84f42653e57005f9033584ab20496"
+      },
+      "scenarioIds": [
+        "model-document-audio-duplicate-asset",
+        "model-document-audio-duplicate-clip",
+        "model-document-audio-upper-bounds",
+        "model-document-audio-volume-high",
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Complete fixture preserves typed metadata, relative/nil entry IDs, silent/muted states and lower sample/channel/byte bounds; upper audio boundaries, playback and placement calculations are not asserted by this case.",
+        "This accepted fixture preserves exact maximum file bytes, duration, sample rate, channels, waveform count and originalName length; whole authored payload equality excludes normalization. No media bytes or playback claim.",
+        "Exact audio-volume-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message.",
+        "Exact audio-duplicate-asset mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message.",
+        "Exact audio-duplicate-clip mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-004",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 101,
+        "end": 101,
+        "sha256": "e6b04491469722e8363a94e4044538e013a2a217e36b1e568ba60acb7b4c8f2e",
+        "fileSha256": "43cbc789d41d4768e1a97ea21aae866e2ce6a6d12378e4a6974b6b8100cb72eb",
+        "spanSha256": "2a44168318e224e1f830fe9ab620aa00dd4f7b3fb19ef4399abf59593cf0756d"
+      },
+      "scenarioIds": [
+        "model-document-audio-upper-bounds",
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Complete fixture preserves typed metadata, relative/nil entry IDs, silent/muted states and lower sample/channel/byte bounds; upper audio boundaries, playback and placement calculations are not asserted by this case.",
+        "This accepted fixture preserves exact maximum file bytes, duration, sample rate, channels, waveform count and originalName length; whole authored payload equality excludes normalization. No media bytes or playback claim."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-005",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 102,
+        "end": 111,
+        "sha256": "5943c2da9197bde72e39bf6fbb57839726947a0eb472247d38e176f40d59af00",
+        "fileSha256": "43cbc789d41d4768e1a97ea21aae866e2ce6a6d12378e4a6974b6b8100cb72eb",
+        "spanSha256": "c140bddec20c32b77e92287506fcc105fb0b5fb72282b9c277dc19b1a7912968"
+      },
+      "scenarioIds": [
+        "model-document-audio-byte-count-high",
+        "model-document-audio-sample-rate-high",
+        "model-document-audio-upper-bounds",
+        "model-document-audio-waveform-negative",
+        "model-document-audio-waveform-too-many",
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Complete fixture preserves typed metadata, relative/nil entry IDs, silent/muted states and lower sample/channel/byte bounds; upper audio boundaries, playback and placement calculations are not asserted by this case.",
+        "This accepted fixture preserves exact maximum file bytes, duration, sample rate, channels, waveform count and originalName length; whole authored payload equality excludes normalization. No media bytes or playback claim.",
+        "Exact audio-sample-rate-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message.",
+        "Exact audio-waveform-negative mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message.",
+        "Exact audio-waveform-too-many mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message.",
+        "Exact audio-byte-count-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-006",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 112,
+        "end": 113,
+        "sha256": "655e4bc44cae3fb344847ae3ce84bdbcea6049858efcdd8fc3b5b09804b24b64",
+        "fileSha256": "43cbc789d41d4768e1a97ea21aae866e2ce6a6d12378e4a6974b6b8100cb72eb",
+        "spanSha256": "096cfd1dbde37d1f7d138aa3ea66f1476fe5416b528b3509c53e0bf84eeef767"
+      },
+      "scenarioIds": [
+        "model-document-audio-upper-bounds",
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Complete fixture preserves typed metadata, relative/nil entry IDs, silent/muted states and lower sample/channel/byte bounds; upper audio boundaries, playback and placement calculations are not asserted by this case.",
+        "This accepted fixture preserves exact maximum file bytes, duration, sample rate, channels, waveform count and originalName length; whole authored payload equality excludes normalization. No media bytes or playback claim."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-007",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 114,
+        "end": 121,
+        "sha256": "59f6f154f84092d7cfc8e3fde7317990cc4b99ed3ace8c97f255f19e73f807c0",
+        "fileSha256": "43cbc789d41d4768e1a97ea21aae866e2ce6a6d12378e4a6974b6b8100cb72eb",
+        "spanSha256": "2e2822393eab2280e2d956423a2f0c4471443a16235db66284c4ecc49f04ed4c"
+      },
+      "scenarioIds": [
+        "model-document-audio-clip-duration-high",
+        "model-document-audio-cross-scene-entry",
+        "model-document-audio-start-high",
+        "model-document-audio-upper-bounds",
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Complete fixture preserves typed metadata, relative/nil entry IDs, silent/muted states and lower sample/channel/byte bounds; upper audio boundaries, playback and placement calculations are not asserted by this case.",
+        "This accepted fixture preserves exact maximum file bytes, duration, sample rate, channels, waveform count and originalName length; whole authored payload equality excludes normalization. No media bytes or playback claim.",
+        "Exact audio-clip-duration-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message.",
+        "Exact audio-cross-scene-entry mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message.",
+        "Exact audio-start-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-008",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioTrack.swift",
+        "start": 122,
+        "end": 123,
+        "sha256": "655e4bc44cae3fb344847ae3ce84bdbcea6049858efcdd8fc3b5b09804b24b64",
+        "fileSha256": "43cbc789d41d4768e1a97ea21aae866e2ce6a6d12378e4a6974b6b8100cb72eb",
+        "spanSha256": "096cfd1dbde37d1f7d138aa3ea66f1476fe5416b528b3509c53e0bf84eeef767"
+      },
+      "scenarioIds": [
+        "model-document-audio-upper-bounds",
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Complete fixture preserves typed metadata, relative/nil entry IDs, silent/muted states and lower sample/channel/byte bounds; upper audio boundaries, playback and placement calculations are not asserted by this case.",
+        "This accepted fixture preserves exact maximum file bytes, duration, sample rate, channels, waveform count and originalName length; whole authored payload equality excludes normalization. No media bytes or playback claim."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-009",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 18,
+        "end": 27,
+        "sha256": "a703d120eb0fc088712e4c92bc0193e5079fa1c060ffd212682386585e80b3f4",
+        "fileSha256": "e422c0ff5e876f60436bf375f491c66ee11b9f3159a90b50d968e36a6f21545b",
+        "spanSha256": "8bd2569ff0a402f49d7008b2f1a0d09d32c9549670bcfba12158a2aede64eb1c"
+      },
+      "scenarioIds": [
+        "model-document-unknown-word-timing-enum"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Exact unknown-word-timing-enum mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is intentionally locale-independent; only nonempty stable public decoder error is asserted."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-010",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 64,
+        "end": 72,
+        "sha256": "ffb6f64bf8363b98ae6a7f41e4648447be83a5387c94c51acfde437ebb47bac6",
+        "fileSha256": "e422c0ff5e876f60436bf375f491c66ee11b9f3159a90b50d968e36a6f21545b",
+        "spanSha256": "af0485d0ae7f4a933c2791367de1d9528ed8aa6c354e654fc0c0d238ee1c2646"
+      },
+      "scenarioIds": [
+        "model-document-complete",
+        "model-document-nested-null-optionals"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Complete fixture preserves all character fields and populated portrait/crop semantics through synthesized Codable; declaration support only, not convenience initializer/equality coverage.",
+        "Explicit null portrait ID and crop decode to omitted optional fields; all remaining character fields retain exact input."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-011",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 88,
+        "end": 97,
+        "sha256": "20d18691177faf6cc3e8fdfaa66bd423739939461e3def2018479afe5b67462e",
+        "fileSha256": "e422c0ff5e876f60436bf375f491c66ee11b9f3159a90b50d968e36a6f21545b",
+        "spanSha256": "f41ea2df85c1d1041f2c143a4bed25124ea10d64c9299aa62d6938c9a3977c03"
+      },
+      "scenarioIds": [
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Complete exact image fields plus absent characterAnalysis preserve synthesized Codable metadata; no image bytes or analysis-provider execution."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-012",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 100,
+        "end": 102,
+        "sha256": "3aa90dadbcbcd79d7213200214bb8e0c637bbbddd312c8f039147ddc72767419",
+        "fileSha256": "e422c0ff5e876f60436bf375f491c66ee11b9f3159a90b50d968e36a6f21545b",
+        "spanSha256": "e787ff7888851e163ded293e219205869c88bbc8afea160977b24cdf435f007d"
+      },
+      "scenarioIds": [
+        "model-document-complete",
+        "model-document-nested-null-optionals"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Captured prompt, millisecond nested dates and previous version survive in this complete fixture.",
+        "Explicit null generationPrompt and previousVersionId become omitted optional fields; nested image date is retained."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-013",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 157,
+        "end": 160,
+        "sha256": "d52a853a38402f0022e3e515ab80c9863c4a4f73d643b15c9dddf84d1dcbb96e",
+        "fileSha256": "e422c0ff5e876f60436bf375f491c66ee11b9f3159a90b50d968e36a6f21545b",
+        "spanSha256": "f8a5c19772368481cc20299de69a1dc85c1b25c80b0e5b88e25939fac17b439d"
+      },
+      "scenarioIds": [
+        "model-document-complete",
+        "model-document-explicit-null-defaults",
+        "model-document-minimal-legacy"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Required project fields and present audio collections/volume decode; envelope identity/revision/dates are subsequently reset by import, never falsely preserved.",
+        "This exact minimal-legacy fixture decodes required empty project collections and omitted audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted.",
+        "This exact explicit-null-defaults fixture decodes required empty project collections and explicit null audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-014",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 161,
+        "end": 161,
+        "sha256": "920167af64820945985348ace434b11f46fcec204c8544133759282a43a974ec",
+        "fileSha256": "e422c0ff5e876f60436bf375f491c66ee11b9f3159a90b50d968e36a6f21545b",
+        "spanSha256": "ace3bc987b383be359d1084e0b05dc3c0831864065b12a4364fd99b90a25f8fb"
+      },
+      "scenarioIds": [
+        "model-document-complete",
+        "model-document-explicit-null-defaults",
+        "model-document-minimal-legacy",
+        "model-document-null-required-date"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Required project fields and present audio collections/volume decode; envelope identity/revision/dates are subsequently reset by import, never falsely preserved.",
+        "This exact minimal-legacy fixture decodes required empty project collections and omitted audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted.",
+        "This exact explicit-null-defaults fixture decodes required empty project collections and explicit null audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted.",
+        "Exact null-required-date mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is intentionally locale-independent; only nonempty stable public decoder error is asserted."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-015",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 162,
+        "end": 162,
+        "sha256": "47bb4619b6d8e4ff572313efd6775962b52064e5d53a55fe8f6dc146b19dc44f",
+        "fileSha256": "e422c0ff5e876f60436bf375f491c66ee11b9f3159a90b50d968e36a6f21545b",
+        "spanSha256": "cee3cbcb038f09a68624cf1c65923da2dc5856eb7ad855f55aab0c9454235f54"
+      },
+      "scenarioIds": [
+        "model-document-complete",
+        "model-document-explicit-null-defaults",
+        "model-document-minimal-legacy",
+        "model-document-missing-required-scenes"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Required project fields and present audio collections/volume decode; envelope identity/revision/dates are subsequently reset by import, never falsely preserved.",
+        "This exact minimal-legacy fixture decodes required empty project collections and omitted audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted.",
+        "This exact explicit-null-defaults fixture decodes required empty project collections and explicit null audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted.",
+        "Exact missing-required-scenes mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is intentionally locale-independent; only nonempty stable public decoder error is asserted."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-016",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 163,
+        "end": 163,
+        "sha256": "fa5fc9fc4e68ce61c2648f64b1efd1e67b1dcd0a6e74ba59fe09af95e36163da",
+        "fileSha256": "e422c0ff5e876f60436bf375f491c66ee11b9f3159a90b50d968e36a6f21545b",
+        "spanSha256": "50440ca67d1a06f644ab0471a595ac0a928013b7aaabf815a4fcc21faf5a8063"
+      },
+      "scenarioIds": [
+        "model-document-complete",
+        "model-document-explicit-null-defaults",
+        "model-document-minimal-legacy"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Required project fields and present audio collections/volume decode; envelope identity/revision/dates are subsequently reset by import, never falsely preserved.",
+        "This exact minimal-legacy fixture decodes required empty project collections and omitted audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted.",
+        "This exact explicit-null-defaults fixture decodes required empty project collections and explicit null audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-017",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 164,
+        "end": 164,
+        "sha256": "7ca07669d2245c59f79b2b06bffeb4d103f4b429563f07d6268e809d352d0edc",
+        "fileSha256": "e422c0ff5e876f60436bf375f491c66ee11b9f3159a90b50d968e36a6f21545b",
+        "spanSha256": "a3eaa554480c74a5392514d66873a3705c6736fbf0f6c2e1d30d95182567b953"
+      },
+      "scenarioIds": [
+        "model-document-complete",
+        "model-document-explicit-null-defaults",
+        "model-document-minimal-legacy",
+        "model-document-wrong-audio-array-type"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Required project fields and present audio collections/volume decode; envelope identity/revision/dates are subsequently reset by import, never falsely preserved.",
+        "This exact minimal-legacy fixture decodes required empty project collections and omitted audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted.",
+        "This exact explicit-null-defaults fixture decodes required empty project collections and explicit null audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted.",
+        "Exact wrong-audio-array-type mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is intentionally locale-independent; only nonempty stable public decoder error is asserted."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-018",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/Models.swift",
+        "start": 165,
+        "end": 165,
+        "sha256": "4893f40e3781eb896c82d046a08067a11e35cdf2f1dfaf26fea90b8db6676413",
+        "fileSha256": "e422c0ff5e876f60436bf375f491c66ee11b9f3159a90b50d968e36a6f21545b",
+        "spanSha256": "28d86778615f6af47bb1bc4f40face756749768e5111f114cfa234a5060c25af"
+      },
+      "scenarioIds": [
+        "model-document-complete",
+        "model-document-explicit-null-defaults",
+        "model-document-minimal-legacy"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Required project fields and present audio collections/volume decode; envelope identity/revision/dates are subsequently reset by import, never falsely preserved.",
+        "This exact minimal-legacy fixture decodes required empty project collections and omitted audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted.",
+        "This exact explicit-null-defaults fixture decodes required empty project collections and explicit null audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-019",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+        "start": 127,
+        "end": 132,
+        "sha256": "0cdadf413ad6de7eb05c578d22498fcfd578306fd6e8ca76df5f0e1304b5aeb1",
+        "fileSha256": "f8c784fb76061700304a9c27ca6aed2c8a1217d7097e24d2000c2dfdd0388049",
+        "spanSha256": "392196d4351698cb8fa14aacd29f00f4c7cf6ad5acf48b228dca1383cf319314"
+      },
+      "scenarioIds": [
+        "model-document-audio-upper-bounds",
+        "model-document-complete",
+        "model-document-explicit-null-defaults",
+        "model-document-minimal-legacy",
+        "model-document-nested-null-optionals"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Real project browser switch-away/reopen invokes repository decode and validation; whole model and exact Date storage bits match previously observed accepted baseline. No direct repository invocation or package corruption claim."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-020",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 36,
+        "end": 37,
+        "sha256": "0574bc823f36a7b18641b121aaf5fec5992abad9d4dfe668ca17c1d8d6030d27",
+        "fileSha256": "e58037c54d6af7e3002b4ef183e428232298083cbc49f4c770b52424f5a8e2b6",
+        "spanSha256": "8d87b89705052ee89f2326ad2876e763355c16718debcab8cb493f2e90cdbb81"
+      },
+      "scenarioIds": [
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Accepted document traverses audio-first validation, schema, valid identity/revision/date, unique heterogeneous IDs and valid scene/character guard success. Negative schema/revision are separate assertions."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-021",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 38,
+        "end": 38,
+        "sha256": "24f89cd92c54cf6706025749a6baf5ccd781dc89712f9d6d298cd4f6c8d51a67",
+        "fileSha256": "e58037c54d6af7e3002b4ef183e428232298083cbc49f4c770b52424f5a8e2b6",
+        "spanSha256": "872d9cb6687b53900fca2c7bfcbc45a56a8fb48c5bc55d4e0a0af2a2bb854cc7"
+      },
+      "scenarioIds": [
+        "model-document-complete",
+        "model-document-schema-future"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Accepted document traverses audio-first validation, schema, valid identity/revision/date, unique heterogeneous IDs and valid scene/character guard success. Negative schema/revision are separate assertions.",
+        "Exact schema-future mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-022",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 39,
+        "end": 40,
+        "sha256": "ab9c06b958153e7bb588ab70ec3864a3248d2929473691792035feacd8aacd86",
+        "fileSha256": "e58037c54d6af7e3002b4ef183e428232298083cbc49f4c770b52424f5a8e2b6",
+        "spanSha256": "d61c33daa93d7bc13d5d4f31315fbe9167e24b380ef0acfda1bc1bd1419c480a"
+      },
+      "scenarioIds": [
+        "model-document-complete",
+        "model-document-revision-negative-before-reset"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Accepted document traverses audio-first validation, schema, valid identity/revision/date, unique heterogeneous IDs and valid scene/character guard success. Negative schema/revision are separate assertions.",
+        "Exact revision-negative-before-reset mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-023",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 41,
+        "end": 43,
+        "sha256": "970299de0a8e58da33075c29906909cd2cb7049dce2667abfa18b2b1a000dc5e",
+        "fileSha256": "e58037c54d6af7e3002b4ef183e428232298083cbc49f4c770b52424f5a8e2b6",
+        "spanSha256": "fd3a3d7a16fd9c76563342c0b4c253c10d3bb950cd561eeacc4e684f51dc0f80"
+      },
+      "scenarioIds": [
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Accepted document traverses audio-first validation, schema, valid identity/revision/date, unique heterogeneous IDs and valid scene/character guard success. Negative schema/revision are separate assertions."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-024",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 44,
+        "end": 45,
+        "sha256": "446ddc7ab5cfcb237a0b839445dc218c2b6c3ecac3fcf37625382e8781b22eb1",
+        "fileSha256": "e58037c54d6af7e3002b4ef183e428232298083cbc49f4c770b52424f5a8e2b6",
+        "spanSha256": "349a4445161536ffed07a19c10b277f59e1317d7c126b1b1eee9c52488a00843"
+      },
+      "scenarioIds": [
+        "model-document-word-id-cross-entry-duplicate"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Exact word-id-cross-entry-duplicate mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-025",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 46,
+        "end": 49,
+        "sha256": "f60ee14eff1a917913f152a87b2fe30c89ba22dfbb85f38372512377837537af",
+        "fileSha256": "e58037c54d6af7e3002b4ef183e428232298083cbc49f4c770b52424f5a8e2b6",
+        "spanSha256": "a998899037b9b01286947472ec6d30b1241fb8e65811d0a3021135da504d012c"
+      },
+      "scenarioIds": [
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Accepted dialogue preserves authored timing with gaps and unowned trailing time, source links and speaker; zero-owned direction preserves coverage. This asserts successful validation, not editing or every rejected timing variant."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-026",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 50,
+        "end": 50,
+        "sha256": "008080c4baffa2aef67c56cf3e71949378f411c5a3b8866b7f3e0793c4c9bf43",
+        "fileSha256": "e58037c54d6af7e3002b4ef183e428232298083cbc49f4c770b52424f5a8e2b6",
+        "spanSha256": "567f81cca19ecfec5586c6ea492875806dd5c9781be3b16fe22105a216950d44"
+      },
+      "scenarioIds": [
+        "model-document-complete",
+        "model-document-speaker-missing"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Accepted dialogue preserves authored timing with gaps and unowned trailing time, source links and speaker; zero-owned direction preserves coverage. This asserts successful validation, not editing or every rejected timing variant.",
+        "Exact speaker-missing mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-027",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 51,
+        "end": 61,
+        "sha256": "b8e2c24964a34a55998c2548178d42022d884381e3e459097a30dad561375379",
+        "fileSha256": "e58037c54d6af7e3002b4ef183e428232298083cbc49f4c770b52424f5a8e2b6",
+        "spanSha256": "5f7c9ac1d130ffbd793e7cc430039bab8076954655bdc821b9d00bcf3f163b24"
+      },
+      "scenarioIds": [
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Accepted dialogue preserves authored timing with gaps and unowned trailing time, source links and speaker; zero-owned direction preserves coverage. This asserts successful validation, not editing or every rejected timing variant."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-028",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 63,
+        "end": 77,
+        "sha256": "b2c6e453b26bd15d77e832b2114d17b41034c4cfd25d1bdae99a66828e7fe36b",
+        "fileSha256": "e58037c54d6af7e3002b4ef183e428232298083cbc49f4c770b52424f5a8e2b6",
+        "spanSha256": "532c8ff622a42585cb03479b89e63e7793703b6f2fb1e78b8573577b1cfc6a07"
+      },
+      "scenarioIds": [
+        "model-document-complete"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "Two immutable image metadata versions, generation prompt and portrait crop validate and preserve exact values; no bytes/file checks, failed crop, provider or generation claim."
+      ]
+    },
+    {
+      "rangeId": "model-document-v85-029",
+      "featureId": "script-import-export",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 80,
+        "end": 95,
+        "sha256": "4bea3944e9a7705ab059bc2db84b9063a3df7a59ddee4a00a80bca882579821d",
+        "fileSha256": "e58037c54d6af7e3002b4ef183e428232298083cbc49f4c770b52424f5a8e2b6",
+        "spanSha256": "d527a3a5149d2fa3e6ac3c92ec68d463fd8ef35f18a9a9289245ee0e3e274053"
+      },
+      "scenarioIds": [
+        "model-document-complete",
+        "model-document-nested-null-optionals"
+      ],
+      "rationale": "Case-specific bounded catalog associations share this disjoint source interval; see model-document-audit-contract.json for each exact witness and rationale.",
+      "confidence": "medium",
+      "uncertainty": "Prepared native NOT RUN. Independent semantic audit pending. This partition is not branch-complete execution.",
+      "proposedAssertions": [
+        "1000ms scene plus empty scene validate; anchored cue preserves authored1500ms while resolved end is scene1000ms. No overlap-negative claim.",
+        "Explicit null cue anchor and authored extent decode to absent fields; legacy nonanchored 0..1000 cue validates inside1000ms scene. No anchored or overlap-negative claim."
+      ]
+    }
+  ]
+}

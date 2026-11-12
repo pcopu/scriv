@@ -4,6 +4,12 @@ import ScrivCore
 /// All selected-word edits remain a local draft until one atomic Save timing.
 /// UIKit is the editor, not a host for a SwiftUI view.
 final class WordTimingEditorController: ScrivScreenController {
+#if SCRIV_CLI_AUTOMATION
+    /// Read-only identity witness for this exact isolated draft presentation.
+    var cliOwnsCurrentScene: Bool {
+        contextIsCurrent && store.selectedSceneID == draft.original.sceneId
+    }
+#endif
     private var draft: ManualWordTimingDraft
     private let chips = UIStackView()
     private let chipScroll = UIScrollView()

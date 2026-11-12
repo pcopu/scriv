@@ -166,6 +166,19 @@ final class AudioLibraryController: ScrivScreenController, UIDocumentPickerDeleg
         }
     }
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) { importEntryID = nil }
+    #if SCRIV_CLI_AUTOMATION
+    /// Only this library's captured scene and selected clip may identify its
+    /// actual presented editor. No command supplies either identity.
+    func cliOwnsTrimEditor(_ editor: AudioClipEditorController, requiresUnchangedClip: Bool) -> Bool {
+        guard scopeToProject, initialNavigationContext == store.navigationContext,
+              sceneID == store.selectedSceneID, let selectedClipID,
+              !isImporting, importTask == nil, importEntryID == nil,
+              presentedViewController === editor, editor.presentingViewController === self else { return false }
+        return editor.cliMatchesTrimContext(store: store, clipID: selectedClipID,
+                                           sceneID: sceneID, requiresUnchangedClip: requiresUnchangedClip)
+    }
+    #endif
+
     override var keyCommands: [UIKeyCommand]? {
         [UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(closeAudio))]
     }

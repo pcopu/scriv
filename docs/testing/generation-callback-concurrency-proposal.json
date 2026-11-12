@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "generation-callback-concurrency-v105",
+      "title": "Resolve duplicate and competing generation callbacks",
+      "featureId": "generation-callback-concurrency",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/generation-journey.mjs"
+      ],
+      "plannedActions": [
+        "Complete both existing chapters; capture exact business, user and session baselines. Create one fresh job from the retained session.",
+        "Dispatch two identical claim requests with the same operation ID and expectedVersion one. Require both 200, identical running version-two job and exactly one exact receipt.",
+        "Dispatch distinct progress operations at version two. Require exactly one winner, one conflict, matching winning payload/version three and one receipt. Read as viewer.",
+        "Retry the loser at its old version and require exact refusal/no writes. Correct only its expectedVersion to three and require that same previously refused operation ID to succeed at version four.",
+        "Dispatch two completion operations with distinct output IDs at version four. Require exactly one winner, completed version five with its exact output ID and one receipt.",
+        "Replay the old claim and winning progress operation and require current terminal state rather than a stale running grant. Refuse the losing completion and read terminal state as viewer.",
+        "Refuse fresh cancel and recover requests at correct version five. Preserve all old business/identity state, exactly one new job/four receipts, empty unchanged R2 and zero outbound."
+      ],
+      "expectedOutcomes": [
+        "Two identical same-session claim requests dispatched together both return 200 with the same running version-two job, while exactly one operation receipt exists. Two distinct progress requests at expectedVersion two have exactly one 200 winner and one exact 409/job_conflict loser; two distinct completion requests at expectedVersion four likewise have exactly one winner. Each winning payload determines exact progress/output and one version increment. This is concurrent client dispatch, not verified internal SQL overlap or fault-injected atomicity.",
+        "The losing progress operation at its old version remains 409 with all observed business rows unchanged, then the same operation ID with corrected expectedVersion three succeeds once at version four. After completion at version five, replaying the original claim and winning progress operation returns the current completed job with replayed true, without new writes. The losing completion remains refused; fresh cancel and recover attempts at the correct terminal version also fail and preserve all observed business state.",
+        "The chapter adds exactly one metadata job and four exact operation receipts. Receipt request hashes are independently computed from sorted flat request fields plus action; actor session, operation ID, resulting version and timestamp match the expected successful mutation. Job timestamps/90-second leases are bounded by request intervals, and completed lease is zero. All five previous jobs, prior receipts, projects, teams, memberships, users, sessions, assets and R2 inventory remain exact. Output image IDs are synthetic metadata only, with no generated image/provider/native execution."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "generation-callback-concurrency-v105-1",
+      "featureId": "generation-callback-concurrency",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/generation.ts",
+        "start": 52,
+        "end": 58,
+        "fileSha256": "8fc26207cb3980ea5efce6ec0a6222c05ba0b5cc270d44507ac65fd5611b377a",
+        "spanSha256": "712691fd92c2c4448bd503c8b50b8f5437f2a0a243455a93b7021b25350b99d7",
+        "sha256": "3c5d1dbd9f9b0184e7cd35699817c22093a676c8e070925f318bb2cf96e153fd"
+      },
+      "scenarioIds": [
+        "generation-callback-concurrency-v105"
+      ],
+      "rationale": "Accepted operation IDs are hash/session scoped. Same-session exact old operations replay without a new mutation; negative cross-session/hash cases remain in the unchanged earlier chapter, not this new pair test.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Concurrent client dispatch does not establish internal transaction overlap, forced race/fault or crash durability. Same valid auth session only; output IDs are metadata, not real images. No native/provider execution or measured coverage.",
+      "proposedAssertions": [
+        "The losing progress operation at its old version remains 409 with all observed business rows unchanged, then the same operation ID with corrected expectedVersion three succeeds once at version four. After completion at version five, replaying the original claim and winning progress operation returns the current completed job with replayed true, without new writes. The losing completion remains refused; fresh cancel and recover attempts at the correct terminal version also fail and preserve all observed business state."
+      ]
+    },
+    {
+      "rangeId": "generation-callback-concurrency-v105-2",
+      "featureId": "generation-callback-concurrency",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/generation.ts",
+        "start": 97,
+        "end": 109,
+        "fileSha256": "8fc26207cb3980ea5efce6ec0a6222c05ba0b5cc270d44507ac65fd5611b377a",
+        "spanSha256": "8d5f6843a9188060ac81d57318d727f61053320ddb530d37f3253c24df9e492b",
+        "sha256": "ae22983b4fda875071b0fd3addc2fa975f3d492f5fa978fd3b00aa4719e51f49"
+      },
+      "scenarioIds": [
+        "generation-callback-concurrency-v105"
+      ],
+      "rationale": "Live owner and route/body checks reach prior receipt lookup. Old claim/progress retries return current completed state with replayed true; this is not a stale execution grant or new claim.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Concurrent client dispatch does not establish internal transaction overlap, forced race/fault or crash durability. Same valid auth session only; output IDs are metadata, not real images. No native/provider execution or measured coverage.",
+      "proposedAssertions": [
+        "The losing progress operation at its old version remains 409 with all observed business rows unchanged, then the same operation ID with corrected expectedVersion three succeeds once at version four. After completion at version five, replaying the original claim and winning progress operation returns the current completed job with replayed true, without new writes. The losing completion remains refused; fresh cancel and recover attempts at the correct terminal version also fail and preserve all observed business state."
+      ]
+    },
+    {
+      "rangeId": "generation-callback-concurrency-v105-3",
+      "featureId": "generation-callback-concurrency",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/generation.ts",
+        "start": 126,
+        "end": 134,
+        "fileSha256": "8fc26207cb3980ea5efce6ec0a6222c05ba0b5cc270d44507ac65fd5611b377a",
+        "spanSha256": "1c9c919bafb17e9ee18b906d1466c69dc624061da0df491b4a4b773637c4e14e",
+        "sha256": "c4ed3e950ace81dfc72b3b41a6ad824f1d4fe5470a9652f66884ce8eca562afc"
+      },
+      "scenarioIds": [
+        "generation-callback-concurrency-v105"
+      ],
+      "rationale": "Queued claim and live owning-session update gates combine with version checks. Completed jobs refuse fresh cancel/recover even at current version. Lease-expiry and cross-device races are not newly varied.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Concurrent client dispatch does not establish internal transaction overlap, forced race/fault or crash durability. Same valid auth session only; output IDs are metadata, not real images. No native/provider execution or measured coverage.",
+      "proposedAssertions": [
+        "Two identical same-session claim requests dispatched together both return 200 with the same running version-two job, while exactly one operation receipt exists. Two distinct progress requests at expectedVersion two have exactly one 200 winner and one exact 409/job_conflict loser; two distinct completion requests at expectedVersion four likewise have exactly one winner. Each winning payload determines exact progress/output and one version increment. This is concurrent client dispatch, not verified internal SQL overlap or fault-injected atomicity."
+      ]
+    },
+    {
+      "rangeId": "generation-callback-concurrency-v105-4",
+      "featureId": "generation-callback-concurrency",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/generation.ts",
+        "start": 135,
+        "end": 141,
+        "fileSha256": "8fc26207cb3980ea5efce6ec0a6222c05ba0b5cc270d44507ac65fd5611b377a",
+        "spanSha256": "35b5b48062da72d6f314a75941b688d71fef541f336c0ab30f1b570f0ad6e27e",
+        "sha256": "f345b7dbe4a081bf2f4ae4bc30adafe7c69a9066e22c286b92ad244112be50e6"
+      },
+      "scenarioIds": [
+        "generation-callback-concurrency-v105"
+      ],
+      "rationale": "CAS predicates and operation-ID nonexistence allow one distinct progress/completion winner at the shared expected version. Identical claim retries do not increment twice. Actual internal overlap is not measured.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Concurrent client dispatch does not establish internal transaction overlap, forced race/fault or crash durability. Same valid auth session only; output IDs are metadata, not real images. No native/provider execution or measured coverage.",
+      "proposedAssertions": [
+        "Two identical same-session claim requests dispatched together both return 200 with the same running version-two job, while exactly one operation receipt exists. Two distinct progress requests at expectedVersion two have exactly one 200 winner and one exact 409/job_conflict loser; two distinct completion requests at expectedVersion four likewise have exactly one winner. Each winning payload determines exact progress/output and one version increment. This is concurrent client dispatch, not verified internal SQL overlap or fault-injected atomicity."
+      ]
+    },
+    {
+      "rangeId": "generation-callback-concurrency-v105-5",
+      "featureId": "generation-callback-concurrency",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/generation.ts",
+        "start": 142,
+        "end": 146,
+        "fileSha256": "8fc26207cb3980ea5efce6ec0a6222c05ba0b5cc270d44507ac65fd5611b377a",
+        "spanSha256": "dcb9e60462f6f5c717f2790d06dcd25527ffc9990f69cbf143a4c72a1cbfcaef",
+        "sha256": "c7a39721850febd717cfa8b80c6615e3f21660d6004a30e038aa22e2d96e9f54"
+      },
+      "scenarioIds": [
+        "generation-callback-concurrency-v105"
+      ],
+      "rationale": "Each accepted change has one exact operation receipt with independently expected request hash, session, resulting version and timestamp; refused operations leave no receipt. No partial-write fault is injected.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Concurrent client dispatch does not establish internal transaction overlap, forced race/fault or crash durability. Same valid auth session only; output IDs are metadata, not real images. No native/provider execution or measured coverage.",
+      "proposedAssertions": [
+        "The chapter adds exactly one metadata job and four exact operation receipts. Receipt request hashes are independently computed from sorted flat request fields plus action; actor session, operation ID, resulting version and timestamp match the expected successful mutation. Job timestamps/90-second leases are bounded by request intervals, and completed lease is zero. All five previous jobs, prior receipts, projects, teams, memberships, users, sessions, assets and R2 inventory remain exact. Output image IDs are synthetic metadata only, with no generated image/provider/native execution."
+      ]
+    },
+    {
+      "rangeId": "generation-callback-concurrency-v105-6",
+      "featureId": "generation-callback-concurrency",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/generation.ts",
+        "start": 147,
+        "end": 150,
+        "fileSha256": "8fc26207cb3980ea5efce6ec0a6222c05ba0b5cc270d44507ac65fd5611b377a",
+        "spanSha256": "9493d539d2ce51b9554f6ad53f78416b63d3db4012e015eb21cfefc2eed9b343",
+        "sha256": "6fcf2ea0d184e4e7fe0779c539de7fd7b1178bb0958359b83d1d89da0ca3786e"
+      },
+      "scenarioIds": [
+        "generation-callback-concurrency-v105"
+      ],
+      "rationale": "After the mutation batch, missing loser receipt yields exact conflict; accepted receipt yields the current job. Read-only final state proves one new job/four receipts and preservation of all prior observed rows.",
+      "confidence": "medium",
+      "uncertainty": "Independent review required. Concurrent client dispatch does not establish internal transaction overlap, forced race/fault or crash durability. Same valid auth session only; output IDs are metadata, not real images. No native/provider execution or measured coverage.",
+      "proposedAssertions": [
+        "The chapter adds exactly one metadata job and four exact operation receipts. Receipt request hashes are independently computed from sorted flat request fields plus action; actor session, operation ID, resulting version and timestamp match the expected successful mutation. Job timestamps/90-second leases are bounded by request intervals, and completed lease is zero. All five previous jobs, prior receipts, projects, teams, memberships, users, sessions, assets and R2 inventory remain exact. Output image IDs are synthetic metadata only, with no generated image/provider/native execution."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "update-cache-revalidation-v103",
+      "title": "Revalidate update bytes before cache shortcuts",
+      "preconditions": [
+        "Run the public tracer app -- test services updates command in its owned isolated Miniflare/R2 process. Original test lines 1–240 and all original 42 requests remain unchanged; six appended requests use the original 48-request limit. Worker source is unchanged and checked byte-for-byte.",
+        "The original synthetic fixture leaves a valid artifact whose in-memory Ed25519 signature can be verified, and an unsigned-key object whose metadata digest deliberately differs from the filename digest. The new conditional header matches that filename digest, so returning 304 before metadata validation would be observable.",
+        "Only synthetic fixture R2 mutation is used: delete the known mismatched object, prove absence with an isolated read, and restore the original valid stable pointer. Feed and valid artifact bytes remain intact. No production/private data, credentials, external requests or persistent publication.",
+        "Assertions cover the local origin HTTP response. They do not invalidate an already cached CDN/client copy, establish broad ETag parsing, rehash streamed archive bytes inside the Worker, certify a native package, execute release tooling or test storage errors."
+      ],
+      "actions": [
+        "Finish the original 42-request publication and acceptance-namespace journey; send a matching filename-digest validator to the known metadata-mismatched artifact by GET and HEAD.",
+        "Delete only that synthetic object, verify its absence, and send the same matching validator by GET.",
+        "Send the now-stale validator to the intact signed synthetic artifact; verify full downloaded bytes and signature. Send its correct validator by HEAD and check 304 body/header behavior.",
+        "Restore the original valid stable pointer and GET its feed with the exact matching feed ETag; verify fresh 200 byte-identical signed payload and no-store headers.",
+        "Finish at exactly 48 requests, zero outbound attempts and unchanged production Worker source; dispose the owned process and temporary R2 state."
+      ],
+      "expectations": [
+        {
+          "id": "refusal",
+          "description": "A matching filename-digest If-None-Match must not bypass R2 metadata or existence checks: metadata-mismatched GET and HEAD return 503 with no ETag and no-store, then the deleted object returns exact 404/Not found with no ETag and no-store. The GET error is exact Release artifact unavailable.; HEAD has no bytes. The corrupt object exists before its first two requests. These are origin revalidation checks, not revocation of previously cached bytes.",
+          "witness": {
+            "path": "updates/tests-e2e/update-journey.mjs",
+            "start": 241,
+            "end": 252,
+            "sha256": "4474dffd08d78475d1319039009301e3366d0eec5d361f0e6b55a366956ad7bd"
+          }
+        },
+        {
+          "id": "artifact",
+          "description": "A mismatching validator on the valid inert artifact returns 200 with exact downloaded bytes, ephemeral Ed25519 verification and exact size. Matching HEAD returns bodyless 304 with no Content-Length. Both responses retain exact artifact ETag, application/zip, immutable one-year cache policy, attachment filename and no Retry-After. Conditional list, weak, wildcard, Range and CDN behavior are not covered.",
+          "witness": {
+            "path": "updates/tests-e2e/update-journey.mjs",
+            "start": 253,
+            "end": 262,
+            "sha256": "178a40101fa3074b49eb69c9ea249fc041e8387124cc39c9b176e269000f6514"
+          }
+        },
+        {
+          "id": "feed",
+          "description": "After synthetic restoration of the valid stable pointer, a matching feed validator still returns 200 with the exact signed feed bytes, digest ETag, XML content type and no-store. The matching feed validator does not produce a conditional 304; the complete payload is still returned. GET transport Content-Length is not asserted; byte equality is the oracle. No live signing identity, publisher, CDN, native install or Sparkle is involved.",
+          "witness": {
+            "path": "updates/tests-e2e/update-journey.mjs",
+            "start": 263,
+            "end": 270,
+            "sha256": "026dbc3c6d20a9fb3dae57530ab65db96381548d3c5d1e871b1e1946ce0c7a77"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "updates/src/worker.mjs",
+            "start": 27,
+            "end": 36,
+            "sha256": "3bd609c1a6acf5639f497ce95f1b567f12aed7b634dc6a71962557458c96b6bc"
+          },
+          "expectation": "feed",
+          "why": "The valid stable pointer resolves to its hash-checked feed before the response ignores conditional caching and returns exact signed bytes with no-store. Existing malformed-pointer coverage is retained, not newly claimed."
+        },
+        {
+          "source": {
+            "path": "updates/src/worker.mjs",
+            "start": 38,
+            "end": 43,
+            "sha256": "c2c144f225ac63be358e0967e6b4bd588d93727cb1cb376f1927e04f31cf95d1"
+          },
+          "expectation": "refusal",
+          "why": "Only a valid artifact route reaches object lookup and metadata matching. Matching validators cannot shortcut missing/mismatched objects because these guards run first; both R2 head and get paths are exercised."
+        },
+        {
+          "source": {
+            "path": "updates/src/worker.mjs",
+            "start": 44,
+            "end": 45,
+            "sha256": "47fa920c311a748346c94f1c9f57d79de9fcf6ad0a3458f092b97a6889699092"
+          },
+          "expectation": "artifact",
+          "why": "Valid artifact responses carry immutable-cache headers. Mismatching GET returns full bytes; exact matching HEAD returns 304 after validation, with Content-Length removed."
+        },
+        {
+          "source": {
+            "path": "updates/src/worker.mjs",
+            "start": 46,
+            "end": 47,
+            "sha256": "1dd68bcef1f10f92a397b009a1b5d5a16a6f09ce5466b8b9c0c7914b40138956"
+          },
+          "expectation": "artifact",
+          "why": "The valid artifact response exposes exact streamed body bytes for a mismatching validator; matching HEAD is intercepted above. No large-file memory bound or arbitrary Range behavior is proven."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "update-cache-revalidation-v103",
+      "title": "Revalidate update bytes before cache shortcuts",
+      "steps": [
+        "update-cache-revalidation-v103"
+      ]
+    }
+  ]
+}

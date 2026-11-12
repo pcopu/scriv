@@ -14,18 +14,9 @@
 			"package" = "C62CB260058B61585C496365";
 			"productName" = "ScrivCore";
 		};
-		"BF4A8D13C9C47A4710CAD610" = {
-			"isa" = "XCSwiftPackageProductDependency";
-			"package" = "C62CB260058B61585C496365";
-			"productName" = "ScrivCore";
-		};
 		"492C08CEA949CABC40234AD3" = {
 			"isa" = "PBXBuildFile";
 			"productRef" = "5D8F0DC8F76177DE5A71EE2B";
-		};
-		"27625B49175EA9D3EACC0786" = {
-			"isa" = "PBXBuildFile";
-			"productRef" = "BF4A8D13C9C47A4710CAD610";
 		};
 		"F324F9493DAF354259C64D24" = {
 			"isa" = "PBXFileSystemSynchronizedRootGroup";
@@ -35,11 +26,6 @@
 		"F8B0CF0F4FF60C8CBEF9524A" = {
 			"isa" = "PBXFileSystemSynchronizedRootGroup";
 			"path" = "MacRuntimeBridge";
-			"sourceTree" = "<group>";
-		};
-		"0865960FFB59039A99EC2318" = {
-			"isa" = "PBXFileSystemSynchronizedRootGroup";
-			"path" = "Tests";
 			"sourceTree" = "<group>";
 		};
 		"15AD2B80ABF66755DD92C769" = {
@@ -184,19 +170,11 @@
 			"path" = "Scriv.app";
 			"sourceTree" = "BUILT_PRODUCTS_DIR";
 		};
-		"E675E32A51E7F83551FFE1EA" = {
-			"isa" = "PBXFileReference";
-			"explicitFileType" = "wrapper.cfbundle";
-			"includeInIndex" = 0;
-			"path" = "ScrivUIKitTests.xctest";
-			"sourceTree" = "BUILT_PRODUCTS_DIR";
-		};
 		"0A0B46C7A66A8752BED6CB7F" = {
 			"isa" = "PBXGroup";
 			"name" = "Products";
 			"children" = (
 				"7CB289F23BA4971DFFB39B5F",
-				"E675E32A51E7F83551FFE1EA",
 				"1ADF23CF70B14077E5346B1C",
 				"E2787FDACC03DDF5BFAC3E2C",
 			);
@@ -209,7 +187,6 @@
 				"F8B0CF0F4FF60C8CBEF9524A",
 				"3811F21F8634315D29CC92B7",
 				"99EB2565B25CDBFBAAA9B2B5",
-				"0865960FFB59039A99EC2318",
 				"0A0B46C7A66A8752BED6CB7F",
 				"C7F6186C89EDC93B13492A78",
 				"BF7C677674410FDAD0DC0442",
@@ -367,131 +344,6 @@
 			"productName" = "ScrivUIKit";
 			"productReference" = "7CB289F23BA4971DFFB39B5F";
 			"productType" = "com.apple.product-type.application";
-		};
-		"509AFC7EC977F1D7989CA391" = {
-			"isa" = "PBXContainerItemProxy";
-			"containerPortal" = "FC63FB878121111E0B03416E";
-			"proxyType" = 1;
-			"remoteGlobalIDString" = "54670338D523D7E28DA448ED";
-			"remoteInfo" = "ScrivUIKit";
-		};
-		"F48038B4B028BB465D57E5B8" = {
-			"isa" = "PBXTargetDependency";
-			"target" = "54670338D523D7E28DA448ED";
-			"targetProxy" = "509AFC7EC977F1D7989CA391";
-		};
-		"5B6665E6C8DF79144657F9F0" = {
-			"isa" = "XCBuildConfiguration";
-			"name" = "Debug";
-			"buildSettings" = {
-				"CLANG_ENABLE_MODULES" = "YES";
-				"SWIFT_VERSION" = "5.0";
-				"SDKROOT" = "iphoneos";
-				"IPHONEOS_DEPLOYMENT_TARGET" = "17.0";
-				"MACOSX_DEPLOYMENT_TARGET" = "14.0";
-				"SUPPORTS_MACCATALYST" = "YES";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"TARGETED_DEVICE_FAMILY" = "2";
-				"CODE_SIGN_STYLE" = "Automatic";
-				"ENABLE_APP_SANDBOX" = "YES";
-				"ENABLE_HARDENED_RUNTIME" = "YES";
-				"GENERATE_INFOPLIST_FILE" = "YES";
-				"PRODUCT_NAME" = "$(TARGET_NAME)";
-				"DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER" = "NO";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "app.scriv.uikit.tests";
-				"BUNDLE_LOADER" = "$(TEST_HOST)";
-				"TEST_TARGET_NAME" = "ScrivUIKit";
-				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/Scriv.app/Scriv";
-				"TEST_HOST[sdk=macosx*]" = "$(BUILT_PRODUCTS_DIR)/Scriv.app/Contents/MacOS/Scriv";
-				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
-				"DEBUG_INFORMATION_FORMAT" = "dwarf";
-				"ONLY_ACTIVE_ARCH" = "YES";
-				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "DEBUG $(inherited)";
-				"ENABLE_TESTABILITY" = "YES";
-			};
-		};
-		"C97019DDBA79A47E391E4D9A" = {
-			"isa" = "XCBuildConfiguration";
-			"name" = "Release";
-			"buildSettings" = {
-				"CLANG_ENABLE_MODULES" = "YES";
-				"SWIFT_VERSION" = "5.0";
-				"SDKROOT" = "iphoneos";
-				"IPHONEOS_DEPLOYMENT_TARGET" = "17.0";
-				"MACOSX_DEPLOYMENT_TARGET" = "14.0";
-				"SUPPORTS_MACCATALYST" = "YES";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"TARGETED_DEVICE_FAMILY" = "2";
-				"CODE_SIGN_STYLE" = "Automatic";
-				"ENABLE_APP_SANDBOX" = "YES";
-				"ENABLE_HARDENED_RUNTIME" = "YES";
-				"GENERATE_INFOPLIST_FILE" = "YES";
-				"PRODUCT_NAME" = "$(TARGET_NAME)";
-				"DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER" = "NO";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "app.scriv.uikit.tests";
-				"BUNDLE_LOADER" = "$(TEST_HOST)";
-				"TEST_TARGET_NAME" = "ScrivUIKit";
-				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/Scriv.app/Scriv";
-				"TEST_HOST[sdk=macosx*]" = "$(BUILT_PRODUCTS_DIR)/Scriv.app/Contents/MacOS/Scriv";
-				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
-				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
-				"ONLY_ACTIVE_ARCH" = "NO";
-			};
-		};
-		"D8D0F18CA8F7563ECFC692F0" = {
-			"isa" = "XCConfigurationList";
-			"buildConfigurations" = (
-				"5B6665E6C8DF79144657F9F0",
-				"C97019DDBA79A47E391E4D9A",
-			);
-			"defaultConfigurationIsVisible" = 0;
-			"defaultConfigurationName" = "Release";
-		};
-		"7008BDCB0DFE17E97B778131" = {
-			"isa" = "PBXSourcesBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = (
-			);
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		"79FABAD5340384F27057952B" = {
-			"isa" = "PBXFrameworksBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = (
-				"27625B49175EA9D3EACC0786",
-			);
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		"35FC349C3EC92F1506D5D634" = {
-			"isa" = "PBXResourcesBuildPhase";
-			"buildActionMask" = 2147483647;
-			"files" = (
-			);
-			"runOnlyForDeploymentPostprocessing" = 0;
-		};
-		"DDF721F7A9FBE9FC438573D9" = {
-			"isa" = "PBXNativeTarget";
-			"buildConfigurationList" = "D8D0F18CA8F7563ECFC692F0";
-			"buildPhases" = (
-				"7008BDCB0DFE17E97B778131",
-				"79FABAD5340384F27057952B",
-				"35FC349C3EC92F1506D5D634",
-			);
-			"buildRules" = (
-			);
-			"dependencies" = (
-				"F48038B4B028BB465D57E5B8",
-			);
-			"fileSystemSynchronizedGroups" = (
-				"0865960FFB59039A99EC2318",
-			);
-			"name" = "ScrivUIKitTests";
-			"packageProductDependencies" = (
-				"BF4A8D13C9C47A4710CAD610",
-			);
-			"productName" = "ScrivUIKitTests";
-			"productReference" = "E675E32A51E7F83551FFE1EA";
-			"productType" = "com.apple.product-type.bundle.unit-test";
 		};
 		"5CB6177A2C82296D5DDF62DF" = {
 			"isa" = "XCRemoteSwiftPackageReference";
@@ -1657,10 +1509,6 @@
 					"54670338D523D7E28DA448ED" = {
 						"CreatedOnToolsVersion" = "26.0";
 					};
-					"DDF721F7A9FBE9FC438573D9" = {
-						"CreatedOnToolsVersion" = "26.0";
-						"TestTargetID" = "54670338D523D7E28DA448ED";
-					};
 				};
 			};
 			"buildConfigurationList" = "2EBA7B4CDC9593479C6DD11D";
@@ -1682,7 +1530,6 @@
 			"projectRoot" = "";
 			"targets" = (
 				"54670338D523D7E28DA448ED",
-				"DDF721F7A9FBE9FC438573D9",
 				"7603CEFB99D4C7AA5CD18741",
 				"7FC8B2E1FD0CC433A5B74317",
 			);

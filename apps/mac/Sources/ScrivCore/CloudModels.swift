@@ -2,6 +2,20 @@ import Foundation
 
 public enum JSONValue: Codable, Hashable, Sendable {
     case null, bool(Bool), number(Double), string(String), array([JSONValue]), object([String: JSONValue])
+    /// JSON string payloads preserve source code units. Canonical String
+    /// equality would suppress exact-text cloud commits, conflict checks and
+    /// readable history changes even after the local project accepts the edit.
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+        case (.null, .null): return true
+        case (.bool(let a), .bool(let b)): return a == b
+        case (.number(let a), .number(let b)): return a == b
+        case (.string(let a), .string(let b)): return a.utf16.elementsEqual(b.utf16)
+        case (.array(let a), .array(let b)): return a == b
+        case (.object(let a), .object(let b)): return a == b
+        default: return false
+        }
+    }
     public init(from decoder: Decoder) throws {
         let c = try decoder.singleValueContainer()
         if c.decodeNil() { self = .null }

@@ -6,13 +6,27 @@ final class CharacterCropImageView: UIView {
     private let picture = UIImageView()
     private let placeholder = ScrivUIKitTheme.label("Portrait unavailable",size:12,color:ScrivUIKitTheme.secondary)
     private var load: Task<Void,Never>?
-    init(source: URL?, sha256: String, region: NormalizedCharacterRegion, title: String) {
+    init(source: URL?, sha256: String, region: NormalizedCharacterRegion, title: String, store: WorkspaceStore, asset: ImageAsset) {
         super.init(frame:.zero)
         backgroundColor = ScrivUIKitTheme.inset; clipsToBounds = true; layer.cornerRadius = 10
         picture.contentMode = .scaleAspectFill; addSubview(picture); picture.scrivPinEdges(to:self)
         placeholder.textAlignment = .center; addSubview(placeholder); placeholder.scrivPinEdges(to:self,insets:.init(top:4,leading:4,bottom:4,trailing:4))
         accessibilityLabel = title; isAccessibilityElement = true
         guard let source else { return }
+        #if SCRIV_CLI_AUTOMATION
+        // Preparation happens synchronously on the main actor, bound to this
+        // view's original asset/navigation, before any detached work begins.
+        guard sha256 == asset.sha256,
+              let prepared = try? ScrivCLIPortraitMemory.prepare(store: store, asset: asset, source: source, region: region) else { return }
+        load = Task { [weak self] in
+            do {
+                let image = try await prepared.image()
+                guard !Task.isCancelled, let self else { return }
+                try prepared.validate(store: store, view: self)
+                self.picture.image = image; self.placeholder.isHidden = self.picture.image != nil
+            } catch { /* Keep the placeholder; never fall through to disk. */ }
+        }
+        #else
         load = Task { [weak self] in
             do {
                 let url = try await CharacterPortraitCache.thumbnail(source:source,sha256:sha256,region:region)
@@ -20,6 +34,7 @@ final class CharacterCropImageView: UIView {
                 self.picture.image = UIImage(contentsOfFile:url.path); self.placeholder.isHidden = self.picture.image != nil
             } catch { self?.placeholder.text = "Crop unavailable" }
         }
+        #endif
     }
     deinit { load?.cancel() }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(source:sha256:region:title:)") }
@@ -48,11 +63,20 @@ private final class CharacterReviewImageView: UIView {
             addSubview(region); regions.append(region)
         }
         if let url = store.assetURL(image) {
+            #if SCRIV_CLI_AUTOMATION
+            guard let prepared = try? ScrivCLIPortraitMemory.prepare(store: store, asset: image, source: url, region: nil) else { return }
+            load = Task { [weak self] in
+                guard let decoded = try? await prepared.image(), !Task.isCancelled, let self,
+                      (try? prepared.validate(store: store, view: self)) != nil else { return }
+                self.picture.image = decoded; self.setNeedsLayout()
+            }
+            #else
             load = Task { [weak self] in
                 let data = try? await Task.detached(priority:.utility) { try Data(contentsOf:url,options:.mappedIfSafe) }.value
                 guard !Task.isCancelled, let self, let data else { return }
                 self.picture.image = UIImage(data:data); self.setNeedsLayout()
             }
+            #endif
         }
     }
     deinit { load?.cancel() }
@@ -79,7 +103,7 @@ final class CharacterImageReviewController: ScrivScreenController, UISearchBarDe
     private let content = ScrivUIKitTheme.stack(spacing:14)
     private let search = UISearchBar()
     private let choices = CharacterTeamUI.row([],spacing:10)
-    private let save = CharacterTeamUI.button("Save tag & next",primary:true) {}
+    private lazy var save = CharacterTeamUI.button("Save tag & next",primary:true) { [weak self] in self?.submit() }
     private var currentID: String?
     private var selectedCharacterID: String?
     private var newName: String?
@@ -105,7 +129,6 @@ final class CharacterImageReviewController: ScrivScreenController, UISearchBarDe
         search.accessibilityLabel = "Find a character for this image region"
         save.accessibilityIdentifier = "character-review-save"
         save.heightAnchor.constraint(greaterThanOrEqualToConstant:44).isActive = true
-        save.addAction(UIAction { [weak self] _ in self?.submit() },for:.touchUpInside)
         render()
     }
     override func storeDidChange() {
@@ -135,7 +158,7 @@ final class CharacterImageReviewController: ScrivScreenController, UISearchBarDe
         let cropScroll = UIScrollView(); cropScroll.showsHorizontalScrollIndicator = false; cropScroll.addSubview(crops); crops.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([crops.leadingAnchor.constraint(equalTo:cropScroll.contentLayoutGuide.leadingAnchor),crops.trailingAnchor.constraint(equalTo:cropScroll.contentLayoutGuide.trailingAnchor),crops.topAnchor.constraint(equalTo:cropScroll.contentLayoutGuide.topAnchor),crops.bottomAnchor.constraint(equalTo:cropScroll.contentLayoutGuide.bottomAnchor),crops.heightAnchor.constraint(equalTo:cropScroll.frameLayoutGuide.heightAnchor),cropScroll.heightAnchor.constraint(equalToConstant:140)])
         for annotation in item.image.characterAnalysis?.annotations ?? [] where annotation.decision != .ignored {
-            let crop = CharacterCropImageView(source:store.assetURL(item.image),sha256:item.image.sha256,region:annotation.portraitRegion,title:annotation.characterID.flatMap { store.project.character($0)?.name } ?? "Unknown character")
+            let crop = CharacterCropImageView(source:store.assetURL(item.image),sha256:item.image.sha256,region:annotation.portraitRegion,title:annotation.characterID.flatMap { store.project.character($0)?.name } ?? "Unknown character",store:store,asset:item.image)
             let button = UIButton(type:.custom); button.addSubview(crop); crop.scrivPinEdges(to:button); crop.isUserInteractionEnabled = false
             button.widthAnchor.constraint(equalToConstant:160).isActive = true; button.heightAnchor.constraint(equalToConstant:130).isActive = true
             button.layer.cornerRadius = 10; button.layer.borderColor = (annotation.decision == .needsReview ? UIColor.systemOrange : ScrivUIKitTheme.accent).cgColor; button.layer.borderWidth = annotation.id == item.annotation.id ? 3 : 1

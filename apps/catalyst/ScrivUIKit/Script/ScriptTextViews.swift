@@ -46,7 +46,12 @@ final class ScriptTextView: UITextView {
     }
     @objc private func finish() { finishEditing?() }
     override func deleteBackward() {
-        if isEditable, markedTextRange == nil, selectedRange == NSRange(location: 0, length: 0), let mergeAtStart { mergeAtStart(); return }
+        if isEditable, markedTextRange == nil, selectedRange == NSRange(location: 0, length: 0), let mergeAtStart {
+#if SCRIV_CLI_AUTOMATION
+            ScrivCLIInteractionCounts.recordMergeAtStartInvocation()
+#endif
+            mergeAtStart(); return
+        }
         super.deleteBackward()
     }
     func setScriptStyle(size: CGFloat, direction: Bool) {
@@ -254,6 +259,9 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
             // preserved on the new line rather than silently deleted.
             onSplit(range.location); return false
         }
+#if SCRIV_CLI_AUTOMATION
+        if onTextEdit != nil { ScrivCLIInteractionCounts.recordOnTextEditInvocation() }
+#endif
         return onTextEdit?(CharacterTextEdit(range: range, replacement: text)) ?? false
     }
     func textViewDidChange(_ textView: UITextView) {

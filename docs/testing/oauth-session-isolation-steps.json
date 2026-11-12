@@ -1,0 +1,241 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "oauth-session-isolation-v99",
+      "title": "Reuse OAuth identity and isolate session revocation",
+      "preconditions": [
+        "Run the entire public tracer app -- test services oauth command on the unchanged owned local Worker. Original source lines 1–283, all 24 named runtime callbacks and their expectations remain exact. A new chapter adds 16 HTTP requests for 40 total, within the unchanged 40-request cap.",
+        "Existing fixture permits only three exact GitHub endpoint URLs and exact synthetic credentials/code/token, with no forwarding or fallback. The valid provider profile remains unchanged. Total 14 simulated provider calls remain below the unchanged 16-call limit; denied outbound stays zero.",
+        "After original logout, seed only one unrelated synthetic user and active session. No OAuth states, exchange codes or new tested-user sessions are seeded, edited or reset. Both fresh authentication flows use the real HTTP routes and synthetic provider fixture.",
+        "Read-only D1 observations compare full declared users, sessions, oauth_states, auth_codes and email_identities. Rate counters and project-room notification behavior are excluded. Plaintext state/code/token values remain transient and never appear in logs or artifacts.",
+        "Two client callback requests and later two exchange requests are each dispatched before either result is awaited. Internal D1 or worker scheduling is not controlled. Five-second requests, owned 90-second watchdog, pinned runtime, telemetry-disabled settings and isolated cleanup remain unchanged.",
+        "No real GitHub login, real account, native input, notification delivery, storage-fault, arbitrary-race, expired-time, changed-profile or alternate SESSION_DAYS/device-name configuration is claimed."
+      ],
+      "actions": [
+        "Finish original 24 HTTP steps and capture original revoked user/session and empty state/code/verified-identity rows. Add one isolated unrelated user/session fixture.",
+        "Start a fresh OAuth flow; observe the stored opaque-state hash, client state, fresh PKCE challenge and request-bounded ten-minute expiry without user/session writes.",
+        "Dispatch two identical callback fetches together. Require one redirect and one exact oauth_expired refusal, a single provider exchange, unchanged user/session rows and one correctly hashed two-minute exchange code.",
+        "Exchange the first code and proof once; require exactly one session for the existing user, exact token hash, requested device and default expiry.",
+        "Repeat with a second fresh state and proof for the same GitHub identity; after its callback dispatch two correct exchanges together and require one success and one invalid_code refusal with only one additional session.",
+        "List sessions using the second token and require exactly the two new active sessions. Attempt deletion of the unrelated session ID and require ok with complete declared auth state unchanged.",
+        "Read current identity, revoke the first session using the second, and check only the target timestamp changed. Require the first token refused and the second still able to list its sole session.",
+        "Log out the second session; require its token refused and only its revocation timestamp changed. Preserve original and unrelated rows, empty state/code/identity rows, 40 total HTTP requests, 14 simulated provider requests and zero denied outbound."
+      ],
+      "expectations": [
+        {
+          "id": "states",
+          "description": "Real starts store exactly one new OAuth state with the SHA-256 of the returned opaque state, distinct client state, correct fresh PKCE challenge and ten-minute expiry bounded by actual request time; users/sessions remain exact and auth codes empty.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 299,
+            "end": 306,
+            "sha256": "911c51856d8203972ecd48f3c1205c7d1716a3af43a0d991f13d8c4bc590bfc1"
+          }
+        },
+        {
+          "id": "callback",
+          "description": "Two callback fetches for one real OAuth state are dispatched before either result is awaited; exactly one redirects with a code and one returns exact 400/oauth_expired. Only one synthetic provider exchange occurs. Separately, two correct code-exchange fetches are dispatched together; exactly one returns 200 and one exact 401/invalid_code, the exchange code disappears and exactly one new session is added. No particular internal transaction overlap is forced.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 307,
+            "end": 324,
+            "sha256": "dea8a35cddf28693863131603fe4e255b3cd989a2914f6c2e13e4dfafaf6590d"
+          }
+        },
+        {
+          "id": "identity",
+          "description": "Repeated successful callbacks for the same simulated GitHub account preserve every user row including the preexisting ID/creation time, do not create a second user, and do not create a verified email identity. The provider profile is deliberately unchanged; profile-field update behavior is not tested.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 312,
+            "end": 324,
+            "sha256": "e2332a9055030b68fd9611dbda09bc5ca7f59648fa2912ed3719a95b0abce0a0"
+          }
+        },
+        {
+          "id": "codes",
+          "description": "Each successful callback consumes its OAuth state and stores exactly one two-minute exchange-code row containing the SHA-256 of the returned code, the existing user ID and the fresh proof challenge. No sessions are created until exchange.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 307,
+            "end": 313,
+            "sha256": "a0686fa3f630387f7aa06a4dcee14b7cbf7d4013a4d92d969aa443ba9e0e1151"
+          }
+        },
+        {
+          "id": "credentials",
+          "description": "Each successful exchange adds exactly one session with SHA-256 of its returned 64-character bearer, unique session ID, existing user ID, requested device name, request-bounded creation timestamp, default 30-day expiry and null revocation. Existing sessions remain byte-for-byte equal.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 314,
+            "end": 326,
+            "sha256": "61539561e614229b069e9ee596cbad59237fb21c201b9279924fb65a55cadea1"
+          }
+        },
+        {
+          "id": "inventory",
+          "description": "Public session reads return exactly the two new active sessions and the correct current ID, omitting the original revoked and unrelated active session. After sibling revocation only the current session remains.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 326,
+            "end": 336,
+            "sha256": "17a3baf8fb2e0f39844c3c9fa299a2f42fe8904b39672fec07dfbf52e52a9787"
+          }
+        },
+        {
+          "id": "revoke",
+          "description": "The public session list contains exactly the two new active sessions and identifies the current session; it omits the original revoked session and an unrelated synthetic user session. Deleting the unrelated session ID reports ok with all declared auth rows unchanged. Deleting the sibling session changes only its revocation timestamp; the sibling token is refused while the current token still lists its own session. Logout changes only the current session revocation timestamp and its token is then refused. Original and unrelated user/session rows remain exact.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 326,
+            "end": 341,
+            "sha256": "9650de58234a93da6cb68542500c3118f36221cf94b3daf482378caa336588bc"
+          }
+        },
+        {
+          "id": "logout",
+          "description": "Logout of the remaining current session changes only its revocation timestamp within real request time. Its next identity read is exact 401/session_expired. Prior revoked and unrelated sessions stay unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 337,
+            "end": 341,
+            "sha256": "300c013acf0b158c576458def2e0dd255b7d352aefca9d0cd77efda5c36ce014"
+          }
+        },
+        {
+          "id": "authenticate",
+          "description": "The current OAuth bearer successfully reads the existing user and empty teams/projects. Revoking the sibling session makes the sibling bearer fail with exact 401/session_expired while the current bearer still lists its own session. After current logout the current bearer is also refused.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 331,
+            "end": 338,
+            "sha256": "95d4b34e1fbd782100c913c6befb1aab4adc1cc652f74a565115fdf3f29c16dc"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 15,
+            "end": 18,
+            "sha256": "1c0a15605da869ccaf2ba2cea2e5b9a1f5be5e5904312e9f8090fafaea8b929e"
+          },
+          "expectation": "states",
+          "why": "Fresh real OAuth starts persist the returned opaque state hash, independent client state, fresh proof challenge and default expiry; no random distribution or expiry rejection claim."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 27,
+            "end": 30,
+            "sha256": "59b317e7f5d213e8eb6f2688322cfdd557ac1bd39dccaf479f5d44ae6b8924d9"
+          },
+          "expectation": "callback",
+          "why": "Two callback requests for the same real state produce one successful consumption and one exact stale-state refusal, with one provider exchange; no forced internal concurrency or arbitrary race proof."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 50,
+            "end": 53,
+            "sha256": "4b050c14143666379f9e8bb6ad2175cabed2dc9c1b69c48bbec52db823f14ece"
+          },
+          "expectation": "identity",
+          "why": "The existing GitHub ID conflict retains the original user ID/creation time and unchanged profile without duplicate user creation. Changed profile-field updates are not exercised."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 54,
+            "end": 58,
+            "sha256": "bc80e349419740734776ce0d84f0b5050155fa5f262847b042cb4d79a643a362"
+          },
+          "expectation": "codes",
+          "why": "Successful callbacks insert one correctly hashed exchange code with the existing user and fresh proof, then return that opaque code and client state."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 65,
+            "end": 67,
+            "sha256": "ca52f7250fd0eb10bd10a626c45176b61273142d9e799cd55ce351060bfa640e"
+          },
+          "expectation": "callback",
+          "why": "Two valid exchanges of one real code yield exactly one session and one exact invalid-code refusal; the code row is removed. Storage faults and particular internal interleavings are not tested."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 68,
+            "end": 71,
+            "sha256": "745eec5b66034bb433d4f7ee4ce4d7e34b9c05242e773801f610747baa42169f"
+          },
+          "expectation": "credentials",
+          "why": "New sessions independently reproduce the returned token hash and requested device name with the default duration. Other duration settings and device truncation are not claimed."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 72,
+            "end": 73,
+            "sha256": "af012ced647769e4fe8cb467b7469958a0bfdbc7fdb5a7d717165797c08e8e7f"
+          },
+          "expectation": "credentials",
+          "why": "Successful exchange returns the existing user and the issued token/expiry, agreeing with complete owned-D1 observations."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 80,
+            "end": 83,
+            "sha256": "6ac017592eb9916296f84c0b6bad520ac366809d7f6f8a87c186c30afb56062d"
+          },
+          "expectation": "inventory",
+          "why": "Two same-user active sessions are listed without the original revoked or unrelated-user session; currentSessionId and post-revocation list are exact."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 85,
+            "end": 89,
+            "sha256": "59ecab0b9f5876f918f75c6f60fa81120d638cd08272d65d3a8b72a53a778dab"
+          },
+          "expectation": "revoke",
+          "why": "The same authenticated DELETE route cannot change an existing foreign-user session, but does revoke its own sibling session. Notification delivery itself is not asserted."
+        },
+        {
+          "source": {
+            "path": "cloud/src/auth.ts",
+            "start": 75,
+            "end": 78,
+            "sha256": "6133c51be5597cb7e00569ae7cd564161eb6eb7dff47653b9a3dd2151c9b7594"
+          },
+          "expectation": "logout",
+          "why": "Public logout revokes only the authenticated current session and subsequent identity authentication fails. Notification delivery is outside the stated oracle."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 6,
+            "end": 10,
+            "sha256": "c6d23def340398a64725363c16742a3f4e94c8696ec68c59f6e7e786c434bc84"
+          },
+          "expectation": "authenticate",
+          "why": "Correct issued bearer authenticates the existing user until its own revocation; revoking a sibling does not revoke the current bearer. Other header/expiry inputs are excluded."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "oauth-session-isolation-v99",
+      "title": "Reuse OAuth identity and isolate session revocation",
+      "steps": [
+        "oauth-session-isolation-v99"
+      ]
+    }
+  ]
+}

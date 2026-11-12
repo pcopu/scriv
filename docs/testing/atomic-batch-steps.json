@@ -1,0 +1,1189 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "create-project",
+      "title": "Create synthetic team project",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The project ID is unused and the member can create a team project."
+      ],
+      "actions": [
+        "POST /v1/projects synthetic team project"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 201 returns a project owned by the synthetic team owner.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 149,
+            "end": 149,
+            "sha256": "7f8c15e9734f92a24192b3a075049d657cffb04a125be55b993f22385a04535c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "inspect-empty-project",
+      "title": "Inspect empty project",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The synthetic project exists and no item edits have committed."
+      ],
+      "actions": [
+        "GET /v1/projects/:project/snapshot as viewer"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Viewer snapshot returns HTTP 200, head sequence zero and no items.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 153,
+            "end": 153,
+            "sha256": "4918e742f0a5bdf9297d333df703d9a25f82fcf50b57b2854fda3368949abcce"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-invalid-manifest",
+      "title": "Reject manifest count mismatch",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The project is empty and the member has write access."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches manifest with mismatched count"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A part-count mismatch returns HTTP 400 with invalid_batch.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 157,
+            "end": 157,
+            "sha256": "d83e0f027aa10fafc3d8cda320baed7be68d9cd0a7dcae979171e4621f7c8eb3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/atomic-batch.ts",
+            "start": 12,
+            "end": 12,
+            "sha256": "0994f3931f22368d2e3a4834f3aa6abc3ed3477d49a59d65bbc1abea647b4347"
+          },
+          "expectation": "observed",
+          "why": "The mismatched total is rejected with invalid_batch before staging."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 393,
+            "end": 397,
+            "sha256": "d4245bcbb69a0d82763f93cd97b85f14639df99b7b68abb6a1e3ed91a2222a86"
+          },
+          "expectation": "observed",
+          "why": "The prepare route parses the submitted manifest, whose mismatched count is rejected."
+        }
+      ]
+    },
+    {
+      "id": "prepare-edit",
+      "title": "Prepare immutable two-part edit",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The project is empty; a valid two-part manifest names a scene, character and direction."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches valid two-part manifest"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The valid manifest returns HTTP 200, staged true and the same command ID.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 161,
+            "end": 161,
+            "sha256": "1657b7ce956c599f93f4dfabc45d9cc02edd3f76367a12e4423cf053d5e378e7"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/atomic-batch.ts",
+            "start": 7,
+            "end": 11,
+            "sha256": "9fa9e03cf8c15eb2a6a8bd34d11769ce51a3f1cf2c172b1ad49c82c9ed583fed"
+          },
+          "expectation": "observed",
+          "why": "The accepted two-part manifest is parsed with its identifiers, operation count and part descriptors; success does not test invalid bounds."
+        },
+        {
+          "source": {
+            "path": "cloud/src/atomic-batch.ts",
+            "start": 14,
+            "end": 14,
+            "sha256": "174d15b6816f63ce572abdd904f3ebc0059911b8dcccd8df22b3b0ee506cf202"
+          },
+          "expectation": "observed",
+          "why": "The valid manifest preserves the expected timing version for the staged edit."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 362,
+            "end": 362,
+            "sha256": "4821b25ea60bdb8cb3de17203db82aa742152a2b2ea09df9bb8c28c1849e2cf4"
+          },
+          "expectation": "observed",
+          "why": "The successful batches request is dispatched to the room batch handler."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 404,
+            "end": 404,
+            "sha256": "69dc56fa4165b4aaccbc496c6133b2c404624912a388ee88a48c13a17aeff3a1"
+          },
+          "expectation": "observed",
+          "why": "A new manifest is checked against staged batches before its successful prepare."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 409,
+            "end": 411,
+            "sha256": "52ea5e50b993e610e1b2847fe5addffba32ef9a29300c3a9d3328228ec5cbbe5"
+          },
+          "expectation": "observed",
+          "why": "A new prepare enters the branch that reserves the submitted part bytes."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 414,
+            "end": 414,
+            "sha256": "081c26a5e5f0c6f13a219fa93763f22bd6b1bf726a0c7cc3789fb21c2183aab1"
+          },
+          "expectation": "observed",
+          "why": "The manifest is stored for the staged response."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 417,
+            "end": 417,
+            "sha256": "a5529c0e1b935a68af57a2bed1964fd538cd324da10711d9f76be8f33ccf57ab"
+          },
+          "expectation": "observed",
+          "why": "The prepare returns the asserted staged command ID."
+        }
+      ]
+    },
+    {
+      "id": "retry-prepare",
+      "title": "Retry identical prepare",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The identical manifest is already staged by the same member session."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches identical manifest"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "An identical prepare retry returns HTTP 200 and staged true.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "874c9f6ac7a072ad41c8840e5ef35731a53a13e5f7e5fbd87bf24d3808b8f7e1"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 405,
+            "end": 406,
+            "sha256": "3c6d3108a4dada6dd150cab6630ca9a1b14273d60e98f1f91672695a11bd7123"
+          },
+          "expectation": "observed",
+          "why": "An identical staged command passes the immutable request-hash check and returns staged."
+        }
+      ]
+    },
+    {
+      "id": "conflict-prepare",
+      "title": "Reject changed manifest reuse",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The original manifest is staged under this command ID."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches changed label same command"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Changing the label under the staged command ID returns HTTP 409 command_reused.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 169,
+            "end": 169,
+            "sha256": "297fe5baf07f5275ba678636a5ec73203bff18bb3726b5fb0df665cabbcc8324"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 406,
+            "end": 406,
+            "sha256": "b6b1c74f1e8662acd113a7b04a150b6365ea0d2dbba8c9c73ea635c7eb111aed"
+          },
+          "expectation": "observed",
+          "why": "Changing the label while reusing the staged command triggers command_reused."
+        }
+      ]
+    },
+    {
+      "id": "incomplete-no-parts",
+      "title": "Reject commit before upload",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The original manifest is staged; neither upload part exists."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches/:batch/commit before uploads"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Commit before uploading any part returns HTTP 409 batch_incomplete.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 173,
+            "end": 173,
+            "sha256": "caf099edd7d95367fc6b44ac1f9d003d36346b78fb3cf2ceec7c9b252fd80ca4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 420,
+            "end": 421,
+            "sha256": "a27c9f10b3f2a9b063fc4e43c1d3893267baffbe6d3be1becda776241fa627db"
+          },
+          "expectation": "observed",
+          "why": "A staged edit with no parts fails the required ordered-parts check."
+        }
+      ]
+    },
+    {
+      "id": "reject-part-bytes",
+      "title": "Reject mismatched part bytes",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The original manifest is staged with its immutable first-part digest."
+      ],
+      "actions": [
+        "PUT /v1/projects/:project/batches/:batch/parts/0 mismatched bytes"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Part bytes differing from the manifest return HTTP 400 batch_part_mismatch.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 177,
+            "end": 177,
+            "sha256": "2d5c8797093f40c3df0f408a55544db9f6571ebc31e336fbd8afc6793ed0b83a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 440,
+            "end": 440,
+            "sha256": "62d8be9f983edd860833dac0b8b13b04abbaf8fd8e01cdc07aba25547411267e"
+          },
+          "expectation": "observed",
+          "why": "The room reads and hashes the provided part bytes before comparing the manifest."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 444,
+            "end": 445,
+            "sha256": "80d03ef8a986ff482194bef56f25a9b8d3e231b7c3f7561ab4552ca9d32fb45b"
+          },
+          "expectation": "observed",
+          "why": "The mismatched part bytes produce the asserted batch_part_mismatch response."
+        }
+      ]
+    },
+    {
+      "id": "upload-first-part",
+      "title": "Upload scene and character part",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The original manifest is staged; its first part contains scene and character."
+      ],
+      "actions": [
+        "PUT /v1/projects/:project/batches/:batch/parts/0 scene and character"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The scene and character part returns HTTP 200, staged true and part index zero.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 181,
+            "end": 181,
+            "sha256": "8c95902867374fd05438b4193ea9e1df5a5ff49712aaae082eee90c29e1a37be"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 442,
+            "end": 444,
+            "sha256": "7667df047a3216aac9d59b667e23ab26d41c26d51bcd15fe61227006d85f4123"
+          },
+          "expectation": "observed",
+          "why": "The accepted first part resolves the staged manifest and its expected descriptor."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 446,
+            "end": 448,
+            "sha256": "9b25ab02109faecc3018ce9b30528b56aff3e784a9a2b4747515c8ae78b35ccf"
+          },
+          "expectation": "observed",
+          "why": "The first part parses as the declared operation array and passes command validation before staging."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 451,
+            "end": 452,
+            "sha256": "58d9afa5d13cdb9a5939af9612e59a860519e39f18821f562691594fad2cb37b"
+          },
+          "expectation": "observed",
+          "why": "The accepted first part is stored and returns its asserted part index and staged flag."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 20,
+            "end": 23,
+            "sha256": "02c574e08ceff13ab5899d285bccd2d25b6c36d4ad7ff021e098fb88b239d5fa"
+          },
+          "expectation": "observed",
+          "why": "The accepted part validates the scene identity, title and order; rejection boundaries are not exercised."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 52,
+            "end": 54,
+            "sha256": "a0392b79db02d44e8f3b8608422ef28fab3442d27d2fda310dcb1aa07b12f2e5"
+          },
+          "expectation": "observed",
+          "why": "The accepted character is validated as a character with a name and portrait input."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 56,
+            "end": 57,
+            "sha256": "cbb73564979bbffe16a5b4e9fab42ed324b5eeb20c5a93f30d0bdbb2e93305bd"
+          },
+          "expectation": "observed",
+          "why": "The accepted character has a nonblank name and valid aliases and descriptive fields."
+        }
+      ]
+    },
+    {
+      "id": "retry-first-part",
+      "title": "Retry identical first part",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The first part was uploaded with identical bytes by the same member."
+      ],
+      "actions": [
+        "PUT /v1/projects/:project/batches/:batch/parts/0 identical bytes"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "An identical upload retry returns HTTP 200 and part index zero.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 185,
+            "end": 185,
+            "sha256": "2b8545a8602722f64d9368e989b62135c6bbfc4438b81aae1c68bd151a795fd7"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 449,
+            "end": 452,
+            "sha256": "46748cd399dc412d26572618bd5a1e4b700c77ea237dec40947904bdabd49071"
+          },
+          "expectation": "observed",
+          "why": "The identical first-part retry returns the same part index without replacing different content."
+        }
+      ]
+    },
+    {
+      "id": "incomplete-one-part",
+      "title": "Reject commit with missing second part",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "Only the first of two declared parts is uploaded."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches/:batch/commit after first part"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Commit with the second part missing returns HTTP 409 batch_incomplete.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 189,
+            "end": 189,
+            "sha256": "caf099edd7d95367fc6b44ac1f9d003d36346b78fb3cf2ceec7c9b252fd80ca4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 420,
+            "end": 421,
+            "sha256": "a27c9f10b3f2a9b063fc4e43c1d3893267baffbe6d3be1becda776241fa627db"
+          },
+          "expectation": "observed",
+          "why": "A two-part edit with only its first part fails the same completeness check."
+        }
+      ]
+    },
+    {
+      "id": "inspect-before-commit",
+      "title": "Verify no partial project state",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The first part is uploaded but no structural edit has committed."
+      ],
+      "actions": [
+        "GET /v1/projects/:project/snapshot before final part"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The viewer still sees head sequence zero and no items before commit.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 193,
+            "end": 193,
+            "sha256": "4918e742f0a5bdf9297d333df703d9a25f82fcf50b57b2854fda3368949abcce"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-viewer-upload",
+      "title": "Reject viewer part upload",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The original manifest remains staged and the viewer lacks write access."
+      ],
+      "actions": [
+        "PUT /v1/projects/:project/batches/:batch/parts/1 as viewer"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A viewer upload returns HTTP 403 read_only.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 197,
+            "end": 197,
+            "sha256": "22b954aae2f0c40544c122875083468dfb7c3155e4fb2c7e71e08138f46c7989"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 441,
+            "end": 441,
+            "sha256": "ad383ecca0a5084d3c16e2721c1c94feb1b61c1a35f4715694ad1e8aa9aa8aca"
+          },
+          "expectation": "observed",
+          "why": "The viewer part upload is rejected as read_only before staging a part."
+        }
+      ]
+    },
+    {
+      "id": "upload-second-part",
+      "title": "Upload direction part",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The first part is staged; the second contains the valid direction."
+      ],
+      "actions": [
+        "PUT /v1/projects/:project/batches/:batch/parts/1 direction"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The direction part returns HTTP 200, staged true and part index one.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 201,
+            "end": 201,
+            "sha256": "7ef50518141546cb3c3d8200a22e7b4f4aebfb612b84cd95647269857ad35c97"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 24,
+            "end": 28,
+            "sha256": "a964ef6bebce0e05d97dec58a1f7f512c9fbebcf425776d6dace48236a22622a"
+          },
+          "expectation": "observed",
+          "why": "The accepted direction has valid scene ID, order, kind, text and timing fields."
+        },
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 44,
+            "end": 45,
+            "sha256": "5182f8d3e5283c513de4aa69868e84f008160b8c01ed25041e341c2182253007"
+          },
+          "expectation": "observed",
+          "why": "The accepted direction has no spoken words and coverage reaches its owned duration."
+        }
+      ]
+    },
+    {
+      "id": "commit-edit",
+      "title": "Commit complete atomic edit",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "Both immutable parts are uploaded for the same member and project epoch."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches/:batch/commit complete"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The full commit returns sequence one, timing version one and snapshotRequired true.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 205,
+            "end": 205,
+            "sha256": "0f08b0f51ea14125d62215513ed2f27070aaae959c3a5511d1ada2c8ae1b5b49"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 422,
+            "end": 424,
+            "sha256": "766526968dd61b350b4e21baf93aeec3157c6453a5ae523ed54d34469ab62d7f"
+          },
+          "expectation": "observed",
+          "why": "Complete ordered parts are assembled into one validated command before the successful commit."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 427,
+            "end": 428,
+            "sha256": "48972bd1920ba39fca9e3f3ad93ba57877eefd6b475f8a4fcbfe4adadc1d1ebd"
+          },
+          "expectation": "observed",
+          "why": "The assembled batch commits through the room transaction."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 431,
+            "end": 431,
+            "sha256": "7a5f60d1ac6b401db07272cf8ef5140355171541769c66485ffc4ac5f230bb05"
+          },
+          "expectation": "observed",
+          "why": "The successful batch returns the asserted receipt."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 228,
+            "end": 229,
+            "sha256": "302701ba36f1e756791b19546bd407326efad942cf2eb0726c431eca1dd5c1fb"
+          },
+          "expectation": "observed",
+          "why": "The successful batch commit uses the room storage transaction for its item changes."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 233,
+            "end": 238,
+            "sha256": "3185b1c422b1d2705b23447547a0a25ae78b22003fda0322307bf1f597caeb68"
+          },
+          "expectation": "observed",
+          "why": "Adding a direction changes timing and produces the asserted first timing version; other timing branches are not claimed."
+        }
+      ]
+    },
+    {
+      "id": "inspect-committed-project",
+      "title": "Inspect committed structural edit",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The first atomic edit has committed at sequence one."
+      ],
+      "actions": [
+        "GET /v1/projects/:project/snapshot after commit"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Viewer snapshot has sequence one, timing version one, exactly scene, character and entry items, with the entry linked to the scene.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 209,
+            "end": 209,
+            "sha256": "1f6189bae36bd136360e47c04f2405ad457ecc6393e11797caba750d9270da71"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 261,
+            "end": 261,
+            "sha256": "de8bf1137306f5cbd9c89fdccba130a3ee623ca51a225fb938e25390f57a0d9f"
+          },
+          "expectation": "observed",
+          "why": "The committed put operations create versioned items returned by the subsequent snapshot."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 264,
+            "end": 264,
+            "sha256": "2222df8c4d66b8f2e7c29b3202f29a8415dfdb4c6e4210ceef24407aab895b36"
+          },
+          "expectation": "observed",
+          "why": "The assembled changes pass cross-item reference validation before becoming visible together."
+        }
+      ]
+    },
+    {
+      "id": "retry-commit",
+      "title": "Retry successful commit",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The original manifest has committed successfully and its receipt is retained."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches/:batch/commit identical manifest"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The identical commit retry returns the exact original receipt.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 213,
+            "end": 213,
+            "sha256": "3ab161ffd2b7e0b8296d81dde3f471093933afb671e46d5f1bc8bce16adea7c7"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 387,
+            "end": 391,
+            "sha256": "574a369fc53bc3521ae356af28e8d3bcce3c36e94f511e31584b4f2e0983d36e"
+          },
+          "expectation": "observed",
+          "why": "The identical committed batch returns its stored receipt for the same user and manifest hash."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 401,
+            "end": 401,
+            "sha256": "9d7b0a0e752c0b772a9a4ff9684b95376585c3ae4e8135936c5e87205004372d"
+          },
+          "expectation": "observed",
+          "why": "The identical retry returns the previously stored batch receipt."
+        }
+      ]
+    },
+    {
+      "id": "conflict-receipt",
+      "title": "Reject changed successful retry",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The original command has committed; the retry changes its label."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches/:batch/commit changed label"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A successful command ID reused with a changed label returns HTTP 409 command_reused.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 217,
+            "end": 217,
+            "sha256": "297fe5baf07f5275ba678636a5ec73203bff18bb3726b5fb0df665cabbcc8324"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 390,
+            "end": 390,
+            "sha256": "755cc71efcf8e896d84b6e06014a46469669fdbdf103262a4d7784a1e9481b70"
+          },
+          "expectation": "observed",
+          "why": "The changed committed manifest produces command_reused rather than the saved receipt."
+        }
+      ]
+    },
+    {
+      "id": "prepare-image-cue",
+      "title": "Prepare image and anchored cue edit",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The first edit is committed at timing version one; the referenced scene, entry and character exist."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches image and cue manifest"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The image and anchored cue manifest returns HTTP 200 and staged true.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 225,
+            "end": 225,
+            "sha256": "874c9f6ac7a072ad41c8840e5ef35731a53a13e5f7e5fbd87bf24d3808b8f7e1"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "upload-image-part",
+      "title": "Upload image and scene update",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The image and cue manifest is staged; the scene update expects version one."
+      ],
+      "actions": [
+        "PUT /v1/projects/:project/batches/:batch/parts/0 image and scene update"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The scene update and image part returns HTTP 200 with part index zero.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 229,
+            "end": 229,
+            "sha256": "2b8545a8602722f64d9368e989b62135c6bbfc4438b81aae1c68bd151a795fd7"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 60,
+            "end": 64,
+            "sha256": "f39af4a42e309732940620acaac6ee383501e9208120f13b7bb000c6d086a075"
+          },
+          "expectation": "observed",
+          "why": "The accepted image has a valid synthetic filename, digest, media metadata and character tag; negative cases are not asserted."
+        }
+      ]
+    },
+    {
+      "id": "upload-cue-part",
+      "title": "Upload anchored cue",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The image and cue manifest is staged; the cue refers to the existing entry and newly staged image."
+      ],
+      "actions": [
+        "PUT /v1/projects/:project/batches/:batch/parts/1 anchored cue"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The anchored cue part returns HTTP 200 with part index one.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 233,
+            "end": 233,
+            "sha256": "2f6dc6ead24155901083cc0fabf72ac97e8daa6afaeb0a3b7088b27ce5b408d2"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 70,
+            "end": 74,
+            "sha256": "d1f3bde3fb714e2341402ef32a9146a9061a0c82a685e58e7244529e9f927cb5"
+          },
+          "expectation": "observed",
+          "why": "The accepted cue supplies an anchor and duration and valid scene, timing, label and image fields."
+        }
+      ]
+    },
+    {
+      "id": "commit-image-cue",
+      "title": "Commit image and cue edit",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "Both image and cue parts are uploaded at expected timing version one."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches/:batch/commit image and cue"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The second commit returns sequence two, timing version two and snapshotRequired true.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 237,
+            "end": 237,
+            "sha256": "b3dccd25256f772418029a4a6b87bbefa0b953aac118889dbce7fb81b5499be0"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "inspect-image-cue",
+      "title": "Inspect image cue and scene update",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The second atomic edit has committed at sequence two."
+      ],
+      "actions": [
+        "GET /v1/projects/:project/snapshot after image and cue"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Snapshot contains five items at sequence and timing version two, the version-two renamed scene, an image tagged to the character and a cue anchored to the entry and linked to the image.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 241,
+            "end": 241,
+            "sha256": "1a8e2783ca4048bde6e30588f2bc14934a0d248da5c0532a17924c1179943dd4"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-invalid-part-prepare",
+      "title": "Prepare invalid direction variant",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The first two edits are committed; the variant declares a direction with a word timing."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches invalid direction manifest"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The invalid direction variant manifest can be staged.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 247,
+            "end": 247,
+            "sha256": "874c9f6ac7a072ad41c8840e5ef35731a53a13e5f7e5fbd87bf24d3808b8f7e1"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-invalid-direction",
+      "title": "Reject direction with spoken words",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The invalid direction manifest is staged with a digest matching the variant bytes."
+      ],
+      "actions": [
+        "PUT /v1/projects/:project/batches/:batch/parts/0 direction with words"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A direction containing word timings returns HTTP 400 direction_timing during part upload.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 251,
+            "end": 251,
+            "sha256": "7deaa9cf0768c28711b95a8559e5c31a142db0725ade33802e2c9efe6c26b5e8"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 44,
+            "end": 45,
+            "sha256": "5182f8d3e5283c513de4aa69868e84f008160b8c01ed25041e341c2182253007"
+          },
+          "expectation": "observed",
+          "why": "A direction carrying a word is rejected with direction_timing."
+        }
+      ]
+    },
+    {
+      "id": "prepare-rollback",
+      "title": "Prepare edit with missing reference",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The project has the five-item baseline; the orphan-edit manifest uses timing version two."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches missing reference manifest"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The missing-reference edit manifest returns HTTP 200 and staged true.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 258,
+            "end": 258,
+            "sha256": "874c9f6ac7a072ad41c8840e5ef35731a53a13e5f7e5fbd87bf24d3808b8f7e1"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "upload-rollback",
+      "title": "Upload individually valid operations",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The rollback manifest is staged and its two operations are individually valid."
+      ],
+      "actions": [
+        "PUT /v1/projects/:project/batches/:batch/parts/0 scene and orphan entry"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The individually valid scene and orphan entry part returns HTTP 200 and staged true.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 262,
+            "end": 262,
+            "sha256": "874c9f6ac7a072ad41c8840e5ef35731a53a13e5f7e5fbd87bf24d3808b8f7e1"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-reference-commit",
+      "title": "Reject commit with missing scene reference",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The rollback part was uploaded; its new entry refers to an absent scene."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/batches/:batch/commit missing scene reference"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The uploaded orphan entry causes HTTP 400 invalid_reference at commit.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 266,
+            "end": 266,
+            "sha256": "6e415972da00790125a320f7ed4cb8d6712e2155f805817ddd6b3089955ca00b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 159,
+            "end": 162,
+            "sha256": "d8acb18b1833e71b72d4c8e18dfa48b653f730a38d928e73c0f30ecb5e248027"
+          },
+          "expectation": "observed",
+          "why": "An unavailable referenced item raises invalid_reference during the commit reference check."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 171,
+            "end": 173,
+            "sha256": "7bc3586904c22503c5f1179ae27f5921f20f9c7f8068eef0e3657b7eb56f28f4"
+          },
+          "expectation": "observed",
+          "why": "The orphan entry checks its scene reference and produces the asserted invalid_reference response."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 432,
+            "end": 432,
+            "sha256": "6ad83172950d3ed711477a56dc5ee5de84a999f0333a92ce9882be26a5702abb"
+          },
+          "expectation": "observed",
+          "why": "The failed commit leaves the transaction through its error path."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 436,
+            "end": 436,
+            "sha256": "f25c235ed59fb58f00700009f3a15e5b768bf02eea42f6f0da3f289ccf1d40f8"
+          },
+          "expectation": "observed",
+          "why": "The failed reference check propagates out of the commit handler."
+        }
+      ]
+    },
+    {
+      "id": "inspect-rollback",
+      "title": "Verify item snapshot rollback",
+      "preconditions": [
+        "Isolated synthetic team, member and viewer sessions; real local Worker and project room.",
+        "The missing-reference commit was rejected and the prior five-item snapshot is retained for comparison."
+      ],
+      "actions": [
+        "GET /v1/projects/:project/snapshot after failed commit"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The snapshot after rejected commit has the exact prior item array, head sequence and timing version.",
+          "witness": {
+            "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
+            "start": 270,
+            "end": 270,
+            "sha256": "37093beba95b6591df1bc49d46ad00a68a710d7fd99bea475ffb23831b8ab79f"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 427,
+            "end": 428,
+            "sha256": "48972bd1920ba39fca9e3f3ad93ba57877eefd6b475f8a4fcbfe4adadc1d1ebd"
+          },
+          "expectation": "observed",
+          "why": "The later identical snapshot witnesses rollback of the failed batch transaction, including the scene put before the orphan entry."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "atomic-batch-structural-edit",
+      "title": "Atomic multi-part structural edit and rollback",
+      "steps": [
+        "create-project",
+        "inspect-empty-project",
+        "reject-invalid-manifest",
+        "prepare-edit",
+        "retry-prepare",
+        "conflict-prepare",
+        "incomplete-no-parts",
+        "reject-part-bytes",
+        "upload-first-part",
+        "retry-first-part",
+        "incomplete-one-part",
+        "inspect-before-commit",
+        "reject-viewer-upload",
+        "upload-second-part",
+        "commit-edit",
+        "inspect-committed-project",
+        "retry-commit",
+        "conflict-receipt",
+        "prepare-image-cue",
+        "upload-image-part",
+        "upload-cue-part",
+        "commit-image-cue",
+        "inspect-image-cue",
+        "reject-invalid-part-prepare",
+        "reject-invalid-direction",
+        "prepare-rollback",
+        "upload-rollback",
+        "reject-reference-commit",
+        "inspect-rollback"
+      ]
+    }
+  ]
+}

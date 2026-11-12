@@ -1,0 +1,1183 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "create-project",
+      "title": "Create project",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The team exists and the member has a valid session."
+      ],
+      "actions": [
+        "POST /v1/projects synthetic team project"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 201 returns the synthetic project ID.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 143,
+            "end": 143,
+            "sha256": "0e48f1000004304f30fd3506fda17614b3968a3fb63083ea88fe990b11de388d"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "create-job",
+      "title": "Create job",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The member created the team project and has write access."
+      ],
+      "actions": [
+        "POST generation-jobs queued job"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 201 returns the requested job, queued at version 1.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 147,
+            "end": 147,
+            "sha256": "49530bcf9c944c8649f211ee78d64da095a0c32977c835d30ca67e9205c67f69"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 22,
+            "end": 30,
+            "sha256": "407ef985fafc80ca717d885390054d85b38d9b7b22e169d27ad7b7b30f6b6775"
+          },
+          "expectation": "observed",
+          "why": "The guarded INSERT with the synthetic paid member and current live session succeeds; this SQL predicate also serves later mutations. The individually disjunctive owner, trial, lapse and concurrent access-change cases are not established. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 59,
+            "end": 63,
+            "sha256": "fc18532d9424e77e74b82737ebb09242ecba15609ebdae5dbff5b221d676138f"
+          },
+          "expectation": "observed",
+          "why": "The authenticated project generation-jobs POST reaches this matching route and creates the queued job; nonmatching route behavior is not asserted here. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 75,
+            "end": 76,
+            "sha256": "2d68adb685be3dfb81ca53f3a19b126242aa990ea8e4a2216629ad99f4b5dd7e"
+          },
+          "expectation": "observed",
+          "why": "The authorized POST with JSON body reaches queued creation; unsupported methods and body size limits are not tested. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 77,
+            "end": 83,
+            "sha256": "e7caf21100ae32a218d21e2b4f9aa75b8cae3fc1d54791e09df7966f9e381952"
+          },
+          "expectation": "observed",
+          "why": "The synthetic member creates a queued version-1 job and receives HTTP 201; the concrete guard is limited to the paid membership and live session in the fixture. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 95,
+            "end": 95,
+            "sha256": "e19a0a93ed76df8ebb7f24641e28bed51e62577c0ecb3ac20a1d3f55885d63ee"
+          },
+          "expectation": "observed",
+          "why": "A new job is read back in the 201 response as queued version 1. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        },
+        {
+          "source": {
+            "path": "cloud/src/index.ts",
+            "start": 28,
+            "end": 28,
+            "sha256": "43dc1210d36b21d58317621e42b17db4f7a8b99a1c104b1d1035a012b0a2ce3e"
+          },
+          "expectation": "observed",
+          "why": "The real HTTP generation request returns the handler response from this route dispatch; earlier billing and media routes were traversed but are not claimed by this mapping. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "read-job",
+      "title": "Read job",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The first queued job exists; viewer has read access."
+      ],
+      "actions": [
+        "GET generation-jobs job as viewer"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 preserves job, target item and source revision.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 151,
+            "end": 151,
+            "sha256": "9c47801f003e8a00c75d75469daeda273a9cfbf562b5b3dc88a45c1e89263db1"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 8,
+            "end": 18,
+            "sha256": "b2ee921d5b2d04d324803d19fc1b8b1be7e7e996c4df368dcf3e1cf80b33c016"
+          },
+          "expectation": "observed",
+          "why": "The job row projection and owner-session liveness SELECT support returning the created job fields to the authorized viewer; no expired or revoked session is tested. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 32,
+            "end": 36,
+            "sha256": "e7d694c6631c1d3ee31d42b1e2a49b83e3582fd6067c970d1643bfb6361c829d"
+          },
+          "expectation": "observed",
+          "why": "The path job UUID is accepted in the successful viewer read; no malformed UUID is tested. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 64,
+            "end": 65,
+            "sha256": "cf18c2275fb3953560f20559b8cccd9300857c48712e661a0442e844d6d749ac"
+          },
+          "expectation": "observed",
+          "why": "GET with a job ID as project viewer returns its ID, target and source revision. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "replay-create",
+      "title": "Replay create",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The first job was created with the same ID, target and revision."
+      ],
+      "actions": [
+        "POST generation-jobs identical queued job"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 marks the original version 1 job replayed.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 156,
+            "end": 156,
+            "sha256": "86b5ca53949af7c3432bf5f3d3807fcda416800e6a0001a536900899324cb03c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 84,
+            "end": 84,
+            "sha256": "4114504a58d7cde6d1a50ebb2e585a2675f0aaef5f380be6c967fa9b0834d95e"
+          },
+          "expectation": "observed",
+          "why": "The duplicate identical create takes the no-insert path and returns replayed without incrementing version. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "conflict-create",
+      "title": "Conflict create",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The first job exists with source revision 3."
+      ],
+      "actions": [
+        "POST generation-jobs changed revision same ID"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 409 job_conflict rejects a changed revision.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 160,
+            "end": 160,
+            "sha256": "ef5ed213967bea259479bc9612908ee0c7b2023e45ce87c9f64fd3448dcafb8a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 87,
+            "end": 92,
+            "sha256": "00704fdbcf8bd881191dc2667f8e399c7df076cec601be351252285402166d36"
+          },
+          "expectation": "observed",
+          "why": "After the same ID is created, a create with changed sourceRevision returns job_conflict; the identical replay succeeds separately. Concurrent rights/session changes are not exercised. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "reject-private-field",
+      "title": "Reject private field",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The member can write and the request includes an extra prompt field."
+      ],
+      "actions": [
+        "POST generation-jobs with synthetic prompt field"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 invalid_field rejects the prompt field.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 164,
+            "end": 164,
+            "sha256": "c9dbe2f45e232db454fda009c37b5f769811d9996e642614d8dd5f81ba189268"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 37,
+            "end": 39,
+            "sha256": "6d15462fbdaa6b550ccd80f4febb60a7d9436befaa2e05bffd10564463e50c8c"
+          },
+          "expectation": "observed",
+          "why": "A create body containing an extra synthetic prompt field yields invalid_field before insertion. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "reject-viewer-create",
+      "title": "Reject viewer create",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The viewer can read but cannot write the active team project."
+      ],
+      "actions": [
+        "POST generation-jobs as viewer"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 403 not_allowed rejects job creation.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 168,
+            "end": 168,
+            "sha256": "6dd47485326c6218bbd4c084ca1b4f7e89f26392817f2478a8bf055d121f363a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 74,
+            "end": 74,
+            "sha256": "6faf2c97fbc8765bd21eace72f0ba7637bab3c1b35a267fb783b8da16ef79ad5"
+          },
+          "expectation": "observed",
+          "why": "The active-team viewer POST is denied with not_allowed. Other roles and lapsed or archived projects are not tested by this assertion. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "reject-outsider-read",
+      "title": "Reject outsider read",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The outsider has no project membership."
+      ],
+      "actions": [
+        "GET generation-jobs as outsider"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 404 not_found conceals the project.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 172,
+            "end": 172,
+            "sha256": "eff7f52d7be1d3931cde8de4b854ddf5146f9905d6e03afa7b06a9b29d14f126"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-other-owner",
+      "title": "Reject other owner",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The team owner has write access but did not create the job."
+      ],
+      "actions": [
+        "POST generation-jobs claim as team owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 403 not_job_owner rejects control.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 176,
+            "end": 176,
+            "sha256": "fc0e46512c982b5d5e8bacbf6225243cecb30386758480ccb1fcc8c091706e98"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 101,
+            "end": 101,
+            "sha256": "216872f9d19c57f6f8365767d5440fca23e77a80240d99a5aaf70a0281be6bfc"
+          },
+          "expectation": "observed",
+          "why": "Another team owner cannot control the member-created job and receives not_job_owner. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "reject-unclaimed-update",
+      "title": "Reject unclaimed update",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The member created a queued job but has not claimed it."
+      ],
+      "actions": [
+        "PATCH generation-jobs completion before claim"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 409 job_conflict rejects completion before a running claim.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 180,
+            "end": 180,
+            "sha256": "ef5ed213967bea259479bc9612908ee0c7b2023e45ce87c9f64fd3448dcafb8a"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "claim-job",
+      "title": "Claim job",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The original creating device owns the queued job at version 1."
+      ],
+      "actions": [
+        "POST generation-jobs claim on original device"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 claims it as running on the original session at version 2.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 184,
+            "end": 184,
+            "sha256": "4017ace651ec98d2ec8dc2dab694c1926ad6b32034c94552caaf444c89534dcc"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 97,
+            "end": 100,
+            "sha256": "f6bb58b4c7500d18023a4e5865f9009406efe06846e8f6fc517f11e6f8eab927"
+          },
+          "expectation": "observed",
+          "why": "The owner-device claim accepts operation UUID and expected version, hashes its claim body, and reads the existing job before producing running version 2; malformed input is not tested. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 111,
+            "end": 115,
+            "sha256": "1bbe87da5614b1d220e2f522dd64d9b4b324e0463c7acb1f4b893514b60c65fc"
+          },
+          "expectation": "observed",
+          "why": "The successful initial claim sets running and the response records original-device ownership; recover type validation is not separately exercised. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "replay-claim",
+      "title": "Replay claim",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The original device has successfully claimed the job."
+      ],
+      "actions": [
+        "POST generation-jobs identical claim retry"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 marks an identical claim replayed and keeps version 2.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 188,
+            "end": 188,
+            "sha256": "b5f681631f75ec4db08f5403b33f06985e1c7736668fec813462e9e87a8c3776"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 52,
+            "end": 55,
+            "sha256": "e72293432facf7d08ba97d89f1d92a045b41b8e5777fe672a4838c5f3c2df96d"
+          },
+          "expectation": "observed",
+          "why": "The same claim operation returns replayed with version 2, consistent with lookup of its persisted operation receipt. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "conflict-operation",
+      "title": "Conflict operation",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The claim operation ID was already used at version 1."
+      ],
+      "actions": [
+        "POST generation-jobs reused claim operation with changed body"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 409 operation_conflict rejects a changed request with that ID.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 192,
+            "end": 192,
+            "sha256": "d2276fec1fc505157e480e2244edc80687015289f4242a6edcbee800f92b158d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 56,
+            "end": 58,
+            "sha256": "0a653b85677ad28cd66293f34bf057367f3d6c38b6c80778a70d5e19bd8e7c38"
+          },
+          "expectation": "observed",
+          "why": "The same operation ID with a changed expectedVersion yields operation_conflict; no cross-device replay is tested. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 102,
+            "end": 104,
+            "sha256": "fffc8ec42eed87a85095796fa2f42b9ae706f3694c2f6b7f72c37e77b5ea0622"
+          },
+          "expectation": "observed",
+          "why": "A reused claim operation ID with a changed body returns operation_conflict rather than another update. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "reject-live-takeover",
+      "title": "Reject live takeover",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The job is running on the original device with a live lease; the same user has a second session."
+      ],
+      "actions": [
+        "POST generation-jobs recovery claim from second device while live"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 409 job_conflict rejects recovery takeover while live.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 196,
+            "end": 196,
+            "sha256": "ef5ed213967bea259479bc9612908ee0c7b2023e45ce87c9f64fd3448dcafb8a"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-missing-output",
+      "title": "Reject missing output",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The job is running at version 2."
+      ],
+      "actions": [
+        "PATCH generation-jobs completion without output"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 invalid_field rejects completion without an image ID.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 200,
+            "end": 200,
+            "sha256": "c9dbe2f45e232db454fda009c37b5f769811d9996e642614d8dd5f81ba189268"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 121,
+            "end": 122,
+            "sha256": "70db6df193dd0139f1f9d341c4d4792ab5f87196a6bf61145f5fe6c95d2954c1"
+          },
+          "expectation": "observed",
+          "why": "Completion without outputImageId returns invalid_field; the separate successful completion includes its output ID. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "complete-job",
+      "title": "Complete job",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The job is running on the original device at version 2."
+      ],
+      "actions": [
+        "PATCH generation-jobs completed with image ID"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 returns completed version 3 with the specified output image ID.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 204,
+            "end": 204,
+            "sha256": "6789fc96b71341ee35b8901dbca28d38e9be17774b99ac92c2bc8452984014ef"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 117,
+            "end": 120,
+            "sha256": "cd71422e52207776231b0f8ac961f02de7000f30baab80fb329f9ac3aeb35b4c"
+          },
+          "expectation": "observed",
+          "why": "The completed update with valid status returns completed; custom progress text and control-character rejection are not exercised. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 135,
+            "end": 141,
+            "sha256": "f345b7dbe4a081bf2f4ae4bc30adafe7c69a9066e22c286b92ad244112be50e6"
+          },
+          "expectation": "observed",
+          "why": "The version-2 claimed job update returns completed output at version 3; a former device is later fenced on the recovered job, and the creator can cancel from the original device. No concurrent races or access changes are exercised. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        },
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 143,
+            "end": 150,
+            "sha256": "4885d95875a220dbabe62c2e2ae9f616dd61035f42f84cf188dd8fa8256c9a4c"
+          },
+          "expectation": "observed",
+          "why": "The initial completion returns completed output and version 3 after its update and receipt path. The retry separately returns replayed. These assertions do not independently prove batch atomicity or concurrent behavior. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "replay-complete",
+      "title": "Replay complete",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "Completion at version 2 has succeeded with this operation ID."
+      ],
+      "actions": [
+        "PATCH generation-jobs identical completion retry"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 marks the exact retry replayed and retains version 3.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 208,
+            "end": 208,
+            "sha256": "ca45df838a868373bc93ce41f3aaa29f69673e2d407fc0a0e69a44c4ef5d1a59"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "claim-replay-current",
+      "title": "Claim replay current",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The same claim operation previously succeeded and the job is now completed."
+      ],
+      "actions": [
+        "POST generation-jobs retry original claim after completion"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 replay returns current completed version 3, not a stale running grant.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 212,
+            "end": 212,
+            "sha256": "f544c9c4b04bfaa6fd260b91a8becbee265e930e824036a3fbf3a9fb7a5aa32a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 106,
+            "end": 109,
+            "sha256": "71fffb2aa5ab7003ad039f9b02f2ba12a4d6139152470a6b339de363928428b5"
+          },
+          "expectation": "observed",
+          "why": "Retrying the original claim after completion returns replayed current completed version 3. Session expiration and changing access during replay are not tested. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "reject-completed-recovery",
+      "title": "Reject completed recovery",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The first job has completed at version 3."
+      ],
+      "actions": [
+        "POST generation-jobs recovery on completed job"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 409 job_conflict rejects a fresh recovery claim.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 216,
+            "end": 216,
+            "sha256": "ef5ed213967bea259479bc9612908ee0c7b2023e45ce87c9f64fd3448dcafb8a"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "read-completed",
+      "title": "Read completed",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The first job completed with a synthetic output image ID."
+      ],
+      "actions": [
+        "GET generation-jobs completed job as viewer"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Viewer receives HTTP 200 and the completed version 3 image reference.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 220,
+            "end": 220,
+            "sha256": "6789fc96b71341ee35b8901dbca28d38e9be17774b99ac92c2bc8452984014ef"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 40,
+            "end": 47,
+            "sha256": "5f3c17349f4507b77ccd9fc50d617bb6c64b3a5339c26db4247f44feaf1c4adb"
+          },
+          "expectation": "observed",
+          "why": "The authorized read returns completed status, output image ID and version. It does not establish waiting due to expired or revoked device. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "create-failure-job",
+      "title": "Create failure job",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The member can write and a second job ID is unused."
+      ],
+      "actions": [
+        "POST generation-jobs second queued job"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 201 returns the second job queued.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 224,
+            "end": 224,
+            "sha256": "356226044e0ed4504000be9e6f5fa70c8e6660672a038b5a3bfea393cc7f81df"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "claim-failure-job",
+      "title": "Claim failure job",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The second job is queued at version 1 on the original device."
+      ],
+      "actions": [
+        "POST generation-jobs second job claim"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 returns the second job at version 2.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 228,
+            "end": 228,
+            "sha256": "10926c284a97d6e35b5a117ec6059610b21f3360b59a72df70eedc406d039837"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "fail-job",
+      "title": "Fail job",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The second job is running on its original device at version 2."
+      ],
+      "actions": [
+        "PATCH generation-jobs second job failed with safe code"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 records failed status, safe error code and version 3.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 232,
+            "end": 232,
+            "sha256": "290c6024a33cf35f5ddd66c514997319ca0714f3ba85ffb03385d69fd0a4f805"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 123,
+            "end": 124,
+            "sha256": "c5b0d9c50669ebee536c5aff23affa7f0ff0398e45efff40262c97f9de413230"
+          },
+          "expectation": "observed",
+          "why": "A failed update accepts synthetic_failure and returns that code; malformed codes and every other allowed status are not independently tested. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "reject-recovery-omission",
+      "title": "Reject recovery omission",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The second job is failed at version 3."
+      ],
+      "actions": [
+        "POST generation-jobs failed job without recover flag"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 409 job_conflict rejects a claim without explicit recovery.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 236,
+            "end": 236,
+            "sha256": "ef5ed213967bea259479bc9612908ee0c7b2023e45ce87c9f64fd3448dcafb8a"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "recover-failed",
+      "title": "Recover failed",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The second job failed at version 3 and the same creator has a second session."
+      ],
+      "actions": [
+        "POST generation-jobs failed job recovery on second device"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 recovers to running version 4 on the second device, clearing the error.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 240,
+            "end": 240,
+            "sha256": "0d8df279cb0ca923f653c4bca13bb4f6eeaec2acd52294e7d0bce64a1a7a0a7f"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 128,
+            "end": 134,
+            "sha256": "0b11936bc2b8249e9ccdc0263fd8b994f3752b84f5088a61058977631ba9463f"
+          },
+          "expectation": "observed",
+          "why": "The failed job is recovered by the creator on a second device with recover=true and reaches running version 4; a live job takeover and omitted recovery are separately rejected. Lease expiry and revoked prior owner are not tested; line-level associations do not imply every SQL disjunct. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "fence-former-device",
+      "title": "Fence former device",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The second job has been recovered on the second device at version 4."
+      ],
+      "actions": [
+        "PATCH generation-jobs running job from former device"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 409 job_conflict fences a completion attempt by the former device.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 244,
+            "end": 244,
+            "sha256": "ef5ed213967bea259479bc9612908ee0c7b2023e45ce87c9f64fd3448dcafb8a"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "cancel-recovered",
+      "title": "Cancel recovered",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The second job is running at version 4 on the second device."
+      ],
+      "actions": [
+        "PATCH generation-jobs cancellation by creator on original device"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Creator cancellation succeeds with HTTP 200, cancelled version 5 and safe code.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 248,
+            "end": 248,
+            "sha256": "9c17f8b2b4bcfa032272eae5215f6110c01040b936d2980f2d3c818b80d19258"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "read-cancelled",
+      "title": "Read cancelled",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The second job was cancelled at version 5."
+      ],
+      "actions": [
+        "GET generation-jobs cancelled job as viewer"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Viewer readback returns HTTP 200 and cancelled version 5.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 252,
+            "end": 252,
+            "sha256": "08c43fb47d5e1c0bb0961e741b9333f622499de526fbd0b5299cc33d785bfa56"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "create-third-job",
+      "title": "Create third job",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "Two jobs exist and a third ID is unused."
+      ],
+      "actions": [
+        "POST generation-jobs third queued job"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 201 creates the third job at version 1.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 256,
+            "end": 256,
+            "sha256": "acfe3b3ab8b74b30e60d23c477dfc4cda6b4e94ace703c1c25dd08908044fa49"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "reject-cursor",
+      "title": "Reject cursor",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "Three jobs exist and viewer has read access."
+      ],
+      "actions": [
+        "GET generation-jobs invalid cursor"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 invalid_cursor rejects the malformed cursor.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 260,
+            "end": 260,
+            "sha256": "8829a835f67c30d91d5c8f6d915ad902752815e64ef29395a0ccb7170474c201"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 66,
+            "end": 68,
+            "sha256": "35d0b8c04806c172e3f2edaf45bf0650950932ea0ceb6bc37d84f04ac1389726"
+          },
+          "expectation": "observed",
+          "why": "The viewer list request with cursor=invalid returns invalid_cursor; this does not test all malformed or valid cursor forms. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "list-first-page",
+      "title": "List first page",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "Three jobs exist and viewer requests a page size of one."
+      ],
+      "actions": [
+        "GET generation-jobs limit one as viewer"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 returns one job and a next cursor.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 264,
+            "end": 264,
+            "sha256": "9abbdf1228e4d878afa5155da5194f3508330eb3eef85b3afe1d801a5d3dadcf"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "list-second-page",
+      "title": "List second page",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The first page returned a cursor."
+      ],
+      "actions": [
+        "GET generation-jobs next cursor as viewer"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 returns a distinct second job and another cursor.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 268,
+            "end": 268,
+            "sha256": "d586b9f2290b7bb43c5b88009f8575ed34296772d0e6bef4591c2205ea571ab2"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "list-final-page",
+      "title": "List final page",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The second page returned a cursor."
+      ],
+      "actions": [
+        "GET generation-jobs final cursor as viewer"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 returns the third distinct job and no further cursor.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 272,
+            "end": 272,
+            "sha256": "6731a4a9a385adc7679ba950a7d93a1b4658fd4f0b2febba1c110af81b977273"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 69,
+            "end": 72,
+            "sha256": "ebb416b3095f0b1f4b36bd11d6cda90ce37f19c4e6e97a2982df1d4e4d6aca5e"
+          },
+          "expectation": "observed",
+          "why": "Three limit-one pages return distinct IDs matching exactly the three created jobs and a null final cursor; ordering across equal timestamps is not asserted. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    },
+    {
+      "id": "reject-missing-job",
+      "title": "Reject missing job",
+      "preconditions": [
+        "Isolated synthetic team and sessions; real local Worker HTTP; preceding ordered steps succeeded.",
+        "The viewer can access the project; the requested job ID is unused."
+      ],
+      "actions": [
+        "GET generation-jobs nonexistent job"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 404 job_not_found reports the absent job.",
+          "witness": {
+            "path": "cloud/tests-e2e/generation-journey.mjs",
+            "start": 276,
+            "end": 276,
+            "sha256": "e8463e703d15ea6f9a91f7f87af0c3fec28f5a97cedcbc7b0de90ff7ce2f3638"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/generation.ts",
+            "start": 48,
+            "end": 51,
+            "sha256": "e08bdfd90813b057de12abb46aa596a07da907fa2902d8b503ba67a8b2186a88"
+          },
+          "expectation": "observed",
+          "why": "A valid nonexistent job ID produces job_not_found on viewer GET. Association limited to the stated observed case; static mapping is not measured execution or branch completeness."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "generation-job-lifecycle",
+      "title": "Synthetic generation job lifecycle",
+      "steps": [
+        "create-project",
+        "create-job",
+        "read-job",
+        "replay-create",
+        "conflict-create",
+        "reject-private-field",
+        "reject-viewer-create",
+        "reject-outsider-read",
+        "reject-other-owner",
+        "reject-unclaimed-update",
+        "claim-job",
+        "replay-claim",
+        "conflict-operation",
+        "reject-live-takeover",
+        "reject-missing-output",
+        "complete-job",
+        "replay-complete",
+        "claim-replay-current",
+        "reject-completed-recovery",
+        "read-completed",
+        "create-failure-job",
+        "claim-failure-job",
+        "fail-job",
+        "reject-recovery-omission",
+        "recover-failed",
+        "fence-former-device",
+        "cancel-recovered",
+        "read-cancelled",
+        "create-third-job",
+        "reject-cursor",
+        "list-first-page",
+        "list-second-page",
+        "list-final-page",
+        "reject-missing-job"
+      ]
+    }
+  ]
+}

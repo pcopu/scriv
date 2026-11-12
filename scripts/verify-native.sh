@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Portable Swift checks are not a substitute for compiling/rendering AppKit.
+# Portable Swift checks are not a substitute for compiling/rendering Catalyst.
 set -euo pipefail
 scriv_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 scriv_mode="${1:---portable}"
@@ -8,7 +8,7 @@ if [[ "$#" -gt 1 || ( "$scriv_mode" != --portable && "$scriv_mode" != --native )
   exit 2
 fi
 if [[ "$scriv_mode" == --native && "$(uname -s)" != Darwin ]]; then
-  echo 'BLOCKED: Native AppKit/SwiftUI compilation, packaging and rendering require macOS and its SDK. Use --portable for Linux core tests and syntax checks; xtool iOS builds do not supply a macOS runtime.' >&2
+  echo 'BLOCKED: Native Catalyst compilation and packaging require macOS and the Xcode Catalyst SDK. Use --portable for Linux core builds and syntax checks; xtool iOS builds do not supply a macOS runtime.' >&2
   exit 2
 fi
 scriv_swift="${SCRIV_SWIFT:-swift}"
@@ -40,18 +40,16 @@ scriv_package_options=(
 scriv_sources=()
 while IFS= read -r -d '' scriv_source; do
   scriv_sources+=("$scriv_source")
-done < <(find "$scriv_root/apps/mac/Sources" "$scriv_root/apps/mac/Tests" -name '*.swift' -type f -print0)
+done < <(find "$scriv_root/apps/mac/Sources" -name '*.swift' -type f -print0)
 "$scriv_swiftc" -frontend -parse -swift-version 5 -module-cache-path "$scriv_work/module-cache" "${scriv_sources[@]}"
-"$scriv_swiftc" -frontend -parse "$scriv_root/scripts/make-icon.swift"
-echo "PASS: Swift syntax (${#scriv_sources[@]} source/test files and the icon script). This is parsing, not AppKit type-checking."
-"$scriv_swift" test "${scriv_package_options[@]}"
+echo "PASS: Swift syntax (${#scriv_sources[@]} shared source files). This is parsing, not native SDK type-checking."
 "$scriv_swift" build "${scriv_package_options[@]}" --configuration release --target ScrivCore
-echo 'PASS: Portable Swift core tests and optimized core build.'
+echo 'PASS: Portable optimized Swift core build. No native behavioral journey ran.'
+bash "$scriv_root/scripts/verify-catalyst.sh"
 
 if [[ "$scriv_mode" == --native ]]; then
-  # Preserve build-mac.sh as the single packaging/signing implementation.
-  bash "$scriv_root/scripts/build-mac.sh"
-  echo 'PASS: Native app packaging. Native UI interaction, fresh screenshots and live-account checks remain separate gates.'
+  bash "$scriv_root/scripts/build-catalyst.sh"
+  echo 'PASS: Catalyst development app packaging. Native UI interaction, fresh screenshots, signed releases and live-account checks remain separate gates.'
 else
-  echo 'NOT RUN: Native AppKit/SwiftUI type-check, app launch, WebKit smoke and new screenshots. Portable checks do not certify native visual parity.'
+  echo 'NOT RUN: Native Catalyst SDK type-check/build, app launch, WebKit smoke and new screenshots. Portable checks do not certify native visual parity.'
 fi
