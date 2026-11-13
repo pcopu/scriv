@@ -9,6 +9,85 @@ The previous 20.76% figure describes that manual map, not execution coverage.
 Keep the existing assertions and reviewed map; use instrumentation to guide
 coverage discovery instead of maintaining more manual links before each run.
 
+## Required first lookup
+
+Before proposing more scenarios or estimating which code is covered, query the
+retained measurements. Use a reusable external capture-set file instead of
+reconstructing a long list of analysis roots. The concise output identifies
+observed scenario matches, known-unobserved instrumented ranges and unknown
+ranges. Detailed interval actions and evidence remain available with `--json`.
+
+```bash
+TRACER_NO_UPDATE=1 node "$TRACER_CLI" --root "$SCRIV_SOURCE" measure where \
+  --capture-set "$NATIVE_CAPTURE_SET" \
+  --source apps/catalyst/ScrivUIKit/Account/ScrivSignInController.swift
+
+TRACER_NO_UPDATE=1 node "$TRACER_CLI" --root "$SCRIV_SOURCE" measure union \
+  --capture-set "$NATIVE_CAPTURE_SET"
+```
+
+A capture set is ordinary version-1 JSON; input and outcome paths resolve from
+its parent directory. Keep separate native, cloud and update scope files.
+
+```json
+{
+  "version": 1,
+  "inputRoots": ["analysis-a/source", "analysis-b/source"],
+  "outcomes": "outcomes.json",
+  "scope": "source-lines"
+}
+```
+
+`where` validates stored payloads, the requested snapshot source and the exact
+current requested file. Changed source stays historical and gives no current
+credit. Missing datasets or absent instrumentation stay unknown. It preserves
+independent provenance families and does not require the manual map or proposal
+to be current. It does not run the app, force a production branch, or establish
+assertion adequacy. Whole-scope `union` retains its stricter compatibility checks.
+
+The full 38-root native union read 111,159,935 bytes in a measured 3.888 seconds.
+The main delay was repeatedly assembling and interpreting that evidence. A
+reusable capture set and one direct query remove those repeated preparation
+steps; this change does not add a cache or scheduler.
+
+Ten real-data acceptance checks matched independent source-line and scenario
+oracles across native and cloud captures. Native lookups took 1.417–1.610
+seconds; cloud lookups took 0.366–0.415 seconds on this host. The concise Sign-In
+answer was 755 bytes and identified the Projects journey's 143 observed lines.
+The capture-set union reproduced every prior independently validated native
+file, interval, outcome and provenance group. Input dataset bytes stayed intact.
+These are measured command times for this run, not universal performance bounds.
+
+## First larger gap follow-up
+
+The retained evidence showed zero observed lines in the native Sign-In and Teams
+controllers. Extending the existing Projects journey with signed-out validation,
+provider disclosure, cancellation, reopen and Teams open/dismiss checks added
+**252 lines from a passing run in 41.688 seconds**, including **143 Sign-In** and
+**80 Teams** lines. The remaining gain is 22 email-flow, five account-UI and two
+workspace/character lines. Every cycle preserves the complete loaded model and
+both saved project packages; no email, OAuth or billing action is submitted.
+
+The initial attempt clicked during UIKit presentation and reached the existing
+router guard. Its failed capture is retained. The test now waits for a unique
+enabled public control with stable geometry before modal transitions; the CLI
+has no transition-completion field. The wait is bounded, mutations dispatch
+once, and production guards are unchanged.
+
+The updated native totals are **12,512 / 21,667 (57.75%) from passing runs** and
+**12,514 / 21,667 (57.76%) across all observations**. The two extra lines are
+router guard lines observed only in the failed attempt. There are 169 intervals
+(151 passing, 18 historical failed), five retained provenance groups, and no
+unknown outcomes. All 39 permitted current test graphs have passing evidence;
+the restricted alias route remains blocked. The independently checked raw
+counter union agrees with Tracer. Cloud/update totals below are unchanged.
+
+Reusing the original native build with the full current test tree also exposed
+a narrow host-file classification omission. The service-only test runner is now
+an explicitly permitted host-file difference. Its exact before/after hashes are
+checked, and native source, resource, package and build-script rejection tests
+remain intact. No native inputs changed and no app rebuild was needed.
+
 ## Working loop
 
 1. Join proposal `existingPaths` to discovered native/service/tooling routes.
@@ -82,7 +161,7 @@ dispatch must reach `ProjectBrowserController`; both shortcuts verify browser
 dismissal, the complete loaded model, absence of alerts and preservation of both
 complete saved packages. Its passing capture added exactly the intended two
 previously unobserved lines, `ProjectBrowserController.swift:181-182`, in 19.882
-seconds. The final native union is **12,260 / 21,667 (56.58%)**, leaving **9,407
+seconds. The native union at that checkpoint is **12,260 / 21,667 (56.58%)**, leaving **9,407
 unobserved instrumented lines**. Its 167 unique intervals include 150 known-passing
 and 17 historical failed intervals, with no unknown outcomes and four retained
 provenance groups. This demonstrates the measured-gap loop without
@@ -222,7 +301,7 @@ estimated whole-file coverage or proof that the code is dead.
 | `CodexController.swift` | 6 / 873 | 867 |
 | `ScrivCLIRunCapability.swift` | 70 / 409 | 339 |
 | `ScrivDiscussionController.swift` | 0 / 312 | 312 |
-| `TeamsController.swift` | 0 / 282 | 282 |
+| `TeamsController.swift` | 80 / 282 | 202 |
 
 The next useful native variants are account-backed cloud/team/discussion flows
 and Codex job lifecycle/error handling, with their actual supported CLI routes,
@@ -243,14 +322,17 @@ project denominator or release/notarization claim is inferred from these results
 Scriv's repository/type checks, all 18 public CLI tooling checks and the public
 source-provenance journey passed. The latter includes 18 measurement-output
 checks using synthetic importer fixtures; these are tooling evidence, not extra
-native coverage. Tracer's full check passed 151 journeys with four Linux-only
-TTY skips. Its 444 manual links validated. After the final documentation-only
-skill path clarification, the affected project/installation journeys passed
-13 checks with the same four platform skips, and both skill copies validated.
+native coverage. The earlier measurement-first checkpoint passed 151 Tracer
+journeys. After adding the direct lookup and capture-set support, the integrated
+full check passed 155 journeys with four Linux-only TTY skips, and all 447 manual
+links validated. Both skill copies validated. Ten real-data lookup checks and
+eight independently rerun public lookup regressions also passed.
 
 Existing affected Scriv references were maintained without adding manual links
 to support the measured runs. All 2,520 live links and 1,211 explicit comment
-declarations validate; proposal integrity also passes. An unrelated preexisting
+declarations validate. Proposal integrity passed at the published `c867f33`
+checkpoint; the later host-file edit leaves its planning pin stale until a
+planning review. That does not gate measured lookup. An unrelated preexisting
 `tooling-service-steps.json` witness pin remains unresolved, and historical v89
 catalog context was preserved. These catalog limits neither create execution
 credit nor invalidate the separately checked raw captures.

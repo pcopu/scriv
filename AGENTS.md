@@ -12,6 +12,15 @@ observed execution and test outcomes separate. Do not count guessed connections
 as observed coverage or resume the former case-by-case mapping grind.
 See `docs/testing/measurement-first-coverage.md` for the verified workflow.
 
+For coverage work, first query the retained evidence with `tracer measure where
+--capture-set /external/captures.json --source PATH[:RANGE]` (or `measure union
+--capture-set ...` for a scope). Reuse its observed scenario matches before
+writing tests. Missing, stale or uninstrumented evidence remains unknown; use
+existing instrumented routes to resolve it. Keep the capture-set file outside
+pinned source and use concise output for inspection. This lookup is required
+workflow preparation, not permission to force production branches or a manual
+mapping gate.
+
 The user previously authorized isolated
 auth/team journeys and live sign-in verification with their supplied accounts,
 retrieving the requested codes through computer use in their opened inboxes. Keep account details,

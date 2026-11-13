@@ -93,5 +93,90 @@ try {
     assert.deepEqual(packages.sort((left, right) => left.id.localeCompare(right.id)), expectedPackages,
       'Browser keyboard cancellation/open preserves exactly both complete saved packages');
   }
-  console.log('PASS: actual project browser search, sources, local open/reopen, keyboard cancellation/open, model preservation, and modal routing');
+  async function waitForSettledControl(predicate) {
+    // Snapshot hit-testing becomes available before UIKit clears isBeingPresented.
+    // The CLI exposes no transition-completion bit. Require one second of stable
+    // mounted control geometry (within waitFor's 15-second bound) before the
+    // next presentation/dismissal action. Mutations are dispatched only once.
+    let previous = '';
+    let stableSince = 0;
+    return session.waitFor(nodes => {
+      const matches = nodes.filter(node => node.hittable && node.enabled && predicate(node));
+      const current = matches.length === 1 ? JSON.stringify([matches[0].path, matches[0].frame]) : '';
+      if (!current || current !== previous) {
+        previous = current;
+        stableSince = Date.now();
+        return false;
+      }
+      return Date.now() - stableSince >= 1000;
+    });
+  }
+  const emailField = nodes => nodes.filter(node => node.type === 'UITextField' && node.label === 'Email address' && node.hittable);
+  const emailActions = nodes => nodes.filter(node => node.type === 'UIButton' && node.title === 'Continue with email');
+  for (let repeat = 0; repeat < 2; repeat++) {
+    await session.command('activate', { target: 'workspace-project' });
+    await waitForSettledControl(node => node.title === 'Sign in to Scriv…' || node.label === 'Sign in to Scriv…');
+    await click('Sign in to Scriv…');
+    nodes = await session.waitFor(nodes => emailField(nodes).length === 1 && emailActions(nodes).length === 1);
+    await waitForSettledControl(node => node.type === 'UITextField' && node.label === 'Email address');
+    assert.equal(emailField(nodes)[0].text, '', 'Reopened sign-in starts with an empty transient email draft');
+    assert.equal(emailField(nodes)[0].enabled, true);
+    assert.equal(emailActions(nodes)[0].enabled, false, 'Empty email cannot request a code');
+    assert.ok(nodes.some(node => node.text === 'Save scripts to the cloud and join your team.'));
+    assert.equal(nodes.some(node => node.label === 'Verification code' && node.hittable), false);
+    assert.equal(nodes.some(node => node.title === 'Continue with GitHub…' && node.hittable), false, 'Reopened sign-in collapses the provider disclosure');
+    for (const [value, enabled] of [
+      ['   ', false], ['not-an-email', false], ['writer@localhost', false],
+      ['a..b@example.invalid', false], [' Writer@Example.invalid ', true], ['', false]
+    ]) {
+      await session.command('text', { target: emailField(nodes)[0].path, text: value });
+      nodes = await session.waitFor(nodes => emailField(nodes).length === 1 && emailField(nodes)[0].text === value
+        && emailActions(nodes).length === 1 && emailActions(nodes)[0].enabled === enabled);
+      assert.equal(emailActions(nodes)[0].enabled, enabled, 'Email syntax controls the real request button without sending a request');
+    }
+    await click('Already used GitHub?');
+    nodes = await session.waitFor(nodes => nodes.some(node => node.title === 'Continue with GitHub…' && node.enabled && node.hittable));
+    assert.ok(nodes.some(node => node.text === 'Use your existing GitHub-linked Scriv account.'));
+    await click('Already used GitHub?');
+    await session.waitFor(nodes => !nodes.some(node => node.title === 'Continue with GitHub…' && node.hittable));
+    // Leave the disclosure expanded before dismissal to check fresh state on reopen.
+    await click('Already used GitHub?');
+    await session.waitFor(nodes => nodes.some(node => node.title === 'Continue with GitHub…' && node.enabled && node.hittable));
+    await click('Keep writing locally');
+    await session.waitFor(nodes => nodes.some(node => node.placeholder === 'Find a project' && node.hittable) && emailField(nodes).length === 0);
+    await waitForSettledControl(node => node.title === 'Close Projects' || node.label === 'Close Projects');
+    await click('Close Projects');
+    await session.waitFor(nodes => nodes.some(node => node.identifier === 'workspace-project' && node.title === original.title && node.enabled && node.hittable)
+      && !nodes.some(node => node.placeholder === 'Find a project'));
+    await waitForSettledControl(node => node.identifier === 'workspace-project');
+    assert.deepEqual(await session.command('loaded-project'), originalLoaded, 'Cancelling signed-out sign-in preserves the complete loaded project');
+    assert.deepEqual(await session.command('presented-alerts'), []);
+    const packages = await session.command('persisted-projects');
+    assert.deepEqual(packages.sort((left, right) => left.id.localeCompare(right.id)), expectedPackages,
+      'Sign-in drafts and disclosure changes preserve both complete saved packages');
+  }
+  for (let repeat = 0; repeat < 2; repeat++) {
+    await waitForSettledControl(node => node.label === 'Teams and sharing');
+    await click('Teams and sharing');
+    nodes = await session.waitFor(nodes => nodes.some(node => node.text === 'Your entire team. One subscription.'));
+    assert.ok(nodes.some(node => node.text === 'Teams & sharing'));
+    assert.ok(nodes.some(node => node.text === '$9.99/month per team, with no per-seat charge. Personal editing and hosted script, timing and image-prompt metadata remain free; Team adds collaboration and private image-file hosting.'));
+    assert.equal(buttons(nodes, 'Sign in to Scriv').length, 1, 'Signed-out Teams offers sign-in');
+    for (const title of ['New team', 'Join', 'Invite people']) {
+      assert.equal(buttons(nodes, title).length, 0, 'Signed-out Teams hides account-only actions');
+    }
+    assert.equal(nodes.some(node => node.type === 'UISegmentedControl' && node.hittable
+      && node.segments?.includes('Members') && node.segments?.includes('Invitations')), false);
+    await waitForSettledControl(node => node.title === 'Done' || node.label === 'Done');
+    await click('Done');
+    await session.waitFor(nodes => nodes.some(node => node.identifier === 'workspace-project' && node.enabled && node.hittable)
+      && !nodes.some(node => node.text === 'Teams & sharing'));
+    await waitForSettledControl(node => node.identifier === 'workspace-project');
+    assert.deepEqual(await session.command('loaded-project'), originalLoaded, 'Opening signed-out Teams preserves the complete loaded project');
+    assert.deepEqual(await session.command('presented-alerts'), []);
+    const packages = await session.command('persisted-projects');
+    assert.deepEqual(packages.sort((left, right) => left.id.localeCompare(right.id)), expectedPackages,
+      'Opening and dismissing signed-out Teams preserves both complete saved packages');
+  }
+  console.log('PASS: actual project browser search, sources, local open/reopen, keyboard cancellation/open, signed-out sign-in and Teams, model preservation, and modal routing');
 } finally { await session.close(); }

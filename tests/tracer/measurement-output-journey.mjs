@@ -205,11 +205,13 @@ export async function runMeasurementOutputJourney({ output, fixture, manifest, d
       'tests/e2e/journeys/example.mjs': 'original journey\n',
       'docs/testing/retired.json': 'original documentation\n',
       'scripts/run-cli-e2e.mjs': 'original host runner\n',
+      'scripts/run-service-journeys.mjs': 'original service-only host runner\n',
     };
     const currentFiles = { ...originalFiles,
       'tests/e2e/journeys/example.mjs': 'updated journey\n',
       'tests/e2e/journeys/support/new.mjs': 'new host helper\n',
-      'scripts/run-cli-e2e.mjs': 'updated host runner\n' };
+      'scripts/run-cli-e2e.mjs': 'updated host runner\n',
+      'scripts/run-service-journeys.mjs': 'updated service-only host runner\n' };
     delete currentFiles['docs/testing/retired.json'];
     const populate = async (directory, files) => {
       await mkdir(directory, { mode: 0o700 });
@@ -240,6 +242,11 @@ export async function runMeasurementOutputJourney({ output, fixture, manifest, d
     assert.equal(receipt.sourceManifestSHA256, originalPin.digest);
     assert.equal(receipt.journeySourceManifestSHA256, journeyPin.digest);
     assert.deepEqual(receipt.differences, differences());
+    assert.deepEqual(receipt.differences.find(file => file.path === 'scripts/run-service-journeys.mjs'), {
+      path: 'scripts/run-service-journeys.mjs',
+      beforeSHA256: sha('original service-only host runner\n'),
+      afterSHA256: sha('updated service-only host runner\n'),
+    });
     assert.equal(receipt.nativeInputsUnchanged, true);
     const single = spawn(process.execPath, ['scripts/collect-cli-coverage.mjs', '--verify-source-provenance',
       '--source-root', buildRoot, '--source-manifest', originalPin.path,
