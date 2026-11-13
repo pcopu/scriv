@@ -159,6 +159,11 @@ export async function main() {
     }, value => { assert.deepEqual(value.before, value.after); assert.deepEqual(value.bytes, manifestBytes); assert.equal(value.insideExists, false); assert.equal(value.stderr, 'Source manifest export failed; inspect selected source paths and output destination.\n'); });
     // STEP recover-readback
     await stage('recover-readback', 'tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}', () => verify('selected-scenarios-blocked'), evidence => assert.equal(evidence.source.manifestSHA256, digest));
+    // STEP isolate-measurement-output
+    await stage('isolate-measurement-output', 'Run public analysis preparation and real Tracer imports with synthetic LCOV', async () => {
+      const { runMeasurementOutputJourney } = await import('./measurement-output-journey.mjs');
+      return runMeasurementOutputJourney({ output, fixture, manifest, digest, spawn, snapshot, verify });
+    }, result => { assert.equal(result.checks, 13); assert.equal(result.status, 'passed'); assert.equal(result.nativeExecution, 'not-run'); });
   } finally {
     const result = run.finish();
     await writeFile(join(output, 'scenario-result.json'), JSON.stringify(result, null, 2) + '\n', { mode: 0o600 });

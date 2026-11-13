@@ -9,8 +9,8 @@
     "fileSha256": "SHA-256 of exact complete original file bytes",
     "spanSha256": "Legacy feature pin: SHA-256 of LF-joined selected lines without a trailing LF"
   },
-  "featureCatalogSHA256": "58425af640056c5b0863de7fa6109d432d07d1c7d462479880663fbbec7315ee",
-  "reviewedMapSHA256": "ef8e4758d074fc2bd6608bb02817242445bf9c44a4d7a2d4db22cca29488f0ae",
+  "featureCatalogSHA256": "f31c414aaab1ad7ff46b3376beda6dab283cba9d4009764d2d2011a7c464b56d",
+  "reviewedMapSHA256": "8e842b656475924dd411b8b1735f9b2a3a7fc93d9abba3d3d564d26a40f4368f",
   "totals": {
     "status": "model-proposed-unreviewed",
     "completedAssignments": [
@@ -1113,8 +1113,8 @@
     },
     {
       "path": "scripts/collect-cli-coverage.mjs",
-      "includedLines": 205,
-      "proposedAssociatedIncludedLines": 205
+      "includedLines": 211,
+      "proposedAssociatedIncludedLines": 211
     },
     {
       "path": "scripts/export-cli-source-manifest.mjs",
@@ -1205,6 +1205,11 @@
       "path": "scripts/service-catalog.mjs",
       "includedLines": 17,
       "proposedAssociatedIncludedLines": 17
+    },
+    {
+      "path": "scripts/prepare-coverage-analysis.mjs",
+      "includedLines": 77,
+      "proposedAssociatedIncludedLines": 77
     }
   ],
   "scenarios": [
@@ -9260,6 +9265,24 @@
       ],
       "expectedOutcomes": [
         "Denied acquisition and canceled or stale drafts do not save. A formerly held lease expiring without a competing holder is not shown to block saving; that guarantee remains unverified."
+      ]
+    },
+    {
+      "id": "measurement-output-isolation",
+      "title": "Keep repeated measurement imports outside pinned build source",
+      "featureId": "instrumentation",
+      "state": "needs-extension",
+      "existingPaths": [
+        "tests/tracer/measurement-output-journey.mjs"
+      ],
+      "plannedActions": [
+        "Run the public provenance journey to prepare an external exact source copy, import two explicitly synthetic LCOV intervals through genuine Tracer, replay one, and prepare another fresh analysis root.",
+        "Reject stale source or analysis bytes, extra source files, existing output, output inside source and symlinked output; preserve previous evidence.",
+        "On macOS, build a matching instrumented app and complete two real native captures while keeping the original source manifest valid."
+      ],
+      "expectedOutcomes": [
+        "Original source and manifest remain unchanged; each imported interval and exact replay retain correct provenance, and output never appears in build source.",
+        "Synthetic importer fixtures prove tooling behavior only; native integration and runtime counters require real separate captures."
       ]
     }
   ],
@@ -18642,7 +18665,7 @@
       ],
       "rationale": "The proposed exercise targets captures bounded per-session before and after coverage profiles with command sequence and build provenance. The replacement specifies the triggering fixture and observable result.",
       "confidence": "medium",
-      "uncertainty": "Implementation, required public CLI fixture and control routes, execution, and unplanned variants remain unverified.",
+      "uncertainty": "Scoped source update requires renewed semantic audit and a matching native capture; current pins alone do not prove implementation coverage or execution.",
       "proposedAssertions": [
         "Records identify session, build and command context and are kept separate; cumulative counters may include polling, capture transport and overlapping background work, so they are not exclusive causal attribution."
       ],
@@ -18652,9 +18675,9 @@
         "path": "cli/coverage-session.mjs",
         "start": 1,
         "end": 112,
-        "fileSha256": "b0f3b1b09136240bbcbde0ebfac81645c5668a828670d096947d0e7b76674c5a",
-        "spanSha256": "5ff89808d8babba3756defc73ad857b4c9bad92c34db158d401102d74a7a6bb9",
-        "sha256": "b0f3b1b09136240bbcbde0ebfac81645c5668a828670d096947d0e7b76674c5a"
+        "fileSha256": "239ec6b07415d95fa9f03cac7b0cdeecfd960afbdad4feb906999d125ad06f4a",
+        "spanSha256": "9936a05d991691c699ee64e85725dc33fcac9f3a48a81c080300dc88157531ba",
+        "sha256": "239ec6b07415d95fa9f03cac7b0cdeecfd960afbdad4feb906999d125ad06f4a"
       }
     },
     {
@@ -20966,7 +20989,7 @@
       ],
       "rationale": "The proposed exercise targets coordinates native coverage capture, tool and source provenance, export and import.",
       "confidence": "medium",
-      "uncertainty": "Proposed association only; exact witness, branch coverage and assertions require source and test audit. Existing paths, when present, are candidate family files only.",
+      "uncertainty": "Scoped source update requires renewed semantic audit and a matching native capture; current pins alone do not prove implementation coverage or execution.",
       "proposedAssertions": [
         "Coverage capture records build and tool provenance and exports/imports only the intended session profile; missing evidence yields an error."
       ],
@@ -20975,10 +20998,10 @@
       "source": {
         "path": "scripts/collect-cli-coverage.mjs",
         "start": 1,
-        "end": 217,
-        "fileSha256": "425843060d595beb0b89f2246e167ecb6e577a42e9422eabb9f5841a1d3b2afd",
-        "spanSha256": "37a6a620df506fe4122ca445363c46c5a45d3fe3be707b5eeba599e56ae5d82f",
-        "sha256": "425843060d595beb0b89f2246e167ecb6e577a42e9422eabb9f5841a1d3b2afd"
+        "end": 223,
+        "fileSha256": "15e6d6f2322aa2a7eef2d46fa650f1826c8927e0eade9409405188523e8a0b65",
+        "spanSha256": "05ac6ffc72759c868e8658543c139fb8286941ad1b73c46894b17b241f32394a",
+        "sha256": "15e6d6f2322aa2a7eef2d46fa650f1826c8927e0eade9409405188523e8a0b65"
       }
     },
     {
@@ -21517,6 +21540,28 @@
         "sha256": "d5c2dc54948b1746db1e544607457fed57373ad9d0d56c51c2c5d40193142abf",
         "spanSha256": "2aa45fb4b04e9a413aed581b925dd2ee7bbcac4a4bc2458fe64369174c2fc523"
       }
+    },
+    {
+      "rangeId": "measurement-output-isolation",
+      "scenarioIds": [
+        "measurement-output-isolation"
+      ],
+      "rationale": "External exact source-copy preparation isolates the fixed Tracer measurement path from strict build-source identity.",
+      "confidence": "medium",
+      "uncertainty": "The portable regression exercises public commands with synthetic LCOV, not native capture. Matching native reruns, adversarial races, size limits and all platform variants remain unverified.",
+      "proposedAssertions": [
+        "Source bytes and eligible set stay unchanged after repeated imports; refusal paths preserve all pre-existing source and evidence."
+      ],
+      "featureId": "instrumentation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "scripts/prepare-coverage-analysis.mjs",
+        "start": 1,
+        "end": 80,
+        "fileSha256": "869234ba5689cf77c1ee514ce2f9470007c07e7799e80188984e76c5a83cc5d0",
+        "spanSha256": "99c4a6a44a533242d165ea4fc9398fa43286c6fe698ca8da8f7132c7c09558fe",
+        "sha256": "869234ba5689cf77c1ee514ce2f9470007c07e7799e80188984e76c5a83cc5d0"
+      }
     }
   ],
   "readinessMetadataNormalization": {
@@ -21745,5 +21790,19 @@
     "associations": 2,
     "status": "model-proposed-unreviewed",
     "notice": "Publication projection only. Exact retained legacy workflow, incompatible with retired tests and AppKit packaging. Two inspection scenarios are unwritten; no workflow execution or coverage claim. Overall inventory/proposal totals and prior checkpoint fingerprints remain historical; current Tracer reports recompute scope. All other associations and scenarios are unchanged."
+  },
+  "scopedMeasurementOutputUpdate": {
+    "baseCommit": "5239091c47639eeecfaf67f26971bc3200f5fd70",
+    "sources": [
+      "cli/coverage-session.mjs",
+      "scripts/collect-cli-coverage.mjs",
+      "scripts/prepare-coverage-analysis.mjs"
+    ],
+    "associationsRequiringNewSemanticAudit": [
+      "e20ffa2667aac058b17b",
+      "63785d5cf7470b30e408",
+      "measurement-output-isolation"
+    ],
+    "notice": "Exact scoped proposal update, not reviewed manual links or native execution. Preserve the historical 100% planning audit and prior integration audit obligations."
   }
 }

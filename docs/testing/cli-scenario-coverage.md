@@ -6,11 +6,13 @@ mock application or an implementation-level test suite. It brackets each real
 **each app run has its own cumulative before/after pair and UUID**. Profiles
 from different sessions are never combined.
 
-Successful capture, LLVM compatibility and import through this new native path
-remain **unverified until run on macOS with a matching instrumented build**.
-Linux's public Tracer tooling journeys check CLI requirements and honest not-run
-behavior. They cannot establish native success. Historical tab-switch evidence
-is retained unchanged and is not evidence for this implementation.
+One workspace session on public checkpoint `e9819de` successfully captured,
+exported and imported a real interval: 150 app/Core files, 21,667 instrumented
+line records and 1,736 counter-increasing lines, with no stale measured files.
+That is a scoped historical observation, not a full-suite or current-build pass.
+Every changed collector/build still needs a matching macOS run. Linux's public
+tooling journeys cannot establish native success; their hand-authored LCOV
+fixtures exercise output handling only and must never be reported as app hits.
 
 ## 1. Pin source before building
 
@@ -87,6 +89,14 @@ artifacts can consume many GiB. Confirm sufficient disk before running; a low
 cap reduces the bound but can stop a multi-session scenario. Nothing is deleted
 automatically to make room.
 
+Preparation also creates an exact source copy for analysis under this run's
+private evidence directory. Its bound is 10,000 files, 64 MiB per file and
+512 MiB total. It copies only the verified manifest, rejects symlinks and
+existing output, and verifies the original and copy before capture. These are
+separate regular files, never hard links or a symlink back to build source.
+Tracer requires a Git root, so the copy has new empty local Git metadata, with
+no copied history, template hooks, remote, staged files or commits.
+
 LLVM tools default to `xcrun --find llvm-profdata` and `llvm-cov`. Optional
 `--llvm-profdata /absolute/tool` and `--llvm-cov /absolute/tool` must identify
 compatible trusted tools. The importer must be Tracer 0.1.2 or newer. It defaults
@@ -110,7 +120,8 @@ manifest are separately pinned, so changing an implementation module is detected
   executable with real `llvm-cov -format=lcov`.
 - Verify source, bundle, probe and tools again before invoking actual
   `tracer measure import` for each complete interval. No `--allow-stale` fallback
-  is used. Capture source checks finish before the explicit dataset mutation.
+  is used. Import uses the external analysis root, and the original build source
+  is checked again after import. The strict eligible source file set is unchanged.
 
 Private output includes `coverage/capture.json`, pinned build/source/probe/Tracer
 records and `coverage/sessions/RUN_UUID/` containing raw profiles, indexed
@@ -119,6 +130,36 @@ Both capture.json and the runner's evidence.json track phases/outcomes. The
 measurement dataset stores only Tracer's validated counters and provenance, not
 the raw profile/export files. Do not publish raw captures or private evidence
 without separate review and authorization.
+
+`coverage/capture.json` records `analysis.root` and `analysis.dataset`.
+Tracer 0.3 always writes `docs/testing/code-e2e-measurements.json` below its
+selected root. Therefore this collector uses
+`coverage/analysis/source/` as that root, **never the pinned build checkout**.
+The sibling `coverage/analysis/analysis.json` records the verified source-copy
+identity. To inspect results, use the recorded canonical root:
+
+```sh
+tracer --root EXTERNAL_ANALYSIS_ROOT measure report --json
+tracer --root EXTERNAL_ANALYSIS_ROOT measure check --json
+```
+
+Each invocation has its own create-only analysis root and dataset. Multiple
+sessions within that invocation import separate intervals into that dataset.
+Different invocations do not automatically merge counters or deduplicate lines
+across reports. Report exact scope rather than adding interval totals together.
+The public `scripts/prepare-coverage-analysis.mjs` command also prepares such a
+copy with `--source-manifest`, `--source-manifest-sha256` and an external
+`--output` whose owned, non-group/world-writable parent already exists. It does
+not capture, invent, import or migrate any measurements.
+
+The earlier collector imported into the source checkout, leaving an untracked
+dataset that caused the next strict manifest check to fail. Preserve that
+checkout, dataset and its raw evidence. Use a separate clean, verified checkout
+and a newly matching build for later runs; do not delete the old dataset, silently
+copy it into a new run, ignore it in source verification, or regenerate the old
+build's manifest. The new analysis preparer refuses manifests containing the
+measurement dataset. A partial failed preparation remains available for inspection
+and is never reused or erased automatically.
 
 An import can succeed before receipt persistence fails. Such an interval remains
 marked imported, with receipt pending. A failed/timed-out import can be uncertain;

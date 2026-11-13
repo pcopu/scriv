@@ -7,6 +7,8 @@ import { access, lstat, realpath, readFile, writeFile, mkdir, readdir, rename } 
 import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashFile, probeIdentity } from '../cli/coverage-session.mjs';
+import { prepareAnalysisRoot } from './prepare-coverage-analysis.mjs';
+import { verifySourceManifest } from './export-cli-source-manifest.mjs';
 
 const execute = promisify(execFile);
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -101,13 +103,15 @@ export async function prepareCoverage({ app, output, sourceOptions, buildRecordP
   await write(join(directory, 'build-record.json'), buildBytes);
   await write(join(directory, 'probe-sources.json'), JSON.stringify(probe, null, 2) + '\n');
   await write(join(directory, 'tracer-sources.json'), JSON.stringify(tracerCLI.packageIdentity, null, 2) + '\n');
+  const analysis = await prepareAnalysisRoot(root, join(directory, 'build-sources.json'),
+    sourceOptions.manifestSHA256, join(directory, 'analysis'));
   const capture = { directory, executable, executableSHA256, sourceManifestSHA256: sourceOptions.manifestSHA256,
-    buildRecordSHA256: sha(buildBytes), probe, invocationID: randomUUID(), maximumSessions,
+    buildRecordSHA256: sha(buildBytes), probe, invocationID: randomUUID(), maximumSessions, analysis,
     profdata, cov, tracerCLI, tools: [profdata, cov, tracerCLI, ...(tracerCLI.node ? [tracerCLI.node] : [])], intervals: [] };
   capture.report = { status: 'ready', invocationID: capture.invocationID, buildRecordSHA256: capture.buildRecordSHA256,
     sourceManifestSHA256: capture.sourceManifestSHA256, probeSHA256: probe.sha256, maximumSessions,
     tools: capture.tools.map(tool => tool.identity), intervals: [], imported: 0,
-    tracerPackageSHA256: tracerCLI.packageIdentity.sha256,
+    tracerPackageSHA256: tracerCLI.packageIdentity.sha256, analysis,
     limitations: ['Producer-declared build record binds source and signed executable; this is not a cryptographic attestation.',
       'Each real app session has a separate cumulative pair; different processes are never merged.',
       'Counter increases include polling, transport, capture and background work, not action causality or assertion proof.',
@@ -193,16 +197,17 @@ export async function exportCoverage(capture, scenarios) {
 }
 
 export async function importCoverage(capture) {
+  await verifySourceManifest(root, join(capture.directory, 'build-sources.json'), capture.sourceManifestSHA256);
   capture.report.status = 'importing';
   await saveCoverageStatus(capture);
   for (const { directory, interval } of capture.intervals) {
     await verifyTools(capture);
     interval.status = 'importing'; await saveCoverageStatus(capture);
     let result;
-    try { result = await execute(capture.tracerCLI.executable, [...capture.tracerCLI.prefix, '--root', root, 'measure', 'import',
+    try { result = await execute(capture.tracerCLI.executable, [...capture.tracerCLI.prefix, '--root', capture.analysis.root, 'measure', 'import',
       '--before', join(directory, 'before.lcov'), '--after', join(directory, 'after.lcov'),
       '--manifest', join(directory, 'interval.json'), '--sources', join(capture.directory, 'build-sources.json'),
-      '--strip-prefix', '/scriv-source/', '--json'], { cwd: root, timeout: 120000, maxBuffer: 1024 * 1024,
+      '--strip-prefix', '/scriv-source/', '--json'], { cwd: capture.analysis.root, timeout: 120000, maxBuffer: 1024 * 1024,
       env: { ...process.env, TRACER_NO_UPDATE: '1' } }); }
     catch (error) { interval.status = 'import-outcome-uncertain'; await saveCoverageStatus(capture); throw error; }
     // Preserve each successful import receipt. A later failure does not undo or
@@ -212,6 +217,7 @@ export async function importCoverage(capture) {
     await write(join(directory, 'import.json'), result.stdout);
     interval.status = 'imported'; await saveCoverageStatus(capture);
   }
+  await verifySourceManifest(root, join(capture.directory, 'build-sources.json'), capture.sourceManifestSHA256);
   capture.report.status = 'imported';
   await saveCoverageStatus(capture);
 }

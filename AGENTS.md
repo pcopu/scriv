@@ -10,6 +10,75 @@ distinct. Do not add new implementation-level test suites. Legacy implementation
 through the Scriv CLI. Preserve the frozen baseline ledger and unverified gaps;
 removal is not evidence of behavioral parity. See docs/testing/cli-only-tests.md.
 
+## Coverage Goal, History and Reporting
+
+The user's goal is **100% overall Tracer coverage**. Continue implementing,
+auditing and running meaningful CLI scenarios toward that goal; do not stop at
+planning coverage or manufacture links, exclusions, passing results or runtime
+evidence to reach a percentage. Report each metric with its source checkpoint,
+numerator, denominator and scope. A missing execution measure is unknown, not
+zero. Never replace a completed milestone with a differently scoped low number.
+
+The November 10, 2026 Scriv planning pass reached **100% audited scenario
+planning: 30,675 of 30,675 included lines, 551 associations audited, and 186 plans
+corrected and independently rechecked**. This is a completed milestone. The
+separate 9.62% figure at that checkpoint described existing witnessed manual
+links, not the audit's completion. The corrected plan had 513 scenario plans
+still requiring implementation or extension. Later changes marked nine
+associations for renewed semantic audit. The preserved evidence is in
+`docs/testing/proposed-scenario-map.json`: `provenance`, `correctionLayer` and
+`integrationDelta`. Saved totals describe historical checkpoints; recompute
+current reports instead of presenting those saved totals as current execution.
+
+At public commit `5239091c47639eeecfaf67f26971bc3200f5fd70`, Tracer 0.3 reported:
+
+- Current categorization and proposed associations: 30,748/30,748 included lines
+  (100%), across 223 files. The current proposal contains 552 associations and
+  513 plans; current integrity does not establish a fresh semantic audit.
+- Witnessed manual links: 4,508/30,748 (14.66%); 26,240 lines below the one-trace
+  minimum. All 1,897 links and 1,211 comment declarations passed integrity checks.
+  These are source-to-assertion associations, not observed execution.
+- Independent permitted retest: nine isolated service journeys and 17 tooling
+  checks passed. Document integrity included 223 HTTP checks, 56 in its timeline
+  continuation. Do not imply the four excluded auth/team journeys ran.
+- Earlier selected native batch on `f68408d` passed 39/39 eligible journeys on a
+  local ad-hoc automation build; character aliases remained blocked. This was
+  not a new native run on `5239091` or proof of release signing.
+- A real instrumented workspace interval on `e9819de` imported successfully:
+  150 app/Core source files, 21,667 recorded instrumented lines and 1,736 lines
+  whose counters increased. This 8.01% interval observation is **not an overall
+  project coverage percentage**. Other app journeys and uninstrumented helpers,
+  runtime/browser code, backend and other languages remain outside that capture.
+  Build binding was producer-declared, not cryptographic attestation.
+
+Keep the overall witnessed-mapping goal, real scenario assertions and measured
+runtime evidence separate. Use `tracer report --json`, `tracer check
+--require-minimum --json`, and `tracer proposal report --file
+docs/testing/proposed-scenario-map.json --json` for current mapping/accounting.
+Use `tracer --root EXTERNAL_ANALYSIS_ROOT measure report --json` and `measure
+check --json` for captured intervals. Do not sum repeated interval denominators
+or observed lines as unique project coverage. Uninstrumented code is unknown.
+Keep private profiles, datasets, logs, user data and local evidence out of Git.
+
+## Test and Fix Batches
+
+Finish the available authorized testing first and collect all findings. Fix the
+surfaced defects as one coherent batch, run applicable checks and review it,
+then publish that batch and have the independent tester rerun the exact tree.
+Only then resume the next coverage expansion and repeat. Do not return to
+per-issue commits. Preserve unrelated work and existing evidence; never
+force-push or change GitHub Actions as part of this workflow.
+
+Keep explicit exclusions and blockers visible: login/auth/team work remains
+excluded unless the user changes that scope; the character-alias AppKit fallback
+must not be retried after its Library Validation denial without a permitted new
+route. Do not bypass signing, network or sandbox restrictions. Ad-hoc testing
+does not establish Developer ID/helper trust, notarization or release readiness.
+Keep strict build-source manifest checks. Measurement output must be separate
+from pinned source so a successful import cannot invalidate the next run. Never
+delete evidence, regenerate build-source hashes or add blanket exclusions to
+make an identity mismatch disappear.
+
 ## CLI-Only Apple Builds
 
 The user wants to keep Xcode.app and simulator runtimes uninstalled on this

@@ -78548,7 +78548,7 @@
         "end": 1,
         "sha256": "ef36205faffd3ae967869975744f3b264629f6eb58784b8596ffdd4b95450610"
       },
-      "fileSha256": "b0f3b1b09136240bbcbde0ebfac81645c5668a828670d096947d0e7b76674c5a"
+      "fileSha256": "239ec6b07415d95fa9f03cac7b0cdeecfd960afbdad4feb906999d125ad06f4a"
     },
     {
       "id": "686d9ee6b76e23a4",
@@ -78834,11 +78834,11 @@
       "id": "6dea53bfea9dbc86",
       "source": {
         "path": "scripts/collect-cli-coverage.mjs",
-        "start": 92,
-        "end": 92,
+        "start": 94,
+        "end": 94,
         "sha256": "64b42861c5851f8e02f73c3666f0991bcda0269b34023dc60482887c61d2b92b"
       },
-      "fileSha256": "425843060d595beb0b89f2246e167ecb6e577a42e9422eabb9f5841a1d3b2afd"
+      "fileSha256": "15e6d6f2322aa2a7eef2d46fa650f1826c8927e0eade9409405188523e8a0b65"
     },
     {
       "id": "6e17e24e733006dd",
@@ -80728,7 +80728,7 @@
         "end": 47,
         "sha256": "252800a1211f72c8bea4e4b0dc0575a949c72e90911bbd6b8cbb822d4495ab85"
       },
-      "fileSha256": "b0f3b1b09136240bbcbde0ebfac81645c5668a828670d096947d0e7b76674c5a"
+      "fileSha256": "239ec6b07415d95fa9f03cac7b0cdeecfd960afbdad4feb906999d125ad06f4a"
     },
     {
       "id": "9728cadb7100156c",
@@ -81984,11 +81984,11 @@
       "id": "af2f9b0a25dd7560",
       "source": {
         "path": "scripts/collect-cli-coverage.mjs",
-        "start": 45,
-        "end": 46,
+        "start": 47,
+        "end": 48,
         "sha256": "936c001ad29cd2301b0b5b3141c0b92a919a8a59578aaa27f5de600ed7e0e648"
       },
-      "fileSha256": "425843060d595beb0b89f2246e167ecb6e577a42e9422eabb9f5841a1d3b2afd"
+      "fileSha256": "15e6d6f2322aa2a7eef2d46fa650f1826c8927e0eade9409405188523e8a0b65"
     },
     {
       "id": "af7295a03d13bec0",
@@ -83008,7 +83008,7 @@
         "end": 1,
         "sha256": "55e9b601fd66ab814c615457d88c73bccb6dca1c69745f73b953e71646f7edf2"
       },
-      "fileSha256": "425843060d595beb0b89f2246e167ecb6e577a42e9422eabb9f5841a1d3b2afd"
+      "fileSha256": "15e6d6f2322aa2a7eef2d46fa650f1826c8927e0eade9409405188523e8a0b65"
     },
     {
       "id": "c590f6c5735d4de5",
@@ -83084,11 +83084,11 @@
       "id": "c6f620669df95ed6",
       "source": {
         "path": "scripts/collect-cli-coverage.mjs",
-        "start": 167,
-        "end": 167,
+        "start": 171,
+        "end": 171,
         "sha256": "a514b5d4ca41a462b57b7bf3c9e9beb4773dde77896f14574b9a559b3ec891c6"
       },
-      "fileSha256": "425843060d595beb0b89f2246e167ecb6e577a42e9422eabb9f5841a1d3b2afd"
+      "fileSha256": "15e6d6f2322aa2a7eef2d46fa650f1826c8927e0eade9409405188523e8a0b65"
     },
     {
       "id": "c71e3aa8bd849a21",
@@ -84814,11 +84814,11 @@
       "id": "e9685122768075a6",
       "source": {
         "path": "scripts/collect-cli-coverage.mjs",
-        "start": 208,
-        "end": 209,
+        "start": 213,
+        "end": 214,
         "sha256": "3783407c8fa2e370e33c649034cab7229cb4f2cba92f6cb8ddafd46df97b346a"
       },
-      "fileSha256": "425843060d595beb0b89f2246e167ecb6e577a42e9422eabb9f5841a1d3b2afd"
+      "fileSha256": "15e6d6f2322aa2a7eef2d46fa650f1826c8927e0eade9409405188523e8a0b65"
     },
     {
       "id": "e97b608e47defb40",

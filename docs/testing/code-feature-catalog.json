@@ -7173,7 +7173,7 @@
       },
       {
         "path": "cli/coverage-session.mjs",
-        "sha256": "b0f3b1b09136240bbcbde0ebfac81645c5668a828670d096947d0e7b76674c5a",
+        "sha256": "239ec6b07415d95fa9f03cac7b0cdeecfd960afbdad4feb906999d125ad06f4a",
         "physicalLines": 112,
         "includedLines": 107,
         "blankRanges": [
@@ -7936,29 +7936,29 @@
       },
       {
         "path": "scripts/collect-cli-coverage.mjs",
-        "sha256": "425843060d595beb0b89f2246e167ecb6e577a42e9422eabb9f5841a1d3b2afd",
-        "physicalLines": 217,
-        "includedLines": 205,
+        "sha256": "15e6d6f2322aa2a7eef2d46fa650f1826c8927e0eade9409405188523e8a0b65",
+        "physicalLines": 223,
+        "includedLines": 211,
         "blankRanges": [
           [
-            10,
-            10
+            12,
+            12
           ],
           [
-            78,
-            78
+            80,
+            80
           ],
           [
-            119,
-            119
+            123,
+            123
           ],
           [
-            127,
-            127
+            131,
+            131
           ],
           [
-            194,
-            194
+            198,
+            198
           ]
         ],
         "commentRanges": [
@@ -7967,20 +7967,20 @@
             1
           ],
           [
-            45,
-            46
+            47,
+            48
           ],
           [
-            92,
-            92
+            94,
+            94
           ],
           [
-            167,
-            167
+            171,
+            171
           ],
           [
-            208,
-            209
+            213,
+            214
           ]
         ]
       },
@@ -8627,6 +8627,27 @@
             1
           ]
         ]
+      },
+      {
+        "path": "scripts/prepare-coverage-analysis.mjs",
+        "sha256": "869234ba5689cf77c1ee514ce2f9470007c07e7799e80188984e76c5a83cc5d0",
+        "physicalLines": 80,
+        "includedLines": 77,
+        "blankRanges": [
+          [
+            9,
+            9
+          ],
+          [
+            15,
+            15
+          ],
+          [
+            66,
+            66
+          ]
+        ],
+        "commentRanges": []
       }
     ],
     "scopedUpdateV109": {
@@ -8873,6 +8894,11 @@
       "assignmentId": "v89-reviewed-code-delta",
       "model": "reviewed-delta",
       "sha256": "c7253018d8d0ada8791ed2da035a7275599da178f2e0775517b4e007e3d670c8"
+    },
+    {
+      "assignmentId": "measurement-output-fix",
+      "model": "gpt-6-astra",
+      "sha256": "f31ea88bbd470bf64745cf4e6abf06aad15c43893709b61191b12a270971e01c"
     }
   ],
   "ranges": [
@@ -13949,8 +13975,8 @@
       "rationale": "Captures bounded per-session before and after coverage profiles with command sequence and build provenance.",
       "status": "model-proposed",
       "assignmentId": "wave2-07",
-      "fileSha256": "b0f3b1b09136240bbcbde0ebfac81645c5668a828670d096947d0e7b76674c5a",
-      "spanSha256": "5ff89808d8babba3756defc73ad857b4c9bad92c34db158d401102d74a7a6bb9"
+      "fileSha256": "239ec6b07415d95fa9f03cac7b0cdeecfd960afbdad4feb906999d125ad06f4a",
+      "spanSha256": "9936a05d991691c699ee64e85725dc33fcac9f3a48a81c080300dc88157531ba"
     },
     {
       "path": "cli/owned-workspace.mjs",
@@ -15203,14 +15229,14 @@
     {
       "path": "scripts/collect-cli-coverage.mjs",
       "start": 1,
-      "end": 217,
+      "end": 223,
       "featureId": "instrumentation",
       "confidence": "high",
-      "rationale": "Coordinates native coverage capture, tool and source provenance, export and import.",
+      "rationale": "Coordinates native coverage capture, strict source/tool provenance, separate exports and import into an owned external analysis copy.",
       "status": "model-proposed",
       "assignmentId": "wave2-02",
-      "fileSha256": "425843060d595beb0b89f2246e167ecb6e577a42e9422eabb9f5841a1d3b2afd",
-      "spanSha256": "37a6a620df506fe4122ca445363c46c5a45d3fe3be707b5eeba599e56ae5d82f"
+      "fileSha256": "15e6d6f2322aa2a7eef2d46fa650f1826c8927e0eade9409405188523e8a0b65",
+      "spanSha256": "05ac6ffc72759c868e8658543c139fb8286941ad1b73c46894b17b241f32394a"
     },
     {
       "path": "scripts/export-cli-source-manifest.mjs",
@@ -15499,6 +15525,18 @@
       "rationale": "Immutable fixed local service route declarations and derived CLI help, isolated from native command/session behavior.",
       "fileSha256": "d5c2dc54948b1746db1e544607457fed57373ad9d0d56c51c2c5d40193142abf",
       "spanSha256": "2aa45fb4b04e9a413aed581b925dd2ee7bbcac4a4bc2458fe64369174c2fc523"
+    },
+    {
+      "path": "scripts/prepare-coverage-analysis.mjs",
+      "start": 1,
+      "end": 80,
+      "featureId": "instrumentation",
+      "confidence": "high",
+      "rationale": "Prepares a bounded exact source copy outside the build checkout for isolated Tracer measurement storage; does not create native coverage.",
+      "status": "model-proposed",
+      "assignmentId": "measurement-output-fix",
+      "fileSha256": "869234ba5689cf77c1ee514ce2f9470007c07e7799e80188984e76c5a83cc5d0",
+      "spanSha256": "99c4a6a44a533242d165ea4fc9398fa43286c6fe698ca8da8f7132c7c09558fe"
     }
   ],
   "explicitUnclassified": [],
@@ -15579,5 +15617,14 @@
     "associations": 2,
     "status": "model-proposed-unreviewed",
     "notice": "Publication projection only. Exact retained legacy workflow, incompatible with retired tests and AppKit packaging. Two inspection scenarios are unwritten; no workflow execution or coverage claim. Overall inventory/proposal totals and prior checkpoint fingerprints remain historical; current Tracer reports recompute scope. All other associations and scenarios are unchanged."
+  },
+  "scopedMeasurementOutputUpdate": {
+    "baseCommit": "5239091c47639eeecfaf67f26971bc3200f5fd70",
+    "sources": [
+      "cli/coverage-session.mjs",
+      "scripts/collect-cli-coverage.mjs",
+      "scripts/prepare-coverage-analysis.mjs"
+    ],
+    "notice": "Scoped feature classification and current source pins only. Prior inventory fingerprints/totals remain historical; recompute current Tracer reports. No execution or complete-audit claim."
   }
 }

@@ -631,6 +631,30 @@
           "why": "Restored source verifies with original file count, worktree hash, base commit and manifest digest, still returns blocked/not-run with no app identity; source and manifest remain unchanged. Bounded association only; no exhaustive branch or measured execution claim."
         }
       ]
+    },
+    {
+      "id": "isolate-measurement-output",
+      "title": "Keep repeated imports outside pinned source",
+      "preconditions": [
+        "The original synthetic source and its exact external manifest remain unchanged after the preceding provenance checks.",
+        "Uses the public analysis preparation CLI and genuine installed Tracer with explicitly hand-authored LCOV; no app is launched or measured."
+      ],
+      "actions": [
+        "Run public analysis preparation and real Tracer imports with synthetic LCOV"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "All 13 public output-isolation checks complete, including repeated imports, exact replay, source readbacks and refusal cases. Any failed continuation action makes the enclosing recorded scenario fail. Synthetic measurements are not app execution.",
+          "witness": {
+            "path": "tests/tracer/source-provenance-journey.mjs",
+            "start": 163,
+            "end": 166,
+            "sha256": "e507319f84cd3f0e7d4912fe156a6f0c14a2a49cde28c8840784995d32b3dd22"
+          }
+        }
+      ],
+      "mappings": []
     }
   ],
   "scenarios": [
@@ -653,7 +677,8 @@
         "reject-entry-hash-format",
         "reject-entry-hash-mismatch",
         "refuse-inside-output",
-        "recover-readback"
+        "recover-readback",
+        "isolate-measurement-output"
       ]
     }
   ]
