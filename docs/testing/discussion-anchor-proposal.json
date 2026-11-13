@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "discussion-anchors",
+      "title": "Validate discussion anchors and canonical image threads",
+      "featureId": "discussions",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/discussion-anchor-cases.mjs",
+        "cloud/tests-e2e/discussions-assets-journey.mjs"
+      ],
+      "plannedActions": [
+        "POST /v1/projects synthetic personal anchor project",
+        "POST commands seed eight independently authored items",
+        "GET snapshot seeded anchor graph",
+        "GET events seeded anchor graph",
+        "POST leases unused image",
+        "POST commands delete unused image",
+        "GET events deletion",
+        "GET snapshot deletion",
+        "GET events deletion readback",
+        "POST threads reject word-list-type",
+        "GET snapshot after word-list-type",
+        "GET events after word-list-type",
+        "POST threads reject word-list-bound",
+        "GET snapshot after word-list-bound",
+        "GET events after word-list-bound",
+        "POST threads reject words-without-entry",
+        "GET snapshot after words-without-entry",
+        "GET events after words-without-entry",
+        "POST threads reject words-on-image",
+        "GET snapshot after words-on-image",
+        "GET events after words-on-image",
+        "POST threads reject duplicate-words",
+        "GET snapshot after duplicate-words",
+        "GET events after duplicate-words",
+        "POST threads reject foreign-word",
+        "GET snapshot after foreign-word",
+        "GET events after foreign-word",
+        "POST threads reject missing-image-anchor",
+        "GET snapshot after missing-image-anchor",
+        "GET events after missing-image-anchor",
+        "POST threads reject non-image-anchor",
+        "GET snapshot after non-image-anchor",
+        "GET events after non-image-anchor",
+        "POST threads reject deleted-image-anchor",
+        "GET snapshot after deleted-image-anchor",
+        "GET events after deleted-image-anchor",
+        "POST threads reject different-image-family",
+        "GET snapshot after different-image-family",
+        "GET events after different-image-family",
+        "POST threads create ordered-word-anchor",
+        "GET events creation ordered-word-anchor",
+        "GET snapshot creation ordered-word-anchor",
+        "GET events readback ordered-word-anchor",
+        "POST threads create automatic-image-version",
+        "GET events creation automatic-image-version",
+        "GET snapshot creation automatic-image-version",
+        "GET events readback automatic-image-version",
+        "POST threads create explicit-family-version",
+        "GET events creation explicit-family-version",
+        "GET snapshot creation explicit-family-version",
+        "GET events readback explicit-family-version",
+        "GET threads for first-family root",
+        "POST threads reopen first-family root with different-family input anchor",
+        "GET threads for first-family middle",
+        "POST threads reopen first-family middle with different-family input anchor",
+        "GET threads for first-family leaf",
+        "POST threads reopen first-family leaf with different-family input anchor",
+        "GET threads for entry",
+        "GET threads for second-family child",
+        "GET snapshot after canonical lookups",
+        "GET events after canonical lookups",
+        "GET threads scope all limit 1 page 1",
+        "GET threads scope all limit 1 page 2",
+        "GET threads scope all limit 1 page 3",
+        "GET threads scope all limit 1 page 4",
+        "GET snapshot after pagination",
+        "GET events after pagination"
+      ],
+      "expectedOutcomes": [
+        "A three-version image family resolves through every revision to one root thread with the first leaf image anchor unchanged. A separate two-version family accepts an explicit same-family version. Reopening returns the exact original thread and adds no event or document mutation.",
+        "Ten malformed or unavailable anchor requests return exact 400 invalid_anchor: word-list type/size with the exact size-specific error body, missing or non-entry target, duplicate/foreign words, missing/non-image/deleted image, and a different image family. Each rejection preserves the complete public document snapshot excluding leases and the full previously verified event stream. Valid ordered word IDs, automatic image anchor and explicit family image anchor create exact thread/event objects.",
+        "Three threads page in observed thread-ID order with limit 1, exact hasMore/nextCursor values, and a final empty page. Listing preserves document fields excluding leases and the full event stream."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "image-family-lookup",
+      "featureId": "discussions",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 76,
+        "end": 99,
+        "sha256": "043d3ab999430cc9e270d95e0a353ba4962e607ecf05448d7878c42e7d915206",
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "a761335c917ea9c0bd8d7a2a7d36ac6ae08863d60255b025151c121f73449f4f"
+      },
+      "scenarioIds": [
+        "discussion-anchors"
+      ],
+      "rationale": "Public lookup and reopening exercise image-root traversal and canonical root-thread selection across known valid chains.",
+      "confidence": "high",
+      "uncertainty": "No claim of corrupt legacy lineage, cycle/depth rejection, pre-existing forked family threads, 1,000-word acceptance, guaranteed distinction between item-ID and thread-ID sort order, lease expiry, concurrent access changes, native UI, provider login, full line/branch execution or measured counters. The source remains uninstrumented in this service journey.",
+      "proposedAssertions": [
+        "A three-version image family resolves through every revision to one root thread with the first leaf image anchor unchanged. A separate two-version family accepts an explicit same-family version. Reopening returns the exact original thread and adds no event or document mutation."
+      ]
+    },
+    {
+      "rangeId": "new-thread-anchors",
+      "featureId": "discussions",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 499,
+        "end": 508,
+        "sha256": "ccc5d8b1da914871a7b98630c8978c6912e5bf606a8a0206ee2ca439dddf8346",
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "9d3c2948eb8b7c667efc4c413ef602d36b7efcd2fe9c87aef321ad4ca8379b1c"
+      },
+      "scenarioIds": [
+        "discussion-anchors"
+      ],
+      "rationale": "New-thread validation rejects invalid word/image references before any discussion event; accepted thread fields and events match independently stated expectations.",
+      "confidence": "high",
+      "uncertainty": "No claim of corrupt legacy lineage, cycle/depth rejection, pre-existing forked family threads, 1,000-word acceptance, guaranteed distinction between item-ID and thread-ID sort order, lease expiry, concurrent access changes, native UI, provider login, full line/branch execution or measured counters. The source remains uninstrumented in this service journey.",
+      "proposedAssertions": [
+        "Ten malformed or unavailable anchor requests return exact 400 invalid_anchor: word-list type/size with the exact size-specific error body, missing or non-entry target, duplicate/foreign words, missing/non-image/deleted image, and a different image family. Each rejection preserves the complete public document snapshot excluding leases and the full previously verified event stream. Valid ordered word IDs, automatic image anchor and explicit family image anchor create exact thread/event objects."
+      ]
+    },
+    {
+      "rangeId": "thread-pagination",
+      "featureId": "discussions",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 477,
+        "end": 481,
+        "sha256": "be13d868160773808e1e11f8dc913b3435843ed0985da1f9adff4add8342593d",
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "005ca647f0ed3858e4e98bf16651b339b3979a4ffe48e74a6670da4d998944fa"
+      },
+      "scenarioIds": [
+        "discussion-anchors"
+      ],
+      "rationale": "Public one-thread pages expose exact ID ordering, cursor and terminal state without mutating history.",
+      "confidence": "high",
+      "uncertainty": "No claim of corrupt legacy lineage, cycle/depth rejection, pre-existing forked family threads, 1,000-word acceptance, guaranteed distinction between item-ID and thread-ID sort order, lease expiry, concurrent access changes, native UI, provider login, full line/branch execution or measured counters. The source remains uninstrumented in this service journey.",
+      "proposedAssertions": [
+        "Three threads page in observed thread-ID order with limit 1, exact hasMore/nextCursor values, and a final empty page. Listing preserves document fields excluding leases and the full event stream."
+      ]
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, realpath, rm, readFile, readdir, copyFile, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawn } from 'node:child_process';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 
@@ -447,6 +447,9 @@ if (process.argv[2] !== '--owned-child') {
     assert(archived.archived_at>=archiveStart&&archived.archived_at<=archiveEnd);assert.deepEqual(archived,{...replicaProjectRow,updated_at:archived.archived_at,archived_at:archived.archived_at});assert.deepEqual(finalReplicaProjects.filter(p=>p.id!==replicaProject),replicaBaselineProjects);
     assert.deepEqual(await replicaRows('teams'),replicaBaselineTeams);assert.deepEqual(await replicaIdentity(),replicaBaselineIdentity);assert.deepEqual(await mediaState(),{rows:[],objects:[]});assert.equal(requests-replicaStart,24);assert.equal(requests,107);assert.equal(outboundAttempts,0);
     console.log(JSON.stringify({kind:'cross-project-replica-evidence',httpChecks:24,sharedHashProjects:2,peakReplicaBytes:24,independentObjectKeys:true,duplicateUploads:2,readPrivacyRefusals:2,deletePermissionRefusals:2,replacementKeyRotated:true,newProjectArchived:true,finalStorageBytes:0,internalInterleavingControlled:false,nativeScenarios:0,outboundAttempts}));
+    const { discussionAnchorCases } = await import(pathToFileURL(join(cloud, 'tests-e2e/discussion-anchor-cases.mjs')).href);
+    const anchors = await discussionAnchorCases({ base: await mf.ready, token: actors.owner.token, actor: actors.owner });
+    requests += anchors.httpChecks; assert.equal(requests, 174); assert.equal(outboundAttempts, 0);
     console.log(JSON.stringify({ result: 'PASS', journey: 'discussions-assets', requests, mediaBoundaryCases: mediaCases, outboundAttempts, migrations: migrations.length, bundleSha256: createHash('sha256').update(await readFile(bundle)).digest('hex'), nativeScenarios: 0, loginFlowTested: false, fixture: 'four original synthetic users/sessions plus two upload users and three sessions; one synthetic active team' }));
   } finally { await mf.dispose(); }
 }
