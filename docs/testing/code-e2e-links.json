@@ -10872,6 +10872,91 @@
       "why": "AUT-J09: After successful merge, real Undo/Redo and browser reopen, the sole remaining left card has no following cue. The owning-card validator rejects its missing-next index before dispatch, preserving full loaded Date witnesses and saved state. This is not a rejection in ProjectEditing.mergeCues, whose throwing guard is unreachable on this route. Reviewed static source/action/assertion association only. The linked finite synthetic fixture imports two source-anchored cues, actual coral/blue images and decoded PCM through production import routes, then uses the mounted original menu action via bounded semantic dispatch. Whole-model success is checked by saveAfter at lines 43–49: exactly one revision, finite nondecreasing modifiedAt, and otherwise literal expected content; invariant at lines 38–41 preserves all saved packages and the loaded serialized project. Reject at lines 54–58 additionally compares the complete loaded observer, including Date bits, before and after. No physical menu, provider, Remove confirmation, arbitrary source race, all-guard coverage, inner-helper mutation purity, post-merge decoded byte check, complex version ancestry or legacy retirement is inferred. Native results are recorded separately; this mapping did not run the app."
     },
     {
+      "id": "26099b07ca84045b",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 477,
+        "end": 481,
+        "sha256": "be13d868160773808e1e11f8dc913b3435843ed0985da1f9adff4add8342593d"
+      },
+      "actions": [
+        "POST /v1/projects synthetic personal anchor project",
+        "POST commands seed eight independently authored items",
+        "GET snapshot seeded anchor graph",
+        "GET events seeded anchor graph",
+        "POST leases unused image",
+        "POST commands delete unused image",
+        "GET events deletion",
+        "GET snapshot deletion",
+        "GET events deletion readback",
+        "POST threads reject word-list-type",
+        "GET snapshot after word-list-type",
+        "GET events after word-list-type",
+        "POST threads reject word-list-bound",
+        "GET snapshot after word-list-bound",
+        "GET events after word-list-bound",
+        "POST threads reject words-without-entry",
+        "GET snapshot after words-without-entry",
+        "GET events after words-without-entry",
+        "POST threads reject words-on-image",
+        "GET snapshot after words-on-image",
+        "GET events after words-on-image",
+        "POST threads reject duplicate-words",
+        "GET snapshot after duplicate-words",
+        "GET events after duplicate-words",
+        "POST threads reject foreign-word",
+        "GET snapshot after foreign-word",
+        "GET events after foreign-word",
+        "POST threads reject missing-image-anchor",
+        "GET snapshot after missing-image-anchor",
+        "GET events after missing-image-anchor",
+        "POST threads reject non-image-anchor",
+        "GET snapshot after non-image-anchor",
+        "GET events after non-image-anchor",
+        "POST threads reject deleted-image-anchor",
+        "GET snapshot after deleted-image-anchor",
+        "GET events after deleted-image-anchor",
+        "POST threads reject different-image-family",
+        "GET snapshot after different-image-family",
+        "GET events after different-image-family",
+        "POST threads create ordered-word-anchor",
+        "GET events creation ordered-word-anchor",
+        "GET snapshot creation ordered-word-anchor",
+        "GET events readback ordered-word-anchor",
+        "POST threads create automatic-image-version",
+        "GET events creation automatic-image-version",
+        "GET snapshot creation automatic-image-version",
+        "GET events readback automatic-image-version",
+        "POST threads create explicit-family-version",
+        "GET events creation explicit-family-version",
+        "GET snapshot creation explicit-family-version",
+        "GET events readback explicit-family-version",
+        "GET threads for first-family root",
+        "POST threads reopen first-family root with different-family input anchor",
+        "GET threads for first-family middle",
+        "POST threads reopen first-family middle with different-family input anchor",
+        "GET threads for first-family leaf",
+        "POST threads reopen first-family leaf with different-family input anchor",
+        "GET threads for entry",
+        "GET threads for second-family child",
+        "GET snapshot after canonical lookups",
+        "GET events after canonical lookups",
+        "GET threads scope all limit 1 page 1",
+        "GET threads scope all limit 1 page 2",
+        "GET threads scope all limit 1 page 3",
+        "GET threads scope all limit 1 page 4",
+        "GET snapshot after pagination",
+        "GET events after pagination"
+      ],
+      "step": {
+        "path": "cloud/tests-e2e/discussion-anchor-cases.mjs",
+        "start": 7,
+        "end": 139,
+        "sha256": "b14750d938277f11b3be73d1d327be5162fb91726cae866b92bbd34c5caebb9e"
+      },
+      "why": "Three threads page in observed thread-ID order with limit 1, exact hasMore/nextCursor values, and a final empty page. Listing preserves document fields excluding leases and the full event stream. No claim of corrupt legacy lineage, cycle/depth rejection, pre-existing forked family threads, 1,000-word acceptance, guaranteed distinction between item-ID and thread-ID sort order, lease expiry, concurrent access changes, native UI, provider login, full line/branch execution or measured counters. The source remains uninstrumented in this service journey."
+    },
+    {
       "id": "26426877cef75fd4",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/LocalAudioEngine.swift",
@@ -16105,9 +16190,9 @@
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
         "start": 71,
         "end": 131,
-        "sha256": "975a89aa462498ace3f4bac60c1bd8a0784f1f8e969afa3c569a275083b8d7b2"
+        "sha256": "06595ccbae800cca97950092be3b8545cd579e442d39380a0c1f247d911f18cc"
       },
-      "why": "Exact over-limit rejection plus unchanged canonical state and retained exact text; successful correction assertion is separately at current witness lines 115-130. Do not include identity/epoch/64-KiB rejection branches. At original authorship this was a prepared native-unrun association; it remains a manual source/witness relationship. No branch-complete claim. Cold-open readiness now waits for the matching workspace-project header to be enabled and hittable before loaded-project. This adds five preceding helper lines; the linked retained-draft and correction assertions keep their exact model, Date, package and journal-byte oracles."
+      "why": "Exact over-limit rejection plus unchanged canonical state and retained exact text; successful correction assertion is separately at current witness lines 115-130. Do not include identity/epoch/64-KiB rejection branches. At original authorship this was a prepared native-unrun association; it remains a manual source/witness relationship. No branch-complete claim. Cold-open readiness now waits for the matching workspace-project header to be enabled and hittable before loaded-project. This adds five preceding helper lines; the linked retained-draft and correction assertions keep their exact model, Date, package and journal-byte oracles. The assertion message now describes the empty journal when observed after the saved correction; it does not prove deletion ordering through an unobserved failure window. Assertion behavior and source spans are unchanged."
     },
     {
       "id": "38855e2cc197b89a",
@@ -17875,6 +17960,91 @@
         "sha256": "d31e184abad5450ca26a468bf4a7198def48f0da9cfb0cb082d05010510c4f85"
       },
       "why": "The selected identity receives only its own captured reason array. Preconditions: The current-image-tag fixture is imported and its cue is selected at word w2; the review is already open. Clara is tagged in the selected current image and is not a speaker in this interval. No other reason formatting branch, portrait state, tag mutation, generation, or global-substring inference is claimed. Helper polling/conditional reveal scrolling are dynamic. Static reviewed CLI witness only; no native run, measured coverage or branch-complete claim."
+    },
+    {
+      "id": "3ee219cb7eb4c379",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 499,
+        "end": 508,
+        "sha256": "ccc5d8b1da914871a7b98630c8978c6912e5bf606a8a0206ee2ca439dddf8346"
+      },
+      "actions": [
+        "POST /v1/projects synthetic personal anchor project",
+        "POST commands seed eight independently authored items",
+        "GET snapshot seeded anchor graph",
+        "GET events seeded anchor graph",
+        "POST leases unused image",
+        "POST commands delete unused image",
+        "GET events deletion",
+        "GET snapshot deletion",
+        "GET events deletion readback",
+        "POST threads reject word-list-type",
+        "GET snapshot after word-list-type",
+        "GET events after word-list-type",
+        "POST threads reject word-list-bound",
+        "GET snapshot after word-list-bound",
+        "GET events after word-list-bound",
+        "POST threads reject words-without-entry",
+        "GET snapshot after words-without-entry",
+        "GET events after words-without-entry",
+        "POST threads reject words-on-image",
+        "GET snapshot after words-on-image",
+        "GET events after words-on-image",
+        "POST threads reject duplicate-words",
+        "GET snapshot after duplicate-words",
+        "GET events after duplicate-words",
+        "POST threads reject foreign-word",
+        "GET snapshot after foreign-word",
+        "GET events after foreign-word",
+        "POST threads reject missing-image-anchor",
+        "GET snapshot after missing-image-anchor",
+        "GET events after missing-image-anchor",
+        "POST threads reject non-image-anchor",
+        "GET snapshot after non-image-anchor",
+        "GET events after non-image-anchor",
+        "POST threads reject deleted-image-anchor",
+        "GET snapshot after deleted-image-anchor",
+        "GET events after deleted-image-anchor",
+        "POST threads reject different-image-family",
+        "GET snapshot after different-image-family",
+        "GET events after different-image-family",
+        "POST threads create ordered-word-anchor",
+        "GET events creation ordered-word-anchor",
+        "GET snapshot creation ordered-word-anchor",
+        "GET events readback ordered-word-anchor",
+        "POST threads create automatic-image-version",
+        "GET events creation automatic-image-version",
+        "GET snapshot creation automatic-image-version",
+        "GET events readback automatic-image-version",
+        "POST threads create explicit-family-version",
+        "GET events creation explicit-family-version",
+        "GET snapshot creation explicit-family-version",
+        "GET events readback explicit-family-version",
+        "GET threads for first-family root",
+        "POST threads reopen first-family root with different-family input anchor",
+        "GET threads for first-family middle",
+        "POST threads reopen first-family middle with different-family input anchor",
+        "GET threads for first-family leaf",
+        "POST threads reopen first-family leaf with different-family input anchor",
+        "GET threads for entry",
+        "GET threads for second-family child",
+        "GET snapshot after canonical lookups",
+        "GET events after canonical lookups",
+        "GET threads scope all limit 1 page 1",
+        "GET threads scope all limit 1 page 2",
+        "GET threads scope all limit 1 page 3",
+        "GET threads scope all limit 1 page 4",
+        "GET snapshot after pagination",
+        "GET events after pagination"
+      ],
+      "step": {
+        "path": "cloud/tests-e2e/discussion-anchor-cases.mjs",
+        "start": 7,
+        "end": 139,
+        "sha256": "b14750d938277f11b3be73d1d327be5162fb91726cae866b92bbd34c5caebb9e"
+      },
+      "why": "Ten malformed or unavailable anchor requests return exact 400 invalid_anchor: word-list type/size with the exact size-specific error body, missing or non-entry target, duplicate/foreign words, missing/non-image/deleted image, and a different image family. Each rejection preserves the complete public document snapshot excluding leases and the full previously verified event stream. Valid ordered word IDs, automatic image anchor and explicit family image anchor create exact thread/event objects. No claim of corrupt legacy lineage, cycle/depth rejection, pre-existing forked family threads, 1,000-word acceptance, guaranteed distinction between item-ID and thread-ID sort order, lease expiry, concurrent access changes, native UI, provider login, full line/branch execution or measured counters. The source remains uninstrumented in this service journey."
     },
     {
       "id": "3f5f4d7657818a95",
@@ -68456,6 +68626,91 @@
       "why": "The successful reveal computes a bounded header destination and scrolls that header into view. Preconditions: generation-review.mjs:34-84 imported the literal generation-review-fixture, opened the real brief in Source, and captured fixed chrome. People are June, Mara, June in the test loop, including long/decomposed Unicode biography. No portraits exist. Snapshot polling and reveal-helper conditional scrolls remain dynamic. Successful header reveal only: no retry-count, invalidation, offscreen retention, scroll-offset preservation, empty-field fallback, portrait attachment/pixels, provider execution or physical input claim. Static reviewed CLI witness only; no run, measured coverage or branch-complete claim."
     },
     {
+      "id": "ed29a5c0c700db17",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 76,
+        "end": 99,
+        "sha256": "043d3ab999430cc9e270d95e0a353ba4962e607ecf05448d7878c42e7d915206"
+      },
+      "actions": [
+        "POST /v1/projects synthetic personal anchor project",
+        "POST commands seed eight independently authored items",
+        "GET snapshot seeded anchor graph",
+        "GET events seeded anchor graph",
+        "POST leases unused image",
+        "POST commands delete unused image",
+        "GET events deletion",
+        "GET snapshot deletion",
+        "GET events deletion readback",
+        "POST threads reject word-list-type",
+        "GET snapshot after word-list-type",
+        "GET events after word-list-type",
+        "POST threads reject word-list-bound",
+        "GET snapshot after word-list-bound",
+        "GET events after word-list-bound",
+        "POST threads reject words-without-entry",
+        "GET snapshot after words-without-entry",
+        "GET events after words-without-entry",
+        "POST threads reject words-on-image",
+        "GET snapshot after words-on-image",
+        "GET events after words-on-image",
+        "POST threads reject duplicate-words",
+        "GET snapshot after duplicate-words",
+        "GET events after duplicate-words",
+        "POST threads reject foreign-word",
+        "GET snapshot after foreign-word",
+        "GET events after foreign-word",
+        "POST threads reject missing-image-anchor",
+        "GET snapshot after missing-image-anchor",
+        "GET events after missing-image-anchor",
+        "POST threads reject non-image-anchor",
+        "GET snapshot after non-image-anchor",
+        "GET events after non-image-anchor",
+        "POST threads reject deleted-image-anchor",
+        "GET snapshot after deleted-image-anchor",
+        "GET events after deleted-image-anchor",
+        "POST threads reject different-image-family",
+        "GET snapshot after different-image-family",
+        "GET events after different-image-family",
+        "POST threads create ordered-word-anchor",
+        "GET events creation ordered-word-anchor",
+        "GET snapshot creation ordered-word-anchor",
+        "GET events readback ordered-word-anchor",
+        "POST threads create automatic-image-version",
+        "GET events creation automatic-image-version",
+        "GET snapshot creation automatic-image-version",
+        "GET events readback automatic-image-version",
+        "POST threads create explicit-family-version",
+        "GET events creation explicit-family-version",
+        "GET snapshot creation explicit-family-version",
+        "GET events readback explicit-family-version",
+        "GET threads for first-family root",
+        "POST threads reopen first-family root with different-family input anchor",
+        "GET threads for first-family middle",
+        "POST threads reopen first-family middle with different-family input anchor",
+        "GET threads for first-family leaf",
+        "POST threads reopen first-family leaf with different-family input anchor",
+        "GET threads for entry",
+        "GET threads for second-family child",
+        "GET snapshot after canonical lookups",
+        "GET events after canonical lookups",
+        "GET threads scope all limit 1 page 1",
+        "GET threads scope all limit 1 page 2",
+        "GET threads scope all limit 1 page 3",
+        "GET threads scope all limit 1 page 4",
+        "GET snapshot after pagination",
+        "GET events after pagination"
+      ],
+      "step": {
+        "path": "cloud/tests-e2e/discussion-anchor-cases.mjs",
+        "start": 7,
+        "end": 139,
+        "sha256": "b14750d938277f11b3be73d1d327be5162fb91726cae866b92bbd34c5caebb9e"
+      },
+      "why": "A three-version image family resolves through every revision to one root thread with the first leaf image anchor unchanged. A separate two-version family accepts an explicit same-family version. Reopening returns the exact original thread and adds no event or document mutation. No claim of corrupt legacy lineage, cycle/depth rejection, pre-existing forked family threads, 1,000-word acceptance, guaranteed distinction between item-ID and thread-ID sort order, lease expiry, concurrent access changes, native UI, provider login, full line/branch execution or measured counters. The source remains uninstrumented in this service journey."
+    },
+    {
       "id": "ed3f60f264b2371c",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
@@ -73600,6 +73855,39 @@
       "why": "AUT-J08: second finite-PNG import after coral and inspector dismissal (caller 142). Exact digest-derived filename/MIME/bytecount, distinct asset and immutable prior asset are checked with visible decoding. Only new PNG file path; existing-file corruption, other formats and atomic failure branches not tested. Reviewed static association only, not native execution or measured coverage."
     },
     {
+      "id": "ff83f6a91dda7a35",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 193,
+        "end": 214,
+        "sha256": "468740cb855d4b48537cbc299b500406e6011f3db74ca1ded8f100fcf82f610f"
+      },
+      "actions": [
+        "Create a separate synthetic timeline project through POST /v1/projects and read its empty snapshot and events",
+        "Create a zero-owned direction and dormant anchored cue, then acquire its edit lease",
+        "Reject a nonzero offset into the zero-owned direction and read unchanged snapshot/events",
+        "Reject appending dialogue without resolving the cue and read unchanged snapshot/events",
+        "Repair the rejected append ID with its cue edit and read exact receipt/snapshot/events",
+        "Prepend a 500 ms direction with the shifted cue and read exact receipt/snapshot/events",
+        "Reject legacy coverage crossing the anchor from before and read unchanged snapshot/events",
+        "Reject legacy coverage overlapping the earlier anchored cue and read unchanged snapshot/events",
+        "Accept legacy coverage meeting the anchor exactly and read receipt/snapshot/events",
+        "Acquire legacy cue lease and migrate to overlapping anchored coverage, then read receipt/snapshot/events",
+        "Replay the exact migration and verify unchanged receipt/snapshot/events",
+        "Acquire prefix and dialogue leases, reject collapse with stale cues, and read unchanged snapshot/events",
+        "Repair the rejected collapse ID with companion cue operations and read receipt/snapshot/events",
+        "Replay the exact collapse and verify unchanged receipt/snapshot/events",
+        "Restore the tombstoned dialogue with resolved image coverage and read receipt/snapshot/events"
+      ],
+      "step": {
+        "path": "cloud/tests-e2e/document-timeline-cases.mjs",
+        "start": 45,
+        "end": 133,
+        "sha256": "50927a1f125dfa8f4c825d9a9c9dba4122cb43e6bb05409d2729ec8eaf792d13"
+      },
+      "why": "Scene start offsets and dormant/anchored/legacy cue geometry are distinguished by independently authored full graph readbacks and exact rejection/nonmutation checks. The 24-hour limit rejection and concurrency are not covered."
+    },
+    {
       "id": "ffaedd364c9a3803",
       "source": {
         "path": "cloud/src/billing.ts",
@@ -73706,292 +73994,213 @@
       "why": "Opposite recent/old cancellation and payment dates distinguish canceled_at precedence and null fallback, as well as nonpremium read-only grace projections. No exact-time boundary is claimed."
     },
     {
-      "id": "ff83f6a91dda7a35",
+      "id": "2c4c6be839a74fa2",
       "source": {
-        "path": "cloud/src/project-room.ts",
-        "start": 193,
-        "end": 214,
-        "sha256": "468740cb855d4b48537cbc299b500406e6011f3db74ca1ded8f100fcf82f610f"
-      },
-      "actions": [
-        "Create a separate synthetic timeline project through POST /v1/projects and read its empty snapshot and events",
-        "Create a zero-owned direction and dormant anchored cue, then acquire its edit lease",
-        "Reject a nonzero offset into the zero-owned direction and read unchanged snapshot/events",
-        "Reject appending dialogue without resolving the cue and read unchanged snapshot/events",
-        "Repair the rejected append ID with its cue edit and read exact receipt/snapshot/events",
-        "Prepend a 500 ms direction with the shifted cue and read exact receipt/snapshot/events",
-        "Reject legacy coverage crossing the anchor from before and read unchanged snapshot/events",
-        "Reject legacy coverage overlapping the earlier anchored cue and read unchanged snapshot/events",
-        "Accept legacy coverage meeting the anchor exactly and read receipt/snapshot/events",
-        "Acquire legacy cue lease and migrate to overlapping anchored coverage, then read receipt/snapshot/events",
-        "Replay the exact migration and verify unchanged receipt/snapshot/events",
-        "Acquire prefix and dialogue leases, reject collapse with stale cues, and read unchanged snapshot/events",
-        "Repair the rejected collapse ID with companion cue operations and read receipt/snapshot/events",
-        "Replay the exact collapse and verify unchanged receipt/snapshot/events",
-        "Restore the tombstoned dialogue with resolved image coverage and read receipt/snapshot/events"
-      ],
-      "step": {
-        "path": "cloud/tests-e2e/document-timeline-cases.mjs",
-        "start": 45,
-        "end": 133,
-        "sha256": "50927a1f125dfa8f4c825d9a9c9dba4122cb43e6bb05409d2729ec8eaf792d13"
-      },
-      "why": "Scene start offsets and dormant/anchored/legacy cue geometry are distinguished by independently authored full graph readbacks and exact rejection/nonmutation checks. The 24-hour limit rejection and concurrency are not covered."
-    },
-    {
-      "id": "26099b07ca84045b",
-      "source": {
-        "path": "cloud/src/project-room.ts",
-        "start": 477,
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 481,
         "end": 481,
-        "sha256": "be13d868160773808e1e11f8dc913b3435843ed0985da1f9adff4add8342593d"
+        "sha256": "41663d27387e11b3b5ab35a8b822dfe9835568290de6179652d380284afb0c3f"
       },
       "actions": [
-        "POST /v1/projects synthetic personal anchor project",
-        "POST commands seed eight independently authored items",
-        "GET snapshot seeded anchor graph",
-        "GET events seeded anchor graph",
-        "POST leases unused image",
-        "POST commands delete unused image",
-        "GET events deletion",
-        "GET snapshot deletion",
-        "GET events deletion readback",
-        "POST threads reject word-list-type",
-        "GET snapshot after word-list-type",
-        "GET events after word-list-type",
-        "POST threads reject word-list-bound",
-        "GET snapshot after word-list-bound",
-        "GET events after word-list-bound",
-        "POST threads reject words-without-entry",
-        "GET snapshot after words-without-entry",
-        "GET events after words-without-entry",
-        "POST threads reject words-on-image",
-        "GET snapshot after words-on-image",
-        "GET events after words-on-image",
-        "POST threads reject duplicate-words",
-        "GET snapshot after duplicate-words",
-        "GET events after duplicate-words",
-        "POST threads reject foreign-word",
-        "GET snapshot after foreign-word",
-        "GET events after foreign-word",
-        "POST threads reject missing-image-anchor",
-        "GET snapshot after missing-image-anchor",
-        "GET events after missing-image-anchor",
-        "POST threads reject non-image-anchor",
-        "GET snapshot after non-image-anchor",
-        "GET events after non-image-anchor",
-        "POST threads reject deleted-image-anchor",
-        "GET snapshot after deleted-image-anchor",
-        "GET events after deleted-image-anchor",
-        "POST threads reject different-image-family",
-        "GET snapshot after different-image-family",
-        "GET events after different-image-family",
-        "POST threads create ordered-word-anchor",
-        "GET events creation ordered-word-anchor",
-        "GET snapshot creation ordered-word-anchor",
-        "GET events readback ordered-word-anchor",
-        "POST threads create automatic-image-version",
-        "GET events creation automatic-image-version",
-        "GET snapshot creation automatic-image-version",
-        "GET events readback automatic-image-version",
-        "POST threads create explicit-family-version",
-        "GET events creation explicit-family-version",
-        "GET snapshot creation explicit-family-version",
-        "GET events readback explicit-family-version",
-        "GET threads for first-family root",
-        "POST threads reopen first-family root with different-family input anchor",
-        "GET threads for first-family middle",
-        "POST threads reopen first-family middle with different-family input anchor",
-        "GET threads for first-family leaf",
-        "POST threads reopen first-family leaf with different-family input anchor",
-        "GET threads for entry",
-        "GET threads for second-family child",
-        "GET snapshot after canonical lookups",
-        "GET events after canonical lookups",
-        "GET threads scope all limit 1 page 1",
-        "GET threads scope all limit 1 page 2",
-        "GET threads scope all limit 1 page 3",
-        "GET threads scope all limit 1 page 4",
-        "GET snapshot after pagination",
-        "GET events after pagination"
+        "tracer app -- test --scenario journeys/cue-draft-recovery"
       ],
       "step": {
-        "path": "cloud/tests-e2e/discussion-anchor-cases.mjs",
-        "start": 7,
-        "end": 139,
-        "sha256": "b14750d938277f11b3be73d1d327be5162fb91726cae866b92bbd34c5caebb9e"
+        "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+        "start": 115,
+        "end": 130,
+        "sha256": "800e262db6afedc84aa289563e6d2c39177991046fa5c2bcf486843aa46f383d"
       },
-      "why": "Three threads page in observed thread-ID order with limit 1, exact hasMore/nextCursor values, and a final empty page. Listing preserves document fields excluding leases and the full event stream. No claim of corrupt legacy lineage, cycle/depth rejection, pre-existing forked family threads, 1,000-word acceptance, guaranteed distinction between item-ID and thread-ID sort order, lease expiry, concurrent access changes, native UI, provider login, full line/branch execution or measured counters. The source remains uninstrumented in this service journey."
+      "why": "After observing the exact corrected saved project and UI, observe an empty recovery journal. A third owned reopen preserves complete loaded and saved state and keeps the journal empty. Eventual successful acknowledgement and cache clearing only. The later empty-journal read does not prove that deletion could never precede canonical persistence at an unobserved failure window. Busy retry, competing CAS, presentation-read readiness and crash cases are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes. No clear-generation fence or cancellation-of-delayed-read credit."
     },
     {
-      "id": "3ee219cb7eb4c379",
+      "id": "460fb2e24229a4ff",
       "source": {
-        "path": "cloud/src/project-room.ts",
-        "start": 499,
-        "end": 508,
-        "sha256": "ccc5d8b1da914871a7b98630c8978c6912e5bf606a8a0206ee2ca439dddf8346"
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 452,
+        "end": 452,
+        "sha256": "014fa3c07cf744321ed82462735eef14d271146d1af0216749837ac44ed057cb"
       },
       "actions": [
-        "POST /v1/projects synthetic personal anchor project",
-        "POST commands seed eight independently authored items",
-        "GET snapshot seeded anchor graph",
-        "GET events seeded anchor graph",
-        "POST leases unused image",
-        "POST commands delete unused image",
-        "GET events deletion",
-        "GET snapshot deletion",
-        "GET events deletion readback",
-        "POST threads reject word-list-type",
-        "GET snapshot after word-list-type",
-        "GET events after word-list-type",
-        "POST threads reject word-list-bound",
-        "GET snapshot after word-list-bound",
-        "GET events after word-list-bound",
-        "POST threads reject words-without-entry",
-        "GET snapshot after words-without-entry",
-        "GET events after words-without-entry",
-        "POST threads reject words-on-image",
-        "GET snapshot after words-on-image",
-        "GET events after words-on-image",
-        "POST threads reject duplicate-words",
-        "GET snapshot after duplicate-words",
-        "GET events after duplicate-words",
-        "POST threads reject foreign-word",
-        "GET snapshot after foreign-word",
-        "GET events after foreign-word",
-        "POST threads reject missing-image-anchor",
-        "GET snapshot after missing-image-anchor",
-        "GET events after missing-image-anchor",
-        "POST threads reject non-image-anchor",
-        "GET snapshot after non-image-anchor",
-        "GET events after non-image-anchor",
-        "POST threads reject deleted-image-anchor",
-        "GET snapshot after deleted-image-anchor",
-        "GET events after deleted-image-anchor",
-        "POST threads reject different-image-family",
-        "GET snapshot after different-image-family",
-        "GET events after different-image-family",
-        "POST threads create ordered-word-anchor",
-        "GET events creation ordered-word-anchor",
-        "GET snapshot creation ordered-word-anchor",
-        "GET events readback ordered-word-anchor",
-        "POST threads create automatic-image-version",
-        "GET events creation automatic-image-version",
-        "GET snapshot creation automatic-image-version",
-        "GET events readback automatic-image-version",
-        "POST threads create explicit-family-version",
-        "GET events creation explicit-family-version",
-        "GET snapshot creation explicit-family-version",
-        "GET events readback explicit-family-version",
-        "GET threads for first-family root",
-        "POST threads reopen first-family root with different-family input anchor",
-        "GET threads for first-family middle",
-        "POST threads reopen first-family middle with different-family input anchor",
-        "GET threads for first-family leaf",
-        "POST threads reopen first-family leaf with different-family input anchor",
-        "GET threads for entry",
-        "GET threads for second-family child",
-        "GET snapshot after canonical lookups",
-        "GET events after canonical lookups",
-        "GET threads scope all limit 1 page 1",
-        "GET threads scope all limit 1 page 2",
-        "GET threads scope all limit 1 page 3",
-        "GET threads scope all limit 1 page 4",
-        "GET snapshot after pagination",
-        "GET events after pagination"
+        "tracer app -- test --scenario journeys/cue-draft-recovery"
       ],
       "step": {
-        "path": "cloud/tests-e2e/discussion-anchor-cases.mjs",
-        "start": 7,
-        "end": 139,
-        "sha256": "b14750d938277f11b3be73d1d327be5162fb91726cae866b92bbd34c5caebb9e"
+        "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+        "start": 112,
+        "end": 124,
+        "sha256": "26942ecc11e7dc25ac580a746b3abd698f795fdf49bc21009f93dd7bb56b3660"
       },
-      "why": "Ten malformed or unavailable anchor requests return exact 400 invalid_anchor: word-list type/size with the exact size-specific error body, missing or non-entry target, duplicate/foreign words, missing/non-image/deleted image, and a different image family. Each rejection preserves the complete public document snapshot excluding leases and the full previously verified event stream. Valid ordered word IDs, automatic image anchor and explicit family image anchor create exact thread/event objects. No claim of corrupt legacy lineage, cycle/depth rejection, pre-existing forked family threads, 1,000-word acceptance, guaranteed distinction between item-ID and thread-ID sort order, lease expiry, concurrent access changes, native UI, provider login, full line/branch execution or measured counters. The source remains uninstrumented in this service journey."
+      "why": "Correct retained direction to valid exact Unicode text. Assert one prompt-only revision, unchanged complete unrelated project data, matching displayed and loaded prompt, and no stale refusal. Changed-draft application only; unchanged queueSave, failed change, rejected context, lease failure and concurrency branches are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
     },
     {
-      "id": "ed29a5c0c700db17",
+      "id": "6e838cafaf3f1475",
       "source": {
-        "path": "cloud/src/project-room.ts",
-        "start": 76,
-        "end": 99,
-        "sha256": "043d3ab999430cc9e270d95e0a353ba4962e607ecf05448d7878c42e7d915206"
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 361,
+        "end": 365,
+        "sha256": "416f7ec5a6cacb63c58a90ea42273e18aa7fc4d061c59457e90db5f875100fec"
       },
       "actions": [
-        "POST /v1/projects synthetic personal anchor project",
-        "POST commands seed eight independently authored items",
-        "GET snapshot seeded anchor graph",
-        "GET events seeded anchor graph",
-        "POST leases unused image",
-        "POST commands delete unused image",
-        "GET events deletion",
-        "GET snapshot deletion",
-        "GET events deletion readback",
-        "POST threads reject word-list-type",
-        "GET snapshot after word-list-type",
-        "GET events after word-list-type",
-        "POST threads reject word-list-bound",
-        "GET snapshot after word-list-bound",
-        "GET events after word-list-bound",
-        "POST threads reject words-without-entry",
-        "GET snapshot after words-without-entry",
-        "GET events after words-without-entry",
-        "POST threads reject words-on-image",
-        "GET snapshot after words-on-image",
-        "GET events after words-on-image",
-        "POST threads reject duplicate-words",
-        "GET snapshot after duplicate-words",
-        "GET events after duplicate-words",
-        "POST threads reject foreign-word",
-        "GET snapshot after foreign-word",
-        "GET events after foreign-word",
-        "POST threads reject missing-image-anchor",
-        "GET snapshot after missing-image-anchor",
-        "GET events after missing-image-anchor",
-        "POST threads reject non-image-anchor",
-        "GET snapshot after non-image-anchor",
-        "GET events after non-image-anchor",
-        "POST threads reject deleted-image-anchor",
-        "GET snapshot after deleted-image-anchor",
-        "GET events after deleted-image-anchor",
-        "POST threads reject different-image-family",
-        "GET snapshot after different-image-family",
-        "GET events after different-image-family",
-        "POST threads create ordered-word-anchor",
-        "GET events creation ordered-word-anchor",
-        "GET snapshot creation ordered-word-anchor",
-        "GET events readback ordered-word-anchor",
-        "POST threads create automatic-image-version",
-        "GET events creation automatic-image-version",
-        "GET snapshot creation automatic-image-version",
-        "GET events readback automatic-image-version",
-        "POST threads create explicit-family-version",
-        "GET events creation explicit-family-version",
-        "GET snapshot creation explicit-family-version",
-        "GET events readback explicit-family-version",
-        "GET threads for first-family root",
-        "POST threads reopen first-family root with different-family input anchor",
-        "GET threads for first-family middle",
-        "POST threads reopen first-family middle with different-family input anchor",
-        "GET threads for first-family leaf",
-        "POST threads reopen first-family leaf with different-family input anchor",
-        "GET threads for entry",
-        "GET threads for second-family child",
-        "GET snapshot after canonical lookups",
-        "GET events after canonical lookups",
-        "GET threads scope all limit 1 page 1",
-        "GET threads scope all limit 1 page 2",
-        "GET threads scope all limit 1 page 3",
-        "GET threads scope all limit 1 page 4",
-        "GET snapshot after pagination",
-        "GET events after pagination"
+        "tracer app -- test --scenario journeys/cue-draft-recovery"
       ],
       "step": {
-        "path": "cloud/tests-e2e/discussion-anchor-cases.mjs",
-        "start": 7,
-        "end": 139,
-        "sha256": "b14750d938277f11b3be73d1d327be5162fb91726cae866b92bbd34c5caebb9e"
+        "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+        "start": 71,
+        "end": 110,
+        "sha256": "1f0e70e3088f998508f4c38a054573d6c65e28e411f41c4111299b85cc251faa"
       },
-      "why": "A three-version image family resolves through every revision to one root thread with the first leaf image anchor unchanged. A separate two-version family accepts an explicit same-family version. Reopening returns the exact original thread and adds no event or document mutation. No claim of corrupt legacy lineage, cycle/depth rejection, pre-existing forked family threads, 1,000-word acceptance, guaranteed distinction between item-ID and thread-ID sort order, lease expiry, concurrent access changes, native UI, provider login, full line/branch execution or measured counters. The source remains uninstrumented in this service journey."
+      "why": "Enter the exact oversized Unicode direction through the native editor. Assert one scoped draft retains exact text and source prompt, complete loaded/saved canonical projects remain unchanged, and exact journal bytes survive two owned cold reopens. Ordinary local draft creation, persistence and retention only; competing edits, conditional rebase, alias/account/navigation guards, lease failures and durable crash guarantees are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+    },
+    {
+      "id": "7a366529db627d07",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 357,
+        "end": 357,
+        "sha256": "cb4d0849f03f96ed4ca52143eb95894810c3a09dd307966621b6cb295d957858"
+      },
+      "actions": [
+        "tracer app -- test --scenario journeys/cue-draft-recovery"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+        "start": 71,
+        "end": 110,
+        "sha256": "1f0e70e3088f998508f4c38a054573d6c65e28e411f41c4111299b85cc251faa"
+      },
+      "why": "Enter the exact oversized Unicode direction through the native editor. Assert one scoped draft retains exact text and source prompt, complete loaded/saved canonical projects remain unchanged, and exact journal bytes survive two owned cold reopens. Ordinary local draft creation, persistence and retention only; competing edits, conditional rebase, alias/account/navigation guards, lease failures and durable crash guarantees are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+    },
+    {
+      "id": "8d5743aa7d7a170a",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 802,
+        "end": 802,
+        "sha256": "e8eb432f992b6506874bc5633b0a0ae431731b5b368496d7cfa8f665ef06d29f"
+      },
+      "actions": [
+        "tracer app -- test --scenario journeys/save-failure-recovery"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/save-failure-recovery.mjs",
+        "start": 158,
+        "end": 177,
+        "sha256": "de0985e60ce48808ae3f66d571b9568a1185e90d4fd3a90c657894e568327cd4"
+      },
+      "why": "Save one character edit while a verified host history-directory write refusal prevents package persistence. Assert the exact accepted model and revision, unchanged complete package bytes and exactly one schema-2 pending record with exact label, after-project and local scope. Existing accepted-change journal creation only; first-save bootstrap, journal-write failure, races, crash durability and independently recomputed before/after content hashes are not covered. Hash fields are checked for shape only. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+    },
+    {
+      "id": "a1fc2b84de91de21",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 483,
+        "end": 484,
+        "sha256": "7c3a832f11cdb40983892eeb47bcb97b36f21e04073aa7f1f7928e9c05e92db0"
+      },
+      "actions": [
+        "tracer app -- test --scenario journeys/cue-draft-recovery"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+        "start": 115,
+        "end": 130,
+        "sha256": "800e262db6afedc84aa289563e6d2c39177991046fa5c2bcf486843aa46f383d"
+      },
+      "why": "After observing the exact corrected saved project and UI, observe an empty recovery journal. A third owned reopen preserves complete loaded and saved state and keeps the journal empty. Eventual successful acknowledgement and cache clearing only. The later empty-journal read does not prove that deletion could never precede canonical persistence at an unobserved failure window. Busy retry, competing CAS, presentation-read readiness and crash cases are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes. No clear-generation fence or cancellation-of-delayed-read credit."
+    },
+    {
+      "id": "d820d27479c11bd1",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 447,
+        "end": 450,
+        "sha256": "575bad9a8cdb061990dae6beedbac2fb43ae8b0220f6cb1659a208c547cea583"
+      },
+      "actions": [
+        "tracer app -- test --scenario journeys/cue-draft-recovery"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+        "start": 112,
+        "end": 124,
+        "sha256": "26942ecc11e7dc25ac580a746b3abd698f795fdf49bc21009f93dd7bb56b3660"
+      },
+      "why": "Correct retained direction to valid exact Unicode text. Assert one prompt-only revision, unchanged complete unrelated project data, matching displayed and loaded prompt, and no stale refusal. Changed-draft application only; unchanged queueSave, failed change, rejected context, lease failure and concurrency branches are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+    },
+    {
+      "id": "de953a9983e5c344",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1039,
+        "end": 1039,
+        "sha256": "6b6a71d0c6aefe6dc6745dd8b06b230f6e5214ce2631848537fd166bf33e7fdc"
+      },
+      "actions": [
+        "tracer app -- test --scenario journeys/script-authoring-source"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/script-authoring-source.mjs",
+        "start": 103,
+        "end": 115,
+        "sha256": "5d8f82894790e93a96a4bf34650e8beb3298db159600ade3ce8683780d0bb37c"
+      },
+      "why": "Replace decomposed text with composed text using the preserved UTF-16 selection. Assert exact saved and displayed text and unchanged word IDs, endpoints and timing ownership. Changed script draft application only; stale/recovery/error/no-op branches and complete unrelated-project equality are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+    },
+    {
+      "id": "f099cb3455161711",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 487,
+        "end": 487,
+        "sha256": "08e7cb6636cf02f200d84de2bc1585e17c5cbcba4c4234b3df6eec682cb0b123"
+      },
+      "actions": [
+        "tracer app -- test --scenario journeys/cue-draft-recovery"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+        "start": 115,
+        "end": 130,
+        "sha256": "800e262db6afedc84aa289563e6d2c39177991046fa5c2bcf486843aa46f383d"
+      },
+      "why": "After observing the exact corrected saved project and UI, observe an empty recovery journal. A third owned reopen preserves complete loaded and saved state and keeps the journal empty. Eventual successful acknowledgement and cache clearing only. The later empty-journal read does not prove that deletion could never precede canonical persistence at an unobserved failure window. Busy retry, competing CAS, presentation-read readiness and crash cases are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes. No clear-generation fence or cancellation-of-delayed-read credit."
+    },
+    {
+      "id": "fb859a15baa6bed6",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1037,
+        "end": 1037,
+        "sha256": "4cf41ec9c53ea473ff2f2b02d88ed5524252942797904c3451b491dad4f403d1"
+      },
+      "actions": [
+        "tracer app -- test --scenario journeys/script-authoring-source"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/script-authoring-source.mjs",
+        "start": 103,
+        "end": 115,
+        "sha256": "5d8f82894790e93a96a4bf34650e8beb3298db159600ade3ce8683780d0bb37c"
+      },
+      "why": "Replace decomposed text with composed text using the preserved UTF-16 selection. Assert exact saved and displayed text and unchanged word IDs, endpoints and timing ownership. Changed script draft application only; stale/recovery/error/no-op branches and complete unrelated-project equality are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+    },
+    {
+      "id": "fec0081d62af98f9",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1193,
+        "end": 1193,
+        "sha256": "8c59adbae0c277b58ff07ced94b3caa82b9f9b1f24be5b8167a89a68b1e5e8fe"
+      },
+      "actions": [
+        "tracer app -- test --scenario journeys/word-timing"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/word-timing.mjs",
+        "start": 22,
+        "end": 38,
+        "sha256": "1acd50d550db27f3852e6c612f93b0292089c5826d4cea12afbc12b9a85c77bb"
+      },
+      "why": "Save a reviewed complete word-timing draft once. Assert exact authored second-word timings, exact optional adjacent first word, unchanged third word, entry text, cues, audio and owned duration. Reopen and Cancel preserves saved state. Successful plural setWordTimings transaction only; singular setWordTiming, shiftWords, stale expected words or duration, store rejection, lease failures and invalid-input branches are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
     }
   ],
   "commentExclusions": [

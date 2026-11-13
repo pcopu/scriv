@@ -119,7 +119,7 @@ if (process.argv.includes('--list-cases')) {
     assert.deepEqual(committed, expected, 'Exactly one corrected prompt revision; unrelated text, timing, characters and cue metadata preserved');
     await session.waitFor(nodes => byID(nodes, 'generation-optional-direction')?.text === corrected
       && !nodes.some(node => node.text === refusal || node.text === 'Direction saved in local recovery until the project save completes.'));
-    assert.deepEqual(await journals(), [], 'Recovery record cleared only after canonical persistence');
+    assert.deepEqual(await journals(), [], 'Recovery journal is empty when observed after corrected canonical persistence');
     const correctedLoaded = await session.command('loaded-project');
     assert.deepEqual(correctedLoaded.project, expected);
     stage = cases[4]; await relaunch(expected);

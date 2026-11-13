@@ -1,0 +1,310 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "word-timing-save",
+      "title": "Word timing save",
+      "preconditions": [
+        "This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes.",
+        "Successful plural setWordTimings transaction only; singular setWordTiming, shiftWords, stale expected words or duration, store rejection, lease failures and invalid-input branches are not covered. Audio equality means model metadata, not audio bytes or playback."
+      ],
+      "actions": [
+        "tracer app -- test --scenario journeys/word-timing"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Save a reviewed complete word-timing draft once. Assert exact authored second-word timings, exact optional adjacent first word, unchanged third word, entry text, cues, audio and owned duration. Reopen and Cancel preserves saved state.",
+          "witness": {
+            "path": "tests/e2e/journeys/word-timing.mjs",
+            "start": 22,
+            "end": 38,
+            "sha256": "1acd50d550db27f3852e6c612f93b0292089c5826d4cea12afbc12b9a85c77bb"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1193,
+            "end": 1193,
+            "sha256": "8c59adbae0c277b58ff07ced94b3caa82b9f9b1f24be5b8167a89a68b1e5e8fe"
+          },
+          "expectation": "observed",
+          "why": "Save a reviewed complete word-timing draft once. Assert exact authored second-word timings, exact optional adjacent first word, unchanged third word, entry text, cues, audio and owned duration. Reopen and Cancel preserves saved state. Successful plural setWordTimings transaction only; singular setWordTiming, shiftWords, stale expected words or duration, store rejection, lease failures and invalid-input branches are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+        }
+      ]
+    },
+    {
+      "id": "pending-save-journal",
+      "title": "Pending save journal",
+      "preconditions": [
+        "This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes.",
+        "Existing accepted-change journal creation only; first-save bootstrap, journal-write failure, races, crash durability and independently recomputed before/after content hashes are not covered. Hash fields are checked for shape only."
+      ],
+      "actions": [
+        "tracer app -- test --scenario journeys/save-failure-recovery"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Save one character edit while a verified host history-directory write refusal prevents package persistence. Assert the exact accepted model and revision, unchanged complete package bytes and exactly one schema-2 pending record with exact label, after-project and local scope.",
+          "witness": {
+            "path": "tests/e2e/journeys/save-failure-recovery.mjs",
+            "start": 158,
+            "end": 177,
+            "sha256": "de0985e60ce48808ae3f66d571b9568a1185e90d4fd3a90c657894e568327cd4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 802,
+            "end": 802,
+            "sha256": "e8eb432f992b6506874bc5633b0a0ae431731b5b368496d7cfa8f665ef06d29f"
+          },
+          "expectation": "observed",
+          "why": "Save one character edit while a verified host history-directory write refusal prevents package persistence. Assert the exact accepted model and revision, unchanged complete package bytes and exactly one schema-2 pending record with exact label, after-project and local scope. Existing accepted-change journal creation only; first-save bootstrap, journal-write failure, races, crash durability and independently recomputed before/after content hashes are not covered. Hash fields are checked for shape only. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+        }
+      ]
+    },
+    {
+      "id": "cue-draft-retention",
+      "title": "Cue draft retention",
+      "preconditions": [
+        "This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes.",
+        "Ordinary local draft creation, persistence and retention only; competing edits, conditional rebase, alias/account/navigation guards, lease failures and durable crash guarantees are not covered. Scope checks cover project, cue and package identity, not every stored scope field."
+      ],
+      "actions": [
+        "tracer app -- test --scenario journeys/cue-draft-recovery"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Enter the exact oversized Unicode direction through the native editor. Assert one scoped draft retains exact text and source prompt, complete loaded/saved canonical projects remain unchanged, and exact journal bytes survive two owned cold reopens.",
+          "witness": {
+            "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+            "start": 71,
+            "end": 110,
+            "sha256": "1f0e70e3088f998508f4c38a054573d6c65e28e411f41c4111299b85cc251faa"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 357,
+            "end": 357,
+            "sha256": "cb4d0849f03f96ed4ca52143eb95894810c3a09dd307966621b6cb295d957858"
+          },
+          "expectation": "observed",
+          "why": "Enter the exact oversized Unicode direction through the native editor. Assert one scoped draft retains exact text and source prompt, complete loaded/saved canonical projects remain unchanged, and exact journal bytes survive two owned cold reopens. Ordinary local draft creation, persistence and retention only; competing edits, conditional rebase, alias/account/navigation guards, lease failures and durable crash guarantees are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 361,
+            "end": 365,
+            "sha256": "416f7ec5a6cacb63c58a90ea42273e18aa7fc4d061c59457e90db5f875100fec"
+          },
+          "expectation": "observed",
+          "why": "Enter the exact oversized Unicode direction through the native editor. Assert one scoped draft retains exact text and source prompt, complete loaded/saved canonical projects remain unchanged, and exact journal bytes survive two owned cold reopens. Ordinary local draft creation, persistence and retention only; competing edits, conditional rebase, alias/account/navigation guards, lease failures and durable crash guarantees are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+        }
+      ]
+    },
+    {
+      "id": "cue-draft-application",
+      "title": "Cue draft application",
+      "preconditions": [
+        "This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes.",
+        "Changed-draft application only; unchanged queueSave, failed change, rejected context, lease failure and concurrency branches are not covered."
+      ],
+      "actions": [
+        "tracer app -- test --scenario journeys/cue-draft-recovery"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Correct retained direction to valid exact Unicode text. Assert one prompt-only revision, unchanged complete unrelated project data, matching displayed and loaded prompt, and no stale refusal. The expected modification date is the observed finite nondecreasing value.",
+          "witness": {
+            "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+            "start": 112,
+            "end": 124,
+            "sha256": "26942ecc11e7dc25ac580a746b3abd698f795fdf49bc21009f93dd7bb56b3660"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 447,
+            "end": 450,
+            "sha256": "575bad9a8cdb061990dae6beedbac2fb43ae8b0220f6cb1659a208c547cea583"
+          },
+          "expectation": "observed",
+          "why": "Correct retained direction to valid exact Unicode text. Assert one prompt-only revision, unchanged complete unrelated project data, matching displayed and loaded prompt, and no stale refusal. Changed-draft application only; unchanged queueSave, failed change, rejected context, lease failure and concurrency branches are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 452,
+            "end": 452,
+            "sha256": "014fa3c07cf744321ed82462735eef14d271146d1af0216749837ac44ed057cb"
+          },
+          "expectation": "observed",
+          "why": "Correct retained direction to valid exact Unicode text. Assert one prompt-only revision, unchanged complete unrelated project data, matching displayed and loaded prompt, and no stale refusal. Changed-draft application only; unchanged queueSave, failed change, rejected context, lease failure and concurrency branches are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+        }
+      ]
+    },
+    {
+      "id": "cue-draft-clear",
+      "title": "Cue draft clear",
+      "preconditions": [
+        "This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes.",
+        "Eventual successful acknowledgement and cache clearing only. The later empty-journal read does not prove that deletion could never precede canonical persistence at an unobserved failure window. Busy retry, competing CAS, presentation-read readiness and crash cases are not covered. Clear-generation fencing and cancellation of held or delayed presentation reads are also not covered."
+      ],
+      "actions": [
+        "tracer app -- test --scenario journeys/cue-draft-recovery"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "After observing the exact corrected saved project and UI, observe an empty recovery journal. A third owned reopen preserves complete loaded and saved state and keeps the journal empty.",
+          "witness": {
+            "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+            "start": 115,
+            "end": 130,
+            "sha256": "800e262db6afedc84aa289563e6d2c39177991046fa5c2bcf486843aa46f383d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 481,
+            "end": 481,
+            "sha256": "41663d27387e11b3b5ab35a8b822dfe9835568290de6179652d380284afb0c3f"
+          },
+          "expectation": "observed",
+          "why": "After observing the exact corrected saved project and UI, observe an empty recovery journal. A third owned reopen preserves complete loaded and saved state and keeps the journal empty. Eventual successful acknowledgement and cache clearing only. The later empty-journal read does not prove that deletion could never precede canonical persistence at an unobserved failure window. Busy retry, competing CAS, presentation-read readiness and crash cases are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes. No clear-generation fence or cancellation-of-delayed-read credit."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 483,
+            "end": 484,
+            "sha256": "7c3a832f11cdb40983892eeb47bcb97b36f21e04073aa7f1f7928e9c05e92db0"
+          },
+          "expectation": "observed",
+          "why": "After observing the exact corrected saved project and UI, observe an empty recovery journal. A third owned reopen preserves complete loaded and saved state and keeps the journal empty. Eventual successful acknowledgement and cache clearing only. The later empty-journal read does not prove that deletion could never precede canonical persistence at an unobserved failure window. Busy retry, competing CAS, presentation-read readiness and crash cases are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes. No clear-generation fence or cancellation-of-delayed-read credit."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 487,
+            "end": 487,
+            "sha256": "08e7cb6636cf02f200d84de2bc1585e17c5cbcba4c4234b3df6eec682cb0b123"
+          },
+          "expectation": "observed",
+          "why": "After observing the exact corrected saved project and UI, observe an empty recovery journal. A third owned reopen preserves complete loaded and saved state and keeps the journal empty. Eventual successful acknowledgement and cache clearing only. The later empty-journal read does not prove that deletion could never precede canonical persistence at an unobserved failure window. Busy retry, competing CAS, presentation-read readiness and crash cases are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes. No clear-generation fence or cancellation-of-delayed-read credit."
+        }
+      ]
+    },
+    {
+      "id": "script-canonical-edit",
+      "title": "Script canonical edit",
+      "preconditions": [
+        "This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes.",
+        "Changed script draft application only; stale/recovery/error/no-op branches and complete unrelated-project equality are not covered. The canonical replacement fixture is not a populated authored-timing fixture."
+      ],
+      "actions": [
+        "tracer app -- test --scenario journeys/script-authoring-source"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Replace decomposed text with composed text using the preserved UTF-16 selection. Assert exact saved and displayed text and unchanged word IDs, endpoints and timing ownership.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-authoring-source.mjs",
+            "start": 103,
+            "end": 115,
+            "sha256": "5d8f82894790e93a96a4bf34650e8beb3298db159600ade3ce8683780d0bb37c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1037,
+            "end": 1037,
+            "sha256": "4cf41ec9c53ea473ff2f2b02d88ed5524252942797904c3451b491dad4f403d1"
+          },
+          "expectation": "observed",
+          "why": "Replace decomposed text with composed text using the preserved UTF-16 selection. Assert exact saved and displayed text and unchanged word IDs, endpoints and timing ownership. Changed script draft application only; stale/recovery/error/no-op branches and complete unrelated-project equality are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1039,
+            "end": 1039,
+            "sha256": "6b6a71d0c6aefe6dc6745dd8b06b230f6e5214ce2631848537fd166bf33e7fdc"
+          },
+          "expectation": "observed",
+          "why": "Replace decomposed text with composed text using the preserved UTF-16 selection. Assert exact saved and displayed text and unchanged word IDs, endpoints and timing ownership. Changed script draft application only; stale/recovery/error/no-op branches and complete unrelated-project equality are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "word-timing-save",
+      "title": "Word timing save",
+      "steps": [
+        "word-timing-save"
+      ]
+    },
+    {
+      "id": "pending-save-journal",
+      "title": "Pending save journal",
+      "steps": [
+        "pending-save-journal"
+      ]
+    },
+    {
+      "id": "cue-draft-retention",
+      "title": "Cue draft retention",
+      "steps": [
+        "cue-draft-retention"
+      ]
+    },
+    {
+      "id": "cue-draft-application",
+      "title": "Cue draft application",
+      "steps": [
+        "cue-draft-application"
+      ]
+    },
+    {
+      "id": "cue-draft-clear",
+      "title": "Cue draft clear",
+      "steps": [
+        "cue-draft-clear"
+      ]
+    },
+    {
+      "id": "script-canonical-edit",
+      "title": "Script canonical edit",
+      "steps": [
+        "script-canonical-edit"
+      ]
+    }
+  ]
+}

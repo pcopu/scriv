@@ -21,7 +21,7 @@
       "expectedOutcomes": [
         "Exact 30,001 UTF-16-unit text and refusal appear while complete loaded and both saved models remain unchanged.",
         "Two cold opens preserve exact journal bytes and revision and reproduce refusal without provider jobs or alerts.",
-        "Correction changes only prompt, one revision and modification date; journal clears after persistence.",
+        "Correction changes only prompt, one revision and modification date; a subsequent journal read is empty after the saved correction is observed; no unobserved failure-window ordering claim.",
         "Final cold open retains corrected model and empty recovery journal without provider jobs."
       ]
     }

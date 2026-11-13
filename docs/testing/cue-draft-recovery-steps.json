@@ -30,12 +30,12 @@
         },
         {
           "id": "refusal-and-correction",
-          "description": "Retained refusal observations discriminate oversize rejection before mutation. Corrected text changes only target prompt, exactly one revision and permitted modification timestamp; journal clears after persisted save and stays absent after third reopen, with entire loaded and saved models equal expected.",
+          "description": "Retained refusal observations discriminate oversize rejection before mutation. Corrected text changes only target prompt, exactly one revision and permitted modification timestamp; journal is observed empty after the corrected saved state is observed and stays absent after third reopen, with entire loaded and saved models equal expected.",
           "witness": {
             "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
             "start": 71,
             "end": 131,
-            "sha256": "975a89aa462498ace3f4bac60c1bd8a0784f1f8e969afa3c569a275083b8d7b2"
+            "sha256": "06595ccbae800cca97950092be3b8545cd579e442d39380a0c1f247d911f18cc"
           }
         }
       ],
