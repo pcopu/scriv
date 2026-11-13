@@ -101,7 +101,7 @@ if (process.argv[2] !== '--owned-child') {
       assert.equal(base.hostname, '127.0.0.1'); assert.equal(base.protocol, 'http:'); assert(Number(base.port) > 0);
       const url = new URL(path, base); assert.equal(url.origin, base.origin);
       const encoded = body === undefined ? undefined : JSON.stringify(body);
-      assert(requests++ < 80); assert(Buffer.byteLength(encoded ?? '') <= 16384);
+      assert(requests++ < 180); assert(Buffer.byteLength(encoded ?? '') <= 16384);
       const response = await fetch(url, { method, headers: { authorization: `Bearer ${actors[role].token}`, ...(encoded ? { 'content-type': 'application/json' } : {}) }, body: encoded, redirect: 'error', signal: AbortSignal.timeout(5000) });
       // Never include response bodies or headers in errors: leases are secrets.
       const actualStatus = response.status;
@@ -224,6 +224,10 @@ if (process.argv[2] !== '--owned-child') {
     const replaySnapshot=await request(route('snapshot')), replayEvents=await request(route('events?after=0')); assert.equal(replaySnapshot.status,200); assert.equal(replayEvents.status,200); assert.deepEqual(withoutLeases(replaySnapshot.data),withoutLeases(deletedSnapshot.data)); assert.deepEqual(replayEvents.data,deletedEvents.data);
     assert.deepEqual((await bucket.list()).objects,[]); assert.equal(requests,80); assert.equal(outboundAttempts,0);
     console.log(JSON.stringify({kind:'document-graph-deletion-evidence',httpChecks:12,rejectedReferencedDelete:true,repairedCommandIdAccepted:true,deletedItems:5,metadataOnlyTombstones:5,newEvents:1,timingVersionIncrement:1,exactReplayStable:true,controlledFailureInjection:false,nativeScenarios:0,outboundAttempts}));
+    const { documentBoundaryCases } = await import(pathToFileURL(join(cloud, 'tests-e2e/document-boundary-cases.mjs')).href);
+    try { console.log(JSON.stringify(await documentBoundaryCases({request,route,post,graph,leases,member:actors.member,deletedEvents}))); }
+    catch (error) { console.error('Document boundary continuation failed; stack locations only.', String(error.stack).split('\n').filter(line=>/^\s+at /.test(line)).join('\n')); throw error; }
+    assert.equal(requests,167); assert.equal(outboundAttempts,0); assert.deepEqual((await bucket.list()).objects,[]);
     console.log(JSON.stringify({result:'PASS',journey:'document-integrity',requests,outboundAttempts,nativeScenarios:0,workerBundleSHA256:createHash('sha256').update(await readFile(bundle)).digest('hex'),runtime:report}));
   } finally { await mf.dispose(); }
 }

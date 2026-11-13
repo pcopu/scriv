@@ -6,7 +6,7 @@ Run through the actual public CLI with the trusted installed Tracer paths:
 
     SCRIV_TRACER_CLI=/absolute/tracer/bin/tracer.mjs SCRIV_TRACER_RUNTIME=/absolute/tracer/src/scenario-runtime.mjs node scripts/tracer-cli.mjs app -- test services document-integrity
 
-The unchanged Worker is bundled and served on an ephemeral loopback port. The runner owns its process group, temporary HOME, D1, R2 and state; all outbound service requests are denied, metrics disabled, and inherited secrets/proxies/NODE_OPTIONS excluded. There is a 90-second process deadline, 5-second HTTP deadline, maximum 80 requests, 16 KiB request bodies and 64 KiB responses. Cleanup runs on normal completion and interruption.
+The unchanged Worker is bundled and served on an ephemeral loopback port. The runner owns its process group, temporary HOME, D1, R2 and state; all outbound service requests are denied, metrics disabled, and inherited secrets/proxies/NODE_OPTIONS excluded. There is a 90-second process deadline, 5-second HTTP deadline, maximum 180 requests, 16 KiB request bodies and 64 KiB responses. Cleanup runs on normal completion and interruption.
 
 Fixture actions before HTTP apply the three actual local D1 migrations, create synthetic owner/member/viewer/outsider identities and hashed sessions, and create a locally entitled synthetic team. No production state, external login, billing provider, R2 object or actual image bytes are provisioned. Fixtures are ephemeral and deliberately not a claim of authentication-provider or payment execution.
 
@@ -24,10 +24,49 @@ This is metadata and document validation only. It does not inspect pixels, run a
 
 Production project-room.ts line 115 explicitly reads event changes ORDER BY item_id; line 270 produces receipt items in command operation order. The original v1 correction compared event/receipt contents with each other after sorting by ID; v2 additionally compares each separately with independently authored expected changed items. This normalization does not require the two public arrays to promise the same order. All prior negative readbacks had passed. Production code is unchanged.
 
-The final exact CLI run passes 68 HTTP actions and 22 named expectation callbacks. Source associations remain proposals, pending independent semantic review. The candidate adds only a minimal service dispatcher route; the integration owner must update aggregate help/catalog expectations and rebase the three shifted dispatcher manual links. Existing baseline links were not rewritten by this worker.
+The original catalog covers 68 HTTP actions and 22 named expectation callbacks. The connected-graph deletion continuation adds 12 HTTP actions, and the boundary continuation below adds 87, for an expected 167-request complete journey. The additional assertions are separate from the original 22 catalog callbacks. Source associations are not measured execution or proof of complete behavior.
 
 ## v2 independent-review corrections
 
 Review found that v1 omitted deletedItems from rejection readbacks and compared final event after-items only with server-derived receipt items. V2 asserts initially empty tombstones, exact unchanged tombstones after all nineteen rejected mutations, empty tombstones after the valid edit, and separately compares final event and receipt after-items against authored expected changed items. No new HTTP actions or production changes are required.
 
 These checks observe public document snapshot/event/version nonmutation only. They do not observe internal word-owner indexes, receipt rows, lease tables, transient state, restart/crash durability or concurrency races. Leases necessarily exist in owned temporary local server storage as well as runner memory; no lease tokens are logged. Provider/pixel/native exclusions remain unchanged.
+
+## Boundary and recovery continuation
+
+After the connected graph is deleted and its exact replay verified, the same
+public HTTP route restores all five items in one command. Expected data starts
+from the independently authored graph and its explicit metadata edits. It also
+contains a dialogue with NEL-separated words, an emoji and a retained BOM,
+authored word timings, and an explicitly confirmed unlinked emoji range. The
+complete item data, versions, timeline counter, event before/after items and
+prior event history must match. Snapshot item order is normalized by ID;
+receipt operation order and event change order are asserted separately.
+
+Twenty-six rejected variants each require an exact status/code followed by an
+unchanged public document snapshot and complete event stream:
+
+- Blank character names and oversized aliases.
+- Duplicate, overlapping, mismatched or unconfirmed text links, and both ways
+  to split an emoji surrogate pair.
+- Duplicate word identities, invalid timing provenance, overlapping word
+  timings and spoken words in a direction.
+- Unsafe image filenames and attempts to change six previously unexercised
+  immutable image fields: version, filename, digest, MIME type, capture time
+  and predecessor. Version/digest cases keep their analysis metadata consistent
+  so they reach the immutability guard rather than an earlier analysis error.
+- Unknown analysis kinds and negative completion timestamps.
+- Unpaired cue anchors, coverage beyond the scene, mismatched resolved start,
+  and a missing source entry.
+- A two-item command with a valid character edit followed by a dangling entry
+  reference. Neither edit, item version, event nor sequence may persist.
+
+Repairing only that invalid reference while reusing the failed command ID must
+succeed once. Both changed items, the receipt and the new event have independent
+expected values. An exact replay must return the same receipt without changing
+the saved document or event stream. The R2 bucket remains empty and no outbound
+request may occur.
+
+These are real local Worker HTTP assertions. They do not establish native UI,
+physical input, live-provider behavior, lease-table internals, concurrent races,
+crash durability, measured source-line coverage, or complete validation coverage.
