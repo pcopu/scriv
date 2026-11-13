@@ -1,5 +1,13 @@
 # Scriv Agent Guidance
 
+## Work Status, November 13, 2026
+
+The user asked to finish the current four-module measurement increment, test and
+commit/push its changes, then stop Scriv work. This supersedes the earlier
+open-ended coverage push below. Do not start another increment under that prior
+request. The 100% goal remains historical context, not a completion claim or
+permission to resume work without a new user request.
+
 ## Tracer
 
 Use the Tracer skill and CLI for testing and source/action/journey mapping;
@@ -67,11 +75,12 @@ not all Worker lines or the whole project. Preserve real before/after snapshots,
 strict source/probe identities and external analysis storage. Keep its measured
 interval separate from manual links, historical planning and native results.
 
-The generation-service CLI journey also offers opt-in main-Worker counters for
-selected statement entries in `cloud/src/generation.ts`. Follow
+The generation-service CLI journey also offers opt-in counters for selected
+statement entries in four routing/access/HTTP/generation modules. Follow
 `docs/testing/generation-counter-coverage.md`. Preserve its exact TypeScript
-build graph, cumulative baselines and external evidence. It does not measure
-Durable Objects, the entire backend or overall project execution.
+build graph, per-module generations, cumulative baselines and external evidence.
+Collected module instances do not establish main-fetch-only attribution, Durable
+Object-instance, other-isolate, entire-backend or overall project coverage.
 
 ## Test and Fix Batches
 

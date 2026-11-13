@@ -1,4 +1,4 @@
-/** Actual opt-in generation main-Worker counters; all evidence and Tracer data stay outside source. */
+/** Actual opt-in module-instance counters; evidence and Tracer data stay outside source. */
 import assert from 'node:assert/strict';
 import { createHash, randomUUID, randomBytes } from 'node:crypto';
 import { createReadStream } from 'node:fs';
@@ -6,12 +6,11 @@ import { lstat, mkdir, readFile, readdir, realpath, writeFile } from 'node:fs/pr
 import { execFileSync } from 'node:child_process';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { instrumentGeneration, collectorPath, nonceBinding, counterNotice } from './instrument-generation.mjs';
+import { instrumentGeneration, generationWrapper, measuredSources, collectorPath, nonceBinding, counterNotice } from './instrument-generation.mjs';
 import { exportSourceManifest, verifySourceManifest } from '../../scripts/export-cli-source-manifest.mjs';
 import { prepareAnalysisRoot } from '../../scripts/prepare-coverage-analysis.mjs';
 
 const repository = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const sourcePath = 'cloud/src/generation.ts';
 const sha = value => createHash('sha256').update(value).digest('hex');
 const write = (path, value) => writeFile(path, value, { flag: 'wx', mode: 0o600 });
 const json = value => JSON.stringify(value, null, 2) + '\n';
@@ -42,8 +41,9 @@ function tracer(capture, root, args) {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 }
-async function buildGenerationBundle(directory, pinned, instrumented, moduleSHA256, wrapperSHA256) {
-  assert.equal(sha(instrumented), moduleSHA256);
+async function buildGenerationBundle(directory, pinned, compiled, wrapperSHA256) {
+  assert.deepEqual([...compiled.keys()], measuredSources);
+  for (const module of compiled.values()) assert.equal(sha(module.contents), module.moduleSHA256);
   const wrapperPath = join(directory, 'entry.ts'), entry = await readFile(wrapperPath);
   assert.equal(sha(entry), wrapperSHA256);
   const inputs = [], loaded = new Set();
@@ -53,7 +53,7 @@ async function buildGenerationBundle(directory, pinned, instrumented, moduleSHA2
   assert.equal(process.env.ESBUILD_BINARY_PATH, undefined, 'Do not substitute an unpinned esbuild binary');
   const { build, stop } = await import('../node_modules/esbuild/lib/main.js');
   let result;
-  try { result = await build({ ...options, plugins: [{ name: 'pinned-generation-only', setup(builder) {
+  try { result = await build({ ...options, plugins: [{ name: 'pinned-selected-modules', setup(builder) {
     builder.onLoad({ filter: /./ }, async args => {
       assert.equal(args.namespace, 'file'); assert.equal(await realpath(args.path), args.path);
       assert(!loaded.has(args.path), 'Each source module resolves exactly once'); loaded.add(args.path);
@@ -64,12 +64,12 @@ async function buildGenerationBundle(directory, pinned, instrumented, moduleSHA2
       const path = relative(repository, args.path);
       assert(/^cloud\/src\/[a-z-]+\.ts$/.test(path) && pinned.has(path), 'Build inputs must be pinned production TypeScript');
       const original = await readFile(args.path); assert.equal(sha(original), pinned.get(path));
-      const transformed = path === sourcePath;
-      inputs.push({ path, originalSHA256: sha(original), compiledSHA256: transformed ? moduleSHA256 : sha(original), transformed });
-      return { contents: transformed ? instrumented : new TextDecoder('utf-8', { fatal: true }).decode(original), loader: 'ts', resolveDir: dirname(args.path) };
+      const module = compiled.get(path), transformed = !!module;
+      inputs.push({ path, originalSHA256: sha(original), compiledSHA256: transformed ? module.moduleSHA256 : sha(original), transformed });
+      return { contents: transformed ? module.contents : new TextDecoder('utf-8', { fatal: true }).decode(original), loader: 'ts', resolveDir: dirname(args.path) };
     });
   } }] }); } finally { stop(); }
-  assert.equal(inputs.filter(input => input.transformed).length, 1);
+  assert.deepEqual(inputs.filter(input => input.transformed).map(input => input.path).sort(), measuredSources);
   assert(inputs.some(input => input.path === 'cloud/src/index.ts'));
   assert.equal(result.outputFiles.length, 1);
   const bundle = result.outputFiles[0].contents; assert(bundle.length > 0 && bundle.length <= 4 * 1024 * 1024);
@@ -79,9 +79,9 @@ async function buildGenerationBundle(directory, pinned, instrumented, moduleSHA2
     if (dependency.external) assert(dependency.path.startsWith('cloudflare:'), 'No external runtime import outside Cloudflare builtin');
   const output = Object.values(result.metafile.outputs); assert.equal(output.length, 1);
   assert.deepEqual([...output[0].exports].sort(), ['BillingCoordinator', 'ProjectRoom', 'default']);
-  assert(output[0].inputs[sourcePath]?.bytesInOutput > 0, 'Instrumented generation module must be retained in bundle');
+  for (const path of measuredSources) assert(output[0].inputs[path]?.bytesInOutput > 0, 'Every selected module must be retained in bundle');
   const buildRecord = { version: 1, options, inputs: inputs.sort((a, b) => a.path.localeCompare(b.path)),
-    wrapperSHA256, moduleSHA256, bundleSHA256: sha(bundle), metafile: result.metafile,
+    wrapperSHA256, modules: [...compiled].map(([path, module]) => ({ path, moduleSHA256: module.moduleSHA256 })), bundleSHA256: sha(bundle), metafile: result.metafile,
     notice: 'Producer-declared original/transformed build graph; not cryptographic compiler attestation. Statement anchors are selected before TypeScript transpilation.' };
   const bytes = json(buildRecord); await write(join(directory, 'build.json'), bytes); await write(join(directory, 'bundle.mjs'), bundle);
   return { bundleSHA256: sha(bundle), buildRecordSHA256: sha(bytes) };
@@ -102,12 +102,22 @@ export async function prepareGenerationCapture(output, selectedTracer) {
   const probe = [];
   for (const path of probeFiles) probe.push({ path, sha256: await hashFile(join(repository, path)) });
   const probeSHA256 = sha(JSON.stringify(probe));
-  const source = await readFile(join(repository, sourcePath));
-  const built = instrumentGeneration(new TextDecoder('utf-8', { fatal: true }).decode(source), { runId, probeSHA256, indexPath: join(repository, 'cloud/src/index.ts'), generationPath: join(repository, sourcePath) });
-  assert.equal(built.sourceSHA256, sha(source));
-  await write(join(output, 'original.ts'), source);
-  await write(join(output, 'instrumented.ts'), built.module); await write(join(output, 'entry.ts'), built.wrapper);
-  await write(join(output, 'sites.json'), built.siteManifestBytes); await write(join(output, 'insertions.json'), json(built.insertionLedger));
+  const compiled = new Map(), modules = [], sites = [];
+  for (const [index, sourcePath] of measuredSources.entries()) {
+    const source = await readFile(join(repository, sourcePath));
+    const built = instrumentGeneration(new TextDecoder('utf-8', { fatal: true }).decode(source), { runId, probeSHA256, sourcePath });
+    assert.equal(built.sourceSHA256, sha(source));
+    const originalFile = `original-${index}.ts`, instrumentedFile = `instrumented-${index}.ts`;
+    await write(join(output, originalFile), source); await write(join(output, instrumentedFile), built.module);
+    await write(join(output, `insertions-${index}.json`), json(built.insertionLedger));
+    const module = { sourcePath, sourceSHA256: sha(source), moduleSHA256: sha(built.module),
+      siteManifestSHA256: built.siteManifestSHA256, slotCount: built.siteManifest.sites.length, originalFile, instrumentedFile };
+    modules.push(module); sites.push(built.siteManifest); compiled.set(sourcePath, { ...module, contents: built.module });
+  }
+  assert(modules.reduce((sum, module) => sum + module.slotCount, 0) <= 4096);
+  const siteManifestBytes = json({ version: 2, modules: sites, notice: counterNotice }), siteManifestSHA256 = sha(siteManifestBytes);
+  const wrapper = generationWrapper(Object.fromEntries(measuredSources.map(path => [path, join(repository, path)])), { runId, probeSHA256 });
+  await write(join(output, 'entry.ts'), wrapper); await write(join(output, 'sites.json'), siteManifestBytes);
   await write(join(output, 'probe.json'), json(probe));
   const manifest = join(output, 'sources.json');
   // Explicitly include only this test directory while developing an uncommitted
@@ -115,7 +125,7 @@ export async function prepareGenerationCapture(output, selectedTracer) {
   const exported = await exportSourceManifest(repository, manifest, ['cloud/tests-e2e']);
   await verifySourceManifest(repository, manifest, exported.manifestSHA256);
   const pinned = new Map(JSON.parse(await readFile(manifest)).files.map(file => [file.path, file.sha256]));
-  assert.equal(pinned.get(sourcePath), built.sourceSHA256, 'Built Worker must match exported source identity');
+  for (const module of modules) assert.equal(pinned.get(module.sourcePath), module.sourceSHA256, 'Every instrumented input must match exported source identity');
   for (const input of probe) assert.equal(pinned.get(input.path), input.sha256, 'Probe bytes must match exported source identity');
   const miniflare = await graph(join(repository, 'cloud/node_modules/miniflare/dist'));
   const tracerGraph = await graph(join(dirname(dirname(selectedTracer)), 'src'));
@@ -136,15 +146,16 @@ export async function prepareGenerationCapture(output, selectedTracer) {
     { name: 'Tracer source graph', version: '0.3', sha256: tracerGraph.sha256, hashTiming: 'capture' });
   const toolInputs = { toolFiles, graphs: [miniflare, tracerGraph] };
   await write(join(output, 'tool-inputs.json'), json(toolInputs));
-  const moduleSHA256 = sha(built.module), wrapperSHA256 = sha(built.wrapper);
-  const bundleIdentity = await buildGenerationBundle(output, pinned, built.module, moduleSHA256, wrapperSHA256);
+  const wrapperSHA256 = sha(wrapper);
+  const bundleIdentity = await buildGenerationBundle(output, pinned, compiled, wrapperSHA256);
   await verifySourceManifest(repository, manifest, exported.manifestSHA256);
-  const buildSHA256 = sha(JSON.stringify({ moduleSHA256, wrapperSHA256, ...bundleIdentity, siteManifestSHA256: built.siteManifestSHA256 }));
-  const capture = { version: 1, directory: output, runId, tracer: selectedTracer, sourcePath, sourceSHA256: sha(source),
-    sourceManifestSHA256: exported.manifestSHA256, probeSHA256, moduleSHA256, wrapperSHA256, buildSHA256, ...bundleIdentity,
-    siteManifestSHA256: built.siteManifestSHA256, slotCount: built.siteManifest.sites.length, tools,
+  const buildSHA256 = sha(JSON.stringify({ modules, wrapperSHA256, ...bundleIdentity, siteManifestSHA256 }));
+  const capture = { version: 2, directory: output, runId, tracer: selectedTracer, modules,
+    sourceManifestSHA256: exported.manifestSHA256, probeSHA256, wrapperSHA256, buildSHA256, ...bundleIdentity,
+    siteManifestSHA256, tools,
     limitations: [counterNotice, 'Instrumentation is a test-build transform, not production performance or a compiler coverage attestation.',
-      'Only generation.ts selected statement entries in one main-Worker module instance are represented; other backend modules, Durable Objects, native and helpers are unknown.',
+      'Selected statement entries in four modules, sampled through one Worker module instance during the existing generation journey; no Durable Object instance, other-isolate, branch or overall-project coverage claim.',
+      'Shared helpers can be called by background or Durable Object work sharing the collected module instance. Counter increases do not establish main-fetch-only or per-request attribution.',
       'TypeScript is instrumented before esbuild transpilation; original statement positions identify anchors, not generated bundle line ranges or full-line coverage.',
       'Module initialization occurs before the baseline; counter deltas do not include it.',
       'Listed tool input hashes are producer-declared identity evidence, not a cryptographic build or complete operating-system attestation.'] };
@@ -153,16 +164,23 @@ export async function prepareGenerationCapture(output, selectedTracer) {
   return { path: join(output, 'capture.json'), finish: interrupted => finishGenerationCapture(capture, interrupted) };
 }
 
-export async function loadGenerationCapture(path, source) {
+export async function loadGenerationCapture(path) {
   assert.equal(await realpath(path), resolve(path)); assert((await lstat(path)).size < 65536);
-  const capture = JSON.parse(await readFile(path)); assert.equal(capture.version, 1);
+  const capture = JSON.parse(await readFile(path)); assert.equal(capture.version, 2);
   assert.equal(dirname(path), capture.directory); assert(outside(repository, capture.directory));
-  assert.equal(sha(source), capture.sourceSHA256); assert.match(capture.runId, /^[0-9a-f-]{36}$/);
-  const module = await readFile(join(capture.directory, 'instrumented.ts'), 'utf8');
-  const wrapper = await readFile(join(capture.directory, 'entry.ts'), 'utf8');
-  assert.equal(sha(module), capture.moduleSHA256); assert.equal(sha(wrapper), capture.wrapperSHA256);
+  assert.match(capture.runId, /^[0-9a-f-]{36}$/);
+  assert.deepEqual(capture.modules.map(module => module.sourcePath), measuredSources);
+  assert.equal(await hashFile(join(capture.directory, 'entry.ts')), capture.wrapperSHA256);
   const sitesBytes = await readFile(join(capture.directory, 'sites.json')); assert.equal(sha(sitesBytes), capture.siteManifestSHA256);
-  const siteManifest = JSON.parse(sitesBytes); assert.equal(siteManifest.sites.length, capture.slotCount);
+  const siteManifest = JSON.parse(sitesBytes); assert.equal(siteManifest.version, 2);
+  assert.deepEqual(siteManifest.modules.map(module => module.source), measuredSources);
+  for (const [index, module] of capture.modules.entries()) {
+    assert.equal(await hashFile(join(repository, module.sourcePath)), module.sourceSHA256);
+    assert.equal(await hashFile(join(capture.directory, module.originalFile)), module.sourceSHA256);
+    assert.equal(await hashFile(join(capture.directory, module.instrumentedFile)), module.moduleSHA256);
+    assert.equal(sha(json(siteManifest.modules[index])), module.siteManifestSHA256);
+    assert.equal(siteManifest.modules[index].sites.length, module.slotCount);
+  }
   const nonce = randomBytes(32).toString('hex'); let collectorRequests = 0, previous, baseline;
   const bundle = await readFile(join(capture.directory, 'bundle.mjs'));
   assert.equal(sha(bundle), capture.bundleSHA256);
@@ -179,16 +197,22 @@ export async function loadGenerationCapture(path, source) {
     if (status !== 200) { assert.equal(body.toString(), 'Not found'); return; }
     await write(join(capture.directory, `${label}.json`), body);
     const value = JSON.parse(body);
-    assert.deepEqual(Object.keys(value).sort(), ['version', 'runId', 'sourceSHA256', 'siteManifestSHA256', 'probeSHA256', 'generation', 'sequence', 'invalid', 'counts'].sort());
-    assert.equal(value.version, 1); assert.equal(value.runId, capture.runId);
-    for (const key of ['sourceSHA256', 'siteManifestSHA256', 'probeSHA256']) assert.equal(value[key], capture[key]);
-    assert.equal(value.invalid, false); assert.match(value.generation, /^[0-9a-f-]{36}$/);
-    assert.equal(value.sequence, previous ? previous.sequence + 1 : 1);
-    assert(Array.isArray(value.counts) && value.counts.length === capture.slotCount);
-    assert(value.counts.every(count => Number.isSafeInteger(count) && count >= 0));
-    if (previous) {
-      assert.equal(value.generation, previous.generation, 'Worker generation must not reset');
-      assert(value.counts.every((count, index) => count >= previous.counts[index]), 'Counters must not decrease');
+    assert.deepEqual(Object.keys(value).sort(), ['version', 'runId', 'probeSHA256', 'modules'].sort());
+    assert.equal(value.version, 2); assert.equal(value.runId, capture.runId); assert.equal(value.probeSHA256, capture.probeSHA256);
+    assert.deepEqual(value.modules.map(module => module.sourcePath), measuredSources);
+    for (const [index, module] of value.modules.entries()) {
+      const expected = capture.modules[index], prior = previous?.modules[index];
+      assert.deepEqual(Object.keys(module).sort(), ['version', 'sourcePath', 'runId', 'sourceSHA256', 'siteManifestSHA256', 'probeSHA256', 'generation', 'sequence', 'invalid', 'counts'].sort());
+      assert.equal(module.version, 1); assert.equal(module.runId, capture.runId); assert.equal(module.probeSHA256, capture.probeSHA256);
+      for (const key of ['sourceSHA256', 'siteManifestSHA256']) assert.equal(module[key], expected[key]);
+      assert.equal(module.invalid, false); assert.match(module.generation, /^[0-9a-f-]{36}$/);
+      assert.equal(module.sequence, prior ? prior.sequence + 1 : 1);
+      assert(Array.isArray(module.counts) && module.counts.length === expected.slotCount);
+      assert(module.counts.every(count => Number.isSafeInteger(count) && count >= 0));
+      if (prior) {
+        assert.equal(module.generation, prior.generation, 'Collected module generation must not reset');
+        assert(module.counts.every((count, slot) => count >= prior.counts[slot]), 'Counters must not decrease');
+      }
     }
     previous = value; return value;
   }
@@ -196,22 +220,23 @@ export async function loadGenerationCapture(path, source) {
     async begin(base) {
       const b0 = await request(base, 'before-control');
       await request(base, 'missing-nonce', null, 404); await request(base, 'wrong-nonce', 'invalid', 404);
-      baseline = await request(base, 'before'); assert.deepEqual(baseline.counts, b0.counts, 'Collector reads/refusals do not execute original probes');
+      baseline = await request(base, 'before'); assert.deepEqual(baseline.modules.map(module => module.counts), b0.modules.map(module => module.counts), 'Collector reads/refusals do not execute original probes');
     },
     async end(base, ordinaryRequests) {
       assert.equal(ordinaryRequests, 80); assert(baseline);
       const after = await request(base, 'after'), a1 = await request(base, 'after-control');
-      assert.deepEqual(a1.counts, after.counts, 'Repeated snapshots do not reset or increment counters');
-      assert(after.counts.some((count, index) => count > baseline.counts[index]), 'Require genuine positive counter deltas');
+      assert.deepEqual(a1.modules.map(module => module.counts), after.modules.map(module => module.counts), 'Repeated snapshots do not reset or increment counters');
+      assert(after.modules.some((module, index) => module.counts.some((count, slot) => count > baseline.modules[index].counts[slot])), 'Require genuine positive counter deltas');
       assert.equal(collectorRequests, 6);
-      const lines = [...new Set(siteManifest.sites.map(site => site.line))].sort((a, b) => a - b);
-      const exportLCOV = snapshot => {
-        const totals = new Map(lines.map(line => [line, 0]));
-        for (const [index, site] of siteManifest.sites.entries()) {
-          const count = totals.get(site.line) + snapshot.counts[index]; assert(Number.isSafeInteger(count)); totals.set(site.line, count);
+      const lineSets = siteManifest.modules.map(module => [...new Set(module.sites.map(site => site.line))].sort((a, b) => a - b));
+      const instrumentedAnchorLines = lineSets.reduce((sum, lines) => sum + lines.length, 0);
+      const exportLCOV = snapshot => snapshot.modules.map((module, index) => {
+        const lines = lineSets[index], totals = new Map(lines.map(line => [line, 0]));
+        for (const [slot, site] of siteManifest.modules[index].sites.entries()) {
+          const count = totals.get(site.line) + module.counts[slot]; assert(Number.isSafeInteger(count)); totals.set(site.line, count);
         }
-        return `TN:${capture.runId}\nSF:${sourcePath}\nVER:${capture.sourceSHA256}\n${lines.map(line => `DA:${line},${totals.get(line)}`).join('\n')}\nend_of_record\n`;
-      };
+        return `TN:${capture.runId}\nSF:${module.sourcePath}\nVER:${module.sourceSHA256}\n${lines.map(line => `DA:${line},${totals.get(line)}`).join('\n')}\nend_of_record\n`;
+      }).join('');
       const beforeLCOV = exportLCOV(baseline), afterLCOV = exportLCOV(after);
       await write(join(capture.directory, 'before.lcov'), beforeLCOV); await write(join(capture.directory, 'after.lcov'), afterLCOV);
       const snapshot = bytes => ({ sha256: sha(bytes), runId: capture.runId, buildSha256: capture.buildSHA256,
@@ -223,10 +248,10 @@ export async function loadGenerationCapture(path, source) {
         before: snapshot(beforeLCOV), after: snapshot(afterLCOV) };
       await write(join(capture.directory, 'interval.json'), json(interval));
       await write(join(capture.directory, 'export.json'), json({ status: 'exported', ordinaryRequests, collectorRequests,
-        generation: after.generation, sites: siteManifest.sites.length, instrumentedAnchorLines: lines.length, sourceUnchanged: true,
+        modules: after.modules.map((module, index) => ({ sourcePath: module.sourcePath, generation: module.generation, sites: module.counts.length, instrumentedAnchorLines: lineSets[index].length })), instrumentedAnchorLines, sourceUnchanged: true,
         notice: counterNotice }));
       console.log(JSON.stringify({ kind: 'generation-counter-capture', status: 'exported', ordinaryRequests, collectorRequests,
-        instrumentedAnchorLines: lines.length, nativeExecution: 'not-run', notice: counterNotice }));
+        instrumentedAnchorLines, nativeExecution: 'not-run', notice: counterNotice }));
     },
   };
 }
@@ -240,7 +265,7 @@ async function finishGenerationCapture(capture, interrupted = () => false) {
   const tools = JSON.parse(await readFile(join(directory, 'tool-inputs.json')));
   for (const tool of tools.toolFiles) assert.equal(await hashFile(tool.path), tool.sha256);
   for (const input of tools.graphs) assert.equal((await graph(input.root)).sha256, input.sha256);
-  for (const [name, expected] of [['instrumented.ts', capture.moduleSHA256], ['entry.ts', capture.wrapperSHA256], ['sites.json', capture.siteManifestSHA256], ['bundle.mjs', capture.bundleSHA256], ['build.json', capture.buildRecordSHA256]])
+  for (const [name, expected] of [...capture.modules.flatMap(module => [[module.instrumentedFile, module.moduleSHA256], [module.originalFile, module.sourceSHA256]]), ['entry.ts', capture.wrapperSHA256], ['sites.json', capture.siteManifestSHA256], ['bundle.mjs', capture.bundleSHA256], ['build.json', capture.buildRecordSHA256]])
     assert.equal(await hashFile(join(directory, name)), expected);
   const interval = JSON.parse(await readFile(join(directory, 'interval.json')));
   // Real endpoints reversed, not fabricated counts. A fresh validation root must

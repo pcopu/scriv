@@ -1,8 +1,8 @@
-# Generation Worker counter capture
+# Generation-journey module counter capture
 
 The existing generation CLI journey supports opt-in cumulative counters for
-selected statement entries in `cloud/src/generation.ts`. All 80 ordinary HTTP
-checks and their assertions remain unchanged. Six separate collector requests
+selected statement entries in `cloud/src/access.ts`, `generation.ts`, `http.ts`
+and `index.ts`. All 80 ordinary HTTP checks and their assertions remain unchanged. Six separate collector requests
 check the measurement channel. The normal route uses the ordinary Worker build.
 
 Set `SCRIV_TRACER_CLI` and `SCRIV_TRACER_RUNTIME` to the verified installed Tracer
@@ -30,9 +30,9 @@ and footer must reproduce the original source exactly. It does not reprint the
 source, wrap standalone control bodies or infer hits across a function/range.
 
 A narrowly scoped esbuild loader validates every loaded production TypeScript
-file against the strict source manifest and substitutes only the instrumented
-`generation.ts` content. The ordinary index import and snapshot import resolve
-to that same module. The loader graph, build options, emitted bundle, source
+file against the strict source manifest and substitutes only those four
+instrumented modules. Ordinary application imports and the corresponding snapshot
+imports resolve to the same recorded module graph. The loader graph, build options, emitted bundle, source
 hashes, insertion ledger and tool input hashes are retained privately. Other
 source modules stay uninstrumented. The wrapper delegates to the real index
 handler and re-exports the original Durable Object classes. Neither production
@@ -50,24 +50,36 @@ imports are not automatically retried.
 
 ## What the numbers mean
 
-The denominator is selected original statement-anchor lines in one generation
-module instance in the main Worker. The counter on each line sums its selected
+The denominator is selected original statement-anchor lines in four collected
+module instances, sampled through the Worker wrapper during the generation
+journey. The counter on each line sums its selected
 statement-site counters. A hit means statement entry, not completion, every
 expression/branch, all TypeScript lines, SQL engine coverage or assertion quality.
 Concise arrows, standalone control bodies, unselected statements, multiline
 continuations and other uninstrumented code remain unknown. This is not a
-universal TypeScript instrumenter.
+universal TypeScript instrumenter. Module directives, labels, decorators,
+namespaces and class static blocks are refused rather than silently broadening
+the reviewed transform. The current HTTP error constructor retains its original
+super call and TypeScript parameter-property initialization; probes before super
+use only private module state and never access this or call application helpers.
 
 Real repeated before/after reads must preserve cumulative counts, one generation
-and advancing snapshot sequences. Missing/wrong nonce requests must leave those
+per collected module, advancing per-module snapshot sequences and the exact ordered
+module/source identities. Snapshots are collected synchronously in one wrapper
+request; this is not evidence of a globally atomic snapshot across other isolates.
+Missing/wrong nonce requests must leave those
 counters unchanged. Module initialization occurs before the real baseline, so
 its already-nonzero counters are not interval increases. Never manufacture zero
 baselines or claim those initialization lines ran again during the HTTP interval.
 
 The official interval contains the entire 80-check journey, including its existing
-synthetic recovery and concurrent-callback continuations. It does not establish
-per-action causality or force a particular internal SQL overlap. Other backend
-modules, Durable Objects, native app and helpers are outside this measurement.
+synthetic project creation, logout/recovery and concurrent-callback continuations.
+Logout calls ProjectRoom.refreshAccess; access and HTTP helpers are also imported
+by Durable Object classes. These counters identify collected module instances,
+not a request or Durable Object instance. They may include incidental or background
+work sharing those instances, and do not prove main-fetch-only attribution or
+coverage of other isolates. No per-action causality, forced internal SQL overlap,
+Durable Object-instance, native app or overall-backend coverage is established.
 Do not combine this denominator with manual mapping, native intervals or other
 captures to claim overall coverage.
 

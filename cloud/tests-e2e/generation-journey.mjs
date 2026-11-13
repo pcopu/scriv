@@ -68,7 +68,7 @@ if (process.argv[2] !== '--owned-child') {
   const bundle = join(root, 'worker.mjs');
   const capture = process.argv[5]
     ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
-      .loadGenerationCapture(process.argv[5], await readFile(join(cloud, 'src/generation.ts'))) : null;
+      .loadGenerationCapture(process.argv[5]) : null;
   if (!capture) await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
     bundle: true, format: 'esm', platform: 'neutral', target: 'es2022',
     external: ['cloudflare:*'], logLevel: 'silent' });
