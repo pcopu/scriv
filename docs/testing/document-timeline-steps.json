@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "timeline-continuation",
+      "title": "Retain and migrate authored image coverage",
+      "preconditions": [
+        "Run the actual Scriv CLI document-integrity service journey against the bundled production Worker in an owned local Miniflare process; no direct production function imports.",
+        "Synthetic actor sessions and entitled team are preseeded outside the HTTP contract; the new timeline project is created through HTTP. No live identity, payment or provider behavior is covered.",
+        "All earlier journey chapters must succeed. Four public item leases are acquired and remain valid during this bounded chapter; expiry is not tested. The request helper pins loopback, bounds input/output, denies outbound requests and owns cleanup."
+      ],
+      "actions": [
+        "Create a separate synthetic timeline project through POST /v1/projects and read its empty snapshot and events",
+        "Create a zero-owned direction and dormant anchored cue, then acquire its edit lease",
+        "Reject a nonzero offset into the zero-owned direction and read unchanged snapshot/events",
+        "Reject appending dialogue without resolving the cue and read unchanged snapshot/events",
+        "Repair the rejected append ID with its cue edit and read exact receipt/snapshot/events",
+        "Prepend a 500 ms direction with the shifted cue and read exact receipt/snapshot/events",
+        "Reject legacy coverage crossing the anchor from before and read unchanged snapshot/events",
+        "Reject legacy coverage overlapping the earlier anchored cue and read unchanged snapshot/events",
+        "Accept legacy coverage meeting the anchor exactly and read receipt/snapshot/events",
+        "Acquire legacy cue lease and migrate to overlapping anchored coverage, then read receipt/snapshot/events",
+        "Replay the exact migration and verify unchanged receipt/snapshot/events",
+        "Acquire prefix and dialogue leases, reject collapse with stale cues, and read unchanged snapshot/events",
+        "Repair the rejected collapse ID with companion cue operations and read receipt/snapshot/events",
+        "Replay the exact collapse and verify unchanged receipt/snapshot/events",
+        "Restore the tombstoned dialogue with resolved image coverage and read receipt/snapshot/events"
+      ],
+      "expectations": [
+        {
+          "id": "timeline-geometry",
+          "description": "Zero-owned direction coverage is dormant at [0,0], resolves to [0,750] after appending a 1000 ms dialogue, shifts to [500,1250] after prepending 500 ms, collapses to dormant and resolves again after restoration; seven accepted edits match independent item/version/timing/receipt/event expectations. Five exact 409 cue_anchor or cue_timing rejections leave the complete public document snapshot excluding leases and complete event stream unchanged. Legacy coverage crossing an anchored cue from either side is rejected, an exact boundary is accepted, and migration to source anchors permits the explicit overlap. Rejected append and collapse command IDs accept the repaired companion operations without an extra event from failure; exact migration and collapse replays preserve receipts and saved document snapshot excluding leases and complete history.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-timeline-cases.mjs",
+            "start": 45,
+            "end": 133,
+            "sha256": "50927a1f125dfa8f4c825d9a9c9dba4122cb43e6bb05409d2729ec8eaf792d13"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 193,
+            "end": 214,
+            "sha256": "468740cb855d4b48537cbc299b500406e6011f3db74ca1ded8f100fcf82f610f"
+          },
+          "expectation": "timeline-geometry",
+          "why": "Scene start offsets and dormant/anchored/legacy cue geometry are distinguished by independently authored full graph readbacks and exact rejection/nonmutation checks. The 24-hour limit rejection and concurrency are not covered."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "document-timeline",
+      "title": "Retain and migrate authored image coverage",
+      "steps": [
+        "timeline-continuation"
+      ]
+    }
+  ]
+}

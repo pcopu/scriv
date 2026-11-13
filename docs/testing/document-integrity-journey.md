@@ -6,7 +6,7 @@ Run through the actual public CLI with the trusted installed Tracer paths:
 
     SCRIV_TRACER_CLI=/absolute/tracer/bin/tracer.mjs SCRIV_TRACER_RUNTIME=/absolute/tracer/src/scenario-runtime.mjs node scripts/tracer-cli.mjs app -- test services document-integrity
 
-The unchanged Worker is bundled and served on an ephemeral loopback port. The runner owns its process group, temporary HOME, D1, R2 and state; all outbound service requests are denied, metrics disabled, and inherited secrets/proxies/NODE_OPTIONS excluded. There is a 90-second process deadline, 5-second HTTP deadline, maximum 180 requests, 16 KiB request bodies and 64 KiB responses. Cleanup runs on normal completion and interruption.
+The unchanged Worker is bundled and served on an ephemeral loopback port. The runner owns its process group, temporary HOME, D1, R2 and state; all outbound service requests are denied, metrics disabled, and inherited secrets/proxies/NODE_OPTIONS excluded. There is a 90-second process deadline, 5-second HTTP deadline, maximum 240 requests, 16 KiB request bodies and 64 KiB responses. Cleanup runs on normal completion and interruption.
 
 Fixture actions before HTTP apply the three actual local D1 migrations, create synthetic owner/member/viewer/outsider identities and hashed sessions, and create a locally entitled synthetic team. No production state, external login, billing provider, R2 object or actual image bytes are provisioned. Fixtures are ephemeral and deliberately not a claim of authentication-provider or payment execution.
 
@@ -24,7 +24,7 @@ This is metadata and document validation only. It does not inspect pixels, run a
 
 Production project-room.ts line 115 explicitly reads event changes ORDER BY item_id; line 270 produces receipt items in command operation order. The original v1 correction compared event/receipt contents with each other after sorting by ID; v2 additionally compares each separately with independently authored expected changed items. This normalization does not require the two public arrays to promise the same order. All prior negative readbacks had passed. Production code is unchanged.
 
-The original catalog covers 68 HTTP actions and 22 named expectation callbacks. The connected-graph deletion continuation adds 12 HTTP actions, and the boundary continuation below adds 87, for an expected 167-request complete journey. The additional assertions are separate from the original 22 catalog callbacks. Source associations are not measured execution or proof of complete behavior.
+The original catalog covers 68 HTTP actions and 22 named expectation callbacks. The connected-graph deletion continuation adds 12 HTTP actions, the boundary continuation below adds 87, and the timeline continuation adds 56, for an expected 223-request complete journey. The additional assertions are separate from the original 22 runtime catalog callbacks. Source associations are not measured execution or proof of complete behavior.
 
 ## v2 independent-review corrections
 
@@ -70,3 +70,35 @@ request may occur.
 These are real local Worker HTTP assertions. They do not establish native UI,
 physical input, live-provider behavior, lease-table internals, concurrent races,
 crash durability, measured source-line coverage, or complete validation coverage.
+
+## Dormant and overlapping image coverage
+
+The timeline continuation creates a separate synthetic project through public
+HTTP, reusing only the isolated actor/team fixtures. A zero-owned direction at
+the end of an empty scene retains a 750 ms authored image extent while its
+resolved cue is dormant at [0, 0]. Appending a 1,000 ms dialogue requires an
+atomic cue edit to [0, 750]. Prepending a 500 ms direction moves the original
+source and cue to [500, 1,250].
+
+Five rejected edits require exact 409 codes and the complete unchanged document
+snapshot excluding leases, plus the complete event history: a nonzero offset
+into the zero-owned direction, an append without its cue update, legacy coverage
+crossing the anchored cue from either
+side, and deleting timed entries without updating their cues. The failed append
+and collapse IDs are reused with only the necessary companion operations added.
+
+A legacy cue ending exactly at 500 ms is accepted. Migrating it to a source
+anchor permits the explicitly authored overlap [0, 750] with [500, 1,250]. The
+journey then collapses the scene to the retained dormant cue, checks exact
+metadata-only tombstones, and restores the dialogue and its resolved coverage.
+Seven successful edits compare independently authored full items, ordered
+receipts, versions, sequence/timing counters and complete event before/after
+contents. Two exact replays must preserve the receipt, document snapshot
+excluding leases, and complete history.
+
+The 56 HTTP actions include public lease acquisition, reads and replays. The
+declarative timeline catalog is navigation evidence, not an additional runtime
+callback report. This chapter does not test the 24-hour scene limit, lease
+expiry, native rendering/playback, crash recovery, concurrent edits, or measured
+source coverage. It preserves the existing bounds, outbound-denial guard and
+owned cleanup.
