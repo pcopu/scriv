@@ -40,6 +40,12 @@ journey, including its 13 synthetic measurement-output checks, passed. No
 application or test source changed in either reuse increment. Repository,
 catalog and global link checks passed.
 
+The six native batches share the retained source-manifest and executable
+hashes, and each reports its bundle unchanged during that run. The first two
+recorded an 80-file bundle fingerprint; the later four recorded a different
+77-file fingerprint. These records do not establish identical complete bundles
+across all six runs.
+
 Tracer's read-only `next` packet and compact measurement storage are published
 in `pcopu/tracerCLI` commit `8d0cfa5`. Its required aggregate check passed 137
 tests, with four existing Linux-only skips. The owned checkout is used
