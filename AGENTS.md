@@ -67,6 +67,12 @@ not all Worker lines or the whole project. Preserve real before/after snapshots,
 strict source/probe identities and external analysis storage. Keep its measured
 interval separate from manual links, historical planning and native results.
 
+The generation-service CLI journey also offers opt-in main-Worker counters for
+selected statement entries in `cloud/src/generation.ts`. Follow
+`docs/testing/generation-counter-coverage.md`. Preserve its exact TypeScript
+build graph, cumulative baselines and external evidence. It does not measure
+Durable Objects, the entire backend or overall project execution.
+
 ## Test and Fix Batches
 
 Finish the available authorized testing first and collect all findings. Fix the

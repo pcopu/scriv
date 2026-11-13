@@ -28,8 +28,8 @@
           "description": "Nine metadata refusals use exact error JSON and unchanged complete generation jobs/receipts, projects, teams, memberships, assets and empty R2 listing. Inputs are extra prompt/credential/localPath fields on create/claim/update, string recover, newline progress, 161-character progress, output on running, error on running, and invalid error-code syntax. The same fresh operation IDs subsequently succeed with permitted inputs, including 160-character progress.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 306,
-            "end": 343,
+            "start": 318,
+            "end": 355,
             "sha256": "b5e66ebc19a2550581676370f9623b1f8446647ad24e19085143b90174fb6437"
           }
         },
@@ -38,8 +38,8 @@
           "description": "Checked job responses contain exactly the 16 declared public metadata fields, with public values equal to explicit expected status/device/version/progress/output/error and corresponding stored identity/timestamps/lease/revision. Internal last-operation and owner-liveness fields are not emitted.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 289,
-            "end": 304,
+            "start": 301,
+            "end": 316,
             "sha256": "9b28064b205a26d25576e3ec90f3a90b5e098f2321196da45c8ecb96a2634f54"
           }
         },
@@ -48,8 +48,8 @@
           "description": "After actual logout, a future-lease running job is returned as waiting by single and list HTTP reads, and an original queued job also appears waiting. Underlying rows and receipts remain exact; the lease-expiry branch is not exercised.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 362,
-            "end": 374,
+            "start": 374,
+            "end": 386,
             "sha256": "5281c74e8293e1224eee3c1ff13bb03262f5bcc3889c726d2117f602df1242f3"
           }
         },
@@ -58,8 +58,8 @@
           "description": "Explicit waiting requires recover:true on the second device. A replay of the first device claim returns the current second-device running job at version 5 without writes. The same receipt on another device conflicts, and the former live device cannot complete the job. The second device completes it, and duplicate original create returns the completed version 6 without reset.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 344,
-            "end": 357,
+            "start": 356,
+            "end": 369,
             "sha256": "8a4a5af67d7e9a7ac2ff072c6b19c78e56dc0845a129addbf80fac2ec2a7951a"
           }
         },
@@ -68,8 +68,8 @@
           "description": "Each of eight successful claim/update transitions has one newly appended receipt with exact project, job, operation, actor session, resulting version and update timestamp, plus a 64-hex request hash. Running leases are bounded against real request time at 90 seconds; terminal/waiting leases are zero. No transactional failure injection or exhaustive hash correctness claim.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 311,
-            "end": 323,
+            "start": 323,
+            "end": 335,
             "sha256": "b56fb0a1f56f5da18afc91a78f3124316d325049f8921c0f755c9abb30a660bf"
           }
         },
@@ -78,8 +78,8 @@
           "description": "String recover is rejected without state change; omission of recover on waiting and revoked-owner running jobs conflicts; explicit true recovery succeeds only after the demonstrated permitted state change.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 332,
-            "end": 379,
+            "start": 344,
+            "end": 391,
             "sha256": "ed878cd5d120ebba9b022ffd3292c377f6051b5ee2efbccb5f890d061df990f5"
           }
         },
@@ -88,8 +88,8 @@
           "description": "An actual newline and 161-character progress fail without writes, while 160 characters succeed with a new version and receipt; no claim covers every control code or Unicode length boundary.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 335,
-            "end": 343,
+            "start": 347,
+            "end": 355,
             "sha256": "31aae28dca9a00c676b5eaf5860ce10ccd0dd8ac947dbae23c0359555fca9b23"
           }
         },
@@ -98,8 +98,8 @@
           "description": "A running output image, error on running, and provider-style error string are refused without writes. Explicit waiting accepts user_paused, recovery clears it and completion stores its output reference. No image-generation or image-existence check is claimed.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 338,
-            "end": 354,
+            "start": 350,
+            "end": 366,
             "sha256": "6f0162dea5aae80c68dcdbb5440895954663a6ccc66311d59f56c766dd3e6d62"
           }
         },
@@ -108,8 +108,8 @@
           "description": "Public logout revokes the unexpired first session while the retained second session remains live. Single/list reads project the original queued job and a new running job to waiting without changing their raw rows or business state. The running lease remains future, and recovery omission fails; explicit second-device recovery succeeds, identical recovery replays without writes, and completion succeeds. Revoked-token update fails in outer authentication.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 362,
-            "end": 383,
+            "start": 374,
+            "end": 395,
             "sha256": "1be8e1d247c14043dde51d9028ba50e3fa0bdb82ccc6e514e39fb9813d11f797"
           }
         },
@@ -118,8 +118,8 @@
           "description": "Final state has exactly two additional jobs and eight appended receipts, preserves all three original job rows and every original receipt, project, team, membership, asset and empty R2 listing, and records 30 added HTTP requests, 14 refusals and zero outbound attempts.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 384,
-            "end": 390,
+            "start": 396,
+            "end": 402,
             "sha256": "8f1b2207b2a12e8e40e1ba4f0a3a4a72676a6bab20d8c7a4f121688e8c86e6e1"
           }
         }

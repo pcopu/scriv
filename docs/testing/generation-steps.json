@@ -18,8 +18,8 @@
           "description": "HTTP 201 returns the synthetic project ID.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 143,
-            "end": 143,
+            "start": 155,
+            "end": 155,
             "sha256": "0e48f1000004304f30fd3506fda17614b3968a3fb63083ea88fe990b11de388d"
           }
         }
@@ -42,8 +42,8 @@
           "description": "HTTP 201 returns the requested job, queued at version 1.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 147,
-            "end": 147,
+            "start": 159,
+            "end": 159,
             "sha256": "49530bcf9c944c8649f211ee78d64da095a0c32977c835d30ca67e9205c67f69"
           }
         }
@@ -127,8 +127,8 @@
           "description": "HTTP 200 preserves job, target item and source revision.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 151,
-            "end": 151,
+            "start": 163,
+            "end": 163,
             "sha256": "9c47801f003e8a00c75d75469daeda273a9cfbf562b5b3dc88a45c1e89263db1"
           }
         }
@@ -182,8 +182,8 @@
           "description": "HTTP 200 marks the original version 1 job replayed.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 156,
-            "end": 156,
+            "start": 168,
+            "end": 168,
             "sha256": "86b5ca53949af7c3432bf5f3d3807fcda416800e6a0001a536900899324cb03c"
           }
         }
@@ -217,8 +217,8 @@
           "description": "HTTP 409 job_conflict rejects a changed revision.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 160,
-            "end": 160,
+            "start": 172,
+            "end": 172,
             "sha256": "ef5ed213967bea259479bc9612908ee0c7b2023e45ce87c9f64fd3448dcafb8a"
           }
         }
@@ -252,8 +252,8 @@
           "description": "HTTP 400 invalid_field rejects the prompt field.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 164,
-            "end": 164,
+            "start": 176,
+            "end": 176,
             "sha256": "c9dbe2f45e232db454fda009c37b5f769811d9996e642614d8dd5f81ba189268"
           }
         }
@@ -287,8 +287,8 @@
           "description": "HTTP 403 not_allowed rejects job creation.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 168,
-            "end": 168,
+            "start": 180,
+            "end": 180,
             "sha256": "6dd47485326c6218bbd4c084ca1b4f7e89f26392817f2478a8bf055d121f363a"
           }
         }
@@ -322,8 +322,8 @@
           "description": "HTTP 404 not_found conceals the project.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 172,
-            "end": 172,
+            "start": 184,
+            "end": 184,
             "sha256": "eff7f52d7be1d3931cde8de4b854ddf5146f9905d6e03afa7b06a9b29d14f126"
           }
         }
@@ -346,8 +346,8 @@
           "description": "HTTP 403 not_job_owner rejects control.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 176,
-            "end": 176,
+            "start": 188,
+            "end": 188,
             "sha256": "fc0e46512c982b5d5e8bacbf6225243cecb30386758480ccb1fcc8c091706e98"
           }
         }
@@ -381,8 +381,8 @@
           "description": "HTTP 409 job_conflict rejects completion before a running claim.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 180,
-            "end": 180,
+            "start": 192,
+            "end": 192,
             "sha256": "ef5ed213967bea259479bc9612908ee0c7b2023e45ce87c9f64fd3448dcafb8a"
           }
         }
@@ -405,8 +405,8 @@
           "description": "HTTP 200 claims it as running on the original session at version 2.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 184,
-            "end": 184,
+            "start": 196,
+            "end": 196,
             "sha256": "4017ace651ec98d2ec8dc2dab694c1926ad6b32034c94552caaf444c89534dcc"
           }
         }
@@ -450,8 +450,8 @@
           "description": "HTTP 200 marks an identical claim replayed and keeps version 2.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 188,
-            "end": 188,
+            "start": 200,
+            "end": 200,
             "sha256": "b5f681631f75ec4db08f5403b33f06985e1c7736668fec813462e9e87a8c3776"
           }
         }
@@ -485,8 +485,8 @@
           "description": "HTTP 409 operation_conflict rejects a changed request with that ID.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 192,
-            "end": 192,
+            "start": 204,
+            "end": 204,
             "sha256": "d2276fec1fc505157e480e2244edc80687015289f4242a6edcbee800f92b158d"
           }
         }
@@ -530,8 +530,8 @@
           "description": "HTTP 409 job_conflict rejects recovery takeover while live.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 196,
-            "end": 196,
+            "start": 208,
+            "end": 208,
             "sha256": "ef5ed213967bea259479bc9612908ee0c7b2023e45ce87c9f64fd3448dcafb8a"
           }
         }
@@ -554,8 +554,8 @@
           "description": "HTTP 400 invalid_field rejects completion without an image ID.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 200,
-            "end": 200,
+            "start": 212,
+            "end": 212,
             "sha256": "c9dbe2f45e232db454fda009c37b5f769811d9996e642614d8dd5f81ba189268"
           }
         }
@@ -589,8 +589,8 @@
           "description": "HTTP 200 returns completed version 3 with the specified output image ID.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 204,
-            "end": 204,
+            "start": 216,
+            "end": 216,
             "sha256": "6789fc96b71341ee35b8901dbca28d38e9be17774b99ac92c2bc8452984014ef"
           }
         }
@@ -644,8 +644,8 @@
           "description": "HTTP 200 marks the exact retry replayed and retains version 3.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 208,
-            "end": 208,
+            "start": 220,
+            "end": 220,
             "sha256": "ca45df838a868373bc93ce41f3aaa29f69673e2d407fc0a0e69a44c4ef5d1a59"
           }
         }
@@ -668,8 +668,8 @@
           "description": "HTTP 200 replay returns current completed version 3, not a stale running grant.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 212,
-            "end": 212,
+            "start": 224,
+            "end": 224,
             "sha256": "f544c9c4b04bfaa6fd260b91a8becbee265e930e824036a3fbf3a9fb7a5aa32a"
           }
         }
@@ -703,8 +703,8 @@
           "description": "HTTP 409 job_conflict rejects a fresh recovery claim.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 216,
-            "end": 216,
+            "start": 228,
+            "end": 228,
             "sha256": "ef5ed213967bea259479bc9612908ee0c7b2023e45ce87c9f64fd3448dcafb8a"
           }
         }
@@ -727,8 +727,8 @@
           "description": "Viewer receives HTTP 200 and the completed version 3 image reference.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 220,
-            "end": 220,
+            "start": 232,
+            "end": 232,
             "sha256": "6789fc96b71341ee35b8901dbca28d38e9be17774b99ac92c2bc8452984014ef"
           }
         }
@@ -762,8 +762,8 @@
           "description": "HTTP 201 returns the second job queued.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 224,
-            "end": 224,
+            "start": 236,
+            "end": 236,
             "sha256": "356226044e0ed4504000be9e6f5fa70c8e6660672a038b5a3bfea393cc7f81df"
           }
         }
@@ -786,8 +786,8 @@
           "description": "HTTP 200 returns the second job at version 2.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 228,
-            "end": 228,
+            "start": 240,
+            "end": 240,
             "sha256": "10926c284a97d6e35b5a117ec6059610b21f3360b59a72df70eedc406d039837"
           }
         }
@@ -810,8 +810,8 @@
           "description": "HTTP 200 records failed status, safe error code and version 3.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 232,
-            "end": 232,
+            "start": 244,
+            "end": 244,
             "sha256": "290c6024a33cf35f5ddd66c514997319ca0714f3ba85ffb03385d69fd0a4f805"
           }
         }
@@ -845,8 +845,8 @@
           "description": "HTTP 409 job_conflict rejects a claim without explicit recovery.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 236,
-            "end": 236,
+            "start": 248,
+            "end": 248,
             "sha256": "ef5ed213967bea259479bc9612908ee0c7b2023e45ce87c9f64fd3448dcafb8a"
           }
         }
@@ -869,8 +869,8 @@
           "description": "HTTP 200 recovers to running version 4 on the second device, clearing the error.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 240,
-            "end": 240,
+            "start": 252,
+            "end": 252,
             "sha256": "0d8df279cb0ca923f653c4bca13bb4f6eeaec2acd52294e7d0bce64a1a7a0a7f"
           }
         }
@@ -904,8 +904,8 @@
           "description": "HTTP 409 job_conflict fences a completion attempt by the former device.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 244,
-            "end": 244,
+            "start": 256,
+            "end": 256,
             "sha256": "ef5ed213967bea259479bc9612908ee0c7b2023e45ce87c9f64fd3448dcafb8a"
           }
         }
@@ -928,8 +928,8 @@
           "description": "Creator cancellation succeeds with HTTP 200, cancelled version 5 and safe code.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 248,
-            "end": 248,
+            "start": 260,
+            "end": 260,
             "sha256": "9c17f8b2b4bcfa032272eae5215f6110c01040b936d2980f2d3c818b80d19258"
           }
         }
@@ -952,8 +952,8 @@
           "description": "Viewer readback returns HTTP 200 and cancelled version 5.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 252,
-            "end": 252,
+            "start": 264,
+            "end": 264,
             "sha256": "08c43fb47d5e1c0bb0961e741b9333f622499de526fbd0b5299cc33d785bfa56"
           }
         }
@@ -976,8 +976,8 @@
           "description": "HTTP 201 creates the third job at version 1.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 256,
-            "end": 256,
+            "start": 268,
+            "end": 268,
             "sha256": "acfe3b3ab8b74b30e60d23c477dfc4cda6b4e94ace703c1c25dd08908044fa49"
           }
         }
@@ -1000,8 +1000,8 @@
           "description": "HTTP 400 invalid_cursor rejects the malformed cursor.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 260,
-            "end": 260,
+            "start": 272,
+            "end": 272,
             "sha256": "8829a835f67c30d91d5c8f6d915ad902752815e64ef29395a0ccb7170474c201"
           }
         }
@@ -1035,8 +1035,8 @@
           "description": "HTTP 200 returns one job and a next cursor.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 264,
-            "end": 264,
+            "start": 276,
+            "end": 276,
             "sha256": "9abbdf1228e4d878afa5155da5194f3508330eb3eef85b3afe1d801a5d3dadcf"
           }
         }
@@ -1059,8 +1059,8 @@
           "description": "HTTP 200 returns a distinct second job and another cursor.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 268,
-            "end": 268,
+            "start": 280,
+            "end": 280,
             "sha256": "d586b9f2290b7bb43c5b88009f8575ed34296772d0e6bef4591c2205ea571ab2"
           }
         }
@@ -1083,8 +1083,8 @@
           "description": "HTTP 200 returns the third distinct job and no further cursor.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 272,
-            "end": 272,
+            "start": 284,
+            "end": 284,
             "sha256": "6731a4a9a385adc7679ba950a7d93a1b4658fd4f0b2febba1c110af81b977273"
           }
         }
@@ -1118,8 +1118,8 @@
           "description": "HTTP 404 job_not_found reports the absent job.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 276,
-            "end": 276,
+            "start": 288,
+            "end": 288,
             "sha256": "e8463e703d15ea6f9a91f7f87af0c3fec28f5a97cedcbc7b0de90ff7ce2f3638"
           }
         }

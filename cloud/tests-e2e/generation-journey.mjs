@@ -15,40 +15,48 @@ const cloud = await realpath(process.argv[2] === '--owned-child' ? process.argv[
   process.argv[2] === '--cloud' ? process.argv[3] : join(here, '..'));
 const self = await realpath(fileURLToPath(import.meta.url));
 if (process.argv[2] !== '--owned-child') {
-  const root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-generation-')));
-  let child;
-  let timer;
+  let root, capture, child, timer, interrupted = false;
   const killOwned = signal => {
     if (child?.pid) {
       try { process.kill(-child.pid, signal); } catch (error) { if (error.code !== 'ESRCH') throw error; }
     }
   };
-  const interrupt = () => killOwned('SIGTERM');
+  const interrupt = () => { interrupted = true; killOwned('SIGTERM'); };
+  process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
   try {
-    for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
-    // Resolve installed dependencies from an owned runner, never edit the repository.
-    await copyFile(self, join(root, 'runner.mjs'));
-    await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
-    child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud], {
-      cwd: root, detached: true, stdio: 'inherit',
-      // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
-      env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
-        XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
-        WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
-    });
-    process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
-    timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
-    const result = await new Promise((resolve, reject) => {
-      child.once('error', reject);
-      child.once('exit', (code, signal) => resolve({ code, signal }));
-    });
-    assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    try {
+      root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-generation-')));
+      for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
+      capture = process.env.SCRIV_GENERATION_COVERAGE_DIR
+        ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+          .prepareGenerationCapture(process.env.SCRIV_GENERATION_COVERAGE_DIR, process.env.SCRIV_TRACER_CLI) : null;
+      // Resolve installed dependencies from an owned runner, never edit the repository.
+      await copyFile(self, join(root, 'runner.mjs'));
+      await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
+      assert.equal(interrupted, false, 'Cancelled during preparation; no Worker launched');
+      child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud, ...(capture ? [capture.path] : [])], {
+        cwd: root, detached: true, stdio: 'inherit',
+        // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
+        env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
+          XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
+          WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
+      });
+      timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
+      const result = await new Promise((resolve, reject) => {
+        child.once('error', reject);
+        child.once('exit', (code, signal) => resolve({ code, signal }));
+      });
+      assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    } finally {
+      clearTimeout(timer); killOwned('SIGKILL');
+      if (root) await rm(root, { recursive: true, force: true });
+      console.log('Owned service process group and temporary state cleaned.');
+    }
+    assert.equal(interrupted, false, 'Cancelled before measurement import');
+    if (capture) await capture.finish(() => interrupted);
+    assert.equal(interrupted, false, 'Cancelled during measurement import; inspect preserved evidence');
   } finally {
-    clearTimeout(timer);
     process.off('SIGINT', interrupt); process.off('SIGTERM', interrupt);
-    killOwned('SIGKILL');
-    await rm(root, { recursive: true, force: true });
-    console.log('Owned service process group and temporary state cleaned.');
   }
 } else {
   const root = await realpath(process.argv[3]);
@@ -58,7 +66,10 @@ if (process.argv[2] !== '--owned-child') {
   const { Miniflare, Log, LogLevel, convertV4MiniflareOptions } = await import('miniflare');
   const { unstable_splitSqlQuery } = await import('wrangler');
   const bundle = join(root, 'worker.mjs');
-  await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
+  const capture = process.argv[5]
+    ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+      .loadGenerationCapture(process.argv[5], await readFile(join(cloud, 'src/generation.ts'))) : null;
+  if (!capture) await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
     bundle: true, format: 'esm', platform: 'neutral', target: 'es2022',
     external: ['cloudflare:*'], logLevel: 'silent' });
   let outboundAttempts = 0;
@@ -70,8 +81,8 @@ if (process.argv[2] !== '--owned-child') {
     unsafeLocalExplorer: false, unsafeObservability: false,
     unsafeEnableSharedStorage: false, logRequests: false, log: new Log(LogLevel.ERROR),
     resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
-    workers: [{ ...common, name: 'scriv', scriptPath: bundle,
-      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test' },
+    workers: [{ ...common, name: 'scriv', ...(capture ? { script: capture.options.script } : { scriptPath: bundle }),
+      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', ...(capture?.options.bindings ?? {}) },
       d1Databases: { DB: 'journey-db' }, r2Buckets: ['ASSETS'],
       durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
     }],
@@ -138,6 +149,7 @@ if (process.argv[2] !== '--owned-child') {
     const post = body => ({method:'POST', body, role:'member'});
     const patch = body => ({method:'PATCH', body, role:'member'});
     let result;
+    if (capture) await capture.begin(await mf.ready);
     await run.step('create-project', async step => {
       result = await step.action('POST /v1/projects synthetic team project', () => request('/v1/projects', post({id:projectId,title:'Synthetic generation project',teamId})));
       await step.expect('observed', () => { assert.equal(result.status,201); assert.equal(result.data.project.id,projectId); });
@@ -424,6 +436,7 @@ if (process.argv[2] !== '--owned-child') {
     const callbackFinal=await business();assert.deepEqual(callbackFinal.jobs.filter(r=>r.id!==callbackId),callbackBaseline.jobs);assert.equal(callbackFinal.jobs.length,callbackBaseline.jobs.length+1);assert.deepEqual(callbackFinal.receipts,[...callbackBaseline.receipts,...callbackReceipts]);assert.equal(callbackReceipts.length,4);
     for(const key of ['projects','teams','members','assets','objects'])assert.deepEqual(callbackFinal[key],callbackBaseline[key]);assert.deepEqual(await rows('users'),callbackUsers);assert.deepEqual(await rows('sessions'),callbackSessions);assert.equal(requests,80);assert.equal(outboundAttempts,0);
     console.log(JSON.stringify({kind:'generation-callback-concurrency-evidence',httpChecks:16,duplicateClaimResponses:2,duplicateClaimReceipts:1,competingPairs:2,winnersPerPair:1,correctedLoserSucceeds:true,finalVersion:5,newJobs:1,newReceipts:4,currentStateReplays:2,terminalRefusals:2,forcedInternalOverlap:false,nativeScenarios:0,outboundAttempts}));
+    if (capture) await capture.end(await mf.ready, requests);
     console.log(JSON.stringify({result:'PASS',journey:'generation',requests,outboundAttempts,nativeScenarios:0,runtime:report}));
   } finally { await mf.dispose(); }
 }
