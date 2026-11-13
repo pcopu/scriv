@@ -1,12 +1,19 @@
 # Scriv Agent Guidance
 
-## Work Status, November 13, 2026
+## Active Coverage Goal, November 13, 2026
 
-The user asked to finish the current four-module measurement increment, test and
-commit/push its changes, then stop Scriv work. This supersedes the earlier
-open-ended coverage push below. Do not start another increment under that prior
-request. The 100% goal remains historical context, not a completion claim or
-permission to resume work without a new user request.
+The user has explicitly resumed work toward 100% overall Tracer coverage, with
+a secondary goal of improving the owned `pcopu/tracerCLI` tool so that agents
+can reach coverage faster using fewer meaningful scenarios. Reuse and extend
+existing journeys, preserve assertion quality and the agreed denominator, and
+keep planning, witnessed links, actual results and measured execution separate.
+This new request supersedes the earlier instruction to stop after the
+four-module measurement increment. The user subsequently authorized isolated
+auth/team journeys and live sign-in verification with their supplied accounts,
+retrieving the requested codes through computer use in their opened inboxes. Keep account details,
+codes and session tokens out of source and reports. Other restrictions below
+remain applicable; do not bypass a denied interaction or treat the goal as a
+completion claim.
 
 ## Tracer
 
@@ -91,8 +98,8 @@ Only then resume the next coverage expansion and repeat. Do not return to
 per-issue commits. Preserve unrelated work and existing evidence; never
 force-push or change GitHub Actions as part of this workflow.
 
-Keep explicit exclusions and blockers visible: login/auth/team work remains
-excluded unless the user changes that scope; the character-alias AppKit fallback
+Keep explicit exclusions and blockers visible: auth/team work is authorized
+for this goal, but real billing changes are not; the character-alias AppKit fallback
 must not be retried after its Library Validation denial without a permitted new
 route. Do not bypass signing, network or sandbox restrictions. Ad-hoc testing
 does not establish Developer ID/helper trust, notarization or release readiness.
@@ -156,6 +163,13 @@ found.” The cause was not established. Do not disable timestamps, weaken
 security, or present a partially signed bundle as verified to bypass the
 failure. Report compilation, signing, native behavior, notarization, and
 distribution as separate outcomes.
+
+A later November 13 run from pinned `9d4f717` production source completed a new
+Developer ID signed automation coverage build with signature, icon and Catalyst
+platform checks. Workspace and short-film journeys passed; their three separate
+LCOV intervals passed integrity checks. This does not explain the earlier
+timestamp failure or establish notarization, distribution or trusted-helper
+behavior. See `docs/testing/coverage-goal-20261113.md` for the scoped checkpoint.
 
 ## What Has Been Verified
 

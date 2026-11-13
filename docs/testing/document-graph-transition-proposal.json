@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "document-integrity",
+      "title": "Document integrity: move scenes and create image lineage",
+      "featureId": "document-graph-transitions",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/document-graph-transition-cases.mjs",
+        "cloud/tests-e2e/document-integrity-journey.mjs"
+      ],
+      "plannedActions": [
+        "POST /v1/projects synthetic graph-transition project",
+        "GET /v1/projects/:project/snapshot empty transition project",
+        "GET /v1/projects/:project/events?after=0 empty transition project",
+        "POST /v1/projects/:project/commands create-two-scene-graph",
+        "GET /v1/projects/:project/events?after=0 create-two-scene-graph event timestamp",
+        "GET /v1/projects/:project/snapshot create-two-scene-graph",
+        "GET /v1/projects/:project/events?after=0 create-two-scene-graph",
+        "POST /v1/projects/:project/leases moving entry A",
+        "POST /v1/projects/:project/leases source cue A",
+        "POST /v1/projects/:project/leases destination cue B",
+        "POST /v1/projects/:project/commands move-leaves-source-cue",
+        "GET /v1/projects/:project/snapshot move-leaves-source-cue",
+        "GET /v1/projects/:project/events?after=0 move-leaves-source-cue",
+        "POST /v1/projects/:project/commands move-leaves-destination-cue-stale",
+        "GET /v1/projects/:project/snapshot move-leaves-destination-cue-stale",
+        "GET /v1/projects/:project/events?after=0 move-leaves-destination-cue-stale",
+        "POST /v1/projects/:project/commands repair-cross-scene-move",
+        "GET /v1/projects/:project/events?after=0 repair-cross-scene-move event timestamp",
+        "GET /v1/projects/:project/snapshot repair-cross-scene-move",
+        "GET /v1/projects/:project/events?after=0 repair-cross-scene-move",
+        "POST /v1/projects/:project/commands replay-cross-scene-move",
+        "GET /v1/projects/:project/snapshot replay-cross-scene-move",
+        "GET /v1/projects/:project/events?after=0 replay-cross-scene-move",
+        "POST /v1/projects/:project/commands invalid-predecessor-id",
+        "GET /v1/projects/:project/snapshot invalid-predecessor-id",
+        "GET /v1/projects/:project/events?after=0 invalid-predecessor-id",
+        "POST /v1/projects/:project/commands missing-predecessor",
+        "GET /v1/projects/:project/snapshot missing-predecessor",
+        "GET /v1/projects/:project/events?after=0 missing-predecessor",
+        "POST /v1/projects/:project/commands wrong-kind-predecessor",
+        "GET /v1/projects/:project/snapshot wrong-kind-predecessor",
+        "GET /v1/projects/:project/events?after=0 wrong-kind-predecessor",
+        "POST /v1/projects/:project/commands self-predecessor",
+        "GET /v1/projects/:project/snapshot self-predecessor",
+        "GET /v1/projects/:project/events?after=0 self-predecessor",
+        "POST /v1/projects/:project/commands equal-revision-version",
+        "GET /v1/projects/:project/snapshot equal-revision-version",
+        "GET /v1/projects/:project/events?after=0 equal-revision-version",
+        "POST /v1/projects/:project/commands backwards-revision-version",
+        "GET /v1/projects/:project/snapshot backwards-revision-version",
+        "GET /v1/projects/:project/events?after=0 backwards-revision-version",
+        "POST /v1/projects/:project/commands missing-image-character",
+        "GET /v1/projects/:project/snapshot missing-image-character",
+        "GET /v1/projects/:project/events?after=0 missing-image-character",
+        "POST /v1/projects/:project/commands wrong-kind-image-character",
+        "GET /v1/projects/:project/snapshot wrong-kind-image-character",
+        "GET /v1/projects/:project/events?after=0 wrong-kind-image-character",
+        "POST /v1/projects/:project/commands create-forward-image-lineage",
+        "GET /v1/projects/:project/events?after=0 create-forward-image-lineage event timestamp",
+        "GET /v1/projects/:project/snapshot create-forward-image-lineage",
+        "GET /v1/projects/:project/events?after=0 create-forward-image-lineage",
+        "POST /v1/projects/:project/leases predecessor image",
+        "POST /v1/projects/:project/commands delete-referenced-predecessor",
+        "GET /v1/projects/:project/snapshot delete-referenced-predecessor",
+        "GET /v1/projects/:project/events?after=0 delete-referenced-predecessor"
+      ],
+      "expectedOutcomes": [
+        "Entry A and cue A move together to scene B, and cue B shifts from [0,1000] to [1000,2000]. Reusing the rejected destination-move command ID succeeds once with exactly the three expected version-two items, sequence two, timing two and the exact before/after event; both earlier rejected moves leave the full public document and history unchanged.",
+        "Missing and wrong-kind predecessor references and image character tags reject with 400 invalid_reference; self, equal and decreasing revisions reject with 400 image_version. A valid version-two revision followed by its version-one predecessor in the same command succeeds with exact saved items and references, sequence three, unchanged timing two and one exact event. Both image item versions are one, distinct from their data.version values; all rejected attempts preserve the full public snapshot excluding leases and event stream.",
+        "The unsupported predecessor ID invalid/id rejects with 400 invalid_id, exact replay preserves the repaired move, and deletion of the predecessor while its revision survives returns 409 item_in_use; each preserves the complete expected public snapshot excluding leases and event stream."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "repair-cross-scene-move-165",
+      "featureId": "document-graph-transitions",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 165,
+        "end": 170,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "94335f7a99fc1e35d2a6a5c1421781b8487c3568b3fb9b67048d7cf9d33958c7",
+        "sha256": "b344caf9d07ce2c80164e2b071bb84078185c1835f9321f4919356ff46e2316a"
+      },
+      "scenarioIds": [
+        "document-integrity"
+      ],
+      "rationale": "Changing an entry scene gathers its former and new scene for cue geometry validation. Source-only and destination-stale failures are distinguished before the complete companion edit succeeds.",
+      "confidence": "high",
+      "uncertainty": "Local public Worker HTTP only. No live identity/provider/native behavior, internal state, crash durability, lease expiry, concurrent races or measured execution is established. Other branches on already-mapped lines are not claimed by this association.",
+      "proposedAssertions": [
+        "Entry A and cue A move together to scene B, and cue B shifts from [0,1000] to [1000,2000]. Reusing the rejected destination-move command ID succeeds once with exactly the three expected version-two items, sequence two, timing two and the exact before/after event; both earlier rejected moves leave the full public document and history unchanged."
+      ]
+    },
+    {
+      "rangeId": "invalid-predecessor-id-68",
+      "featureId": "document-graph-transitions",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/validation.ts",
+        "start": 68,
+        "end": 68,
+        "fileSha256": "47a7dc97b0b4711ba4d16ecd060d53193fa527e2f410888f1c6d63ee6f93bf2f",
+        "spanSha256": "c450c221bd188042e5862b78f0f9e3a93594f74cc7f919a6bdce9d2943d179a3",
+        "sha256": "92ddd801a8422a499d6f4a95653d5f9b9bc4c103696ac886bdb14fa54905fa1b"
+      },
+      "scenarioIds": [
+        "document-integrity"
+      ],
+      "rationale": "An optional supplied previousVersionId is passed to the production safe-identifier validator. A slash rejects before document commit; no UUID-only rule is claimed.",
+      "confidence": "high",
+      "uncertainty": "Local public Worker HTTP only. No live identity/provider/native behavior, internal state, crash durability, lease expiry, concurrent races or measured execution is established. Other branches on already-mapped lines are not claimed by this association.",
+      "proposedAssertions": [
+        "HTTP 400 invalid_id; the complete public snapshot excluding leases and complete event stream remain exactly at the independently expected moved graph, with no image from the refused command present."
+      ]
+    },
+    {
+      "rangeId": "create-forward-image-lineage-178",
+      "featureId": "document-graph-transitions",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 178,
+        "end": 179,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "d5cc30c31070b60835ca9d5a2a1543f984477e7d1c30f585a0f662716e0f486c",
+        "sha256": "d662c59b969e2d6f3f2ef32a7162b4fe84bcfe79de3b4633245368cc115a700f"
+      },
+      "scenarioIds": [
+        "document-integrity"
+      ],
+      "rationale": "Public image character-tag and predecessor references reject absent/wrong-kind targets and accept the correct character plus complete same-command image predecessor.",
+      "confidence": "high",
+      "uncertainty": "Local public Worker HTTP only. No live identity/provider/native behavior, internal state, crash durability, lease expiry, concurrent races or measured execution is established. Other branches on already-mapped lines are not claimed by this association.",
+      "proposedAssertions": [
+        "Missing and wrong-kind predecessor references and image character tags reject with 400 invalid_reference; self, equal and decreasing revisions reject with 400 image_version. A valid version-two revision followed by its version-one predecessor in the same command succeeds with exact saved items and references, sequence three, unchanged timing two and one exact event. Both image item versions are one, distinct from their data.version values; all rejected attempts preserve the full public snapshot excluding leases and event stream."
+      ]
+    },
+    {
+      "rangeId": "create-forward-image-lineage-181",
+      "featureId": "document-graph-transitions",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 181,
+        "end": 181,
+        "fileSha256": "363ec25aa15ac30900147915cf0de29b0899ae0c758951da85f6692a62812f0b",
+        "spanSha256": "2606929e6a360a80238a7c5f287bc3ca9d3210c624848d81a207ca2535bf2be5",
+        "sha256": "2ca5ab640d7fcfdfac68d928285b41d1cd0dafe0c97c0b7181dd62f6175aaa2b"
+      },
+      "scenarioIds": [
+        "document-integrity"
+      ],
+      "rationale": "A self-reference and equal/decreasing revision numbers reject, while a strictly increasing revision with a separately identified predecessor persists exactly.",
+      "confidence": "high",
+      "uncertainty": "Local public Worker HTTP only. No live identity/provider/native behavior, internal state, crash durability, lease expiry, concurrent races or measured execution is established. Other branches on already-mapped lines are not claimed by this association.",
+      "proposedAssertions": [
+        "Missing and wrong-kind predecessor references and image character tags reject with 400 invalid_reference; self, equal and decreasing revisions reject with 400 image_version. A valid version-two revision followed by its version-one predecessor in the same command succeeds with exact saved items and references, sequence three, unchanged timing two and one exact event. Both image item versions are one, distinct from their data.version values; all rejected attempts preserve the full public snapshot excluding leases and event stream."
+      ]
+    }
+  ]
+}

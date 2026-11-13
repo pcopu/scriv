@@ -1,0 +1,2828 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "email-request-code",
+      "title": "Request code",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST /auth/email/request synthetic address and proof challenge"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 136,
+            "end": 136,
+            "sha256": "85222e3bc79e21bed2f277a5d05282686ed7d3f10b409f26fca3822a1fbb8b5d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 25,
+            "end": 25,
+            "sha256": "6381b2d6d3a75f25ce297c22b6ea4bd671d81394c342b82bc5759b3e4829bb6c"
+          },
+          "expectation": "observed",
+          "why": "The actually generated and delivered code matches exactly six decimal digits. This associates the returned formatting expression only; it does not establish distribution, entropy, a sampled leading-zero case or the rare rejection-sampling retry."
+        }
+      ]
+    },
+    {
+      "id": "email-reject-resend",
+      "title": "Reject resend",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST /auth/email/request same address and proof during cooldown"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Enforces resend cooldown without a second delivery.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 140,
+            "end": 140,
+            "sha256": "52e840d2d66bceb7352dbee2e9039385a407b719f9aeaee8813ddd75bfea1ac0"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-reject-wrong-code",
+      "title": "Reject wrong code",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST /auth/email/verify incorrect code"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejects an incorrect six-digit code.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 144,
+            "end": 144,
+            "sha256": "4f3c9bbf6b4e3a6c03150a3ace81ef414a805e312319c4b75eab5f4a5ac9df43"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-reject-wrong-proof",
+      "title": "Reject wrong proof",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST /auth/email/verify correct code incorrect proof"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejects the correct code with a mismatched proof key.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 148,
+            "end": 148,
+            "sha256": "4f3c9bbf6b4e3a6c03150a3ace81ef414a805e312319c4b75eab5f4a5ac9df43"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-verify-code",
+      "title": "Verify code",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST /auth/email/verify correct code and proof"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Issues a session for the normalized synthetic email after successful proof.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 152,
+            "end": 152,
+            "sha256": "4633f2d0f81ae4b0c12b1a55bf0cc842f9fce292e1cff675da9a894c6b9fb47c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-reject-replay",
+      "title": "Reject replay",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST /auth/email/verify replay consumed code"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejects reuse of the consumed challenge.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 156,
+            "end": 156,
+            "sha256": "4f3c9bbf6b4e3a6c03150a3ace81ef414a805e312319c4b75eab5f4a5ac9df43"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-read-identity",
+      "title": "Read identity",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET /v1/me using issued session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Reads the issued identity and empty initial team and project lists.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 160,
+            "end": 160,
+            "sha256": "0330e15efcb1db8647e7dffbb73bafb26b31314a065914b83a981db4ca00bd30"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-list-session",
+      "title": "List session",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET /auth/sessions using issued session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Lists the active session and device name.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 164,
+            "end": 164,
+            "sha256": "95924dc29e5a54e7c7fb230a57760820395cce74a6e715f80e84ae67bcae6f50"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-request-second-code",
+      "title": "Request second code",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST /auth/email/request same synthetic account second device proof"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Issues a second challenge for the same synthetic account and another proof key.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 170,
+            "end": 170,
+            "sha256": "b131364810546f235df9a31f8df8338c9607c1f6b435219d29f21f81d5e391ff"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-verify-second-device",
+      "title": "Verify second device",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST /auth/email/verify second device proof and code"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Issues a second device session for the existing user.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 174,
+            "end": 174,
+            "sha256": "ad12826b84b783d2d871b7a3f8bb8a8c0719f15310d92b1c3ef28c1d77d219ed"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-read-two-sessions",
+      "title": "Read two sessions",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET /auth/sessions with two authenticated devices"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Lists both device sessions and identifies the current session.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 178,
+            "end": 178,
+            "sha256": "bcfb9d5f3dc44cba87079e97a11dac3c18417743b89a22ff8f7c2e6d3e62c09e"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-revoke-second-session",
+      "title": "Revoke second session",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "DELETE /auth/sessions second device from first device"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Revokes the second device session from the first.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 182,
+            "end": 182,
+            "sha256": "913b77b23f93373bbcdeaebca44e7bf4d3e3711ea044497c38cd0016a2f43cdb"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-reject-second-revoked",
+      "title": "Reject second revoked",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET /v1/me using revoked second session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejects the revoked second session.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 186,
+            "end": 186,
+            "sha256": "b021bc8dc42cb14609439da4d3c8fe786bf9adf2d42a3a4ad92384f8193d1ab1"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-read-after-revocation",
+      "title": "Read after revocation",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET /auth/sessions after second device revocation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Lists only the still-active first session after revocation.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 190,
+            "end": 190,
+            "sha256": "da188fab88fe12c70b85abee03918d681d8a58493107ecdd476370e59265ab3e"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-logout",
+      "title": "Logout",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST /auth/logout using issued session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Logs out the first session.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 194,
+            "end": 194,
+            "sha256": "913b77b23f93373bbcdeaebca44e7bf4d3e3711ea044497c38cd0016a2f43cdb"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-reject-revoked-session",
+      "title": "Reject revoked session",
+      "preconditions": [
+        "Isolated local synthetic mailbox and real Worker HTTP; preceding ordered steps succeeded.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET /v1/me using logged-out session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejects the logged-out first session.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 198,
+            "end": 198,
+            "sha256": "b021bc8dc42cb14609439da4d3c8fe786bf9adf2d42a3a4ad92384f8193d1ab1"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-reject-malformed-challenge",
+      "title": "Reject malformed challenge",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET OAuth start malformed challenge"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET OAuth start malformed challenge has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 188,
+            "end": 188,
+            "sha256": "e648f665e4683e791e442ba9c457ef39e1a241579ad10d99e03bfb88f1aac880"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-start-sign-in",
+      "title": "Start sign in",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET OAuth start valid challenge and client state"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET OAuth start valid challenge and client state has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 192,
+            "end": 192,
+            "sha256": "219789117af8dfceef6ac7324a8af12798b5bbadf942815145e7d25be82de771"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-complete-provider-callback",
+      "title": "Complete provider callback",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET callback synthetic GitHub authorization"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback synthetic GitHub authorization has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 196,
+            "end": 196,
+            "sha256": "bc92fd2d31acba4a8fd36f7688e3ce29ace10df5540c528a21f82c127b2d2ea5"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-reject-state-replay",
+      "title": "Reject state replay",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET callback consumed state replay"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback consumed state replay has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 200,
+            "end": 200,
+            "sha256": "f5be804d432109d411a2bfaf8eefdda4e25bebd7d44ce3974c686fc43c5e4889"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-reject-verifier-characters",
+      "title": "Reject verifier characters",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST exchange malformed verifier"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "POST exchange malformed verifier has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 204,
+            "end": 204,
+            "sha256": "7d06a47cfc48fec821f3776f9bdfa418d491f5c287521436d0845a34ee82f1a5"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-reject-wrong-verifier",
+      "title": "Reject wrong verifier",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST exchange wrong valid verifier"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "POST exchange wrong valid verifier has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 208,
+            "end": 208,
+            "sha256": "a5a4dd3fff22396a6decfa77d9494f30159183ea0575eb01e7447295a92fa783"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-exchange-correct-proof",
+      "title": "Exchange correct proof",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST exchange correct verifier after failures"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "After a wrong verifier failed without consumption, correct proof returns a session with the exact persisted synthetic identity and the verified primary email chosen from competing fixture addresses.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 212,
+            "end": 212,
+            "sha256": "86281022f7aa626b6efa87fce0b14d65920be522946fa300378112db23de802b"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-reject-code-replay",
+      "title": "Reject code replay",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST exchange consumed code replay"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "POST exchange consumed code replay has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 216,
+            "end": 216,
+            "sha256": "a5a4dd3fff22396a6decfa77d9494f30159183ea0575eb01e7447295a92fa783"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-read-oauth-identity",
+      "title": "Read oauth identity",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET identity using OAuth session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET identity using OAuth session has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 220,
+            "end": 220,
+            "sha256": "67ea92623f25a34afc751755f5f77b913d4d23c677a5708b1ac897560bd36c76"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-read-oauth-session",
+      "title": "Read oauth session",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET sessions using OAuth session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET sessions using OAuth session has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 224,
+            "end": 224,
+            "sha256": "e2084f107b5d2c67cbaa84ca2762ff83d4ac05c9b3d679a80b35994b1f76b2f0"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-start-cancellation",
+      "title": "Start cancellation",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET OAuth start cancellation fixture"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET OAuth start cancellation fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 228,
+            "end": 228,
+            "sha256": "a7707495b521d7a11f03fbcc3d74ef1c82c6b2ebaa4ad9f51e930fb9210227c2"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-cancel-callback",
+      "title": "Cancel callback",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET callback provider cancellation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback provider cancellation has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 232,
+            "end": 232,
+            "sha256": "4388c5bbefcd4afc9222350e4ed477267201dfe8734663b822a6b06c01b7fff3"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-reject-cancelled-state",
+      "title": "Reject cancelled state",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET callback cancelled state replay"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback cancelled state replay has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 236,
+            "end": 236,
+            "sha256": "51bb4c5fce63ebc9a3a01f7ac69c339f08d2e8273c1dffa0c1a9a3ede0f2b41c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-start-token-error",
+      "title": "Start token error",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET OAuth start token-error fixture"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET OAuth start token-error fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 240,
+            "end": 240,
+            "sha256": "2244126c264201cf16d6f17a164dc94426e07ad642a108dbeda7e97a9a2d74ac"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-reject-token-error",
+      "title": "Reject token error",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET callback simulated token-error"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback simulated token-error has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 244,
+            "end": 244,
+            "sha256": "f51db6946b5914e9a2605df6822992369c51e4ba13421755a0dcbe2b459c5d88"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-replay-token-error",
+      "title": "Replay token error",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET callback token-error consumed state"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback token-error consumed state has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 248,
+            "end": 248,
+            "sha256": "761e5addbd812cb35d335466e491231ee7f65ca94f5d3134b5b286caa5750da3"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-start-profile-error",
+      "title": "Start profile error",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET OAuth start profile-error fixture"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET OAuth start profile-error fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 252,
+            "end": 252,
+            "sha256": "d8415446c7380da18481143ec84c023cf4e65b771faa532ee24e8e91643bde3f"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-reject-profile-error",
+      "title": "Reject profile error",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET callback simulated profile-error"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback simulated profile-error has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 256,
+            "end": 256,
+            "sha256": "4c8fd573e7e6f3ab41f40e7fde05be0464a57dad4926c1152d76668262641d4a"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-replay-profile-error",
+      "title": "Replay profile error",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET callback profile-error consumed state"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback profile-error consumed state has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 260,
+            "end": 260,
+            "sha256": "a4acec8fc68c603b0162b18e97679815a7e17aa28cca3b717f9fb5932c78af35"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-start-invalid-profile",
+      "title": "Start invalid profile",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET OAuth start invalid-profile fixture"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET OAuth start invalid-profile fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 264,
+            "end": 264,
+            "sha256": "46d59196cf23dfc90fa74432d74763e8520235bedc83b6d0d0cea9e782197e24"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-reject-invalid-profile",
+      "title": "Reject invalid profile",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET callback simulated invalid-profile"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback simulated invalid-profile has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 268,
+            "end": 268,
+            "sha256": "b32f56f852189e97c2fa83f233c8d6b43d412b02ce55549aebd4d61d64b4a2d8"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-replay-invalid-profile",
+      "title": "Replay invalid profile",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET callback invalid-profile consumed state"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET callback invalid-profile consumed state has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 272,
+            "end": 272,
+            "sha256": "5c30a9450830cd7ebb3e23dd108e401616bf2a57dc2c4ec2876ef929edea8d25"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-logout-oauth",
+      "title": "Logout oauth",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST logout OAuth session"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "POST logout OAuth session has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 276,
+            "end": 276,
+            "sha256": "73454176e4b843a69ff6754487fc3f563fd44a23abd9b7919e5854daa1bdc947"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "oauth-reject-logged-out-oauth",
+      "title": "Reject logged out oauth",
+      "preconditions": [
+        "Isolated unchanged Worker, synthetic state and exact local GitHub simulation; earlier ordered steps passed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET identity after OAuth logout"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "GET identity after OAuth logout has independently asserted status and public result.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 280,
+            "end": 280,
+            "sha256": "3a198e4469e9f09171f5fd4af68208f07c612e9d72adb5080d9ea542e4172bef"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-create-free-team",
+      "title": "Create free team",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST /v1/teams with padded synthetic name"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Creation returns trimmed name, free plan and authenticated owner role.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 133,
+            "end": 133,
+            "sha256": "2e9e94feb63b74cfaa0d0cb9b19df9a796446a053af6d1398aa6f856c247979c"
+          }
+        },
+        {
+          "id": "created-team-fields",
+          "description": "Public creation returns the trimmed authored team name and the authenticated owner ID, and a following team GET returns the same team ID with exactly its owner membership. This checks persisted team identity/name/owner fields; it does not establish raw duplicate-ID or invalid-owner foreign-key rejection.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 131,
+            "end": 137,
+            "sha256": "f1a21159fd94bab034dfd0e9a5fe96497faf9a057704d6048f837820ad7955a9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 34,
+            "end": 36,
+            "sha256": "46fb9cdd9868cef5bddea43d8b75edd179e2c0e7fb8e648a475dcbd29ba48c3a"
+          },
+          "expectation": "created-team-fields",
+          "why": "Team ID, independently authored trimmed name and known owner ID are persisted by the real creation route and read through the public team route. Entitlement fixtures are unrelated and receive no credit."
+        }
+      ]
+    },
+    {
+      "id": "team-read-created-team",
+      "title": "Read created team",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET created team as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Readback contains exactly the owner membership and no invitations.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 137,
+            "end": 137,
+            "sha256": "3c637914ef9edeacc54bbe8a1781951626bf7a6833dae083d84338af27021ed2"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-create-member-invite",
+      "title": "Create member invite",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST member invitation as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner creates a member invitation with exact one-day lifetime and local URL.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 141,
+            "end": 141,
+            "sha256": "3ea6885af796c88a03c3afb133df7f834e443285e4664d20bfa6028c8257b3c5"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-reject-unpaid-join",
+      "title": "Reject unpaid join",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST member invitation join while team is free"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A valid invitation cannot admit a member while the team is free.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 145,
+            "end": 145,
+            "sha256": "d55c5b5998e054ae5be84978d70d97cc1a69c0bc3523ca44d5fc61bfbbb68464"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-read-rejected-join",
+      "title": "Read rejected join",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET team after rejected free-plan join"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejected free-plan join leaves only the owner membership.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 149,
+            "end": 149,
+            "sha256": "51cda8bc01412e3ef69035943eedf6c74c65531e746867f9777f6d1cd13aad15"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-seed-synthetic-entitlement",
+      "title": "Seed synthetic entitlement",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "Fixture only: seed active entitlement in owned D1"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Synthetic fixture setup updates exactly one owned team; no payment or subscription transition is asserted.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 153,
+            "end": 153,
+            "sha256": "f93c72cb7595632292017fc9b0bf898deb388609ad7e503f5505bc206bfd8db2"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-join-member",
+      "title": "Join member",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST valid member invitation after fixture entitlement"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Entitled team admits a member through its valid invitation.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 157,
+            "end": 157,
+            "sha256": "aa6647b91d5d86d5c3e579b7c3e433fc08b867c8fe8bf61b1275b788567368fb"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 59,
+            "end": 59,
+            "sha256": "4fec24328465991f6a5a57ac5f1faef9a2ee78c342f70c9f08ea929fe29ba1ea"
+          },
+          "expectation": "observed",
+          "why": "The owner-created member invitation is consumed by a public join that returns member role. This is the stored invitation role contract, not a direct invalid-role CHECK test."
+        }
+      ]
+    },
+    {
+      "id": "team-join-member-again",
+      "title": "Join member again",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST same invitation again as existing member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A sequential duplicate join returns the existing member role.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 161,
+            "end": 161,
+            "sha256": "bf46d595172b4563e15f24b9f7a55b58bd6b13f107b28d6b462c0e8dcb734841"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-read-single-membership",
+      "title": "Read single membership",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET team after duplicate member join"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Duplicate join creates no second membership in public readback.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 165,
+            "end": 165,
+            "sha256": "f6805121f617a28a8a0f722545e5c0c9091b6ef8c0dfa8c4b46bb8a59a98a823"
+          }
+        },
+        {
+          "id": "membership-key",
+          "description": "A public member invite join returns the expected team and member role; repeating that same invite as the same member still returns member and public team readback contains exactly one membership for that actor. No raw orphan-member insert or foreign-key cascade is asserted.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 155,
+            "end": 165,
+            "sha256": "78b76e5161b501553a91687599f981e426689fbcd34507919e9b4df88958a7f8"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 48,
+            "end": 49,
+            "sha256": "b479e343425a5dd8ee2748c56002b535e66948d348295d365119a2ebbb9989c5"
+          },
+          "expectation": "membership-key",
+          "why": "Public joins associate the expected team and actor; exact readback shows only one row for repeated same-team membership. These are persisted reference fields, not deletion-cascade verification."
+        },
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 52,
+            "end": 52,
+            "sha256": "da46b912a95f6b38891bcc441552706aeb29964325da6cbb47bb9920f6069c25"
+          },
+          "expectation": "membership-key",
+          "why": "The production join uses ON CONFLICT(team_id,user_id) DO NOTHING. Rejoining the same invite leaves exactly one membership, directly supporting this composite conflict key without a direct implementation test."
+        }
+      ]
+    },
+    {
+      "id": "team-create-viewer-invite",
+      "title": "Create viewer invite",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST viewer invitation as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner creates a viewer invitation with default 30-day lifetime.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 169,
+            "end": 169,
+            "sha256": "ca76c6492d31b9ef9fff8cf8c5e021212c35ca178fea1ba2d53f892407f2e876"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-join-viewer",
+      "title": "Join viewer",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST viewer invitation as viewer actor"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Viewer invitation admits the requested viewer role.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 173,
+            "end": 173,
+            "sha256": "77aa284fab39ed9eabd3a346f0bec8048052c42ff34587b6502002466646069e"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-member-keeps-role",
+      "title": "Member keeps role",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST viewer invitation as existing member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "An existing member joining a viewer invitation retains its member role.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 177,
+            "end": 177,
+            "sha256": "e3e10cf3038c612e4e9bdccb2f617214e282f2caeed88adac230547fc456db1c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-hide-invites-from-member",
+      "title": "Hide invites from member",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET team as nonmanager member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Nonmanager member sees membership list but no invitation management rows.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 181,
+            "end": 181,
+            "sha256": "c7bc831492e2b8d46ed5c71583a11018efd5e8c53de656f7b05427a5b043b74a"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-deny-member-invite",
+      "title": "Deny member invite",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST invitation as nonmanager member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A nonmanager cannot create invitations.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 185,
+            "end": 185,
+            "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-deny-member-rename",
+      "title": "Deny member rename",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "PATCH team name as nonmanager member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A member cannot rename the team.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 189,
+            "end": 189,
+            "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-deny-owner-leave",
+      "title": "Deny owner leave",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "DELETE owner membership as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The owner cannot remove its own membership.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 193,
+            "end": 193,
+            "sha256": "7ad2b750ea8224ca606605e60a871e90b40b1f62496a03f210e868b9f510dd83"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-appoint-admin",
+      "title": "Appoint admin",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "PATCH member role to admin as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner can promote a member to admin.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 197,
+            "end": 197,
+            "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-read-admin-role",
+      "title": "Read admin role",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET team as newly appointed admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Promoted admin reads its persisted role, both invitations, and the unchanged original Synthetic team name after the denied member rename.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 201,
+            "end": 201,
+            "sha256": "b6b80ab93654a54d2b0a8aa6b2a2846b04562dba5a8ed0e446a83f8093d5dd37"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 50,
+            "end": 50,
+            "sha256": "3a48d17f8f3e3505eb7721992339aa093a6a44bc67062820f11c39425e76ebcc"
+          },
+          "expectation": "observed",
+          "why": "A public owner PATCH promotes the member, and a subsequent public GET independently observes persisted admin role. This covers the role field for accepted roles, not the database CHECK rejection or membership races."
+        }
+      ]
+    },
+    {
+      "id": "team-admin-rename",
+      "title": "Admin rename",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "PATCH team name as admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Admin can rename the team with whitespace trimmed.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 205,
+            "end": 205,
+            "sha256": "5893a5161becc59f586b3ae7a8285e259d4bbb07efce81874f1fb222f55509b1"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-read-renamed-team-list",
+      "title": "Read renamed team list",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET viewer team list after rename"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Viewer team list reflects the admin rename and unchanged viewer membership.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 209,
+            "end": 209,
+            "sha256": "6c83d048745fb77d4d3c134d4e1fb8e99e1f364ebc6113ccf374d92efd3aa552"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-deny-admin-appoint-admin",
+      "title": "Deny admin appoint admin",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "PATCH viewer to admin as admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "An admin cannot appoint another admin.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 213,
+            "end": 213,
+            "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-deny-admin-change-owner",
+      "title": "Deny admin change owner",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "PATCH owner role as admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "An admin cannot change the owner membership.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 217,
+            "end": 217,
+            "sha256": "7ad2b750ea8224ca606605e60a871e90b40b1f62496a03f210e868b9f510dd83"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-create-team-project",
+      "title": "Create team project",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST team project as admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Admin creates a team project owned by the team owner.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 221,
+            "end": 221,
+            "sha256": "4059605311db0190b9b11386a4a262d241cfe0b9a2737712acd20d52805b270a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 69,
+            "end": 70,
+            "sha256": "9653e7ab8f64620cdca5660402887cbb1c4826d62c03eb4f6237ffa1217616c6"
+          },
+          "expectation": "observed",
+          "why": "A public admin project creation returns the exact known team ID and the team owner ID instead of the admin actor. This supports persisted ownership/reference fields; foreign-key failure behavior is excluded."
+        }
+      ]
+    },
+    {
+      "id": "team-read-viewer-project",
+      "title": "Read viewer project",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET project as viewer"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Viewer project readback explicitly reports read-only access.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 225,
+            "end": 225,
+            "sha256": "492ed6c25937d5c6f77ad72e436e6a788f690ca852c80cc71f419bdbb7f2bf0c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-admin-promote-viewer",
+      "title": "Admin promote viewer",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "PATCH viewer to member as admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Admin can promote a viewer to ordinary member.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 229,
+            "end": 229,
+            "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-read-promoted-project",
+      "title": "Read promoted project",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET project after viewer promotion"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "After promotion public project readback changes to member and writable.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 233,
+            "end": 233,
+            "sha256": "d77869066cafdc6d8c78d339dfe631f9192755b6a1f159b2efd20cc71a48bc47"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-deny-member-archive",
+      "title": "Deny member archive",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "DELETE project as ordinary member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A writable ordinary member cannot archive the project.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 237,
+            "end": 237,
+            "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-member-self-leave",
+      "title": "Member self leave",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "DELETE own membership as ordinary member"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A nonowner ordinary member can leave the team.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 241,
+            "end": 241,
+            "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-read-after-self-leave",
+      "title": "Read after self leave",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET own identity after leaving team"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Self-leave removes the team and project from public identity lists.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 245,
+            "end": 245,
+            "sha256": "19410a4e80b95107f49871ee954a1ad7de549f3f78efa77d17bd6c3b6a599be9"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-reject-left-project",
+      "title": "Reject left project",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET project after leaving team"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Departed member cannot read the former team project.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 249,
+            "end": 249,
+            "sha256": "7ec908805ab29a96887ff81e6ef14f964e5a6fa07bbbba22eabbc91a0819b054"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-revoke-viewer-invite",
+      "title": "Revoke viewer invite",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "DELETE viewer invitation as admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Admin can revoke the viewer invitation.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 253,
+            "end": 253,
+            "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-read-revoked-invite",
+      "title": "Read revoked invite",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET team invitation list after revocation"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Public manager readback marks only the selected invitation revoked.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 257,
+            "end": 257,
+            "sha256": "f8cae32d7d9fbf9d92b2d066349a49d88fbadd947f90ffd8a95b92e87fbb02c2"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 63,
+            "end": 63,
+            "sha256": "8a5fce7d772d10b87462938d268b62ae26f78914036a3555e68018661a24bc65"
+          },
+          "expectation": "observed",
+          "why": "After public deletion of one invite, public manager readback observes its numeric revoked_at and leaves the other invite unrevoked. No raw SQL update is used to produce this state."
+        }
+      ]
+    },
+    {
+      "id": "team-reject-revoked-invite",
+      "title": "Reject revoked invite",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "POST revoked invitation as outsider"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "A revoked invitation cannot admit a new outsider.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 261,
+            "end": 261,
+            "sha256": "d56c2e597eadbae06fddbb6e4c15452e1a8be168a8096e3b0f87ae65af111330"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-read-no-outsider-membership",
+      "title": "Read no outsider membership",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET outsider identity after revoked join"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Rejected revoked invitation leaves outsider without team or project access.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 265,
+            "end": 265,
+            "sha256": "19410a4e80b95107f49871ee954a1ad7de549f3f78efa77d17bd6c3b6a599be9"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-owner-removes-admin",
+      "title": "Owner removes admin",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "DELETE admin membership as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner can remove an admin membership.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 269,
+            "end": 269,
+            "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-read-after-admin-removal",
+      "title": "Read after admin removal",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET team after owner removed admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner readback contains only the owner after self-leave and admin removal.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 273,
+            "end": 273,
+            "sha256": "51cda8bc01412e3ef69035943eedf6c74c65531e746867f9777f6d1cd13aad15"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-reject-removed-admin",
+      "title": "Reject removed admin",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET team as removed admin"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Removed admin cannot read the team.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 277,
+            "end": 277,
+            "sha256": "7ec908805ab29a96887ff81e6ef14f964e5a6fa07bbbba22eabbc91a0819b054"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-archive-project",
+      "title": "Archive project",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "DELETE team project as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner archives the team project.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 281,
+            "end": 281,
+            "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-read-archived-list",
+      "title": "Read archived list",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET owner project list after archive"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Archived project disappears from owner project list.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 285,
+            "end": 285,
+            "sha256": "191fc6db26623323414d4c0e9b231770fb95589cc61edb2833b23c854ea15623"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "team-reject-archived-get",
+      "title": "Reject archived get",
+      "preconditions": [
+        "Isolated unchanged Worker with owned synthetic users and live session fixtures; ordered preceding steps succeeded. Synthetic active entitlement is directly seeded only in the explicit fixture step; it is not a payment or subscription API transition. All requests are sequential, with real clock guards unchanged.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "GET archived project as owner"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Even its owner cannot retrieve an archived project via normal project read.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 289,
+            "end": 289,
+            "sha256": "7ec908805ab29a96887ff81e6ef14f964e5a6fa07bbbba22eabbc91a0819b054"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "email-consumption-fields",
+      "title": "Bound attempts and consume a verified email challenge once",
+      "preconditions": [
+        "Run the entire existing tracer app -- test services email-auth command. Original 16 callbacks run first; this consumption chapter adds 15 HTTP requests and ends at 31. The subsequent recovery chapter brings the current full journey to 40 requests.",
+        "The existing local mailbox accepts only synthetic addresses at example.invalid and never sends email externally. The new synthetic-boundary address differs from the original account. Seed one GitHub-style user with that unverified contact email, no email_identity and no session; do not seed or alter challenge rows, attempt counters or issued sessions.",
+        "Real request/verify routes create both new challenges and the winning identity/session. Read-only D1 observations compare complete declared users, email_identities, sessions and email_auth_challenges. Rate-limit counters may change and are excluded. Plaintext codes/tokens remain transient and are not emitted in evidence.",
+        "Fresh PKCE proof creates a distinct challenge for the same email after exhaustion. This is a separate proof, not waiting for or bypassing same-proof resend cooldown. Both competing correct fetches are dispatched without awaiting the other result; server scheduling or transaction overlap is not controlled.",
+        "Unchanged 40-request cap, five-second HTTP bounds, 90-second owned-process watchdog, pinned local runtime, telemetry-disabled configuration and denied unexpected outbound access apply. No expiry wait, send failure, storage fault, statistical randomness proof, account enumeration, live provider/native or exhaustive race claim.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "Read original identity/challenge rows after the original 16 HTTP actions; fixture only: seed one GitHub-style user with the boundary synthetic email as an unverified contact, no verified identity and no session.",
+        "Request a real local-mailbox challenge and validate exact row hashes, timing and zero identity/session mutation.",
+        "Submit a guaranteed wrong six-digit code with correct proof five times. After each exact 401, require attempts one through five and otherwise exact challenge and identity/session rows.",
+        "Submit the correct code and proof while still unexpired; require exact 401, attempts still five and no identity/session creation.",
+        "Request another challenge for the same email with a different PKCE proof. Dispatch two identical correct verification fetches before awaiting either, supplying an over-100-character device name.",
+        "Require exactly one 200 and one exact 401. Inspect one consumption marker and attempt, exactly one new user/identity/session, separation from the existing contact user, hashed token, device truncation and default expiry.",
+        "Read winning public identity and session list. Replay the identical verification and require exact 401 with full identity/session/challenge state unchanged.",
+        "Log out the winner, verify only its revocation timestamp changed, and require subsequent identity read 401. Preserve original rows and the locked/consumed challenge states, empty mailbox, 15 added requests and zero outbound attempts."
+      ],
+      "expectations": [
+        {
+          "id": "challenge",
+          "description": "Each newly requested challenge has exact declared row shape, SHA-256 challenge ID and challenge-bound code hash, correct PKCE proof, zero attempts, null consumption, persisted sent timestamp and real ten-minute/one-minute expiry/resend values. Issuance creates no user, verified identity or session.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 215,
+            "end": 225,
+            "sha256": "e2b23ab44111cbcee1f50c67cb4400c0d12c05fb18851726d3cc5bb4af9d83c7"
+          }
+        },
+        {
+          "id": "exhaustion",
+          "description": "Five wrong codes each return exact 401/invalid_code, increment only the target challenge attempts by one through five, and preserve all users, verified identities and sessions. A correct code/proof while the challenge is still unexpired is then refused with attempts fixed at five, unchanged challenge row and no identity/session creation.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 227,
+            "end": 238,
+            "sha256": "38a3dda64ee39f73f35f2851969b2ca06c606bc35f39f5cedda662165086065d"
+          }
+        },
+        {
+          "id": "consumption",
+          "description": "For the same synthetic email under a fresh distinct PKCE proof, two correct verification fetches are dispatched before either result is awaited. Exactly one returns 200 and one exact 401. The challenge has attempts one and one consumption marker; there is exactly one additional verified user, identity and session. A later identical verification is refused with all identity/session/challenge state unchanged. No particular internal transaction overlap is forced.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 239,
+            "end": 264,
+            "sha256": "c7972f690a0350a85a396755a86958696b2cb60d32748afd1dfaef4f3292ac74"
+          }
+        },
+        {
+          "id": "separation",
+          "description": "A seeded GitHub-style user with the matching unverified contact email is preserved exactly and receives no session. The winning verified email identity belongs to a distinct new email-namespace user, and its session has the SHA-256 of the returned token, a 100-character truncated device name and the default 30-day expiry. Public identity/session reads agree. Public logout revokes only that session; its next identity read is 401. Original identities, sessions and challenges remain exact, and mailbox/outbound counters remain empty/zero.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 247,
+            "end": 272,
+            "sha256": "059fbbecbd06679a3babb213f554414a3101e72943676301d009facb2e23b731"
+          }
+        },
+        {
+          "id": "credentials",
+          "description": "The sole new session is linked to the newly verified user, stores the SHA-256 of the returned 64-character token, truncates the supplied device name to 100 characters, uses the same creation time as its new user and a default 30-day expiry, and starts unrevoked. No other SESSION_DAYS or Unicode boundary is varied.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 247,
+            "end": 258,
+            "sha256": "0200f83a14bc5aa1e2b77f9e695615bd18f61241efedcedf4eeabff977ade67f"
+          }
+        },
+        {
+          "id": "new-user",
+          "description": "Exactly one new user and verified identity are inserted; they share the winner ID and creation/verification timestamp, use the reserved email:<UUID> namespace and do not reuse the existing GitHub-style user with the matching contact email.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 247,
+            "end": 260,
+            "sha256": "c9bdc304bddeedc5c3f731f549bc57eabe903da19a1f9081c957695ca2beb72b"
+          }
+        },
+        {
+          "id": "session-use",
+          "description": "The winning token reads its own user/session and exactly one public session, then real logout sets only revoked_at and subsequent identity access returns exact session_expired. Original session rows remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 261,
+            "end": 272,
+            "sha256": "ef5b1735f00b45841da44305efc996faaa369b9f5b252907472e428a31795500"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 5,
+            "end": 6,
+            "sha256": "4f04360339695d97d97a64659d9a75b3a608923395c1ba1ea2960cfb10e89f77"
+          },
+          "expectation": "challenge",
+          "why": "The accepted challenge row and HTTP response independently assert created_at+600000 expiry and created_at+60000 resend time. These are exact constant contracts, not an expiry wait."
+        },
+        {
+          "source": {
+            "path": "cloud/src/email-auth.ts",
+            "start": 7,
+            "end": 8,
+            "sha256": "006c2bd56b7cae4095b5bf2745cc8d2933018d8c0df007af8f1ecaf3c2c11a57"
+          },
+          "expectation": "exhaustion",
+          "why": "Five guaranteed wrong codes advance attempts through five; an unexpired correct code then stays refused. The independent invalidCode object asserts the exact public message. The limit comes from the application guard; this does not test the schema CHECK rejection."
+        },
+        {
+          "source": {
+            "path": "cloud/migrations/0003_email_auth.sql",
+            "start": 11,
+            "end": 17,
+            "sha256": "1d383709bbed112f37dc4358f19d3a1c4ef77fe73b51af55c9a4a6444f241822"
+          },
+          "expectation": "challenge",
+          "why": "Public challenge issuance yields the exact id_hash/email/pkce_challenge/code_hash/created_at/expires_at/sent_at fields and independently expected digests and timestamps. The database is only read for observation after HTTP issuance."
+        },
+        {
+          "source": {
+            "path": "cloud/migrations/0003_email_auth.sql",
+            "start": 18,
+            "end": 19,
+            "sha256": "5cc16464f1791d203c35f9e2316a611c027c69ab6eaeb6b93efff757e9cd1e7b"
+          },
+          "expectation": "consumption",
+          "why": "The real fresh challenge starts with default attempts zero and null consumption, then one successful verification yields attempts one and one consumption marker while its concurrent duplicate and replay cannot add another identity/session. Attempts zero-to-five are separately asserted in exhaustion. The CHECK failure for out-of-range raw SQL is not tested."
+        }
+      ]
+    },
+    {
+      "id": "email-recovery-fields",
+      "title": "Recover safely after email delivery failure",
+      "preconditions": [
+        "Run complete tracer app -- test services email-auth. Preserve original lines 1–273 and footer, sixteen named runtime callbacks and fifteen consumption checks. Append nine requests for forty total within original cap 40.",
+        "Reuse existing synthetic state and verify users, identities, sessions and challenges across the Miniflare mailbox configuration switch. The replacement mailbox accepts only synthetic-recovery@example.invalid and the configured synthetic sender/subject/code shape; it stores the first code then throws a synthetic response failure, and accepts the second normally.",
+        "New challenge/auth mutations use public loopback HTTP. Mailbox RPC and D1 queries only observe fixture state; no direct new D1 fixture write, production helper call, clock override or production bypass is added.",
+        "Wait naturally until the failed row creation time plus 60000ms has elapsed, with 25ms margin. The unchanged process-group deadline remains 90 seconds; this is not exact cooldown-boundary or ten-minute expiry testing.",
+        "Assertions concern users, verified identities, sessions and challenges; the two preflight refusals also preserve security-limit rows. Other internal counters and business stores are outside the declared scope. The failed request never returns its challenge ID, so its stored invalidation is inspected rather than attempting that unavailable ID.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "Read existing identity/challenge rows; reconfigure only the local mailbox fixture to accept then fail its first delivery response, and verify the same owned persistent state survives.",
+        "Send text/plain and foreign-origin JSON sign-in requests. Require exact errors, no mailbox attempt and unchanged identity/challenge/security-limit state.",
+        "Request a code with a fresh synthetic email/proof. The mailbox records the code then throws. Require exact sanitized 503, one failed challenge with nulled digest/send time and send_failed marker, and no new identity/session.",
+        "Retry immediately with the same email/proof. Require exact cooldown 429, unchanged failed challenge and no additional mailbox attempt.",
+        "Wait out the real one-minute cooldown without altering clock/storage. Request again with the same email/proof and require exact new challenge/code digest, bounded timestamps and replacement of the failed row.",
+        "Verify the successful replacement code/proof, check exact new user/identity/session/consumption rows, then read public identity.",
+        "Log out, require only bounded revocation of the new session, then require exact expired-session denial. Preserve all old rows, two send attempts, empty mailbox and zero outbound."
+      ],
+      "expectations": [
+        {
+          "id": "guards",
+          "description": "A text/plain request and a JSON request with a foreign Origin return the exact 415/unsupported_media_type and 403/invalid_origin error objects before any mailbox attempt. All security-limit rows, users, verified identities, sessions and existing challenges remain exact after these two requests. This is one disallowed media type and one foreign origin, not every header normalization or browser behavior.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 274,
+            "end": 339,
+            "sha256": "25510423c3a8fe5f061195745a7f30e92ff42aa9e0325ef7166c1ffa474bea0b"
+          }
+        },
+        {
+          "id": "failure",
+          "description": "The local mailbox accepts and stores a correctly addressed six-digit code, then fails its first send response. The public request returns only the exact 503/email_unavailable error. One new failed challenge has a request-bounded creation time, ten-minute expiry, null code_hash/sent_at, zero attempts and consumed_by send_failed; no identity or session is created. Immediate same-email/same-proof resend returns the exact cooldown 429 with that row unchanged and no second send attempt. After the actual one-minute cooldown elapses, the same request succeeds with a new challenge ID/hash, independently expected code digest, bounded creation/send times, reset consumption/attempt state and exact expiry/resend timestamps. The row replaces the failed row without increasing the challenge count. No clock override or direct challenge write is used.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 274,
+            "end": 339,
+            "sha256": "25510423c3a8fe5f061195745a7f30e92ff42aa9e0325ef7166c1ffa474bea0b"
+          }
+        },
+        {
+          "id": "session",
+          "description": "Successful verification of the replacement code/proof creates exactly one expected email-namespace user, verified identity and session. Exact row checks cover returned user, independently hashed session token, bounded creation time, named device and default thirty-day expiry. The replacement challenge is consumed exactly once with one attempt. Public identity read agrees; logout changes only this session revocation timestamp, bounded by its request, and the next identity read returns the exact expired-session error. All earlier users, identities, sessions and challenges are preserved. The local mailbox has exactly two attempts and ends empty; outbound attempts remain zero. No verification of the unavailable failed challenge ID, rollback fault, concurrent resend, process restart, native UI or real email delivery is asserted.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 274,
+            "end": 339,
+            "sha256": "25510423c3a8fe5f061195745a7f30e92ff42aa9e0325ef7166c1ffa474bea0b"
+          }
+        },
+        {
+          "id": "replacement-key",
+          "description": "After real cooldown, the same email and PKCE proof replace the failed challenge with a new ID and exact new digest/timestamps/reset state, without increasing row count or changing other challenges. This exercises the production INSERT ON CONFLICT(email,pkce_challenge) replacement path; no concurrent resend is claimed.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 310,
+            "end": 324,
+            "sha256": "261b4421b37fa8c0a111515583df5b96fbcae7685f3d8f2e71d8c3aaf3ff5ede"
+          }
+        },
+        {
+          "id": "verified-user-fields",
+          "description": "Verification of the replacement code creates one exact email-namespace user with the returned ID, independently expected github_id/name/email/avatar_url and bounded creation time, plus exactly one verified email identity with the same user ID and verified_at equal to that creation time. Existing users and identities remain exact. No seeded contact user is credited as a verified identity.",
+          "witness": {
+            "path": "cloud/tests-e2e/email-auth-journey.mjs",
+            "start": 325,
+            "end": 331,
+            "sha256": "9223aa8947a4e23eca5f676d033902e8e9536ad2e3685233721ea44013c756fc"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/migrations/0003_email_auth.sql",
+            "start": 20,
+            "end": 20,
+            "sha256": "4e786969d049f09cc7ea3931a0579ce011aa563f7c102dc11395879cc8e915d0"
+          },
+          "expectation": "replacement-key",
+          "why": "The declared composite uniqueness key is the production upsert conflict target. Same-email/same-proof recovery replaces one failed row after natural cooldown, with exact row count and unchanged other rows."
+        },
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 3,
+            "end": 8,
+            "sha256": "15871b9ad608fe9e27f464c957aa19f4397ebaa271b3b423a78b27bab1c434d2"
+          },
+          "expectation": "verified-user-fields",
+          "why": "Each declared user field is checked on the row inserted by the real email verify route, with old users preserved. This is positive field persistence, not arbitrary uniqueness/nullability/cascade failure coverage."
+        },
+        {
+          "source": {
+            "path": "cloud/migrations/0003_email_auth.sql",
+            "start": 6,
+            "end": 8,
+            "sha256": "65a42f306d0376e85e61dbaff1a4568682f5f63401ff1691ea0676f66be34657"
+          },
+          "expectation": "verified-user-fields",
+          "why": "The exact verified email, newly created user reference and verification timestamp are read after public verification. The matching unverified contact fixture remains separate; foreign-key cascade and colliding user-key insert behavior are not exercised."
+        }
+      ]
+    },
+    {
+      "id": "oauth-persisted-fields",
+      "title": "Reuse OAuth identity and isolate session revocation",
+      "preconditions": [
+        "Run the entire public tracer app -- test services oauth command on the unchanged owned local Worker. Original source lines 1–283, all 24 named runtime callbacks and their expectations remain exact. A new chapter adds 16 HTTP requests for 40 total, within the unchanged 40-request cap.",
+        "Existing fixture permits only three exact GitHub endpoint URLs and exact synthetic credentials/code/token, with no forwarding or fallback. The valid provider profile remains unchanged. Total 14 simulated provider calls remain below the unchanged 16-call limit; denied outbound stays zero.",
+        "After original logout, seed only one unrelated synthetic user and active session. No OAuth states, exchange codes or new tested-user sessions are seeded, edited or reset. Both fresh authentication flows use the real HTTP routes and synthetic provider fixture.",
+        "Read-only D1 observations compare full declared users, sessions, oauth_states, auth_codes and email_identities. Rate counters and project-room notification behavior are excluded. Plaintext state/code/token values remain transient and never appear in logs or artifacts.",
+        "Two client callback requests and later two exchange requests are each dispatched before either result is awaited. Internal D1 or worker scheduling is not controlled. Five-second requests, owned 90-second watchdog, pinned runtime, telemetry-disabled settings and isolated cleanup remain unchanged.",
+        "No real GitHub login, real account, native input, notification delivery, storage-fault, arbitrary-race, expired-time, changed-profile or alternate SESSION_DAYS/device-name configuration is claimed.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "Read original revoked user/session and empty OAuth state/code/verified-identity rows after the original 24 HTTP actions; fixture only: add one isolated unrelated user/session.",
+        "Start a fresh OAuth flow; observe the stored opaque-state hash, client state, fresh PKCE challenge and request-bounded ten-minute expiry without user/session writes.",
+        "Dispatch two identical callback fetches together. Require one redirect and one exact oauth_expired refusal, a single provider exchange, unchanged user/session rows and one correctly hashed two-minute exchange code.",
+        "Exchange the first code and proof once; require exactly one session for the existing user, exact token hash, requested device and default expiry.",
+        "Repeat with a second fresh state and proof for the same GitHub identity; after its callback dispatch two correct exchanges together and require one success and one invalid_code refusal with only one additional session.",
+        "List sessions using the second token and require exactly the two new active sessions. Attempt deletion of the unrelated session ID and require ok with complete declared auth state unchanged.",
+        "Read current identity, revoke the first session using the second, and check only the target timestamp changed. Require the first token refused and the second still able to list its sole session.",
+        "Log out the second session; require its token refused and only its revocation timestamp changed. Preserve original and unrelated rows, empty state/code/identity rows, 40 total HTTP requests, 14 simulated provider requests and zero denied outbound."
+      ],
+      "expectations": [
+        {
+          "id": "states",
+          "description": "Real starts store exactly one new OAuth state with the SHA-256 of the returned opaque state, distinct client state, correct fresh PKCE challenge and ten-minute expiry bounded by actual request time; users/sessions remain exact and auth codes empty.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 299,
+            "end": 306,
+            "sha256": "911c51856d8203972ecd48f3c1205c7d1716a3af43a0d991f13d8c4bc590bfc1"
+          }
+        },
+        {
+          "id": "callback",
+          "description": "Two callback fetches for one real OAuth state are dispatched before either result is awaited; exactly one redirects with a code and one returns exact 400/oauth_expired. Only one synthetic provider exchange occurs. Separately, two correct code-exchange fetches are dispatched together; exactly one returns 200 and one exact 401/invalid_code, the exchange code disappears and exactly one new session is added. No particular internal transaction overlap is forced.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 307,
+            "end": 324,
+            "sha256": "dea8a35cddf28693863131603fe4e255b3cd989a2914f6c2e13e4dfafaf6590d"
+          }
+        },
+        {
+          "id": "identity",
+          "description": "Repeated successful callbacks for the same simulated GitHub account preserve every user row including the preexisting ID/creation time, do not create a second user, and do not create a verified email identity. The provider profile is deliberately unchanged; profile-field update behavior is not tested.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 312,
+            "end": 324,
+            "sha256": "e2332a9055030b68fd9611dbda09bc5ca7f59648fa2912ed3719a95b0abce0a0"
+          }
+        },
+        {
+          "id": "codes",
+          "description": "Each successful callback consumes its OAuth state and stores exactly one two-minute exchange-code row containing the SHA-256 of the returned code, the existing user ID and the fresh proof challenge. No sessions are created until exchange.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 307,
+            "end": 313,
+            "sha256": "a0686fa3f630387f7aa06a4dcee14b7cbf7d4013a4d92d969aa443ba9e0e1151"
+          }
+        },
+        {
+          "id": "credentials",
+          "description": "Each successful exchange adds exactly one session with SHA-256 of its returned 64-character bearer, unique session ID, existing user ID, requested device name, request-bounded creation timestamp, default 30-day expiry and null revocation. Existing sessions remain byte-for-byte equal.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 314,
+            "end": 326,
+            "sha256": "61539561e614229b069e9ee596cbad59237fb21c201b9279924fb65a55cadea1"
+          }
+        },
+        {
+          "id": "inventory",
+          "description": "Public session reads return exactly the two new active sessions and the correct current ID, omitting the original revoked and unrelated active session. After sibling revocation only the current session remains.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 326,
+            "end": 336,
+            "sha256": "17a3baf8fb2e0f39844c3c9fa299a2f42fe8904b39672fec07dfbf52e52a9787"
+          }
+        },
+        {
+          "id": "revoke",
+          "description": "The public session list contains exactly the two new active sessions and identifies the current session; it omits the original revoked session and an unrelated synthetic user session. Deleting the unrelated session ID reports ok with all declared auth rows unchanged. Deleting the sibling session changes only its revocation timestamp; the sibling token is refused while the current token still lists its own session. Logout changes only the current session revocation timestamp and its token is then refused. Original and unrelated user/session rows remain exact.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 326,
+            "end": 341,
+            "sha256": "9650de58234a93da6cb68542500c3118f36221cf94b3daf482378caa336588bc"
+          }
+        },
+        {
+          "id": "logout",
+          "description": "Logout of the remaining current session changes only its revocation timestamp within real request time. Its next identity read is exact 401/session_expired. Prior revoked and unrelated sessions stay unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 337,
+            "end": 341,
+            "sha256": "300c013acf0b158c576458def2e0dd255b7d352aefca9d0cd77efda5c36ce014"
+          }
+        },
+        {
+          "id": "authenticate",
+          "description": "The current OAuth bearer successfully reads the existing user and empty teams/projects. Revoking the sibling session makes the sibling bearer fail with exact 401/session_expired while the current bearer still lists its own session. After current logout the current bearer is also refused.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 331,
+            "end": 338,
+            "sha256": "95d4b34e1fbd782100c913c6befb1aab4adc1cc652f74a565115fdf3f29c16dc"
+          }
+        },
+        {
+          "id": "session-fields",
+          "description": "Successful exchanges create one exact row each with independently hashed bearer, new session ID, existing user ID, named device, bounded created_at, default thirty-day expires_at and null revoked_at. Public sibling revocation and logout later change only the target revoked_at within request time; unrelated and original rows remain equal. This is persisted field behavior, not database uniqueness/nullability/cascade rejection.",
+          "witness": {
+            "path": "cloud/tests-e2e/oauth-journey.mjs",
+            "start": 314,
+            "end": 341,
+            "sha256": "a399186c39034ad242fefece04f1a139e45254314975e4b6f82e0e0f13ee485f"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 22,
+            "end": 25,
+            "sha256": "c4f9f3957811243c5a39c2f9be16ee246c7f264b4e7a4afca724b747e63a1995"
+          },
+          "expectation": "states",
+          "why": "Fresh public OAuth starts persist the exact state_hash, client_state, challenge and expires_at fields, including independent hash and request-bounded lifetime assertions. No malformed/colliding raw SQL insert or index behavior is claimed."
+        },
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 28,
+            "end": 31,
+            "sha256": "6db758a77063e8a467a5f799017cf538740f81d15fa122204dd1b1247e5d67a0"
+          },
+          "expectation": "codes",
+          "why": "The successful callback creates one code row with exact returned-code hash, existing user ID, fresh challenge and request-bounded two-minute expiry; no session exists yet. Foreign-key enforcement and duplicate-code collision rejection are not exercised."
+        },
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 11,
+            "end": 17,
+            "sha256": "3518621dec29017b5ba7a16df49c05e20f1d451043fccd633f19ef7e0be44486"
+          },
+          "expectation": "session-fields",
+          "why": "Actual exchange, public session revocation and logout distinguish all declared session fields against independently expected hashes, actor IDs, device names and timestamps. The seeded unrelated row is preservation context, not the evidence for these writes."
+        }
+      ]
+    },
+    {
+      "id": "team-project-archive-fields",
+      "title": "Keep project access consistent across entitlement grace",
+      "preconditions": [
+        "Run the entire public tracer app -- test services team-lifecycle command. Original source lines 1–291, 40 named callbacks (39 HTTP plus one entitlement fixture) and their assertions remain unchanged. The appendix adds 41 HTTP requests for 80 total, within the unchanged 80-request cap.",
+        "Use the existing isolated synthetic owner/member/viewer/outsider identities. Rejoin member and viewer through the original valid member invite, set viewer role through owner PATCH, and create one new team project through real HTTP. Original project stays archived.",
+        "Only subscription_status, paid_until and canceled_at on the owned synthetic team are adjusted as fixture inputs. No provider, billing webhook or reconciliation is simulated; no membership, auth or project state is reset by fixture SQL. The original three entitlement fields are restored afterward.",
+        "Frozen dates are one hour future, one day past or 31 days past relative to the real clock. This is safely inside/outside grace, not exact boundary equality or a 30-day wall-clock wait. Real session expiry remains future within the unchanged 90-second watchdog.",
+        "Read-only D1 observations compare complete users, sessions, teams, team_members, join_links and projects. Security/rate counters and durable-object internals are excluded. New project IDs are fresh for refused creates; no duplicate-ID replay intercepts the tested entitlement guard.",
+        "canWrite/premium/role describe returned metadata, not successful content mutations. No live payment/provider, actual document write/export, socket notification, arbitrary race/storage failure, native execution, removed-owner/stale-owner fixture or other subscription-state boundary is claimed. Unexpected outbound remains denied.",
+        "This is an additional source-to-assertion catalog for the existing local Scriv CLI journeys. It neither adds a scenario execution nor claims live email, GitHub, native sign-in or provider behavior.",
+        "Migration mappings below identify fields persisted by public HTTP operations and explicitly observed afterward. A mapped field line does not establish every colocated PRIMARY KEY, UNIQUE, NOT NULL, CHECK, foreign-key or cascade rejection; indexes and query-plan performance are unclaimed.",
+        "Use the production Worker bundled by the existing isolated journey, its synthetic mailbox/provider/identity fixtures, pinned local runtime and existing cleanup. Full preceding actions in this scenario remain required. No real account addresses or credentials are included."
+      ],
+      "actions": [
+        "Read original membership/project rows; rejoin the member and viewer through the retained member invite, assign viewer role with owner PATCH, and create one new owner-held team project through public HTTP.",
+        "Seed each of seven entitlement tuples in turn: active/future-paid, trialing/future-paid, past_due/future-paid, active/recently-expired, canceled/recent-cancel plus old-paid, canceled/old-cancel plus recent-paid, active/old-paid without cancel.",
+        "For each tuple, GET the project as owner, member and viewer; check exact public project shape or exact 402. GET member identity; check project inclusion/omission and team role/status/plan.",
+        "In recent active expiry, attempt a fresh member project create; in old cancellation, attempt a fresh owner project create. Require exact 402 and complete declared business-state preservation.",
+        "After the last expired-grace tuple, list the existing project as owner, then archive it through the owner route. Observe only its archive/update timestamps change; owner listing becomes empty and direct lookup is 404.",
+        "Restore only the three fixture entitlement fields, leave both rejoined memberships through their own HTTP DELETEs, and read owner team. Preserve every original declared row exactly plus the one newly archived project; finish at 80 HTTP requests and zero outbound."
+      ],
+      "expectations": [
+        {
+          "id": "matrix",
+          "description": "Seven explicitly seeded entitlement states are exercised through 21 real project reads and seven member identity reads. Active and trialing future-paid teams project premium access; past_due with future paid_until does not. Recent expiry and recent cancellation allow member/viewer metadata reads with canWrite false; dates safely beyond the 30-day grace window refuse those reads with exact 402 and omit the project from member identity. The owner reads the existing project in every state. canWrite assertions concern public capability projection, not document-write execution.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 309,
+            "end": 334,
+            "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
+          }
+        },
+        {
+          "id": "precedence",
+          "description": "Cancellation time takes precedence over paid_until for grace: recent canceled_at with 31-day-old paid_until allows member/viewer reads, whereas 31-day-old canceled_at with recent paid_until refuses them. With canceled_at null, old paid_until refuses them. The real clock is not altered and exact equality at the expiry boundary is not tested. All declared business rows remain unchanged by each phase of reads and refused creates.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 309,
+            "end": 334,
+            "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
+          }
+        },
+        {
+          "id": "team-plan",
+          "description": "Across seven states, member identity retains exactly its team with matching role/status; plan is team only for active/trialing with future paid_until and free for the other five states. Project-list membership and capability projections match the phase expectations.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 309,
+            "end": 334,
+            "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
+          }
+        },
+        {
+          "id": "projection",
+          "description": "Public project GET responses preserve all original project fields and expose exact owner/member/viewer role, phase premium and projected canWrite. Owner canWrite stays true; member canWrite is true only in the two premium states, and viewer canWrite stays false. This does not execute document writes.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 309,
+            "end": 334,
+            "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
+          }
+        },
+        {
+          "id": "owner-read",
+          "description": "Owner metadata reads succeed in all seven entitlement states even when member/viewer reads are refused. The final owner project list still contains the original unarchived project with premium false and canWrite true after grace expires.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 309,
+            "end": 335,
+            "sha256": "f557aea7fc229234c88b8996c15285928a003c54a3bda649ed058d2ddf733b75"
+          }
+        },
+        {
+          "id": "list",
+          "description": "Member identity contains exactly the new active project during premium/grace states and no projects in the two expired-grace states; original archived project is never returned. Team membership and identity remain visible. All declared business rows remain unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 309,
+            "end": 334,
+            "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
+          }
+        },
+        {
+          "id": "create",
+          "description": "A member new-project POST in active-expired grace and an owner new-project POST in canceled expired grace each returns exact 402/team_subscription_required. Fresh project IDs prevent an idempotent replay short circuit, and all declared business rows remain exact.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 309,
+            "end": 334,
+            "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
+          }
+        },
+        {
+          "id": "archive",
+          "description": "A member cannot create a new team project while active entitlement is expired, and the owner cannot create one after canceled grace has expired; both return exact 402 without business-row changes. Nevertheless, after grace the owner can list and archive the existing team project. Archive changes only that project archived_at and updated_at within request time; owner list then omits it and direct owner lookup is 404. Restoring the three fixture entitlement fields and leaving through real membership routes restores all original declared rows, with only the new archived project retained.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 332,
+            "end": 345,
+            "sha256": "9a35ad9dc9461d658e7ffff11422fb4a10887d3a3f2ca1a37b54dee6be8b7699"
+          }
+        },
+        {
+          "id": "project-archive-fields",
+          "description": "After grace expires, the public owner DELETE archives the existing project. Read-only D1 comparison shows archived_at bounded by the request and updated_at equal to archived_at; all other project fields and business rows remain equal. Public listing becomes empty and direct lookup is 404. The three entitlement fixture fields receive no source credit.",
+          "witness": {
+            "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
+            "start": 335,
+            "end": 340,
+            "sha256": "033ea55a2eac1cc6772f98564011f91005d73a1744cca0e9a7763fe915990be1"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/migrations/0001_identity_teams.sql",
+            "start": 72,
+            "end": 73,
+            "sha256": "298335b0bf4d5d994fa43d83aae735cef66d65a0999bd583924611ec3932409a"
+          },
+          "expectation": "project-archive-fields",
+          "why": "Only the public archive operation produces the observed updated_at/archived_at values. Exact before/after row and public visibility assertions distinguish these two fields from the setup entitlement writes."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "local-email-session-lifecycle",
+      "title": "Local synthetic email session lifecycle — existing stored-data assertions",
+      "steps": [
+        "email-request-code",
+        "email-reject-resend",
+        "email-reject-wrong-code",
+        "email-reject-wrong-proof",
+        "email-verify-code",
+        "email-reject-replay",
+        "email-read-identity",
+        "email-list-session",
+        "email-request-second-code",
+        "email-verify-second-device",
+        "email-read-two-sessions",
+        "email-revoke-second-session",
+        "email-reject-second-revoked",
+        "email-read-after-revocation",
+        "email-logout",
+        "email-reject-revoked-session",
+        "email-consumption-fields",
+        "email-recovery-fields"
+      ]
+    },
+    {
+      "id": "local-github-oauth-pkce",
+      "title": "Synthetic GitHub OAuth and PKCE lifecycle — existing stored-data assertions",
+      "steps": [
+        "oauth-reject-malformed-challenge",
+        "oauth-start-sign-in",
+        "oauth-complete-provider-callback",
+        "oauth-reject-state-replay",
+        "oauth-reject-verifier-characters",
+        "oauth-reject-wrong-verifier",
+        "oauth-exchange-correct-proof",
+        "oauth-reject-code-replay",
+        "oauth-read-oauth-identity",
+        "oauth-read-oauth-session",
+        "oauth-start-cancellation",
+        "oauth-cancel-callback",
+        "oauth-reject-cancelled-state",
+        "oauth-start-token-error",
+        "oauth-reject-token-error",
+        "oauth-replay-token-error",
+        "oauth-start-profile-error",
+        "oauth-reject-profile-error",
+        "oauth-replay-profile-error",
+        "oauth-start-invalid-profile",
+        "oauth-reject-invalid-profile",
+        "oauth-replay-invalid-profile",
+        "oauth-logout-oauth",
+        "oauth-reject-logged-out-oauth",
+        "oauth-persisted-fields"
+      ]
+    },
+    {
+      "id": "local-team-membership-lifecycle",
+      "title": "Local synthetic team membership lifecycle — existing stored-data assertions",
+      "steps": [
+        "team-create-free-team",
+        "team-read-created-team",
+        "team-create-member-invite",
+        "team-reject-unpaid-join",
+        "team-read-rejected-join",
+        "team-seed-synthetic-entitlement",
+        "team-join-member",
+        "team-join-member-again",
+        "team-read-single-membership",
+        "team-create-viewer-invite",
+        "team-join-viewer",
+        "team-member-keeps-role",
+        "team-hide-invites-from-member",
+        "team-deny-member-invite",
+        "team-deny-member-rename",
+        "team-deny-owner-leave",
+        "team-appoint-admin",
+        "team-read-admin-role",
+        "team-admin-rename",
+        "team-read-renamed-team-list",
+        "team-deny-admin-appoint-admin",
+        "team-deny-admin-change-owner",
+        "team-create-team-project",
+        "team-read-viewer-project",
+        "team-admin-promote-viewer",
+        "team-read-promoted-project",
+        "team-deny-member-archive",
+        "team-member-self-leave",
+        "team-read-after-self-leave",
+        "team-reject-left-project",
+        "team-revoke-viewer-invite",
+        "team-read-revoked-invite",
+        "team-reject-revoked-invite",
+        "team-read-no-outsider-membership",
+        "team-owner-removes-admin",
+        "team-read-after-admin-removal",
+        "team-reject-removed-admin",
+        "team-archive-project",
+        "team-read-archived-list",
+        "team-reject-archived-get",
+        "team-project-archive-fields"
+      ]
+    }
+  ]
+}

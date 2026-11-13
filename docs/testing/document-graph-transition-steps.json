@@ -1,0 +1,512 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "create-two-scene-graph",
+      "title": "Create the two-scene transition fixture",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution."
+      ],
+      "actions": [
+        "POST /v1/projects synthetic graph-transition project",
+        "GET /v1/projects/:project/snapshot empty transition project",
+        "GET /v1/projects/:project/events?after=0 empty transition project",
+        "POST /v1/projects/:project/commands create-two-scene-graph",
+        "GET /v1/projects/:project/events?after=0 create-two-scene-graph event timestamp",
+        "GET /v1/projects/:project/snapshot create-two-scene-graph",
+        "GET /v1/projects/:project/events?after=0 create-two-scene-graph"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Project creation returns 201. The empty public state is exact. The seven-item graph saves with all item versions one, sequence one, timing one and one exact event, with source and destination cues each covering [0,1000] in their own scenes.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 84,
+            "sha256": "81f66dd0c6d61f2950c460782c640547ecf5bbe8e7e894915cfb5de384cef337"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "move-leaves-source-cue",
+      "title": "Reject a move that strands source coverage",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution.",
+        "Move only entry A from scene A to scene B at order -1; its existing cue remains in scene A, which now has zero duration."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/leases moving entry A",
+        "POST /v1/projects/:project/leases source cue A",
+        "POST /v1/projects/:project/leases destination cue B",
+        "POST /v1/projects/:project/commands move-leaves-source-cue",
+        "GET /v1/projects/:project/snapshot move-leaves-source-cue",
+        "GET /v1/projects/:project/events?after=0 move-leaves-source-cue"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 409 cue_timing; the complete public snapshot excluding leases and complete event stream remain exactly at the independently expected pre-edit graph.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 88,
+            "sha256": "80e7e0a8ba8e91c8837775db90fa8017be434fa519b6c8b99b894d9defb846b0"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "move-leaves-destination-cue-stale",
+      "title": "Reject stale destination coverage",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution.",
+        "Move entry A and cue A to scene B; existing entry B follows A, but cue B incorrectly remains [0,1000]."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/commands move-leaves-destination-cue-stale",
+        "GET /v1/projects/:project/snapshot move-leaves-destination-cue-stale",
+        "GET /v1/projects/:project/events?after=0 move-leaves-destination-cue-stale"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 409 cue_anchor; the complete public snapshot excluding leases and complete event stream remain exactly at the independently expected pre-edit graph.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 88,
+            "sha256": "80e7e0a8ba8e91c8837775db90fa8017be434fa519b6c8b99b894d9defb846b0"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "repair-cross-scene-move",
+      "title": "Repair both affected scenes in one edit",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/commands repair-cross-scene-move",
+        "GET /v1/projects/:project/events?after=0 repair-cross-scene-move event timestamp",
+        "GET /v1/projects/:project/snapshot repair-cross-scene-move",
+        "GET /v1/projects/:project/events?after=0 repair-cross-scene-move"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Entry A and cue A move together to scene B, and cue B shifts from [0,1000] to [1000,2000]. Reusing the rejected destination-move command ID succeeds once with exactly the three expected version-two items, sequence two, timing two and the exact before/after event; both earlier rejected moves leave the full public document and history unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 90,
+            "sha256": "7e107ced888d6f47de8e225796072bf3d3ce6632af34fee22a9a2b32f0f6c32d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 165,
+            "end": 170,
+            "sha256": "b344caf9d07ce2c80164e2b071bb84078185c1835f9321f4919356ff46e2316a"
+          },
+          "expectation": "observed",
+          "why": "Changing an entry scene gathers its former and new scene for cue geometry validation. Source-only and destination-stale failures are distinguished before the complete companion edit succeeds."
+        }
+      ]
+    },
+    {
+      "id": "replay-cross-scene-move",
+      "title": "Replay the completed move",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/commands replay-cross-scene-move",
+        "GET /v1/projects/:project/snapshot replay-cross-scene-move",
+        "GET /v1/projects/:project/events?after=0 replay-cross-scene-move"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The exact successful command replay returns the original receipt without another item/version, sequence, timing or event change; full snapshot excluding leases and history remain exact.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 93,
+            "sha256": "92c4732276c36aae1ca51c71a427ab754ac27809af03dddb0b67dfe4b7a67ca5"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "invalid-predecessor-id",
+      "title": "Reject unsupported predecessor ID syntax",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution.",
+        "The new revision has previousVersionId equal to invalid/id; all other image fields are valid."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/commands invalid-predecessor-id",
+        "GET /v1/projects/:project/snapshot invalid-predecessor-id",
+        "GET /v1/projects/:project/events?after=0 invalid-predecessor-id"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 invalid_id; the complete public snapshot excluding leases and complete event stream remain exactly at the independently expected moved graph, with no image from the refused command present.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 103,
+            "sha256": "e3ebc8cccab09e6e82773d8dd126fbbe515d705335da6f74521c230b6d30902c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/validation.ts",
+            "start": 68,
+            "end": 68,
+            "sha256": "92ddd801a8422a499d6f4a95653d5f9b9bc4c103696ac886bdb14fa54905fa1b"
+          },
+          "expectation": "observed",
+          "why": "An optional supplied previousVersionId is passed to the production safe-identifier validator. A slash rejects before document commit; no UUID-only rule is claimed."
+        }
+      ]
+    },
+    {
+      "id": "missing-predecessor",
+      "title": "Reject an unavailable predecessor",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution.",
+        "The new revision refers to a fresh syntactically valid ID absent from the project."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/commands missing-predecessor",
+        "GET /v1/projects/:project/snapshot missing-predecessor",
+        "GET /v1/projects/:project/events?after=0 missing-predecessor"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 invalid_reference; the complete public snapshot excluding leases and complete event stream remain exactly at the independently expected moved graph, with no image from the refused command present.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 103,
+            "sha256": "e3ebc8cccab09e6e82773d8dd126fbbe515d705335da6f74521c230b6d30902c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "wrong-kind-predecessor",
+      "title": "Reject a non-image predecessor",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution.",
+        "The new revision refers to existing scene B as its predecessor."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/commands wrong-kind-predecessor",
+        "GET /v1/projects/:project/snapshot wrong-kind-predecessor",
+        "GET /v1/projects/:project/events?after=0 wrong-kind-predecessor"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 invalid_reference; the complete public snapshot excluding leases and complete event stream remain exactly at the independently expected moved graph, with no image from the refused command present.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 103,
+            "sha256": "e3ebc8cccab09e6e82773d8dd126fbbe515d705335da6f74521c230b6d30902c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "self-predecessor",
+      "title": "Reject a self-referencing image",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution.",
+        "The new revision refers to its own ID."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/commands self-predecessor",
+        "GET /v1/projects/:project/snapshot self-predecessor",
+        "GET /v1/projects/:project/events?after=0 self-predecessor"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 image_version; the complete public snapshot excluding leases and complete event stream remain exactly at the independently expected moved graph, with no image from the refused command present.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 103,
+            "sha256": "e3ebc8cccab09e6e82773d8dd126fbbe515d705335da6f74521c230b6d30902c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "equal-revision-version",
+      "title": "Reject an equal-numbered revision",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution.",
+        "One command puts a revision with data.version one before its new predecessor with data.version one."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/commands equal-revision-version",
+        "GET /v1/projects/:project/snapshot equal-revision-version",
+        "GET /v1/projects/:project/events?after=0 equal-revision-version"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 image_version; the complete public snapshot excluding leases and complete event stream remain exactly at the independently expected moved graph, with no image from the refused command present.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 103,
+            "sha256": "e3ebc8cccab09e6e82773d8dd126fbbe515d705335da6f74521c230b6d30902c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "backwards-revision-version",
+      "title": "Reject a backwards image revision",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution.",
+        "One command puts a revision with data.version one before its new predecessor with data.version two."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/commands backwards-revision-version",
+        "GET /v1/projects/:project/snapshot backwards-revision-version",
+        "GET /v1/projects/:project/events?after=0 backwards-revision-version"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 image_version; the complete public snapshot excluding leases and complete event stream remain exactly at the independently expected moved graph, with no image from the refused command present.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 103,
+            "sha256": "e3ebc8cccab09e6e82773d8dd126fbbe515d705335da6f74521c230b6d30902c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "missing-image-character",
+      "title": "Reject an unavailable image character tag",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution.",
+        "A valid two-image lineage command gives the revision a fresh absent character ID."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/commands missing-image-character",
+        "GET /v1/projects/:project/snapshot missing-image-character",
+        "GET /v1/projects/:project/events?after=0 missing-image-character"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 invalid_reference; the complete public snapshot excluding leases and complete event stream remain exactly at the independently expected moved graph, with no image from the refused command present.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 103,
+            "sha256": "e3ebc8cccab09e6e82773d8dd126fbbe515d705335da6f74521c230b6d30902c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "wrong-kind-image-character",
+      "title": "Reject a non-character image tag",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution.",
+        "A valid two-image lineage command gives the revision existing scene B as its character tag."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/commands wrong-kind-image-character",
+        "GET /v1/projects/:project/snapshot wrong-kind-image-character",
+        "GET /v1/projects/:project/events?after=0 wrong-kind-image-character"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 400 invalid_reference; the complete public snapshot excluding leases and complete event stream remain exactly at the independently expected moved graph, with no image from the refused command present.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 103,
+            "sha256": "e3ebc8cccab09e6e82773d8dd126fbbe515d705335da6f74521c230b6d30902c"
+          }
+        }
+      ],
+      "mappings": []
+    },
+    {
+      "id": "create-forward-image-lineage",
+      "title": "Create a valid lineage in dependent-first order",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/commands create-forward-image-lineage",
+        "GET /v1/projects/:project/events?after=0 create-forward-image-lineage event timestamp",
+        "GET /v1/projects/:project/snapshot create-forward-image-lineage",
+        "GET /v1/projects/:project/events?after=0 create-forward-image-lineage"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Missing and wrong-kind predecessor references and image character tags reject with 400 invalid_reference; self, equal and decreasing revisions reject with 400 image_version. A valid version-two revision followed by its version-one predecessor in the same command succeeds with exact saved items and references, sequence three, unchanged timing two and one exact event. Both image item versions are one, distinct from their data.version values; all rejected attempts preserve the full public snapshot excluding leases and event stream.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 106,
+            "sha256": "0a6ce4e425f82ee45072b32de621baba16b51260c65bf125ae8bb4e99526d60a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 178,
+            "end": 179,
+            "sha256": "d662c59b969e2d6f3f2ef32a7162b4fe84bcfe79de3b4633245368cc115a700f"
+          },
+          "expectation": "observed",
+          "why": "Public image character-tag and predecessor references reject absent/wrong-kind targets and accept the correct character plus complete same-command image predecessor."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 181,
+            "end": 181,
+            "sha256": "2ca5ab640d7fcfdfac68d928285b41d1cd0dafe0c97c0b7181dd62f6175aaa2b"
+          },
+          "expectation": "observed",
+          "why": "A self-reference and equal/decreasing revision numbers reject, while a strictly increasing revision with a separately identified predecessor persists exactly."
+        }
+      ]
+    },
+    {
+      "id": "delete-referenced-predecessor",
+      "title": "Keep a referenced predecessor image",
+      "preconditions": [
+        "Run the document-integrity service through the actual Scriv CLI, after its earlier graph, boundary and timeline chapters, against the bundled production Worker in an owned local Miniflare process.",
+        "Synthetic users, sessions and a paid team are preseeded only for access; no login, team administration, live account, billing, provider or native UI behavior is under test.",
+        "This continuation creates its own project by public HTTP. All requests use the existing bounded loopback request helper, denied outbound network and owned process cleanup. Item leases are acquired publicly and remain valid during this bounded chapter; expiry and concurrency are outside scope.",
+        "Expected full document items, versions, sequence, timing, receipts and history are authored from fixture inputs. Snapshot comparison omits expiring leases; it does not establish internal table contents, crash durability, transient behavior, image bytes or measured source execution."
+      ],
+      "actions": [
+        "POST /v1/projects/:project/leases predecessor image",
+        "POST /v1/projects/:project/commands delete-referenced-predecessor",
+        "GET /v1/projects/:project/snapshot delete-referenced-predecessor",
+        "GET /v1/projects/:project/events?after=0 delete-referenced-predecessor"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Deleting the predecessor while its image revision still refers to it returns 409 item_in_use and leaves the full expected public snapshot excluding leases and event stream unchanged. No cue or portrait refers to this predecessor, so the surviving image lineage is the relevant public reference.",
+          "witness": {
+            "path": "cloud/tests-e2e/document-graph-transition-cases.mjs",
+            "start": 41,
+            "end": 109,
+            "sha256": "3484c5c00c75bdf29331f132e36bfa52f73f446af8b16285ea294ab28b7410b0"
+          }
+        }
+      ],
+      "mappings": []
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "document-integrity",
+      "title": "Document integrity: move scenes and create image lineage",
+      "steps": [
+        "create-two-scene-graph",
+        "move-leaves-source-cue",
+        "move-leaves-destination-cue-stale",
+        "repair-cross-scene-move",
+        "replay-cross-scene-move",
+        "invalid-predecessor-id",
+        "missing-predecessor",
+        "wrong-kind-predecessor",
+        "self-predecessor",
+        "equal-revision-version",
+        "backwards-revision-version",
+        "missing-image-character",
+        "wrong-kind-image-character",
+        "create-forward-image-lineage",
+        "delete-referenced-predecessor"
+      ]
+    }
+  ]
+}

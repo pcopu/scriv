@@ -1,0 +1,591 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "local-email-session-lifecycle",
+      "title": "Local synthetic email session lifecycle — existing stored-data assertions",
+      "featureId": "auth-existing-persistence",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/email-auth-journey.mjs"
+      ],
+      "plannedActions": [
+        "POST /auth/email/request synthetic address and proof challenge",
+        "POST /auth/email/request same address and proof during cooldown",
+        "POST /auth/email/verify incorrect code",
+        "POST /auth/email/verify correct code incorrect proof",
+        "POST /auth/email/verify correct code and proof",
+        "POST /auth/email/verify replay consumed code",
+        "GET /v1/me using issued session",
+        "GET /auth/sessions using issued session",
+        "POST /auth/email/request same synthetic account second device proof",
+        "POST /auth/email/verify second device proof and code",
+        "GET /auth/sessions with two authenticated devices",
+        "DELETE /auth/sessions second device from first device",
+        "GET /v1/me using revoked second session",
+        "GET /auth/sessions after second device revocation",
+        "POST /auth/logout using issued session",
+        "GET /v1/me using logged-out session",
+        "Read original identity/challenge rows after the original 16 HTTP actions; fixture only: seed one GitHub-style user with the boundary synthetic email as an unverified contact, no verified identity and no session.",
+        "Request a real local-mailbox challenge and validate exact row hashes, timing and zero identity/session mutation.",
+        "Submit a guaranteed wrong six-digit code with correct proof five times. After each exact 401, require attempts one through five and otherwise exact challenge and identity/session rows.",
+        "Submit the correct code and proof while still unexpired; require exact 401, attempts still five and no identity/session creation.",
+        "Request another challenge for the same email with a different PKCE proof. Dispatch two identical correct verification fetches before awaiting either, supplying an over-100-character device name.",
+        "Require exactly one 200 and one exact 401. Inspect one consumption marker and attempt, exactly one new user/identity/session, separation from the existing contact user, hashed token, device truncation and default expiry.",
+        "Read winning public identity and session list. Replay the identical verification and require exact 401 with full identity/session/challenge state unchanged.",
+        "Log out the winner, verify only its revocation timestamp changed, and require subsequent identity read 401. Preserve original rows and the locked/consumed challenge states, empty mailbox, 15 added requests and zero outbound attempts.",
+        "Read existing identity/challenge rows; reconfigure only the local mailbox fixture to accept then fail its first delivery response, and verify the same owned persistent state survives.",
+        "Send text/plain and foreign-origin JSON sign-in requests. Require exact errors, no mailbox attempt and unchanged identity/challenge/security-limit state.",
+        "Request a code with a fresh synthetic email/proof. The mailbox records the code then throws. Require exact sanitized 503, one failed challenge with nulled digest/send time and send_failed marker, and no new identity/session.",
+        "Retry immediately with the same email/proof. Require exact cooldown 429, unchanged failed challenge and no additional mailbox attempt.",
+        "Wait out the real one-minute cooldown without altering clock/storage. Request again with the same email/proof and require exact new challenge/code digest, bounded timestamps and replacement of the failed row.",
+        "Verify the successful replacement code/proof, check exact new user/identity/session/consumption rows, then read public identity.",
+        "Log out, require only bounded revocation of the new session, then require exact expired-session denial. Preserve all old rows, two send attempts, empty mailbox and zero outbound."
+      ],
+      "expectedOutcomes": [
+        "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code.",
+        "Each newly requested challenge has exact declared row shape, SHA-256 challenge ID and challenge-bound code hash, correct PKCE proof, zero attempts, null consumption, persisted sent timestamp and real ten-minute/one-minute expiry/resend values. Issuance creates no user, verified identity or session.",
+        "Five wrong codes each return exact 401/invalid_code, increment only the target challenge attempts by one through five, and preserve all users, verified identities and sessions. A correct code/proof while the challenge is still unexpired is then refused with attempts fixed at five, unchanged challenge row and no identity/session creation.",
+        "For the same synthetic email under a fresh distinct PKCE proof, two correct verification fetches are dispatched before either result is awaited. Exactly one returns 200 and one exact 401. The challenge has attempts one and one consumption marker; there is exactly one additional verified user, identity and session. A later identical verification is refused with all identity/session/challenge state unchanged. No particular internal transaction overlap is forced.",
+        "After real cooldown, the same email and PKCE proof replace the failed challenge with a new ID and exact new digest/timestamps/reset state, without increasing row count or changing other challenges. This exercises the production INSERT ON CONFLICT(email,pkce_challenge) replacement path; no concurrent resend is claimed.",
+        "Verification of the replacement code creates one exact email-namespace user with the returned ID, independently expected github_id/name/email/avatar_url and bounded creation time, plus exactly one verified email identity with the same user ID and verified_at equal to that creation time. Existing users and identities remain exact. No seeded contact user is credited as a verified identity."
+      ]
+    },
+    {
+      "id": "local-github-oauth-pkce",
+      "title": "Synthetic GitHub OAuth and PKCE lifecycle — existing stored-data assertions",
+      "featureId": "auth-existing-persistence",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/oauth-journey.mjs"
+      ],
+      "plannedActions": [
+        "GET OAuth start malformed challenge",
+        "GET OAuth start valid challenge and client state",
+        "GET callback synthetic GitHub authorization",
+        "GET callback consumed state replay",
+        "POST exchange malformed verifier",
+        "POST exchange wrong valid verifier",
+        "POST exchange correct verifier after failures",
+        "POST exchange consumed code replay",
+        "GET identity using OAuth session",
+        "GET sessions using OAuth session",
+        "GET OAuth start cancellation fixture",
+        "GET callback provider cancellation",
+        "GET callback cancelled state replay",
+        "GET OAuth start token-error fixture",
+        "GET callback simulated token-error",
+        "GET callback token-error consumed state",
+        "GET OAuth start profile-error fixture",
+        "GET callback simulated profile-error",
+        "GET callback profile-error consumed state",
+        "GET OAuth start invalid-profile fixture",
+        "GET callback simulated invalid-profile",
+        "GET callback invalid-profile consumed state",
+        "POST logout OAuth session",
+        "GET identity after OAuth logout",
+        "Read original revoked user/session and empty OAuth state/code/verified-identity rows after the original 24 HTTP actions; fixture only: add one isolated unrelated user/session.",
+        "Start a fresh OAuth flow; observe the stored opaque-state hash, client state, fresh PKCE challenge and request-bounded ten-minute expiry without user/session writes.",
+        "Dispatch two identical callback fetches together. Require one redirect and one exact oauth_expired refusal, a single provider exchange, unchanged user/session rows and one correctly hashed two-minute exchange code.",
+        "Exchange the first code and proof once; require exactly one session for the existing user, exact token hash, requested device and default expiry.",
+        "Repeat with a second fresh state and proof for the same GitHub identity; after its callback dispatch two correct exchanges together and require one success and one invalid_code refusal with only one additional session.",
+        "List sessions using the second token and require exactly the two new active sessions. Attempt deletion of the unrelated session ID and require ok with complete declared auth state unchanged.",
+        "Read current identity, revoke the first session using the second, and check only the target timestamp changed. Require the first token refused and the second still able to list its sole session.",
+        "Log out the second session; require its token refused and only its revocation timestamp changed. Preserve original and unrelated rows, empty state/code/identity rows, 40 total HTTP requests, 14 simulated provider requests and zero denied outbound."
+      ],
+      "expectedOutcomes": [
+        "Real starts store exactly one new OAuth state with the SHA-256 of the returned opaque state, distinct client state, correct fresh PKCE challenge and ten-minute expiry bounded by actual request time; users/sessions remain exact and auth codes empty.",
+        "Each successful callback consumes its OAuth state and stores exactly one two-minute exchange-code row containing the SHA-256 of the returned code, the existing user ID and the fresh proof challenge. No sessions are created until exchange.",
+        "Successful exchanges create one exact row each with independently hashed bearer, new session ID, existing user ID, named device, bounded created_at, default thirty-day expires_at and null revoked_at. Public sibling revocation and logout later change only the target revoked_at within request time; unrelated and original rows remain equal. This is persisted field behavior, not database uniqueness/nullability/cascade rejection."
+      ]
+    },
+    {
+      "id": "local-team-membership-lifecycle",
+      "title": "Local synthetic team membership lifecycle — existing stored-data assertions",
+      "featureId": "auth-existing-persistence",
+      "state": "existing",
+      "existingPaths": [
+        "cloud/tests-e2e/team-lifecycle-journey.mjs"
+      ],
+      "plannedActions": [
+        "POST /v1/teams with padded synthetic name",
+        "GET created team as owner",
+        "POST member invitation as owner",
+        "POST member invitation join while team is free",
+        "GET team after rejected free-plan join",
+        "Fixture only: seed active entitlement in owned D1",
+        "POST valid member invitation after fixture entitlement",
+        "POST same invitation again as existing member",
+        "GET team after duplicate member join",
+        "POST viewer invitation as owner",
+        "POST viewer invitation as viewer actor",
+        "POST viewer invitation as existing member",
+        "GET team as nonmanager member",
+        "POST invitation as nonmanager member",
+        "PATCH team name as nonmanager member",
+        "DELETE owner membership as owner",
+        "PATCH member role to admin as owner",
+        "GET team as newly appointed admin",
+        "PATCH team name as admin",
+        "GET viewer team list after rename",
+        "PATCH viewer to admin as admin",
+        "PATCH owner role as admin",
+        "POST team project as admin",
+        "GET project as viewer",
+        "PATCH viewer to member as admin",
+        "GET project after viewer promotion",
+        "DELETE project as ordinary member",
+        "DELETE own membership as ordinary member",
+        "GET own identity after leaving team",
+        "GET project after leaving team",
+        "DELETE viewer invitation as admin",
+        "GET team invitation list after revocation",
+        "POST revoked invitation as outsider",
+        "GET outsider identity after revoked join",
+        "DELETE admin membership as owner",
+        "GET team after owner removed admin",
+        "GET team as removed admin",
+        "DELETE team project as owner",
+        "GET owner project list after archive",
+        "GET archived project as owner",
+        "Read original membership/project rows; rejoin the member and viewer through the retained member invite, assign viewer role with owner PATCH, and create one new owner-held team project through public HTTP.",
+        "Seed each of seven entitlement tuples in turn: active/future-paid, trialing/future-paid, past_due/future-paid, active/recently-expired, canceled/recent-cancel plus old-paid, canceled/old-cancel plus recent-paid, active/old-paid without cancel.",
+        "For each tuple, GET the project as owner, member and viewer; check exact public project shape or exact 402. GET member identity; check project inclusion/omission and team role/status/plan.",
+        "In recent active expiry, attempt a fresh member project create; in old cancellation, attempt a fresh owner project create. Require exact 402 and complete declared business-state preservation.",
+        "After the last expired-grace tuple, list the existing project as owner, then archive it through the owner route. Observe only its archive/update timestamps change; owner listing becomes empty and direct lookup is 404.",
+        "Restore only the three fixture entitlement fields, leave both rejoined memberships through their own HTTP DELETEs, and read owner team. Preserve every original declared row exactly plus the one newly archived project; finish at 80 HTTP requests and zero outbound."
+      ],
+      "expectedOutcomes": [
+        "Public creation returns the trimmed authored team name and the authenticated owner ID, and a following team GET returns the same team ID with exactly its owner membership. This checks persisted team identity/name/owner fields; it does not establish raw duplicate-ID or invalid-owner foreign-key rejection.",
+        "Entitled team admits a member through its valid invitation.",
+        "A public member invite join returns the expected team and member role; repeating that same invite as the same member still returns member and public team readback contains exactly one membership for that actor. No raw orphan-member insert or foreign-key cascade is asserted.",
+        "Promoted admin reads its persisted role, both invitations, and the unchanged original Synthetic team name after the denied member rename.",
+        "Admin creates a team project owned by the team owner.",
+        "Public manager readback marks only the selected invitation revoked.",
+        "After grace expires, the public owner DELETE archives the existing project. Read-only D1 comparison shows archived_at bounded by the request and updated_at equal to archived_at; all other project fields and business rows remain equal. Public listing becomes empty and direct lookup is 404. The three entitlement fixture fields receive no source credit."
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "email-request-code-email-auth-25",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 25,
+        "end": 25,
+        "sha256": "6381b2d6d3a75f25ce297c22b6ea4bd671d81394c342b82bc5759b3e4829bb6c",
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "fc8a00216dbebcd4acd2d1892d78f097d06a2bc940d22422c0b03d4290c16682"
+      },
+      "scenarioIds": [
+        "local-email-session-lifecycle"
+      ],
+      "rationale": "The actually generated and delivered code matches exactly six decimal digits. This associates the returned formatting expression only; it does not establish distribution, entropy, a sampled leading-zero case or the rare rejection-sampling retry.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-fields-email-auth-5",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 5,
+        "end": 6,
+        "sha256": "4f04360339695d97d97a64659d9a75b3a608923395c1ba1ea2960cfb10e89f77",
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "f5ec3b6d3c8781fac74a0e8491aef4bc3c9b1b489b21da84e9756a4c85cd1c5a"
+      },
+      "scenarioIds": [
+        "local-email-session-lifecycle"
+      ],
+      "rationale": "The accepted challenge row and HTTP response independently assert created_at+600000 expiry and created_at+60000 resend time. These are exact constant contracts, not an expiry wait.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Each newly requested challenge has exact declared row shape, SHA-256 challenge ID and challenge-bound code hash, correct PKCE proof, zero attempts, null consumption, persisted sent timestamp and real ten-minute/one-minute expiry/resend values. Issuance creates no user, verified identity or session."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-fields-email-auth-7",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/src/email-auth.ts",
+        "start": 7,
+        "end": 8,
+        "sha256": "006c2bd56b7cae4095b5bf2745cc8d2933018d8c0df007af8f1ecaf3c2c11a57",
+        "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db",
+        "spanSha256": "ddfdabb66a3e010ad728ca20fed8ce99bbfeb579b84aa9767176f73066b05368"
+      },
+      "scenarioIds": [
+        "local-email-session-lifecycle"
+      ],
+      "rationale": "Five guaranteed wrong codes advance attempts through five; an unexpired correct code then stays refused. The independent invalidCode object asserts the exact public message. The limit comes from the application guard; this does not test the schema CHECK rejection.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Five wrong codes each return exact 401/invalid_code, increment only the target challenge attempts by one through five, and preserve all users, verified identities and sessions. A correct code/proof while the challenge is still unexpired is then refused with attempts fixed at five, unchanged challenge row and no identity/session creation."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-fields-0003-email-auth-11",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0003_email_auth.sql",
+        "start": 11,
+        "end": 17,
+        "sha256": "1d383709bbed112f37dc4358f19d3a1c4ef77fe73b51af55c9a4a6444f241822",
+        "fileSha256": "b4aec2678314cc35e13927cf8e7471ed4c9032d89140b15173bea1c1b3a9d48e",
+        "spanSha256": "5969036d540a3e295bcfa3e5dbfb44bb9a4f4f1baa33dc31d07d3b9dd91b12c6"
+      },
+      "scenarioIds": [
+        "local-email-session-lifecycle"
+      ],
+      "rationale": "Public challenge issuance yields the exact id_hash/email/pkce_challenge/code_hash/created_at/expires_at/sent_at fields and independently expected digests and timestamps. The database is only read for observation after HTTP issuance.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Each newly requested challenge has exact declared row shape, SHA-256 challenge ID and challenge-bound code hash, correct PKCE proof, zero attempts, null consumption, persisted sent timestamp and real ten-minute/one-minute expiry/resend values. Issuance creates no user, verified identity or session."
+      ]
+    },
+    {
+      "rangeId": "email-consumption-fields-0003-email-auth-18",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0003_email_auth.sql",
+        "start": 18,
+        "end": 19,
+        "sha256": "5cc16464f1791d203c35f9e2316a611c027c69ab6eaeb6b93efff757e9cd1e7b",
+        "fileSha256": "b4aec2678314cc35e13927cf8e7471ed4c9032d89140b15173bea1c1b3a9d48e",
+        "spanSha256": "d39558bbdd7bc1985d706f87abcc1be457da94464a7efe5a44b8feaaeec35eca"
+      },
+      "scenarioIds": [
+        "local-email-session-lifecycle"
+      ],
+      "rationale": "The real fresh challenge starts with default attempts zero and null consumption, then one successful verification yields attempts one and one consumption marker while its concurrent duplicate and replay cannot add another identity/session. Attempts zero-to-five are separately asserted in exhaustion. The CHECK failure for out-of-range raw SQL is not tested.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "For the same synthetic email under a fresh distinct PKCE proof, two correct verification fetches are dispatched before either result is awaited. Exactly one returns 200 and one exact 401. The challenge has attempts one and one consumption marker; there is exactly one additional verified user, identity and session. A later identical verification is refused with all identity/session/challenge state unchanged. No particular internal transaction overlap is forced."
+      ]
+    },
+    {
+      "rangeId": "email-recovery-fields-0003-email-auth-20",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0003_email_auth.sql",
+        "start": 20,
+        "end": 20,
+        "sha256": "4e786969d049f09cc7ea3931a0579ce011aa563f7c102dc11395879cc8e915d0",
+        "fileSha256": "b4aec2678314cc35e13927cf8e7471ed4c9032d89140b15173bea1c1b3a9d48e",
+        "spanSha256": "b9e811befdfa2ebace18cb2af4d0224552215ca223ad330ae37cbc3d81817bee"
+      },
+      "scenarioIds": [
+        "local-email-session-lifecycle"
+      ],
+      "rationale": "The declared composite uniqueness key is the production upsert conflict target. Same-email/same-proof recovery replaces one failed row after natural cooldown, with exact row count and unchanged other rows.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "After real cooldown, the same email and PKCE proof replace the failed challenge with a new ID and exact new digest/timestamps/reset state, without increasing row count or changing other challenges. This exercises the production INSERT ON CONFLICT(email,pkce_challenge) replacement path; no concurrent resend is claimed."
+      ]
+    },
+    {
+      "rangeId": "email-recovery-fields-0001-identity-teams-3",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0001_identity_teams.sql",
+        "start": 3,
+        "end": 8,
+        "sha256": "15871b9ad608fe9e27f464c957aa19f4397ebaa271b3b423a78b27bab1c434d2",
+        "fileSha256": "75f58c160cdde6cf0baaa56b8049a833e8e72a443eb7d053877d2ae3c2bf1428",
+        "spanSha256": "5c958a8cf33fdb60c3f0f97896ee4ae4b57614d63bf83cdfa6f8cf60c1ae50aa"
+      },
+      "scenarioIds": [
+        "local-email-session-lifecycle"
+      ],
+      "rationale": "Each declared user field is checked on the row inserted by the real email verify route, with old users preserved. This is positive field persistence, not arbitrary uniqueness/nullability/cascade failure coverage.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Verification of the replacement code creates one exact email-namespace user with the returned ID, independently expected github_id/name/email/avatar_url and bounded creation time, plus exactly one verified email identity with the same user ID and verified_at equal to that creation time. Existing users and identities remain exact. No seeded contact user is credited as a verified identity."
+      ]
+    },
+    {
+      "rangeId": "email-recovery-fields-0003-email-auth-6",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0003_email_auth.sql",
+        "start": 6,
+        "end": 8,
+        "sha256": "65a42f306d0376e85e61dbaff1a4568682f5f63401ff1691ea0676f66be34657",
+        "fileSha256": "b4aec2678314cc35e13927cf8e7471ed4c9032d89140b15173bea1c1b3a9d48e",
+        "spanSha256": "71779e72139975c01f3ceaf858baeb01e5c05ef40fead1427e892a5441023bb1"
+      },
+      "scenarioIds": [
+        "local-email-session-lifecycle"
+      ],
+      "rationale": "The exact verified email, newly created user reference and verification timestamp are read after public verification. The matching unverified contact fixture remains separate; foreign-key cascade and colliding user-key insert behavior are not exercised.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Verification of the replacement code creates one exact email-namespace user with the returned ID, independently expected github_id/name/email/avatar_url and bounded creation time, plus exactly one verified email identity with the same user ID and verified_at equal to that creation time. Existing users and identities remain exact. No seeded contact user is credited as a verified identity."
+      ]
+    },
+    {
+      "rangeId": "oauth-persisted-fields-0001-identity-teams-22",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0001_identity_teams.sql",
+        "start": 22,
+        "end": 25,
+        "sha256": "c4f9f3957811243c5a39c2f9be16ee246c7f264b4e7a4afca724b747e63a1995",
+        "fileSha256": "75f58c160cdde6cf0baaa56b8049a833e8e72a443eb7d053877d2ae3c2bf1428",
+        "spanSha256": "3a24eea1df2f36e6e43516f4dfdb54952444ebc074eb093540ccb8b38badd8da"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "Fresh public OAuth starts persist the exact state_hash, client_state, challenge and expires_at fields, including independent hash and request-bounded lifetime assertions. No malformed/colliding raw SQL insert or index behavior is claimed.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Real starts store exactly one new OAuth state with the SHA-256 of the returned opaque state, distinct client state, correct fresh PKCE challenge and ten-minute expiry bounded by actual request time; users/sessions remain exact and auth codes empty."
+      ]
+    },
+    {
+      "rangeId": "oauth-persisted-fields-0001-identity-teams-28",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0001_identity_teams.sql",
+        "start": 28,
+        "end": 31,
+        "sha256": "6db758a77063e8a467a5f799017cf538740f81d15fa122204dd1b1247e5d67a0",
+        "fileSha256": "75f58c160cdde6cf0baaa56b8049a833e8e72a443eb7d053877d2ae3c2bf1428",
+        "spanSha256": "62e4ba121ff326e6db05ec4b4331410a6bd85d4f384ce311ac6413500e209557"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "The successful callback creates one code row with exact returned-code hash, existing user ID, fresh challenge and request-bounded two-minute expiry; no session exists yet. Foreign-key enforcement and duplicate-code collision rejection are not exercised.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Each successful callback consumes its OAuth state and stores exactly one two-minute exchange-code row containing the SHA-256 of the returned code, the existing user ID and the fresh proof challenge. No sessions are created until exchange."
+      ]
+    },
+    {
+      "rangeId": "oauth-persisted-fields-0001-identity-teams-11",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0001_identity_teams.sql",
+        "start": 11,
+        "end": 17,
+        "sha256": "3518621dec29017b5ba7a16df49c05e20f1d451043fccd633f19ef7e0be44486",
+        "fileSha256": "75f58c160cdde6cf0baaa56b8049a833e8e72a443eb7d053877d2ae3c2bf1428",
+        "spanSha256": "1b632bae95f4f924dd272f1e9b2e95b0b957b463a9eee8f443d5bf4fd97ec04b"
+      },
+      "scenarioIds": [
+        "local-github-oauth-pkce"
+      ],
+      "rationale": "Actual exchange, public session revocation and logout distinguish all declared session fields against independently expected hashes, actor IDs, device names and timestamps. The seeded unrelated row is preservation context, not the evidence for these writes.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Successful exchanges create one exact row each with independently hashed bearer, new session ID, existing user ID, named device, bounded created_at, default thirty-day expires_at and null revoked_at. Public sibling revocation and logout later change only the target revoked_at within request time; unrelated and original rows remain equal. This is persisted field behavior, not database uniqueness/nullability/cascade rejection."
+      ]
+    },
+    {
+      "rangeId": "team-create-free-team-0001-identity-teams-34",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0001_identity_teams.sql",
+        "start": 34,
+        "end": 36,
+        "sha256": "46fb9cdd9868cef5bddea43d8b75edd179e2c0e7fb8e648a475dcbd29ba48c3a",
+        "fileSha256": "75f58c160cdde6cf0baaa56b8049a833e8e72a443eb7d053877d2ae3c2bf1428",
+        "spanSha256": "3c4ab755e692183d2981cc62ad1b2eba42d92ae2b6ab0aafc3083913a71d07b4"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Team ID, independently authored trimmed name and known owner ID are persisted by the real creation route and read through the public team route. Entitlement fixtures are unrelated and receive no credit.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Public creation returns the trimmed authored team name and the authenticated owner ID, and a following team GET returns the same team ID with exactly its owner membership. This checks persisted team identity/name/owner fields; it does not establish raw duplicate-ID or invalid-owner foreign-key rejection."
+      ]
+    },
+    {
+      "rangeId": "team-join-member-0001-identity-teams-59",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0001_identity_teams.sql",
+        "start": 59,
+        "end": 59,
+        "sha256": "4fec24328465991f6a5a57ac5f1faef9a2ee78c342f70c9f08ea929fe29ba1ea",
+        "fileSha256": "75f58c160cdde6cf0baaa56b8049a833e8e72a443eb7d053877d2ae3c2bf1428",
+        "spanSha256": "c16a4c76524ffd67939e47da7676db0333b89dd07a3d208ab48da044ca1ff579"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "The owner-created member invitation is consumed by a public join that returns member role. This is the stored invitation role contract, not a direct invalid-role CHECK test.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Entitled team admits a member through its valid invitation."
+      ]
+    },
+    {
+      "rangeId": "team-read-single-membership-0001-identity-teams-48",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0001_identity_teams.sql",
+        "start": 48,
+        "end": 49,
+        "sha256": "b479e343425a5dd8ee2748c56002b535e66948d348295d365119a2ebbb9989c5",
+        "fileSha256": "75f58c160cdde6cf0baaa56b8049a833e8e72a443eb7d053877d2ae3c2bf1428",
+        "spanSha256": "66d284adc8a2bc8babfc351e56447cf89bd3d1cc9fbf42356d8e35f671b1ecda"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Public joins associate the expected team and actor; exact readback shows only one row for repeated same-team membership. These are persisted reference fields, not deletion-cascade verification.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "A public member invite join returns the expected team and member role; repeating that same invite as the same member still returns member and public team readback contains exactly one membership for that actor. No raw orphan-member insert or foreign-key cascade is asserted."
+      ]
+    },
+    {
+      "rangeId": "team-read-single-membership-0001-identity-teams-52",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0001_identity_teams.sql",
+        "start": 52,
+        "end": 52,
+        "sha256": "da46b912a95f6b38891bcc441552706aeb29964325da6cbb47bb9920f6069c25",
+        "fileSha256": "75f58c160cdde6cf0baaa56b8049a833e8e72a443eb7d053877d2ae3c2bf1428",
+        "spanSha256": "a6f008f99dcd5d31d44c7a82efd08dbd852661e52ed6b00a4a2eb2666cac65e2"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "The production join uses ON CONFLICT(team_id,user_id) DO NOTHING. Rejoining the same invite leaves exactly one membership, directly supporting this composite conflict key without a direct implementation test.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "A public member invite join returns the expected team and member role; repeating that same invite as the same member still returns member and public team readback contains exactly one membership for that actor. No raw orphan-member insert or foreign-key cascade is asserted."
+      ]
+    },
+    {
+      "rangeId": "team-read-admin-role-0001-identity-teams-50",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0001_identity_teams.sql",
+        "start": 50,
+        "end": 50,
+        "sha256": "3a48d17f8f3e3505eb7721992339aa093a6a44bc67062820f11c39425e76ebcc",
+        "fileSha256": "75f58c160cdde6cf0baaa56b8049a833e8e72a443eb7d053877d2ae3c2bf1428",
+        "spanSha256": "6a5738f5d85aa1274cc5b5495b89b7493343380df61ebe7dcb20566b82bcc78c"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "A public owner PATCH promotes the member, and a subsequent public GET independently observes persisted admin role. This covers the role field for accepted roles, not the database CHECK rejection or membership races.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Promoted admin reads its persisted role, both invitations, and the unchanged original Synthetic team name after the denied member rename."
+      ]
+    },
+    {
+      "rangeId": "team-create-team-project-0001-identity-teams-69",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0001_identity_teams.sql",
+        "start": 69,
+        "end": 70,
+        "sha256": "9653e7ab8f64620cdca5660402887cbb1c4826d62c03eb4f6237ffa1217616c6",
+        "fileSha256": "75f58c160cdde6cf0baaa56b8049a833e8e72a443eb7d053877d2ae3c2bf1428",
+        "spanSha256": "02286dc2cbc1cfc82774f5bca8c9498d5175c0e336c20ec3567a5dbf1e52fa8c"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "A public admin project creation returns the exact known team ID and the team owner ID instead of the admin actor. This supports persisted ownership/reference fields; foreign-key failure behavior is excluded.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Admin creates a team project owned by the team owner."
+      ]
+    },
+    {
+      "rangeId": "team-read-revoked-invite-0001-identity-teams-63",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0001_identity_teams.sql",
+        "start": 63,
+        "end": 63,
+        "sha256": "8a5fce7d772d10b87462938d268b62ae26f78914036a3555e68018661a24bc65",
+        "fileSha256": "75f58c160cdde6cf0baaa56b8049a833e8e72a443eb7d053877d2ae3c2bf1428",
+        "spanSha256": "6f0685333647b0b7d18183898a54b9fe49ae9eb49de7c2913585c2abcbc00814"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "After public deletion of one invite, public manager readback observes its numeric revoked_at and leaves the other invite unrevoked. No raw SQL update is used to produce this state.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "Public manager readback marks only the selected invitation revoked."
+      ]
+    },
+    {
+      "rangeId": "team-project-archive-fields-0001-identity-teams-72",
+      "featureId": "auth-existing-persistence",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "cloud/migrations/0001_identity_teams.sql",
+        "start": 72,
+        "end": 73,
+        "sha256": "298335b0bf4d5d994fa43d83aae735cef66d65a0999bd583924611ec3932409a",
+        "fileSha256": "75f58c160cdde6cf0baaa56b8049a833e8e72a443eb7d053877d2ae3c2bf1428",
+        "spanSha256": "170899a153b7bcfd8e6fb7cb9118eb765ffc468ac0e5dbca845e32af2329040e"
+      },
+      "scenarioIds": [
+        "local-team-membership-lifecycle"
+      ],
+      "rationale": "Only the public archive operation produces the observed updated_at/archived_at values. Exact before/after row and public visibility assertions distinguish these two fields from the setup entitlement writes.",
+      "confidence": "high",
+      "uncertainty": "These are existing local Worker HTTP and explicitly read-only owned-D1 observations. Schema field associations do not establish all colocated constraints, cascading deletes or index performance. No native/live account/provider execution, arbitrary concurrency, statistical randomness or mutation-time authorization race is claimed.",
+      "proposedAssertions": [
+        "After grace expires, the public owner DELETE archives the existing project. Read-only D1 comparison shows archived_at bounded by the request and updated_at equal to archived_at; all other project fields and business rows remain equal. Public listing becomes empty and direct lookup is 404. The three entitlement fixture fields receive no source credit."
+      ]
+    }
+  ]
+}
