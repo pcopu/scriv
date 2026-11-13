@@ -49,7 +49,12 @@ The script checks the template and Sparkle identity, compiles the app, Core,
 native update adapter and runtime XPC, and signs nested Sparkle components,
 plugin and XPC before the outer app. It checks the complete signature, icon and
 Catalyst platform. Add `--automation` only for isolated automation testing;
-never distribute an automation build. Confirm the exact source tree and all
+never distribute an automation build. For local-only automation, `--identity -`
+uses an ad-hoc signature with no team identity; it does not prove Developer ID,
+Keychain or trusted-helper behavior, notarization, or release readiness. On
+2026-11-13 that route built the verified f68408d source, passed the script's
+signature and icon checks, and passed the native project-roundtrip journey.
+Confirm the exact source tree and all
 build inputs before attributing a build to a commit. Keep keys, credentials,
 local evidence and generated bundles out of the repository. An `asc` login
 does not replace the local signing identity or the Apple timestamp service.
