@@ -17,8 +17,8 @@
           "description": "GET OAuth start malformed challenge has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 188,
-            "end": 188,
+            "start": 202,
+            "end": 202,
             "sha256": "e648f665e4683e791e442ba9c457ef39e1a241579ad10d99e03bfb88f1aac880"
           }
         }
@@ -51,8 +51,8 @@
           "description": "GET OAuth start valid challenge and client state has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 192,
-            "end": 192,
+            "start": 206,
+            "end": 206,
             "sha256": "219789117af8dfceef6ac7324a8af12798b5bbadf942815145e7d25be82de771"
           }
         }
@@ -85,8 +85,8 @@
           "description": "GET callback synthetic GitHub authorization has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 196,
-            "end": 196,
+            "start": 210,
+            "end": 210,
             "sha256": "bc92fd2d31acba4a8fd36f7688e3ce29ace10df5540c528a21f82c127b2d2ea5"
           }
         }
@@ -129,8 +129,8 @@
           "description": "GET callback consumed state replay has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 200,
-            "end": 200,
+            "start": 214,
+            "end": 214,
             "sha256": "f5be804d432109d411a2bfaf8eefdda4e25bebd7d44ce3974c686fc43c5e4889"
           }
         }
@@ -163,8 +163,8 @@
           "description": "POST exchange malformed verifier has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 204,
-            "end": 204,
+            "start": 218,
+            "end": 218,
             "sha256": "7d06a47cfc48fec821f3776f9bdfa418d491f5c287521436d0845a34ee82f1a5"
           }
         }
@@ -197,8 +197,8 @@
           "description": "POST exchange wrong valid verifier has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 208,
-            "end": 208,
+            "start": 222,
+            "end": 222,
             "sha256": "a5a4dd3fff22396a6decfa77d9494f30159183ea0575eb01e7447295a92fa783"
           }
         }
@@ -220,8 +220,8 @@
           "description": "After a wrong verifier failed without consumption, correct proof returns a session with the exact persisted synthetic identity and the verified primary email chosen from competing fixture addresses.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 212,
-            "end": 212,
+            "start": 226,
+            "end": 226,
             "sha256": "86281022f7aa626b6efa87fce0b14d65920be522946fa300378112db23de802b"
           }
         }
@@ -274,8 +274,8 @@
           "description": "POST exchange consumed code replay has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 216,
-            "end": 216,
+            "start": 230,
+            "end": 230,
             "sha256": "a5a4dd3fff22396a6decfa77d9494f30159183ea0575eb01e7447295a92fa783"
           }
         }
@@ -297,8 +297,8 @@
           "description": "GET identity using OAuth session has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 220,
-            "end": 220,
+            "start": 234,
+            "end": 234,
             "sha256": "67ea92623f25a34afc751755f5f77b913d4d23c677a5708b1ac897560bd36c76"
           }
         }
@@ -320,8 +320,8 @@
           "description": "GET sessions using OAuth session has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 224,
-            "end": 224,
+            "start": 238,
+            "end": 238,
             "sha256": "e2084f107b5d2c67cbaa84ca2762ff83d4ac05c9b3d679a80b35994b1f76b2f0"
           }
         }
@@ -343,8 +343,8 @@
           "description": "GET OAuth start cancellation fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 228,
-            "end": 228,
+            "start": 242,
+            "end": 242,
             "sha256": "a7707495b521d7a11f03fbcc3d74ef1c82c6b2ebaa4ad9f51e930fb9210227c2"
           }
         }
@@ -366,8 +366,8 @@
           "description": "GET callback provider cancellation has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 232,
-            "end": 232,
+            "start": 246,
+            "end": 246,
             "sha256": "4388c5bbefcd4afc9222350e4ed477267201dfe8734663b822a6b06c01b7fff3"
           }
         }
@@ -400,8 +400,8 @@
           "description": "GET callback cancelled state replay has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 236,
-            "end": 236,
+            "start": 250,
+            "end": 250,
             "sha256": "51bb4c5fce63ebc9a3a01f7ac69c339f08d2e8273c1dffa0c1a9a3ede0f2b41c"
           }
         }
@@ -423,8 +423,8 @@
           "description": "GET OAuth start token-error fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 240,
-            "end": 240,
+            "start": 254,
+            "end": 254,
             "sha256": "2244126c264201cf16d6f17a164dc94426e07ad642a108dbeda7e97a9a2d74ac"
           }
         }
@@ -446,8 +446,8 @@
           "description": "GET callback simulated token-error has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 244,
-            "end": 244,
+            "start": 258,
+            "end": 258,
             "sha256": "f51db6946b5914e9a2605df6822992369c51e4ba13421755a0dcbe2b459c5d88"
           }
         }
@@ -469,8 +469,8 @@
           "description": "GET callback token-error consumed state has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 248,
-            "end": 248,
+            "start": 262,
+            "end": 262,
             "sha256": "761e5addbd812cb35d335466e491231ee7f65ca94f5d3134b5b286caa5750da3"
           }
         }
@@ -492,8 +492,8 @@
           "description": "GET OAuth start profile-error fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 252,
-            "end": 252,
+            "start": 266,
+            "end": 266,
             "sha256": "d8415446c7380da18481143ec84c023cf4e65b771faa532ee24e8e91643bde3f"
           }
         }
@@ -515,8 +515,8 @@
           "description": "GET callback simulated profile-error has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 256,
-            "end": 256,
+            "start": 270,
+            "end": 270,
             "sha256": "4c8fd573e7e6f3ab41f40e7fde05be0464a57dad4926c1152d76668262641d4a"
           }
         }
@@ -538,8 +538,8 @@
           "description": "GET callback profile-error consumed state has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 260,
-            "end": 260,
+            "start": 274,
+            "end": 274,
             "sha256": "a4acec8fc68c603b0162b18e97679815a7e17aa28cca3b717f9fb5932c78af35"
           }
         }
@@ -561,8 +561,8 @@
           "description": "GET OAuth start invalid-profile fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 264,
-            "end": 264,
+            "start": 278,
+            "end": 278,
             "sha256": "46d59196cf23dfc90fa74432d74763e8520235bedc83b6d0d0cea9e782197e24"
           }
         }
@@ -584,8 +584,8 @@
           "description": "GET callback simulated invalid-profile has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 268,
-            "end": 268,
+            "start": 282,
+            "end": 282,
             "sha256": "b32f56f852189e97c2fa83f233c8d6b43d412b02ce55549aebd4d61d64b4a2d8"
           }
         }
@@ -607,8 +607,8 @@
           "description": "GET callback invalid-profile consumed state has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 272,
-            "end": 272,
+            "start": 286,
+            "end": 286,
             "sha256": "5c30a9450830cd7ebb3e23dd108e401616bf2a57dc2c4ec2876ef929edea8d25"
           }
         }
@@ -630,8 +630,8 @@
           "description": "POST logout OAuth session has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 276,
-            "end": 276,
+            "start": 290,
+            "end": 290,
             "sha256": "73454176e4b843a69ff6754487fc3f563fd44a23abd9b7919e5854daa1bdc947"
           }
         }
@@ -653,8 +653,8 @@
           "description": "GET identity after OAuth logout has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 280,
-            "end": 280,
+            "start": 294,
+            "end": 294,
             "sha256": "3a198e4469e9f09171f5fd4af68208f07c612e9d72adb5080d9ea542e4172bef"
           }
         }

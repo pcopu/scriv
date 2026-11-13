@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { ScrivSession } from '../../cli/scriv.mjs';
 import { waitForSavedProject } from './support/saved-projects.mjs';
+import { assertBlankProject, reopenProject } from './support/project-defaults-steps.mjs';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
 const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
@@ -27,8 +28,10 @@ try {
   for (let pass = 0; pass < 2; pass++) {
     await session.command('activate', { target: 'workspace-project' });
     await session.waitFor(nodes => nodes.some(node => node.placeholder === 'Find a project' && node.hittable));
+    const earliest = Date.now();
     await click('New project');
     const created = await waitForSavedProject(session, project => !known.has(project.id));
+    assertBlankProject(created, earliest, Date.now());
     known.add(created.id);
     assert.equal(created.title, 'Untitled');
     assert.deepEqual(created.entries.map(entry => entry.text), ['Describe the opening moment.', 'Your first line.'], 'New project starts with the blank template, not the previous script');
@@ -39,8 +42,15 @@ try {
     if (nodes.some(node => node.placeholder === 'Find a project')) await click('Close Projects');
     await workspaceReady();
     await session.command('key', { input: 's', modifiers: ['command'] });
-    await waitForSavedProject(session, project => project.id === created.id);
+    const saved = await waitForSavedProject(session, project => project.id === created.id);
+    assert.deepEqual(saved, created, 'Explicit save retains the complete independently checked blank model');
+    if (pass === 0) {
+      // At this point each title is unique in the production project browser.
+      await reopenProject(session, original);
+      await reopenProject(session, created);
+    }
     const retained = (await session.command('persisted-projects')).find(project => project.id === original.id);
+    assert.deepEqual(retained, original, 'Creating, saving and reopening preserve the entire startup sentinel');
     assert.deepEqual(retained.entries, original.entries, 'Creating a project preserves the original saved script');
     assert.deepEqual(retained.characters, original.characters, 'Creating a project preserves original character profiles');
   }

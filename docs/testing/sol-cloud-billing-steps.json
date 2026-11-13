@@ -1,0 +1,292 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "sol-billing-signatures",
+      "title": "Refuse malformed signature fields",
+      "preconditions": [
+        "Run tracer app -- test services billing with the trusted pinned local runtime.",
+        "Existing synthetic billing lifecycle, checkout and webhook chapters have completed. Local fixture only, outbound provider calls intercepted."
+      ],
+      "actions": [
+        "POST /billing/webhook with t=-1 and 64-zero v1 digest",
+        "POST /billing/webhook with t=9007199254740992 and 64-zero v1 digest",
+        "POST /billing/webhook with t=1e3 and 64-zero v1 digest",
+        "POST /billing/webhook with current integer timestamp and v1=abc",
+        "POST /billing/webhook with current integer timestamp and 64-uppercase-A v1 digest",
+        "POST /billing/webhook with current integer timestamp and empty v1 digest"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Six HTTP 400 invalid_signature replies preserve durable rows and provider-call count via unchanged assertions at lines 23\u201327.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-boundary-cases.mjs",
+            "start": 29,
+            "end": 36,
+            "sha256": "92fec1e401cac0d2733144e9a514b77e89bbf360a4fa6c41e08fecfb3e6f623f"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 160,
+            "end": 163,
+            "sha256": "127fcec372e31230355a1d261a7f830d60114ebec4efa6a265a072e0f955c2c5"
+          },
+          "expectation": "observed",
+          "why": "Exercises timestamp validation and digest syntax filtering Local HTTP fixture observation. Manual association only."
+        }
+      ]
+    },
+    {
+      "id": "sol-billing-envelope",
+      "title": "Refuse malformed signed envelopes",
+      "preconditions": [
+        "Run tracer app -- test services billing with the trusted pinned local runtime.",
+        "Existing synthetic billing lifecycle, checkout and webhook chapters have completed. Local fixture only, outbound provider calls intercepted."
+      ],
+      "actions": [
+        "POST /billing/webhook with valid synthetic signature and event.id containing 129 x characters",
+        "POST /billing/webhook with valid synthetic signature and event.type=17",
+        "POST /billing/webhook with valid synthetic signature and event.data.object=null",
+        "POST /billing/webhook with valid synthetic signature and event.data.object.customer={\"id\":1}",
+        "POST /billing/webhook with valid synthetic signature and customer containing 129 x characters",
+        "POST /billing/webhook with valid synthetic signature and event.created=-1",
+        "POST /billing/webhook with valid synthetic signature and event.created=1.5",
+        "POST /billing/webhook with valid synthetic signature and event.created=\"1234\""
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Eight signed invalid envelopes return expected error codes and leave durable state unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-boundary-cases.mjs",
+            "start": 37,
+            "end": 47,
+            "sha256": "701f15448782d8368b5e222a93f0301d7d6101b51a00817d3d3c8c9a7b241f19"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 173,
+            "end": 180,
+            "sha256": "f09ac2d986a6dabff480b9bf68f9cd244496a1c9bc24b623b043719ddea42b37"
+          },
+          "expectation": "observed",
+          "why": "Valid signatures reach envelope, customer and event timestamp guards Local HTTP fixture observation. Manual association only."
+        }
+      ]
+    },
+    {
+      "id": "sol-billing-webhook-limit",
+      "title": "Bound webhook body",
+      "preconditions": [
+        "Run tracer app -- test services billing with the trusted pinned local runtime.",
+        "Existing synthetic billing lifecycle, checkout and webhook chapters have completed. Local fixture only, outbound provider calls intercepted."
+      ],
+      "actions": [
+        "POST /billing/webhook with 262145 signed bytes"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Oversized signed webhook returns HTTP 413 body_too_large without provider calls or application-row mutation.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-boundary-cases.mjs",
+            "start": 48,
+            "end": 50,
+            "sha256": "9f656019c6475c516c5bbcf67b8b6974007791d500f947902fb14187e953cd30"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/http.ts",
+            "start": 30,
+            "end": 33,
+            "sha256": "9b78df9f2155e0a3715d472ce67e8b28826f07bc579602a5910f0729775feae5"
+          },
+          "expectation": "observed",
+          "why": "Content-Length exceeds the caller-provided limit Local HTTP fixture observation. Manual association only."
+        }
+      ]
+    },
+    {
+      "id": "sol-billing-roles",
+      "title": "Refuse viewer and unsigned billing management",
+      "preconditions": [
+        "Run tracer app -- test services billing with the trusted pinned local runtime.",
+        "Existing synthetic billing lifecycle, checkout and webhook chapters have completed. Local fixture only, outbound provider calls intercepted."
+      ],
+      "actions": [
+        "POST /v1/teams/{syntheticTeam}/billing/checkout as viewer",
+        "POST /v1/teams/{syntheticTeam}/billing/checkout without authorization",
+        "POST /v1/teams/{syntheticTeam}/billing/portal as viewer",
+        "POST /v1/teams/{syntheticTeam}/billing/portal without authorization"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Viewer requests return 403 and unauthenticated requests return 401, with no provider or application-row changes.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-boundary-cases.mjs",
+            "start": 51,
+            "end": 55,
+            "sha256": "dc5a3c0092133443bc9782f40dc82db623749c6f8aa30ee2c1a47dfa8dc9f735"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 4,
+            "end": 5,
+            "sha256": "6f4aa4cad49db7fd2d6aa232a4b5a022e47fe3ad088774cc58bfc3f44caafa45"
+          },
+          "expectation": "observed",
+          "why": "Missing bearer header is rejected Local HTTP fixture observation. Manual association only."
+        },
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 22,
+            "end": 25,
+            "sha256": "2c842b69620fb7a1d899030bfb255100d548b778bc8cc88b3936aa32216ed91e"
+          },
+          "expectation": "observed",
+          "why": "Viewer role cannot satisfy owner management authorization Local HTTP fixture observation. Manual association only."
+        }
+      ]
+    },
+    {
+      "id": "sol-billing-owner-body-limit",
+      "title": "Bound owner billing body",
+      "preconditions": [
+        "Run tracer app -- test services billing with the trusted pinned local runtime.",
+        "Existing synthetic billing lifecycle, checkout and webhook chapters have completed. Local fixture only, outbound provider calls intercepted."
+      ],
+      "actions": [
+        "POST /v1/teams/{syntheticTeam}/billing/checkout as owner with 4097 bytes"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Owner checkout with 4097 bytes returns HTTP 413 body_too_large without provider calls or application-row mutation.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-boundary-cases.mjs",
+            "start": 56,
+            "end": 56,
+            "sha256": "150fdbe13c7436a70fade68e7df7d99b3c451687233e73c95d54502604f87823"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 195,
+            "end": 195,
+            "sha256": "53161062bdc5226b4d05557bc6305dae710a3c1c5b71cda3c69811ea16808d6e"
+          },
+          "expectation": "observed",
+          "why": "Owner billing route enforces its 4096-byte optional body limit Local HTTP fixture observation. Manual association only."
+        }
+      ]
+    },
+    {
+      "id": "sol-billing-project-access",
+      "title": "Preserve paid viewer restrictions",
+      "preconditions": [
+        "Run tracer app -- test services billing with the trusted pinned local runtime.",
+        "Existing synthetic billing lifecycle, checkout and webhook chapters have completed. Local fixture only, outbound provider calls intercepted."
+      ],
+      "actions": [
+        "POST /v1/projects/{syntheticProject}/commands with valid viewer command envelope",
+        "GET /v1/projects/{syntheticProject} as outsider"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Valid viewer command returns read_only and outsider read returns not_found. Each preserves application rows and provider calls.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-boundary-cases.mjs",
+            "start": 57,
+            "end": 58,
+            "sha256": "31d758477c744a09e6c9fce8e80226077cb3372b32cbef730105d3c427e572a1"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/access.ts",
+            "start": 40,
+            "end": 46,
+            "sha256": "c82254330e96219a4968678ad3c07cd1f8e8f889dfd9e8e4c53e0995bea4bac1"
+          },
+          "expectation": "observed",
+          "why": "Paid viewer lacks write access and outsider lacks project membership Local HTTP fixture observation. Manual association only."
+        }
+      ]
+    },
+    {
+      "id": "sol-billing-return",
+      "title": "Encode untrusted billing return team",
+      "preconditions": [
+        "Run tracer app -- test services billing with the trusted pinned local runtime.",
+        "Existing synthetic billing lifecycle, checkout and webhook chapters have completed. Local fixture only, outbound provider calls intercepted."
+      ],
+      "actions": [
+        "GET /billing/return?team=%22%3E%3Cscript%3E%26"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "HTTP 200 HTML contains the independently expected encoded deep link, exact CSP and no script element. Durable state and provider calls stay unchanged.",
+          "witness": {
+            "path": "cloud/tests-e2e/billing-boundary-cases.mjs",
+            "start": 59,
+            "end": 70,
+            "sha256": "7e3acbfaa064c784445089fa157c766cfa9414eaf3d7e5ee6f8659a92cb743a9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/billing.ts",
+            "start": 198,
+            "end": 201,
+            "sha256": "4ba76ba823efc0520359a6c2869e4e9df9c99a2db855fc521d5d38f2bf419ac0"
+          },
+          "expectation": "observed",
+          "why": "Public return handler encodes the team query into a Scriv deep link and supplies response policy headers Local HTTP fixture observation. Manual association only."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "sol-cloud-billing-boundaries",
+      "title": "Synthetic billing refusal and return boundaries",
+      "steps": [
+        "sol-billing-signatures",
+        "sol-billing-envelope",
+        "sol-billing-webhook-limit",
+        "sol-billing-roles",
+        "sol-billing-owner-body-limit",
+        "sol-billing-project-access",
+        "sol-billing-return"
+      ]
+    }
+  ]
+}

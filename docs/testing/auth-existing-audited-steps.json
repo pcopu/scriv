@@ -20,8 +20,8 @@
           "description": "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 136,
-            "end": 136,
+            "start": 165,
+            "end": 165,
             "sha256": "85222e3bc79e21bed2f277a5d05282686ed7d3f10b409f26fca3822a1fbb8b5d"
           }
         }
@@ -57,8 +57,8 @@
           "description": "Enforces resend cooldown without a second delivery.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 140,
-            "end": 140,
+            "start": 169,
+            "end": 169,
             "sha256": "52e840d2d66bceb7352dbee2e9039385a407b719f9aeaee8813ddd75bfea1ac0"
           }
         }
@@ -83,8 +83,8 @@
           "description": "Rejects an incorrect six-digit code.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 144,
-            "end": 144,
+            "start": 173,
+            "end": 173,
             "sha256": "4f3c9bbf6b4e3a6c03150a3ace81ef414a805e312319c4b75eab5f4a5ac9df43"
           }
         }
@@ -109,8 +109,8 @@
           "description": "Rejects the correct code with a mismatched proof key.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 148,
-            "end": 148,
+            "start": 177,
+            "end": 177,
             "sha256": "4f3c9bbf6b4e3a6c03150a3ace81ef414a805e312319c4b75eab5f4a5ac9df43"
           }
         }
@@ -135,8 +135,8 @@
           "description": "Issues a session for the normalized synthetic email after successful proof.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 152,
-            "end": 152,
+            "start": 181,
+            "end": 181,
             "sha256": "4633f2d0f81ae4b0c12b1a55bf0cc842f9fce292e1cff675da9a894c6b9fb47c"
           }
         }
@@ -161,8 +161,8 @@
           "description": "Rejects reuse of the consumed challenge.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 156,
-            "end": 156,
+            "start": 185,
+            "end": 185,
             "sha256": "4f3c9bbf6b4e3a6c03150a3ace81ef414a805e312319c4b75eab5f4a5ac9df43"
           }
         }
@@ -187,8 +187,8 @@
           "description": "Reads the issued identity and empty initial team and project lists.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 160,
-            "end": 160,
+            "start": 189,
+            "end": 189,
             "sha256": "0330e15efcb1db8647e7dffbb73bafb26b31314a065914b83a981db4ca00bd30"
           }
         }
@@ -213,8 +213,8 @@
           "description": "Lists the active session and device name.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 164,
-            "end": 164,
+            "start": 193,
+            "end": 193,
             "sha256": "95924dc29e5a54e7c7fb230a57760820395cce74a6e715f80e84ae67bcae6f50"
           }
         }
@@ -239,8 +239,8 @@
           "description": "Issues a second challenge for the same synthetic account and another proof key.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 170,
-            "end": 170,
+            "start": 199,
+            "end": 199,
             "sha256": "b131364810546f235df9a31f8df8338c9607c1f6b435219d29f21f81d5e391ff"
           }
         }
@@ -265,8 +265,8 @@
           "description": "Issues a second device session for the existing user.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 174,
-            "end": 174,
+            "start": 203,
+            "end": 203,
             "sha256": "ad12826b84b783d2d871b7a3f8bb8a8c0719f15310d92b1c3ef28c1d77d219ed"
           }
         }
@@ -291,8 +291,8 @@
           "description": "Lists both device sessions and identifies the current session.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 178,
-            "end": 178,
+            "start": 207,
+            "end": 207,
             "sha256": "bcfb9d5f3dc44cba87079e97a11dac3c18417743b89a22ff8f7c2e6d3e62c09e"
           }
         }
@@ -317,8 +317,8 @@
           "description": "Revokes the second device session from the first.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 182,
-            "end": 182,
+            "start": 211,
+            "end": 211,
             "sha256": "913b77b23f93373bbcdeaebca44e7bf4d3e3711ea044497c38cd0016a2f43cdb"
           }
         }
@@ -343,8 +343,8 @@
           "description": "Rejects the revoked second session.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 186,
-            "end": 186,
+            "start": 215,
+            "end": 215,
             "sha256": "b021bc8dc42cb14609439da4d3c8fe786bf9adf2d42a3a4ad92384f8193d1ab1"
           }
         }
@@ -369,8 +369,8 @@
           "description": "Lists only the still-active first session after revocation.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 190,
-            "end": 190,
+            "start": 219,
+            "end": 219,
             "sha256": "da188fab88fe12c70b85abee03918d681d8a58493107ecdd476370e59265ab3e"
           }
         }
@@ -395,8 +395,8 @@
           "description": "Logs out the first session.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 194,
-            "end": 194,
+            "start": 223,
+            "end": 223,
             "sha256": "913b77b23f93373bbcdeaebca44e7bf4d3e3711ea044497c38cd0016a2f43cdb"
           }
         }
@@ -421,8 +421,8 @@
           "description": "Rejects the logged-out first session.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 198,
-            "end": 198,
+            "start": 227,
+            "end": 227,
             "sha256": "b021bc8dc42cb14609439da4d3c8fe786bf9adf2d42a3a4ad92384f8193d1ab1"
           }
         }
@@ -447,8 +447,8 @@
           "description": "GET OAuth start malformed challenge has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 188,
-            "end": 188,
+            "start": 202,
+            "end": 202,
             "sha256": "e648f665e4683e791e442ba9c457ef39e1a241579ad10d99e03bfb88f1aac880"
           }
         }
@@ -473,8 +473,8 @@
           "description": "GET OAuth start valid challenge and client state has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 192,
-            "end": 192,
+            "start": 206,
+            "end": 206,
             "sha256": "219789117af8dfceef6ac7324a8af12798b5bbadf942815145e7d25be82de771"
           }
         }
@@ -499,8 +499,8 @@
           "description": "GET callback synthetic GitHub authorization has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 196,
-            "end": 196,
+            "start": 210,
+            "end": 210,
             "sha256": "bc92fd2d31acba4a8fd36f7688e3ce29ace10df5540c528a21f82c127b2d2ea5"
           }
         }
@@ -525,8 +525,8 @@
           "description": "GET callback consumed state replay has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 200,
-            "end": 200,
+            "start": 214,
+            "end": 214,
             "sha256": "f5be804d432109d411a2bfaf8eefdda4e25bebd7d44ce3974c686fc43c5e4889"
           }
         }
@@ -551,8 +551,8 @@
           "description": "POST exchange malformed verifier has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 204,
-            "end": 204,
+            "start": 218,
+            "end": 218,
             "sha256": "7d06a47cfc48fec821f3776f9bdfa418d491f5c287521436d0845a34ee82f1a5"
           }
         }
@@ -577,8 +577,8 @@
           "description": "POST exchange wrong valid verifier has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 208,
-            "end": 208,
+            "start": 222,
+            "end": 222,
             "sha256": "a5a4dd3fff22396a6decfa77d9494f30159183ea0575eb01e7447295a92fa783"
           }
         }
@@ -603,8 +603,8 @@
           "description": "After a wrong verifier failed without consumption, correct proof returns a session with the exact persisted synthetic identity and the verified primary email chosen from competing fixture addresses.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 212,
-            "end": 212,
+            "start": 226,
+            "end": 226,
             "sha256": "86281022f7aa626b6efa87fce0b14d65920be522946fa300378112db23de802b"
           }
         }
@@ -629,8 +629,8 @@
           "description": "POST exchange consumed code replay has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 216,
-            "end": 216,
+            "start": 230,
+            "end": 230,
             "sha256": "a5a4dd3fff22396a6decfa77d9494f30159183ea0575eb01e7447295a92fa783"
           }
         }
@@ -655,8 +655,8 @@
           "description": "GET identity using OAuth session has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 220,
-            "end": 220,
+            "start": 234,
+            "end": 234,
             "sha256": "67ea92623f25a34afc751755f5f77b913d4d23c677a5708b1ac897560bd36c76"
           }
         }
@@ -681,8 +681,8 @@
           "description": "GET sessions using OAuth session has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 224,
-            "end": 224,
+            "start": 238,
+            "end": 238,
             "sha256": "e2084f107b5d2c67cbaa84ca2762ff83d4ac05c9b3d679a80b35994b1f76b2f0"
           }
         }
@@ -707,8 +707,8 @@
           "description": "GET OAuth start cancellation fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 228,
-            "end": 228,
+            "start": 242,
+            "end": 242,
             "sha256": "a7707495b521d7a11f03fbcc3d74ef1c82c6b2ebaa4ad9f51e930fb9210227c2"
           }
         }
@@ -733,8 +733,8 @@
           "description": "GET callback provider cancellation has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 232,
-            "end": 232,
+            "start": 246,
+            "end": 246,
             "sha256": "4388c5bbefcd4afc9222350e4ed477267201dfe8734663b822a6b06c01b7fff3"
           }
         }
@@ -759,8 +759,8 @@
           "description": "GET callback cancelled state replay has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 236,
-            "end": 236,
+            "start": 250,
+            "end": 250,
             "sha256": "51bb4c5fce63ebc9a3a01f7ac69c339f08d2e8273c1dffa0c1a9a3ede0f2b41c"
           }
         }
@@ -785,8 +785,8 @@
           "description": "GET OAuth start token-error fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 240,
-            "end": 240,
+            "start": 254,
+            "end": 254,
             "sha256": "2244126c264201cf16d6f17a164dc94426e07ad642a108dbeda7e97a9a2d74ac"
           }
         }
@@ -811,8 +811,8 @@
           "description": "GET callback simulated token-error has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 244,
-            "end": 244,
+            "start": 258,
+            "end": 258,
             "sha256": "f51db6946b5914e9a2605df6822992369c51e4ba13421755a0dcbe2b459c5d88"
           }
         }
@@ -837,8 +837,8 @@
           "description": "GET callback token-error consumed state has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 248,
-            "end": 248,
+            "start": 262,
+            "end": 262,
             "sha256": "761e5addbd812cb35d335466e491231ee7f65ca94f5d3134b5b286caa5750da3"
           }
         }
@@ -863,8 +863,8 @@
           "description": "GET OAuth start profile-error fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 252,
-            "end": 252,
+            "start": 266,
+            "end": 266,
             "sha256": "d8415446c7380da18481143ec84c023cf4e65b771faa532ee24e8e91643bde3f"
           }
         }
@@ -889,8 +889,8 @@
           "description": "GET callback simulated profile-error has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 256,
-            "end": 256,
+            "start": 270,
+            "end": 270,
             "sha256": "4c8fd573e7e6f3ab41f40e7fde05be0464a57dad4926c1152d76668262641d4a"
           }
         }
@@ -915,8 +915,8 @@
           "description": "GET callback profile-error consumed state has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 260,
-            "end": 260,
+            "start": 274,
+            "end": 274,
             "sha256": "a4acec8fc68c603b0162b18e97679815a7e17aa28cca3b717f9fb5932c78af35"
           }
         }
@@ -941,8 +941,8 @@
           "description": "GET OAuth start invalid-profile fixture has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 264,
-            "end": 264,
+            "start": 278,
+            "end": 278,
             "sha256": "46d59196cf23dfc90fa74432d74763e8520235bedc83b6d0d0cea9e782197e24"
           }
         }
@@ -967,8 +967,8 @@
           "description": "GET callback simulated invalid-profile has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 268,
-            "end": 268,
+            "start": 282,
+            "end": 282,
             "sha256": "b32f56f852189e97c2fa83f233c8d6b43d412b02ce55549aebd4d61d64b4a2d8"
           }
         }
@@ -993,8 +993,8 @@
           "description": "GET callback invalid-profile consumed state has independently asserted status and public result. Auxiliary owned-D1 SELECTs independently assert all users, sessions and auth_codes rows exactly match the immutable pre-cancellation baseline; no new session or code, including unrelated-user rows, can go unnoticed.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 272,
-            "end": 272,
+            "start": 286,
+            "end": 286,
             "sha256": "5c30a9450830cd7ebb3e23dd108e401616bf2a57dc2c4ec2876ef929edea8d25"
           }
         }
@@ -1019,8 +1019,8 @@
           "description": "POST logout OAuth session has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 276,
-            "end": 276,
+            "start": 290,
+            "end": 290,
             "sha256": "73454176e4b843a69ff6754487fc3f563fd44a23abd9b7919e5854daa1bdc947"
           }
         }
@@ -1045,8 +1045,8 @@
           "description": "GET identity after OAuth logout has independently asserted status and public result.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 280,
-            "end": 280,
+            "start": 294,
+            "end": 294,
             "sha256": "3a198e4469e9f09171f5fd4af68208f07c612e9d72adb5080d9ea542e4172bef"
           }
         }
@@ -1071,8 +1071,8 @@
           "description": "Creation returns trimmed name, free plan and authenticated owner role.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 133,
-            "end": 133,
+            "start": 147,
+            "end": 147,
             "sha256": "2e9e94feb63b74cfaa0d0cb9b19df9a796446a053af6d1398aa6f856c247979c"
           }
         },
@@ -1081,8 +1081,8 @@
           "description": "Public creation returns the trimmed authored team name and the authenticated owner ID, and a following team GET returns the same team ID with exactly its owner membership. This checks persisted team identity/name/owner fields; it does not establish raw duplicate-ID or invalid-owner foreign-key rejection.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 131,
-            "end": 137,
+            "start": 145,
+            "end": 151,
             "sha256": "f1a21159fd94bab034dfd0e9a5fe96497faf9a057704d6048f837820ad7955a9"
           }
         }
@@ -1118,8 +1118,8 @@
           "description": "Readback contains exactly the owner membership and no invitations.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 137,
-            "end": 137,
+            "start": 151,
+            "end": 151,
             "sha256": "3c637914ef9edeacc54bbe8a1781951626bf7a6833dae083d84338af27021ed2"
           }
         }
@@ -1144,8 +1144,8 @@
           "description": "Owner creates a member invitation with exact one-day lifetime and local URL.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 141,
-            "end": 141,
+            "start": 155,
+            "end": 155,
             "sha256": "3ea6885af796c88a03c3afb133df7f834e443285e4664d20bfa6028c8257b3c5"
           }
         }
@@ -1170,8 +1170,8 @@
           "description": "A valid invitation cannot admit a member while the team is free.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 145,
-            "end": 145,
+            "start": 159,
+            "end": 159,
             "sha256": "d55c5b5998e054ae5be84978d70d97cc1a69c0bc3523ca44d5fc61bfbbb68464"
           }
         }
@@ -1196,8 +1196,8 @@
           "description": "Rejected free-plan join leaves only the owner membership.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 149,
-            "end": 149,
+            "start": 163,
+            "end": 163,
             "sha256": "51cda8bc01412e3ef69035943eedf6c74c65531e746867f9777f6d1cd13aad15"
           }
         }
@@ -1222,8 +1222,8 @@
           "description": "Synthetic fixture setup updates exactly one owned team; no payment or subscription transition is asserted.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 153,
-            "end": 153,
+            "start": 167,
+            "end": 167,
             "sha256": "f93c72cb7595632292017fc9b0bf898deb388609ad7e503f5505bc206bfd8db2"
           }
         }
@@ -1248,8 +1248,8 @@
           "description": "Entitled team admits a member through its valid invitation.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 157,
-            "end": 157,
+            "start": 171,
+            "end": 171,
             "sha256": "aa6647b91d5d86d5c3e579b7c3e433fc08b867c8fe8bf61b1275b788567368fb"
           }
         }
@@ -1285,8 +1285,8 @@
           "description": "A sequential duplicate join returns the existing member role.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 161,
-            "end": 161,
+            "start": 175,
+            "end": 175,
             "sha256": "bf46d595172b4563e15f24b9f7a55b58bd6b13f107b28d6b462c0e8dcb734841"
           }
         }
@@ -1311,8 +1311,8 @@
           "description": "Duplicate join creates no second membership in public readback.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 165,
-            "end": 165,
+            "start": 179,
+            "end": 179,
             "sha256": "f6805121f617a28a8a0f722545e5c0c9091b6ef8c0dfa8c4b46bb8a59a98a823"
           }
         },
@@ -1321,8 +1321,8 @@
           "description": "A public member invite join returns the expected team and member role; repeating that same invite as the same member still returns member and public team readback contains exactly one membership for that actor. No raw orphan-member insert or foreign-key cascade is asserted.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 155,
-            "end": 165,
+            "start": 169,
+            "end": 179,
             "sha256": "78b76e5161b501553a91687599f981e426689fbcd34507919e9b4df88958a7f8"
           }
         }
@@ -1368,8 +1368,8 @@
           "description": "Owner creates a viewer invitation with default 30-day lifetime.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 169,
-            "end": 169,
+            "start": 183,
+            "end": 183,
             "sha256": "ca76c6492d31b9ef9fff8cf8c5e021212c35ca178fea1ba2d53f892407f2e876"
           }
         }
@@ -1394,8 +1394,8 @@
           "description": "Viewer invitation admits the requested viewer role.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 173,
-            "end": 173,
+            "start": 187,
+            "end": 187,
             "sha256": "77aa284fab39ed9eabd3a346f0bec8048052c42ff34587b6502002466646069e"
           }
         }
@@ -1420,8 +1420,8 @@
           "description": "An existing member joining a viewer invitation retains its member role.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 177,
-            "end": 177,
+            "start": 191,
+            "end": 191,
             "sha256": "e3e10cf3038c612e4e9bdccb2f617214e282f2caeed88adac230547fc456db1c"
           }
         }
@@ -1446,8 +1446,8 @@
           "description": "Nonmanager member sees membership list but no invitation management rows.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 181,
-            "end": 181,
+            "start": 195,
+            "end": 195,
             "sha256": "c7bc831492e2b8d46ed5c71583a11018efd5e8c53de656f7b05427a5b043b74a"
           }
         }
@@ -1472,8 +1472,8 @@
           "description": "A nonmanager cannot create invitations.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 185,
-            "end": 185,
+            "start": 199,
+            "end": 199,
             "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
           }
         }
@@ -1498,8 +1498,8 @@
           "description": "A member cannot rename the team.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 189,
-            "end": 189,
+            "start": 203,
+            "end": 203,
             "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
           }
         }
@@ -1524,8 +1524,8 @@
           "description": "The owner cannot remove its own membership.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 193,
-            "end": 193,
+            "start": 207,
+            "end": 207,
             "sha256": "7ad2b750ea8224ca606605e60a871e90b40b1f62496a03f210e868b9f510dd83"
           }
         }
@@ -1550,8 +1550,8 @@
           "description": "Owner can promote a member to admin.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 197,
-            "end": 197,
+            "start": 211,
+            "end": 211,
             "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
           }
         }
@@ -1576,8 +1576,8 @@
           "description": "Promoted admin reads its persisted role, both invitations, and the unchanged original Synthetic team name after the denied member rename.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 201,
-            "end": 201,
+            "start": 215,
+            "end": 215,
             "sha256": "b6b80ab93654a54d2b0a8aa6b2a2846b04562dba5a8ed0e446a83f8093d5dd37"
           }
         }
@@ -1613,8 +1613,8 @@
           "description": "Admin can rename the team with whitespace trimmed.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 205,
-            "end": 205,
+            "start": 219,
+            "end": 219,
             "sha256": "5893a5161becc59f586b3ae7a8285e259d4bbb07efce81874f1fb222f55509b1"
           }
         }
@@ -1639,8 +1639,8 @@
           "description": "Viewer team list reflects the admin rename and unchanged viewer membership.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 209,
-            "end": 209,
+            "start": 223,
+            "end": 223,
             "sha256": "6c83d048745fb77d4d3c134d4e1fb8e99e1f364ebc6113ccf374d92efd3aa552"
           }
         }
@@ -1665,8 +1665,8 @@
           "description": "An admin cannot appoint another admin.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 213,
-            "end": 213,
+            "start": 227,
+            "end": 227,
             "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
           }
         }
@@ -1691,8 +1691,8 @@
           "description": "An admin cannot change the owner membership.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 217,
-            "end": 217,
+            "start": 231,
+            "end": 231,
             "sha256": "7ad2b750ea8224ca606605e60a871e90b40b1f62496a03f210e868b9f510dd83"
           }
         }
@@ -1717,8 +1717,8 @@
           "description": "Admin creates a team project owned by the team owner.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 221,
-            "end": 221,
+            "start": 235,
+            "end": 235,
             "sha256": "4059605311db0190b9b11386a4a262d241cfe0b9a2737712acd20d52805b270a"
           }
         }
@@ -1754,8 +1754,8 @@
           "description": "Viewer project readback explicitly reports read-only access.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 225,
-            "end": 225,
+            "start": 239,
+            "end": 239,
             "sha256": "492ed6c25937d5c6f77ad72e436e6a788f690ca852c80cc71f419bdbb7f2bf0c"
           }
         }
@@ -1780,8 +1780,8 @@
           "description": "Admin can promote a viewer to ordinary member.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 229,
-            "end": 229,
+            "start": 243,
+            "end": 243,
             "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
           }
         }
@@ -1806,8 +1806,8 @@
           "description": "After promotion public project readback changes to member and writable.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 233,
-            "end": 233,
+            "start": 247,
+            "end": 247,
             "sha256": "d77869066cafdc6d8c78d339dfe631f9192755b6a1f159b2efd20cc71a48bc47"
           }
         }
@@ -1832,8 +1832,8 @@
           "description": "A writable ordinary member cannot archive the project.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 237,
-            "end": 237,
+            "start": 251,
+            "end": 251,
             "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
           }
         }
@@ -1858,8 +1858,8 @@
           "description": "A nonowner ordinary member can leave the team.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 241,
-            "end": 241,
+            "start": 255,
+            "end": 255,
             "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
           }
         }
@@ -1884,8 +1884,8 @@
           "description": "Self-leave removes the team and project from public identity lists.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 245,
-            "end": 245,
+            "start": 259,
+            "end": 259,
             "sha256": "19410a4e80b95107f49871ee954a1ad7de549f3f78efa77d17bd6c3b6a599be9"
           }
         }
@@ -1910,8 +1910,8 @@
           "description": "Departed member cannot read the former team project.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 249,
-            "end": 249,
+            "start": 263,
+            "end": 263,
             "sha256": "7ec908805ab29a96887ff81e6ef14f964e5a6fa07bbbba22eabbc91a0819b054"
           }
         }
@@ -1936,8 +1936,8 @@
           "description": "Admin can revoke the viewer invitation.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 253,
-            "end": 253,
+            "start": 267,
+            "end": 267,
             "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
           }
         }
@@ -1962,8 +1962,8 @@
           "description": "Public manager readback marks only the selected invitation revoked.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 257,
-            "end": 257,
+            "start": 271,
+            "end": 271,
             "sha256": "f8cae32d7d9fbf9d92b2d066349a49d88fbadd947f90ffd8a95b92e87fbb02c2"
           }
         }
@@ -1999,8 +1999,8 @@
           "description": "A revoked invitation cannot admit a new outsider.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 261,
-            "end": 261,
+            "start": 275,
+            "end": 275,
             "sha256": "d56c2e597eadbae06fddbb6e4c15452e1a8be168a8096e3b0f87ae65af111330"
           }
         }
@@ -2025,8 +2025,8 @@
           "description": "Rejected revoked invitation leaves outsider without team or project access.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 265,
-            "end": 265,
+            "start": 279,
+            "end": 279,
             "sha256": "19410a4e80b95107f49871ee954a1ad7de549f3f78efa77d17bd6c3b6a599be9"
           }
         }
@@ -2051,8 +2051,8 @@
           "description": "Owner can remove an admin membership.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 269,
-            "end": 269,
+            "start": 283,
+            "end": 283,
             "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
           }
         }
@@ -2077,8 +2077,8 @@
           "description": "Owner readback contains only the owner after self-leave and admin removal.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 273,
-            "end": 273,
+            "start": 287,
+            "end": 287,
             "sha256": "51cda8bc01412e3ef69035943eedf6c74c65531e746867f9777f6d1cd13aad15"
           }
         }
@@ -2103,8 +2103,8 @@
           "description": "Removed admin cannot read the team.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 277,
-            "end": 277,
+            "start": 291,
+            "end": 291,
             "sha256": "7ec908805ab29a96887ff81e6ef14f964e5a6fa07bbbba22eabbc91a0819b054"
           }
         }
@@ -2129,8 +2129,8 @@
           "description": "Owner archives the team project.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 281,
-            "end": 281,
+            "start": 295,
+            "end": 295,
             "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
           }
         }
@@ -2155,8 +2155,8 @@
           "description": "Archived project disappears from owner project list.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 285,
-            "end": 285,
+            "start": 299,
+            "end": 299,
             "sha256": "191fc6db26623323414d4c0e9b231770fb95589cc61edb2833b23c854ea15623"
           }
         }
@@ -2181,8 +2181,8 @@
           "description": "Even its owner cannot retrieve an archived project via normal project read.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 289,
-            "end": 289,
+            "start": 303,
+            "end": 303,
             "sha256": "7ec908805ab29a96887ff81e6ef14f964e5a6fa07bbbba22eabbc91a0819b054"
           }
         }
@@ -2218,8 +2218,8 @@
           "description": "Each newly requested challenge has exact declared row shape, SHA-256 challenge ID and challenge-bound code hash, correct PKCE proof, zero attempts, null consumption, persisted sent timestamp and real ten-minute/one-minute expiry/resend values. Issuance creates no user, verified identity or session.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 215,
-            "end": 225,
+            "start": 244,
+            "end": 254,
             "sha256": "e2b23ab44111cbcee1f50c67cb4400c0d12c05fb18851726d3cc5bb4af9d83c7"
           }
         },
@@ -2228,8 +2228,8 @@
           "description": "Five wrong codes each return exact 401/invalid_code, increment only the target challenge attempts by one through five, and preserve all users, verified identities and sessions. A correct code/proof while the challenge is still unexpired is then refused with attempts fixed at five, unchanged challenge row and no identity/session creation.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 227,
-            "end": 238,
+            "start": 256,
+            "end": 267,
             "sha256": "38a3dda64ee39f73f35f2851969b2ca06c606bc35f39f5cedda662165086065d"
           }
         },
@@ -2238,8 +2238,8 @@
           "description": "For the same synthetic email under a fresh distinct PKCE proof, two correct verification fetches are dispatched before either result is awaited. Exactly one returns 200 and one exact 401. The challenge has attempts one and one consumption marker; there is exactly one additional verified user, identity and session. A later identical verification is refused with all identity/session/challenge state unchanged. No particular internal transaction overlap is forced.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 239,
-            "end": 264,
+            "start": 268,
+            "end": 293,
             "sha256": "c7972f690a0350a85a396755a86958696b2cb60d32748afd1dfaef4f3292ac74"
           }
         },
@@ -2248,8 +2248,8 @@
           "description": "A seeded GitHub-style user with the matching unverified contact email is preserved exactly and receives no session. The winning verified email identity belongs to a distinct new email-namespace user, and its session has the SHA-256 of the returned token, a 100-character truncated device name and the default 30-day expiry. Public identity/session reads agree. Public logout revokes only that session; its next identity read is 401. Original identities, sessions and challenges remain exact, and mailbox/outbound counters remain empty/zero.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 247,
-            "end": 272,
+            "start": 276,
+            "end": 301,
             "sha256": "059fbbecbd06679a3babb213f554414a3101e72943676301d009facb2e23b731"
           }
         },
@@ -2258,8 +2258,8 @@
           "description": "The sole new session is linked to the newly verified user, stores the SHA-256 of the returned 64-character token, truncates the supplied device name to 100 characters, uses the same creation time as its new user and a default 30-day expiry, and starts unrevoked. No other SESSION_DAYS or Unicode boundary is varied.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 247,
-            "end": 258,
+            "start": 276,
+            "end": 287,
             "sha256": "0200f83a14bc5aa1e2b77f9e695615bd18f61241efedcedf4eeabff977ade67f"
           }
         },
@@ -2268,8 +2268,8 @@
           "description": "Exactly one new user and verified identity are inserted; they share the winner ID and creation/verification timestamp, use the reserved email:<UUID> namespace and do not reuse the existing GitHub-style user with the matching contact email.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 247,
-            "end": 260,
+            "start": 276,
+            "end": 289,
             "sha256": "c9bdc304bddeedc5c3f731f549bc57eabe903da19a1f9081c957695ca2beb72b"
           }
         },
@@ -2278,8 +2278,8 @@
           "description": "The winning token reads its own user/session and exactly one public session, then real logout sets only revoked_at and subsequent identity access returns exact session_expired. Original session rows remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 261,
-            "end": 272,
+            "start": 290,
+            "end": 301,
             "sha256": "ef5b1735f00b45841da44305efc996faaa369b9f5b252907472e428a31795500"
           }
         }
@@ -2331,7 +2331,7 @@
       "id": "email-recovery-fields",
       "title": "Recover safely after email delivery failure",
       "preconditions": [
-        "Run complete tracer app -- test services email-auth. Preserve original lines 1–273 and footer, sixteen named runtime callbacks and fifteen consumption checks. Append nine requests for forty total within original cap 40.",
+        "Run complete tracer app -- test services email-auth. Preserve original lines 1\u2013273 and footer, sixteen named runtime callbacks and fifteen consumption checks. Append nine requests for forty total within original cap 40.",
         "Reuse existing synthetic state and verify users, identities, sessions and challenges across the Miniflare mailbox configuration switch. The replacement mailbox accepts only synthetic-recovery@example.invalid and the configured synthetic sender/subject/code shape; it stores the first code then throws a synthetic response failure, and accepts the second normally.",
         "New challenge/auth mutations use public loopback HTTP. Mailbox RPC and D1 queries only observe fixture state; no direct new D1 fixture write, production helper call, clock override or production bypass is added.",
         "Wait naturally until the failed row creation time plus 60000ms has elapsed, with 25ms margin. The unchanged process-group deadline remains 90 seconds; this is not exact cooldown-boundary or ten-minute expiry testing.",
@@ -2355,9 +2355,9 @@
           "description": "A text/plain request and a JSON request with a foreign Origin return the exact 415/unsupported_media_type and 403/invalid_origin error objects before any mailbox attempt. All security-limit rows, users, verified identities, sessions and existing challenges remain exact after these two requests. This is one disallowed media type and one foreign origin, not every header normalization or browser behavior.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 274,
-            "end": 339,
-            "sha256": "25510423c3a8fe5f061195745a7f30e92ff42aa9e0325ef7166c1ffa474bea0b"
+            "start": 303,
+            "end": 372,
+            "sha256": "23cc6d31c60355566f242fc03285eecd61733a4cdf27d71d3ead384a58bb975c"
           }
         },
         {
@@ -2365,9 +2365,9 @@
           "description": "The local mailbox accepts and stores a correctly addressed six-digit code, then fails its first send response. The public request returns only the exact 503/email_unavailable error. One new failed challenge has a request-bounded creation time, ten-minute expiry, null code_hash/sent_at, zero attempts and consumed_by send_failed; no identity or session is created. Immediate same-email/same-proof resend returns the exact cooldown 429 with that row unchanged and no second send attempt. After the actual one-minute cooldown elapses, the same request succeeds with a new challenge ID/hash, independently expected code digest, bounded creation/send times, reset consumption/attempt state and exact expiry/resend timestamps. The row replaces the failed row without increasing the challenge count. No clock override or direct challenge write is used.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 274,
-            "end": 339,
-            "sha256": "25510423c3a8fe5f061195745a7f30e92ff42aa9e0325ef7166c1ffa474bea0b"
+            "start": 303,
+            "end": 372,
+            "sha256": "23cc6d31c60355566f242fc03285eecd61733a4cdf27d71d3ead384a58bb975c"
           }
         },
         {
@@ -2375,9 +2375,9 @@
           "description": "Successful verification of the replacement code/proof creates exactly one expected email-namespace user, verified identity and session. Exact row checks cover returned user, independently hashed session token, bounded creation time, named device and default thirty-day expiry. The replacement challenge is consumed exactly once with one attempt. Public identity read agrees; logout changes only this session revocation timestamp, bounded by its request, and the next identity read returns the exact expired-session error. All earlier users, identities, sessions and challenges are preserved. The local mailbox has exactly two attempts and ends empty; outbound attempts remain zero. No verification of the unavailable failed challenge ID, rollback fault, concurrent resend, process restart, native UI or real email delivery is asserted.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 274,
-            "end": 339,
-            "sha256": "25510423c3a8fe5f061195745a7f30e92ff42aa9e0325ef7166c1ffa474bea0b"
+            "start": 303,
+            "end": 372,
+            "sha256": "23cc6d31c60355566f242fc03285eecd61733a4cdf27d71d3ead384a58bb975c"
           }
         },
         {
@@ -2385,8 +2385,8 @@
           "description": "After real cooldown, the same email and PKCE proof replace the failed challenge with a new ID and exact new digest/timestamps/reset state, without increasing row count or changing other challenges. This exercises the production INSERT ON CONFLICT(email,pkce_challenge) replacement path; no concurrent resend is claimed.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 310,
-            "end": 324,
+            "start": 343,
+            "end": 357,
             "sha256": "261b4421b37fa8c0a111515583df5b96fbcae7685f3d8f2e71d8c3aaf3ff5ede"
           }
         },
@@ -2395,8 +2395,8 @@
           "description": "Verification of the replacement code creates one exact email-namespace user with the returned ID, independently expected github_id/name/email/avatar_url and bounded creation time, plus exactly one verified email identity with the same user ID and verified_at equal to that creation time. Existing users and identities remain exact. No seeded contact user is credited as a verified identity.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 325,
-            "end": 331,
+            "start": 358,
+            "end": 364,
             "sha256": "9223aa8947a4e23eca5f676d033902e8e9536ad2e3685233721ea44013c756fc"
           }
         }
@@ -2438,7 +2438,7 @@
       "id": "oauth-persisted-fields",
       "title": "Reuse OAuth identity and isolate session revocation",
       "preconditions": [
-        "Run the entire public tracer app -- test services oauth command on the unchanged owned local Worker. Original source lines 1–283, all 24 named runtime callbacks and their expectations remain exact. A new chapter adds 16 HTTP requests for 40 total, within the unchanged 40-request cap.",
+        "Run the entire public tracer app -- test services oauth command on the unchanged owned local Worker. Original source lines 1\u2013283, all 24 named runtime callbacks and their expectations remain exact. A new chapter adds 16 HTTP requests for 40 total, within the unchanged 40-request cap.",
         "Existing fixture permits only three exact GitHub endpoint URLs and exact synthetic credentials/code/token, with no forwarding or fallback. The valid provider profile remains unchanged. Total 14 simulated provider calls remain below the unchanged 16-call limit; denied outbound stays zero.",
         "After original logout, seed only one unrelated synthetic user and active session. No OAuth states, exchange codes or new tested-user sessions are seeded, edited or reset. Both fresh authentication flows use the real HTTP routes and synthetic provider fixture.",
         "Read-only D1 observations compare full declared users, sessions, oauth_states, auth_codes and email_identities. Rate counters and project-room notification behavior are excluded. Plaintext state/code/token values remain transient and never appear in logs or artifacts.",
@@ -2464,8 +2464,8 @@
           "description": "Real starts store exactly one new OAuth state with the SHA-256 of the returned opaque state, distinct client state, correct fresh PKCE challenge and ten-minute expiry bounded by actual request time; users/sessions remain exact and auth codes empty.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 299,
-            "end": 306,
+            "start": 313,
+            "end": 320,
             "sha256": "911c51856d8203972ecd48f3c1205c7d1716a3af43a0d991f13d8c4bc590bfc1"
           }
         },
@@ -2474,8 +2474,8 @@
           "description": "Two callback fetches for one real OAuth state are dispatched before either result is awaited; exactly one redirects with a code and one returns exact 400/oauth_expired. Only one synthetic provider exchange occurs. Separately, two correct code-exchange fetches are dispatched together; exactly one returns 200 and one exact 401/invalid_code, the exchange code disappears and exactly one new session is added. No particular internal transaction overlap is forced.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 307,
-            "end": 324,
+            "start": 321,
+            "end": 338,
             "sha256": "dea8a35cddf28693863131603fe4e255b3cd989a2914f6c2e13e4dfafaf6590d"
           }
         },
@@ -2484,8 +2484,8 @@
           "description": "Repeated successful callbacks for the same simulated GitHub account preserve every user row including the preexisting ID/creation time, do not create a second user, and do not create a verified email identity. The provider profile is deliberately unchanged; profile-field update behavior is not tested.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 312,
-            "end": 324,
+            "start": 326,
+            "end": 338,
             "sha256": "e2332a9055030b68fd9611dbda09bc5ca7f59648fa2912ed3719a95b0abce0a0"
           }
         },
@@ -2494,8 +2494,8 @@
           "description": "Each successful callback consumes its OAuth state and stores exactly one two-minute exchange-code row containing the SHA-256 of the returned code, the existing user ID and the fresh proof challenge. No sessions are created until exchange.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 307,
-            "end": 313,
+            "start": 321,
+            "end": 327,
             "sha256": "a0686fa3f630387f7aa06a4dcee14b7cbf7d4013a4d92d969aa443ba9e0e1151"
           }
         },
@@ -2504,8 +2504,8 @@
           "description": "Each successful exchange adds exactly one session with SHA-256 of its returned 64-character bearer, unique session ID, existing user ID, requested device name, request-bounded creation timestamp, default 30-day expiry and null revocation. Existing sessions remain byte-for-byte equal.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 314,
-            "end": 326,
+            "start": 328,
+            "end": 340,
             "sha256": "61539561e614229b069e9ee596cbad59237fb21c201b9279924fb65a55cadea1"
           }
         },
@@ -2514,8 +2514,8 @@
           "description": "Public session reads return exactly the two new active sessions and the correct current ID, omitting the original revoked and unrelated active session. After sibling revocation only the current session remains.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 326,
-            "end": 336,
+            "start": 340,
+            "end": 350,
             "sha256": "17a3baf8fb2e0f39844c3c9fa299a2f42fe8904b39672fec07dfbf52e52a9787"
           }
         },
@@ -2524,8 +2524,8 @@
           "description": "The public session list contains exactly the two new active sessions and identifies the current session; it omits the original revoked session and an unrelated synthetic user session. Deleting the unrelated session ID reports ok with all declared auth rows unchanged. Deleting the sibling session changes only its revocation timestamp; the sibling token is refused while the current token still lists its own session. Logout changes only the current session revocation timestamp and its token is then refused. Original and unrelated user/session rows remain exact.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 326,
-            "end": 341,
+            "start": 340,
+            "end": 355,
             "sha256": "9650de58234a93da6cb68542500c3118f36221cf94b3daf482378caa336588bc"
           }
         },
@@ -2534,8 +2534,8 @@
           "description": "Logout of the remaining current session changes only its revocation timestamp within real request time. Its next identity read is exact 401/session_expired. Prior revoked and unrelated sessions stay unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 337,
-            "end": 341,
+            "start": 351,
+            "end": 355,
             "sha256": "300c013acf0b158c576458def2e0dd255b7d352aefca9d0cd77efda5c36ce014"
           }
         },
@@ -2544,8 +2544,8 @@
           "description": "The current OAuth bearer successfully reads the existing user and empty teams/projects. Revoking the sibling session makes the sibling bearer fail with exact 401/session_expired while the current bearer still lists its own session. After current logout the current bearer is also refused.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 331,
-            "end": 338,
+            "start": 345,
+            "end": 352,
             "sha256": "95d4b34e1fbd782100c913c6befb1aab4adc1cc652f74a565115fdf3f29c16dc"
           }
         },
@@ -2554,8 +2554,8 @@
           "description": "Successful exchanges create one exact row each with independently hashed bearer, new session ID, existing user ID, named device, bounded created_at, default thirty-day expires_at and null revoked_at. Public sibling revocation and logout later change only the target revoked_at within request time; unrelated and original rows remain equal. This is persisted field behavior, not database uniqueness/nullability/cascade rejection.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 314,
-            "end": 341,
+            "start": 328,
+            "end": 355,
             "sha256": "a399186c39034ad242fefece04f1a139e45254314975e4b6f82e0e0f13ee485f"
           }
         }
@@ -2597,7 +2597,7 @@
       "id": "team-project-archive-fields",
       "title": "Keep project access consistent across entitlement grace",
       "preconditions": [
-        "Run the entire public tracer app -- test services team-lifecycle command. Original source lines 1–291, 40 named callbacks (39 HTTP plus one entitlement fixture) and their assertions remain unchanged. The appendix adds 41 HTTP requests for 80 total, within the unchanged 80-request cap.",
+        "Run the entire public tracer app -- test services team-lifecycle command. Original source lines 1\u2013291, 40 named callbacks (39 HTTP plus one entitlement fixture) and their assertions remain unchanged. The appendix adds 41 HTTP requests for 80 total, within the unchanged 80-request cap.",
         "Use the existing isolated synthetic owner/member/viewer/outsider identities. Rejoin member and viewer through the original valid member invite, set viewer role through owner PATCH, and create one new team project through real HTTP. Original project stays archived.",
         "Only subscription_status, paid_until and canceled_at on the owned synthetic team are adjusted as fixture inputs. No provider, billing webhook or reconciliation is simulated; no membership, auth or project state is reset by fixture SQL. The original three entitlement fields are restored afterward.",
         "Frozen dates are one hour future, one day past or 31 days past relative to the real clock. This is safely inside/outside grace, not exact boundary equality or a 30-day wall-clock wait. Real session expiry remains future within the unchanged 90-second watchdog.",
@@ -2621,8 +2621,8 @@
           "description": "Seven explicitly seeded entitlement states are exercised through 21 real project reads and seven member identity reads. Active and trialing future-paid teams project premium access; past_due with future paid_until does not. Recent expiry and recent cancellation allow member/viewer metadata reads with canWrite false; dates safely beyond the 30-day grace window refuse those reads with exact 402 and omit the project from member identity. The owner reads the existing project in every state. canWrite assertions concern public capability projection, not document-write execution.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 334,
+            "start": 323,
+            "end": 348,
             "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
           }
         },
@@ -2631,8 +2631,8 @@
           "description": "Cancellation time takes precedence over paid_until for grace: recent canceled_at with 31-day-old paid_until allows member/viewer reads, whereas 31-day-old canceled_at with recent paid_until refuses them. With canceled_at null, old paid_until refuses them. The real clock is not altered and exact equality at the expiry boundary is not tested. All declared business rows remain unchanged by each phase of reads and refused creates.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 334,
+            "start": 323,
+            "end": 348,
             "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
           }
         },
@@ -2641,8 +2641,8 @@
           "description": "Across seven states, member identity retains exactly its team with matching role/status; plan is team only for active/trialing with future paid_until and free for the other five states. Project-list membership and capability projections match the phase expectations.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 334,
+            "start": 323,
+            "end": 348,
             "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
           }
         },
@@ -2651,8 +2651,8 @@
           "description": "Public project GET responses preserve all original project fields and expose exact owner/member/viewer role, phase premium and projected canWrite. Owner canWrite stays true; member canWrite is true only in the two premium states, and viewer canWrite stays false. This does not execute document writes.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 334,
+            "start": 323,
+            "end": 348,
             "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
           }
         },
@@ -2661,8 +2661,8 @@
           "description": "Owner metadata reads succeed in all seven entitlement states even when member/viewer reads are refused. The final owner project list still contains the original unarchived project with premium false and canWrite true after grace expires.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 335,
+            "start": 323,
+            "end": 349,
             "sha256": "f557aea7fc229234c88b8996c15285928a003c54a3bda649ed058d2ddf733b75"
           }
         },
@@ -2671,8 +2671,8 @@
           "description": "Member identity contains exactly the new active project during premium/grace states and no projects in the two expired-grace states; original archived project is never returned. Team membership and identity remain visible. All declared business rows remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 334,
+            "start": 323,
+            "end": 348,
             "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
           }
         },
@@ -2681,8 +2681,8 @@
           "description": "A member new-project POST in active-expired grace and an owner new-project POST in canceled expired grace each returns exact 402/team_subscription_required. Fresh project IDs prevent an idempotent replay short circuit, and all declared business rows remain exact.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 334,
+            "start": 323,
+            "end": 348,
             "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
           }
         },
@@ -2691,8 +2691,8 @@
           "description": "A member cannot create a new team project while active entitlement is expired, and the owner cannot create one after canceled grace has expired; both return exact 402 without business-row changes. Nevertheless, after grace the owner can list and archive the existing team project. Archive changes only that project archived_at and updated_at within request time; owner list then omits it and direct owner lookup is 404. Restoring the three fixture entitlement fields and leaving through real membership routes restores all original declared rows, with only the new archived project retained.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 332,
-            "end": 345,
+            "start": 346,
+            "end": 359,
             "sha256": "9a35ad9dc9461d658e7ffff11422fb4a10887d3a3f2ca1a37b54dee6be8b7699"
           }
         },
@@ -2701,8 +2701,8 @@
           "description": "After grace expires, the public owner DELETE archives the existing project. Read-only D1 comparison shows archived_at bounded by the request and updated_at equal to archived_at; all other project fields and business rows remain equal. Public listing becomes empty and direct lookup is 404. The three entitlement fixture fields receive no source credit.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 335,
-            "end": 340,
+            "start": 349,
+            "end": 354,
             "sha256": "033ea55a2eac1cc6772f98564011f91005d73a1744cca0e9a7763fe915990be1"
           }
         }
@@ -2724,7 +2724,7 @@
   "scenarios": [
     {
       "id": "local-email-session-lifecycle",
-      "title": "Local synthetic email session lifecycle — existing stored-data assertions",
+      "title": "Local synthetic email session lifecycle \u2014 existing stored-data assertions",
       "steps": [
         "email-request-code",
         "email-reject-resend",
@@ -2748,7 +2748,7 @@
     },
     {
       "id": "local-github-oauth-pkce",
-      "title": "Synthetic GitHub OAuth and PKCE lifecycle — existing stored-data assertions",
+      "title": "Synthetic GitHub OAuth and PKCE lifecycle \u2014 existing stored-data assertions",
       "steps": [
         "oauth-reject-malformed-challenge",
         "oauth-start-sign-in",
@@ -2779,7 +2779,7 @@
     },
     {
       "id": "local-team-membership-lifecycle",
-      "title": "Local synthetic team membership lifecycle — existing stored-data assertions",
+      "title": "Local synthetic team membership lifecycle \u2014 existing stored-data assertions",
       "steps": [
         "team-create-free-team",
         "team-read-created-team",

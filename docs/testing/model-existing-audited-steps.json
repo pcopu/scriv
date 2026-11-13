@@ -159,8 +159,8 @@
           "description": "The accepted biography edit changes only the independently expected biography/revision/date, canonical bytes remain unchanged during failure and before open, normal Open project publishes exactly the accepted state and one expected history event, and a second reopen preserves all package bytes with no pending records.",
           "witness": {
             "path": "tests/e2e/journeys/save-failure-recovery.mjs",
-            "start": 164,
-            "end": 209,
+            "start": 165,
+            "end": 210,
             "sha256": "6f711fa157ec280eac0804aad57aa2222752abfe0392290774042f3a2726175b"
           }
         }

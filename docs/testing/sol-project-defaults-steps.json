@@ -1,0 +1,169 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "sol-project-defaults",
+      "title": "Independent blank defaults and real browser reopen",
+      "preconditions": [
+        "Fresh isolated automation workspace with saved startup sample. Run tracer app -- test --scenario project-creation.",
+        "Only the first created Untitled is reopened while browser titles are unique. The second creation checks independence and complete startup sentinel preservation.",
+        "No native run has been performed by the author. Import/export, ProjectEditing operations and sample media installation are outside these added assertions."
+      ],
+      "actions": [
+        "key --input s --modifiers command",
+        "persisted-projects",
+        "snapshot",
+        "activate --target workspace-project",
+        "activate --title \"New project\"",
+        "persisted-projects",
+        "snapshot",
+        "activate --title \"Close Projects\" if project browser remains open",
+        "key --input s --modifiers command",
+        "persisted-projects",
+        "activate --target workspace-project",
+        "text --placeholder \"Find a project\" --text \"YAM MAN\"",
+        "activate --title \"Open project\"",
+        "loaded-project",
+        "presented-alerts",
+        "activate --target workspace-project",
+        "text --placeholder \"Find a project\" --text \"Untitled\"",
+        "activate --title \"Open project\"",
+        "loaded-project",
+        "presented-alerts",
+        "activate --target workspace-project",
+        "activate --title \"New project\"",
+        "persisted-projects",
+        "snapshot",
+        "activate --title \"Close Projects\" if project browser remains open",
+        "key --input s --modifiers command",
+        "persisted-projects",
+        "persisted-projects",
+        "persisted-projects"
+      ],
+      "expectations": [
+        {
+          "id": "defaults",
+          "description": "Complete independently authored blank JSON has exact defaults, no optional cloud/media/profile fields, bounded creation clock, eight distinct UUIDv4 identities, exact direction/dialogue metadata and independently computed three word timing intervals. Both creations are checked.",
+          "witness": {
+            "path": "tests/e2e/support/project-defaults-steps.mjs",
+            "start": 3,
+            "end": 35,
+            "sha256": "42ac117839a9a0d79057c6b7e0a8959ad686b89cba3879592eba98d49445ee34"
+          }
+        },
+        {
+          "id": "reopen",
+          "description": "After explicit save, real UI browser navigation opens startup sentinel and first blank project, comparing the complete loaded model and empty presented alerts. Every startup field survives both creations.",
+          "witness": {
+            "path": "tests/e2e/project-creation.mjs",
+            "start": 44,
+            "end": 58,
+            "sha256": "6ad6b1931a752fa396a9be328adec6cc813e2c23a3918eb142a3536a65d902a8"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Models.swift",
+            "start": 12,
+            "end": 17,
+            "sha256": "45cf8553e08ea62e9ec9ffc08847ff8526218f4d524c5e4a3f0ab77855d3188e"
+          },
+          "expectation": "defaults",
+          "why": "Exact single scene default order/title and unique identity."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Models.swift",
+            "start": 34,
+            "end": 53,
+            "sha256": "2dde5b958ec6a594a190152b5b5b075fd297e4f6fa542ab6b0a79d141d55c550"
+          },
+          "expectation": "defaults",
+          "why": "Direction duration/coverage and dialogue defaults with exact generated word timing and absent character links."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Models.swift",
+            "start": 113,
+            "end": 127,
+            "sha256": "e19c3a103259ce4d33a3a12e3b295f840393526e40a2475026a88a8ada428c31"
+          },
+          "expectation": "defaults",
+          "why": "Template cue exact scene relationship, empty prompt, extent and absent optional attachment/anchor metadata."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Models.swift",
+            "start": 137,
+            "end": 155,
+            "sha256": "d7460cd82cf81a6f07e4dd3a7b6ea1a16101857cef9bff208f101b5131d3169e"
+          },
+          "expectation": "defaults",
+          "why": "Independent complete project envelope, timestamps, revision and empty image/character/audio collections."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/SampleProject.swift",
+            "start": 4,
+            "end": 7,
+            "sha256": "6a2bbb73ac543c7da8c41e65036f270a958d47093388182e8962df0a840e7cbb"
+          },
+          "expectation": "defaults",
+          "why": "Real New project blank factory yields the two independently specified rows and one cue."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1745,
+            "end": 1745,
+            "sha256": "758aca4760b9c59e860b8f853204f306ee9e7decb8c951c7165a254d9306b4a4"
+          },
+          "expectation": "defaults",
+          "why": "Production New project action creates blank model."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1826,
+            "end": 1826,
+            "sha256": "c6c250988f0b8744da96ca8cf5659cb1e2dea1aa998f3a83041f9ae68a0ac199"
+          },
+          "expectation": "reopen",
+          "why": "Successful initial persistence publishes the complete independently checked new project."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1832,
+            "end": 1832,
+            "sha256": "3923f29b744dca3544bc78bd7a4793b32afabfc557ea9d77f9771da5e32eee06"
+          },
+          "expectation": "reopen",
+          "why": "Installed project identity and package identity are checked through complete persisted and reopened models."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1839,
+            "end": 1839,
+            "sha256": "a1ee5631c36e4406792295d4973eecb0f9ec4fe6b3547d9799ff31133e10b483"
+          },
+          "expectation": "reopen",
+          "why": "Creation saves the accepted project, which remains complete after explicit save and browser reopen."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "sol-project-defaults",
+      "title": "Independent blank defaults and real browser reopen",
+      "steps": [
+        "sol-project-defaults"
+      ]
+    }
+  ]
+}

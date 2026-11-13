@@ -18,8 +18,8 @@
           "description": "Save a reviewed complete word-timing draft once. Assert exact authored second-word timings, exact optional adjacent first word, unchanged third word, entry text, cues, audio and owned duration. Reopen and Cancel preserves saved state.",
           "witness": {
             "path": "tests/e2e/journeys/word-timing.mjs",
-            "start": 22,
-            "end": 38,
+            "start": 29,
+            "end": 45,
             "sha256": "1acd50d550db27f3852e6c612f93b0292089c5826d4cea12afbc12b9a85c77bb"
           }
         }
@@ -53,8 +53,8 @@
           "description": "Save one character edit while a verified host history-directory write refusal prevents package persistence. Assert the exact accepted model and revision, unchanged complete package bytes and exactly one schema-2 pending record with exact label, after-project and local scope.",
           "witness": {
             "path": "tests/e2e/journeys/save-failure-recovery.mjs",
-            "start": 158,
-            "end": 177,
+            "start": 159,
+            "end": 178,
             "sha256": "de0985e60ce48808ae3f66d571b9568a1185e90d4fd3a90c657894e568327cd4"
           }
         }

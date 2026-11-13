@@ -6,7 +6,7 @@
       "id": "consume-email-code-v98",
       "title": "Bound attempts and consume a verified email challenge once",
       "preconditions": [
-        "Run the entire public tracer app -- test services email-auth command. All original source lines 1–200 and 16 named runtime callbacks remain unchanged; the new chapter adds 15 HTTP requests for 31 total.",
+        "Run the entire public tracer app -- test services email-auth command. All original source lines 1\u2013200 and 16 named runtime callbacks remain unchanged; the new chapter adds 15 HTTP requests for 31 total.",
         "The existing local mailbox accepts only synthetic addresses at example.invalid and never sends email externally. The new synthetic-boundary address differs from the original account. Seed one GitHub-style user with that unverified contact email, no email_identity and no session; do not seed or alter challenge rows, attempt counters or issued sessions.",
         "Real request/verify routes create both new challenges and the winning identity/session. Read-only D1 observations compare complete declared users, email_identities, sessions and email_auth_challenges. Rate-limit counters may change and are excluded. Plaintext codes/tokens remain transient and are not emitted in evidence.",
         "Fresh PKCE proof creates a distinct challenge for the same email after exhaustion. This is a separate proof, not waiting for or bypassing same-proof resend cooldown. Both competing correct fetches are dispatched without awaiting the other result; server scheduling or transaction overlap is not controlled.",
@@ -28,8 +28,8 @@
           "description": "Each newly requested challenge has exact declared row shape, SHA-256 challenge ID and challenge-bound code hash, correct PKCE proof, zero attempts, null consumption, persisted sent timestamp and real ten-minute/one-minute expiry/resend values. Issuance creates no user, verified identity or session.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 215,
-            "end": 225,
+            "start": 244,
+            "end": 254,
             "sha256": "e2b23ab44111cbcee1f50c67cb4400c0d12c05fb18851726d3cc5bb4af9d83c7"
           }
         },
@@ -38,8 +38,8 @@
           "description": "Five wrong codes each return exact 401/invalid_code, increment only the target challenge attempts by one through five, and preserve all users, verified identities and sessions. A correct code/proof while the challenge is still unexpired is then refused with attempts fixed at five, unchanged challenge row and no identity/session creation.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 227,
-            "end": 238,
+            "start": 256,
+            "end": 267,
             "sha256": "38a3dda64ee39f73f35f2851969b2ca06c606bc35f39f5cedda662165086065d"
           }
         },
@@ -48,8 +48,8 @@
           "description": "For the same synthetic email under a fresh distinct PKCE proof, two correct verification fetches are dispatched before either result is awaited. Exactly one returns 200 and one exact 401. The challenge has attempts one and one consumption marker; there is exactly one additional verified user, identity and session. A later identical verification is refused with all identity/session/challenge state unchanged. No particular internal transaction overlap is forced.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 239,
-            "end": 264,
+            "start": 268,
+            "end": 293,
             "sha256": "c7972f690a0350a85a396755a86958696b2cb60d32748afd1dfaef4f3292ac74"
           }
         },
@@ -58,8 +58,8 @@
           "description": "A seeded GitHub-style user with the matching unverified contact email is preserved exactly and receives no session. The winning verified email identity belongs to a distinct new email-namespace user, and its session has the SHA-256 of the returned token, a 100-character truncated device name and the default 30-day expiry. Public identity/session reads agree. Public logout revokes only that session; its next identity read is 401. Original identities, sessions and challenges remain exact, and mailbox/outbound counters remain empty/zero.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 247,
-            "end": 272,
+            "start": 276,
+            "end": 301,
             "sha256": "059fbbecbd06679a3babb213f554414a3101e72943676301d009facb2e23b731"
           }
         },
@@ -68,8 +68,8 @@
           "description": "The sole new session is linked to the newly verified user, stores the SHA-256 of the returned 64-character token, truncates the supplied device name to 100 characters, uses the same creation time as its new user and a default 30-day expiry, and starts unrevoked. No other SESSION_DAYS or Unicode boundary is varied.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 247,
-            "end": 258,
+            "start": 276,
+            "end": 287,
             "sha256": "0200f83a14bc5aa1e2b77f9e695615bd18f61241efedcedf4eeabff977ade67f"
           }
         },
@@ -78,8 +78,8 @@
           "description": "Exactly one new user and verified identity are inserted; they share the winner ID and creation/verification timestamp, use the reserved email:<UUID> namespace and do not reuse the existing GitHub-style user with the matching contact email.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 247,
-            "end": 260,
+            "start": 276,
+            "end": 289,
             "sha256": "c9bdc304bddeedc5c3f731f549bc57eabe903da19a1f9081c957695ca2beb72b"
           }
         },
@@ -88,8 +88,8 @@
           "description": "The winning token reads its own user/session and exactly one public session, then real logout sets only revoked_at and subsequent identity access returns exact session_expired. Original session rows remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 261,
-            "end": 272,
+            "start": 290,
+            "end": 301,
             "sha256": "ef5b1735f00b45841da44305efc996faaa369b9f5b252907472e428a31795500"
           }
         }

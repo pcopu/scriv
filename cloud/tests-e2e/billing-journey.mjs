@@ -15,40 +15,50 @@ const cloud = await realpath(process.argv[2] === '--owned-child' ? process.argv[
   process.argv[2] === '--cloud' ? process.argv[3] : join(here, '..'));
 const self = await realpath(fileURLToPath(import.meta.url));
 if (process.argv[2] !== '--owned-child') {
-  const root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-billing-')));
-  let child;
-  let timer;
+  let root, capture, child, timer, journeyError, interrupted = false;
   const killOwned = signal => {
     if (child?.pid) {
       try { process.kill(-child.pid, signal); } catch (error) { if (error.code !== 'ESRCH') throw error; }
     }
   };
-  const interrupt = () => killOwned('SIGTERM');
+  const interrupt = () => { interrupted = true; killOwned('SIGTERM'); };
+  process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
   try {
-    for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
-    // Resolve installed dependencies from an owned runner, never edit the repository.
-    await copyFile(self, join(root, 'runner.mjs'));
-    await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
-    child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud], {
-      cwd: root, detached: true, stdio: 'inherit',
-      // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
-      env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
-        XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
-        WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
-    });
-    process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
-    timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
-    const result = await new Promise((resolve, reject) => {
-      child.once('error', reject);
-      child.once('exit', (code, signal) => resolve({ code, signal }));
-    });
-    assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    try {
+      root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-billing-')));
+      for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
+      capture = process.env.SCRIV_SERVICE_COVERAGE_DIR
+        ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+          .prepareServiceCapture(process.env.SCRIV_SERVICE_COVERAGE_DIR, process.env.SCRIV_TRACER_CLI, { journeyPath: 'cloud/tests-e2e/billing-journey.mjs' }) : null;
+      // Resolve installed dependencies from an owned runner, never edit the repository.
+      await copyFile(self, join(root, 'runner.mjs'));
+      await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
+      assert.equal(interrupted, false, 'Cancelled during preparation; no Worker launched');
+      child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud, ...(capture ? [capture.path] : [])], {
+        cwd: root, detached: true, stdio: 'inherit',
+        // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
+        env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
+          XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
+          WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
+      });
+      timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
+      const result = await new Promise((resolve, reject) => {
+        child.once('error', reject);
+        child.once('exit', (code, signal) => resolve({ code, signal }));
+      });
+      assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    } catch (error) { journeyError = error; }
+    finally {
+      clearTimeout(timer); killOwned('SIGKILL');
+      if (root) await rm(root, { recursive: true, force: true });
+      console.log('Owned service process group and temporary state cleaned.');
+    }
+    assert.equal(interrupted, false, 'Cancelled before measurement import');
+    if (capture) await capture.finish(() => interrupted);
+    assert.equal(interrupted, false, 'Cancelled during measurement import; inspect preserved evidence');
+    if (journeyError) throw journeyError;
   } finally {
-    clearTimeout(timer);
     process.off('SIGINT', interrupt); process.off('SIGTERM', interrupt);
-    killOwned('SIGKILL');
-    await rm(root, { recursive: true, force: true });
-    console.log('Owned service process group and temporary state cleaned.');
   }
 } else {
   const root = await realpath(process.argv[3]);
@@ -57,6 +67,9 @@ if (process.argv[2] !== '--owned-child') {
   const { build } = await import('esbuild');
   const { Miniflare, Log, LogLevel, convertV4MiniflareOptions } = await import('miniflare');
   const { unstable_splitSqlQuery } = await import('wrangler');
+  const captureModule = process.argv[5]
+    ? await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href) : null;
+  const capture = captureModule ? await captureModule.loadServiceCapture(process.argv[5]) : null;
   const bundle = join(root, 'worker.mjs');
   await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
     bundle: true, format: 'esm', platform: 'neutral', target: 'es2022',
@@ -76,19 +89,34 @@ if (process.argv[2] !== '--owned-child') {
     unsafeLocalExplorer: false, unsafeObservability: false,
     unsafeEnableSharedStorage: false, logRequests: false, log: new Log(LogLevel.ERROR),
     resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
-    workers: [{ ...common, name: 'scriv', scriptPath: bundle,
-      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', STRIPE_SECRET_KEY:'sk_test_synthetic_only', STRIPE_WEBHOOK_SECRET:'whsec_synthetic_only', STRIPE_TEAM_PRICE_ID:'price_synthetic' },
+    workers: [{ ...common, name: 'scriv', ...(capture ? { script: capture.options.script } : { scriptPath: bundle }),
+      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', STRIPE_SECRET_KEY:'sk_test_synthetic_only', STRIPE_WEBHOOK_SECRET:'whsec_synthetic_only', STRIPE_TEAM_PRICE_ID:'price_synthetic', ...(capture?.options.bindings ?? {}) },
       d1Databases: { DB: 'journey-db' }, r2Buckets: ['ASSETS'],
       durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
     }],
   });
   const mf = new Miniflare(config);
   let requests = 0;
+  let captureRequestStart = 0;
+  let serviceObserver;
+  async function beginCapturePhase() {
+    if (!capture) return;
+    await capture.begin(await mf.ready);
+    serviceObserver = captureModule.observeServiceRequests();
+  }
+  async function endCapturePhase() {
+    if (!serviceObserver) return;
+    const observer = serviceObserver;
+    serviceObserver = undefined;
+    observer.stop();
+    if (observer.actions.length) await capture.end(await mf.ready, observer.actions.length, observer.actions);
+  }
   try {
     const db = await mf.getD1Database('DB', 'scriv');
     const migrations = (await readdir(join(cloud, 'migrations'))).filter(name => /^\d+_.+\.sql$/.test(name)).sort();
     assert.deepEqual(migrations, ['0001_identity_teams.sql', '0002_generation_jobs.sql', '0003_email_auth.sql']);
     for (const name of migrations) await db.batch(unstable_splitSqlQuery(await readFile(join(cloud, 'migrations', name), 'utf8')).map(sql => db.prepare(sql)));
+    await beginCapturePhase();
     const now = Date.now(), teamId = randomUUID(), projectId = randomUUID();
     const actors = {};
     for (const role of ['owner', 'member', 'viewer', 'outsider']) {
@@ -99,6 +127,7 @@ if (process.argv[2] !== '--owned-child') {
     await db.prepare('INSERT INTO teams(id,name,owner_id,created_at,stripe_customer_id) VALUES(?,?,?,?,?)').bind(teamId, 'Synthetic billing team', actors.owner.id, now, 'cus_synthetic').run();
     for (const role of ['owner', 'member', 'viewer']) await db.prepare('INSERT INTO team_members(team_id,user_id,role,joined_at) VALUES(?,?,?,?)').bind(teamId, actors[role].id, role, now).run();
     let requests=0;
+    const ordinaryRequests = () => requests;
     async function request(path,{role='owner',method='GET',body,signature}={}) {
       const base=await mf.ready; assert.equal(base.hostname,'127.0.0.1'); assert.equal(base.protocol,'http:'); assert(Number(base.port)>0);
       const url=new URL(path,base); assert.equal(url.origin,base.origin);
@@ -277,16 +306,20 @@ if (process.argv[2] !== '--owned-child') {
         return typeof expected.reply === 'function' ? await expected.reply() : Response.json(expected.reply);
       } catch { unexpectedCalls++; throw new Error('Unexpected synthetic checkout provider request'); }
     };
+    if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests() - captureRequestStart, 'Every ordinary request has one ordered action');
+    await endCapturePhase();
     await mf.setOptions(convertV4MiniflareOptions({
       host: '127.0.0.1', port: 0, cf: false, telemetry: { enabled: false }, unsafeLocalExplorer: false,
       unsafeObservability: false, unsafeEnableSharedStorage: false, logRequests: false, log: new Log(LogLevel.ERROR),
       resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
-      workers: [{ ...common, outboundService: checkoutProvider, name: 'scriv', scriptPath: bundle,
-        bindings: { PUBLIC_URL: publicOrigin, ENVIRONMENT: 'test', STRIPE_SECRET_KEY: 'sk_test_synthetic_only', STRIPE_WEBHOOK_SECRET: 'whsec_synthetic_only', STRIPE_TEAM_PRICE_ID: 'price_synthetic' },
+      workers: [{ ...common, outboundService: checkoutProvider, name: 'scriv', ...(capture ? { script: capture.options.script } : { scriptPath: bundle }),
+        bindings: { PUBLIC_URL: publicOrigin, ENVIRONMENT: 'test', STRIPE_SECRET_KEY: 'sk_test_synthetic_only', STRIPE_WEBHOOK_SECRET: 'whsec_synthetic_only', STRIPE_TEAM_PRICE_ID: 'price_synthetic', ...(capture?.options.bindings ?? {}) },
         d1Databases: { DB: 'journey-db' }, r2Buckets: ['ASSETS'],
         durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
       }],
     }));
+    captureRequestStart = ordinaryRequests();
+    await beginCapturePhase();
     const checkoutDB = await mf.getD1Database('DB', 'scriv');
     await checkoutDB.prepare('INSERT INTO teams(id,name,owner_id,created_at) VALUES(?,?,?,?)').bind(checkoutTeam, 'Synthetic checkout team', actors.owner.id, now).run();
     await checkoutDB.prepare("INSERT INTO team_members(team_id,user_id,role,joined_at) VALUES(?,?,'owner',?)").bind(checkoutTeam, actors.owner.id, now).run();
@@ -393,7 +426,12 @@ if (process.argv[2] !== '--owned-child') {
       state.objects=(await (await mf.getR2Bucket('ASSETS','scriv')).list()).objects; return state;
     }
     const webhookBeforeRestart=await webhookState(checkoutDB);
-    await mf.setOptions(config); const webhookDB=await mf.getD1Database('DB','scriv');
+    if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests() - captureRequestStart, 'Every ordinary request has one ordered action');
+    await endCapturePhase();
+    await mf.setOptions(config);
+    captureRequestStart = ordinaryRequests();
+    await beginCapturePhase();
+    const webhookDB=await mf.getD1Database('DB','scriv');
     assert.deepEqual(await webhookState(webhookDB),webhookBeforeRestart);
     const webhookBaseline=await webhookState(webhookDB), webhookCases=[];
     const rawSignature=(raw,t=Math.floor(Date.now()/1000))=>`t=${t},v1=${createHmac('sha256','whsec_synthetic_only').update(`${t}.${raw}`).digest('hex')}`;
@@ -464,6 +502,12 @@ if (process.argv[2] !== '--owned-child') {
     assert.equal(webhookCases.length,26);assert.equal(requests-webhookStart,26);assert.equal(requests,75);assert.equal(providerCalls-webhookProviderStart,2);assert.equal(unexpectedCalls,0);
     assert.deepEqual(mutationAfter.billing_events.filter(e=>e.id!==boundaryEvent.id),webhookBaseline.billing_events);
     console.log(JSON.stringify({kind:'webhook-boundary-evidence',httpChecks:26,signatureRefusals:8,acceptedSignatureVariants:2,envelopeRefusals:10,ignoredExpandedCustomer:1,crossTeamEventRefusals:1,syntheticProviderAttempts:2,newReceipts:1,currentStateReplays:1,webhookAuthHeaderSent:false,nativeScenarios:0,liveProvider:false,unexpectedCalls}));
+    const { billingBoundaryCases } = await import(pathToFileURL(join(cloud, 'tests-e2e/billing-boundary-cases.mjs')).href);
+    const boundaryEvidence = await billingBoundaryCases({ mf, db: webhookDB, state: webhookState, event, actors, teamId, projectId, providerCount: () => providerCalls + checkoutProviderCalls });
+    console.log(JSON.stringify(boundaryEvidence));
     console.log(JSON.stringify({result:'PASS',journey:'billing',requests,providerCalls:providerCalls+checkoutProviderCalls,entitlementProviderCalls:providerCalls,checkoutProviderCalls,unexpectedCalls,nativeScenarios:0,runtime:report}));
-  } finally { await mf.dispose(); }
+    if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests() - captureRequestStart + boundaryEvidence.httpChecks, 'Every ordinary request has one ordered action');
+  } finally {
+    try { await endCapturePhase(); } finally { await mf.dispose(); }
+  }
 }

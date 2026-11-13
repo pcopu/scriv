@@ -14,39 +14,57 @@ const cloud = await realpath(process.argv[2] === '--owned-child' ? process.argv[
 const self = await realpath(fileURLToPath(import.meta.url));
 if (process.argv[2] !== '--owned-child') {
   const root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-discussions-assets-')));
-  let child;
-  let timer;
+  let child, timer, capture, journeyError;
+  let interrupted = false;
   const killOwned = signal => {
     if (child?.pid) {
       try { process.kill(-child.pid, signal); } catch (error) { if (error.code !== 'ESRCH') throw error; }
     }
   };
-  const interrupt = () => killOwned('SIGTERM');
+  const interrupt = () => { interrupted = true; killOwned('SIGTERM'); };
+  process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
   try {
-    for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
-    // Resolve installed dependencies from an owned runner, never edit the repository.
-    await copyFile(self, join(root, 'runner.mjs'));
-    await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
-    child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud], {
-      cwd: root, detached: true, stdio: 'inherit',
-      // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
-      env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
-        XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
-        WRANGLER_SEND_METRICS: 'false', CI: '1' },
-    });
-    process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
-    timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
-    const result = await new Promise((resolve, reject) => {
-      child.once('error', reject);
-      child.once('exit', (code, signal) => resolve({ code, signal }));
-    });
-    assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    try {
+      for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
+      capture = process.env.SCRIV_SERVICE_COVERAGE_DIR
+        ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+          .prepareServiceCapture(process.env.SCRIV_SERVICE_COVERAGE_DIR, process.env.SCRIV_TRACER_CLI,
+            { journeyPath: 'cloud/tests-e2e/discussions-assets-journey.mjs' }) : null;
+      // Resolve installed dependencies from an owned runner, never edit the repository.
+      await copyFile(self, join(root, 'runner.mjs'));
+      await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
+      assert.equal(interrupted, false, 'Cancelled during preparation; no Worker launched');
+      child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud, ...(capture ? [capture.path] : [])], {
+        cwd: root, detached: true, stdio: 'inherit',
+        // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
+        env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
+          XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
+          WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
+      });
+      timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
+      const result = await new Promise((resolve, reject) => {
+        child.once('error', reject);
+        child.once('exit', (code, signal) => resolve({ code, signal }));
+      });
+      assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    } catch (error) { journeyError = error; }
+    finally {
+      clearTimeout(timer); killOwned('SIGKILL');
+      await rm(root, { recursive: true, force: true });
+      console.log('Owned service process group and temporary state cleaned.');
+    }
+    assert.equal(interrupted, false, 'Cancelled before measurement import');
+    if (capture) {
+      try { await capture.finish(() => interrupted); }
+      catch (captureError) {
+        if (journeyError) throw new AggregateError([journeyError, captureError], 'Owned service journey and capture finalization failed');
+        throw captureError;
+      }
+    }
+    assert.equal(interrupted, false, 'Cancelled during measurement import; inspect preserved evidence');
+    if (journeyError) throw journeyError;
   } finally {
-    clearTimeout(timer);
     process.off('SIGINT', interrupt); process.off('SIGTERM', interrupt);
-    killOwned('SIGKILL');
-    await rm(root, { recursive: true, force: true });
-    console.log('Owned service process group and temporary state cleaned.');
   }
 } else {
   const root = await realpath(process.argv[3]);
@@ -56,7 +74,10 @@ if (process.argv[2] !== '--owned-child') {
   const { Miniflare, Log, LogLevel, convertV4MiniflareOptions } = await import('miniflare');
   const { unstable_splitSqlQuery } = await import('wrangler');
   const bundle = join(root, 'worker.mjs');
-  await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
+  const capture = process.argv[5]
+    ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+      .loadServiceCapture(process.argv[5]) : null;
+  if (!capture) await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
     bundle: true, format: 'esm', platform: 'neutral', target: 'es2022',
     external: ['cloudflare:*'], logLevel: 'silent' });
   let outboundAttempts = 0;
@@ -68,14 +89,22 @@ if (process.argv[2] !== '--owned-child') {
     unsafeLocalExplorer: false, unsafeObservability: false,
     unsafeEnableSharedStorage: false, logRequests: false, log: new Log(LogLevel.ERROR),
     resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
-    workers: [{ ...common, name: 'scriv', scriptPath: bundle,
-      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', ASSET_MAX_BYTES: '12' },
+    workers: [{ ...common, name: 'scriv', ...(capture ? { script: capture.options.script } : { scriptPath: bundle }),
+      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', ASSET_MAX_BYTES: '12', ...(capture?.options.bindings ?? {}) },
       d1Databases: { DB: 'journey-db' }, r2Buckets: ['MEDIA'],
       durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
     }],
   });
   const mf = new Miniflare(config);
   let requests = 0;
+  let serviceObserver;
+  async function beginCapture() {
+    if (!capture) return;
+    await capture.begin(await mf.ready);
+    const { observeServiceRequests } = await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href);
+    serviceObserver = observeServiceRequests();
+  }
+
   try {
     const db = await mf.getD1Database('DB', 'scriv');
     const migrations = (await readdir(join(cloud, 'migrations'))).filter(name => /^\d+_.+\.sql$/.test(name)).sort();
@@ -113,6 +142,7 @@ if (process.argv[2] !== '--owned-child') {
     }
     const route = suffix => `/v1/projects/${projectId}/${suffix}`;
     const post = (body, extra = {}) => ({ method: 'POST', body, ...extra });
+    await beginCapture();
     const created = await request('/v1/projects', post({ id: projectId, title: 'Synthetic discussion', teamId }, { role: 'member', status: 201 }));
     assert.equal(created.project.id, projectId);
     await request(route('threads'), { role: 'outsider', status: 404, code: 'not_found' });
@@ -350,6 +380,7 @@ if (process.argv[2] !== '--owned-child') {
       const before=await quotaState();assert.deepEqual(before,emptyQuota);
       const base=await mf.ready,url=new URL(asset,base);assert.equal(url.origin,base.origin);assert.equal(base.hostname,'127.0.0.1');assert.equal(base.protocol,'http:');
       let outgoing,responseStarted=false,released=false;assert(requests++<110);
+      serviceObserver?.record('PUT', url);
       const completion=new Promise((resolve,reject)=>{
         outgoing=heldRequest(url,{method:'PUT',agent:false,signal:AbortSignal.timeout(10000),headers:{authorization:`Bearer ${attempt.token}`,'content-type':'image/png','content-length':String(content.length)}},incoming=>{
           responseStarted=true;const chunks=[];let size=0;incoming.on('error',reject);incoming.on('data',chunk=>{size+=chunk.length;if(size>16384)incoming.destroy(new Error('Bounded held-upload response'));else chunks.push(chunk);});
@@ -450,6 +481,14 @@ if (process.argv[2] !== '--owned-child') {
     const { discussionAnchorCases } = await import(pathToFileURL(join(cloud, 'tests-e2e/discussion-anchor-cases.mjs')).href);
     const anchors = await discussionAnchorCases({ base: await mf.ready, token: actors.owner.token, actor: actors.owner });
     requests += anchors.httpChecks; assert.equal(requests, 174); assert.equal(outboundAttempts, 0);
-    console.log(JSON.stringify({ result: 'PASS', journey: 'discussions-assets', requests, mediaBoundaryCases: mediaCases, outboundAttempts, migrations: migrations.length, bundleSha256: createHash('sha256').update(await readFile(bundle)).digest('hex'), nativeScenarios: 0, loginFlowTested: false, fixture: 'four original synthetic users/sessions plus two upload users and three sessions; one synthetic active team' }));
-  } finally { await mf.dispose(); }
+    console.log(JSON.stringify({ result: 'PASS', journey: 'discussions-assets', requests, mediaBoundaryCases: mediaCases, outboundAttempts, migrations: migrations.length, bundleSha256: createHash('sha256').update(capture ? capture.options.script : await readFile(bundle)).digest('hex'), nativeScenarios: 0, loginFlowTested: false, fixture: 'four original synthetic users/sessions plus two upload users and three sessions; one synthetic active team' }));
+  } finally {
+    serviceObserver?.stop();
+    try {
+      if (serviceObserver) {
+        assert.equal(serviceObserver.actions.length, requests, 'Every counted public request has one ordered capture action');
+        await capture.end(await mf.ready, requests, serviceObserver.actions);
+      }
+    } finally { await mf.dispose(); }
+  }
 }

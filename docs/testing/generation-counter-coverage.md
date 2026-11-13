@@ -90,3 +90,82 @@ unchanged before and after import. Use `measure report` and `measure check` on
 that external analysis root. Keep raw profiles, datasets and local paths out of
 Git. Report the exact source checkpoint, observed and instrumented anchor counts,
 stale/invalid status and these limits alongside the result.
+
+## Shared service capture
+
+`SCRIV_SERVICE_COVERAGE_DIR` enables the shared adapter through the existing
+`tracer app -- test services` selector. Supply a new absolute output directory
+under a canonical, user-owned private parent outside source. The service runner
+creates that directory and gives every selected cloud journey its own child
+output. The updates journey retains its separate update-counter adapter.
+
+```sh
+SCRIV_SERVICE_COVERAGE_DIR=/absolute/private/parent/service-capture-1 \
+  node scripts/tracer-cli.mjs app -- test services revision-safety
+```
+
+The shared mode uses an explicit runtime allowlist of 15 cloud modules. It
+selects 1,600 statement sites on 1,164 distinct original anchor lines at the
+November 13 adapter checkpoint. These are the transform's candidate universe.
+Only actual before/after counter increases establish observed anchors. The
+existing generation-only environment variable retains its four-module capture.
+The generation journey rejects simultaneous generation-only and shared modes.
+
+The allowlist includes access, atomic-batch, auth, billing,
+character-image-validation, email-auth, email, generation, http, index, media,
+notifications, project-room, teams and validation. `types.ts` supplies erased
+TypeScript declarations. The same restricted AST transform, reversible insertion
+ledger and pinned build-loader graph apply to every selected module. Preparation
+refuses any unsupported construct or counter universe whose maximum safe counter
+values cannot fit the existing 64 KiB collector response bound.
+
+Each journey calls `begin(base)` after fixture provisioning and before its public
+requests. It calls `end(base, ordinaryRequests, actions)` before disposal. The
+ordered actions record actual request method and normalized path. Query values,
+headers and bodies are omitted, UUID/hash components are normalized and join-link
+tokens are redacted. The shared host-fetch observer forwards original arguments
+unchanged. Node HTTP requests require explicit recording. WebSocket descriptors
+may appear in the ordered sequence separately. The number of HTTP-prefixed action
+descriptors must equal the supplied ordinary HTTP request count. Existing journey
+assertions and their independently maintained request-count checks remain active.
+Collector requests are outside that ordinary-request sequence.
+
+Cloud, billing, collaboration and email-auth reconfigure Miniflare. Their adapters
+end the current phase before every reconfiguration and begin a new phase after
+its fixture setup. Each `phase-NNN` directory contains independent real baseline
+and final snapshots, collector controls, LCOV endpoints, interval metadata and an
+external analysis/import result. Each shared phase declares its own interval run ID, formed from the capture ID
+and phase number, in both LCOV TN fields and endpoint metadata. Raw collector
+snapshots retain the original capture ID. The phase export records both IDs and
+actual module generations, preserving separate occurrences when counts repeat.
+No delta crosses a reconfiguration. Within each
+phase, per-module generation remains fixed and counter/sequence monotonicity is
+strict. A new phase may observe a fresh generation or the continuing generation
+of an instance retained by Miniflare.
+
+The module/build/probe/source identities are stored once at the journey output
+root and verified for every phase import. The shared probe pins all cloud journey
+entrypoints and the shared runner. Raw phase evidence remains available when a
+journey or import fails. A partial phase lacking a valid after-export cannot be
+imported. Parent finalization never retries an uncertain import. Each successful
+phase retains the real reversed-endpoint rejection control and its own verified
+analysis copy. Source identities, anchor universes and outcome evidence must be
+checked when combining intervals. Repeated phase denominators must not be added
+as unique backend coverage.
+
+These counters retain the module-instance and selected-anchor limitations above.
+In particular, a snapshot import of ProjectRoom or BillingCoordinator does not
+establish that their methods executed in the collected instance. Uncollected
+isolates, initialization before baselines, SQL engine work and all unselected
+source lines remain unknown. Shared mode does not alter production source,
+provider fixtures, authentication, permitted origins or outbound restrictions.
+
+## November 13 measured batch
+
+All twelve cloud routes eventually passed with the shared adapter. The union
+observed 1,113 of 1,164 selected anchor lines (95.62%), with 51 unobserved. The
+known-passing union is identical. Three failed attempts remain retained with
+their original outcomes; repaired discussions and billing runs passed. This
+supersedes neither the historical four-module generation scope nor the separate
+update-worker denominator. See [measurement-first-coverage.md](measurement-first-coverage.md)
+for the cross-scenario results, remaining gaps and exact interpretation.

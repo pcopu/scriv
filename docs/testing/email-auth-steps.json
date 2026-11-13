@@ -17,8 +17,8 @@
           "description": "Returns a challenge and expiry, and delivers exactly one synthetic mailbox code.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 136,
-            "end": 136,
+            "start": 165,
+            "end": 165,
             "sha256": "85222e3bc79e21bed2f277a5d05282686ed7d3f10b409f26fca3822a1fbb8b5d"
           }
         }
@@ -101,8 +101,8 @@
           "description": "Enforces resend cooldown without a second delivery.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 140,
-            "end": 140,
+            "start": 169,
+            "end": 169,
             "sha256": "52e840d2d66bceb7352dbee2e9039385a407b719f9aeaee8813ddd75bfea1ac0"
           }
         }
@@ -135,8 +135,8 @@
           "description": "Rejects an incorrect six-digit code.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 144,
-            "end": 144,
+            "start": 173,
+            "end": 173,
             "sha256": "4f3c9bbf6b4e3a6c03150a3ace81ef414a805e312319c4b75eab5f4a5ac9df43"
           }
         }
@@ -169,8 +169,8 @@
           "description": "Rejects the correct code with a mismatched proof key.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 148,
-            "end": 148,
+            "start": 177,
+            "end": 177,
             "sha256": "4f3c9bbf6b4e3a6c03150a3ace81ef414a805e312319c4b75eab5f4a5ac9df43"
           }
         }
@@ -203,8 +203,8 @@
           "description": "Issues a session for the normalized synthetic email after successful proof.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 152,
-            "end": 152,
+            "start": 181,
+            "end": 181,
             "sha256": "4633f2d0f81ae4b0c12b1a55bf0cc842f9fce292e1cff675da9a894c6b9fb47c"
           }
         }
@@ -277,8 +277,8 @@
           "description": "Rejects reuse of the consumed challenge.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 156,
-            "end": 156,
+            "start": 185,
+            "end": 185,
             "sha256": "4f3c9bbf6b4e3a6c03150a3ace81ef414a805e312319c4b75eab5f4a5ac9df43"
           }
         }
@@ -321,8 +321,8 @@
           "description": "Reads the issued identity and empty initial team and project lists.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 160,
-            "end": 160,
+            "start": 189,
+            "end": 189,
             "sha256": "0330e15efcb1db8647e7dffbb73bafb26b31314a065914b83a981db4ca00bd30"
           }
         }
@@ -365,8 +365,8 @@
           "description": "Lists the active session and device name.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 164,
-            "end": 164,
+            "start": 193,
+            "end": 193,
             "sha256": "95924dc29e5a54e7c7fb230a57760820395cce74a6e715f80e84ae67bcae6f50"
           }
         }
@@ -399,8 +399,8 @@
           "description": "Issues a second challenge for the same synthetic account and another proof key.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 170,
-            "end": 170,
+            "start": 199,
+            "end": 199,
             "sha256": "b131364810546f235df9a31f8df8338c9607c1f6b435219d29f21f81d5e391ff"
           }
         }
@@ -422,8 +422,8 @@
           "description": "Issues a second device session for the existing user.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 174,
-            "end": 174,
+            "start": 203,
+            "end": 203,
             "sha256": "ad12826b84b783d2d871b7a3f8bb8a8c0719f15310d92b1c3ef28c1d77d219ed"
           }
         }
@@ -456,8 +456,8 @@
           "description": "Lists both device sessions and identifies the current session.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 178,
-            "end": 178,
+            "start": 207,
+            "end": 207,
             "sha256": "bcfb9d5f3dc44cba87079e97a11dac3c18417743b89a22ff8f7c2e6d3e62c09e"
           }
         }
@@ -490,8 +490,8 @@
           "description": "Revokes the second device session from the first.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 182,
-            "end": 182,
+            "start": 211,
+            "end": 211,
             "sha256": "913b77b23f93373bbcdeaebca44e7bf4d3e3711ea044497c38cd0016a2f43cdb"
           }
         }
@@ -524,8 +524,8 @@
           "description": "Rejects the revoked second session.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 186,
-            "end": 186,
+            "start": 215,
+            "end": 215,
             "sha256": "b021bc8dc42cb14609439da4d3c8fe786bf9adf2d42a3a4ad92384f8193d1ab1"
           }
         }
@@ -558,8 +558,8 @@
           "description": "Lists only the still-active first session after revocation.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 190,
-            "end": 190,
+            "start": 219,
+            "end": 219,
             "sha256": "da188fab88fe12c70b85abee03918d681d8a58493107ecdd476370e59265ab3e"
           }
         }
@@ -592,8 +592,8 @@
           "description": "Logs out the first session.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 194,
-            "end": 194,
+            "start": 223,
+            "end": 223,
             "sha256": "913b77b23f93373bbcdeaebca44e7bf4d3e3711ea044497c38cd0016a2f43cdb"
           }
         }
@@ -626,8 +626,8 @@
           "description": "Rejects the logged-out first session.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 198,
-            "end": 198,
+            "start": 227,
+            "end": 227,
             "sha256": "b021bc8dc42cb14609439da4d3c8fe786bf9adf2d42a3a4ad92384f8193d1ab1"
           }
         }

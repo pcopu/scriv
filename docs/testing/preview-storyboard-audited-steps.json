@@ -547,8 +547,8 @@
           "description": "Import changes only the intended cue attachment and immutable successor asset, then the active native surface visibly decodes that exact asset and the complete loaded model equals saved content.",
           "witness": {
             "path": "tests/e2e/journeys/local-images.mjs",
-            "start": 86,
-            "end": 106,
+            "start": 87,
+            "end": 107,
             "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
           }
         }
@@ -621,8 +621,8 @@
           "description": "Activating the real Preview inspect button opens the source-aware image inspector; the exact first asset remains visibly decoded, import is refused under the sheet, dismissal restores Preview, and complete model remains unchanged.",
           "witness": {
             "path": "tests/e2e/journeys/local-images.mjs",
-            "start": 130,
-            "end": 140,
+            "start": 131,
+            "end": 141,
             "sha256": "9b549d4385229275dfa1fa8177ba502d96183992b37f9c5931bfe6214dbcadb3"
           }
         }
@@ -733,8 +733,8 @@
           "description": "The real version picker exposes exactly one hittable historical Version 1 cell. Choosing it changes only the target cue attachment by one revision; original asset visibly decodes and all saved fields remain accounted for.",
           "witness": {
             "path": "tests/e2e/journeys/local-images.mjs",
-            "start": 143,
-            "end": 155,
+            "start": 144,
+            "end": 156,
             "sha256": "7bdda4dcf1c828b93a9481bebf7915de212812fa615906bee87cf8653edc1eee"
           }
         }
@@ -806,8 +806,8 @@
           "description": "Each exact Unicode/empty edit changes only its cue prompt and one revision. Fresh review changes only the quoted manual override in the captured request; both complete saved projects remain exact and zero image jobs start.",
           "witness": {
             "path": "tests/e2e/journeys/generation-review.mjs",
-            "start": 160,
-            "end": 197,
+            "start": 162,
+            "end": 199,
             "sha256": "367b64525c53f7ebe7372e8ceea3f48de0959f79e618cdbf6771998e4fb00668"
           }
         }

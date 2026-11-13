@@ -6,7 +6,7 @@
       "id": "cross-project-replica-v108",
       "title": "Isolate identical hosted media across projects",
       "preconditions": [
-        "Run complete tracer app -- test services discussions-assets. Preserve original lines 1–399 and footer, including all 83 previous HTTP checks. Add 24 for 107 total under the unchanged 110-request ceiling; earlier 80-request helpers are unchanged.",
+        "Run complete tracer app -- test services discussions-assets. Preserve original lines 1\u2013399 and footer, including all 83 previous HTTP checks. Add 24 for 107 total under the unchanged 110-request ceiling; earlier 80-request helpers are unchanged.",
         "Reuse original synthetic owner/member/viewer/outsider sessions and active team after prior quota/held-body chapters finish. Start with no asset rows/objects and original storage quota restored. New setup is one public team-project creation, not a direct D1 fixture write.",
         "Use the existing independent twelve-byte PNG-signature fixture and its independently computed SHA-256. It is not a complete decoded image. Equal content must remain separate per-project replicas under the existing data model.",
         "Read exact D1 asset, team, project, user, session and membership rows and actual R2 bytes/metadata. No direct new storage writes, production helper calls or external providers. Security-limit counters and internal project-room state are outside preservation assertions.",
@@ -26,8 +26,8 @@
           "description": "The same independently known 12-byte PNG-signature fixture is uploaded through public HTTP to the existing project and one newly created team project. Two exact ready rows share the hash but have different project-scoped object keys, expected uploader IDs, bounded creation times and exact R2 bytes/content type/project-team metadata. Team quota rises from zero to twelve to twenty-four bytes; public team read agrees. Duplicate uploads by another allowed writer return 200 and preserve complete rows, objects, uploader attribution and quota. No decoding of a complete image, simultaneous upload or quota race is asserted.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 400,
-            "end": 449,
+            "start": 431,
+            "end": 480,
             "sha256": "cf83ad6a331fdf449278b765eff6cd65f03440d0d5ce4981cf098c107578a201"
           }
         },
@@ -36,8 +36,8 @@
           "description": "Viewer GET and HEAD for each replica return exact content type, length, private/no-store, ETag and hash headers; GET bodies equal the independent fixture and HEAD bodies are empty. Outsider GET and HEAD with the known matching validator return 404, JSON/no-store headers and no asset ETag/hash headers; GET has the exact Project not found error and HEAD is empty. Viewer and ordinary member deletion attempts return the exact permission error. All these reads/refusals preserve both replicas and quota.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 400,
-            "end": 449,
+            "start": 431,
+            "end": 480,
             "sha256": "cf83ad6a331fdf449278b765eff6cd65f03440d0d5ce4981cf098c107578a201"
           }
         },
@@ -46,8 +46,8 @@
           "description": "Deleting the first replica removes only its row/object and releases exactly twelve bytes; its public read becomes missing while the other remains byte-exact/readable. Repeated deletion and duplicate upload of the survivor change nothing. Reuploading the first project uses a new object key while the other remains exact; the old key is absent. A known-validator GET returns the replacement bytes and expected headers. Sequentially deleting both leaves zero stored bytes and no asset rows/objects. Only the newly created project is then archived through the public route, with bounded equal archive/update timestamps and subsequent owner GET denial. Original projects, all team rows and all users/sessions/memberships are preserved. This is sequential replica isolation, not forced internal interleaving, delayed-delete race, R2 failure or scheduled reconciliation.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 400,
-            "end": 449,
+            "start": 431,
+            "end": 480,
             "sha256": "cf83ad6a331fdf449278b765eff6cd65f03440d0d5ce4981cf098c107578a201"
           }
         }

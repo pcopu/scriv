@@ -645,12 +645,12 @@
       "expectations": [
         {
           "id": "observed",
-          "description": "All 13 public output-isolation checks complete, including repeated imports, exact replay, source readbacks and refusal cases. Any failed continuation action makes the enclosing recorded scenario fail. Synthetic measurements are not app execution.",
+          "description": "All 18 public output-isolation checks complete, including repeated imports, exact replay, source readbacks and refusal cases. Any failed continuation action makes the enclosing recorded scenario fail. Synthetic measurements are not app execution.",
           "witness": {
             "path": "tests/tracer/source-provenance-journey.mjs",
             "start": 163,
             "end": 166,
-            "sha256": "e507319f84cd3f0e7d4912fe156a6f0c14a2a49cde28c8840784995d32b3dd22"
+            "sha256": "2a28a5081e9275734602c6937623387d127a7ac0ba7842842805ded0b9f2644c"
           }
         }
       ],

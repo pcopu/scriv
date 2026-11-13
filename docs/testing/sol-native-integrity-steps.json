@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "sol-native-unsigned-bundle-rejection",
+      "title": "Reject an unsigned non-executable bundle before native launch",
+      "preconditions": [
+        "Run the existing public CLI tooling journey on macOS through tracer app -- test tooling.",
+        "The journey creates an external synthetic Unsigned.app with one regular Contents/MacOS/Scriv file, mode 0600, so the fixture cannot execute. No supplied real app is used.",
+        "This catalog witnesses the unsigned prelaunch failure and its safe evidence only. Root must separately verify valid real signed/ad-hoc bundles, postrun checks and post-export failure handling."
+      ],
+      "actions": [
+        "tracer app -- test --scenario workspace --app $UNSIGNED_NONEXEC_APP --output-dir $EXTERNAL_EVIDENCE"
+      ],
+      "expectations": [
+        {
+          "id": "signature-rejected",
+          "description": "The unsigned fixture exits with code 2 before any native scenario starts, emits no stderr or private signing output, records the safe app-signature-verification-failed blocker with not-run status and null app identity, preserves unknown source-to-app matching and both completion flags false, and leaves synthetic fixture bytes unchanged.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 299,
+            "end": 315,
+            "sha256": "6e99dc573c72b96fa217ee3f945e9199f10212a3b54bbc46b99547823cda717e"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 51,
+            "end": 56,
+            "sha256": "18bb5d2f3dd4c4a96a7000eb28c1bed7fcf919dc7857ed60853ebe6dd8ac84ee"
+          },
+          "expectation": "signature-rejected",
+          "why": "The Darwin platform verifier rejects the unsigned non-executable synthetic bundle before file fingerprinting or scenario execution. This test asserts rejection, not valid signing, all-architecture behavior or native acceptance."
+        },
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 210,
+            "end": 212,
+            "sha256": "26b5f341a94a5cc0d925efe79a673ac65963787df2e0041f2aae0730e78ffa47"
+          },
+          "expectation": "signature-rejected",
+          "why": "Initial identity handling preserves the fixed signature-verification failure instead of converting it into the generic identity blocker. The evidence remains null app identity because assignment never completes."
+        },
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 268,
+            "end": 271,
+            "sha256": "a05d40f97c2b138e4802fb9f1ffaba7cd1c490560e6febe7d93044f69f56cbf5"
+          },
+          "expectation": "signature-rejected",
+          "why": "The safe blocker path records the signature failure as not-run and assigns it to the unstarted workspace scenario. Other allowlisted blockers and started-scenario failure behavior remain outside this new negative assertion."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "sol-native-unsigned-bundle-rejection",
+      "title": "Safe public CLI signature rejection before native scenario launch",
+      "steps": [
+        "sol-native-unsigned-bundle-rejection"
+      ]
+    }
+  ]
+}

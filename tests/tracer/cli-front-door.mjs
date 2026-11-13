@@ -284,6 +284,36 @@ export async function main() {
       assert.equal(rejected.stderr, 'Invalid or nested provenance journey\n');
     }
   });
+  if (process.platform === 'darwin') await journey('reject an unsigned non-executable bundle before starting a native scenario', async () => {
+    // This fixture cannot execute, including against the old unguarded runner.
+    // The journey asserts prelaunch rejection and establishes no native acceptance.
+    const fixture = await realpath(await mkdtemp(join(tmpdir(), 'scriv-unsigned-bundle-')));
+    const app = join(fixture, 'Unsigned.app');
+    const executable = join(app, 'Contents/MacOS/Scriv');
+    const sentinel = 'Synthetic unsigned non-executable fixture.\n';
+    await mkdir(dirname(executable), { recursive: true });
+    await writeFile(executable, sentinel, { mode: 0o600, flag: 'wx' });
+    await chmod(executable, 0o600);
+    assert.ok(catalog.scenarios.some(row => row.id === 'workspace' && !row.restriction));
+    const before = new Set(await readdir(output));
+    const result = run(['app', '--', 'test', '--scenario', 'workspace', '--app', app, '--output-dir', output], 2);
+    assert.equal(result.stderr, '');
+    const dirs = (await readdir(output)).filter(name => !before.has(name));
+    assert.equal(dirs.length, 1);
+    const evidence = JSON.parse(await readFile(join(output, dirs[0], 'evidence.json'), 'utf8'));
+    assert.equal(evidence.status, 'not-run');
+    assert.equal(evidence.blocker, 'app-signature-verification-failed');
+    assert.equal(evidence.app, null);
+    assert.equal(evidence.appUnchanged, undefined);
+    assert.equal(evidence.fullSuitePassed, false);
+    assert.equal(evidence.baselineMigrated, false);
+    assert.equal(evidence.sourceToAppMatch, 'not-established');
+    assert.equal(evidence.buildAttestation, null);
+    assert.deepEqual(evidence.scenarios, [{ scenario: 'tests/e2e/workspace.mjs', status: 'not-run', reason: 'app-signature-verification-failed' }]);
+    assert.equal(await readFile(executable, 'utf8'), sentinel);
+    assert.deepEqual(await readdir(join(output, dirs[0])), ['evidence.json']);
+    assert.equal(result.stdout.includes(sentinel.trim()), false);
+  });
   console.log(`PASS ${passed}/${passed} public Tracer CLI journeys. Native scenarios executed: 0; tooling artifacts: ${output}`);
   return 0;
 }

@@ -302,8 +302,8 @@
           "description": "Only the accepted biography/revision/date change exists in memory; all canonical package bytes are unchanged and exactly one real local schema-2 pending record contains the independently expected after snapshot and source revision.",
           "witness": {
             "path": "tests/e2e/journeys/save-failure-recovery.mjs",
-            "start": 164,
-            "end": 177,
+            "start": 165,
+            "end": 178,
             "sha256": "d18b7fd34ca1e9753ac554b73c79de0575b09bb7e92296260c3c03440468364d"
           }
         },
@@ -312,8 +312,8 @@
           "description": "All canonical bytes and pending bytes remain unchanged until normal browser Open project. That open saves the exact accepted model and one history entry, clears the record, and a second cold open preserves every package byte without any pending record.",
           "witness": {
             "path": "tests/e2e/journeys/save-failure-recovery.mjs",
-            "start": 186,
-            "end": 209,
+            "start": 187,
+            "end": 210,
             "sha256": "5e30b466921d7f2e95a1a9995ddca9c52e10fd5095518afc2079d9e481dfd3e7"
           }
         }

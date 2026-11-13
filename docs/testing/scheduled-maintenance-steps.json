@@ -24,8 +24,8 @@
           "description": "Initial asset rows/objects and both teams' reserved bytes match the independent nine-record fixture; matching stale upload is initially unavailable and old ready data is readable.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 309,
-            "end": 332,
+            "start": 351,
+            "end": 374,
             "sha256": "aa106e9812c53287ecc57077847feea28dfce0b00ceb5a9e48d4fbfc308c8f11"
           }
         }
@@ -54,8 +54,8 @@
           "description": "One matching stale upload becomes ready; exactly five stale D1 rows and four existing R2 objects are removed, leaving four rows and four objects, and 87 row-reserved bytes are released. Fresh upload, old ready and same-digest other-project/team sentinel retain exact rows, keys, bytes and specified metadata, with unchanged sentinel-team quota.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 337,
-            "end": 353,
+            "start": 379,
+            "end": 395,
             "sha256": "7caaef95a958cf3f145803c4b53bd1dc7f8507d4fa911b87f5c2a8b6caa26023"
           }
         },
@@ -64,8 +64,8 @@
           "description": "Only the named expired OAuth/code/email/rate records and 31-day-old expired session disappear. Live records, recent-expired and revoked-live sessions, prior counters and both project rows remain exact.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 332,
-            "end": 347,
+            "start": 374,
+            "end": 389,
             "sha256": "3b0a0c274119160452bb4ddde37c7e71ba2df12adb7b33b11ac383b5b691c3dc"
           }
         },
@@ -74,8 +74,8 @@
           "description": "Recovered, old-ready and same-digest other-project media return exact fixture bytes, image/png and their SHA headers. Removed media and the retained nonready fresh upload return 404 asset_unavailable.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 348,
-            "end": 353,
+            "start": 390,
+            "end": 395,
             "sha256": "6241e9aa7b26f69554848d96cb3714ad6ca6a786f8ad76a11f766c23ccc5ea3b"
           }
         }
@@ -173,8 +173,8 @@
           "description": "Second scheduled invocation preserves the complete retained media/quota/expiry state, recovered media remains exact, original ASSETS stays empty and no outbound attempt occurs. Request counters from verification GETs are captured before the repeat rather than mistaken for cleanup mutation.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 354,
-            "end": 359,
+            "start": 396,
+            "end": 401,
             "sha256": "03fa7783dd5a93e5d49986b6e4b02d2193286999e5927983440bc9573a0c34ab"
           }
         }

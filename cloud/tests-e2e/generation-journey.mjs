@@ -27,14 +27,19 @@ if (process.argv[2] !== '--owned-child') {
     try {
       root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-generation-')));
       for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
-      capture = process.env.SCRIV_GENERATION_COVERAGE_DIR
+      assert(!(process.env.SCRIV_GENERATION_COVERAGE_DIR && process.env.SCRIV_SERVICE_COVERAGE_DIR), 'Choose one generation coverage mode');
+      const serviceCapture = Boolean(process.env.SCRIV_SERVICE_COVERAGE_DIR);
+      capture = serviceCapture
+        ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+          .prepareServiceCapture(process.env.SCRIV_SERVICE_COVERAGE_DIR, process.env.SCRIV_TRACER_CLI, { journeyPath: 'cloud/tests-e2e/generation-journey.mjs' })
+        : process.env.SCRIV_GENERATION_COVERAGE_DIR
         ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
           .prepareGenerationCapture(process.env.SCRIV_GENERATION_COVERAGE_DIR, process.env.SCRIV_TRACER_CLI) : null;
       // Resolve installed dependencies from an owned runner, never edit the repository.
       await copyFile(self, join(root, 'runner.mjs'));
       await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
       assert.equal(interrupted, false, 'Cancelled during preparation; no Worker launched');
-      child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud, ...(capture ? [capture.path] : [])], {
+      child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud, ...(capture ? [capture.path, serviceCapture ? 'service' : 'generation'] : [])], {
         cwd: root, detached: true, stdio: 'inherit',
         // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
         env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
@@ -66,9 +71,11 @@ if (process.argv[2] !== '--owned-child') {
   const { Miniflare, Log, LogLevel, convertV4MiniflareOptions } = await import('miniflare');
   const { unstable_splitSqlQuery } = await import('wrangler');
   const bundle = join(root, 'worker.mjs');
-  const capture = process.argv[5]
-    ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
-      .loadGenerationCapture(process.argv[5]) : null;
+  const serviceCapture = process.argv[6] === 'service';
+  const coverageAdapter = process.argv[5]
+    ? await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href) : null;
+  const capture = coverageAdapter
+    ? await coverageAdapter[serviceCapture ? 'loadServiceCapture' : 'loadGenerationCapture'](process.argv[5]) : null;
   if (!capture) await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
     bundle: true, format: 'esm', platform: 'neutral', target: 'es2022',
     external: ['cloudflare:*'], logLevel: 'silent' });
@@ -88,7 +95,8 @@ if (process.argv[2] !== '--owned-child') {
     }],
   });
   const mf = new Miniflare(config);
-  let requests = 0;
+  let requests = 0, captureStarted = false;
+  const coverageActions = [];
   try {
     const db = await mf.getD1Database('DB', 'scriv');
     const migrations = (await readdir(join(cloud, 'migrations'))).filter(name => /^\d+_.+\.sql$/.test(name)).sort();
@@ -115,6 +123,7 @@ if (process.argv[2] !== '--owned-child') {
       const url = new URL(path, base); assert.equal(url.origin, base.origin);
       const encoded = body === undefined ? undefined : JSON.stringify(body);
       assert(requests++ < 80); assert(Buffer.byteLength(encoded ?? '') <= 16384);
+      if (serviceCapture) coverageActions.push(`${method} ${url.pathname.replace(/[0-9a-f]{8}-[0-9a-f-]{27}/gi, ':id')}`);
       const response = await fetch(url, { method, headers: { authorization: `Bearer ${actors[role].token}`, ...(encoded ? { 'content-type': 'application/json' } : {}) }, body: encoded, redirect: 'error', signal: AbortSignal.timeout(5000) });
       // Never include response bodies or headers in errors: leases are secrets.
       const actualStatus = response.status;
@@ -149,7 +158,7 @@ if (process.argv[2] !== '--owned-child') {
     const post = body => ({method:'POST', body, role:'member'});
     const patch = body => ({method:'PATCH', body, role:'member'});
     let result;
-    if (capture) await capture.begin(await mf.ready);
+    if (capture) { await capture.begin(await mf.ready); captureStarted = true; }
     await run.step('create-project', async step => {
       result = await step.action('POST /v1/projects synthetic team project', () => request('/v1/projects', post({id:projectId,title:'Synthetic generation project',teamId})));
       await step.expect('observed', () => { assert.equal(result.status,201); assert.equal(result.data.project.id,projectId); });
@@ -436,7 +445,11 @@ if (process.argv[2] !== '--owned-child') {
     const callbackFinal=await business();assert.deepEqual(callbackFinal.jobs.filter(r=>r.id!==callbackId),callbackBaseline.jobs);assert.equal(callbackFinal.jobs.length,callbackBaseline.jobs.length+1);assert.deepEqual(callbackFinal.receipts,[...callbackBaseline.receipts,...callbackReceipts]);assert.equal(callbackReceipts.length,4);
     for(const key of ['projects','teams','members','assets','objects'])assert.deepEqual(callbackFinal[key],callbackBaseline[key]);assert.deepEqual(await rows('users'),callbackUsers);assert.deepEqual(await rows('sessions'),callbackSessions);assert.equal(requests,80);assert.equal(outboundAttempts,0);
     console.log(JSON.stringify({kind:'generation-callback-concurrency-evidence',httpChecks:16,duplicateClaimResponses:2,duplicateClaimReceipts:1,competingPairs:2,winnersPerPair:1,correctedLoserSucceeds:true,finalVersion:5,newJobs:1,newReceipts:4,currentStateReplays:2,terminalRefusals:2,forcedInternalOverlap:false,nativeScenarios:0,outboundAttempts}));
-    if (capture) await capture.end(await mf.ready, requests);
+    if (capture && !serviceCapture) await capture.end(await mf.ready, requests);
     console.log(JSON.stringify({result:'PASS',journey:'generation',requests,outboundAttempts,nativeScenarios:0,runtime:report}));
-  } finally { await mf.dispose(); }
+  } finally {
+    try {
+      if (captureStarted && serviceCapture) await capture.end(await mf.ready, requests, coverageActions);
+    } finally { await mf.dispose(); }
+  }
 }

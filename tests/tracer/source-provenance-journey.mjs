@@ -163,7 +163,7 @@ export async function main() {
     await stage('isolate-measurement-output', 'Run public analysis preparation and real Tracer imports with synthetic LCOV', async () => {
       const { runMeasurementOutputJourney } = await import('./measurement-output-journey.mjs');
       return runMeasurementOutputJourney({ output, fixture, manifest, digest, spawn, snapshot, verify });
-    }, result => { assert.equal(result.checks, 13); assert.equal(result.status, 'passed'); assert.equal(result.nativeExecution, 'not-run'); });
+    }, result => { assert.equal(result.checks, 18); assert.equal(result.status, 'passed'); assert.equal(result.nativeExecution, 'not-run'); });
   } finally {
     const result = run.finish();
     await writeFile(join(output, 'scenario-result.json'), JSON.stringify(result, null, 2) + '\n', { mode: 0o600 });

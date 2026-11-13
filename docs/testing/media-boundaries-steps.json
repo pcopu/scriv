@@ -22,8 +22,8 @@
           "description": "Both distinct media signatures are created once, retry successfully, and viewer GET/HEAD return exact bytes, MIME type, length and digest headers; HEAD has no body.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 230,
-            "end": 244,
+            "start": 260,
+            "end": 274,
             "sha256": "daa63db0d86c346b098c0604931cce1c4f90f0985190dd1b1bebe1598afa9aa2"
           }
         },
@@ -32,8 +32,8 @@
           "description": "Exactly two ready rows retain valid supplied asset IDs, project/team/uploader, MIME and byte count, and match the two R2 contents and specified metadata.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 258,
-            "end": 267,
+            "start": 288,
+            "end": 297,
             "sha256": "079778b3d57144761e51bec45b5d765798debdc39353ecebe3dd1e4d7e44385f"
           }
         }
@@ -73,8 +73,8 @@
           "description": "The eight named inputs return exact status/code/message and standard JSON/no-store/nosniff headers. Every refusal leaves all asset rows and R2 keys/content bytes/contentType/customMetadata unchanged, and both sentinel media remain readable.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 269,
-            "end": 283,
+            "start": 299,
+            "end": 313,
             "sha256": "2703360b230fb9d8e4caa856f808e96060543b7f6a4830b662ce1b30f188abcd"
           }
         },
@@ -83,8 +83,8 @@
           "description": "For each named refusal the HTTP body is exactly {error:{code,message}}, with its independently specified status and JSON/no-store/nosniff headers; no details or internal-error behavior is claimed.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 214,
-            "end": 222,
+            "start": 244,
+            "end": 252,
             "sha256": "8188ba049092ab3904189b5c1f72d3de2581991aa2c78073a20b26bda9d6865b"
           }
         }
@@ -191,8 +191,8 @@
           "description": "Removing JPEG preserves the complete WebP row and specified R2 content/metadata; removing WebP then repeating DELETE leaves no rows or objects.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 284,
-            "end": 293,
+            "start": 314,
+            "end": 323,
             "sha256": "9f1cc8e457b0fc7193b7f4b80f1b60bdd3c130d9ffddcdc529bc601cdcd1f260"
           }
         }

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { imageBoundaryCases, runImageBoundary } from './support/local-image-boundary-steps.mjs';
 import { sourceNavigationCases, runImageSourceNavigation } from './support/local-image-source-navigation.mjs';
 import { pictureTagCases, runPictureCharacterTags } from './support/local-image-character-tags.mjs';
 import { firstLineBaselineID, firstLineCases, runFirstLineImageCase } from '../support/first-line-image-case.mjs';
@@ -22,18 +23,17 @@ const args = process.argv.slice(2);
 let group;
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--list-cases') continue;
-  assert.equal(args[i], '--group', 'Expected --list-cases or --group versions|first-line|tags|source-navigation');
+  assert.equal(args[i], '--group', 'Expected --list-cases or --group versions|first-line|tags|source-navigation|boundary');
   assert.equal(group, undefined, 'Specify --group only once');
-  group = args[++i]; assert.ok(['versions', 'first-line', 'tags', 'source-navigation'].includes(group), 'Unknown local-images group');
+  group = args[++i]; assert.ok(['versions', 'first-line', 'tags', 'source-navigation', 'boundary'].includes(group), 'Unknown local-images group');
 }
-const groups = group ? [group] : ['versions', 'first-line', 'tags', 'source-navigation'];
+const groups = group ? [group] : ['versions', 'first-line', 'tags', 'source-navigation', 'boundary'];
 if (args.includes('--list-cases')) {
   console.log(JSON.stringify({ journey: 'AUT-J08', nativeVerified: false, groups,
     freshSessionPerGroup: true,
-    optInPendingNativeGroups: [],
     sourceNavigationEvidence: 'Synthetic actual-UI source navigation; disabled unplaced historical version, placed exact-version cross-scene navigation and selected source-row witness. v48 scoped overlay passed; current composition evidence is recorded separately; no frozen baseline retirement.',
     pictureTagEvidence: 'Synthetic actual-UI acceptance, historical-version add/remove/readd and manual marker persistence; v47 tags overlay passed against v46 app; default composition evidence recorded separately, no legacy retirement.',
-    cases: groups.flatMap(value => value === 'versions' ? cases : value === 'tags' ? pictureTagCases : value === 'source-navigation' ? sourceNavigationCases : firstLineCases),
+    cases: groups.flatMap(value => value === 'boundary' ? imageBoundaryCases : value === 'versions' ? cases : value === 'tags' ? pictureTagCases : value === 'source-navigation' ? sourceNavigationCases : firstLineCases),
     partialBaselineIDs: groups.includes('versions') ? [`${inspector}::0001`] : [],
     sourceCandidateBaselineIDs: groups.includes('first-line') ? [firstLineBaselineID] : [],
     relatedUncoveredBaselineIDs: [`${placement}::0004`, `${placement}::0005`],
@@ -46,7 +46,8 @@ if (args.includes('--list-cases')) {
 } else {
   assert.ok(process.env.SCRIV_E2E_APP, 'Requires the reviewed isolated automation-enabled Catalyst app');
   for (const selected of groups) {
-    if (selected === 'versions') await run();
+    if (selected === 'boundary') await runImageBoundary(process.env.SCRIV_E2E_APP);
+    else if (selected === 'versions') await run();
     else if (selected === 'source-navigation') await runImageSourceNavigation(process.env.SCRIV_E2E_APP);
     else if (selected === 'tags') await runPictureCharacterTags(process.env.SCRIV_E2E_APP);
     else await runFirstLineImageCase(process.env.SCRIV_E2E_APP);

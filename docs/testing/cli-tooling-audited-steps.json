@@ -39,8 +39,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 256,
-            "end": 257,
+            "start": 283,
+            "end": 284,
             "sha256": "1674ec57dbd55226a5f98694ec55383a91fb7974f94917174dfd0878836309cc"
           },
           "expectation": "observed",
@@ -181,8 +181,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 191,
-            "end": 191,
+            "start": 208,
+            "end": 208,
             "sha256": "26954abe226d657590ba030fd82494ae8769c26cc99515a9ad638ec1a68c4260"
           },
           "expectation": "observed",
@@ -226,8 +226,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 177,
-            "end": 180,
+            "start": 190,
+            "end": 193,
             "sha256": "865723df71091dc297a11f0a48b7237fb47cc73dff698e5e859975758577b256"
           },
           "expectation": "observed",
@@ -236,8 +236,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 196,
-            "end": 196,
+            "start": 217,
+            "end": 217,
             "sha256": "155b99c4fcc8c5940e6ad104d7a26b3a079f0b25c675fef1e383f0117d5a59f0"
           },
           "expectation": "observed",
@@ -282,9 +282,9 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 192,
-            "end": 194,
-            "sha256": "f7c7fb465dc04f4df55d81a85486180210c680ce8570cb8ce6a8c213fb27c69f"
+            "start": 213,
+            "end": 213,
+            "sha256": "251af02bdf06578e58a84c767afd9e956728e2dcfe6df02fa8e6a30d26dc0748"
           },
           "expectation": "observed",
           "why": "The explicit absent-app identification failure becomes app-identity-unavailable without overwriting the distinct blocked-scenario reason."

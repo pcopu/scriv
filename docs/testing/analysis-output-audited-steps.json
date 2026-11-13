@@ -19,8 +19,8 @@
           "witness": {
             "path": "tests/tracer/measurement-output-journey.mjs",
             "start": 19,
-            "end": 26,
-            "sha256": "c0c0dd852d9aaeac55fb9412e108b958af59e976a37db9c29aa441f25e8fee90"
+            "end": 33,
+            "sha256": "d793215f717d204f45270dfd855c2dc09a6dd9c3be1eed6f2599a20698ac1dba"
           }
         }
       ],
@@ -28,8 +28,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 10,
-            "end": 12,
+            "start": 11,
+            "end": 13,
             "sha256": "b8188e64095ebf5ab7f4815227cc40e189a95522d4a1a912eeb62ef300beab1b"
           },
           "expectation": "observed",
@@ -38,8 +38,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 16,
-            "end": 19,
+            "start": 17,
+            "end": 20,
             "sha256": "5859527f26d9e3822791e2c03306e9e8b38fa1d17e8a14134bb2892b58e5a27f"
           },
           "expectation": "observed",
@@ -48,8 +48,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 23,
-            "end": 26,
+            "start": 24,
+            "end": 27,
             "sha256": "4578e32daead664083205e6f5d3d2dc4e7291862f12934a53dc05a064e9446c6"
           },
           "expectation": "observed",
@@ -58,8 +58,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 35,
-            "end": 37,
+            "start": 36,
+            "end": 38,
             "sha256": "9fb4e64b7e08beee64dcafffb0d779b5df3b7d2d0992d53bf09eb4657e358ab8"
           },
           "expectation": "observed",
@@ -68,8 +68,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 39,
-            "end": 43,
+            "start": 40,
+            "end": 44,
             "sha256": "4cbcea6c1d5553d404820f9d27e44f7b8db16f6f4e570561aa812c591d6be931"
           },
           "expectation": "observed",
@@ -78,9 +78,9 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 45,
-            "end": 50,
-            "sha256": "a6de0e449a8c8f72fae88bfec671f862ca7ea81cb1e9ea21561a302150e678eb"
+            "start": 49,
+            "end": 54,
+            "sha256": "ca874678e37e68e3369b4cab2c270c6e3ff491d724ab0e6bd9ae1a63ea33c46a"
           },
           "expectation": "observed",
           "why": "Nested destination creation, exclusive writes and post-copy checks complete the exact file-copy outcome while preserving the original source. Crash durability, ownership and concurrent writers are not claimed."
@@ -88,8 +88,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 58,
-            "end": 60,
+            "start": 62,
+            "end": 64,
             "sha256": "7c2922b1403903869b73ff2daa4821fe5fecd23576788e1f6ec959ad91699340"
           },
           "expectation": "observed",
@@ -98,8 +98,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 61,
-            "end": 61,
+            "start": 65,
+            "end": 65,
             "sha256": "bcdb7431e206b2e2f5e05ccd33c14140cd859b454ae60cec6d2249076b23d256"
           },
           "expectation": "observed",
@@ -108,8 +108,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 64,
-            "end": 65,
+            "start": 68,
+            "end": 69,
             "sha256": "1bbb4bf4637f86eb956d486fb5e7986030da11137e30ee3d0b4b10617cbb31e7"
           },
           "expectation": "observed",
@@ -118,8 +118,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 67,
-            "end": 77,
+            "start": 71,
+            "end": 81,
             "sha256": "458e361c40cc4c6c4a029388ca0d6c158d3c4fed110c83d7bfbb2f0181635c5a"
           },
           "expectation": "observed",
@@ -128,8 +128,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 78,
-            "end": 78,
+            "start": 82,
+            "end": 82,
             "sha256": "73dc25a8e79ab857806ee1f73cf7e8014c8353c2a3985c4a10ca0395c0c45d15"
           },
           "expectation": "observed",
@@ -159,8 +159,8 @@
           "description": "Two genuine public importer invocations accept explicitly synthetic LCOV in the new repository, preserve the first record, report the expected source and counters, pass integrity, and leave original source verification intact.",
           "witness": {
             "path": "tests/tracer/measurement-output-journey.mjs",
-            "start": 53,
-            "end": 69,
+            "start": 112,
+            "end": 128,
             "sha256": "a021afc17c2d144263ba0b05991ef66877ec48738b619955a352a37faf0fd587"
           }
         }
@@ -169,8 +169,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 54,
-            "end": 57,
+            "start": 58,
+            "end": 61,
             "sha256": "1c36e31c1c209dad2238c02b17c9d84b2ed304d4b815763a06f4e39dc3d11925"
           },
           "expectation": "observed",
@@ -194,8 +194,8 @@
           "description": "The repeat invocation exits 2 and preserves every existing analysis entry and the original source snapshot.",
           "witness": {
             "path": "tests/tracer/measurement-output-journey.mjs",
-            "start": 80,
-            "end": 83,
+            "start": 139,
+            "end": 142,
             "sha256": "88b870f7c1063c30bfdaaef1b5bd09e2c7c5f6ea94937b62952ec49d8ee9b019"
           }
         }
@@ -204,8 +204,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 35,
-            "end": 35,
+            "start": 36,
+            "end": 36,
             "sha256": "4a8cd2be69cbfddb7c82e6a620faceaf186c98cfe4e36d04a6f20e238302fe7f"
           },
           "expectation": "observed",
@@ -229,8 +229,8 @@
           "description": "The CLI exits 2, creates no inside-source output, and preserves the original source snapshot.",
           "witness": {
             "path": "tests/tracer/measurement-output-journey.mjs",
-            "start": 84,
-            "end": 87,
+            "start": 143,
+            "end": 146,
             "sha256": "da468d6de3bc7f306424c5143ccc43493578f5c812ad9b9a193330cd46cb0803"
           }
         }
@@ -239,8 +239,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 13,
-            "end": 14,
+            "start": 14,
+            "end": 15,
             "sha256": "79a80c427c04f7ec1dc0bcade3ab1a79c542708cda0fce261dbc621e96cc8d84"
           },
           "expectation": "observed",
@@ -249,8 +249,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 20,
-            "end": 22,
+            "start": 21,
+            "end": 23,
             "sha256": "44fe230b6d82a5dbbbb22a4d343e23737281f30b6ab4f9c317280b0fadc6d7c9"
           },
           "expectation": "observed",
@@ -275,8 +275,8 @@
           "description": "After explicitly pinning the fixture measurement dataset, preparation exits 2 without creating output, and both copies of the existing dataset retain their bytes.",
           "witness": {
             "path": "tests/tracer/measurement-output-journey.mjs",
-            "start": 116,
-            "end": 131,
+            "start": 180,
+            "end": 195,
             "sha256": "a1c8ad22847e1ae555ded00dcbddc1202ffb0fe201b6830fc39c66501df8b92a"
           }
         }
@@ -285,8 +285,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 27,
-            "end": 27,
+            "start": 28,
+            "end": 28,
             "sha256": "e6d8f7aeb3767ba0d6e193e45864ed6c2f3f5858d7c4ca1f346bd2d4491631a6"
           },
           "expectation": "observed",
@@ -295,8 +295,8 @@
         {
           "source": {
             "path": "scripts/prepare-coverage-analysis.mjs",
-            "start": 79,
-            "end": 80,
+            "start": 83,
+            "end": 84,
             "sha256": "f9d8e6848eea457279aa4cf4f67bf2de51fe28ab05f8024b05ee148babadaf48"
           },
           "expectation": "observed",

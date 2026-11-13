@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "sol-zero-owned-image-boundary",
+      "title": "Import a new picture from a zero-owned direction without shortening authored coverage",
+      "preconditions": [
+        "Run local-images with --group boundary against the reviewed isolated automation app. The default journey includes this group; its native results are recorded separately in docs/testing/coverage-goal-20261113.md.",
+        "The synthetic input has a zero-owned direction with 8500 ms forward coverage, 8500 ms dialogue, and an existing later cue at 1500 ms with authored duration 15300 ms. Its picture is unset. A separately saved startup project is an unchanged sentinel.",
+        "No provider, network, picker, crop, drag, pixel color, stale destination race, refused placement, frozen fixture equivalence or legacy retirement is claimed. Reopen uses the project browser in the same process."
+      ],
+      "actions": [
+        "key {\"input\":\"s\",\"modifiers\":[\"command\"]} on Script to save the startup project",
+        "import-json with imageBoundaryFixture() zero-owned direction, exact words and later authored cue",
+        "activate preview-layers-disclosure when collapsed",
+        "activate the unique enabled Layers direction whose title starts A gate opens. and ends owned",
+        "activate preview-layers-disclosure to collapse Layers",
+        "persisted-projects; loaded-project; presented-alerts",
+        "import-local-image {\"fixture\":\"coral\"}",
+        "persisted-projects; loaded-project; presented-alerts; local-image-evidence",
+        "Open the saved startup project and reopen the imported project through existing project-browser controls",
+        "loaded-project; persisted-projects; loaded-project; presented-alerts; local-image-evidence"
+      ],
+      "expectations": [
+        {
+          "id": "placement",
+          "description": "Exact new version-one asset and fresh cue at 0..1500 anchored to direction offset zero. Direction stays zero-owned with 8500 forward coverage. Dialogue and words, later cue including authored extent, all unrelated fields and separate startup sentinel stay exact. Revision advances once and modifiedAt increases. Real finite PNG decodes as 2x2 with a visible preview and no generation or analysis.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/local-image-boundary-steps.mjs",
+            "start": 88,
+            "end": 95,
+            "sha256": "6a787bbbfe18257e8dbf814077d784c206f24dfc99943da17c75e69277ff9c2d"
+          }
+        },
+        {
+          "id": "selection",
+          "description": "Actual Layers direction activation places playhead at zero and shows the unplaced-source preview without persisted mutation or alerts.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/local-image-boundary-steps.mjs",
+            "start": 77,
+            "end": 86,
+            "sha256": "7355f4d7c3057e25609ff7d35002cf9684af9a49dc79199dc880ba4b4438b05c"
+          }
+        },
+        {
+          "id": "reopen",
+          "description": "Project-browser roundtrip preserves complete loaded project and exact Date bit envelope, both saved packages and decoded visible imported image.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/local-image-boundary-steps.mjs",
+            "start": 97,
+            "end": 99,
+            "sha256": "4282f81b04961486e475c018b524fa1a9b86df1fdcfab9d4d2a78cd3343f76c0"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ImageImportPlacement.swift",
+            "start": 23,
+            "end": 34,
+            "sha256": "672d03f420304e674ec543ef74ebe1f006410ed8be9523738fe4ee2db50e408e"
+          },
+          "expectation": "placement",
+          "why": "Zero-owned selected direction supplies its explicit source anchor and forward extent. The existing later start caps the new cue at 1500 without altering that later cue. Only successful placement is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ImageImportPlacement.swift",
+            "start": 41,
+            "end": 42,
+            "sha256": "1d3b0835232d238fee85a1ebace2d0afd35399396a8e60b2a6e34cce6a9b4221"
+          },
+          "expectation": "placement",
+          "why": "The unchanged source and captured scene cues permit attachment. A stale destination is not exercised."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ImageImportPlacement.swift",
+            "start": 51,
+            "end": 56,
+            "sha256": "8bb58a223a5840677f4a39d126a97a6328ff617f923bc035b994641676e1d0ed"
+          },
+          "expectation": "placement",
+          "why": "Append a fresh source-owned cue, validate it and retain the exact later authored cue. No guard rejection is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CueAnchoring.swift",
+            "start": 36,
+            "end": 41,
+            "sha256": "1985a8474d228979bd22754a7b2da942807f4eaa528d8641a5b4e8c9f4aedf4d"
+          },
+          "expectation": "placement",
+          "why": "The exact zero-owned direction anchor and resolved 0..1500 timing exercise successful anchor validation including the direction exception. Error paths are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1077,
+            "end": 1083,
+            "sha256": "d609ccfdfb61b054fa81351ffc9c157c4400397ed78c449f55e231ff4c915b81"
+          },
+          "expectation": "selection",
+          "why": "Layers activation selects the explicit zero-owned source and seeks to its start. Exact no-mutation state and playhead preview assertions witness selection."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1351,
+            "end": 1354,
+            "sha256": "c7d10b03dfeef8c4a6f1787e5c524a33d1fe1cce8205bd6141792ca4613713cf"
+          },
+          "expectation": "placement",
+          "why": "Production import captures selected zero-owned source while no selected/current picture exists at time zero."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1383,
+            "end": 1391,
+            "sha256": "833b1fd3d49595f508a13f33ca5b2a53e72d332716536b8578f896f537f79ce9"
+          },
+          "expectation": "placement",
+          "why": "Successful ordinary post-picker import attaches the new source-owned picture and updates selected cue without navigation changes. The fixture bypasses the picker through the reviewed finite boundary."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/LayerTimelineViewController.swift",
+            "start": 153,
+            "end": 153,
+            "sha256": "3f77a25e85fee6658ea8450bfa35414de5f82bbaa9799c799a20cad7bb961ab4"
+          },
+          "expectation": "selection",
+          "why": "The actual Layers direction block is activated by its unique text and owned-time label, invoking selectEntry. Pixel layout, menu and drag behavior are unclaimed."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "sol-zero-owned-image-boundary",
+      "title": "Import a new picture from a zero-owned direction without shortening authored coverage",
+      "steps": [
+        "sol-zero-owned-image-boundary"
+      ]
+    }
+  ]
+}

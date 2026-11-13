@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "sol-text-identity-boundaries",
+      "title": "Confirm, unlink and edit exact Unicode identity ranges",
+      "preconditions": [
+        "Run the entire identity-boundaries group in fixed case order on the authorized automation Catalyst app with fresh synthetic storage. Existing review-and-edit workflow remains available separately.",
+        "Direction entries reuse the existing fixture envelope and deliberately have no timing words. No image-analysis, menu correction, stale-account/lease failure, pagination, final-text-only fallback or native visual parity assertion. Native results pending."
+      ],
+      "actions": [
+        "Fresh ScrivSession.launch(app) via tracer app -- test --scenario journeys/text-identity-review --group identity-boundaries; capabilities requires public edit and observation commands; ready tabs; select Script; key command-s; persisted-projects must equal saved YAM MAN only.",
+        "For each case in fixed order import-json identityReviewInput converted to direction with words=[] and coverageDurationMs=3000 matching ownedDurationMs=3000, fresh UUID title and literal annotation(s); assert import result, revision=0, independent fixture payload, full loaded project and generated id differs from input.",
+        "Select Script; require displayed exact source; activate Review 1 character suggestion; activate Confirm; wait until no Confirm button.",
+        "Source literal \"Randy waits.\". Activate Unlink; require Kept unlinked; activate Find more name suggestions; require Kept unlinked and no Confirm.",
+        "snapshot requires source exact and read-only; persisted-projects unchanged while review open. Activate Save links; wait sheet dismissed; key command-s; exact revision +1; full independently expected confirmation/unlink model equality.",
+        "Require advertised command-Return; key command-Return; native editor first responder with exact text; reveal editor. selection target script-editor-identity-line start=0 end=0; script-insert text=\"👩‍💻 é \"; result=\"👩‍💻 é Randy waits.\"; caret=9; explicit unlink identity-proposal location=9 length=5 text=Randy isConfirmed=true and absent characterId.",
+        "Observe script-interaction-counts before/after mutation; response exact public delegate contract; onTextEdit delta=1 and mergeAtStart delta=0; exact native text/caret; Escape finish; displayed exact; key command-s.",
+        "Assert revision +1 and finite nondecreasing modifiedAt; complete independently expected project including every unrelated field and annotation ID; loaded-project exact; unchanged creation/image Date bits; persisted-projects exact ordered prior packages plus result; presented-alerts=[]; capability runID unchanged. No mutation retries.",
+        "For each case in fixed order import-json identityReviewInput converted to direction with words=[] and coverageDurationMs=3000 matching ownedDurationMs=3000, fresh UUID title and literal annotation(s); assert import result, revision=0, independent fixture payload, full loaded project and generated id differs from input.",
+        "Select Script; require displayed exact source; activate Review 1 character suggestion; activate Confirm; wait until no Confirm button.",
+        "Source literal \"Randy Randy waits.\". Retain confirmed annotation(s).",
+        "snapshot requires source exact and read-only; persisted-projects unchanged while review open. Activate Save links; wait sheet dismissed; key command-s; exact revision +1; full independently expected confirmation/unlink model equality.",
+        "Require advertised command-Return; key command-Return; native editor first responder with exact text; reveal editor. Import second confirmed annotation identity-second at location=6 length=5 text=Randy characterId=randy. selection start=0 end=6; script-delete-selection target script-editor-identity-line; result=\"Randy waits.\"; caret=0; only surviving annotation identity-second at location=0 length=5 text=Randy characterId=randy isConfirmed=true.",
+        "Observe script-interaction-counts before/after mutation; response exact public delegate contract; onTextEdit delta=1 and mergeAtStart delta=0; exact native text/caret; Escape finish; displayed exact; key command-s.",
+        "Assert revision +1 and finite nondecreasing modifiedAt; complete independently expected project including every unrelated field and annotation ID; loaded-project exact; unchanged creation/image Date bits; persisted-projects exact ordered prior packages plus result; presented-alerts=[]; capability runID unchanged. No mutation retries.",
+        "For each case in fixed order import-json identityReviewInput converted to direction with words=[] and coverageDurationMs=3000 matching ownedDurationMs=3000, fresh UUID title and literal annotation(s); assert import result, revision=0, independent fixture payload, full loaded project and generated id differs from input.",
+        "Select Script; require displayed exact source; activate Review 1 character suggestion; activate Confirm; wait until no Confirm button.",
+        "Source literal \"Randy waits.\". Retain confirmed annotation(s).",
+        "snapshot requires source exact and read-only; persisted-projects unchanged while review open. Activate Save links; wait sheet dismissed; key command-s; exact revision +1; full independently expected confirmation/unlink model equality.",
+        "Require advertised command-Return; key command-Return; native editor first responder with exact text; reveal editor. selection start=5 end=5; script-insert text=\"2\"; result=\"Randy2 waits.\"; caret=6; characterLinks=[] exactly.",
+        "Observe script-interaction-counts before/after mutation; response exact public delegate contract; onTextEdit delta=1 and mergeAtStart delta=0; exact native text/caret; Escape finish; displayed exact; key command-s.",
+        "Assert revision +1 and finite nondecreasing modifiedAt; complete independently expected project including every unrelated field and annotation ID; loaded-project exact; unchanged creation/image Date bits; persisted-projects exact ordered prior packages plus result; presented-alerts=[]; capability runID unchanged. No mutation retries.",
+        "For each case in fixed order import-json identityReviewInput converted to direction with words=[] and coverageDurationMs=3000 matching ownedDurationMs=3000, fresh UUID title and literal annotation(s); assert import result, revision=0, independent fixture payload, full loaded project and generated id differs from input.",
+        "Select Script; require displayed exact source; activate Review 1 character suggestion; activate Confirm; wait until no Confirm button.",
+        "Source literal \"Randy waits.\". Retain confirmed annotation(s).",
+        "snapshot requires source exact and read-only; persisted-projects unchanged while review open. Activate Save links; wait sheet dismissed; key command-s; exact revision +1; full independently expected confirmation/unlink model equality.",
+        "Require advertised command-Return; key command-Return; native editor first responder with exact text; reveal editor. selection start=0 end=0; script-insert text=\"_\"; result=\"_Randy waits.\"; caret=1; characterLinks=[] exactly.",
+        "Observe script-interaction-counts before/after mutation; response exact public delegate contract; onTextEdit delta=1 and mergeAtStart delta=0; exact native text/caret; Escape finish; displayed exact; key command-s.",
+        "Assert revision +1 and finite nondecreasing modifiedAt; complete independently expected project including every unrelated field and annotation ID; loaded-project exact; unchanged creation/image Date bits; persisted-projects exact ordered prior packages plus result; presented-alerts=[]; capability runID unchanged. No mutation retries."
+      ],
+      "expectations": [
+        {
+          "id": "exact-model",
+          "description": "Complete independent saved/loaded model, exact annotation identity/range and UTF-16 native callback outcome.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/text-identity-boundary-steps.mjs",
+            "start": 123,
+            "end": 137,
+            "sha256": "f250f93cea2315edba68f6e264ba099a8f79ff07bc7568ca5e425204879653e3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CharacterMentions.swift",
+            "start": 103,
+            "end": 114,
+            "sha256": "339a965fbc6886c734b076606e40c8b2bcd01eec504264d8e14f2a66d48e9ca4"
+          },
+          "expectation": "exact-model",
+          "why": "Literal native edit and complete independently expected annotation model witness the admitted exact-edit/assign/save path. Numeric/underscore cases revoke token identity, duplicate deletion preserves the second identity, Unicode prefix shifts explicit unlink by nine UTF-16 units. Failure alternatives and final-text fallback remain unclaimed. Prepared static association; native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CharacterMentions.swift",
+            "start": 141,
+            "end": 143,
+            "sha256": "3b459c1a0f3da3e5fd898371161b1a37378fec63dacc442426ced73c4c447057"
+          },
+          "expectation": "exact-model",
+          "why": "Literal native edit and complete independently expected annotation model witness the admitted exact-edit/assign/save path. Numeric/underscore cases revoke token identity, duplicate deletion preserves the second identity, Unicode prefix shifts explicit unlink by nine UTF-16 units. Failure alternatives and final-text fallback remain unclaimed. Prepared static association; native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CharacterMentions.swift",
+            "start": 146,
+            "end": 151,
+            "sha256": "40039daa1cb554530691e5bbadee8b08aef10c5676e15c9d8799528c49c308eb"
+          },
+          "expectation": "exact-model",
+          "why": "Literal native edit and complete independently expected annotation model witness the admitted exact-edit/assign/save path. Numeric/underscore cases revoke token identity, duplicate deletion preserves the second identity, Unicode prefix shifts explicit unlink by nine UTF-16 units. Failure alternatives and final-text fallback remain unclaimed. Prepared static association; native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CharacterMentions.swift",
+            "start": 155,
+            "end": 170,
+            "sha256": "660be580c2b24c06f8400f9fd0de7e748700d3b8aae7427078481c0d3f508509"
+          },
+          "expectation": "exact-model",
+          "why": "Literal native edit and complete independently expected annotation model witness the admitted exact-edit/assign/save path. Numeric/underscore cases revoke token identity, duplicate deletion preserves the second identity, Unicode prefix shifts explicit unlink by nine UTF-16 units. Failure alternatives and final-text fallback remain unclaimed. Prepared static association; native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CharacterMentions.swift",
+            "start": 176,
+            "end": 177,
+            "sha256": "332b43f00840e52994ef50a3a7e7b4d2d1765d103b7306f1b15bdbf0f4e232fb"
+          },
+          "expectation": "exact-model",
+          "why": "Literal native edit and complete independently expected annotation model witness the admitted exact-edit/assign/save path. Numeric/underscore cases revoke token identity, duplicate deletion preserves the second identity, Unicode prefix shifts explicit unlink by nine UTF-16 units. Failure alternatives and final-text fallback remain unclaimed. Prepared static association; native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CharacterMentions.swift",
+            "start": 180,
+            "end": 181,
+            "sha256": "7d74786e509c7c96d5a1035ae1ce12310198aef34a5029302b5dc47d093afb76"
+          },
+          "expectation": "exact-model",
+          "why": "Literal native edit and complete independently expected annotation model witness the admitted exact-edit/assign/save path. Numeric/underscore cases revoke token identity, duplicate deletion preserves the second identity, Unicode prefix shifts explicit unlink by nine UTF-16 units. Failure alternatives and final-text fallback remain unclaimed. Prepared static association; native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1265,
+            "end": 1266,
+            "sha256": "362613ab92c7577c0c3a7250154363e626e7c078ef04b2bfb916258ec4f1efe8"
+          },
+          "expectation": "exact-model",
+          "why": "Literal native edit and complete independently expected annotation model witness the admitted exact-edit/assign/save path. Numeric/underscore cases revoke token identity, duplicate deletion preserves the second identity, Unicode prefix shifts explicit unlink by nine UTF-16 units. Failure alternatives and final-text fallback remain unclaimed. Prepared static association; native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1269,
+            "end": 1269,
+            "sha256": "dd676db3d8912557d65b735cc9ef765c52c3fbc43562d5060442ba59e4ef7408"
+          },
+          "expectation": "exact-model",
+          "why": "Literal native edit and complete independently expected annotation model witness the admitted exact-edit/assign/save path. Numeric/underscore cases revoke token identity, duplicate deletion preserves the second identity, Unicode prefix shifts explicit unlink by nine UTF-16 units. Failure alternatives and final-text fallback remain unclaimed. Prepared static association; native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1271,
+            "end": 1274,
+            "sha256": "2c2be3331e4dd97e4944933986a21cf935058b6bf18605114508638b7a5e26d4"
+          },
+          "expectation": "exact-model",
+          "why": "Literal native edit and complete independently expected annotation model witness the admitted exact-edit/assign/save path. Numeric/underscore cases revoke token identity, duplicate deletion preserves the second identity, Unicode prefix shifts explicit unlink by nine UTF-16 units. Failure alternatives and final-text fallback remain unclaimed. Prepared static association; native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 255,
+            "end": 256,
+            "sha256": "f5fbe8136334f7603f1ec26b478eeadd1e8eb17b055e49516f8b30a34d8ebe17"
+          },
+          "expectation": "exact-model",
+          "why": "Literal native edit and complete independently expected annotation model witness the admitted exact-edit/assign/save path. Numeric/underscore cases revoke token identity, duplicate deletion preserves the second identity, Unicode prefix shifts explicit unlink by nine UTF-16 units. Failure alternatives and final-text fallback remain unclaimed. Prepared static association; native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 262,
+            "end": 265,
+            "sha256": "fa4c0d6ce1d650d371e111584a9ed1d3b966d36c36907fe94b4aca3be36a6994"
+          },
+          "expectation": "exact-model",
+          "why": "Literal native edit and complete independently expected annotation model witness the admitted exact-edit/assign/save path. Numeric/underscore cases revoke token identity, duplicate deletion preserves the second identity, Unicode prefix shifts explicit unlink by nine UTF-16 units. Failure alternatives and final-text fallback remain unclaimed. Prepared static association; native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "sol-text-identity-boundaries",
+      "title": "Exact identity boundary workflow",
+      "steps": [
+        "sol-text-identity-boundaries"
+      ]
+    }
+  ]
+}

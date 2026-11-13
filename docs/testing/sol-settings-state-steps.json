@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "sol-settings-state-idle-draft",
+      "title": "Idle Settings and retained local server draft",
+      "preconditions": [
+        "Prepared CLI journey candidate. Native NOT RUN by this worker. No measured execution claim. Existing settings-navigation runs an isolated automation session with default Codex endpoint and signed-out Scriv account.",
+        "Runner owns fresh private preferences. Each of the original two cycles selects Codex then Account then General, keeping the existing follow-playback toggle/pane persistence/restoration assertions.",
+        "No provider, runtime, connect, start, sign-in, sign-out, save-server, pairing, keychain, clipboard or external URL action occurs. Server draft uses a reserved .invalid hostname and is restored without saving.",
+        "CodexConnectionReadiness blocker strings, CodexConnectionCheck begin/finish/cancel/reset, connected/sign-in/model selection, async cancellation, pairing management, process persistence and cloud URL mutation remain unclaimed. Idle presentation cannot witness those paths. Snapshot absence is visibility evidence, not a network audit."
+      ],
+      "actions": [
+        "key {input:\",\",modifiers:[\"command\"]}",
+        "activate {target: unique hittable scriv.settings.general path}",
+        "toggle {target: sole enabled General UISwitch path,value: !original}",
+        "activate {target: unique hittable scriv.settings.codex path}; snapshot polls and exact idle Settings assertions",
+        "activate {target: unique hittable scriv.settings.account path}; snapshot polls signed-out account",
+        "activate {target: unique enabled hittable Server settings button path}",
+        "text {target: server UITextField path,text:\"https://settings-draft.invalid\"}",
+        "activate {target: unique enabled hittable Server settings button path}; snapshot polls field absent",
+        "activate {target: unique enabled hittable Server settings button path}; snapshot polls retained literal draft and ended editing",
+        "text {target: server UITextField path,text: original observed server text}",
+        "activate {target: unique enabled hittable Server settings button path}; snapshot polls field absent and local-account text retained",
+        "activate {target: unique hittable scriv.settings.general path}; assert inverse original follow preference; key {input:\",\",modifiers:[\"command\"]}; snapshot polls General switch",
+        "activate {target: unique hittable scriv.settings.codex path}; snapshot polls and exact idle Settings assertions",
+        "activate {target: unique hittable scriv.settings.account path}; snapshot polls signed-out account",
+        "activate {target: unique enabled hittable Server settings button path}",
+        "text {target: server UITextField path,text:\"https://settings-draft.invalid\"}",
+        "activate {target: unique enabled hittable Server settings button path}; snapshot polls field absent",
+        "activate {target: unique enabled hittable Server settings button path}; snapshot polls retained literal draft and ended editing",
+        "text {target: server UITextField path,text: original observed server text}",
+        "activate {target: unique enabled hittable Server settings button path}; snapshot polls field absent and local-account text retained",
+        "activate {target: unique hittable scriv.settings.general path}; assert inverse original follow preference; key {input:\",\",modifiers:[\"command\"]}; snapshot polls General switch",
+        "after both cycles toggle {target: General UISwitch path,value: original}; snapshot asserts original"
+      ],
+      "expectations": [
+        {
+          "id": "idle",
+          "description": "Actual idle Codex pane has exact Not connected label, Connect controls enabled, hidden account/model/stop/cancel/error controls, enabled untouched fields and literal default endpoint and automatic executable. No runtime request is made.",
+          "witness": {
+            "path": "tests/e2e/support/settings-state-steps.mjs",
+            "start": 14,
+            "end": 39,
+            "sha256": "335238a4d114a78fb3c2044b255ad48918a8fe72cc7cc9eb208ab2b096b09cc4"
+          }
+        },
+        {
+          "id": "draft",
+          "description": "Signed-out Account pane shows exact local-account text and sign-in control. Expanding server settings exposes enabled field/save control and explanation. Synthetic unsaved draft survives close/reopen, editing ends, original text is restored and disclosure closes.",
+          "witness": {
+            "path": "tests/e2e/support/settings-state-steps.mjs",
+            "start": 42,
+            "end": 75,
+            "sha256": "81b9133d60244fc328da570b99d877d028bdbf68eace0a2269b50a3937e5444e"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
+            "start": 40,
+            "end": 40,
+            "sha256": "4d48308da9397b25e91299a9e6603b7c344bcddd1f198357929ae36738499040"
+          },
+          "expectation": "draft",
+          "why": "Text editing records an unsaved server draft, witnessed by close/reopen retention. Reviewed association to prepared assertions. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
+            "start": 130,
+            "end": 134,
+            "sha256": "5aec9740f23e5712c51cb81071b2195078c9e8210317f414c4dbb5bdad2ee107"
+          },
+          "expectation": "draft",
+          "why": "Account disclosure changes rebuild the signed-out account card and preserve exact local-account labels. Reviewed association to prepared assertions. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
+            "start": 138,
+            "end": 140,
+            "sha256": "1ff34476e7dd7ccedc53acb34356b9e47f67a6f7f0d6d8efa346a5d631132ee2"
+          },
+          "expectation": "draft",
+          "why": "Server disclosure ends editing, toggles expansion and shows/removes the real field. Reviewed association to prepared assertions. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
+            "start": 142,
+            "end": 147,
+            "sha256": "ca6df08a05257ab57aa8af7051c5ed8ab8ae4a9a097f8110ac6cc6aa40084d9e"
+          },
+          "expectation": "draft",
+          "why": "Signed-out server field/save control stay enabled, exact explanation is shown and nonnil draft survives rebuilding. Save action line 141 is excluded. Reviewed association to prepared assertions. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Account/ScrivCodexSetupView.swift",
+            "start": 23,
+            "end": 24,
+            "sha256": "137166ba560466681cc7cfc76807c5ef2c184ec11e99049d2b41a20bcbd804f6"
+          },
+          "expectation": "idle",
+          "why": "Fresh disconnected presentation uses idle check phase. Connected/checking branches are excluded. Reviewed association to prepared assertions. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Account/ScrivCodexSetupView.swift",
+            "start": 27,
+            "end": 29,
+            "sha256": "ccdd2ecda6e9b05c78ff0dfe4197d309e54a6e31c7f117487f34906d73056423"
+          },
+          "expectation": "idle",
+          "why": "Idle edit/connect permission yields enabled controls and fields. Paired start paths are excluded. Reviewed association to prepared assertions. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Account/ScrivCodexSetupView.swift",
+            "start": 43,
+            "end": 43,
+            "sha256": "76fa831918d9e8a3481f733e6f9f717cbca871c0d66822bba2a1841e74eeed6f"
+          },
+          "expectation": "idle",
+          "why": "Idle status displays exact Not connected. Reviewed association to prepared assertions. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Account/ScrivCodexSetupView.swift",
+            "start": 293,
+            "end": 297,
+            "sha256": "86bd67be23eb582d6f71c6c0aabfa1fc3a2c64045ba8f5c533b8791cf1d9366e"
+          },
+          "expectation": "idle",
+          "why": "Idle update renders connection label/hint and hides the disconnected account group. Ready color and checking text alternatives are excluded. Reviewed association to prepared assertions. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Account/ScrivCodexSetupView.swift",
+            "start": 304,
+            "end": 304,
+            "sha256": "0ab0152fc8ddab633ebfaaa2e63c9a1c4f1b5d830693ab1430edc810762c80c1"
+          },
+          "expectation": "idle",
+          "why": "Idle model group is absent from public snapshot. Reviewed association to prepared assertions. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Account/ScrivCodexSetupView.swift",
+            "start": 307,
+            "end": 312,
+            "sha256": "6a3fd145d009653fc70563fbb8fee8af272363966c1b4303cfb0736578393e9d"
+          },
+          "expectation": "idle",
+          "why": "Idle Connect is visible and enabled with exact label while Cancel and Stop stay hidden. Active phases are excluded. Reviewed association to prepared assertions. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Account/ScrivCodexSetupView.swift",
+            "start": 319,
+            "end": 320,
+            "sha256": "2f2a73bbdd852bf9df162994be82ed5672d58bf02cd9c90f172046ea9506ce45"
+          },
+          "expectation": "idle",
+          "why": "Idle runtime fields are enabled and nil error hides the error label. Error presentation paths are excluded. Reviewed association to prepared assertions. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "sol-settings-state-idle-draft",
+      "title": "Idle Settings and retained local server draft",
+      "steps": [
+        "sol-settings-state-idle-draft"
+      ]
+    }
+  ]
+}

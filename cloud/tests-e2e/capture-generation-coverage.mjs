@@ -6,9 +6,36 @@ import { lstat, mkdir, readFile, readdir, realpath, writeFile } from 'node:fs/pr
 import { execFileSync } from 'node:child_process';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { instrumentGeneration, generationWrapper, measuredSources, collectorPath, nonceBinding, counterNotice } from './instrument-generation.mjs';
+import { instrumentGeneration, generationWrapper, measuredSources as generationSources, serviceMeasuredSources, collectorPath, nonceBinding, counterNotice } from './instrument-generation.mjs';
 import { exportSourceManifest, verifySourceManifest } from '../../scripts/export-cli-source-manifest.mjs';
 import { prepareAnalysisRoot } from '../../scripts/prepare-coverage-analysis.mjs';
+
+/** Observe only host-side request method/path metadata while forwarding original fetch unchanged. */
+export function observeServiceRequests() {
+  const originalFetch = globalThis.fetch, actions = [];
+  let stopped = false;
+  const record = (method, target) => {
+    assert.equal(stopped, false, 'Request observer has stopped');
+    const url = new URL(target instanceof Request ? target.url : String(target));
+    assert.equal(url.protocol, 'http:'); assert.equal(url.hostname, '127.0.0.1');
+    if (url.pathname === collectorPath) return;
+    const verb = String(method ?? 'GET').toUpperCase();
+    assert(/^[A-Z]{1,16}$/.test(verb));
+    assert(actions.length < 10000, 'Bound service request metadata');
+    const path = url.pathname.replace(/(\/join\/)[^/]+/g, '$1:token').replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, ':id').replace(/\b[0-9a-f]{32,128}\b/gi, ':hash');
+    actions.push(`${verb} ${path}`);
+  };
+  const observedFetch = function(input, init) {
+    record(init?.method ?? (input instanceof Request ? input.method : 'GET'), input);
+    return originalFetch.call(this, input, init);
+  };
+  globalThis.fetch = observedFetch;
+  return { actions, record, stop() {
+    if (stopped) return;
+    assert.equal(globalThis.fetch, observedFetch, 'Another owner replaced the request observer');
+    globalThis.fetch = originalFetch; stopped = true;
+  } };
+}
 
 const repository = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -41,7 +68,7 @@ function tracer(capture, root, args) {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 }
-async function buildGenerationBundle(directory, pinned, compiled, wrapperSHA256) {
+async function buildGenerationBundle(directory, pinned, compiled, wrapperSHA256, measuredSources) {
   assert.deepEqual([...compiled.keys()], measuredSources);
   for (const module of compiled.values()) assert.equal(sha(module.contents), module.moduleSHA256);
   const wrapperPath = join(directory, 'entry.ts'), entry = await readFile(wrapperPath);
@@ -88,6 +115,16 @@ async function buildGenerationBundle(directory, pinned, compiled, wrapperSHA256)
 }
 
 export async function prepareGenerationCapture(output, selectedTracer) {
+  return prepareCapture(output, selectedTracer);
+}
+
+export async function prepareServiceCapture(output, selectedTracer, { journeyPath }) {
+  assert(/^cloud\/tests-e2e\/[a-z-]+-journey\.mjs$/.test(journeyPath));
+  return prepareCapture(output, selectedTracer, journeyPath);
+}
+
+async function prepareCapture(output, selectedTracer, journeyPath) {
+  const measuredSources = journeyPath ? serviceMeasuredSources : generationSources;
   assert.equal(typeof output, 'string'); assert.equal(output, resolve(output));
   const parent = dirname(output); assert.equal(await realpath(parent), parent);
   const info = await lstat(parent); assert(info.isDirectory() && info.uid === process.getuid() && !(info.mode & 0o022));
@@ -96,16 +133,17 @@ export async function prepareGenerationCapture(output, selectedTracer) {
   assert.equal(await realpath(selectedTracer), selectedTracer);
   await mkdir(output, { mode: 0o700 });
   for (const name of ['home', 'tmp']) await mkdir(join(output, name), { mode: 0o700 });
+  const journeyFiles = journeyPath ? (await readdir(join(repository, 'cloud/tests-e2e'))).filter(name => name.endsWith('-journey.mjs')).sort().map(name => `cloud/tests-e2e/${name}`) : ['cloud/tests-e2e/generation-journey.mjs'];
   const runId = randomUUID(), probeFiles = ['cloud/tests-e2e/instrument-generation.mjs',
-    'cloud/tests-e2e/capture-generation-coverage.mjs', 'cloud/tests-e2e/generation-journey.mjs',
-    'scripts/export-cli-source-manifest.mjs', 'scripts/prepare-coverage-analysis.mjs'];
+    'cloud/tests-e2e/capture-generation-coverage.mjs', ...journeyFiles,
+    'scripts/export-cli-source-manifest.mjs', 'scripts/prepare-coverage-analysis.mjs', ...(journeyPath ? ['scripts/run-service-journeys.mjs'] : [])];
   const probe = [];
   for (const path of probeFiles) probe.push({ path, sha256: await hashFile(join(repository, path)) });
   const probeSHA256 = sha(JSON.stringify(probe));
   const compiled = new Map(), modules = [], sites = [];
   for (const [index, sourcePath] of measuredSources.entries()) {
     const source = await readFile(join(repository, sourcePath));
-    const built = instrumentGeneration(new TextDecoder('utf-8', { fatal: true }).decode(source), { runId, probeSHA256, sourcePath });
+    const built = instrumentGeneration(new TextDecoder('utf-8', { fatal: true }).decode(source), { runId, probeSHA256, sourcePath, sources: measuredSources });
     assert.equal(built.sourceSHA256, sha(source));
     const originalFile = `original-${index}.ts`, instrumentedFile = `instrumented-${index}.ts`;
     await write(join(output, originalFile), source); await write(join(output, instrumentedFile), built.module);
@@ -115,8 +153,13 @@ export async function prepareGenerationCapture(output, selectedTracer) {
     modules.push(module); sites.push(built.siteManifest); compiled.set(sourcePath, { ...module, contents: built.module });
   }
   assert(modules.reduce((sum, module) => sum + module.slotCount, 0) <= 4096);
+  const maximumSnapshot = { version: 2, runId, probeSHA256, modules: modules.map(module => ({ version: 1,
+    sourcePath: module.sourcePath, runId, sourceSHA256: module.sourceSHA256, siteManifestSHA256: module.siteManifestSHA256,
+    probeSHA256, generation: runId, sequence: Number.MAX_SAFE_INTEGER, invalid: false,
+    counts: Array(module.slotCount).fill(Number.MAX_SAFE_INTEGER) })) };
+  assert(Buffer.byteLength(JSON.stringify(maximumSnapshot)) <= 65536, 'All safe counter values must fit the bounded collector response');
   const siteManifestBytes = json({ version: 2, modules: sites, notice: counterNotice }), siteManifestSHA256 = sha(siteManifestBytes);
-  const wrapper = generationWrapper(Object.fromEntries(measuredSources.map(path => [path, join(repository, path)])), { runId, probeSHA256 });
+  const wrapper = generationWrapper(Object.fromEntries(measuredSources.map(path => [path, join(repository, path)])), { runId, probeSHA256, sources: measuredSources });
   await write(join(output, 'entry.ts'), wrapper); await write(join(output, 'sites.json'), siteManifestBytes);
   await write(join(output, 'probe.json'), json(probe));
   const manifest = join(output, 'sources.json');
@@ -147,26 +190,37 @@ export async function prepareGenerationCapture(output, selectedTracer) {
   const toolInputs = { toolFiles, graphs: [miniflare, tracerGraph] };
   await write(join(output, 'tool-inputs.json'), json(toolInputs));
   const wrapperSHA256 = sha(wrapper);
-  const bundleIdentity = await buildGenerationBundle(output, pinned, compiled, wrapperSHA256);
+  const bundleIdentity = await buildGenerationBundle(output, pinned, compiled, wrapperSHA256, measuredSources);
   await verifySourceManifest(repository, manifest, exported.manifestSHA256);
   const buildSHA256 = sha(JSON.stringify({ modules, wrapperSHA256, ...bundleIdentity, siteManifestSHA256 }));
   const capture = { version: 2, directory: output, runId, tracer: selectedTracer, modules,
+    ...(journeyPath ? { journeyPath, mode: 'service' } : {}),
     sourceManifestSHA256: exported.manifestSHA256, probeSHA256, wrapperSHA256, buildSHA256, ...bundleIdentity,
     siteManifestSHA256, tools,
     limitations: [counterNotice, 'Instrumentation is a test-build transform, not production performance or a compiler coverage attestation.',
-      'Selected statement entries in four modules, sampled through one Worker module instance during the existing generation journey; no Durable Object instance, other-isolate, branch or overall-project coverage claim.',
+      `Selected statement entries in ${measuredSources.length} modules sampled through collected Worker module instances; no Durable Object-instance, other-isolate, branch or overall-project coverage claim.`,
       'Shared helpers can be called by background or Durable Object work sharing the collected module instance. Counter increases do not establish main-fetch-only or per-request attribution.',
       'TypeScript is instrumented before esbuild transpilation; original statement positions identify anchors, not generated bundle line ranges or full-line coverage.',
       'Module initialization occurs before the baseline; counter deltas do not include it.',
       'Listed tool input hashes are producer-declared identity evidence, not a cryptographic build or complete operating-system attestation.'] };
   const version = tracer(capture, repository, ['--version']).trim(); assert.match(version, /\b0\.3(?:\b|\.)/);
   await write(join(output, 'capture.json'), json(capture));
-  return { path: join(output, 'capture.json'), finish: interrupted => finishGenerationCapture(capture, interrupted) };
+  return { path: join(output, 'capture.json'), finish: interrupted => journeyPath ? finishServiceCapture(capture, interrupted) : finishGenerationCapture(capture, interrupted) };
 }
 
 export async function loadGenerationCapture(path) {
+  return loadCapture(path, false);
+}
+
+export async function loadServiceCapture(path) {
+  return loadCapture(path, true);
+}
+
+async function loadCapture(path, service) {
+  const measuredSources = service ? serviceMeasuredSources : generationSources;
   assert.equal(await realpath(path), resolve(path)); assert((await lstat(path)).size < 65536);
   const capture = JSON.parse(await readFile(path)); assert.equal(capture.version, 2);
+  assert.equal(capture.mode === 'service', service);
   assert.equal(dirname(path), capture.directory); assert(outside(repository, capture.directory));
   assert.match(capture.runId, /^[0-9a-f-]{36}$/);
   assert.deepEqual(capture.modules.map(module => module.sourcePath), measuredSources);
@@ -181,7 +235,7 @@ export async function loadGenerationCapture(path) {
     assert.equal(sha(json(siteManifest.modules[index])), module.siteManifestSHA256);
     assert.equal(siteManifest.modules[index].sites.length, module.slotCount);
   }
-  const nonce = randomBytes(32).toString('hex'); let collectorRequests = 0, previous, baseline;
+  const nonce = randomBytes(32).toString('hex'); let collectorRequests = 0, previous, baseline, phaseDirectory = capture.directory, phaseIndex = 0, active = false;
   const bundle = await readFile(join(capture.directory, 'bundle.mjs'));
   assert.equal(sha(bundle), capture.bundleSHA256);
   const options = { script: new TextDecoder('utf-8', { fatal: true }).decode(bundle), bindings: { [nonceBinding]: nonce } };
@@ -195,7 +249,7 @@ export async function loadGenerationCapture(path) {
     assert.equal(response.status, status); assert.equal(response.headers.get('cache-control'), 'no-store');
     const body = Buffer.concat(chunks);
     if (status !== 200) { assert.equal(body.toString(), 'Not found'); return; }
-    await write(join(capture.directory, `${label}.json`), body);
+    await write(join(phaseDirectory, `${label}.json`), body);
     const value = JSON.parse(body);
     assert.deepEqual(Object.keys(value).sort(), ['version', 'runId', 'probeSHA256', 'modules'].sort());
     assert.equal(value.version, 2); assert.equal(value.runId, capture.runId); assert.equal(value.probeSHA256, capture.probeSHA256);
@@ -206,7 +260,9 @@ export async function loadGenerationCapture(path) {
       assert.equal(module.version, 1); assert.equal(module.runId, capture.runId); assert.equal(module.probeSHA256, capture.probeSHA256);
       for (const key of ['sourceSHA256', 'siteManifestSHA256']) assert.equal(module[key], expected[key]);
       assert.equal(module.invalid, false); assert.match(module.generation, /^[0-9a-f-]{36}$/);
-      assert.equal(module.sequence, prior ? prior.sequence + 1 : 1);
+      if (prior) assert.equal(module.sequence, prior.sequence + 1);
+      else if (service) assert(Number.isSafeInteger(module.sequence) && module.sequence > 0);
+      else assert.equal(module.sequence, 1);
       assert(Array.isArray(module.counts) && module.counts.length === expected.slotCount);
       assert(module.counts.every(count => Number.isSafeInteger(count) && count >= 0));
       if (prior) {
@@ -218,16 +274,30 @@ export async function loadGenerationCapture(path) {
   }
   return { options,
     async begin(base) {
+      assert.equal(active, false, 'Finish the current phase before another baseline');
+      active = true;
+      if (service) {
+        phaseDirectory = join(capture.directory, `phase-${String(++phaseIndex).padStart(3, '0')}`);
+        await mkdir(phaseDirectory, { mode: 0o700 });
+        collectorRequests = 0; previous = undefined; baseline = undefined;
+      }
       const b0 = await request(base, 'before-control');
       await request(base, 'missing-nonce', null, 404); await request(base, 'wrong-nonce', 'invalid', 404);
       baseline = await request(base, 'before'); assert.deepEqual(baseline.modules.map(module => module.counts), b0.modules.map(module => module.counts), 'Collector reads/refusals do not execute original probes');
     },
-    async end(base, ordinaryRequests) {
-      assert.equal(ordinaryRequests, 80); assert(baseline);
+    async end(base, ordinaryRequests, actions) {
+      assert(active && baseline);
+      assert(Number.isSafeInteger(ordinaryRequests) && ordinaryRequests > 0);
+      if (service) {
+        assert(Array.isArray(actions) && actions.length > 0 && actions.length <= 10000 && actions.every(action => typeof action === 'string' && action.length > 0 && action.length <= 4096));
+        assert.equal(actions.filter(action => /^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /.test(action)).length, ordinaryRequests, 'Require one ordered HTTP method/path action for every ordinary HTTP request');
+      }
+      else assert.equal(ordinaryRequests, 80);
       const after = await request(base, 'after'), a1 = await request(base, 'after-control');
       assert.deepEqual(a1.modules.map(module => module.counts), after.modules.map(module => module.counts), 'Repeated snapshots do not reset or increment counters');
       assert(after.modules.some((module, index) => module.counts.some((count, slot) => count > baseline.modules[index].counts[slot])), 'Require genuine positive counter deltas');
       assert.equal(collectorRequests, 6);
+      const intervalRunId = service ? `${capture.runId}:phase-${String(phaseIndex).padStart(3, '0')}` : capture.runId;
       const lineSets = siteManifest.modules.map(module => [...new Set(module.sites.map(site => site.line))].sort((a, b) => a - b));
       const instrumentedAnchorLines = lineSets.reduce((sum, lines) => sum + lines.length, 0);
       const exportLCOV = snapshot => snapshot.modules.map((module, index) => {
@@ -235,22 +305,24 @@ export async function loadGenerationCapture(path) {
         for (const [slot, site] of siteManifest.modules[index].sites.entries()) {
           const count = totals.get(site.line) + module.counts[slot]; assert(Number.isSafeInteger(count)); totals.set(site.line, count);
         }
-        return `TN:${capture.runId}\nSF:${module.sourcePath}\nVER:${module.sourceSHA256}\n${lines.map(line => `DA:${line},${totals.get(line)}`).join('\n')}\nend_of_record\n`;
+        return `TN:${intervalRunId}\nSF:${module.sourcePath}\nVER:${module.sourceSHA256}\n${lines.map(line => `DA:${line},${totals.get(line)}`).join('\n')}\nend_of_record\n`;
       }).join('');
       const beforeLCOV = exportLCOV(baseline), afterLCOV = exportLCOV(after);
-      await write(join(capture.directory, 'before.lcov'), beforeLCOV); await write(join(capture.directory, 'after.lcov'), afterLCOV);
-      const snapshot = bytes => ({ sha256: sha(bytes), runId: capture.runId, buildSha256: capture.buildSHA256,
+      await write(join(phaseDirectory, 'before.lcov'), beforeLCOV); await write(join(phaseDirectory, 'after.lcov'), afterLCOV);
+      const snapshot = bytes => ({ sha256: sha(bytes), runId: intervalRunId, buildSha256: capture.buildSHA256,
         sourceManifestSha256: capture.sourceManifestSHA256, toolchainSha256: sha(JSON.stringify(capture.tools)) });
-      const interval = { version: 1, runId: capture.runId,
-        actions: ['Run the existing generation-service journey through its 80 ordered public HTTP checks with original assertions unchanged.'],
+      const interval = { version: 1, runId: intervalRunId,
+        actions: service ? actions : ['Run the existing generation-service journey through its 80 ordered public HTTP checks with original assertions unchanged.'],
         counterMode: 'cumulative', counterReset: false, sourceManifestSha256: capture.sourceManifestSHA256,
         probeSha256: capture.probeSHA256, tools: capture.tools, limitations: capture.limitations,
         before: snapshot(beforeLCOV), after: snapshot(afterLCOV) };
-      await write(join(capture.directory, 'interval.json'), json(interval));
-      await write(join(capture.directory, 'export.json'), json({ status: 'exported', ordinaryRequests, collectorRequests,
+      await write(join(phaseDirectory, 'interval.json'), json(interval));
+      await write(join(phaseDirectory, 'export.json'), json({ status: 'exported', ordinaryRequests, collectorRequests,
+        ...(service ? { journeyPath: capture.journeyPath, phase: phaseIndex, collectorRunId: capture.runId, intervalRunId, actions } : {}),
         modules: after.modules.map((module, index) => ({ sourcePath: module.sourcePath, generation: module.generation, sites: module.counts.length, instrumentedAnchorLines: lineSets[index].length })), instrumentedAnchorLines, sourceUnchanged: true,
         notice: counterNotice }));
-      console.log(JSON.stringify({ kind: 'generation-counter-capture', status: 'exported', ordinaryRequests, collectorRequests,
+      active = false;
+      console.log(JSON.stringify({ kind: service ? 'service-counter-capture' : 'generation-counter-capture', status: 'exported', ordinaryRequests, collectorRequests,
         instrumentedAnchorLines, nativeExecution: 'not-run', notice: counterNotice }));
     },
   };
@@ -259,14 +331,14 @@ export async function loadGenerationCapture(path) {
 async function finishGenerationCapture(capture, interrupted = () => false) {
   capture.interrupted = interrupted;
   assert.equal(interrupted(), false, 'Capture interrupted before finalization');
-  const directory = capture.directory, manifest = join(directory, 'sources.json');
+  const directory = capture.phaseDirectory ?? capture.directory, manifest = join(capture.directory, 'sources.json');
   const exported = JSON.parse(await readFile(join(directory, 'export.json'))); assert.equal(exported.status, 'exported');
   await verifySourceManifest(repository, manifest, capture.sourceManifestSHA256);
-  const tools = JSON.parse(await readFile(join(directory, 'tool-inputs.json')));
+  const tools = JSON.parse(await readFile(join(capture.directory, 'tool-inputs.json')));
   for (const tool of tools.toolFiles) assert.equal(await hashFile(tool.path), tool.sha256);
   for (const input of tools.graphs) assert.equal((await graph(input.root)).sha256, input.sha256);
   for (const [name, expected] of [...capture.modules.flatMap(module => [[module.instrumentedFile, module.moduleSHA256], [module.originalFile, module.sourceSHA256]]), ['entry.ts', capture.wrapperSHA256], ['sites.json', capture.siteManifestSHA256], ['bundle.mjs', capture.bundleSHA256], ['build.json', capture.buildRecordSHA256]])
-    assert.equal(await hashFile(join(directory, name)), expected);
+    assert.equal(await hashFile(join(capture.directory, name)), expected);
   const interval = JSON.parse(await readFile(join(directory, 'interval.json')));
   // Real endpoints reversed, not fabricated counts. A fresh validation root must
   // reject negative deltas and remain without a measurement dataset.
@@ -291,8 +363,18 @@ async function finishGenerationCapture(capture, interrupted = () => false) {
   await write(join(directory, 'measurement-report.json'), report);
   await write(join(directory, 'measurement-check.json'), tracer(capture, analysis.root, ['measure', 'check', '--json']));
   await verifySourceManifest(repository, manifest, capture.sourceManifestSHA256);
-  const completed = { kind: 'generation-measured-interval', status: 'imported', evidence: directory, analysisRoot: analysis.root,
-    ordinaryRequests: 80, collectorRequests: 6, sourceUnchanged: true, negativeDeltaControl: 'rejected',
+  const completed = { kind: capture.mode === 'service' ? 'service-measured-interval' : 'generation-measured-interval', status: 'imported', evidence: directory, analysisRoot: analysis.root,
+    ordinaryRequests: exported.ordinaryRequests, collectorRequests: exported.collectorRequests, sourceUnchanged: true, negativeDeltaControl: 'rejected',
     nativeExecution: 'not-run', notice: counterNotice };
   await write(join(directory, 'completed.json'), json(completed)); console.log(JSON.stringify(completed));
+}
+
+async function finishServiceCapture(capture, interrupted = () => false) {
+  const phases = (await readdir(capture.directory)).filter(name => /^phase-\d{3}$/.test(name)).sort();
+  assert(phases.length > 0, 'No service measurement phase was started');
+  for (const phase of phases) {
+    assert.equal(interrupted(), false, 'Capture interrupted before phase import');
+    await finishGenerationCapture({ ...capture, phaseDirectory: join(capture.directory, phase) }, interrupted);
+  }
+  await write(join(capture.directory, 'completed.json'), json({ kind: 'service-measured-capture', status: 'imported', journeyPath: capture.journeyPath, phases }));
 }

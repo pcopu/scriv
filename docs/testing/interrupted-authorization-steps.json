@@ -6,7 +6,7 @@
       "id": "interrupt-writes-v95",
       "title": "Log out after authentication before completing each write body",
       "preconditions": [
-        "Run the entire public command tracer app -- test services cloud. Original 72 initial checks and 16 scheduled-maintenance checks run unchanged before the appended 32 HTTP requests. Original source lines 1–363 remain exact; the new chapter uses only synthetic fixtures, real loopback HTTP and read-only state observation.",
+        "Run the entire public command tracer app -- test services cloud. Original 72 initial checks and 16 scheduled-maintenance checks run unchanged before the appended 32 HTTP requests. Original source lines 1\u2013363 remain exact; the new chapter uses only synthetic fixtures, real loopback HTTP and read-only state observation.",
         "Each held mutation uses a new synthetic session for the existing owner and a unique request:<sessionId>: prefix with no prior counters. Send only the first JSON byte under exact Content-Length, keep the remaining bytes unsent, and poll for one row with count 1. Since index.ts awaits authenticate before rateLimit, this proves authentication finished, not that body() was reached.",
         "No other /v1 request uses the attempt session before its barrier. Require no early response and no body release. Await public /auth/logout 200 with exact ok:true, observe revocation while expiry remains future, and confirm the retained owner session remains live. Only then finish the held JSON body.",
         "Compare complete ordered business tables and media before/after refusal. Session revocation and legitimate security-limit changes are excluded. After an old-token 401 read, replay the identical payload through the retained owner session and verify an actual persisted change. Fresh IDs and changed names/roles prevent no-op success.",
@@ -29,9 +29,9 @@
           "description": "For each fresh attempt session, one newly observed request counter at count 1 proves initial authentication completed while the body is incomplete and no response started. Public logout succeeds, that unexpired session is revoked, the retained owner session stays live, and only then is the remaining body released.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 386,
-            "end": 428,
-            "sha256": "b2cfbf6a2fed03b6b04060fbd8bea43e8c7907e4338d5b8f9960c7bbae20652b"
+            "start": 428,
+            "end": 471,
+            "sha256": "8cb0ecb2679d4e19164f2766bc453d68e7b0d9e5cd3f5df3fd548a11e2fd8667"
           }
         },
         {
@@ -39,8 +39,8 @@
           "description": "All eight interrupted writes return their exact mutation-specific refusal and preserve complete ordered teams, team_members, join_links, projects and billing_events plus assets/R2 specified bytes/metadata and storage counters. A later old-token identity read is 401/session_expired and leaves the observed request marker unchanged; session and rate-limit writes are expected exclusions.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 429,
-            "end": 436,
+            "start": 472,
+            "end": 479,
             "sha256": "c8d4ece9a6644fff90eaef6a047ea926afcf77e80758ce719debcf952eacb82d"
           }
         },
@@ -49,8 +49,8 @@
           "description": "Interrupted team creation returns 401/session_expired without a team or owner-membership insertion; retained-owner retry creates exactly one returned team with its owner membership while all other team/member rows remain exact.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 443,
-            "end": 449,
+            "start": 486,
+            "end": 492,
             "sha256": "74188c5855929b3429f65ff265716a6ee6f1004b03416af43017723a98d3724f"
           }
         },
@@ -59,8 +59,8 @@
           "description": "Interrupted team rename returns 409/access_changed with exact business-state preservation; the identical retained-owner retry persists the new team name.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 450,
-            "end": 453,
+            "start": 493,
+            "end": 496,
             "sha256": "c18f7fbfda5283d6c7915e98e24bf4115d8b9b99128ad509796498d5ee5d0290"
           }
         },
@@ -69,8 +69,8 @@
           "description": "Interrupted join-link creation returns 409/access_changed without a link insertion; retry creates the desired viewer link with the returned token hash, creator and exact one-day stored expiry.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 454,
-            "end": 459,
+            "start": 497,
+            "end": 502,
             "sha256": "e3c07fbe4be52bb535e2b6c7a60e102302685e5509cad4d706bdd3383d02b381"
           }
         },
@@ -79,8 +79,8 @@
           "description": "Interrupted owner membership-role PATCH returns 409/membership_changed without altering rows; retry persists the desired viewer role.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 460,
-            "end": 462,
+            "start": 503,
+            "end": 505,
             "sha256": "b9a3025e34c3dc5ba6dfe5e3c0e86978b763483a0cff920bca3d1bb09ff57b26"
           }
         },
@@ -89,8 +89,8 @@
           "description": "Both personal and team project creation reject 409/access_changed without inserting a project; retries persist the specified new IDs/titles with exact owner and null-or-team scope.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 463,
-            "end": 471,
+            "start": 506,
+            "end": 514,
             "sha256": "6c6020b45b21c47c8f4c351a31fde38de12ded74cd91ba362bf338f9ee2947a8"
           }
         },
@@ -99,8 +99,8 @@
           "description": "Both personal and team project rename reject 409/access_changed without changing rows; retries persist the specified titles for those exact projects.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 472,
-            "end": 477,
+            "start": 515,
+            "end": 520,
             "sha256": "ffe93c0e916848fcf3a102995722e63a7d273ff55fcf6c354595c975349fb8b2"
           }
         },
@@ -109,8 +109,8 @@
           "description": "Every identical payload succeeds through the retained owner session and verifies its intended persisted name, role, membership, link identity/expiry or project identity/owner/team/title. Original media and team quotas remain unchanged, all eight cases finish and zero outbound requests occur.",
           "witness": {
             "path": "cloud/tests-e2e/service-journey.mjs",
-            "start": 437,
-            "end": 480,
+            "start": 480,
+            "end": 523,
             "sha256": "7ff6b638237c1f47ce21fc9aecf35c9280f8d30d81fe08c4006538a3007b5485"
           }
         }

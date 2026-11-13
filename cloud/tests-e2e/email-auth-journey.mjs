@@ -15,40 +15,50 @@ const cloud = await realpath(process.argv[2] === '--owned-child' ? process.argv[
   process.argv[2] === '--cloud' ? process.argv[3] : join(here, '..'));
 const self = await realpath(fileURLToPath(import.meta.url));
 if (process.argv[2] !== '--owned-child') {
-  const root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-email-auth-')));
-  let child;
-  let timer;
+  let root, capture, child, timer, journeyError, interrupted = false;
   const killOwned = signal => {
     if (child?.pid) {
       try { process.kill(-child.pid, signal); } catch (error) { if (error.code !== 'ESRCH') throw error; }
     }
   };
-  const interrupt = () => killOwned('SIGTERM');
+  const interrupt = () => { interrupted = true; killOwned('SIGTERM'); };
+  process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
   try {
-    for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
-    // Resolve installed dependencies from an owned runner, never edit the repository.
-    await copyFile(self, join(root, 'runner.mjs'));
-    await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
-    child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud], {
-      cwd: root, detached: true, stdio: 'inherit',
-      // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
-      env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
-        XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
-        WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
-    });
-    process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
-    timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
-    const result = await new Promise((resolve, reject) => {
-      child.once('error', reject);
-      child.once('exit', (code, signal) => resolve({ code, signal }));
-    });
-    assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    try {
+      root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-email-auth-')));
+      for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
+      capture = process.env.SCRIV_SERVICE_COVERAGE_DIR
+        ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+          .prepareServiceCapture(process.env.SCRIV_SERVICE_COVERAGE_DIR, process.env.SCRIV_TRACER_CLI, { journeyPath: 'cloud/tests-e2e/email-auth-journey.mjs' }) : null;
+      // Resolve installed dependencies from an owned runner, never edit the repository.
+      await copyFile(self, join(root, 'runner.mjs'));
+      await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
+      assert.equal(interrupted, false, 'Cancelled during preparation; no Worker launched');
+      child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud, ...(capture ? [capture.path] : [])], {
+        cwd: root, detached: true, stdio: 'inherit',
+        // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
+        env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
+          XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
+          WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
+      });
+      timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
+      const result = await new Promise((resolve, reject) => {
+        child.once('error', reject);
+        child.once('exit', (code, signal) => resolve({ code, signal }));
+      });
+      assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    } catch (error) { journeyError = error; }
+    finally {
+      clearTimeout(timer); killOwned('SIGKILL');
+      if (root) await rm(root, { recursive: true, force: true });
+      console.log('Owned service process group and temporary state cleaned.');
+    }
+    assert.equal(interrupted, false, 'Cancelled before measurement import');
+    if (capture) await capture.finish(() => interrupted);
+    assert.equal(interrupted, false, 'Cancelled during measurement import; inspect preserved evidence');
+    if (journeyError) throw journeyError;
   } finally {
-    clearTimeout(timer);
     process.off('SIGINT', interrupt); process.off('SIGTERM', interrupt);
-    killOwned('SIGKILL');
-    await rm(root, { recursive: true, force: true });
-    console.log('Owned service process group and temporary state cleaned.');
   }
 } else {
   const root = await realpath(process.argv[3]);
@@ -57,6 +67,9 @@ if (process.argv[2] !== '--owned-child') {
   const { build } = await import('esbuild');
   const { Miniflare, Log, LogLevel, convertV4MiniflareOptions } = await import('miniflare');
   const { unstable_splitSqlQuery } = await import('wrangler');
+  const captureModule = process.argv[5]
+    ? await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href) : null;
+  const capture = captureModule ? await captureModule.loadServiceCapture(process.argv[5]) : null;
   const bundle = join(root, 'worker.mjs');
   await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
     bundle: true, format: 'esm', platform: 'neutral', target: 'es2022',
@@ -70,8 +83,8 @@ if (process.argv[2] !== '--owned-child') {
     unsafeLocalExplorer: false, unsafeObservability: false,
     unsafeEnableSharedStorage: false, logRequests: false, log: new Log(LogLevel.ERROR),
     resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
-    workers: [{ ...common, name: 'scriv', scriptPath: bundle,
-      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', EMAIL_FROM: 'sender@example.invalid' },
+    workers: [{ ...common, name: 'scriv', ...(capture ? { script: capture.options.script } : { scriptPath: bundle }),
+      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', EMAIL_FROM: 'sender@example.invalid', ...(capture?.options.bindings ?? {}) },
       serviceBindings: { EMAIL: 'local-mailbox' },
       d1Databases: { DB: 'journey-db' }, r2Buckets: ['ASSETS'],
       durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
@@ -90,11 +103,27 @@ if (process.argv[2] !== '--owned-child') {
   });
   const mf = new Miniflare(config);
   let requests = 0;
+  let captureRequestStart = 0;
+  const ordinaryRequests = () => requests;
+  let serviceObserver;
+  async function beginCapturePhase() {
+    if (!capture) return;
+    await capture.begin(await mf.ready);
+    serviceObserver = captureModule.observeServiceRequests();
+  }
+  async function endCapturePhase() {
+    if (!serviceObserver) return;
+    const observer = serviceObserver;
+    serviceObserver = undefined;
+    observer.stop();
+    if (observer.actions.length) await capture.end(await mf.ready, observer.actions.length, observer.actions);
+  }
   try {
     const db = await mf.getD1Database('DB', 'scriv');
     const migrations = (await readdir(join(cloud, 'migrations'))).filter(name => /^\d+_.+\.sql$/.test(name)).sort();
     assert.deepEqual(migrations, ['0001_identity_teams.sql', '0002_generation_jobs.sql', '0003_email_auth.sql']);
     for (const name of migrations) await db.batch(unstable_splitSqlQuery(await readFile(join(cloud, 'migrations', name), 'utf8')).map(sql => db.prepare(sql)));
+    await beginCapturePhase();
     async function request(path, { method = 'GET', body, token } = {}) {
       const base = await mf.ready;
       assert.equal(base.hostname, '127.0.0.1'); assert.equal(base.protocol, 'http:'); assert(Number(base.port) > 0);
@@ -273,10 +302,12 @@ if (process.argv[2] !== '--owned-child') {
     console.log(JSON.stringify({kind:'email-consumption-evidence',httpChecks:15,wrongAttempts:5,correctAfterExhaustionStatus:401,competingStatuses:outcomes.map(o=>o.status).sort(),newVerifiedUsers:1,newIdentities:1,newSessions:1,unverifiedContactPreserved:true,internalInterleavingControlled:false,nativeScenarios:0,outboundAttempts}));
     // Accepted synthetic delivery can still fail its response; recovery uses real cooldown time.
     assert.equal(requests,31);const recoveryStart=requests,recoveryBaseline=await identities(),recoveryChallenges=await rows('email_auth_challenges','id_hash');
+    if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests() - captureRequestStart, 'Every ordinary request has one ordered action');
+    await endCapturePhase();
     await mf.setOptions(convertV4MiniflareOptions({
       host:'127.0.0.1',port:0,cf:false,telemetry:{enabled:false},unsafeLocalExplorer:false,unsafeObservability:false,unsafeEnableSharedStorage:false,logRequests:false,log:new Log(LogLevel.ERROR),
       resourcePersistencePath:join(root,'state'),resourceTmpPath:join(root,'tmp'),
-      workers:[{...common,name:'scriv',scriptPath:bundle,bindings:{PUBLIC_URL:'http://127.0.0.1',ENVIRONMENT:'test',EMAIL_FROM:'sender@example.invalid'},serviceBindings:{EMAIL:'local-mailbox'},
+      workers:[{...common,name:'scriv',...(capture ? {script:capture.options.script} : {scriptPath:bundle}),bindings:{PUBLIC_URL:'http://127.0.0.1',ENVIRONMENT:'test',EMAIL_FROM:'sender@example.invalid', ...(capture?.options.bindings ?? {})},serviceBindings:{EMAIL:'local-mailbox'},
         d1Databases:{DB:'journey-db'},r2Buckets:['ASSETS'],durableObjects:{PROJECTS:{className:'ProjectRoom',useSQLite:true},BILLING:{className:'BillingCoordinator',useSQLite:true}}},
         {...common,name:'local-mailbox',script:`import { WorkerEntrypoint } from 'cloudflare:workers';
           let mailbox=[],calls=0;
@@ -289,6 +320,8 @@ if (process.argv[2] !== '--owned-child') {
             async take(){return mailbox.shift()||null;}async size(){return mailbox.length;}async attempts(){return calls;}
           }` }],
     }));
+    captureRequestStart = ordinaryRequests();
+    await beginCapturePhase();
     const recoveryDB=await mf.getD1Database('DB','scriv'),recoveryMailbox=await mf.getWorker('local-mailbox');
     const recoveryRows=async(table,order)=>(await recoveryDB.prepare(`SELECT * FROM ${table} ORDER BY ${order}`).all()).results;
     const recoveryIdentities=async()=>({users:await recoveryRows('users','id'),identities:await recoveryRows('email_identities','email'),sessions:await recoveryRows('sessions','id')});
@@ -338,5 +371,8 @@ if (process.argv[2] !== '--owned-child') {
     assert.equal(await recoveryMailbox.attempts(),2);assert.equal(await recoveryMailbox.size(),0);assert.equal(outboundAttempts,0);assert.equal(requests-recoveryStart,9);assert.equal(requests,40);
     console.log(JSON.stringify({kind:'email-delivery-recovery-evidence',httpChecks:9,guardRefusals:2,syntheticAcceptedDeliveryFailures:1,cooldownRefusals:1,naturalCooldownWaitMs:cooldownWait,syntheticSendAttempts:2,newVerifiedUsers:1,newIdentities:1,newSessions:1,failedChallengeReplaced:true,clockOrExpiryChanged:false,nativeScenarios:0,outboundAttempts}));
     console.log(JSON.stringify({result:'PASS',journey:'email-auth',requests,outboundAttempts,nativeScenarios:0,bundleSha256:createHash('sha256').update(await readFile(bundle)).digest('hex'),runtime:report}));
-  } finally { await mf.dispose(); }
+    if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests() - captureRequestStart, 'Every ordinary request has one ordered action');
+  } finally {
+    try { await endCapturePhase(); } finally { await mf.dispose(); }
+  }
 }

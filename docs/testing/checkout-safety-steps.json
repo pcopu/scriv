@@ -23,8 +23,8 @@
           "description": "Wrong fixed amount returns 503 invalid_team_price; provider HTTP failure, malformed JSON and array replies return 502 billing_provider_error. Each consumes only its price request and leaves the complete new team row and customer/session create counts unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 314,
-            "end": 323,
+            "start": 347,
+            "end": 356,
             "sha256": "7d8e25821f1154c976b1074518d517fce2c09d27f093c094b936f120769febb7"
           }
         },
@@ -33,8 +33,8 @@
           "description": "Role changed during the price response produces 403 not_allowed before customer, subscription or checkout requests; the new team row remains exact and the role is restored for later cases.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 324,
-            "end": 329,
+            "start": 357,
+            "end": 362,
             "sha256": "5ea762557f995df8ab0631e454ddcd3722ab0d60ea45feeaa62c642697ef8884"
           }
         }
@@ -103,8 +103,8 @@
           "description": "Exact configured customer and fixed USD/price/quantity/return forms are sent despite adversarial client fields. First safe receipt is returned, one customer/session is created, and the new team row differs only by expected customer, free synchronization values and bounded timestamps.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 330,
-            "end": 342,
+            "start": 363,
+            "end": 375,
             "sha256": "ddf700808113b7e04ce804786c00b622255ca1a86e35e3d993780892848cd692"
           }
         },
@@ -113,8 +113,8 @@
           "description": "After real saved expiresAt elapses, a provider-open cached lookup returns its different authoritative safe URL without another customer or checkout create.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 343,
-            "end": 347,
+            "start": 376,
+            "end": 380,
             "sha256": "4a42ed6014052d5407618932b6231795317c80ddf664b4cbcbad2811f9b498e6"
           }
         }
@@ -183,8 +183,8 @@
           "description": "Complete/unconfirmed receipt blocks replacement. Matching terminal history and expired cached status allow replacements, producing exactly three total creates with distinct keys and one total customer.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 348,
-            "end": 355,
+            "start": 381,
+            "end": 388,
             "sha256": "8f6f70f2b30368dbf97022e7c4cc8c601bb155557e962eebb39ec9b84ab24ca7"
           }
         },
@@ -193,8 +193,8 @@
           "description": "Cached customer mismatch and HTTP, wrong-host, userinfo, nondefault-port and malformed URLs each return 502 billing_provider_error without creating a checkout. A following valid lookup returns the third receipt URL; customer and create counts remain one and three.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 356,
-            "end": 365,
+            "start": 389,
+            "end": 398,
             "sha256": "82d3d7e65528b478ba6669929b268eaad8794c602bfa990d32f610811bc09c9b"
           }
         }
@@ -253,8 +253,8 @@
           "description": "Active matching entitlement returns 409 already_subscribed, and a nonterminal unrelated-price past-due record returns 409 subscription_exists. Queues contain no cached lookup or checkout create; expected active/free team statuses are observed.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 366,
-            "end": 371,
+            "start": 399,
+            "end": 404,
             "sha256": "25c45f2c9470f2baa4beb5b5776f0f0a94820128c36e53d3f18f404046088ef9"
           }
         },
@@ -263,8 +263,8 @@
           "description": "Portal sends exact customer/return fields and returns only the safe expected URL. Wrong-host response yields 502; session revocation during a completed provider call yields 401 session_expired without releasing its URL. No provider rollback is claimed.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 372,
-            "end": 383,
+            "start": 405,
+            "end": 416,
             "sha256": "0761a34e7403b824540752368b85c3cb3bc7a41a3b84228d55958fab8fff5d6d"
           }
         },
@@ -273,8 +273,8 @@
           "description": "Every case consumes its exact provider queue and preserves the original team, project and event rows. Final totals are 22 checkout cases, one customer, three creates and zero unexpected requests, with empty ASSETS.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 302,
-            "end": 386,
+            "start": 335,
+            "end": 419,
             "sha256": "93bfef61d036bb54fac7143e35e23d1915c8c6f9740a60acd08a52b02eedfaea"
           }
         }

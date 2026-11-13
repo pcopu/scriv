@@ -6,7 +6,7 @@
       "id": "team-entitlement-grace-v100",
       "title": "Keep project access consistent across entitlement grace",
       "preconditions": [
-        "Run the entire public tracer app -- test services team-lifecycle command. Original source lines 1–291, 40 named callbacks (39 HTTP plus one entitlement fixture) and their assertions remain unchanged. The appendix adds 41 HTTP requests for 80 total, within the unchanged 80-request cap.",
+        "Run the entire public tracer app -- test services team-lifecycle command. Original source lines 1\u2013291, 40 named callbacks (39 HTTP plus one entitlement fixture) and their assertions remain unchanged. The appendix adds 41 HTTP requests for 80 total, within the unchanged 80-request cap.",
         "Use the existing isolated synthetic owner/member/viewer/outsider identities. Rejoin member and viewer through the original valid member invite, set viewer role through owner PATCH, and create one new team project through real HTTP. Original project stays archived.",
         "Only subscription_status, paid_until and canceled_at on the owned synthetic team are adjusted as fixture inputs. No provider, billing webhook or reconciliation is simulated; no membership, auth or project state is reset by fixture SQL. The original three entitlement fields are restored afterward.",
         "Frozen dates are one hour future, one day past or 31 days past relative to the real clock. This is safely inside/outside grace, not exact boundary equality or a 30-day wall-clock wait. Real session expiry remains future within the unchanged 90-second watchdog.",
@@ -27,8 +27,8 @@
           "description": "Seven explicitly seeded entitlement states are exercised through 21 real project reads and seven member identity reads. Active and trialing future-paid teams project premium access; past_due with future paid_until does not. Recent expiry and recent cancellation allow member/viewer metadata reads with canWrite false; dates safely beyond the 30-day grace window refuse those reads with exact 402 and omit the project from member identity. The owner reads the existing project in every state. canWrite assertions concern public capability projection, not document-write execution.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 334,
+            "start": 323,
+            "end": 348,
             "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
           }
         },
@@ -37,8 +37,8 @@
           "description": "Cancellation time takes precedence over paid_until for grace: recent canceled_at with 31-day-old paid_until allows member/viewer reads, whereas 31-day-old canceled_at with recent paid_until refuses them. With canceled_at null, old paid_until refuses them. The real clock is not altered and exact equality at the expiry boundary is not tested. All declared business rows remain unchanged by each phase of reads and refused creates.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 334,
+            "start": 323,
+            "end": 348,
             "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
           }
         },
@@ -47,8 +47,8 @@
           "description": "Across seven states, member identity retains exactly its team with matching role/status; plan is team only for active/trialing with future paid_until and free for the other five states. Project-list membership and capability projections match the phase expectations.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 334,
+            "start": 323,
+            "end": 348,
             "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
           }
         },
@@ -57,8 +57,8 @@
           "description": "Public project GET responses preserve all original project fields and expose exact owner/member/viewer role, phase premium and projected canWrite. Owner canWrite stays true; member canWrite is true only in the two premium states, and viewer canWrite stays false. This does not execute document writes.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 334,
+            "start": 323,
+            "end": 348,
             "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
           }
         },
@@ -67,8 +67,8 @@
           "description": "Owner metadata reads succeed in all seven entitlement states even when member/viewer reads are refused. The final owner project list still contains the original unarchived project with premium false and canWrite true after grace expires.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 335,
+            "start": 323,
+            "end": 349,
             "sha256": "f557aea7fc229234c88b8996c15285928a003c54a3bda649ed058d2ddf733b75"
           }
         },
@@ -77,8 +77,8 @@
           "description": "Member identity contains exactly the new active project during premium/grace states and no projects in the two expired-grace states; original archived project is never returned. Team membership and identity remain visible. All declared business rows remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 334,
+            "start": 323,
+            "end": 348,
             "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
           }
         },
@@ -87,8 +87,8 @@
           "description": "A member new-project POST in active-expired grace and an owner new-project POST in canceled expired grace each returns exact 402/team_subscription_required. Fresh project IDs prevent an idempotent replay short circuit, and all declared business rows remain exact.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 309,
-            "end": 334,
+            "start": 323,
+            "end": 348,
             "sha256": "2b6cee72860e53512a769f19dd82fb93551a3f71fb64af1f74753952d893a702"
           }
         },
@@ -97,8 +97,8 @@
           "description": "A member cannot create a new team project while active entitlement is expired, and the owner cannot create one after canceled grace has expired; both return exact 402 without business-row changes. Nevertheless, after grace the owner can list and archive the existing team project. Archive changes only that project archived_at and updated_at within request time; owner list then omits it and direct owner lookup is 404. Restoring the three fixture entitlement fields and leaving through real membership routes restores all original declared rows, with only the new archived project retained.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 332,
-            "end": 345,
+            "start": 346,
+            "end": 359,
             "sha256": "9a35ad9dc9461d658e7ffff11422fb4a10887d3a3f2ca1a37b54dee6be8b7699"
           }
         }

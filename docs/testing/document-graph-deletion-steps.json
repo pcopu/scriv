@@ -6,7 +6,7 @@
       "id": "document-graph-deletion-v101",
       "title": "Delete a referenced document graph once",
       "preconditions": [
-        "Run the entire public tracer app -- test services document-integrity command. Original source lines 1–195 and all 22 named callbacks remain unchanged. Original 68 HTTP checks complete before the 12-request appendix; total 80 remains within the unchanged cap.",
+        "Run the entire public tracer app -- test services document-integrity command. Original source lines 1\u2013195 and all 22 named callbacks remain unchanged. Original 68 HTTP checks complete before the 12-request appendix; total 80 remains within the unchanged cap.",
         "The original typed scene/character/image/entry/cue graph and valid metadata edit are created through public HTTP. The added chapter only acquires the missing scene lease, reads state and submits commands; no direct project-room writes, synthetic receipt injection or state reset occurs.",
         "Existing four public edit leases and new scene lease must remain live. Public snapshot confirms five live lease entries and omits their tokens. Snapshot equality intentionally excludes leases because time can remove them; lease-table nonmutation or expiry behavior is not claimed.",
         "Character references coexist in entry text/link and image metadata. The negative delete exercises the aggregate in-use guard, not every reference-source branch independently. Repaired deletion orders parents before dependants but validation sees the full transaction result.",
@@ -27,8 +27,8 @@
           "description": "With current public versions and live edit leases, deleting the referenced character alone returns exact 409/item_in_use. A fresh public snapshot excluding the time-sensitive leases field and the complete event response are unchanged. The same refused command ID is then reused with a repaired all-five-item delete payload and succeeds, showing that the refused attempt did not block this corrected retry. No internal receipt/index read or storage failure injection is performed.",
           "witness": {
             "path": "cloud/tests-e2e/document-integrity-journey.mjs",
-            "start": 198,
-            "end": 212,
+            "start": 222,
+            "end": 236,
             "sha256": "46521c4f70c54002459324a92b033a11c2eb34451f6f720f138b5eef4aca888a"
           }
         },
@@ -37,8 +37,8 @@
           "description": "One command deletes scene, character, image, entry and cue, deliberately placing parents before their dependants. The successful receipt contains exactly those five prior items in operation order, each incremented once and marked deleted, at sequence three, epoch one and timing version two. Public snapshot has no live items, five exact metadata-only tombstones with empty data, canImport false and unchanged other nonlease fields. One new event preserves each complete before/after item, actor, command ID, label and request-bounded timestamp; the two original events remain exact.",
           "witness": {
             "path": "cloud/tests-e2e/document-integrity-journey.mjs",
-            "start": 209,
-            "end": 221,
+            "start": 233,
+            "end": 245,
             "sha256": "aa8010d217093496570fdb52e4f3b72ecae589a71261002c6c3943dc29243698"
           }
         },
@@ -47,8 +47,8 @@
           "description": "Snapshot after connected deletion returns no live items and exactly five tombstones with original IDs/kinds, incremented versions, deleted true and empty data. canImport remains false despite no live items. Other nonlease snapshot fields match the prior state except the declared sequence/timing changes. Historical events and receipts intentionally still contain item data; no permanent erasure or global privacy claim.",
           "witness": {
             "path": "cloud/tests-e2e/document-integrity-journey.mjs",
-            "start": 210,
-            "end": 221,
+            "start": 234,
+            "end": 245,
             "sha256": "ac00247b620bf8f669bba7571baeb4a97c4de3013cf05fce0dc22c41c4df4dc8"
           }
         },
@@ -57,8 +57,8 @@
           "description": "The all-five delete contains entry and cue deletions with the current expectedTimingVersion. It increments headSeq from two to three and timingVersion from one to two exactly once while epoch stays one; refused character-only deletion and exact replay do not change those counters.",
           "witness": {
             "path": "cloud/tests-e2e/document-integrity-journey.mjs",
-            "start": 199,
-            "end": 224,
+            "start": 223,
+            "end": 248,
             "sha256": "ae8348def78c5657f7e26c3a52a1d576b54070293c516e28c3d578f53d77ee90"
           }
         },
@@ -67,8 +67,8 @@
           "description": "One new command event has exact actor, command ID, label, sequence/epoch/timing, a request-bounded timestamp and all five independently derived before/after changes ordered by item ID. Both old events are unchanged, hasMore is false, and the full page matches the expected three-event result.",
           "witness": {
             "path": "cloud/tests-e2e/document-integrity-journey.mjs",
-            "start": 209,
-            "end": 221,
+            "start": 233,
+            "end": 245,
             "sha256": "aa8010d217093496570fdb52e4f3b72ecae589a71261002c6c3943dc29243698"
           }
         },
@@ -77,8 +77,8 @@
           "description": "The corrected payload reuses the refused command ID and succeeds with one receipt containing exactly the five expected tombstones in submitted operation order. Each keeps the prior kind/data and increments its version once; epoch and sequence/timing fields are exact. The later identical payload returns that same receipt.",
           "witness": {
             "path": "cloud/tests-e2e/document-integrity-journey.mjs",
-            "start": 203,
-            "end": 224,
+            "start": 227,
+            "end": 248,
             "sha256": "6832e4a00943578567361dffedd1ba8611048ae7f1365baa6bf1c46fd63c510a"
           }
         },
@@ -87,8 +87,8 @@
           "description": "An exact replay of the successful corrected payload by the same actor returns the identical original receipt. Fresh snapshot excluding leases and the full event response remain identical to the post-delete state, with no additional sequence, timing, item-version or event change. R2 stays empty and outbound attempts remain zero. This is sequential public-state/idempotency evidence, not restart durability, hidden-store nonmutation, permanent erasure, arbitrary race or fault safety.",
           "witness": {
             "path": "cloud/tests-e2e/document-integrity-journey.mjs",
-            "start": 222,
-            "end": 225,
+            "start": 246,
+            "end": 249,
             "sha256": "68a2bbacdb06dc178805fc89c27e3fae58aba827e31985ba79c1e9da99fedd3c"
           }
         }

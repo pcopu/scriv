@@ -1,0 +1,189 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "sol-word-timing-line-boundaries",
+      "title": "Retime boundary words beside an unchanged dialogue",
+      "preconditions": [
+        "Prepared native-unverified. Fresh isolated verified automation bundle and synthetic fixture only. Existing AUT-J15 portions preserved.",
+        "Import two literal adjacent dialogue entries of 3000 and 1000 ms, three cues at 0\u20131500, 1500\u20133000 and 3000\u20134000 ms.",
+        "Use existing Layers secondary menu UIAction and real word chips/fields. Mutations issue once. Only exact read-only v43 sheet-observer readiness rejection may retry.",
+        "Refusal occurs in draft validation. No singular-core rejection, split/merge/distribution, ProjectEditing, native menu selection or hardware-input claim. Serialized observer bytes are compared, filesystem package bytes are not exposed.",
+        "Action targets describe the unique current snapshot control whose fresh path is sent by the helper. Conditional Script selection and Layers disclosure activation occur only when the actual selected/collapsed state requires them. Ordered read-only snapshot/wait polling may repeat. The line-boundaries portion runs after the two unchanged portions under tracer app -- test --scenario journeys/word-timing."
+      ],
+      "actions": [
+        "capabilities",
+        "capabilities",
+        "select {target: \"workspace-tabs\", index: observed index of \"Script\"} only if Script is not selected",
+        "keys",
+        "key {input: \"s\", modifiers: [\"command\"]}",
+        "persisted-projects",
+        "loaded-project",
+        "import-json {text: JSON.stringify(boundaryFixture())} (literal two-entry fixture in word-timing-boundary-steps.mjs lines 6\u201317)",
+        "persisted-projects",
+        "loaded-project",
+        "persisted-projects",
+        "persisted-projects",
+        "loaded-project",
+        "snapshot (resolve preview-layers-disclosure and unique enabled/hittable word button titled and labelled two)",
+        "activate {target: observed preview-layers-disclosure path} only if labelled Expand Layers",
+        "menu {target: observed path of word button titled and labelled two}",
+        "menu-action {target: observed path of word button titled and labelled two, action: \"Edit word timing\u2026\"}",
+        "presented-alerts",
+        "activate {target: observed path of identifier word-timing-chip-w1}",
+        "text {target: observed path of identifier word-timing-start, text: \"-0.001\"}",
+        "text {target: observed path of identifier word-timing-end, text: \"0.600\"}",
+        "activate {target: observed path of enabled/hittable button titled Save timing}",
+        "loaded-project",
+        "persisted-projects",
+        "presented-alerts",
+        "text {target: observed path of identifier word-timing-start, text: \"0.600\"}",
+        "text {target: observed path of identifier word-timing-end, text: \"0.600\"}",
+        "activate {target: observed path of enabled/hittable button titled Save timing}",
+        "loaded-project",
+        "persisted-projects",
+        "presented-alerts",
+        "text {target: observed path of identifier word-timing-start, text: \"0.000\"}",
+        "text {target: observed path of identifier word-timing-end, text: \"1.000\"}",
+        "activate {target: observed path of identifier word-timing-chip-w3}",
+        "text {target: observed path of identifier word-timing-end, text: \"3.001\"}",
+        "activate {target: observed path of enabled/hittable button titled Save timing}",
+        "loaded-project",
+        "persisted-projects",
+        "presented-alerts",
+        "text {target: observed path of identifier word-timing-start, text: \"1.600\"}",
+        "text {target: observed path of identifier word-timing-end, text: \"3.000\"}",
+        "loaded-project",
+        "persisted-projects",
+        "presented-alerts",
+        "activate {target: observed path of enabled/hittable button titled Save timing}",
+        "presented-alerts",
+        "persisted-projects",
+        "loaded-project",
+        "persisted-projects",
+        "activate {target: observed preview-layers-disclosure path} only if labelled Collapse Layers",
+        "snapshot (assert scene-playback-position maximum 4000 and following script row timestamp 00:03.0)",
+        "keys",
+        "key {input: \"s\", modifiers: [\"command\"]}",
+        "loaded-project",
+        "activate {target: observed path of identifier workspace-project}",
+        "text {target: observed path of field with placeholder Find a project, text: \"YAM MAN\"}",
+        "activate {target: observed path of enabled/hittable button titled Open project}",
+        "loaded-project",
+        "activate {target: observed path of identifier workspace-project}",
+        "text {target: observed path of field with placeholder Find a project, text: \"Word timing line boundaries\"}",
+        "activate {target: observed path of enabled/hittable button titled Open project}",
+        "loaded-project",
+        "persisted-projects",
+        "persisted-projects",
+        "loaded-project",
+        "snapshot (resolve preview-layers-disclosure and unique enabled/hittable word button titled and labelled two)",
+        "activate {target: observed preview-layers-disclosure path} only if labelled Expand Layers",
+        "menu {target: observed path of word button titled and labelled two}",
+        "menu-action {target: observed path of word button titled and labelled two, action: \"Edit word timing\u2026\"}",
+        "presented-alerts",
+        "activate {target: observed path of identifier word-timing-chip-w1}",
+        "activate {target: observed path of identifier word-timing-chip-w3}",
+        "activate {target: observed path of enabled/hittable button titled Cancel}",
+        "presented-alerts",
+        "persisted-projects",
+        "loaded-project",
+        "presented-alerts"
+      ],
+      "expectations": [
+        {
+          "id": "refusal",
+          "description": "Negative start, zero-length first word and final end 3001 ms are refused against 3000 ms owning line. Each rejection preserves complete serialized loaded model/date bits and all persisted project models/revisions/dates.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/word-timing-boundary-steps.mjs",
+            "start": 78,
+            "end": 89,
+            "sha256": "df1f07e62b580ca153f82da9113a74e3166b86cb723aad1d8929fa826731f7d8"
+          }
+        },
+        {
+          "id": "accepted",
+          "description": "Correct same sheet to literal w1 0\u20131000, unchanged w2 1000\u20131600 and w3 1600\u20133000. Only moved endpoints receive authored markers. Exact full model, IDs, neighboring entry and cues persist with one revision, total runtime 4000 ms and next row 3000 ms, then reopen and cancel are invariant.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/word-timing-boundary-steps.mjs",
+            "start": 90,
+            "end": 100,
+            "sha256": "52d1c4d446c12d9773d9a7954b204f729dcc64638d68200e937b8a90aba25886"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 131,
+            "end": 135,
+            "sha256": "736392b264ee375e0e1548b5e9ba0b4ec993d329f5894d8cacc14d2aadf49f33"
+          },
+          "expectation": "refusal",
+          "why": "Actual invalid numeric ranges surface the literal draft validation message and preserve serialized canonical state. Do not claim core rejection. Prepared association, native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 140,
+            "end": 143,
+            "sha256": "f308daae642f05e4366bfc291d71ed7f2f4df40f05dadf61f19d593201efa2c6"
+          },
+          "expectation": "accepted",
+          "why": "Successful corrected draft retains IDs and untouched middle timing marker, marking exactly two moved words authored. Prepared association, native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/WordTimingEditing.swift",
+            "start": 18,
+            "end": 19,
+            "sha256": "c6ad3effcf7c3f435fcc3a59489b98fbc9e1fe6722708a4af945b759d16e837a"
+          },
+          "expectation": "accepted",
+          "why": "Real plural save retains exact word identities and spelling while updating first and final endpoints. Invalid identity branch unclaimed. Prepared association, native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/WordTimingEditing.swift",
+            "start": 22,
+            "end": 24,
+            "sha256": "c13ca4e4fee1e8190214817c01c07e959c08cf862921c35c291e5b55f0001208"
+          },
+          "expectation": "accepted",
+          "why": "Literal expected output distinguishes moved authored endpoints and unchanged unmarked middle word. Invalid marker branch unclaimed. Prepared association, native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/WordTimingEditing.swift",
+            "start": 28,
+            "end": 30,
+            "sha256": "14150bbbfce63db5059238f39f856b3cec8f9a22d17e60510c6330d9bb89d577"
+          },
+          "expectation": "accepted",
+          "why": "Plural timing draft saves atomically with one revision and unchanged adjacent dialogue/cues. Prepared association, native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+            "start": 54,
+            "end": 59,
+            "sha256": "befdd136c81adfd8f05e8822479971405aab29526947ed394490ed1d5eb4f93f"
+          },
+          "expectation": "accepted",
+          "why": "Accepted literal endpoint ranges are ordered and inside the 3000 ms line, with adjacent 1000 ms dialogue unchanged. Core rejection branch unclaimed. Prepared association, native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "sol-word-timing-line-boundaries",
+      "title": "Retime boundary words beside an unchanged dialogue",
+      "steps": [
+        "sol-word-timing-line-boundaries"
+      ]
+    }
+  ]
+}

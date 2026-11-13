@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { generationRecoveryCases, runGenerationRecovery } from './support/generation-recovery-steps.mjs';
 import { generationContextCases } from './support/generation-context-cases.mjs';
 import { runGenerationContext } from './support/generation-context-steps.mjs';
 import { ScrivSession } from '../../../cli/scriv.mjs';
@@ -10,11 +11,11 @@ import { nodeWithID as byID, sortedProjects, reviewSteps } from './support/gener
 // handler or native AppKit helper. Native verification is required separately.
 const cases = ['source-identity', 'people-link-disclosure', 'exact-request', 'close-reopen', 'optional-direction-edit-clear'];
 const args = process.argv.slice(2);
-const groups = ['review', 'context'];
+const groups = ['review', 'context', 'recovery'];
 let selected = groups;
 if (args.includes('--group')) {
   const value = args[args.indexOf('--group') + 1];
-  assert.ok(groups.includes(value), '--group must be review or context'); selected = [value];
+  assert.ok(groups.includes(value), '--group must be review, context or recovery'); selected = [value];
 }
 assert.ok(args.every((arg, index) => arg === '--list-cases' || arg === '--group'
   || (args[index - 1] === '--group' && groups.includes(arg))), 'Unknown argument');
@@ -24,6 +25,7 @@ if (args.includes('--list-cases')) {
     cases: selected.includes('review') ? cases : [],
     excluded: ['IMG-060 clipboard', 'IMG-062 generation',
       'stale invalidation', 'portrait attachments', 'physical input', 'viewport size matrix'], groups: selected,
+    recoveryCases: selected.includes('recovery') ? generationRecoveryCases : [],
     contextCases: selected.includes('context') ? generationContextCases : [] }, null, 2));
 } else if (selected.includes('review')) {
   assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
@@ -206,4 +208,10 @@ if (!args.includes('--list-cases') && selected.includes('context')) {
   assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
   const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
   try { await runGenerationContext(session); } finally { await session.close(); }
+}
+
+if (!args.includes('--list-cases') && selected.includes('recovery')) {
+  assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
+  const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
+  try { await runGenerationRecovery(session); } finally { await session.close(); }
 }

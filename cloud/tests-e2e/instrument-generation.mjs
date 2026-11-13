@@ -6,12 +6,14 @@ import ts from '../node_modules/typescript/lib/typescript.js';
 const sha = value => createHash('sha256').update(value).digest('hex');
 const prefix = '__scriv_generation_coverage_';
 export const measuredSources = ['cloud/src/access.ts', 'cloud/src/generation.ts', 'cloud/src/http.ts', 'cloud/src/index.ts'];
+export const serviceMeasuredSources = ['access', 'atomic-batch', 'auth', 'billing', 'character-image-validation', 'email-auth', 'email', 'generation', 'http', 'index', 'media', 'notifications', 'project-room', 'teams', 'validation'].map(name => `cloud/src/${name}.ts`).sort();
 export const collectorPath = '/__scriv_test_coverage__/snapshot';
 export const nonceBinding = 'SCRIV_COVERAGE_NONCE';
 export const counterNotice = 'Selected original statement-entry anchor lines only; not whole-line completion, branch coverage, all source lines or whole-project coverage.';
 
-export function instrumentGeneration(source, { runId, probeSHA256, sourcePath }) {
-  assert(measuredSources.includes(sourcePath));
+export function instrumentGeneration(source, { runId, probeSHA256, sourcePath, sources = measuredSources }) {
+  assert.deepEqual(sources, sources.length === measuredSources.length ? measuredSources : serviceMeasuredSources);
+  assert(sources.includes(sourcePath));
   assert.equal(typeof source, 'string'); assert(Buffer.byteLength(source) <= 1024 * 1024);
   assert(!source.includes(prefix) && !source.includes(collectorPath));
   assert.match(runId, /^[0-9a-f-]{36}$/); assert.match(probeSHA256, /^[0-9a-f]{64}$/);
@@ -79,11 +81,12 @@ function ${prefix}hit(index) {
       originalExactlyRecovered: true, notice: 'Removing header, footer and recorded insertions recovers original bytes; this is not a semantics proof.' } };
 }
 
-export function generationWrapper(paths, { runId, probeSHA256 }) {
-  assert.deepEqual(Object.keys(paths), measuredSources);
+export function generationWrapper(paths, { runId, probeSHA256, sources = measuredSources }) {
+  assert.deepEqual(sources, sources.length === measuredSources.length ? measuredSources : serviceMeasuredSources);
+  assert.deepEqual(Object.keys(paths), sources);
   const indexPath = paths['cloud/src/index.ts'];
   return `import worker from ${JSON.stringify(indexPath)};
-${measuredSources.map((path, i) => `import { ${prefix}snapshot as snapshot${i} } from ${JSON.stringify(paths[path])};`).join('\n')}
+${sources.map((path, i) => `import { ${prefix}snapshot as snapshot${i} } from ${JSON.stringify(paths[path])};`).join('\n')}
 export { ProjectRoom, BillingCoordinator } from ${JSON.stringify(indexPath)};
 export default { ...worker, async fetch(request, env, context) {
   const url = new URL(request.url);
@@ -94,7 +97,7 @@ export default { ...worker, async fetch(request, env, context) {
       return new Response('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } });
     }
     return Response.json({ version: 2, runId: ${JSON.stringify(runId)}, probeSHA256: ${JSON.stringify(probeSHA256)},
-      modules: [${measuredSources.map((_, i) => `snapshot${i}()`).join(', ')}] }, { headers: { 'Cache-Control': 'no-store' } });
+      modules: [${sources.map((_, i) => `snapshot${i}()`).join(', ')}] }, { headers: { 'Cache-Control': 'no-store' } });
   }
   return worker.fetch(request, env, context);
 } };\n`;

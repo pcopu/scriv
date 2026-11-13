@@ -29,8 +29,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 185,
-            "end": 185,
+            "start": 191,
+            "end": 191,
             "sha256": "2eee146c7f11991ffabccbcb02ecd812a1816104fce4814ba13453206029bf09"
           },
           "expectation": "observed",
@@ -85,8 +85,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 153,
-            "end": 155,
+            "start": 159,
+            "end": 161,
             "sha256": "56ecb13fc0c593e911da71cf2ff10047a5613206ed4b0e41d93f8a0e4404a2f9"
           },
           "expectation": "observed",
@@ -119,9 +119,9 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 240,
-            "end": 244,
-            "sha256": "a5fd2e11de59dca2fa37b60da3803c7140151859aa4eb9e79bf7d1a001cdc78f"
+            "start": 257,
+            "end": 259,
+            "sha256": "4163ac4331a6167f7daad8dbbf913542d0d68f6df0ca446cbf8df91ff8421b29"
           },
           "expectation": "observed",
           "why": "Preflight error becomes the recorded macos-required blocker, status not-run, and reason for eligible not-started scenarios while preserving explicit restriction reasons. No started scenario, generic unexpected error or collector failure is tested. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -153,8 +153,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 139,
-            "end": 141,
+            "start": 145,
+            "end": 147,
             "sha256": "72f1b6d99d9a4d4c97bb8bacabf926cacaeb2c0d56b5d24c555268ec2a179302"
           },
           "expectation": "observed",
@@ -209,8 +209,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 157,
-            "end": 159,
+            "start": 163,
+            "end": 165,
             "sha256": "a6912d66c983665ce6ffc1cf0d24956a93db7a302a00dfc155079082c66600c1"
           },
           "expectation": "observed",
@@ -243,8 +243,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 148,
-            "end": 149,
+            "start": 154,
+            "end": 155,
             "sha256": "ed17746d631a4bfffdce23eeb12ebf1fdca88d966ee0e55cf51a0c1eb61ef679"
           },
           "expectation": "observed",
@@ -278,8 +278,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 167,
-            "end": 174,
+            "start": 173,
+            "end": 180,
             "sha256": "dec859eb86863e4b91d8f87447a745f5d00988cfaefd4e40c917280e157d14f8"
           },
           "expectation": "observed",
@@ -314,8 +314,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 189,
-            "end": 189,
+            "start": 195,
+            "end": 195,
             "sha256": "5dad5827ad70c283195e105f6805d9a73a68bde4c32ec27cc6fb37bb9a613b98"
           },
           "expectation": "observed",
@@ -349,8 +349,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 109,
-            "end": 116,
+            "start": 115,
+            "end": 122,
             "sha256": "36da1655c9ac5dd106c8327bf691ca3767b9736b85ba1858c2d149eed7466839"
           },
           "expectation": "observed",
@@ -384,8 +384,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 160,
-            "end": 161,
+            "start": 166,
+            "end": 167,
             "sha256": "ad3d84aedfe9ac2699c0884c5cddfa3f82fe5e9d49cc62c94d3b6f0291423133"
           },
           "expectation": "observed",
@@ -420,8 +420,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 187,
-            "end": 187,
+            "start": 193,
+            "end": 193,
             "sha256": "635722f828162803f7415bffb896eeca61f597233ad2ae2b1a228a1b3820da9e"
           },
           "expectation": "observed",
@@ -456,8 +456,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 134,
-            "end": 137,
+            "start": 140,
+            "end": 143,
             "sha256": "33db45876f99cdf9e2550b39845934921f8dc66fcde8f2145523224716999bdb"
           },
           "expectation": "observed",
@@ -512,8 +512,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 147,
-            "end": 147,
+            "start": 153,
+            "end": 153,
             "sha256": "30030c597bb8d222fa5708425ec863c8d63fdfb4ba9620fae5fa53a58f39468c"
           },
           "expectation": "observed",
@@ -568,8 +568,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 123,
-            "end": 131,
+            "start": 129,
+            "end": 137,
             "sha256": "52b5078ad59e1c3f2de14a0c18a08ddced011b3a6242de33473449312283e9a3"
           },
           "expectation": "observed",
@@ -602,8 +602,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 195,
-            "end": 195,
+            "start": 205,
+            "end": 205,
             "sha256": "2001e995fa2f490b3c7b10d4666b7f82f6f7cac1d5d440eecf1db9a34562d8d5"
           },
           "expectation": "observed",
@@ -638,8 +638,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 162,
-            "end": 165,
+            "start": 168,
+            "end": 171,
             "sha256": "5a82e8688515127822e721301c0a9fa9eeeef30247df80fd54f0bdceb6dda029"
           },
           "expectation": "observed",
@@ -672,8 +672,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 181,
-            "end": 184,
+            "start": 187,
+            "end": 190,
             "sha256": "8f2d331ca3a48f718effeb1fdda493956ca6112098c822d5cca4d4e30a9c858d"
           },
           "expectation": "observed",
@@ -706,8 +706,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 251,
-            "end": 254,
+            "start": 266,
+            "end": 269,
             "sha256": "2c812b3746a3626aeef8210fc9651bf318dbc82c96d91b8e0ad85c7475ede9be"
           },
           "expectation": "observed",
@@ -762,8 +762,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 150,
-            "end": 151,
+            "start": 156,
+            "end": 157,
             "sha256": "9f42f39113593acce58361794626f20f4a741404f9ed9f435e49c65e6bcba4bf"
           },
           "expectation": "observed",
@@ -831,8 +831,8 @@
         {
           "source": {
             "path": "scripts/run-cli-e2e.mjs",
-            "start": 143,
-            "end": 145,
+            "start": 149,
+            "end": 151,
             "sha256": "9038120b7ee4960c8676af3a6ea4557ab73afde4ab9061965173cf3fec2a3681"
           },
           "expectation": "observed",

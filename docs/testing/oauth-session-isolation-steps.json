@@ -6,7 +6,7 @@
       "id": "oauth-session-isolation-v99",
       "title": "Reuse OAuth identity and isolate session revocation",
       "preconditions": [
-        "Run the entire public tracer app -- test services oauth command on the unchanged owned local Worker. Original source lines 1–283, all 24 named runtime callbacks and their expectations remain exact. A new chapter adds 16 HTTP requests for 40 total, within the unchanged 40-request cap.",
+        "Run the entire public tracer app -- test services oauth command on the unchanged owned local Worker. Original source lines 1\u2013283, all 24 named runtime callbacks and their expectations remain exact. A new chapter adds 16 HTTP requests for 40 total, within the unchanged 40-request cap.",
         "Existing fixture permits only three exact GitHub endpoint URLs and exact synthetic credentials/code/token, with no forwarding or fallback. The valid provider profile remains unchanged. Total 14 simulated provider calls remain below the unchanged 16-call limit; denied outbound stays zero.",
         "After original logout, seed only one unrelated synthetic user and active session. No OAuth states, exchange codes or new tested-user sessions are seeded, edited or reset. Both fresh authentication flows use the real HTTP routes and synthetic provider fixture.",
         "Read-only D1 observations compare full declared users, sessions, oauth_states, auth_codes and email_identities. Rate counters and project-room notification behavior are excluded. Plaintext state/code/token values remain transient and never appear in logs or artifacts.",
@@ -29,8 +29,8 @@
           "description": "Real starts store exactly one new OAuth state with the SHA-256 of the returned opaque state, distinct client state, correct fresh PKCE challenge and ten-minute expiry bounded by actual request time; users/sessions remain exact and auth codes empty.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 299,
-            "end": 306,
+            "start": 313,
+            "end": 320,
             "sha256": "911c51856d8203972ecd48f3c1205c7d1716a3af43a0d991f13d8c4bc590bfc1"
           }
         },
@@ -39,8 +39,8 @@
           "description": "Two callback fetches for one real OAuth state are dispatched before either result is awaited; exactly one redirects with a code and one returns exact 400/oauth_expired. Only one synthetic provider exchange occurs. Separately, two correct code-exchange fetches are dispatched together; exactly one returns 200 and one exact 401/invalid_code, the exchange code disappears and exactly one new session is added. No particular internal transaction overlap is forced.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 307,
-            "end": 324,
+            "start": 321,
+            "end": 338,
             "sha256": "dea8a35cddf28693863131603fe4e255b3cd989a2914f6c2e13e4dfafaf6590d"
           }
         },
@@ -49,8 +49,8 @@
           "description": "Repeated successful callbacks for the same simulated GitHub account preserve every user row including the preexisting ID/creation time, do not create a second user, and do not create a verified email identity. The provider profile is deliberately unchanged; profile-field update behavior is not tested.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 312,
-            "end": 324,
+            "start": 326,
+            "end": 338,
             "sha256": "e2332a9055030b68fd9611dbda09bc5ca7f59648fa2912ed3719a95b0abce0a0"
           }
         },
@@ -59,8 +59,8 @@
           "description": "Each successful callback consumes its OAuth state and stores exactly one two-minute exchange-code row containing the SHA-256 of the returned code, the existing user ID and the fresh proof challenge. No sessions are created until exchange.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 307,
-            "end": 313,
+            "start": 321,
+            "end": 327,
             "sha256": "a0686fa3f630387f7aa06a4dcee14b7cbf7d4013a4d92d969aa443ba9e0e1151"
           }
         },
@@ -69,8 +69,8 @@
           "description": "Each successful exchange adds exactly one session with SHA-256 of its returned 64-character bearer, unique session ID, existing user ID, requested device name, request-bounded creation timestamp, default 30-day expiry and null revocation. Existing sessions remain byte-for-byte equal.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 314,
-            "end": 326,
+            "start": 328,
+            "end": 340,
             "sha256": "61539561e614229b069e9ee596cbad59237fb21c201b9279924fb65a55cadea1"
           }
         },
@@ -79,8 +79,8 @@
           "description": "Public session reads return exactly the two new active sessions and the correct current ID, omitting the original revoked and unrelated active session. After sibling revocation only the current session remains.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 326,
-            "end": 336,
+            "start": 340,
+            "end": 350,
             "sha256": "17a3baf8fb2e0f39844c3c9fa299a2f42fe8904b39672fec07dfbf52e52a9787"
           }
         },
@@ -89,8 +89,8 @@
           "description": "The public session list contains exactly the two new active sessions and identifies the current session; it omits the original revoked session and an unrelated synthetic user session. Deleting the unrelated session ID reports ok with all declared auth rows unchanged. Deleting the sibling session changes only its revocation timestamp; the sibling token is refused while the current token still lists its own session. Logout changes only the current session revocation timestamp and its token is then refused. Original and unrelated user/session rows remain exact.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 326,
-            "end": 341,
+            "start": 340,
+            "end": 355,
             "sha256": "9650de58234a93da6cb68542500c3118f36221cf94b3daf482378caa336588bc"
           }
         },
@@ -99,8 +99,8 @@
           "description": "Logout of the remaining current session changes only its revocation timestamp within real request time. Its next identity read is exact 401/session_expired. Prior revoked and unrelated sessions stay unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 337,
-            "end": 341,
+            "start": 351,
+            "end": 355,
             "sha256": "300c013acf0b158c576458def2e0dd255b7d352aefca9d0cd77efda5c36ce014"
           }
         },
@@ -109,8 +109,8 @@
           "description": "The current OAuth bearer successfully reads the existing user and empty teams/projects. Revoking the sibling session makes the sibling bearer fail with exact 401/session_expired while the current bearer still lists its own session. After current logout the current bearer is also refused.",
           "witness": {
             "path": "cloud/tests-e2e/oauth-journey.mjs",
-            "start": 331,
-            "end": 338,
+            "start": 345,
+            "end": 352,
             "sha256": "95d4b34e1fbd782100c913c6befb1aab4adc1cc652f74a565115fdf3f29c16dc"
           }
         }

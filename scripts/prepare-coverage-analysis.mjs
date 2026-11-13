@@ -2,7 +2,8 @@
 /** Make a create-only analysis copy; never write measurement data into build source. */
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { lstat, mkdir, readFile, realpath, writeFile } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import { chmod, copyFile, lstat, mkdir, readFile, realpath, writeFile } from 'node:fs/promises';
 import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { verifySourceManifest } from './export-cli-source-manifest.mjs';
@@ -43,7 +44,10 @@ export async function prepareAnalysisRoot(sourceRoot, manifestPath, manifestSHA2
     required(contents.length <= 64 * 1024 * 1024 && sha(contents) === file.sha256);
     copiedBytes += contents.length; required(copiedBytes <= 512 * 1024 * 1024);
     await mkdir(dirname(target), { recursive: true, mode: 0o700 });
-    await writeFile(target, contents, { flag: 'wx', mode: 0o600 });
+    // Request an independent copy-on-write clone where supported. Node falls
+    // back to an ordinary copy, while EXCL preserves the create-only boundary.
+    await copyFile(input, target, constants.COPYFILE_EXCL | constants.COPYFILE_FICLONE);
+    await chmod(target, 0o600);
   }
   const copy = await verifySourceManifest(root, manifestPath, manifestSHA256);
   required(copy.worktreeSHA256 === identity.worktreeSHA256 && copiedBytes === total);

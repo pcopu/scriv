@@ -5,8 +5,8 @@ import { createHash, randomUUID } from 'node:crypto';
 import { constants } from 'node:fs';
 import { access, lstat, realpath, readFile, writeFile, mkdir, readdir, rename } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { hashFile, probeIdentity } from '../cli/coverage-session.mjs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { hashFile, probeIdentity, verifyCoverageContextSources } from '../cli/coverage-session.mjs';
 import { prepareAnalysisRoot } from './prepare-coverage-analysis.mjs';
 import { verifySourceManifest } from './export-cli-source-manifest.mjs';
 
@@ -78,14 +78,57 @@ async function verifyTools(capture) {
   required(sha(JSON.stringify(await capture.tracerCLI.packageFiles())) === capture.tracerCLI.packageIdentity.sha256);
 }
 
-export async function prepareCoverage({ app, output, sourceOptions, buildRecordPath, llvmProfdata, llvmCov, tracer, maximumSessions = 64 }) {
-  const source = await input(sourceOptions.manifest, 64 * 1024 * 1024);
-  required(sha(source) === sourceOptions.manifestSHA256);
+// These host files are outside the native build graph. Every other path,
+// including all app resources, packages and build scripts, must remain exact.
+const hostProbePaths = new Set(['cli/scriv.mjs', 'cli/owned-workspace.mjs', 'cli/scenario-restrictions.mjs',
+  'cli/coverage-profile.mjs', 'cli/coverage-session.mjs', 'scripts/run-cli-e2e.mjs',
+  'scripts/collect-cli-coverage.mjs', 'scripts/export-cli-source-manifest.mjs', 'scripts/prepare-coverage-analysis.mjs']);
+function hostOnlyChange(path) {
+  return path === 'AGENTS.md' || hostProbePaths.has(path)
+    || ['tests/e2e/', 'tests/tracer/', 'cloud/tests-e2e/', 'updates/tests-e2e/', 'docs/'].some(prefix => path.startsWith(prefix));
+}
+export async function verifyCoverageSources({ sourceRoot = root, sourceOptions,
+  buildSourceRoot = sourceRoot, buildSourceOptions = sourceOptions }) {
+  const journeyRoot = await realpath(sourceRoot), buildRoot = await realpath(buildSourceRoot);
+  required(journeyRoot === resolve(sourceRoot) && buildRoot === resolve(buildSourceRoot));
+  await verifySourceManifest(journeyRoot, sourceOptions.manifest, sourceOptions.manifestSHA256);
+  await verifySourceManifest(buildRoot, buildSourceOptions.manifest, buildSourceOptions.manifestSHA256);
+  const journeyBytes = await input(sourceOptions.manifest, 64 * 1024 * 1024);
+  const buildBytes = await input(buildSourceOptions.manifest, 64 * 1024 * 1024);
+  required(sha(journeyBytes) === sourceOptions.manifestSHA256 && sha(buildBytes) === buildSourceOptions.manifestSHA256);
+  const journey = JSON.parse(journeyBytes), build = JSON.parse(buildBytes);
+  const before = new Map(build.files.map(file => [file.path, file.sha256]));
+  const after = new Map(journey.files.map(file => [file.path, file.sha256]));
+  const differences = [...new Set([...before.keys(), ...after.keys()])].sort()
+    .filter(path => before.get(path) !== after.get(path))
+    .map(path => ({ path, beforeSHA256: before.get(path) ?? null, afterSHA256: after.get(path) ?? null }));
+  required(differences.every(file => hostOnlyChange(file.path)));
+  return { version: 1, kind: 'scriv-coverage-source-comparison', buildSourceRoot: buildRoot,
+    journeySourceRoot: journeyRoot, sourceManifestSHA256: buildSourceOptions.manifestSHA256,
+    journeySourceManifestSHA256: sourceOptions.manifestSHA256,
+    nativeInputsUnchanged: true, differences,
+    policy: 'Exact full manifest comparison; only enumerated host tooling, test directories, docs and AGENTS.md may differ.',
+    sourceToBinaryAttestation: 'not-established' };
+}
+async function verifyCaptureSources(capture) {
+  const comparison = await verifyCoverageSources(capture.sourceInputs);
+  required(JSON.stringify(comparison) === JSON.stringify(capture.sourceProvenance));
+}
+
+export async function prepareCoverage({ app, output, sourceOptions, buildSourceRoot = root, buildSourceOptions = sourceOptions, buildRecordPath, llvmProfdata, llvmCov, tracer, maximumSessions = 64 }) {
+  const sourceInputs = { sourceRoot: root, sourceOptions, buildSourceRoot, buildSourceOptions };
+  const sourceProvenance = await verifyCoverageSources(sourceInputs);
+  const outputRoot = await realpath(output);
+  for (const sourceRoot of [sourceProvenance.buildSourceRoot, sourceProvenance.journeySourceRoot]) {
+    required(outputRoot !== sourceRoot && !outputRoot.startsWith(sourceRoot + '/'));
+  }
+  const source = await input(buildSourceOptions.manifest, 64 * 1024 * 1024);
+  required(sha(source) === buildSourceOptions.manifestSHA256);
   const buildBytes = await input(buildRecordPath, 65536), build = JSON.parse(buildBytes);
   const executable = await realpath(join(app, 'Contents/MacOS/Scriv'));
   const executableSHA256 = await hashFile(executable);
   required(build.version === 1 && build.kind === 'scriv-coverage-build' && build.sourceUnchanged === true
-    && build.sourceManifestSha256 === sourceOptions.manifestSHA256 && build.executableSha256 === executableSHA256
+    && build.sourceManifestSha256 === buildSourceOptions.manifestSHA256 && build.executableSha256 === executableSHA256
     && build.coveragePrefix === '/scriv-source/' && Array.isArray(build.limitations));
   const findLLVM = async (configured, name) => configured || (await execute('xcrun', ['--find', name], { encoding: 'utf8', timeout: 30000, maxBuffer: 65536 })).stdout.trim();
   const profdata = await tool('llvm-profdata', await findLLVM(llvmProfdata, 'llvm-profdata'));
@@ -101,15 +144,21 @@ export async function prepareCoverage({ app, output, sourceOptions, buildRecordP
   await mkdir(join(directory, 'slots'), { mode: 0o700 });
   await write(join(directory, 'build-sources.json'), source);
   await write(join(directory, 'build-record.json'), buildBytes);
+  const journeySource = await input(sourceOptions.manifest, 64 * 1024 * 1024);
+  required(sha(journeySource) === sourceOptions.manifestSHA256);
+  await write(join(directory, 'journey-sources.json'), journeySource);
+  await write(join(directory, 'source-comparison.json'), JSON.stringify(sourceProvenance, null, 2) + '\n');
   await write(join(directory, 'probe-sources.json'), JSON.stringify(probe, null, 2) + '\n');
   await write(join(directory, 'tracer-sources.json'), JSON.stringify(tracerCLI.packageIdentity, null, 2) + '\n');
-  const analysis = await prepareAnalysisRoot(root, join(directory, 'build-sources.json'),
-    sourceOptions.manifestSHA256, join(directory, 'analysis'));
-  const capture = { directory, executable, executableSHA256, sourceManifestSHA256: sourceOptions.manifestSHA256,
+  const analysis = await prepareAnalysisRoot(buildSourceRoot, join(directory, 'build-sources.json'),
+    buildSourceOptions.manifestSHA256, join(directory, 'analysis'));
+  const capture = { directory, executable, executableSHA256, sourceManifestSHA256: buildSourceOptions.manifestSHA256,
+    journeySourceManifestSHA256: sourceOptions.manifestSHA256, sourceInputs, sourceProvenance,
     buildRecordSHA256: sha(buildBytes), probe, invocationID: randomUUID(), maximumSessions, analysis,
     profdata, cov, tracerCLI, tools: [profdata, cov, tracerCLI, ...(tracerCLI.node ? [tracerCLI.node] : [])], intervals: [] };
   capture.report = { status: 'ready', invocationID: capture.invocationID, buildRecordSHA256: capture.buildRecordSHA256,
-    sourceManifestSHA256: capture.sourceManifestSHA256, probeSHA256: probe.sha256, maximumSessions,
+    sourceManifestSHA256: capture.sourceManifestSHA256, journeySourceManifestSHA256: capture.journeySourceManifestSHA256,
+    sourceProvenance, probeSHA256: probe.sha256, maximumSessions,
     tools: capture.tools.map(tool => tool.identity), intervals: [], imported: 0,
     tracerPackageSHA256: tracerCLI.packageIdentity.sha256, analysis,
     limitations: ['Producer-declared build record binds source and signed executable; this is not a cryptographic attestation.',
@@ -117,19 +166,25 @@ export async function prepareCoverage({ app, output, sourceOptions, buildRecordP
       'Counter increases include polling, transport, capture and background work, not action causality or assertion proof.',
       'Only instrumented app/Core code is measured; helpers, services and other languages need separate adapters.'] };
   capture.report.limitations.push(`Pinned Tracer bin/src/package manifest SHA-256 ${tracerCLI.packageIdentity.sha256}; tool hashes identify actual launcher/Node bytes, not a hash substituted for a binary.`);
+  await verifyCaptureSources(capture);
   await write(join(directory, 'capture.json'), JSON.stringify(capture.report, null, 2) + '\n');
   return capture;
 }
 
 export async function coverageContext(capture, scenario, index) {
+  await verifyCaptureSources(capture);
   const path = join(capture.directory, `context-${index}.json`);
-  await write(path, JSON.stringify({ version: 1, invocationID: capture.invocationID, scenario,
+  const context = JSON.stringify({ version: 1, invocationID: capture.invocationID, scenario,
     executableSHA256: capture.executableSHA256, sourceManifestSHA256: capture.sourceManifestSHA256,
-    buildRecordSHA256: capture.buildRecordSHA256, probeSHA256: capture.probe.sha256, maximumSessions: capture.maximumSessions }) + '\n');
+    journeySourceManifestSHA256: capture.journeySourceManifestSHA256, sourceProvenance: capture.sourceProvenance,
+    buildRecordSHA256: capture.buildRecordSHA256, probeSHA256: capture.probe.sha256, maximumSessions: capture.maximumSessions }) + '\n';
+  required(Buffer.byteLength(context) <= 8 * 1024 * 1024);
+  await write(path, context);
   return path;
 }
 
 export async function exportCoverage(capture, scenarios) {
+  await verifyCaptureSources(capture);
   capture.report.status = 'exporting';
   await saveCoverageStatus(capture);
   required(!scenarios.some(scenario => scenario.cleanup?.startsWith('uncertain')));
@@ -147,6 +202,8 @@ export async function exportCoverage(capture, scenarios) {
       && uuid(record.workspaceID)
       && record.invocationID === capture.invocationID && scenario && record.executableSHA256 === capture.executableSHA256
       && record.executableUnchanged === true && record.sourceManifestSHA256 === capture.sourceManifestSHA256
+      && record.journeySourceManifestSHA256 === capture.journeySourceManifestSHA256
+      && JSON.stringify(record.sourceProvenance) === JSON.stringify(capture.sourceProvenance)
       && record.buildRecordSHA256 === capture.buildRecordSHA256 && record.probeSHA256 === capture.probe.sha256
       && record.counterMode === 'cumulative' && record.counterReset === false && Number.isSafeInteger(record.slot)
       && record.slot >= 0 && record.slot < capture.maximumSessions);
@@ -184,20 +241,26 @@ export async function exportCoverage(capture, scenarios) {
     const manifest = { version: 1, runId: record.runID, actions: record.commands.map(entry => `scriv ${entry.command}`),
       counterMode: 'cumulative', counterReset: false, sourceManifestSha256: capture.sourceManifestSHA256,
       probeSha256: capture.probe.sha256, tools, limitations: [...capture.report.limitations, ...record.limitations,
-        `Scenario ${record.scenario} ended ${scenario.status}; this interval records observation, not assertion acceptance.`],
+        `Scenario ${record.scenario} ended ${scenario.status}; this interval records observation, not assertion acceptance.`,
+        `Journey source manifest SHA-256 ${capture.journeySourceManifestSHA256}; original build source SHA-256 ${capture.sourceManifestSHA256}; full source comparison is recorded separately in source-comparison.json.`],
       before: snapshot('before'), after: snapshot('after') };
     await write(join(directory, 'interval.json'), JSON.stringify(manifest, null, 2) + '\n');
     await write(join(directory, 'exports.json'), JSON.stringify(profiles, null, 2) + '\n');
+    await write(join(directory, 'source-provenance.json'), JSON.stringify({ sourceManifestSHA256: capture.sourceManifestSHA256,
+      journeySourceManifestSHA256: capture.journeySourceManifestSHA256, sourceProvenance: capture.sourceProvenance }, null, 2) + '\n');
     interval.status = 'exported';
     capture.intervals.push({ directory, interval });
     await saveCoverageStatus(capture);
   }
+  await verifyCaptureSources(capture);
   capture.report.status = 'exported';
   await saveCoverageStatus(capture);
 }
 
 export async function importCoverage(capture) {
-  await verifySourceManifest(root, join(capture.directory, 'build-sources.json'), capture.sourceManifestSHA256);
+  await verifyCaptureSources(capture);
+  await verifySourceManifest(capture.sourceProvenance.buildSourceRoot, join(capture.directory, 'build-sources.json'), capture.sourceManifestSHA256);
+  await verifySourceManifest(capture.sourceProvenance.journeySourceRoot, join(capture.directory, 'journey-sources.json'), capture.journeySourceManifestSHA256);
   capture.report.status = 'importing';
   await saveCoverageStatus(capture);
   for (const { directory, interval } of capture.intervals) {
@@ -217,7 +280,39 @@ export async function importCoverage(capture) {
     await write(join(directory, 'import.json'), result.stdout);
     interval.status = 'imported'; await saveCoverageStatus(capture);
   }
-  await verifySourceManifest(root, join(capture.directory, 'build-sources.json'), capture.sourceManifestSHA256);
+  await verifyCaptureSources(capture);
+  await verifySourceManifest(capture.sourceProvenance.buildSourceRoot, join(capture.directory, 'build-sources.json'), capture.sourceManifestSHA256);
+  await verifySourceManifest(capture.sourceProvenance.journeySourceRoot, join(capture.directory, 'journey-sources.json'), capture.journeySourceManifestSHA256);
   capture.report.status = 'imported';
   await saveCoverageStatus(capture);
+}
+
+// Public source preflight uses synthetic trees in tooling journeys and launches no app.
+async function main(args) {
+  if (args[0] === '--verify-session-source-provenance') {
+    required(args.length === 3 && args[1] === '--context');
+    const contextPath = resolve(args[2]);
+    const context = JSON.parse(await input(contextPath));
+    console.log(JSON.stringify(await verifyCoverageContextSources(context, dirname(contextPath))));
+    return;
+  }
+  required(args[0] === '--verify-source-provenance');
+  const values = {};
+  const allowed = ['--source-root', '--source-manifest', '--source-manifest-sha256',
+    '--coverage-build-source-root', '--coverage-build-source-manifest', '--coverage-build-source-manifest-sha256'];
+  for (let index = 1; index < args.length; index += 2) {
+    required(allowed.includes(args[index]) && args[index + 1] && !Object.hasOwn(values, args[index]));
+    values[args[index]] = args[index + 1];
+  }
+  required(values['--source-root'] && values['--source-manifest'] && values['--source-manifest-sha256']);
+  const buildFlags = allowed.slice(3).filter(flag => Object.hasOwn(values, flag));
+  required(buildFlags.length === 0 || buildFlags.length === 3);
+  const sourceOptions = { manifest: resolve(values['--source-manifest']), manifestSHA256: values['--source-manifest-sha256'] };
+  const buildSourceOptions = buildFlags.length ? { manifest: resolve(values['--coverage-build-source-manifest']),
+    manifestSHA256: values['--coverage-build-source-manifest-sha256'] } : sourceOptions;
+  console.log(JSON.stringify(await verifyCoverageSources({ sourceRoot: resolve(values['--source-root']), sourceOptions,
+    buildSourceRoot: buildFlags.length ? resolve(values['--coverage-build-source-root']) : resolve(values['--source-root']), buildSourceOptions })));
+}
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  main(process.argv.slice(2)).catch(() => { console.error('Coverage source preflight failed; preserve the pinned build and journey inputs.'); process.exitCode = 2; });
 }

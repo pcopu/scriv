@@ -6,7 +6,7 @@
       "id": "email-delivery-recovery-v107",
       "title": "Recover safely after email delivery failure",
       "preconditions": [
-        "Run complete tracer app -- test services email-auth. Preserve original lines 1–273 and footer, sixteen named runtime callbacks and fifteen consumption checks. Append nine requests for forty total within original cap 40.",
+        "Run complete tracer app -- test services email-auth. Preserve original lines 1\u2013273 and footer, sixteen named runtime callbacks and fifteen consumption checks. Append nine requests for forty total within original cap 40.",
         "Reuse existing synthetic state and verify users, identities, sessions and challenges across the Miniflare mailbox configuration switch. The replacement mailbox accepts only synthetic-recovery@example.invalid and the configured synthetic sender/subject/code shape; it stores the first code then throws a synthetic response failure, and accepts the second normally.",
         "New challenge/auth mutations use public loopback HTTP. Mailbox RPC and D1 queries only observe fixture state; no direct new D1 fixture write, production helper call, clock override or production bypass is added.",
         "Wait naturally until the failed row creation time plus 60000ms has elapsed, with 25ms margin. The unchanged process-group deadline remains 90 seconds; this is not exact cooldown-boundary or ten-minute expiry testing.",
@@ -27,9 +27,9 @@
           "description": "A text/plain request and a JSON request with a foreign Origin return the exact 415/unsupported_media_type and 403/invalid_origin error objects before any mailbox attempt. All security-limit rows, users, verified identities, sessions and existing challenges remain exact after these two requests. This is one disallowed media type and one foreign origin, not every header normalization or browser behavior.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 274,
-            "end": 339,
-            "sha256": "25510423c3a8fe5f061195745a7f30e92ff42aa9e0325ef7166c1ffa474bea0b"
+            "start": 303,
+            "end": 372,
+            "sha256": "23cc6d31c60355566f242fc03285eecd61733a4cdf27d71d3ead384a58bb975c"
           }
         },
         {
@@ -37,9 +37,9 @@
           "description": "The local mailbox accepts and stores a correctly addressed six-digit code, then fails its first send response. The public request returns only the exact 503/email_unavailable error. One new failed challenge has a request-bounded creation time, ten-minute expiry, null code_hash/sent_at, zero attempts and consumed_by send_failed; no identity or session is created. Immediate same-email/same-proof resend returns the exact cooldown 429 with that row unchanged and no second send attempt. After the actual one-minute cooldown elapses, the same request succeeds with a new challenge ID/hash, independently expected code digest, bounded creation/send times, reset consumption/attempt state and exact expiry/resend timestamps. The row replaces the failed row without increasing the challenge count. No clock override or direct challenge write is used.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 274,
-            "end": 339,
-            "sha256": "25510423c3a8fe5f061195745a7f30e92ff42aa9e0325ef7166c1ffa474bea0b"
+            "start": 303,
+            "end": 372,
+            "sha256": "23cc6d31c60355566f242fc03285eecd61733a4cdf27d71d3ead384a58bb975c"
           }
         },
         {
@@ -47,9 +47,9 @@
           "description": "Successful verification of the replacement code/proof creates exactly one expected email-namespace user, verified identity and session. Exact row checks cover returned user, independently hashed session token, bounded creation time, named device and default thirty-day expiry. The replacement challenge is consumed exactly once with one attempt. Public identity read agrees; logout changes only this session revocation timestamp, bounded by its request, and the next identity read returns the exact expired-session error. All earlier users, identities, sessions and challenges are preserved. The local mailbox has exactly two attempts and ends empty; outbound attempts remain zero. No verification of the unavailable failed challenge ID, rollback fault, concurrent resend, process restart, native UI or real email delivery is asserted.",
           "witness": {
             "path": "cloud/tests-e2e/email-auth-journey.mjs",
-            "start": 274,
-            "end": 339,
-            "sha256": "25510423c3a8fe5f061195745a7f30e92ff42aa9e0325ef7166c1ffa474bea0b"
+            "start": 303,
+            "end": 372,
+            "sha256": "23cc6d31c60355566f242fc03285eecd61733a4cdf27d71d3ead384a58bb975c"
           }
         }
       ],

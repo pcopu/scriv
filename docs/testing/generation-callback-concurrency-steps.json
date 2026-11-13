@@ -6,7 +6,7 @@
       "id": "generation-callback-concurrency-v105",
       "title": "Resolve duplicate and competing generation callbacks",
       "preconditions": [
-        "Run the complete tracer app -- test services generation command. Original lines 1–390, original 34 runtime callbacks and 30 recovery requests are unchanged; the new appendix adds 16 requests for 80 total within the original 80-request cap.",
+        "Run the complete tracer app -- test services generation command. Original lines 1\u2013390, original 34 runtime callbacks and 30 recovery requests are unchanged; the new appendix adds 16 requests for 80 total within the original 80-request cap.",
         "Use only the already-live member2 auth session for the existing synthetic member user. The first member session remains revoked by the preceding recovery chapter. No new identity/session, direct fixture write, clock override or production helper call is introduced.",
         "Create one fresh metadata job through HTTP with sourceRevision 21 and the existing target ID. New operation IDs and two distinct completion output IDs are random synthetic values. There is no actual output artifact or engine invocation.",
         "Each pair uses Promise.all to dispatch two real loopback HTTP requests and waits for both before observing or sending later mutations. The test does not force an internal transaction overlap or select which distinct payload wins.",
@@ -27,8 +27,8 @@
           "description": "Two identical same-session claim requests dispatched together both return 200 with the same running version-two job, while exactly one operation receipt exists. Two distinct progress requests at expectedVersion two have exactly one 200 winner and one exact 409/job_conflict loser; two distinct completion requests at expectedVersion four likewise have exactly one winner. Each winning payload determines exact progress/output and one version increment. This is concurrent client dispatch, not verified internal SQL overlap or fault-injected atomicity.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 404,
-            "end": 437,
+            "start": 413,
+            "end": 446,
             "sha256": "6b33405f1493dd03856ca596b231dee026ccdea0ae36fcc892d6990d5fc5b3bf"
           }
         },
@@ -37,8 +37,8 @@
           "description": "The losing progress operation at its old version remains 409 with all observed business rows unchanged, then the same operation ID with corrected expectedVersion three succeeds once at version four. After completion at version five, replaying the original claim and winning progress operation returns the current completed job with replayed true, without new writes. The losing completion remains refused; fresh cancel and recover attempts at the correct terminal version also fail and preserve all observed business state.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 419,
-            "end": 437,
+            "start": 428,
+            "end": 446,
             "sha256": "be50e52e02a27496f31e9349c4592ab6cb1ff76e3a20220ddc4dc1783d28f8f8"
           }
         },
@@ -47,8 +47,8 @@
           "description": "The chapter adds exactly one metadata job and four exact operation receipts. Receipt request hashes are independently computed from sorted flat request fields plus action; actor session, operation ID, resulting version and timestamp match the expected successful mutation. Job timestamps/90-second leases are bounded by request intervals, and completed lease is zero. All five previous jobs, prior receipts, projects, teams, memberships, users, sessions, assets and R2 inventory remain exact. Output image IDs are synthetic metadata only, with no generated image/provider/native execution.",
           "witness": {
             "path": "cloud/tests-e2e/generation-journey.mjs",
-            "start": 404,
-            "end": 437,
+            "start": 413,
+            "end": 446,
             "sha256": "6b33405f1493dd03856ca596b231dee026ccdea0ae36fcc892d6990d5fc5b3bf"
           }
         }

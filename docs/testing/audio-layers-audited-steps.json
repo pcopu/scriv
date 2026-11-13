@@ -21,8 +21,8 @@
           "description": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked.",
           "witness": {
             "path": "tests/e2e/journeys/word-timing.mjs",
-            "start": 19,
-            "end": 38,
+            "start": 26,
+            "end": 45,
             "sha256": "8ca0778f45bea2002b523778ef6d3f932cb550bb8d550a37e6f62f9581d9e946"
           }
         }
@@ -299,8 +299,8 @@
           "description": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed.",
           "witness": {
             "path": "tests/e2e/journeys/audio-library.mjs",
-            "start": 197,
-            "end": 245,
+            "start": 203,
+            "end": 251,
             "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
           }
         }
@@ -457,8 +457,8 @@
           "description": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback.",
           "witness": {
             "path": "tests/e2e/journeys/audio-library.mjs",
-            "start": 70,
-            "end": 145,
+            "start": 72,
+            "end": 147,
             "sha256": "36d626a6f1a642c9fdf88d1a4352f6e94d61dd36f1cdc57d3367dba2ea3c3ba4"
           }
         }
@@ -555,8 +555,8 @@
           "description": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain.",
           "witness": {
             "path": "tests/e2e/journeys/audio-library.mjs",
-            "start": 157,
-            "end": 186,
+            "start": 159,
+            "end": 188,
             "sha256": "a2352cfe78250900fd4650adb1a147826473cee7ab23d7283263aec196a62c23"
           }
         }

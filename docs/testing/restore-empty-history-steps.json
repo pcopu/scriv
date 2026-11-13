@@ -28,8 +28,8 @@
           "description": "Three fresh owner restores each append exactly one snapshotRequired receipt/event and increment head, epoch and timing once. Restoring the current content at sequence six preserves both live item versions and the existing tombstone; restoring sequence zero tombstones only the two live scenes with one version increase each; another empty restore leaves all three tombstone versions fixed. Each resulting current snapshot has no active leases and retains the exact discussion thread/message. This is visible state evidence, not raw change-table equality or a fault/race proof.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 258,
-            "end": 301,
+            "start": 282,
+            "end": 325,
             "sha256": "e9f9fc83949c8bd8144a2b11cc237ba6952a663f5b9b9271c27aae483aef4f7b"
           }
         },
@@ -38,8 +38,8 @@
           "description": "Fresh member and viewer restores are exact 403/not_allowed and preserve nonlease snapshot, full journal, thread and message list. After restoring empty, canImport is false and a valid fresh owner import is exact 409/project_not_empty with those observations unchanged. Three exact owner restore retries return their original receipts despite later epochs and leave current public state/history unchanged. Users and sessions remain exact, R2 empty and outbound zero.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 275,
-            "end": 301,
+            "start": 299,
+            "end": 325,
             "sha256": "f8fb3bbbb1cedcabf199359f1902a37fd99f6fddae901bc8f30a94c200e93da7"
           }
         },
@@ -48,8 +48,8 @@
           "description": "After all three restores, sequence zero has the exact empty historical snapshot and null historyEvent. Sequence six still returns the original two live scenes and metadata-only tombstone across exactly three limit-one ID-cursor pages, with expected versions/data, epoch two, timing one, cursor/hasMore boundaries and original event metadata. Current discussion data remains readable through its own routes; historical snapshots deliberately have empty thread/lease projections. All six original events and two new discussion events remain byte-equivalent values in the current journal before the three exact restore events.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 258,
-            "end": 301,
+            "start": 282,
+            "end": 325,
             "sha256": "e9f9fc83949c8bd8144a2b11cc237ba6952a663f5b9b9271c27aae483aef4f7b"
           }
         }

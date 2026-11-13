@@ -24,8 +24,8 @@
           "description": "The initial real review displays the exact imported source/people identities and picture title, no unrelated sentinel, exact empty-direction messages, three literal tabs and a positive source viewport bounded by the fixed header/footer; both saved projects and zero jobs are preserved.",
           "witness": {
             "path": "tests/e2e/journeys/generation-review.mjs",
-            "start": 62,
-            "end": 84,
+            "start": 64,
+            "end": 86,
             "sha256": "1314920d213bf8905c96d0325a796291ad7bc84e674e41591dff76b8584043f4"
           }
         }
@@ -366,8 +366,8 @@
           "description": "Each requested source link opens People and reveals the correct fully visible expanded header; complete captured profiles appear, collapse removes that grid, expansion restores it, and fixed chrome plus saved projects/empty jobs remain unchanged.",
           "witness": {
             "path": "tests/e2e/journeys/generation-review.mjs",
-            "start": 87,
-            "end": 113,
+            "start": 89,
+            "end": 115,
             "sha256": "aeea7df9f15faa5a85c51bd8a80c3f09f0cffcc0d48bd9ee3468548437ec00d4"
           }
         }
@@ -559,8 +559,8 @@
           "description": "The real exact-request view contains all complete quoted source and identity data with the expected prefix/suffix and no unrelated sentinel, is read-only/selectable/scrollable, retains fixed chrome after scrolling, and preserves exact text across Source/People/Exact navigation.",
           "witness": {
             "path": "tests/e2e/journeys/generation-review.mjs",
-            "start": 116,
-            "end": 139,
+            "start": 118,
+            "end": 141,
             "sha256": "34dedd4057c6877ba3479086c6d5ab930cd5c1b34e074224242592bdc785aa22"
           }
         }
@@ -700,8 +700,8 @@
           "description": "Each Done/Close/Escape dismissal restores the composer; every fresh review shows the same captured source and exact request, with both complete saved projects and zero jobs preserved. The native responder chain exposes controller-owned priority Escape.",
           "witness": {
             "path": "tests/e2e/journeys/generation-review.mjs",
-            "start": 143,
-            "end": 157,
+            "start": 145,
+            "end": 159,
             "sha256": "6cc508a4fd4c14e334c7f2777986ac0162800368916697a860e62c87e1bd517f"
           }
         }
@@ -898,8 +898,8 @@
           "description": "The exact local imported asset visibly decodes while the read-only native observer reports zero actual generation jobs and no character analysis; complete saved/loaded models match the independently allowed import mutation.",
           "witness": {
             "path": "tests/e2e/journeys/local-images.mjs",
-            "start": 66,
-            "end": 84,
+            "start": 67,
+            "end": 85,
             "sha256": "a611dd1448f934393f6cd222c439b04079ea9c71806a8907a7c76edfe169481f"
           }
         }

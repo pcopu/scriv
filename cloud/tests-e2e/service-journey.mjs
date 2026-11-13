@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, realpath, rm, readFile, readdir, copyFile, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawn } from 'node:child_process';
 import { request as httpRequest } from 'node:http';
 import { createHash } from 'node:crypto';
@@ -14,40 +14,50 @@ const cloud = await realpath(process.argv[2] === '--owned-child' ? process.argv[
   process.argv[2] === '--cloud' ? process.argv[3] : join(here, '..'));
 const self = await realpath(fileURLToPath(import.meta.url));
 if (process.argv[2] !== '--owned-child') {
-  const root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-service-')));
-  let child;
-  let timer;
+  let root, capture, child, timer, journeyError, interrupted = false;
   const killOwned = signal => {
     if (child?.pid) {
       try { process.kill(-child.pid, signal); } catch (error) { if (error.code !== 'ESRCH') throw error; }
     }
   };
-  const interrupt = () => killOwned('SIGTERM');
+  const interrupt = () => { interrupted = true; killOwned('SIGTERM'); };
+  process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
   try {
-    for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
-    // Resolve installed dependencies from an owned runner, never edit the repository.
-    await copyFile(self, join(root, 'runner.mjs'));
-    await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
-    child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud], {
-      cwd: root, detached: true, stdio: 'inherit',
-      // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
-      env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
-        XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
-        WRANGLER_SEND_METRICS: 'false', CI: '1' },
-    });
-    process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
-    timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
-    const result = await new Promise((resolve, reject) => {
-      child.once('error', reject);
-      child.once('exit', (code, signal) => resolve({ code, signal }));
-    });
-    assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    try {
+      root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-service-')));
+      for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
+      capture = process.env.SCRIV_SERVICE_COVERAGE_DIR
+        ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+          .prepareServiceCapture(process.env.SCRIV_SERVICE_COVERAGE_DIR, process.env.SCRIV_TRACER_CLI, { journeyPath: 'cloud/tests-e2e/service-journey.mjs' }) : null;
+      // Resolve installed dependencies from an owned runner, never edit the repository.
+      await copyFile(self, join(root, 'runner.mjs'));
+      await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
+      assert.equal(interrupted, false, 'Cancelled during preparation; no Worker launched');
+      child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud, ...(capture ? [capture.path] : [])], {
+        cwd: root, detached: true, stdio: 'inherit',
+        // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
+        env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
+          XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
+          WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
+      });
+      timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
+      const result = await new Promise((resolve, reject) => {
+        child.once('error', reject);
+        child.once('exit', (code, signal) => resolve({ code, signal }));
+      });
+      assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    } catch (error) { journeyError = error; }
+    finally {
+      clearTimeout(timer); killOwned('SIGKILL');
+      if (root) await rm(root, { recursive: true, force: true });
+      console.log('Owned service process group and temporary state cleaned.');
+    }
+    assert.equal(interrupted, false, 'Cancelled before measurement import');
+    if (capture) await capture.finish(() => interrupted);
+    assert.equal(interrupted, false, 'Cancelled during measurement import; inspect preserved evidence');
+    if (journeyError) throw journeyError;
   } finally {
-    clearTimeout(timer);
     process.off('SIGINT', interrupt); process.off('SIGTERM', interrupt);
-    killOwned('SIGKILL');
-    await rm(root, { recursive: true, force: true });
-    console.log('Owned service process group and temporary state cleaned.');
   }
 } else {
   const root = await realpath(process.argv[3]);
@@ -56,6 +66,9 @@ if (process.argv[2] !== '--owned-child') {
   const { build } = await import('esbuild');
   const { Miniflare, Log, LogLevel, convertV4MiniflareOptions } = await import('miniflare');
   const { unstable_splitSqlQuery } = await import('wrangler');
+  const captureModule = process.argv[5]
+    ? await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href) : null;
+  const capture = captureModule ? await captureModule.loadServiceCapture(process.argv[5]) : null;
   const bundle = join(root, 'worker.mjs');
   await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
     bundle: true, format: 'esm', platform: 'neutral', target: 'es2022',
@@ -69,8 +82,8 @@ if (process.argv[2] !== '--owned-child') {
     unsafeLocalExplorer: false, unsafeObservability: false,
     unsafeEnableSharedStorage: false, logRequests: false, log: new Log(LogLevel.ERROR),
     resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
-    workers: [{ ...common, name: 'scriv', scriptPath: bundle,
-      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', EMAIL_FROM: 'no-delivery@example.invalid' },
+    workers: [{ ...common, name: 'scriv', ...(capture ? { script: capture.options.script } : { scriptPath: bundle }),
+      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', EMAIL_FROM: 'no-delivery@example.invalid', ...(capture?.options.bindings ?? {}) },
       d1Databases: { DB: 'journey-db' }, r2Buckets: ['ASSETS'],
       durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
       ...(mailBinding ? { serviceBindings: { EMAIL: 'deny-mail' } } : {}),
@@ -83,7 +96,22 @@ if (process.argv[2] !== '--owned-child') {
   });
   const mf = new Miniflare(config(false));
   let requests = 0;
+  let captureRequestStart = 0;
   let chunkedRequests = 0;
+  const ordinaryRequests = () => requests;
+  let serviceObserver;
+  async function beginCapturePhase() {
+    if (!capture) return;
+    await capture.begin(await mf.ready);
+    serviceObserver = captureModule.observeServiceRequests();
+  }
+  async function endCapturePhase() {
+    if (!serviceObserver) return;
+    const observer = serviceObserver;
+    serviceObserver = undefined;
+    observer.stop();
+    if (observer.actions.length) await capture.end(await mf.ready, observer.actions.length, observer.actions);
+  }
   try {
     const migrations = [];
     for (const name of (await readdir(join(cloud, 'migrations'))).filter(name => /^\d+_.+\.sql$/.test(name)).sort()) {
@@ -92,9 +120,11 @@ if (process.argv[2] !== '--owned-child') {
     assert.deepEqual(migrations.map(m => m.name), ['0001_identity_teams.sql', '0002_generation_jobs.sql', '0003_email_auth.sql']);
     let db = await mf.getD1Database('DB', 'scriv');
     for (const migration of migrations) await db.batch(migration.queries.map(query => db.prepare(query)));
+    await beginCapturePhase();
     async function chunkedResponse(url, options) {
       // node:http writes HTTP/1.1 chunk framing here, not fetch's auto-sized string.
       return new Promise((resolve, reject) => {
+        serviceObserver?.record('POST', url);
         const outgoing = httpRequest(url, {
           method: 'POST', headers: { ...options.headers, 'transfer-encoding': 'chunked' },
           signal: AbortSignal.timeout(5000), agent: false,
@@ -167,7 +197,11 @@ if (process.argv[2] !== '--owned-child') {
       email: 'alex@example.com', codeChallenge: createHash('sha256').update('v'.repeat(50)).digest('base64url'),
     }));
     await assertNoEmailSends();
+    if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests() - captureRequestStart, 'Every ordinary request has one ordered action');
+    await endCapturePhase();
     await mf.setOptions(config(true));
+    captureRequestStart = ordinaryRequests();
+    await beginCapturePhase();
     db = await mf.getD1Database('DB', 'scriv');
     // Same frozen test: EMAIL is configured, but oversized input must never send.
     await request('/auth/email/request', 413, 'body_too_large', post({ email: 'x'.repeat(5000) }));
@@ -185,7 +219,11 @@ if (process.argv[2] !== '--owned-child') {
     }
     assert.equal(chunkedRequests, 2);
     await assertNoEmailSends();
+    if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests() - captureRequestStart, 'Every ordinary request has one ordered action');
+    await endCapturePhase();
     await mf.setOptions(config(false));
+    captureRequestStart = ordinaryRequests();
+    await beginCapturePhase();
     db = await mf.getD1Database('DB', 'scriv');
     // Different synthetic clients isolate quotas without seeding or resetting D1.
     const windowMs = 600_000;
@@ -224,16 +262,20 @@ if (process.argv[2] !== '--owned-child') {
     // Maintenance is invoked through Miniflare's reserved local HTTP event adapter,
     // not a direct application export or a new production endpoint. No clock override.
     const { randomUUID, randomBytes } = await import('node:crypto');
+    if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests() - captureRequestStart, 'Every ordinary request has one ordered action');
+    await endCapturePhase();
     await mf.setOptions(convertV4MiniflareOptions({
       host: '127.0.0.1', port: 0, cf: false, telemetry: { enabled: false }, unsafeTriggerHandlers: true,
       unsafeLocalExplorer: false, unsafeObservability: false, unsafeEnableSharedStorage: false,
       logRequests: false, log: new Log(LogLevel.ERROR), resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
-      workers: [{ ...common, name: 'scriv', scriptPath: bundle,
-        bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test' },
+      workers: [{ ...common, name: 'scriv', ...(capture ? { script: capture.options.script } : { scriptPath: bundle }),
+        bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', ...(capture?.options.bindings ?? {}) },
         d1Databases: { DB: 'journey-db' }, r2Buckets: ['ASSETS', 'MEDIA'],
         durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
       }],
     }));
+    captureRequestStart = ordinaryRequests();
+    await beginCapturePhase();
     db = await mf.getD1Database('DB', 'scriv');
     const mediaBucket = await mf.getR2Bucket('MEDIA', 'scriv');
     const fixtureTime = Date.now(), hour = 3600000, ownerId = randomUUID(), sessionId = randomUUID();
@@ -396,6 +438,7 @@ if (process.argv[2] !== '--owned-child') {
       const payload = Buffer.from(JSON.stringify(body)); assert(payload.length > 2 && payload.length < 4096); assert(requests++ < 160);
       let outgoing, responseStarted = false, bodyReleased = false;
       const completion = new Promise((resolve, reject) => {
+        serviceObserver?.record(method, url);
         outgoing = httpRequest(url, { method, headers: { authorization: `Bearer ${attemptToken}`, 'content-type': 'application/json', 'content-length': String(payload.length) }, agent: false, signal: AbortSignal.timeout(10000) }, incoming => {
           responseStarted = true;
           const chunks = []; let size = 0;
@@ -479,9 +522,12 @@ if (process.argv[2] !== '--owned-child') {
     for (const team of protectedMedia.teams) assert.deepEqual(finalMedia.teams.find(row => row.id === team.id), team);
     assert.equal(interruptedCases.length, 8); assert.equal(outboundAttempts, 0);
     console.log(JSON.stringify({ kind: 'interrupted-authorization-evidence', cases: interruptedCases, marker: 'post-authentication per-session request counter', sentBodyPrefixBytes: 1, realLogout: true, arbitraryRaceCoverage: false, outboundAttempts, nativeScenarios: 0 }));
-    const hash = createHash('sha256').update(await readFile(bundle)).digest('hex');
+    const hash = createHash('sha256').update(capture ? capture.options.script : await readFile(bundle)).digest('hex');
     console.log(`PASS service-process integration: ${requests} loopback HTTP checks; 3 original migrations; initial empty-identity guards plus scheduled-maintenance fixtures; zero EMAIL.send RPC invocations; zero outbound attempts.`);
-    console.log(`Production entry bundle SHA-256: ${hash}`);
+    console.log(`${capture ? 'Instrumented capture' : 'Production entry'} bundle SHA-256: ${hash}`);
     console.log('No successful login, email delivery, OAuth grant, native launch, or Catalyst E2E claimed; later sessions are synthetic service fixtures.');
-  } finally { await mf.dispose(); }
+    if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests() - captureRequestStart, 'Every ordinary request has one ordered action');
+  } finally {
+    try { await endCapturePhase(); } finally { await mf.dispose(); }
+  }
 }

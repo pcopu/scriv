@@ -1,14 +1,18 @@
 # Scriv Agent Guidance
 
-## Active Coverage Goal, November 13, 2026
+## Current Coverage Workflow, November 13, 2026
 
-The user has explicitly resumed work toward 100% overall Tracer coverage, with
-a secondary goal of improving the owned `pcopu/tracerCLI` tool so that agents
-can reach coverage faster using fewer meaningful scenarios. Reuse and extend
-existing journeys, preserve assertion quality and the agreed denominator, and
-keep planning, witnessed links, actual results and measured execution separate.
-This new request supersedes the earlier instruction to stop after the
-four-module measurement increment. The user subsequently authorized isolated
+The user cleared the exhaustive 100% goal and redirected work toward making
+actual coverage much faster. Automatically connect existing source plans to
+discovered CLI journeys as provisional candidates, deduplicate the journeys,
+run them with instrumentation, and use observed source ranges to choose the
+next gaps. Detailed manual source-to-assertion mapping is not a prerequisite
+for these runs. Preserve assertions and keep planning, manual mappings,
+observed execution and test outcomes separate. Do not count guessed connections
+as observed coverage or resume the former case-by-case mapping grind.
+See `docs/testing/measurement-first-coverage.md` for the verified workflow.
+
+The user previously authorized isolated
 auth/team journeys and live sign-in verification with their supplied accounts,
 retrieving the requested codes through computer use in their opened inboxes. Keep account details,
 codes and session tokens out of source and reports. Other restrictions below
@@ -27,10 +31,9 @@ removal is not evidence of behavioral parity. See docs/testing/cli-only-tests.md
 
 ## Coverage Goal, History and Reporting
 
-The user's goal is **100% overall Tracer coverage**. Continue implementing,
-auditing and running meaningful CLI scenarios toward that goal; do not stop at
-planning coverage or manufacture links, exclusions, passing results or runtime
-evidence to reach a percentage. Report each metric with its source checkpoint,
+The prior target was **100% overall Tracer coverage**; the current task is the
+measurement-first workflow above. Do not manufacture links, exclusions,
+passing results or runtime evidence to reach a percentage. Report each metric with its source checkpoint,
 numerator, denominator and scope. A missing execution measure is unknown, not
 zero. Never replace a completed milestone with a differently scoped low number.
 
@@ -82,8 +85,10 @@ not all Worker lines or the whole project. Preserve real before/after snapshots,
 strict source/probe identities and external analysis storage. Keep its measured
 interval separate from manual links, historical planning and native results.
 
-The generation-service CLI journey also offers opt-in counters for selected
-statement entries in four routing/access/HTTP/generation modules. Follow
+The shared service adapter now offers opt-in counters across all twelve cloud
+journeys, selecting statement-entry anchors in fifteen runtime modules. The
+generation-only mode retains its four-module scope; updates has a separate
+adapter. Follow
 `docs/testing/generation-counter-coverage.md`. Preserve its exact TypeScript
 build graph, per-module generations, cumulative baselines and external evidence.
 Collected module instances do not establish main-fetch-only attribution, Durable
@@ -170,6 +175,15 @@ platform checks. Workspace and short-film journeys passed; their three separate
 LCOV intervals passed integrity checks. This does not explain the earlier
 timestamp failure or establish notarization, distribution or trusted-helper
 behavior. See `docs/testing/coverage-goal-20261113.md` for the scoped checkpoint.
+
+A later retained-bundle check found two sealed assets missing. The original
+bundle and evidence were preserved. A new copy restored the exact sealed bytes
+from a verified installed donor without re-signing, then passed strict signature
+and icon checks. The updated CLI runner verifies the signature before and after
+native runs. Nine selected final journeys passed on that restored copy. The
+cause and remaining file-count difference are unresolved. See
+`docs/testing/coverage-goal-20261113.md` for the scoped checkpoint and retained
+historical results.
 
 ## What Has Been Verified
 

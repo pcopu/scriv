@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { ScrivSession } from '../../cli/scriv.mjs';
+import { assertIdleSettings, exerciseAccountDraft } from './support/settings-state-steps.mjs';
 assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
 const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
 async function choose(id) {
@@ -28,9 +29,11 @@ try {
       && nodes.some(node => node.identifier === 'codex-connection-status'));
     const status = nodes.find(node => node.identifier === 'codex-connection-status');
     assert.equal(status.text?.startsWith('Connected'), false, 'Opening Codex settings must not connect or sign in');
+    await assertIdleSettings(session);
     // No Connect/Start/Sign in/Sign out action is taken in this UI-only scenario.
     await choose('scriv.settings.account');
     await session.waitFor(nodes => nodes.some(node => node.text === 'Write locally, or sign in'));
+    await exerciseAccountDraft(session);
     await choose('scriv.settings.general');
     follow = await switchNode();
     assert.equal(follow.isOn, !original, 'Follow playback preference survives pane changes');

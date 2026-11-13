@@ -1,0 +1,305 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "editor-draft-journal-review",
+      "title": "Recover native-produced journal after canonical history refusal",
+      "preconditions": [
+        "Existing save-failure-recovery assertions pass in the isolated persistent automation workspace. Local default origin is http://127.0.0.1:1. Host history inode ownership and write refusal are verified and restored before relaunch.",
+        "Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md. No malformed/conflicting journal, destructive discard, crash-durability or nonmatching-text apply claim."
+      ],
+      "actions": [
+        "select workspace-tabs Script",
+        "key command-return",
+        "text script-editor-mara-line existing-text-plus-two-spaces with owned history write refusal",
+        "presented-alerts",
+        "loaded-project",
+        "relaunch persistent owned workspace",
+        "activate workspace-project",
+        "text Find a project Synthetic save recovery",
+        "activate Open project",
+        "select workspace-tabs Script",
+        "key command-return",
+        "snapshot recovered comparison",
+        "activate Keep for later",
+        "snapshot wait recovered sheet dismissed and workspace-tabs hittable",
+        "loaded-project",
+        "key command-return",
+        "activate Use current saved line as base",
+        "activate Apply reviewed draft",
+        "snapshot wait recovered sheet dismissed and workspace-tabs hittable",
+        "loaded-project",
+        "relaunch persistent owned workspace",
+        "activate workspace-project",
+        "text Find a project Synthetic save recovery",
+        "activate Open project",
+        "select workspace-tabs Script",
+        "key command-return"
+      ],
+      "expectations": [
+        {
+          "id": "journal",
+          "description": "Full native-produced journal retains original model/UTF-16 edit; cold reopen preserves bytes, public comparison shows exact current and draft, keep retains bytes, explicit rebase independently changes base/edit, successful reviewed save clears journal without changing canonical model/history, repeated reopen has no recovered dialog. Apply is disabled for the original stale base and becomes enabled/hittable only after explicit rebase.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
+            "start": 29,
+            "end": 98,
+            "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 47,
+            "end": 50,
+            "sha256": "a0a6cafae4f91000eaf41a1db0e78917c8840d80567605bec5e49c82000eb7a7"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 57,
+            "end": 61,
+            "sha256": "5b64dd4acbfb48bc04a05f392f95587d93eef657a101fc34957dd4443779f157"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 67,
+            "end": 69,
+            "sha256": "367b2083e371eff8c6698de1f62990e188b0c80c83e5f6ca2b4bf3ad3da9c964"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 73,
+            "end": 74,
+            "sha256": "517763b8c82dace4cd0d9319ebbcf85206debd11d84b5961ed1880686789ec7c"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 81,
+            "end": 83,
+            "sha256": "1fed5f4ff69dbd66db181a34aa8d9d6eef447543d4e40f46d58a3ba4bcc1e2e0"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 85,
+            "end": 85,
+            "sha256": "d44893ea3de065099db9ee1dd92c3d56f4078427973a7977571402295b129f52"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 87,
+            "end": 98,
+            "sha256": "b837587f5dd46325e5c662fc3bfd234464e7127764c74a71dad125322792c52b"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 102,
+            "end": 109,
+            "sha256": "d756a467ce1230a4c9eff895f566272415afd66a9cd2a951f33c9f95ab9ad794"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 120,
+            "end": 126,
+            "sha256": "cbf87a5ce6ec10305ee36555bb728e0eb103b6d469912889ec0f7877c6cd9a79"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 128,
+            "end": 143,
+            "sha256": "e159c53d4d6c6a75d1882cf20592a4ea73bf81a80e078c75a01be2e59c265766"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/EditorDraftJournal.swift",
+            "start": 36,
+            "end": 50,
+            "sha256": "4ded6df85a1abec2056384518cec29e858682871c7c9b67307c4585285b0dfaa"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/EditorDraftJournal.swift",
+            "start": 60,
+            "end": 64,
+            "sha256": "05a465c4b50c38fb1386a75a84bae842ee0c218e2d606ffc00ab6ad749563118"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/EditorDraftJournal.swift",
+            "start": 109,
+            "end": 122,
+            "sha256": "ba2e76bb039f0a5da8da70eb42040a48916dbabeb521d63d3ebf2aa22976117b"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/EditorDraftJournal.swift",
+            "start": 145,
+            "end": 147,
+            "sha256": "980e807e5fbd1825b5bc9aa6d637624cdf24b1950edb876898278cae18f0ebd2"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/EditorDraftJournal.swift",
+            "start": 149,
+            "end": 150,
+            "sha256": "3795ac35c78b0dc0ab113996859e8aa731c3b47816567855814664d7e03fadfa"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/EditorDraftJournal.swift",
+            "start": 163,
+            "end": 169,
+            "sha256": "84e69a40593a7be669a6820a0cf4835d38195c8bcf8a208fa4eb20c5ba00e67e"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/EditorDraftJournal.swift",
+            "start": 174,
+            "end": 181,
+            "sha256": "0eaa9bf91aaa15643213d0147131ae9086f34c1bdd3a46aac351d9e59e71a158"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/EditorDraftJournal.swift",
+            "start": 223,
+            "end": 229,
+            "sha256": "640120da8bf184855412d356ca3dd1964b58430f6adecff005c0fc3ef419bfc8"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1025,
+            "end": 1027,
+            "sha256": "91f3f4f9dfb8505be849d562b4f439eddd9d7a5d99cdf11a36cc2172b9030707"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1033,
+            "end": 1035,
+            "sha256": "2db3c90555cb964d13351d163f3b989fe77cf5760cf66f7b51b9c4ef7e864a35"
+          },
+          "expectation": "journal",
+          "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 982,
+            "end": 985,
+            "sha256": "658ec39002f4ab2da38d1df955b05cc8fab68685347361ef989495e6f0375cc1"
+          },
+          "expectation": "journal",
+          "why": "Native-produced journal snapshots and full canonical invariants witness ordinary recovery, explicit rebase and reviewed acknowledgement. Failure and discard alternatives are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 992,
+            "end": 992,
+            "sha256": "09035ab9721b3352e1c64f894e6c4c5fb9f380a543c6258af15a06ddc2e3613c"
+          },
+          "expectation": "journal",
+          "why": "Native-produced journal snapshots and full canonical invariants witness ordinary recovery, explicit rebase and reviewed acknowledgement. Failure and discard alternatives are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1000,
+            "end": 1002,
+            "sha256": "45c1f0f83ce30ee93b70dbcd78b2830ef7a1d547e5a372fd4d14499b63e42d5b"
+          },
+          "expectation": "journal",
+          "why": "Native-produced journal snapshots and full canonical invariants witness ordinary recovery, explicit rebase and reviewed acknowledgement. Failure and discard alternatives are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1008,
+            "end": 1010,
+            "sha256": "a482e5384fdfd47d8d301cd4f6f42a9132c71e75608ce04d2a465b1c8ad7dde4"
+          },
+          "expectation": "journal",
+          "why": "Native-produced journal snapshots and full canonical invariants witness ordinary recovery, explicit rebase and reviewed acknowledgement. Failure and discard alternatives are unclaimed."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "editor-draft-journal-review",
+      "title": "Native editor journal recovery and reviewed acknowledgement",
+      "steps": [
+        "editor-draft-journal-review"
+      ]
+    }
+  ]
+}

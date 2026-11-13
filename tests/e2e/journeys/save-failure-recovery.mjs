@@ -7,9 +7,10 @@ import { inspectOwnedWorkspace } from '../../../cli/owned-workspace.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { fixture } from './support/generation-review-fixture.mjs';
 import { characterCatalogSteps } from './support/character-catalog-steps.mjs';
+import { editorDraftRecoverySteps } from './support/editor-draft-recovery-steps.mjs';
 import { sortedProjects } from './support/generation-review-steps.mjs';
 
-const cases = ['accepted-save-failure', 'retained-before-normal-open', 'normal-open-replays', 'repeated-clean-open'];
+const cases = ['accepted-save-failure', 'retained-before-normal-open', 'normal-open-replays', 'repeated-clean-open', 'editor-draft-journal-review'];
 const biography = 'Synthetic recovery biography. Cafe\u0301 🎬';
 assert.ok(process.argv.slice(2).every(arg => arg === '--list-cases'), 'Unknown argument');
 if (process.argv.includes('--list-cases')) {
@@ -207,6 +208,15 @@ if (process.argv.includes('--list-cases')) {
     assert.deepEqual(await session.command('loaded-project'), accepted);
     assert.deepEqual(await tree(join(root, 'Projects')), packagesAfter, 'Repeated recovery neither duplicates history nor changes any saved package bytes');
     assert.deepEqual(await records(), []);
+    stage = cases[4];
+    await editorDraftRecoverySteps({ getSession: () => session, root, baseline: expected,
+      tree, directory, activate, cold, normalOpen, saveFailureAlert,
+      refuseHistory: async () => {
+        historyLease = await directory(join(packagePath, 'history'));
+        await historyLease.handle.chmod(historyLease.mode & ~0o200);
+        assert.ok(sameIdentity(historyLease.info, await lstat(historyLease.path)));
+        await assert.rejects(access(historyLease.path, constants.W_OK), e => e.code === 'EACCES');
+      }, restore });
     console.log('PASS: save-failure-recovery: real save refusal, retained before open, normal-open replay and clean repeated reopen');
   } catch (error) { throw new Error(`save-failure-recovery/${stage}; no uncertain mutation retried`, { cause: error }); }
   finally { try { await restore(); } finally { await session.close(); } }

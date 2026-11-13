@@ -1,0 +1,225 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "isolate-measurement-output",
+      "title": "Verify analysis-copy metadata and public input boundaries",
+      "preconditions": [
+        "Continuation of source-provenance-recovery using only synthetic Git source, external outputs and trusted pinned Tracer runtime.",
+        "The listed commands are the ordered new public subprocess checks in the continuation. Existing 13 importer/isolation checks also run and remain asserted. No native app launches or execution measurements."
+      ],
+      "actions": [
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${analysisPath}",
+        "node scripts/prepare-coverage-analysis.mjs",
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest}",
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output",
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${invalidOptionsOutput} --unknown value",
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${invalidOptionsOutput} --output ${invalidOptionsOutput}",
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --source-manifest ${externalManifest} --output ${invalidOptionsOutput}",
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 invalid-digest --output ${invalidDigestOutput}",
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${wrongDigest} --output ${invalidDigestOutput}",
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${worldWritableParent}/copy",
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${malformedManifest} --source-manifest-sha256 ${matchingDigest} --output ${malformedSourceOutput}",
+        "node scripts/export-cli-source-manifest.mjs",
+        "node scripts/export-cli-source-manifest.mjs --output",
+        "node scripts/export-cli-source-manifest.mjs --unknown value",
+        "node scripts/export-cli-source-manifest.mjs --output ${invalidExportOutput} --include",
+        "node scripts/export-cli-source-manifest.mjs --output ${invalidExportOutput} --include ../outside"
+      ],
+      "expectations": [
+        {
+          "id": "metadata",
+          "description": "Analysis stdout and persisted report agree with independent version, paths, notice, total bytes, digest, file count and source identity checks. Copy directories are private 0700 and every copied file and report is 0600.",
+          "witness": {
+            "path": "tests/tracer/measurement-output-journey.mjs",
+            "start": 19,
+            "end": 33,
+            "sha256": "d793215f717d204f45270dfd855c2dc09a6dd9c3be1eed6f2599a20698ac1dba"
+          }
+        },
+        {
+          "id": "options",
+          "description": "Missing, unknown, duplicate and dangling arguments exit 2 with fixed generic error, empty stdout, absent destination and unchanged complete external/source snapshots.",
+          "witness": {
+            "path": "tests/tracer/measurement-output-journey.mjs",
+            "start": 44,
+            "end": 52,
+            "sha256": "591b09ea314098100a09eca463a9c8be3a7ae913a3485b297ecb77de4a29df33"
+          }
+        },
+        {
+          "id": "digests",
+          "description": "Malformed and mismatching manifest digests refuse preparation before output allocation and preserve all inputs.",
+          "witness": {
+            "path": "tests/tracer/measurement-output-journey.mjs",
+            "start": 54,
+            "end": 59,
+            "sha256": "56a8f93bddc3a7151645d99e967fd003fa99b1ac78c8e73295508a6a1eae11e4"
+          }
+        },
+        {
+          "id": "parent",
+          "description": "An owned parent made world-writable refuses preparation before output allocation and remains unchanged. Foreign ownership and concurrent replacement are unclaimed.",
+          "witness": {
+            "path": "tests/tracer/measurement-output-journey.mjs",
+            "start": 61,
+            "end": 67,
+            "sha256": "1cde7c68b8e66da2ff57bdc3e15dd8d214ceee196d74dbffddbb963d586e22f9"
+          }
+        },
+        {
+          "id": "malformed",
+          "description": "Malformed JSON paired with its true digest refuses preparation before output allocation and preserves source/evidence.",
+          "witness": {
+            "path": "tests/tracer/measurement-output-journey.mjs",
+            "start": 69,
+            "end": 73,
+            "sha256": "8b618a68c1b81adf1c95228b2c10671e3fdc24dc18173a2197411b337c9e4c3c"
+          }
+        },
+        {
+          "id": "export-options",
+          "description": "Missing and dangling output/include options, an unknown flag and unsafe include refuse export with fixed error, empty stdout, absent destination and unchanged source/evidence.",
+          "witness": {
+            "path": "tests/tracer/measurement-output-journey.mjs",
+            "start": 75,
+            "end": 85,
+            "sha256": "a3c0386e17b8384f7150e15107cab4232651638f5fe3ca52ff2c754417beb0cb"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 36,
+            "end": 37,
+            "sha256": "e3186796743cf0f9b5cd7ec24f15277f9448b28ce42d4a3404206b75c0360d5a"
+          },
+          "expectation": "metadata",
+          "why": "Analysis stdout and persisted report agree with independent version, paths, notice, total bytes, digest, file count and source identity checks. Copy directories are private 0700 and every copied file and report is 0600."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 49,
+            "end": 54,
+            "sha256": "ca874678e37e68e3369b4cab2c270c6e3ff491d724ab0e6bd9ae1a63ea33c46a"
+          },
+          "expectation": "metadata",
+          "why": "Analysis stdout and persisted report agree with independent version, paths, notice, total bytes, digest, file count and source identity checks. Copy directories are private 0700 and every copied file and report is 0600."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 62,
+            "end": 68,
+            "sha256": "4bec5d6cfa430811d8f4431c2d7d61ded8846d3cbbc4d56ce9c63bb1b1cbcee8"
+          },
+          "expectation": "metadata",
+          "why": "Analysis stdout and persisted report agree with independent version, paths, notice, total bytes, digest, file count and source identity checks. Copy directories are private 0700 and every copied file and report is 0600."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 71,
+            "end": 81,
+            "sha256": "458e361c40cc4c6c4a029388ca0d6c158d3c4fed110c83d7bfbb2f0181635c5a"
+          },
+          "expectation": "options",
+          "why": "Missing, unknown, duplicate and dangling arguments exit 2 with fixed generic error, empty stdout, absent destination and unchanged complete external/source snapshots."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 83,
+            "end": 83,
+            "sha256": "7be939bddeef3df02d5e31f8073c29aa9ebd87c0988660daa1196ed429781932"
+          },
+          "expectation": "options",
+          "why": "Missing, unknown, duplicate and dangling arguments exit 2 with fixed generic error, empty stdout, absent destination and unchanged complete external/source snapshots."
+        },
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 48,
+            "end": 55,
+            "sha256": "8bacbf6c8d9dddab5a56f631d94d02383018790585129f084d7195e1aa9fbba2"
+          },
+          "expectation": "digests",
+          "why": "Malformed and mismatching manifest digests refuse preparation before output allocation and preserve all inputs."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 24,
+            "end": 24,
+            "sha256": "23f1b9cc1defcc9c528637fbe52980e874287c9ea7a4213d1b16fe532a785a66"
+          },
+          "expectation": "digests",
+          "why": "Malformed and mismatching manifest digests refuse preparation before output allocation and preserve all inputs."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 20,
+            "end": 23,
+            "sha256": "d556232e77b84d4b70b792998192b24b61d2b2e0954be17dcbce531960f05454"
+          },
+          "expectation": "parent",
+          "why": "An owned parent made world-writable refuses preparation before output allocation and remains unchanged. Foreign ownership and concurrent replacement are unclaimed."
+        },
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 56,
+            "end": 57,
+            "sha256": "01293d8f0623090826fbe0888afdd21927cc9a3060a6a90f59ddab25fb6e8192"
+          },
+          "expectation": "malformed",
+          "why": "Malformed JSON paired with its true digest refuses preparation before output allocation and preserves source/evidence."
+        },
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 86,
+            "end": 86,
+            "sha256": "6f41106cb5344d1a6a3b1d702f8ee0419124dddd0f2650499015c7fc2bc52c1c"
+          },
+          "expectation": "export-options",
+          "why": "Missing and dangling output/include options, an unknown flag and unsafe include refuse export with fixed error, empty stdout, absent destination and unchanged source/evidence."
+        },
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 107,
+            "end": 114,
+            "sha256": "4debc7b314e4f68277c25940d0032fd731aaa5d93e0b1670f58b52271bd194c0"
+          },
+          "expectation": "export-options",
+          "why": "Missing and dangling output/include options, an unknown flag and unsafe include refuse export with fixed error, empty stdout, absent destination and unchanged source/evidence."
+        },
+        {
+          "source": {
+            "path": "scripts/export-cli-source-manifest.mjs",
+            "start": 118,
+            "end": 118,
+            "sha256": "3e803edba2d173b7f15e8441ed55b885da11612f80d55cad0436070f9d0e1707"
+          },
+          "expectation": "export-options",
+          "why": "Missing and dangling output/include options, an unknown flag and unsafe include refuse export with fixed error, empty stdout, absent destination and unchanged source/evidence."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "source-provenance-recovery",
+      "title": "Synthetic source provenance continuation",
+      "steps": [
+        "isolate-measurement-output"
+      ]
+    }
+  ]
+}

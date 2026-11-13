@@ -1,14 +1,73 @@
-# Coverage goal checkpoint, November 13, 2026
+# Assertion-map checkpoint, November 13, 2026
 
-The resumed goal is 100% overall Tracer coverage with fewer meaningful journeys
-and better agent tooling. This checkpoint is an increment, not completion.
-Production source remains at `9d4f717`; only journey coverage, reviewed mappings
-and documentation changed in this batch. The previous two weeks of Scriv and
-`pcopu/tracerCLI` commits were reviewed before selecting work.
+This records the earlier assertion-mapping effort, not completion. The user
+subsequently cleared the exhaustive goal and redirected work to the faster
+[measurement-first workflow](measurement-first-coverage.md).
+Application, Core, helper and build-input source remains at `9d4f717`.
+This batch changes CLI journey assertions, reviewed mappings, documentation and
+the JavaScript test runner's native-signature guard.
 
 ## Current checkpoint
 
-The second reuse increment reaches **6,176 / 30,831 assertion-linked lines
+The integrated Tracer report records **6,403 / 30,846 assertion-linked lines
+(20.76%)**, with 24,443 lines below the unchanged one-trace minimum. All 2,520
+links and 1,211 comment declarations pass integrity checks. The denominator
+includes 15 added runner lines. Source exclusions and the minimum are unchanged.
+These figures describe manual source-to-assertion mapping. Whole-project measured
+execution coverage remains unknown; native measurement results are recorded in
+the workflow above. The former exhaustive goal is no longer active.
+
+Thirteen reviewed catalogs add 121 associations and 234 previously unlinked
+lines over the repaired 6,169-line baseline. Compared with the published
+6,176-line checkpoint, the net gain is 227 lines. Review removed or narrowed
+seven previously claimed lines, comprising three unsupported workspace-reset lines
+and four changed runner-branch lines. The completed historical planning
+milestone remains preserved separately.
+
+Nine selected native journeys passed their final public CLI runs using the
+updated runner and a restored copy of the retained automation bundle. Every
+run passed strict signature verification before and after execution, and its
+recorded bundle identity stayed unchanged during the run. The selected journeys
+cover audio library, generation review, local images, word timing, project
+creation, projects, settings navigation, save-failure recovery and text identity.
+Earlier failed attempts remain recorded separately. The historical 39 permitted
+native passes retain their original scope. The denied character-alias AppKit
+fallback was never retried.
+
+The retained original bundle was later found to be missing two sealed assets.
+It and its evidence were preserved. A new copy received the exact sealed asset
+bytes from a verified installed donor, without re-signing, and passed strict
+signature and icon checks. The earlier 80-file and later 77-file fingerprints
+alone do not establish valid signatures. The cause of the missing assets and
+the remaining one-file count difference are unresolved.
+
+The final test-source manifest has SHA-256
+`f902bf9cdd1f493496b89b6b0fe4a8ab1ae4985d39d6d0b535d1a30768db2d63`.
+Its delta against the original build source was checked. Compiled application,
+Core, helper and build-input bytes are unchanged. The runner explicitly reports
+`sourceToAppMatch: not-established`, with the source comparison retained as
+separate evidence. This adds no new compilation, cryptographic build attestation,
+notarization or distribution evidence.
+
+Two extended local service journeys passed. Billing adds 23 HTTP assertions
+with zero additional provider calls. Revision safety completes 173 HTTP checks,
+including 50 new requests and 13 rejection boundaries. The provenance journey
+passes 18 checks. The signature-guard regression and the other tooling journeys
+pass 18/18, with zero native scenarios in that tooling run. These results use
+isolated fixtures. Real billing operations remain outside the authorized scope.
+Empty generation-job lists continue to support idle-state assertions only.
+Generation-journal recovery and remaining unasserted paths stay open.
+
+Tracer's report-only integration preflight is published in `pcopu/tracerCLI`
+commit `94cdc66`. It identifies new associations, identical associations and
+conflicts before integration. Its aggregate check passed 139 tests, with four
+existing skips, and all 434 links passed integrity checks. An independent
+post-publication run passed on that exact commit with a clean checkout before
+and after. The installed Tracer binary remains unchanged.
+
+## Historical second reuse increment
+
+The second reuse increment reached **6,176 / 30,831 assertion-linked lines
 (20.03%)**. It adds 724 previously unlinked lines and 214 reviewed associations;
 all 2,399 links and 1,211 comment declarations pass integrity checks. There are
 24,655 lines below the unchanged one-trace minimum. The denominator and source
@@ -31,8 +90,8 @@ generation-journal recovery, and the unopened jobs screen and editor-draft
 journal remain gaps. Playback device output, drawing/dragging and unasserted
 callback, ownership and failure paths remain unclaimed.
 
-All **39 permitted native journeys** have now passed on the pinned automation
-build across the retained batches. The character-alias fallback remains blocked
+At that checkpoint, all **39 permitted native journeys** had passed against
+their recorded source and bundle fingerprints. The character-alias fallback remains blocked
 and was not retried, so this is not a complete 40-journey suite pass. The earlier
 capture-limited run remains a failed run even though its interrupted journey
 passed later. All 17 public CLI tooling checks and the separate provenance
@@ -51,7 +110,7 @@ in `pcopu/tracerCLI` commit `8d0cfa5`. Its required aggregate check passed 137
 tests, with four existing Linux-only skips. The owned checkout is used
 explicitly; the installed binary and installed skill were not changed.
 
-## First reuse increment
+## Historical first reuse increment
 
 The next increment reuses existing journeys without changing application or test
 source. Current assertion-linked lines are **5,452 / 30,831 (17.68%)**, leaving
@@ -99,7 +158,7 @@ hashes and explicit continuation commands. It does not execute a journey or
 approve a mapping. The installed Tracer remains unchanged; this work uses the
 owned checkout explicitly.
 
-## First increment accounting
+## Historical first increment accounting
 
 Tracer 0.3 at `8e12583`, run explicitly from the owned checkout, reports:
 
@@ -117,7 +176,7 @@ exclusions or minimums changed. `check --require-minimum` correctly exits 1 for
 the remaining gaps. The completed historical planning milestone remains intact;
 the current proposal has 553 current associations and 514 scenario plans.
 
-## Asserted workflows
+## Earlier asserted workflows
 
 The document-integrity journey now continues through a cross-scene entry move
 and image revision lineage. Source-only and incomplete destination edits are
@@ -147,7 +206,7 @@ journeys. The four use local fixtures; no real billing operation occurred.
 All seventeen tooling journeys passed, and the batch passed cloud typechecking,
 repository checks, catalog checks and whitespace validation.
 
-## Native measurements
+## Earlier native measurements
 
 A fresh standalone-CLI automation build from an immutable source copy passed
 Developer ID signature, icon and Catalyst platform checks. It used the existing

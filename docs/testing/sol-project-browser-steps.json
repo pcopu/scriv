@@ -1,0 +1,255 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "sol-project-browser-filter-open",
+      "title": "Filter local projects and reopen without model changes",
+      "preconditions": [
+        "Fresh ScrivSession-owned synthetic root only. SCRIV_E2E_APP is an automation-enabled Catalyst bundle. Native execution NOT RUN by author.",
+        "Ordered public calls below include existing two-pass search/modal-routing prelude. click(title) performs waitFor(unique enabled/hittable title-or-label) then activate(snapshot path). waitFor performs snapshot reads at 50ms until predicate, 15000ms default. waitForSavedProject reads persisted-projects at 75ms, retrying only exact publication-pending error.",
+        "original and created are real persisted-projects observations. Baselines are complete loaded-project objects captured before navigation. No setters, fixtures or filesystem writes outside app-owned fresh root. New project is created through existing browser button.",
+        "The post-New-project snapshot may require Close Projects if still mounted, as explicitly recorded. Final close runs on all outcomes."
+      ],
+      "actions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP)",
+        "session.waitFor(enabled hittable workspace-project)",
+        "session.command(\"activate\", {target:\"workspace-project\"})",
+        "session.waitFor(Find a project placeholder)",
+        "session.command(\"text\", {target:search.path,text:\"no-such-synthetic-project-7c891\"})",
+        "session.waitFor(text === \"No matching projects\")",
+        "session.command(\"select\", {target:\"workspace-tabs\",index:1}) [required rejection]",
+        "click(\"Clear search\")",
+        "session.waitFor(Find a project text === \"\")",
+        "click(\"Close Projects\")",
+        "session.waitFor(workspace-project enabled/hittable and browser absent)",
+        "session.command(\"activate\", {target:\"workspace-project\"})",
+        "session.waitFor(Find a project placeholder)",
+        "session.command(\"text\", {target:search.path,text:\"no-such-synthetic-project-7c891\"})",
+        "session.waitFor(text === \"No matching projects\")",
+        "session.command(\"select\", {target:\"workspace-tabs\",index:1}) [required rejection]",
+        "click(\"Clear search\")",
+        "session.waitFor(Find a project text === \"\")",
+        "click(\"Close Projects\")",
+        "session.waitFor(workspace-project enabled/hittable and browser absent)",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session, project.title === \"YAM MAN\")",
+        "session.command(\"loaded-project\")",
+        "session.command(\"activate\", {target:\"workspace-project\"})",
+        "click(\"New project\")",
+        "waitForSavedProject(session, project.id !== original.id)",
+        "session.command(\"snapshot\")",
+        "click(\"Close Projects\") [only if browser remains mounted]",
+        "session.waitFor(workspace-project title === \"Untitled\")",
+        "session.command(\"loaded-project\")",
+        "session.command(\"activate\", {target:\"workspace-project\"})",
+        "click(\"Scriv Cloud\")",
+        "session.waitFor(text === \"Your scriv cloud\")",
+        "click(\"Team projects\")",
+        "session.waitFor(text === \"Your team projects\")",
+        "click(\"On this Mac\")",
+        "session.waitFor(hittable Find a project)",
+        "session.command(\"text\", {target:search.path,text:\"  yAm mAn  \"})",
+        "session.waitFor(selected footer === \"YAM MAN \u00b7 \" + expected.scenes.length + scene pluralization)",
+        "click(\"Open project\")",
+        "session.waitFor(workspace-project title === \"YAM MAN\" and browser absent)",
+        "session.command(\"loaded-project\")",
+        "session.command(\"presented-alerts\")",
+        "session.command(\"activate\", {target:\"workspace-project\"})",
+        "click(\"Recent\")",
+        "session.waitFor(hittable Find a project)",
+        "session.command(\"text\", {target:search.path,text:\"  uNtItLeD  \"})",
+        "session.waitFor(selected footer === \"Untitled \u00b7 \" + expected.scenes.length + scene pluralization)",
+        "click(\"Open project\")",
+        "session.waitFor(workspace-project title === \"Untitled\" and browser absent)",
+        "session.command(\"loaded-project\")",
+        "session.command(\"presented-alerts\")",
+        "session.command(\"persisted-projects\")",
+        "session.close() [finally]"
+      ],
+      "expectations": [
+        {
+          "id": "signed-out",
+          "description": "Both signed-out source choices show the exact explanatory message, disabled Open project, and visible Sign in to Scriv button.",
+          "witness": {
+            "path": "tests/e2e/projects.mjs",
+            "start": 43,
+            "end": 48,
+            "sha256": "fc182435e4cfb750e246f5fbea9b7269f2680b88412da4f9e541fc8f19315960"
+          }
+        },
+        {
+          "id": "opened",
+          "description": "Whitespace-trimmed mixed-case local/recent queries select the expected metadata footer. Opening each project dismisses browser and restores full loaded-project model including exact date bits, with no presented error.",
+          "witness": {
+            "path": "tests/e2e/projects.mjs",
+            "start": 52,
+            "end": 59,
+            "sha256": "7f2f0bc8f38dc9f3ffa9bf0172740fdb20c75381ae37d34f43d38aac85fa6078"
+          }
+        },
+        {
+          "id": "preserved",
+          "description": "Exactly two owned saved packages remain, with entire original and created project objects equal to their saved baselines.",
+          "witness": {
+            "path": "tests/e2e/projects.mjs",
+            "start": 65,
+            "end": 68,
+            "sha256": "f1f48f2d916c7e09dbd95aaae45f247a09df7465901aefa5d3b79965ffecef80"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 84,
+            "end": 85,
+            "sha256": "fd0b21464f3a5883097acc8d4d284daef61db81d121aba2f40f0c85b38c65369"
+          },
+          "expectation": "signed-out",
+          "why": "Real sidebar source actions switch to cloud/team and back to local/recent."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 108,
+            "end": 110,
+            "sha256": "57c730f8ffb0909dca42f5bb55bb5165cc0abe25e9d36bc7b4d34fd16349ad31"
+          },
+          "expectation": "signed-out",
+          "why": "Local candidates disappear in signed-out cloud/team sources. Team/private remote predicates are unclaimed with an empty account."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 132,
+            "end": 137,
+            "sha256": "ac6636331b6a12509d98bfb457226754ed80cfd64429f94667c5afd205896003"
+          },
+          "expectation": "signed-out",
+          "why": "Empty sources disable opening and later local results restore the selected project footer."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 139,
+            "end": 148,
+            "sha256": "ce21fcb7badc0208f5be9efab61aa57df1aed1a1cb008447c317e35f4978c507"
+          },
+          "expectation": "signed-out",
+          "why": "Both signed-out source empty states show their exact title, explanation and sign-in control. Sign-in action and image rendering are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 99,
+            "end": 102,
+            "sha256": "85562c47f5412453a4d773392725190257d723ff582e7b369a845021603db2ed"
+          },
+          "expectation": "opened",
+          "why": "Saved local summaries populate titles used by mixed-case filters and selected footer."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 115,
+            "end": 116,
+            "sha256": "bb8650eb0f1c3b54983ce827501048010b75e9e3e781ece498c6180cb2887f66"
+          },
+          "expectation": "opened",
+          "why": "Both whitespace-trimmed mixed-case queries select the independently known saved project."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 120,
+            "end": 121,
+            "sha256": "5acd52282b440eff1fa1460dc9e3ace6f0837692182451815fbe50ea6790dd90"
+          },
+          "expectation": "opened",
+          "why": "Filtered result becomes selected and opening loads its exact identity/model."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 128,
+            "end": 130,
+            "sha256": "8250773dfc4e4b0deb161835b2ab6e4f94aea85c826173dab954734d47ef0d97"
+          },
+          "expectation": "opened",
+          "why": "Reload publishes the filtered selection and footer subsequently used for Open."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 94,
+            "end": 94,
+            "sha256": "24436fdaabc4e8075106d57c524de44ab76544d4990cf8c37bbd827a4bd5808e"
+          },
+          "expectation": "opened",
+          "why": "Actual Open project footer button dispatches selected local opening."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 173,
+            "end": 175,
+            "sha256": "1ca8f8f19890399c248aeafe9016ab9e7c10b5f93046115d1c0cd9684a8e7f92"
+          },
+          "expectation": "opened",
+          "why": "Selected local package opens and browser dismisses. No remote opening claim."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 178,
+            "end": 178,
+            "sha256": "981654ca60fa716fa718f5e00b7254925ab4bfc85095c6c18885a09a54c9261f"
+          },
+          "expectation": "opened",
+          "why": "Text-field editing reloads real filtered results."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
+            "start": 74,
+            "end": 74,
+            "sha256": "52c2e2457d455c6ac6af86611d0c8a8405849b02a10c6e7840cdf96d0fd87162"
+          },
+          "expectation": "opened",
+          "why": "Browser dismisses after the loaded project identity changes."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1817,
+            "end": 1817,
+            "sha256": "88b1dd8a2e928290c4a7e266f542227e1ef7ffc3d4646db2988db39737e80bef"
+          },
+          "expectation": "opened",
+          "why": "Public browser opening installs the saved loaded project with full equality observed through read-only loaded-project."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 2452,
+            "end": 2452,
+            "sha256": "87a59fa272dfc547a1ceea5a66f62f1601b94c3b3cea51d8e8c137a1f71e0239"
+          },
+          "expectation": "preserved",
+          "why": "Actual browser enumeration retains both owned saved packages through source filtering and switch-away/reopen."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "project-browser",
+      "title": "Project browser filter and local reopen",
+      "steps": [
+        "sol-project-browser-filter-open"
+      ]
+    }
+  ]
+}

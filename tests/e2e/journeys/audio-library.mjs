@@ -4,13 +4,14 @@ import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { audioProjectFixture, audioDirectionProjectFixture, syntheticPCM, verifyImportedAsset, invalidAudioRequests,
   invalidTimingDrafts, stableContent, editedContent, syntheticFilename, draftBaseline, trackBaseline } from './support/audio-library-fixtures.mjs';
 import { audioLibrarySteps, sortedProjects } from './support/audio-library-steps.mjs';
+import { audioBoundaryCases, runAudioBoundarySteps } from './support/audio-boundary-steps.mjs';
 import { sourceShrinkCases, runAudioSourceShrinkSteps } from './support/audio-source-shrink-steps.mjs';
 import { attachmentCases, directionAttachmentCases, runAudioAttachmentSteps } from './support/audio-attachment-steps.mjs';
 
 // AUT-J13/AUT-J14 initial semantic-import/library/numeric-timing portions only.
 // Each group owns a fresh actual app. No picker, microphone, playback-output,
 // private menu handler, domain-model setter, storage fault or parallel decoder.
-const defaultGroups = ['import', 'mix', 'timing', 'attachment', 'attachment-direction', 'timing-source-shrink'];
+const defaultGroups = ['import', 'mix', 'timing', 'attachment', 'attachment-direction', 'timing-source-shrink', 'timing-boundaries'];
 // Each accepted interaction group runs in its own isolated app session.
 const groups = defaultGroups;
 const args = process.argv.slice(2);
@@ -19,6 +20,7 @@ assert.ok(args.every((arg, index) => arg === '--list-cases' || arg === '--group'
 const selected = args.includes('--group') ? [args[args.indexOf('--group') + 1]] : defaultGroups;
 assert.ok(selected.every(group => groups.includes(group)), `Choose --group ${groups.join(', ')}`);
 const cases = {
+  'timing-boundaries': audioBoundaryCases,
   'timing-source-shrink': sourceShrinkCases,
   attachment: attachmentCases,
   'attachment-direction': directionAttachmentCases,
@@ -183,6 +185,10 @@ async function runGroup(group) {
           current = await mutation(before, editedContent(before, project => { project.audioVolume = muted ? 0 : 0.25; }));
         });
       }
+      await run('browser-reopen', reopen);
+    } else if (group === 'timing-boundaries') {
+      await run('dialogue-import', () => importClip('selected-dialogue', { entryId: 'line1' }));
+      current = await runAudioBoundarySteps({ session, ui, run, saved, unchanged, mutation, current });
       await run('browser-reopen', reopen);
     } else if (group === 'timing-source-shrink') {
       await run('dialogue-import', () => importClip('selected-dialogue', { entryId: 'line1' }));

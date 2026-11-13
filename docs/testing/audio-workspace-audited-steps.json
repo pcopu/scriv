@@ -98,8 +98,8 @@
           "description": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted.",
           "witness": {
             "path": "tests/e2e/journeys/audio-library.mjs",
-            "start": 130,
-            "end": 145,
+            "start": 132,
+            "end": 147,
             "sha256": "5f83f4c5e97b0db2d3e5db88294d326bfdf8637c739056acc02ebed1e2f5fe6a"
           }
         }
@@ -389,8 +389,8 @@
           "description": "Exact saved-model assertions observe master volume 0.25, then 0, then restoration to 0.25, each as one accepted revision; save/browser/reopen retains the full model. The current-project volume-memory storage and key are associated with this accepted path. Cross-project mute-memory isolation, nonfinite direct inputs, range-clamp rejection and audible gain are not asserted.",
           "witness": {
             "path": "tests/e2e/journeys/audio-library.mjs",
-            "start": 175,
-            "end": 186,
+            "start": 177,
+            "end": 188,
             "sha256": "21856bc50b75847fdc35eeddc4ae97097ccca804aaeddb7361fb744dd5b7b332"
           }
         }
@@ -427,7 +427,7 @@
       ],
       "actions": [
         "import-json {text: JSON.stringify(word timing fixture)}; import-audio {base64:syntheticPCM().toString(\"base64\"),attachment:\"scene\"}",
-        "menu-action {target: observed Layers word two button, action:\"Edit word timing…\"}; activate word-timing-chip-w1; text word-timing-start 0.1000; text word-timing-end 0.7000; activate word-timing-chip-w2; text word-timing-start 1.2000; text word-timing-end 1.7000; revisit both chips; activate Cancel",
+        "menu-action {target: observed Layers word two button, action:\"Edit word timing\u2026\"}; activate word-timing-chip-w1; text word-timing-start 0.1000; text word-timing-end 0.7000; activate word-timing-chip-w2; text word-timing-start 1.2000; text word-timing-end 1.7000; revisit both chips; activate Cancel",
         "reopen word timing; activate word-timing-chip-w1; text word-timing-end 1.2000; activate Save timing; snapshot overlap notice; activate word-timing-chip-w2; text word-timing-start 1.2000; revisit both chips; activate Save timing",
         "persisted-projects; loaded-project; reopen word timing; activate Cancel; reopen saved project; inspect all three word chips; activate Cancel"
       ],
@@ -437,8 +437,8 @@
           "description": "The actual plural store wrapper commits one complete reviewed adjacent-word transaction: w1 ends at 1200 and w2 starts at 1200/ends at 1600 with authored markers; w3, text, cues, audio and 3000 ms owned duration remain exact. Reopening retains the saved transaction. The singular setter and phrase-shift wrapper remain outside this association.",
           "witness": {
             "path": "tests/e2e/journeys/word-timing.mjs",
-            "start": 19,
-            "end": 38,
+            "start": 26,
+            "end": 45,
             "sha256": "8ca0778f45bea2002b523778ef6d3f932cb550bb8d550a37e6f62f9581d9e946"
           }
         }

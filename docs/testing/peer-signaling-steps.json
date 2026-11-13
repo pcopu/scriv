@@ -18,8 +18,8 @@
           "description": "HTTP 201 returns a synthetic project owned by the team owner.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 164,
-            "end": 164,
+            "start": 179,
+            "end": 179,
             "sha256": "8db76466b35a88598a1982657d587ce6b6281aa678fe93adf2cf078f19a27952"
           }
         }
@@ -42,8 +42,8 @@
           "description": "Each authenticated socket receives hello for its own session and the empty project.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 168,
-            "end": 168,
+            "start": 183,
+            "end": 183,
             "sha256": "0bb85737492ffc3132403bbb81e2d2ba548d8234b4af9e9c43a94c183d26dca2"
           }
         }
@@ -79,8 +79,8 @@
           "description": "B receives exactly the A-authored offer through HTTP and WebSocket; sender fields cannot be forged; C own inbox and socket receive none; C reading B inbox returns 403 not_allowed.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 174,
-            "end": 174,
+            "start": 189,
+            "end": 189,
             "sha256": "bbbfc067ad04d696e07b45dd65cb5d037531e37ff7676bd93639dbb5e4228913"
           }
         }
@@ -116,8 +116,8 @@
           "description": "Binary JSON WebSocket answer reaches A with exactly B authenticated device/user identity and payload in both live and durable envelopes; after B and C watermark barriers, B retains only its original offer and C has no signals.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 180,
-            "end": 180,
+            "start": 195,
+            "end": 195,
             "sha256": "87d63e7156b8a084f0e85c52fb8b7b000a6fb4ffb28361c593263f63adf189e0"
           }
         }
@@ -163,8 +163,8 @@
           "description": "Exactly 50000 UTF-8 payload bytes are accepted as ICE and returned exactly after the offer cursor; the complete B inbox is exactly the original offer plus accepted ICE and is saved as the rejection baseline.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 189,
-            "end": 189,
+            "start": 204,
+            "end": 204,
             "sha256": "4ff12290c3c51e67d9a77c184e6ddb1c03466a4ce70975cafe5d5d953cdf1509"
           }
         }
@@ -209,8 +209,8 @@
           "description": "The specific reject-large-payload input returns HTTP 413 signal_too_large; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 203,
-            "end": 203,
+            "start": 218,
+            "end": 218,
             "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
           }
         }
@@ -245,8 +245,8 @@
           "description": "The specific reject-invalid-signal-type input returns HTTP 400 invalid_signal; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 203,
-            "end": 203,
+            "start": 218,
+            "end": 218,
             "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
           }
         }
@@ -281,8 +281,8 @@
           "description": "The specific reject-nonobject-payload input returns HTTP 400 invalid_field; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 203,
-            "end": 203,
+            "start": 218,
+            "end": 218,
             "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
           }
         }
@@ -317,8 +317,8 @@
           "description": "The specific reject-invalid-recipient input returns HTTP 400 invalid_id; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 203,
-            "end": 203,
+            "start": 218,
+            "end": 218,
             "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
           }
         }
@@ -353,8 +353,8 @@
           "description": "The specific reject-expired-recipient input returns HTTP 404 peer_unavailable; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 203,
-            "end": 203,
+            "start": 218,
+            "end": 218,
             "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
           }
         }
@@ -389,8 +389,8 @@
           "description": "The specific reject-outsider-recipient input returns HTTP 404 not_found; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 203,
-            "end": 203,
+            "start": 218,
+            "end": 218,
             "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
           }
         }
@@ -425,8 +425,8 @@
           "description": "The specific reject-oversized-envelope input returns HTTP 413 body_too_large; the complete intended inbox remains exactly the saved original offer and accepted ICE, including IDs, timestamps, sender identity and payload.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 203,
-            "end": 203,
+            "start": 218,
+            "end": 218,
             "sha256": "b1ae3e583583752eb1541c7ec0aeec525e3bab2be29824c3365e2d2b9a3f3846"
           }
         }
@@ -461,8 +461,8 @@
           "description": "Unsupported signalType receives invalid_signal on the still-open authenticated sender socket; the entire B inbox, including IDs, timestamps, sender identity and payload, remains identical to the saved baseline.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 208,
-            "end": 208,
+            "start": 223,
+            "end": 223,
             "sha256": "fc2e1314d6721c588b9773021618d2ad9de6bcd6d0d61278535df6a97a48d1ef"
           }
         }
@@ -507,8 +507,8 @@
           "description": "Both supported asset notification types are accepted and returned with exact hash payloads in the intended explicit-device inbox.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 213,
-            "end": 213,
+            "start": 228,
+            "end": 228,
             "sha256": "c18359128516c6017b9cd75845b22610e1bf589ad484ce49ae4340f00a916811"
           }
         }
@@ -542,8 +542,8 @@
           "description": "Before revocation B sees its main and secondary live sessions, while its already-expired session is absent.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 217,
-            "end": 217,
+            "start": 232,
+            "end": 232,
             "sha256": "24f028bf4ea05a339e08188859286c0e536d4039fb03d949a02ebad810f284a4"
           }
         }
@@ -567,8 +567,8 @@
           "description": "Public session revocation succeeds; revoked and already-expired senders receive session_expired and a revoked recipient receives peer_unavailable.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 222,
-            "end": 222,
+            "start": 237,
+            "end": 237,
             "sha256": "47a9ec674a3b6d9be5779aae0af632811353d10fc43b9bb169508cf7aa2d2831"
           }
         }
@@ -613,8 +613,8 @@
           "description": "One public command durably stores all five exact item kinds and authored fields, including word timings, Unicode links, image metadata and anchored cue, then the viewer snapshot has five version-one items, head sequence one and timing version one.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 238,
-            "end": 238,
+            "start": 253,
+            "end": 253,
             "sha256": "c0c9b95218fd8231ed7b32aed824b3336398719ae6fe968f3ac346722ef6da90"
           }
         }
@@ -709,8 +709,8 @@
           "description": "The fresh reject-item-identity item command returns HTTP 400 item_identity; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -745,8 +745,8 @@
           "description": "The fresh reject-item-byte-limit item command returns HTTP 413 item_too_large; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -781,8 +781,8 @@
           "description": "The fresh reject-scene-order item command returns HTTP 400 invalid_order; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -817,8 +817,8 @@
           "description": "The fresh reject-entry-word-order item command returns HTTP 400 word_order; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -853,8 +853,8 @@
           "description": "The fresh reject-entry-surrogate-link item command returns HTTP 400 invalid_character_links; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -889,8 +889,8 @@
           "description": "The fresh reject-unconfirmed-link item command returns HTTP 400 invalid_character_links; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -925,8 +925,8 @@
           "description": "The fresh reject-direction-words item command returns HTTP 400 direction_timing; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -961,8 +961,8 @@
           "description": "The fresh reject-word-timing-source item command returns HTTP 400 invalid_word_timing_source; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -997,8 +997,8 @@
           "description": "The fresh reject-empty-character-name item command returns HTTP 400 invalid_name; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -1033,8 +1033,8 @@
           "description": "The fresh reject-character-alias-bound item command returns HTTP 400 invalid_field; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -1069,8 +1069,8 @@
           "description": "The fresh reject-image-filename item command returns HTTP 400 invalid_filename; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -1105,8 +1105,8 @@
           "description": "The fresh reject-image-digest item command returns HTTP 400 invalid_hash; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -1141,8 +1141,8 @@
           "description": "The fresh reject-image-media item command returns HTTP 400 invalid_media; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -1177,8 +1177,8 @@
           "description": "The fresh reject-image-duplicate-tags item command returns HTTP 400 duplicate_character; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -1213,8 +1213,8 @@
           "description": "The fresh reject-unpaired-cue-anchor item command returns HTTP 400 invalid_cue_anchor; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -1249,8 +1249,8 @@
           "description": "The fresh reject-cue-offset-bound item command returns HTTP 400 invalid_field; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -1285,8 +1285,8 @@
           "description": "The fresh reject-missing-scene-reference item command returns HTTP 400 invalid_reference; exact viewer snapshot items, head sequence and timing version remain unchanged.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 263,
-            "end": 263,
+            "start": 278,
+            "end": 278,
             "sha256": "6ac159ab42467aa50e40ab9acac0992704822168e46011af3ba6cff80d838ca5"
           }
         }
@@ -1310,8 +1310,8 @@
           "description": "The independently specified accept-nel-words dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 279,
-            "end": 279,
+            "start": 294,
+            "end": 294,
             "sha256": "334894d594f7c21572931a0a31a0d22e5a424a143c557e10733072189c2da6fe"
           }
         }
@@ -1356,8 +1356,8 @@
           "description": "The independently specified accept-bom-word dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 279,
-            "end": 279,
+            "start": 294,
+            "end": 294,
             "sha256": "334894d594f7c21572931a0a31a0d22e5a424a143c557e10733072189c2da6fe"
           }
         }
@@ -1402,8 +1402,8 @@
           "description": "The independently specified accept-combining-whitespace dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 279,
-            "end": 279,
+            "start": 294,
+            "end": 294,
             "sha256": "334894d594f7c21572931a0a31a0d22e5a424a143c557e10733072189c2da6fe"
           }
         }
@@ -1448,8 +1448,8 @@
           "description": "The independently specified accept-emoji-word dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 279,
-            "end": 279,
+            "start": 294,
+            "end": 294,
             "sha256": "334894d594f7c21572931a0a31a0d22e5a424a143c557e10733072189c2da6fe"
           }
         }
@@ -1494,8 +1494,8 @@
           "description": "The independently specified accept-empty-dialogue dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 279,
-            "end": 279,
+            "start": 294,
+            "end": 294,
             "sha256": "334894d594f7c21572931a0a31a0d22e5a424a143c557e10733072189c2da6fe"
           }
         }
@@ -1540,8 +1540,8 @@
           "description": "The independently specified accept-whitespace-dialogue dialogue word array is accepted and preserved exactly in viewer snapshot, advancing sequence and timing once. No native execution is claimed.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 279,
-            "end": 279,
+            "start": 294,
+            "end": 294,
             "sha256": "334894d594f7c21572931a0a31a0d22e5a424a143c557e10733072189c2da6fe"
           }
         }
@@ -1586,8 +1586,8 @@
           "description": "B inbox contains all four signals at an observation before the earliest stored at-plus-120000 deadline, and is empty at a later observation beyond the latest deadline; no continuous timing observation, clock or storage manipulation is claimed.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 284,
-            "end": 284,
+            "start": 299,
+            "end": 299,
             "sha256": "743983744b81ff71d847ba16d7957c95e6da2d5446e037c5ae15ca55d627bc1d"
           }
         }
@@ -1622,8 +1622,8 @@
           "description": "Public B logout closes its existing WebSocket with 4001; subsequent B inbox access returns session_expired and sending to B returns peer_unavailable.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 289,
-            "end": 289,
+            "start": 304,
+            "end": 304,
             "sha256": "7c4ad3229f3919ec16ef5b334ef52d8ad05c5c39cdbded2cb3e09fb55d6a85f8"
           }
         }
@@ -1657,8 +1657,8 @@
           "description": "Owner retains sequence seven and eleven items, R2 stays empty, outbound attempts and socket errors stay zero, and C has never received a signal.",
           "witness": {
             "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
-            "start": 293,
-            "end": 293,
+            "start": 308,
+            "end": 308,
             "sha256": "383de4a3b61f39e6f610d11eac17163f9d7649b49697e313cd2afbd5175baf08"
           }
         }

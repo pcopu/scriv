@@ -26,8 +26,8 @@
           "description": "General thread initially lists empty, creation returns null item and unresolved state, repeat returns the same thread, and list-all contains its ID.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 119,
-            "end": 123,
+            "start": 149,
+            "end": 153,
             "sha256": "c4244b0502dd0cd6496160036fc4e4c1ff17d67fe7b0b06ccbafef73993ceebe"
           }
         },
@@ -36,8 +36,8 @@
           "description": "General thread initially lists empty, creation and repeat return matching state, list-all contains its ID, and invalid scope or missing selected item are rejected.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 119,
-            "end": 125,
+            "start": 149,
+            "end": 155,
             "sha256": "806fffa86b351f23723e6c9c9e59a6e994ce0ae21d087283b598ea9a7a22a580"
           }
         },
@@ -46,8 +46,8 @@
           "description": "General thread begins empty, creation and repeat match, list-all contains its ID, and combined scope and item is rejected.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 119,
-            "end": 124,
+            "start": 149,
+            "end": 154,
             "sha256": "19f37e4584c3161fa90a4ae96bd058ea350476c2987d5e48d9e238dd8a3a65a7"
           }
         },
@@ -56,8 +56,8 @@
           "description": "General thread begins empty, creation has null item and unresolved state, and a repeat returns the same thread.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 119,
-            "end": 122,
+            "start": 149,
+            "end": 152,
             "sha256": "c509ff6699db31853a205d43cedfabc0a9929b6f61f592a0cefc78600bef2982"
           }
         },
@@ -66,8 +66,8 @@
           "description": "Created thread has null item and unresolved state; repeat and list-all identify it, while invalid scope and missing selected item are rejected.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 120,
-            "end": 125,
+            "start": 150,
+            "end": 155,
             "sha256": "e6b157640a38e7714e8e7c493514ab052c284e5d9bf834918eb74da533b9ed40"
           }
         },
@@ -76,8 +76,8 @@
           "description": "A created general thread has null item and unresolved state.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 120,
-            "end": 121,
+            "start": 150,
+            "end": 151,
             "sha256": "6baa76146bc7f2f8b6b569635405843a3ff557698a4ebdfe57dba7cfe20a170b"
           }
         }
@@ -180,7 +180,7 @@
       "title": "Validate general-thread messages and replies",
       "preconditions": [
         "The preceding project and general thread exist in the active synthetic team and the four actor sessions remain valid.",
-        "The thread has no messages; first is the original synthetic message object containing a fresh ID, whitespace-padded body and member mention. The nonexistent reply target and the existing outsider user’s ID are synthetic."
+        "The thread has no messages; first is the original synthetic message object containing a fresh ID, whitespace-padded body and member mention. The nonexistent reply target and the existing outsider user\u2019s ID are synthetic."
       ],
       "actions": [
         "POST /v1/projects/${projectId}/threads/${thread.id}/messages; actor=member; body=first",
@@ -200,8 +200,8 @@
           "description": "Message text, sender and mention are asserted along with identical retry, validation failures, reply and ordered cursor listing.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 127,
-            "end": 142,
+            "start": 157,
+            "end": 172,
             "sha256": "0ca7faf590261781541b2781ac2cbf62433ce0c914f3d5f9239efa01e68ad21e"
           }
         },
@@ -210,8 +210,8 @@
           "description": "The reply points to the first message, listing preserves both IDs in order, and a cursor returns only the later reply.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 137,
-            "end": 142,
+            "start": 167,
+            "end": 172,
             "sha256": "b4119f2e565d274fecfffc2c5b52dc04a83714d8d856457c90d84fa10839d5a0"
           }
         },
@@ -220,8 +220,8 @@
           "description": "The initial message is trimmed with the expected sender and mention; an identical retry matches, changed reuse, blank body and invalid reply are rejected.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 127,
-            "end": 134,
+            "start": 157,
+            "end": 164,
             "sha256": "0d69a0eed5d911e67b2af96ea87120622259db234bde67dd82b4a36131ab64e2"
           }
         },
@@ -230,8 +230,8 @@
           "description": "Message content and mention are asserted; retry, reuse conflict, blank body, invalid reply and invalid or duplicate mentions are checked.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 127,
-            "end": 136,
+            "start": 157,
+            "end": 166,
             "sha256": "8218d1797647606e5e9f9eaaadd671ad133930cfc7772dd7c8c89cb09a68237a"
           }
         },
@@ -240,8 +240,8 @@
           "description": "The first message is trimmed and attributed to the member with the expected mention; identical retry matches and changed reuse is rejected.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 127,
-            "end": 132,
+            "start": 157,
+            "end": 162,
             "sha256": "03c0012621cd65098981455b784ca4503ef3af3d63c181625534bee21f582ff9"
           }
         },
@@ -250,8 +250,8 @@
           "description": "The sent message and mention are checked, as are retry, reuse conflict and invalid message, reply and mention inputs.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 128,
-            "end": 136,
+            "start": 158,
+            "end": 166,
             "sha256": "11c922f7c146171eb408622300030a90aa001fbaddb658bd85da637a6201b18d"
           }
         },
@@ -260,8 +260,8 @@
           "description": "An invalid reply target and invalid mentions are rejected; the valid reply references the first message.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 134,
-            "end": 138,
+            "start": 164,
+            "end": 168,
             "sha256": "c102c921470e1d197a9c0cdfbbfea40a9f77352c48bc66e85c84766118614380"
           }
         }
@@ -369,8 +369,8 @@
           "description": "Resolution and reopening return expected states; history has exactly the expected creation and update event kinds.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 143,
-            "end": 149,
+            "start": 173,
+            "end": 179,
             "sha256": "d0b39c204d1ee7a31f2a66d21a8631ccb3a85ac7e3e62d086a1dc2bf1b9840b2"
           }
         }
@@ -427,8 +427,8 @@
           "description": "Asset requests assert unavailable, authorization and input failures, successful upload and readback, then owner deletion and unavailability.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 168,
-            "end": 188,
+            "start": 198,
+            "end": 218,
             "sha256": "0d3123b97c9264ea226b1274b444d9c1283b198c90ccc1e2eecd2efd66de5e02"
           }
         },
@@ -437,8 +437,8 @@
           "description": "Synthetic PNG-signature bytes labeled JPEG are rejected and valid content-addressed PNG upload and retry return the expected metadata.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 151,
-            "end": 174,
+            "start": 181,
+            "end": 204,
             "sha256": "915a8c2796457353c5220a4084dbcdd0323670838757226bfdfbc829f62eac4a"
           }
         },
@@ -447,8 +447,8 @@
           "description": "Before upload the asset is unavailable; authorization, declared type and content-address validation are checked and valid upload and retry return expected metadata.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 168,
-            "end": 174,
+            "start": 198,
+            "end": 204,
             "sha256": "be71600c489742819951eec5262fd67966bdd8090a931493acb5150ec94092ab"
           }
         },
@@ -457,8 +457,8 @@
           "description": "Asset upload and retry succeed, and download and HEAD assert bytes, content metadata, privacy headers and length.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 168,
-            "end": 182,
+            "start": 198,
+            "end": 212,
             "sha256": "7276758dea4772670894396fa1e695ac7187259083e00d5ddac32cc5b70d3527"
           }
         },
@@ -467,8 +467,8 @@
           "description": "Outsider access and member deletion are denied; bytes remain readable, owner deletion is repeatable and the asset then becomes unavailable.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 183,
-            "end": 188,
+            "start": 213,
+            "end": 218,
             "sha256": "3b9e66b7c8cc4a34b9bda476007d27df1f71c2b9302022f1dcc54566f18bc145"
           }
         },
@@ -477,8 +477,8 @@
           "description": "After denied member deletion, owner deletes twice; unavailable read, empty R2 and zero asset rows are asserted.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 183,
-            "end": 190,
+            "start": 213,
+            "end": 220,
             "sha256": "4b067d6c624536efd79075d5a93c0d128f89d89c5caa10b0c2c1f38a52ff6cf9"
           }
         },
@@ -487,8 +487,8 @@
           "description": "Fresh upload and identical retry return the same expected content metadata and leave exactly one R2 object.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 172,
-            "end": 175,
+            "start": 202,
+            "end": 205,
             "sha256": "86055121eb5c396c5e30efdcb3724c51d879f672cea8e114192852cd24251a98"
           }
         },
@@ -497,8 +497,8 @@
           "description": "Fresh upload and retry return expected metadata; the downloaded bytes, type, hash and ETag match.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 172,
-            "end": 179,
+            "start": 202,
+            "end": 209,
             "sha256": "8181e15803d73c94373a200fc5f7309f2dab1788be972929200fc6a1aba68bf4"
           }
         },
@@ -507,8 +507,8 @@
           "description": "Fresh upload and immediate identical retry return the same expected hash, byte count and hosted flag.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 172,
-            "end": 174,
+            "start": 202,
+            "end": 204,
             "sha256": "86b3ce8a5046bbe7c6cc0f9b1685072a568f30ecdf84ea45c918f78374baa51d"
           }
         }
@@ -644,8 +644,8 @@
           "description": "After the fixture subscription lapse, exact message retry equals the original response, a new message is rejected as read-only, and two messages remain readable.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 191,
-            "end": 195,
+            "start": 221,
+            "end": 225,
             "sha256": "bfb936a86d5a487b0c044739e22dff08df3a8f099de761d3b90e3915734762c6"
           }
         }

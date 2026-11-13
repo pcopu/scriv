@@ -250,8 +250,8 @@
         {
           "source": {
             "path": "scripts/run-service-journeys.mjs",
-            "start": 15,
-            "end": 19,
+            "start": 16,
+            "end": 20,
             "sha256": "43371114fff1f2d189935a4cb6aca2175b56a394caab921cf06dbcce467c2e48"
           },
           "expectation": "asserted",
@@ -363,8 +363,8 @@
         {
           "source": {
             "path": "scripts/run-service-journeys.mjs",
-            "start": 11,
-            "end": 13,
+            "start": 12,
+            "end": 14,
             "sha256": "7fa079fde8d385d05d8537e6a95bd09d36af60631bb3e75300184a24346212e9"
           },
           "expectation": "asserted",

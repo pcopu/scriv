@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "empty-people",
+      "title": "Review source and People without resolved identities",
+      "preconditions": [
+        "Fresh isolated automation Catalyst session. Production import of generation-review fixture with either empty aliases/appearance/biography or no character identities; all dialogue source retained.",
+        "Run journeys/generation-review --group recovery. No provider or journal fabrication. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+      ],
+      "actions": [
+        "select workspace-tabs Script",
+        "key Command-s",
+        "persisted-projects; image-evidence",
+        "import-json synthetic variant; persisted-projects",
+        "activate generation-review-brief",
+        "select generation-review-tabs index 1",
+        "select generation-review-tabs index 2",
+        "text generation-exact-request Unauthorized replacement (refused)",
+        "select generation-review-tabs index -1 (refused)",
+        "select generation-review-tabs index 3 (refused)",
+        "activate generation-review-done",
+        "activate generation-review-brief",
+        "select generation-review-tabs index 2",
+        "activate generation-review-done",
+        "persisted-projects; image-evidence"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The source and People tabs each display their exact no-resolved-identities disclosure with zero person controls.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/generation-recovery-steps.mjs",
+            "start": 31,
+            "end": 50,
+            "sha256": "b41dcfdf70f3570cb486672ab4a23a1eadf9221910c85b40e6ff4d6fcca020f0"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 236,
+            "end": 236,
+            "sha256": "43e71ff9022787c3c213d7102e33bb2cec4da037403fc394ba6c9ea657dbed2f"
+          },
+          "expectation": "observed",
+          "why": "The source and People tabs each display their exact no-resolved-identities disclosure with zero person controls."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 257,
+            "end": 257,
+            "sha256": "5606493310e87962c88b6b89dce1ead6a051cbba4aee6f2bd31808276f1b0bcb"
+          },
+          "expectation": "observed",
+          "why": "The source and People tabs each display their exact no-resolved-identities disclosure with zero person controls."
+        }
+      ]
+    },
+    {
+      "id": "empty-profile",
+      "title": "Review saved identities with empty profile fields",
+      "preconditions": [
+        "Fresh isolated automation Catalyst session. Production import of generation-review fixture with either empty aliases/appearance/biography or no character identities; all dialogue source retained.",
+        "Run journeys/generation-review --group recovery. No provider or journal fabrication. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md."
+      ],
+      "actions": [
+        "select workspace-tabs Script",
+        "key Command-s",
+        "persisted-projects; image-evidence",
+        "import-json synthetic variant; persisted-projects",
+        "activate generation-review-brief",
+        "select generation-review-tabs index 1",
+        "activate generation-person-mara",
+        "select generation-review-tabs index 2",
+        "text generation-exact-request Unauthorized replacement (refused)",
+        "select generation-review-tabs index -1 (refused)",
+        "select generation-review-tabs index 3 (refused)",
+        "activate generation-review-done",
+        "activate generation-review-brief",
+        "select generation-review-tabs index 2",
+        "activate generation-review-done",
+        "persisted-projects; image-evidence"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Expanded Mara alone displays the three exact missing-profile fallback values, then collapses.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/generation-recovery-steps.mjs",
+            "start": 37,
+            "end": 47,
+            "sha256": "9c19b4d80092149a9b2c04d490556a65c35191a3cbbfc0a2011d099677b3d007"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 280,
+            "end": 284,
+            "sha256": "0392bd76e97e69695535fc045f5739e09ccb902db90336de2e08446dbcf1c541"
+          },
+          "expectation": "observed",
+          "why": "Expanded Mara alone displays the three exact missing-profile fallback values, then collapses."
+        }
+      ]
+    },
+    {
+      "id": "refuse-edits",
+      "title": "Reject edits and invalid tabs then reopen the same request",
+      "preconditions": [
+        "Fresh isolated automation Catalyst session. Production import of generation-review fixture with either empty aliases/appearance/biography or no character identities; all dialogue source retained.",
+        "Run journeys/generation-review --group recovery. No provider or journal fabrication. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md.",
+        "Runs once for each imported variant. Missing-profile variant first collapses generation-person-mara before Exact request."
+      ],
+      "actions": [
+        "select workspace-tabs Script",
+        "key Command-s",
+        "persisted-projects; image-evidence",
+        "import-json synthetic variant; persisted-projects",
+        "activate generation-review-brief",
+        "select generation-review-tabs index 1",
+        "select generation-review-tabs index 2",
+        "text generation-exact-request Unauthorized replacement (refused)",
+        "select generation-review-tabs index -1 (refused)",
+        "select generation-review-tabs index 3 (refused)",
+        "activate generation-review-done",
+        "activate generation-review-brief",
+        "select generation-review-tabs index 2",
+        "activate generation-review-done",
+        "persisted-projects; image-evidence"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Read-only replacement and out-of-range tabs refuse with exact errors, preserving tab/request, complete saved projects and zero jobs through reopen.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/generation-recovery-steps.mjs",
+            "start": 52,
+            "end": 68,
+            "sha256": "7650a6d836d4a083e08a15be1a79cb61aae1b505e07fa8a75c318a15bd90ae6a"
+          }
+        }
+      ],
+      "mappings": []
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "empty-people",
+      "title": "Review source and People without resolved identities",
+      "steps": [
+        "empty-people"
+      ]
+    },
+    {
+      "id": "empty-profile",
+      "title": "Review saved identities with empty profile fields",
+      "steps": [
+        "empty-profile"
+      ]
+    },
+    {
+      "id": "refuse-edits",
+      "title": "Reject edits and invalid tabs then reopen the same request",
+      "steps": [
+        "refuse-edits"
+      ]
+    }
+  ]
+}

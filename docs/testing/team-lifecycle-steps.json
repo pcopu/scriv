@@ -17,8 +17,8 @@
           "description": "Creation returns trimmed name, free plan and authenticated owner role.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 133,
-            "end": 133,
+            "start": 147,
+            "end": 147,
             "sha256": "2e9e94feb63b74cfaa0d0cb9b19df9a796446a053af6d1398aa6f856c247979c"
           }
         }
@@ -71,8 +71,8 @@
           "description": "Readback contains exactly the owner membership and no invitations.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 137,
-            "end": 137,
+            "start": 151,
+            "end": 151,
             "sha256": "3c637914ef9edeacc54bbe8a1781951626bf7a6833dae083d84338af27021ed2"
           }
         }
@@ -105,8 +105,8 @@
           "description": "Owner creates a member invitation with exact one-day lifetime and local URL.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 141,
-            "end": 141,
+            "start": 155,
+            "end": 155,
             "sha256": "3ea6885af796c88a03c3afb133df7f834e443285e4664d20bfa6028c8257b3c5"
           }
         }
@@ -139,8 +139,8 @@
           "description": "A valid invitation cannot admit a member while the team is free.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 145,
-            "end": 145,
+            "start": 159,
+            "end": 159,
             "sha256": "d55c5b5998e054ae5be84978d70d97cc1a69c0bc3523ca44d5fc61bfbbb68464"
           }
         }
@@ -173,8 +173,8 @@
           "description": "Rejected free-plan join leaves only the owner membership.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 149,
-            "end": 149,
+            "start": 163,
+            "end": 163,
             "sha256": "51cda8bc01412e3ef69035943eedf6c74c65531e746867f9777f6d1cd13aad15"
           }
         }
@@ -207,8 +207,8 @@
           "description": "Synthetic fixture setup updates exactly one owned team; no payment or subscription transition is asserted.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 153,
-            "end": 153,
+            "start": 167,
+            "end": 167,
             "sha256": "f93c72cb7595632292017fc9b0bf898deb388609ad7e503f5505bc206bfd8db2"
           }
         }
@@ -230,8 +230,8 @@
           "description": "Entitled team admits a member through its valid invitation.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 157,
-            "end": 157,
+            "start": 171,
+            "end": 171,
             "sha256": "aa6647b91d5d86d5c3e579b7c3e433fc08b867c8fe8bf61b1275b788567368fb"
           }
         }
@@ -264,8 +264,8 @@
           "description": "A sequential duplicate join returns the existing member role.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 161,
-            "end": 161,
+            "start": 175,
+            "end": 175,
             "sha256": "bf46d595172b4563e15f24b9f7a55b58bd6b13f107b28d6b462c0e8dcb734841"
           }
         }
@@ -298,8 +298,8 @@
           "description": "Duplicate join creates no second membership in public readback.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 165,
-            "end": 165,
+            "start": 179,
+            "end": 179,
             "sha256": "f6805121f617a28a8a0f722545e5c0c9091b6ef8c0dfa8c4b46bb8a59a98a823"
           }
         }
@@ -332,8 +332,8 @@
           "description": "Owner creates a viewer invitation with default 30-day lifetime.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 169,
-            "end": 169,
+            "start": 183,
+            "end": 183,
             "sha256": "ca76c6492d31b9ef9fff8cf8c5e021212c35ca178fea1ba2d53f892407f2e876"
           }
         }
@@ -366,8 +366,8 @@
           "description": "Viewer invitation admits the requested viewer role.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 173,
-            "end": 173,
+            "start": 187,
+            "end": 187,
             "sha256": "77aa284fab39ed9eabd3a346f0bec8048052c42ff34587b6502002466646069e"
           }
         }
@@ -400,8 +400,8 @@
           "description": "An existing member joining a viewer invitation retains its member role.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 177,
-            "end": 177,
+            "start": 191,
+            "end": 191,
             "sha256": "e3e10cf3038c612e4e9bdccb2f617214e282f2caeed88adac230547fc456db1c"
           }
         }
@@ -434,8 +434,8 @@
           "description": "Nonmanager member sees membership list but no invitation management rows.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 181,
-            "end": 181,
+            "start": 195,
+            "end": 195,
             "sha256": "c7bc831492e2b8d46ed5c71583a11018efd5e8c53de656f7b05427a5b043b74a"
           }
         }
@@ -468,8 +468,8 @@
           "description": "A nonmanager cannot create invitations.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 185,
-            "end": 185,
+            "start": 199,
+            "end": 199,
             "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
           }
         }
@@ -512,8 +512,8 @@
           "description": "A member cannot rename the team.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 189,
-            "end": 189,
+            "start": 203,
+            "end": 203,
             "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
           }
         }
@@ -546,8 +546,8 @@
           "description": "The owner cannot remove its own membership.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 193,
-            "end": 193,
+            "start": 207,
+            "end": 207,
             "sha256": "7ad2b750ea8224ca606605e60a871e90b40b1f62496a03f210e868b9f510dd83"
           }
         }
@@ -580,8 +580,8 @@
           "description": "Owner can promote a member to admin.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 197,
-            "end": 197,
+            "start": 211,
+            "end": 211,
             "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
           }
         }
@@ -614,8 +614,8 @@
           "description": "Promoted admin reads its persisted role, both invitations, and the unchanged original Synthetic team name after the denied member rename.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 201,
-            "end": 201,
+            "start": 215,
+            "end": 215,
             "sha256": "b6b80ab93654a54d2b0a8aa6b2a2846b04562dba5a8ed0e446a83f8093d5dd37"
           }
         }
@@ -648,8 +648,8 @@
           "description": "Admin can rename the team with whitespace trimmed.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 205,
-            "end": 205,
+            "start": 219,
+            "end": 219,
             "sha256": "5893a5161becc59f586b3ae7a8285e259d4bbb07efce81874f1fb222f55509b1"
           }
         }
@@ -682,8 +682,8 @@
           "description": "Viewer team list reflects the admin rename and unchanged viewer membership.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 209,
-            "end": 209,
+            "start": 223,
+            "end": 223,
             "sha256": "6c83d048745fb77d4d3c134d4e1fb8e99e1f364ebc6113ccf374d92efd3aa552"
           }
         }
@@ -726,8 +726,8 @@
           "description": "An admin cannot appoint another admin.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 213,
-            "end": 213,
+            "start": 227,
+            "end": 227,
             "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
           }
         }
@@ -760,8 +760,8 @@
           "description": "An admin cannot change the owner membership.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 217,
-            "end": 217,
+            "start": 231,
+            "end": 231,
             "sha256": "7ad2b750ea8224ca606605e60a871e90b40b1f62496a03f210e868b9f510dd83"
           }
         }
@@ -794,8 +794,8 @@
           "description": "Admin creates a team project owned by the team owner.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 221,
-            "end": 221,
+            "start": 235,
+            "end": 235,
             "sha256": "4059605311db0190b9b11386a4a262d241cfe0b9a2737712acd20d52805b270a"
           }
         }
@@ -848,8 +848,8 @@
           "description": "Viewer project readback explicitly reports read-only access.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 225,
-            "end": 225,
+            "start": 239,
+            "end": 239,
             "sha256": "492ed6c25937d5c6f77ad72e436e6a788f690ca852c80cc71f419bdbb7f2bf0c"
           }
         }
@@ -912,8 +912,8 @@
           "description": "Admin can promote a viewer to ordinary member.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 229,
-            "end": 229,
+            "start": 243,
+            "end": 243,
             "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
           }
         }
@@ -946,8 +946,8 @@
           "description": "After promotion public project readback changes to member and writable.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 233,
-            "end": 233,
+            "start": 247,
+            "end": 247,
             "sha256": "d77869066cafdc6d8c78d339dfe631f9192755b6a1f159b2efd20cc71a48bc47"
           }
         }
@@ -1010,8 +1010,8 @@
           "description": "A writable ordinary member cannot archive the project.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 237,
-            "end": 237,
+            "start": 251,
+            "end": 251,
             "sha256": "80b2ae04c1a14532c57149af6430e4c57dd6a7b0c0f745e6ea301c3aadbd35c4"
           }
         }
@@ -1044,8 +1044,8 @@
           "description": "A nonowner ordinary member can leave the team.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 241,
-            "end": 241,
+            "start": 255,
+            "end": 255,
             "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
           }
         }
@@ -1088,8 +1088,8 @@
           "description": "Self-leave removes the team and project from public identity lists.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 245,
-            "end": 245,
+            "start": 259,
+            "end": 259,
             "sha256": "19410a4e80b95107f49871ee954a1ad7de549f3f78efa77d17bd6c3b6a599be9"
           }
         }
@@ -1152,8 +1152,8 @@
           "description": "Departed member cannot read the former team project.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 249,
-            "end": 249,
+            "start": 263,
+            "end": 263,
             "sha256": "7ec908805ab29a96887ff81e6ef14f964e5a6fa07bbbba22eabbc91a0819b054"
           }
         }
@@ -1206,8 +1206,8 @@
           "description": "Admin can revoke the viewer invitation.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 253,
-            "end": 253,
+            "start": 267,
+            "end": 267,
             "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
           }
         }
@@ -1250,8 +1250,8 @@
           "description": "Public manager readback marks only the selected invitation revoked.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 257,
-            "end": 257,
+            "start": 271,
+            "end": 271,
             "sha256": "f8cae32d7d9fbf9d92b2d066349a49d88fbadd947f90ffd8a95b92e87fbb02c2"
           }
         }
@@ -1284,8 +1284,8 @@
           "description": "A revoked invitation cannot admit a new outsider.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 261,
-            "end": 261,
+            "start": 275,
+            "end": 275,
             "sha256": "d56c2e597eadbae06fddbb6e4c15452e1a8be168a8096e3b0f87ae65af111330"
           }
         }
@@ -1318,8 +1318,8 @@
           "description": "Rejected revoked invitation leaves outsider without team or project access.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 265,
-            "end": 265,
+            "start": 279,
+            "end": 279,
             "sha256": "19410a4e80b95107f49871ee954a1ad7de549f3f78efa77d17bd6c3b6a599be9"
           }
         }
@@ -1382,8 +1382,8 @@
           "description": "Owner can remove an admin membership.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 269,
-            "end": 269,
+            "start": 283,
+            "end": 283,
             "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
           }
         }
@@ -1426,8 +1426,8 @@
           "description": "Owner readback contains only the owner after self-leave and admin removal.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 273,
-            "end": 273,
+            "start": 287,
+            "end": 287,
             "sha256": "51cda8bc01412e3ef69035943eedf6c74c65531e746867f9777f6d1cd13aad15"
           }
         }
@@ -1460,8 +1460,8 @@
           "description": "Removed admin cannot read the team.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 277,
-            "end": 277,
+            "start": 291,
+            "end": 291,
             "sha256": "7ec908805ab29a96887ff81e6ef14f964e5a6fa07bbbba22eabbc91a0819b054"
           }
         }
@@ -1504,8 +1504,8 @@
           "description": "Owner archives the team project.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 281,
-            "end": 281,
+            "start": 295,
+            "end": 295,
             "sha256": "c981d28eaa81782dfc9bf5252b3a5406d68a03ebc2a773d342101abc8945f599"
           }
         }
@@ -1548,8 +1548,8 @@
           "description": "Archived project disappears from owner project list.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 285,
-            "end": 285,
+            "start": 299,
+            "end": 299,
             "sha256": "191fc6db26623323414d4c0e9b231770fb95589cc61edb2833b23c854ea15623"
           }
         }
@@ -1602,8 +1602,8 @@
           "description": "Even its owner cannot retrieve an archived project via normal project read.",
           "witness": {
             "path": "cloud/tests-e2e/team-lifecycle-journey.mjs",
-            "start": 289,
-            "end": 289,
+            "start": 303,
+            "end": 303,
             "sha256": "7ec908805ab29a96887ff81e6ef14f964e5a6fa07bbbba22eabbc91a0819b054"
           }
         }

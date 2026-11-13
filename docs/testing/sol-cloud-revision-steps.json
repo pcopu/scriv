@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "sol-cloud-revision-boundaries",
+      "title": "Recover from rejected revision commands and lease boundaries",
+      "preconditions": [
+        "Run tracer app -- test services revision-safety against ephemeral local Miniflare with synthetic users, denied outbound, and pinned trusted runtime. Preserve its original 123 HTTP checks and all 18 runtime callbacks.",
+        "The existing appendix leaves three tombstones at head 11, epoch 5, timing 4, plus retained discussion. This extension uses sequential viewer snapshot and full journal observations after each refusal.",
+        "No native, websocket, fault injection, persistence restart, live account or provider behavior is claimed. Lease wall clock fields are omitted from content equality and separately checked against the acquired proof."
+      ],
+      "actions": [
+        "Complete tracer app -- test services revision-safety original 123 HTTP checks",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "POST leases member opening tombstone",
+        "POST leases repeat member opening tombstone",
+        "POST leases owner conflicting member opening lease",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "PATCH leases member valid current proof",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "POST commands new scene then delete absent item",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "POST commands change tombstone scene kind to character",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "POST commands delete existing scene tombstone",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "POST commands viewer fresh scene",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "POST restore member replay owner receipt",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "POST restore owner reused receipt with seq=1",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "GET snapshot seq=6 after=%40",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "GET unknown-revision-route",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "GET snapshot seq=6 limit=0",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "GET events after=-1",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "GET history limit=201",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "GET leases current member proof",
+        "POST commands retry failed transaction ID with new scene only",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer",
+        "POST commands exact recovered-command replay",
+        "GET snapshot as viewer",
+        "GET events after=0 as viewer"
+      ],
+      "expectations": [
+        {
+          "id": "refusals",
+          "description": "Thirteen exact refusals preserve sequential viewer snapshot and complete journal. Lease POST retry returns the same secret receipt; unsupported PATCH preserves the public lease, and cross-actor/changed restore receipt retries reject.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-boundary-cases.mjs",
+            "start": 16,
+            "end": 59,
+            "sha256": "685d0ea30e2316245e0636173f0dd28bed65756e411b4e733c3b8bdb05e43668"
+          }
+        },
+        {
+          "id": "rollback",
+          "description": "A two-operation transaction inserts a new scene then refuses a missing deletion. Every rejection leaves exact prior public state. A corrected retry using that failed command ID persists the new scene at version one with before=null and exactly one independently expected receipt/event; exact replay is inert.",
+          "witness": {
+            "path": "cloud/tests-e2e/revision-boundary-cases.mjs",
+            "start": 39,
+            "end": 76,
+            "sha256": "0fd733b514e3e03f40aa39db55866e5a124e857286e0cbb01d9ade549c38e31d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 252,
+            "end": 253,
+            "sha256": "788e4efa5b68a47368c4d4fb491b49a7a64f8e48b79fa9a808159c6073e5adbe"
+          },
+          "expectation": "rollback",
+          "why": "Missing delete and kind-change attempts reject while exact state remains stable. Corrected retry recovers the first put and command ID after atomic rollback."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 353,
+            "end": 353,
+            "sha256": "9b62f60d8590a579cf46f8d67378c4c572b962ceccdb90c7a5f7b42b960782a4"
+          },
+          "expectation": "refusals",
+          "why": "Viewer fresh command rejects read_only and preserves exact current content and full journal."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 467,
+            "end": 467,
+            "sha256": "e9cd120142f7ec4f0ffc87753f21e9705241ac19b7b143aa8dca0bfcae54502f"
+          },
+          "expectation": "refusals",
+          "why": "PATCH with valid held member lease proof returns method_not_allowed and retains exact lease identity."
+        },
+        {
+          "source": {
+            "path": "cloud/src/project-room.ts",
+            "start": 373,
+            "end": 373,
+            "sha256": "69fd339fde0ca957e3a83dc1f9e919cb1816752fbe00f825751fa7af645bd6e3"
+          },
+          "expectation": "refusals",
+          "why": "An unknown project revision route returns not_found and preserves exact current content/journal."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "sol-cloud-revision-boundaries",
+      "title": "Recover from rejected revision commands and lease boundaries",
+      "steps": [
+        "sol-cloud-revision-boundaries"
+      ]
+    }
+  ]
+}

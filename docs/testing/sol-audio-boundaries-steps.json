@@ -1,0 +1,208 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "audio-boundary-rounded-final-ms",
+      "title": "Reject below-half-millisecond and accept final source millisecond",
+      "preconditions": [
+        "Run tests/e2e/journeys/audio-library.mjs --group timing-boundaries in fresh isolated automation app storage. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md. Existing imported synthetic four-second PCM is the sole clip. Readiness observations may repeat.",
+        "Claims concern persisted metadata and UIKit control state. Device output, playback position, waveform geometry, drawing, dragging, races and storage faults are outside this catalog."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(audioProjectFixture())}",
+        "import-audio {base64: syntheticPCM().toString(\"base64\"), attachment: \"selected-dialogue\"}",
+        "activate {target: observed Audio library control}; activate {target: audio-clip-trim-<imported clip ID>}",
+        "text {target: audio-source-in, text: \"3.999\"}; text {target: audio-duration, text: \"0.00049\"}; text {target: audio-placement-offset, text: \"0.000\"}; activate {target: audio-apply}; persisted-projects",
+        "text {target: audio-source-in, text: \"3.999\"}; text {target: audio-duration, text: \"0.0005\"}; text {target: audio-placement-offset, text: \"86400.001\"}; activate {target: audio-apply}; persisted-projects",
+        "text {target: audio-source-in, text: \"3.999\"}; text {target: audio-duration, text: \"0.0005\"}; text {target: audio-placement-offset, text: \"86400.000\"}; snapshot; activate {target: audio-apply}; persisted-projects; activate {target: observed Close local audio control}; loaded-project; activate {target: observed Audio library control}; snapshot",
+        "activate {target: audio-clip-trim-<imported clip ID>}; text {target: audio-placement-offset, text: \"0.000\"}; activate {target: audio-apply}; persisted-projects; snapshot",
+        "slider {target: observed Clip volume for Synthetic.wav control, value: 0}; persisted-projects",
+        "slider {target: observed Clip volume for Synthetic.wav control, value: 1}; persisted-projects"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "The 0.00049-second duration remains an unapplied draft with unchanged persisted packages. At 0.0005 seconds the saved clip has exactly durationMs 1, sourceStartMs 3999 and startMs 86400000. An offset of 86400.001 seconds is rejected and 86400.000 is accepted. Whole-model revision comparison catches unrelated edits.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/audio-boundary-steps.mjs",
+            "start": 13,
+            "end": 37,
+            "sha256": "bde029da6f02b39363fc74aa5b71fad131d17118c966cca4e8bb91fa9910c284"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 16,
+            "end": 22,
+            "sha256": "ac66b16b1655781d0b197790c735a276b2acc074a05e25fe3ef1443574a476fc"
+          },
+          "expectation": "asserted",
+          "why": "The 0.00049-second duration remains an unapplied draft with unchanged persisted packages. At 0.0005 seconds the saved clip has exactly durationMs 1, sourceStartMs 3999 and startMs 86400000. An offset of 86400.001 seconds is rejected and 86400.000 is accepted. Whole-model revision comparison catches unrelated edits."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 48,
+            "end": 53,
+            "sha256": "ec28bfd1ad628734b969e3e91e34a4bf9bf17f409864b91ff49cfc1f28f5696a"
+          },
+          "expectation": "asserted",
+          "why": "The 0.00049-second duration remains an unapplied draft with unchanged persisted packages. At 0.0005 seconds the saved clip has exactly durationMs 1, sourceStartMs 3999 and startMs 86400000. An offset of 86400.001 seconds is rejected and 86400.000 is accepted. Whole-model revision comparison catches unrelated edits."
+        }
+      ]
+    },
+    {
+      "id": "audio-boundary-outside-scene",
+      "title": "Observe outside-scene warning and restore placement",
+      "preconditions": [
+        "Run tests/e2e/journeys/audio-library.mjs --group timing-boundaries in fresh isolated automation app storage. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md. Existing imported synthetic four-second PCM is the sole clip. Readiness observations may repeat.",
+        "Claims concern persisted metadata and UIKit control state. Device output, playback position, waveform geometry, drawing, dragging, races and storage faults are outside this catalog."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(audioProjectFixture())}",
+        "import-audio {base64: syntheticPCM().toString(\"base64\"), attachment: \"selected-dialogue\"}",
+        "activate {target: observed Audio library control}; activate {target: audio-clip-trim-<imported clip ID>}",
+        "text {target: audio-source-in, text: \"3.999\"}; text {target: audio-duration, text: \"0.00049\"}; text {target: audio-placement-offset, text: \"0.000\"}; activate {target: audio-apply}; persisted-projects",
+        "text {target: audio-source-in, text: \"3.999\"}; text {target: audio-duration, text: \"0.0005\"}; text {target: audio-placement-offset, text: \"86400.001\"}; activate {target: audio-apply}; persisted-projects",
+        "text {target: audio-source-in, text: \"3.999\"}; text {target: audio-duration, text: \"0.0005\"}; text {target: audio-placement-offset, text: \"86400.000\"}; snapshot; activate {target: audio-apply}; persisted-projects; activate {target: observed Close local audio control}; loaded-project; activate {target: observed Audio library control}; snapshot",
+        "activate {target: audio-clip-trim-<imported clip ID>}; text {target: audio-placement-offset, text: \"0.000\"}; activate {target: audio-apply}; persisted-projects; snapshot",
+        "slider {target: observed Clip volume for Synthetic.wav control, value: 0}; persisted-projects",
+        "slider {target: observed Clip volume for Synthetic.wav control, value: 1}; persisted-projects"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Maximum accepted placement displays the explicit after-scene editor warning, then Outside scene and a disabled sole clip play control in the library. Reopening retains canonical 0.001-second duration and 86400.000-second offset. Restoring offset zero creates exactly one saved revision and enables the existing play control. Playback is never activated.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/audio-boundary-steps.mjs",
+            "start": 26,
+            "end": 52,
+            "sha256": "33aa75566c31c3ca477c168fe78ba962805aa5ab61375143c854b99509d3a3a1"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioClipEditorController.swift",
+            "start": 109,
+            "end": 110,
+            "sha256": "d278244595570ae15b472f55f7426413fd42333914edfbcf7205ff52cd900a41"
+          },
+          "expectation": "asserted",
+          "why": "Maximum accepted placement displays the explicit after-scene editor warning, then Outside scene and a disabled sole clip play control in the library. Reopening retains canonical 0.001-second duration and 86400.000-second offset. Restoring offset zero creates exactly one saved revision and enables the existing play control. Playback is never activated."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 268,
+            "end": 268,
+            "sha256": "1e062415822d78eb8e0c6bfa243443f617d8dbfc90e9608c1edfdbe87531f26e"
+          },
+          "expectation": "asserted",
+          "why": "Maximum accepted placement displays the explicit after-scene editor warning, then Outside scene and a disabled sole clip play control in the library. Reopening retains canonical 0.001-second duration and 86400.000-second offset. Restoring offset zero creates exactly one saved revision and enables the existing play control. Playback is never activated."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 277,
+            "end": 277,
+            "sha256": "ca5766e4df89249881d17f80931ddf1ca9bc7d7584b4c3f560f39fd09dac7b81"
+          },
+          "expectation": "asserted",
+          "why": "Maximum accepted placement displays the explicit after-scene editor warning, then Outside scene and a disabled sole clip play control in the library. Reopening retains canonical 0.001-second duration and 86400.000-second offset. Restoring offset zero creates exactly one saved revision and enables the existing play control. Playback is never activated."
+        }
+      ]
+    },
+    {
+      "id": "audio-boundary-volume-endpoints",
+      "title": "Persist independent clip volume endpoints",
+      "preconditions": [
+        "Run tests/e2e/journeys/audio-library.mjs --group timing-boundaries in fresh isolated automation app storage. Native execution results are recorded separately in docs/testing/coverage-goal-20261113.md. Existing imported synthetic four-second PCM is the sole clip. Readiness observations may repeat.",
+        "Claims concern persisted metadata and UIKit control state. Device output, playback position, waveform geometry, drawing, dragging, races and storage faults are outside this catalog."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(audioProjectFixture())}",
+        "import-audio {base64: syntheticPCM().toString(\"base64\"), attachment: \"selected-dialogue\"}",
+        "activate {target: observed Audio library control}; activate {target: audio-clip-trim-<imported clip ID>}",
+        "text {target: audio-source-in, text: \"3.999\"}; text {target: audio-duration, text: \"0.00049\"}; text {target: audio-placement-offset, text: \"0.000\"}; activate {target: audio-apply}; persisted-projects",
+        "text {target: audio-source-in, text: \"3.999\"}; text {target: audio-duration, text: \"0.0005\"}; text {target: audio-placement-offset, text: \"86400.001\"}; activate {target: audio-apply}; persisted-projects",
+        "text {target: audio-source-in, text: \"3.999\"}; text {target: audio-duration, text: \"0.0005\"}; text {target: audio-placement-offset, text: \"86400.000\"}; snapshot; activate {target: audio-apply}; persisted-projects; activate {target: observed Close local audio control}; loaded-project; activate {target: observed Audio library control}; snapshot",
+        "activate {target: audio-clip-trim-<imported clip ID>}; text {target: audio-placement-offset, text: \"0.000\"}; activate {target: audio-apply}; persisted-projects; snapshot",
+        "slider {target: observed Clip volume for Synthetic.wav control, value: 0}; persisted-projects",
+        "slider {target: observed Clip volume for Synthetic.wav control, value: 1}; persisted-projects"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Actual clip slider endpoint changes save exactly volume 0 then 1, each in one revision with every unrelated field preserved. isMuted stays false at both endpoints.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/audio-boundary-steps.mjs",
+            "start": 54,
+            "end": 60,
+            "sha256": "64d9c1b20ea60745cb37cea7010ba4442a52ff3966d60957a7575f62acc3effa"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 119,
+            "end": 119,
+            "sha256": "4ea3aa2434d9efebfef9a6b1b19c6491e573a7c7444692007c7cefc254f5db20"
+          },
+          "expectation": "asserted",
+          "why": "Actual clip slider endpoint changes save exactly volume 0 then 1, each in one revision with every unrelated field preserved. isMuted stays false at both endpoints."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 270,
+            "end": 272,
+            "sha256": "9066f41a69654947a308240132d2b84ed61411046331ca30a53f01d4416c395f"
+          },
+          "expectation": "asserted",
+          "why": "Actual clip slider endpoint changes save exactly volume 0 then 1, each in one revision with every unrelated field preserved. isMuted stays false at both endpoints."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 287,
+            "end": 287,
+            "sha256": "a4aea52be9c1d54e5f07cb7e5d15b65b3442171f714bc4339192c2118be74316"
+          },
+          "expectation": "asserted",
+          "why": "Actual clip slider endpoint changes save exactly volume 0 then 1, each in one revision with every unrelated field preserved. isMuted stays false at both endpoints."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "audio-boundary-rounded-final-ms",
+      "title": "Reject below-half-millisecond and accept final source millisecond",
+      "steps": [
+        "audio-boundary-rounded-final-ms"
+      ]
+    },
+    {
+      "id": "audio-boundary-outside-scene",
+      "title": "Observe outside-scene warning and restore placement",
+      "steps": [
+        "audio-boundary-outside-scene"
+      ]
+    },
+    {
+      "id": "audio-boundary-volume-endpoints",
+      "title": "Persist independent clip volume endpoints",
+      "steps": [
+        "audio-boundary-volume-endpoints"
+      ]
+    }
+  ]
+}

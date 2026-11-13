@@ -22,8 +22,8 @@
           "description": "Two scenes persist exactly at version one and sequence one, with exact receipt and event before=null. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 171,
-            "end": 174,
+            "start": 195,
+            "end": 198,
             "sha256": "7a6153be9c019fc2c273dbe258e2caa4525cc6e3715ef3a1302e7a12ecbfa9b1"
           }
         }
@@ -52,8 +52,8 @@
           "description": "Acquire fence one then renew its unchanged identity/token/fence with a later bounded expiry; public listing omits token. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 175,
-            "end": 180,
+            "start": 199,
+            "end": 204,
             "sha256": "c3705a39a450d6ea3e4a6046095f480b15534c8755abaf8e797c589fb9fd86c8"
           }
         }
@@ -91,8 +91,8 @@
           "description": "DELETE returns ok and removes the active public lease without changing document/events. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 181,
-            "end": 184,
+            "start": 205,
+            "end": 208,
             "sha256": "fd6cc0c7797ff3425e2791b777ba9c046ab0ba1ba347e531f970a88f0751ffb3"
           }
         }
@@ -131,8 +131,8 @@
           "description": "Reacquisition advances fence to two with a new token; old released proof is refused with no document/event mutation. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 185,
-            "end": 189,
+            "start": 209,
+            "end": 213,
             "sha256": "84d3e853d48c5db4262bce3e453d7e1076f80315597dbeeb0b8b4cbf784ef076"
           }
         }
@@ -170,8 +170,8 @@
           "description": "Valid proof cannot be used under a different command session; active lease is unchanged. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 190,
-            "end": 193,
+            "start": 214,
+            "end": 217,
             "sha256": "0e17e62b8388498a643f87e25920cc933ae5678e811eb024d6416ee322dca845"
           }
         }
@@ -208,8 +208,8 @@
           "description": "Delete receipt/event retain deleted before/after content while public tombstone strips data and retains version two. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 195,
-            "end": 197,
+            "start": 219,
+            "end": 221,
             "sha256": "e7fb51d14f2f046970636ac22e34064b211a0e8bdb55ff1b0e597c0c303a70ea"
           }
         }
@@ -246,8 +246,8 @@
           "description": "A put at tombstone version two restores the same identity at version three with exact receipt and deletion-to-live event. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 199,
-            "end": 201,
+            "start": 223,
+            "end": 225,
             "sha256": "fe2239563b3d52ff2da94a2c68f47792345cf9390e4442514ce0aa50aa0bc45f"
           }
         }
@@ -285,8 +285,8 @@
           "description": "Delete second scene and add later scene atomically at sequence four; retain exact tombstone and event before/after values. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 203,
-            "end": 206,
+            "start": 227,
+            "end": 230,
             "sha256": "2b49aa0b67016cf09f3c051f1c0a707cb5ee4764c8a76260e9e10e32954c457e"
           }
         }
@@ -314,8 +314,8 @@
           "description": "Historical sequence two returns only Ending plus empty-data Opening tombstone at version two; sequence three returns recovered Opening v3 and Ending v1; wrong requested epoch is rejected. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 207,
-            "end": 211,
+            "start": 231,
+            "end": 235,
             "sha256": "416e39bf6d2e79f44f3df74acb00e2d578002174b4ba6663deda4c0862afba29"
           }
         }
@@ -383,8 +383,8 @@
           "description": "Restore sequence one resurrects Ending at v3, returns Opening at v4, tombstones later scene at v2, advances epoch to two/timing one, and invalidates active leases. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 213,
-            "end": 216,
+            "start": 237,
+            "end": 240,
             "sha256": "f9aff17b9533af09a9de181e627441ddbb8161815a02040240de690c2ebde595"
           }
         }
@@ -453,8 +453,8 @@
           "description": "Exact old delete request returns original sequence-two receipt after restoration without mutating epoch-two document or events; modified replay is command_reused. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 217,
-            "end": 221,
+            "start": 241,
+            "end": 245,
             "sha256": "6f0319f7451b30975156cc7c7b10d8ad5967d511dd64e6eb9fcde7b652a44a46"
           }
         }
@@ -501,8 +501,8 @@
           "description": "Fresh command with old epoch is rejected before editing restored content. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 222,
-            "end": 224,
+            "start": 246,
+            "end": 248,
             "sha256": "c24b8966985223ba6f85b2dd771cc0f4324b6d72ecb2f003c330111946fcc0e7"
           }
         }
@@ -540,8 +540,8 @@
           "description": "Current epoch and correct version with the pre-restore lease fails lease_required. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 225,
-            "end": 228,
+            "start": 249,
+            "end": 252,
             "sha256": "8b4739d884117bfbad892bbf863535dcb1b13b6b9e013ba1559e1d04a1c3c528"
           }
         }
@@ -569,8 +569,8 @@
           "description": "New epoch lease advances fence to three; stale item version is version_conflict despite fresh valid lease. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 230,
-            "end": 234,
+            "start": 254,
+            "end": 258,
             "sha256": "32dd8032717e1c0cac5927de09e3ed45f0f38825b57d2a64ae7b839400ddb9e9"
           }
         }
@@ -608,8 +608,8 @@
           "description": "Fresh restore beyond head rejects invalid_sequence; old epoch restore rejects stale_epoch; both leave tombstones/history intact. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 235,
-            "end": 238,
+            "start": 259,
+            "end": 262,
             "sha256": "1de3edf0ed7adc93aa3ebaa5a83483374e4608fbac2550d8130e8527d6cc521d"
           }
         }
@@ -647,8 +647,8 @@
           "description": "History pagination after sequence three returns exact command four then restore five, hasMore true then false; before/after changes and restore snapshotRequired are asserted. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 239,
-            "end": 242,
+            "start": 263,
+            "end": 266,
             "sha256": "48ea0f513c8c32828bf0aba763b105e83052540de5a0a92d1511489ce83cdf48"
           }
         }
@@ -707,8 +707,8 @@
           "description": "Wait until actual lease expiry without clock or storage injection; old proof is refused and active lease list empties. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 243,
-            "end": 247,
+            "start": 267,
+            "end": 271,
             "sha256": "a184a3c4b194a10d2c1e4a527f1bbc0d1c046756aab79bc1fe9ed9a058626302"
           }
         }
@@ -735,8 +735,8 @@
           "description": "Reacquire expired lease at fence four, save correct version in epoch two, and preserve unrelated restored Ending and later-scene tombstone. All steps compare current live items, tombstones, epoch, head, timing and ordered event payloads with independent authored expectations. Reuse the refused version-conflict command ID with corrected bytes: failed attempts did not reserve a successful receipt.",
           "witness": {
             "path": "cloud/tests-e2e/revision-safety-journey.mjs",
-            "start": 249,
-            "end": 252,
+            "start": 273,
+            "end": 276,
             "sha256": "39337eed3ddb7030fe37beb6d5d194e6900847c8330f7bf42ea13666836d8484"
           }
         }

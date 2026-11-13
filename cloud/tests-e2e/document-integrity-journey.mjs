@@ -16,39 +16,51 @@ const cloud = await realpath(process.argv[2] === '--owned-child' ? process.argv[
 const self = await realpath(fileURLToPath(import.meta.url));
 if (process.argv[2] !== '--owned-child') {
   const root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-document-integrity-')));
-  let child;
-  let timer;
+  let child, timer, capture, journeyError;
+  let interrupted = false;
   const killOwned = signal => {
     if (child?.pid) {
       try { process.kill(-child.pid, signal); } catch (error) { if (error.code !== 'ESRCH') throw error; }
     }
   };
-  const interrupt = () => killOwned('SIGTERM');
+  const interrupt = () => { interrupted = true; killOwned('SIGTERM'); };
+  process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
   try {
-    for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
-    // Resolve installed dependencies from an owned runner, never edit the repository.
-    await copyFile(self, join(root, 'runner.mjs'));
-    await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
-    child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud], {
-      cwd: root, detached: true, stdio: 'inherit',
-      // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
-      env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
-        XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
-        WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
-    });
-    process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
-    timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
-    const result = await new Promise((resolve, reject) => {
-      child.once('error', reject);
-      child.once('exit', (code, signal) => resolve({ code, signal }));
-    });
-    assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    try {
+      for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
+      capture = process.env.SCRIV_SERVICE_COVERAGE_DIR
+        ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+          .prepareServiceCapture(process.env.SCRIV_SERVICE_COVERAGE_DIR, process.env.SCRIV_TRACER_CLI,
+            { journeyPath: 'cloud/tests-e2e/document-integrity-journey.mjs' }) : null;
+      // Resolve installed dependencies from an owned runner, never edit the repository.
+      await copyFile(self, join(root, 'runner.mjs'));
+      await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
+      assert.equal(interrupted, false, 'Cancelled during preparation; no Worker launched');
+      child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud, ...(capture ? [capture.path] : [])], {
+        cwd: root, detached: true, stdio: 'inherit',
+        // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
+        env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
+          XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
+          WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
+      });
+      timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
+      const result = await new Promise((resolve, reject) => {
+        child.once('error', reject);
+        child.once('exit', (code, signal) => resolve({ code, signal }));
+      });
+      assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    } catch (error) { journeyError = error; }
+    finally {
+      clearTimeout(timer); killOwned('SIGKILL');
+      await rm(root, { recursive: true, force: true });
+      console.log('Owned service process group and temporary state cleaned.');
+    }
+    assert.equal(interrupted, false, 'Cancelled before measurement import');
+    if (capture) await capture.finish(() => interrupted);
+    assert.equal(interrupted, false, 'Cancelled during measurement import; inspect preserved evidence');
+    if (journeyError) throw journeyError;
   } finally {
-    clearTimeout(timer);
     process.off('SIGINT', interrupt); process.off('SIGTERM', interrupt);
-    killOwned('SIGKILL');
-    await rm(root, { recursive: true, force: true });
-    console.log('Owned service process group and temporary state cleaned.');
   }
 } else {
   const root = await realpath(process.argv[3]);
@@ -58,7 +70,10 @@ if (process.argv[2] !== '--owned-child') {
   const { Miniflare, Log, LogLevel, convertV4MiniflareOptions } = await import('miniflare');
   const { unstable_splitSqlQuery } = await import('wrangler');
   const bundle = join(root, 'worker.mjs');
-  await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
+  const capture = process.argv[5]
+    ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+      .loadServiceCapture(process.argv[5]) : null;
+  if (!capture) await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
     bundle: true, format: 'esm', platform: 'neutral', target: 'es2022',
     external: ['cloudflare:*'], logLevel: 'silent' });
   let outboundAttempts = 0;
@@ -70,14 +85,22 @@ if (process.argv[2] !== '--owned-child') {
     unsafeLocalExplorer: false, unsafeObservability: false,
     unsafeEnableSharedStorage: false, logRequests: false, log: new Log(LogLevel.ERROR),
     resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
-    workers: [{ ...common, name: 'scriv', scriptPath: bundle,
-      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test' },
+    workers: [{ ...common, name: 'scriv', ...(capture ? { script: capture.options.script } : { scriptPath: bundle }),
+      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', ...(capture?.options.bindings ?? {}) },
       d1Databases: { DB: 'journey-db' }, r2Buckets: ['ASSETS'],
       durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
     }],
   });
   const mf = new Miniflare(config);
   let requests = 0;
+  let serviceObserver;
+  async function beginCapture() {
+    if (!capture) return;
+    await capture.begin(await mf.ready);
+    const { observeServiceRequests } = await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href);
+    serviceObserver = observeServiceRequests();
+  }
+
   try {
     const db = await mf.getD1Database('DB', 'scriv');
     const migrations = (await readdir(join(cloud, 'migrations'))).filter(name => /^\d+_.+\.sql$/.test(name)).sort();
@@ -145,6 +168,7 @@ if (process.argv[2] !== '--owned-child') {
     const leases=new Map();
     const command=operations=>({commandId:randomUUID(),sessionId:actors.member.sessionId,epoch:1,expectedTimingVersion:baseline?.timingVersion??0,label:'Synthetic document integrity',operations});
     const operation=(id,change)=>{const item=baseline.items.find(x=>x.id===id);return {op:'put',id,kind:item.kind,expectedVersion:item.version,lease:leases.get(id),data:change(structuredClone(item.data))};};
+    await beginCapture();
     await run.step('create-graph', async step=>{
       const created=await step.action('POST synthetic project',()=>request('/v1/projects',post({id:projectId,title:'Synthetic document integrity',teamId})));
       const saved=await step.action('POST commands complete typed graph',()=>request(route('commands'),post(command(graph.map(item=>({...item,op:'put',expectedVersion:0}))))));
@@ -236,6 +260,14 @@ if (process.argv[2] !== '--owned-child') {
     try { console.log(JSON.stringify(await documentGraphTransitionCases({ request, post, teamId, member: actors.member }))); }
     catch (error) { console.error('Document graph transition continuation failed; stack locations only.', String(error.stack).split('\n').filter(line=>/^\s+at /.test(line)).join('\n')); throw error; }
     assert.equal(requests,278); assert.equal(outboundAttempts,0); assert.deepEqual((await bucket.list()).objects,[]);
-    console.log(JSON.stringify({result:'PASS',journey:'document-integrity',requests,outboundAttempts,nativeScenarios:0,workerBundleSHA256:createHash('sha256').update(await readFile(bundle)).digest('hex'),runtime:report}));
-  } finally { await mf.dispose(); }
+    console.log(JSON.stringify({result:'PASS',journey:'document-integrity',requests,outboundAttempts,nativeScenarios:0,workerBundleSHA256:createHash('sha256').update(capture ? capture.options.script : await readFile(bundle)).digest('hex'),runtime:report}));
+  } finally {
+    serviceObserver?.stop();
+    try {
+      if (serviceObserver) {
+        assert.equal(serviceObserver.actions.length, requests, 'Every counted public request has one ordered capture action');
+        await capture.end(await mf.ready, requests, serviceObserver.actions);
+      }
+    } finally { await mf.dispose(); }
+  }
 }

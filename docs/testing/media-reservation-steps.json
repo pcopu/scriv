@@ -6,7 +6,7 @@
       "id": "reserve-hosted-media-v97",
       "title": "Enforce media quota and revoke incomplete uploads safely",
       "preconditions": [
-        "Run the entire public tracer app -- test services discussions-assets command. Original source lines 1–294 and all 63 previous HTTP checks remain exact before this appended 20-request chapter.",
+        "Run the entire public tracer app -- test services discussions-assets command. Original source lines 1\u2013294 and all 63 previous HTTP checks remain exact before this appended 20-request chapter.",
         "Original synthetic team is active with zero storage and empty assets/R2. Fixture setup changes only its storage_limit to 12, saving the original full row. Existing ASSET_MAX_BYTES is 12. Two additional synthetic users/members and three sessions are seeded only for the held-body cases; no real credentials or user content exist.",
         "All uploads, public team reads, deletes, logout and role changes use real loopback HTTP. D1/R2 reads observe complete declared asset/object/team state. Session revocation, member role changes and rate counters are expected exclusions; no claim covers every database table or all R2 metadata.",
         "Each held request has a 10-second bound, 5-second marker polling, exact Content-Length and a one-byte prefix; no production hook or clock override. Other new requests have 5-second bounds and a 110-total request ceiling; original helper caps and 90-second owned-process watchdog remain unchanged.",
@@ -28,8 +28,8 @@
           "description": "With only the synthetic team storage_limit set to 12 and no media present, a 12-byte PNG reaches exact quota and a duplicate retry preserves every row/object/team field. Public team read reports 12. A distinct 3-byte JPEG receives exact 413/storage_quota with all state unchanged. Deleting PNG frees quota, JPEG then uploads successfully, and deleting it twice leaves zero storage and no media; public read reports zero.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 322,
-            "end": 336,
+            "start": 352,
+            "end": 366,
             "sha256": "a38b2352c988c9e9467abea667de42c4ff0ef64318e24eae8339d6835a10571e"
           }
         },
@@ -38,8 +38,8 @@
           "description": "Each successful PNG/JPEG upload has exactly one ready row and one matching R2 object, correct project/team/hash/uploader/MIME/size, null asset ID, exact bytes and specified metadata, and team storage equal to its byte length.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 314,
-            "end": 320,
+            "start": 344,
+            "end": 350,
             "sha256": "325a6ae75e97239c451b87bb5c70044fe9b3db9c0d9a71149fe165544d82dd5a"
           }
         },
@@ -48,9 +48,9 @@
           "description": "For each fresh synthetic user/session, upload and request counters are absent, then each has exactly one count while only one body byte is sent. The upload marker is after initial premium/write authorization, not proof the byte reader has already started. No response or body release precedes the permission transition.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 338,
-            "end": 365,
-            "sha256": "8ff531a57d95f246370a7a0e223f0f485dc0080bbe45a737de8455ab93d98c0d"
+            "start": 368,
+            "end": 396,
+            "sha256": "1de5c6145f9a315ef9d1b5a46097b46f0bdd94db58de25bae40be8bdfcc8b405"
           }
         },
         {
@@ -58,9 +58,9 @@
           "description": "For two fresh synthetic upload users, send only the first PNG byte under exact Content-Length. A fresh upload counter at one proves initial project/premium/write authorization passed; the session request counter is also one. Before any response or body release, publicly log out one attempt session or downgrade the other user to viewer. Complete the body only after verifying that state change. Both held writes return exact 409/upload_unavailable without asset, object or team/quota changes.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 338,
-            "end": 378,
-            "sha256": "fe7c2510d832e8e3e47b35d07067119b6670abe5a1064a6af0160f961f2330d4"
+            "start": 368,
+            "end": 409,
+            "sha256": "c0f89d5a4eb57011b2daa93e3da141d14d95e6b77e12384d70f16d04a8adae9c"
           }
         },
         {
@@ -68,8 +68,8 @@
           "description": "Both held uploads fail with exact 409/upload_unavailable JSON and JSON/no-store/nosniff headers. Complete asset rows, R2 keys/bytes/contentType/customMetadata and all team rows match their pre-upload state; both observed counters remain exact. Session and membership changes are intentional exclusions.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 375,
-            "end": 378,
+            "start": 406,
+            "end": 409,
             "sha256": "e4a23dfb31fe810e1bcc7203af8281324681dee91c84c94d0fe79ad743258317"
           }
         },
@@ -78,8 +78,8 @@
           "description": "After refused held writes, the revoked token receives exact 401 without changing its request marker; a fresh viewer PUT receives exact 402 before changing its upload marker. Retained-session retry after logout and same-session retry after public role restoration each create the exact ready PNG row/R2 bytes/metadata at quota 12. Owner deletion removes it and releases quota. The final original team row and original memberships are restored/preserved; media is empty, 20 new requests finish and unexpected outbound attempts remain zero.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 379,
-            "end": 399,
+            "start": 410,
+            "end": 430,
             "sha256": "f1187860b8768257b87d527ca5d5023cf92213e064350c813335f53010a142c6"
           }
         },
@@ -88,8 +88,8 @@
           "description": "Owner deletes release exactly the reserved bytes. Missing-image DELETE is idempotent without negative or repeated quota release. The distinct JPEG that failed under a full quota succeeds after PNG deletion, and all subsequent deletes leave exact empty media/quota state.",
           "witness": {
             "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-            "start": 327,
-            "end": 336,
+            "start": 357,
+            "end": 366,
             "sha256": "55bd82dfa98b4048be719e95827e743f7c1fa466b79bd20ed11b220786776d92"
           }
         }

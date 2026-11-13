@@ -26,23 +26,42 @@ async function privateDirectory(path) {
   return info;
 }
 
+// Recheck the pinned copies at every actual session boundary, including cold
+// relaunches inside one journey. A scenario-level preflight cannot cover them.
+export async function verifyCoverageContextSources(context, directory) {
+  if (!hex(context.sourceManifestSHA256) || !hex(context.journeySourceManifestSHA256)
+      || typeof context.sourceProvenance?.buildSourceRoot !== 'string'
+      || typeof context.sourceProvenance?.journeySourceRoot !== 'string') fail();
+  const { verifyCoverageSources } = await import('../scripts/collect-cli-coverage.mjs');
+  const comparison = await verifyCoverageSources({ sourceRoot: context.sourceProvenance.journeySourceRoot,
+    sourceOptions: { manifest: join(directory, 'journey-sources.json'), manifestSHA256: context.journeySourceManifestSHA256 },
+    buildSourceRoot: context.sourceProvenance.buildSourceRoot,
+    buildSourceOptions: { manifest: join(directory, 'build-sources.json'), manifestSHA256: context.sourceManifestSHA256 } });
+  if (JSON.stringify(comparison) !== JSON.stringify(context.sourceProvenance)) fail();
+  return comparison;
+}
+
 export async function observeSession(session, executable, capabilities) {
   const contextPath = process.env.SCRIV_E2E_COVERAGE_CONTEXT;
   if (!contextPath) return null;
   const contextInfo = await lstat(contextPath);
-  if (!contextInfo.isFile() || contextInfo.isSymbolicLink() || contextInfo.size > 65536 || (contextInfo.mode & 0o077) || contextInfo.uid !== process.getuid() || await realpath(contextPath) !== contextPath) fail();
+  if (!contextInfo.isFile() || contextInfo.isSymbolicLink() || contextInfo.size > 8 * 1024 * 1024 || (contextInfo.mode & 0o077) || contextInfo.uid !== process.getuid() || await realpath(contextPath) !== contextPath) fail();
   const context = JSON.parse(await readFile(contextPath, 'utf8'));
   const directory = dirname(contextPath);
   const owner = await privateDirectory(directory);
   if (directory === root || directory.startsWith(root + '/') || context.version !== 1 || !uuid(context.invocationID)
       || !/^tests\/e2e\/(?:journeys\/)?[A-Za-z0-9_-]+\.mjs$/.test(context.scenario)
       || !hex(context.executableSHA256) || !hex(context.sourceManifestSHA256) || !hex(context.buildRecordSHA256)
+      || !hex(context.journeySourceManifestSHA256) || context.sourceProvenance?.sourceManifestSHA256 !== context.sourceManifestSHA256
+      || context.sourceProvenance?.journeySourceManifestSHA256 !== context.journeySourceManifestSHA256
+      || context.sourceProvenance?.nativeInputsUnchanged !== true || !Array.isArray(context.sourceProvenance?.differences)
       || !hex(context.probeSHA256) || !Number.isSafeInteger(context.maximumSessions) || context.maximumSessions < 1 || context.maximumSessions > 64) fail();
   const sessionID = capabilities.sessionID ?? capabilities.runID;
   if (!uuid(capabilities.runID) || !uuid(sessionID) || capabilities.coverage?.schemaVersion !== 1 || capabilities.coverage.format !== 'llvm-profraw'
       || capabilities.coverage.cumulative !== true || capabilities.coverage.maximumSnapshotBytes !== 16 * 1024 * 1024
       || !['coverage-snapshot', 'coverage-read', 'coverage-release'].every(name => capabilities.commands?.includes(name))) fail();
   if (await hashFile(executable) !== context.executableSHA256 || (await probeIdentity()).sha256 !== context.probeSHA256) fail();
+  await verifyCoverageContextSources(context, directory);
   // Slots are reserved atomically across app sessions/processes. Never recycle
   // one after failure: the cap bounds all capture attempts in this invocation.
   const slots = join(directory, 'slots'), sessions = join(directory, 'sessions');
@@ -65,6 +84,7 @@ export async function observeSession(session, executable, capabilities) {
   const record = { version: 1, kind: 'scriv-session-coverage', status: 'capturing', invocationID: context.invocationID,
     scenario: context.scenario, runID: sessionID, workspaceID: capabilities.runID, slot, startedAt: new Date().toISOString(), endedAt: null,
     executableSHA256: context.executableSHA256, executableUnchanged: false, sourceManifestSHA256: context.sourceManifestSHA256,
+    journeySourceManifestSHA256: context.journeySourceManifestSHA256, sourceProvenance: context.sourceProvenance,
     buildRecordSHA256: context.buildRecordSHA256, probeSHA256: context.probeSHA256, counterMode: 'cumulative', counterReset: false,
     attribution: 'observed-during-session-not-causal', phase: 'before-profile', profiles: {}, commands,
     limitations: ['One interval per actual app session; sessions are never merged.',
@@ -98,10 +118,12 @@ export async function observeSession(session, executable, capabilities) {
       finishing ??= (async () => {
         try {
           if (!commands.length || commands.some(command => command.status === 'pending')) throw new Error('coverage-incomplete-command-sequence');
+          await verifyCoverageContextSources(context, directory);
           const after = await captureProfile(session.command.bind(session), sessionID, diagnostic, 'after-profile', capabilities.runID);
           await write('after.profraw', after.buffer);
           record.profiles.after = { file: 'after.profraw', sha256: after.sha256, byteCount: after.byteCount, transferCompletedAt: new Date().toISOString() };
           if (await hashFile(executable) !== context.executableSHA256 || (await probeIdentity()).sha256 !== context.probeSHA256) fail();
+          await verifyCoverageContextSources(context, directory);
           record.executableUnchanged = true; record.status = 'captured'; record.phase = 'complete';
         } catch (error) { record.status = 'failed'; throw error; }
         finally { record.endedAt = new Date().toISOString(); await save(); }

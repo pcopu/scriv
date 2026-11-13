@@ -948,8 +948,8 @@
     },
     {
       "path": "cli/coverage-session.mjs",
-      "includedLines": 107,
-      "proposedAssociatedIncludedLines": 107
+      "includedLines": 131,
+      "proposedAssociatedIncludedLines": 131
     },
     {
       "path": "cli/owned-workspace.mjs",
@@ -1113,8 +1113,8 @@
     },
     {
       "path": "scripts/collect-cli-coverage.mjs",
-      "includedLines": 211,
-      "proposedAssociatedIncludedLines": 211
+      "includedLines": 311,
+      "proposedAssociatedIncludedLines": 311
     },
     {
       "path": "scripts/export-cli-source-manifest.mjs",
@@ -1148,13 +1148,13 @@
     },
     {
       "path": "scripts/run-cli-e2e.mjs",
-      "includedLines": 248,
-      "proposedAssociatedIncludedLines": 248
+      "includedLines": 282,
+      "proposedAssociatedIncludedLines": 282
     },
     {
       "path": "scripts/run-service-journeys.mjs",
-      "includedLines": 42,
-      "proposedAssociatedIncludedLines": 42
+      "includedLines": 54,
+      "proposedAssociatedIncludedLines": 54
     },
     {
       "path": "scripts/tracer-cli.mjs",
@@ -1208,8 +1208,8 @@
     },
     {
       "path": "scripts/prepare-coverage-analysis.mjs",
-      "includedLines": 77,
-      "proposedAssociatedIncludedLines": 77
+      "includedLines": 81,
+      "proposedAssociatedIncludedLines": 81
     }
   ],
   "scenarios": [
@@ -5750,7 +5750,7 @@
     },
     {
       "id": "wave81-5-b5c6a44da65d",
-      "title": "Coordinate durable edits and live collaborators — project-room",
+      "title": "Coordinate durable edits and live collaborators \u2014 project-room",
       "featureId": "collaboration",
       "state": "needs-extension",
       "existingPaths": [
@@ -5768,7 +5768,7 @@
     },
     {
       "id": "wave81-5-a6f18184c54a",
-      "title": "Create and review anchored discussions — project-room",
+      "title": "Create and review anchored discussions \u2014 project-room",
       "featureId": "discussions",
       "state": "needs-extension",
       "existingPaths": [
@@ -5785,7 +5785,7 @@
     },
     {
       "id": "wave81-5-d4f89768ffb8",
-      "title": "Exchange bounded peer media signals — project-room",
+      "title": "Exchange bounded peer media signals \u2014 project-room",
       "featureId": "media-sync",
       "state": "unwritten",
       "existingPaths": [],
@@ -5800,7 +5800,7 @@
     },
     {
       "id": "wave81-5-cbf007ea4781",
-      "title": "Find current project members — project-room",
+      "title": "Find current project members \u2014 project-room",
       "featureId": "teams",
       "state": "needs-extension",
       "existingPaths": [
@@ -5817,7 +5817,7 @@
     },
     {
       "id": "wave81-5-f247c4f727a0",
-      "title": "Reject invalid project relationships — project-room",
+      "title": "Reject invalid project relationships \u2014 project-room",
       "featureId": "project-model",
       "state": "needs-extension",
       "existingPaths": [
@@ -5835,7 +5835,7 @@
     },
     {
       "id": "wave81-5-baa193560ef7",
-      "title": "Import, inspect and restore project revisions — project-room",
+      "title": "Import, inspect and restore project revisions \u2014 project-room",
       "featureId": "project-persistence",
       "state": "needs-extension",
       "existingPaths": [
@@ -5853,7 +5853,7 @@
     },
     {
       "id": "wave81-5-55675032900d",
-      "title": "Return bounded failures for invalid requests — project-room",
+      "title": "Return bounded failures for invalid requests \u2014 project-room",
       "featureId": "security-validation",
       "state": "needs-extension",
       "existingPaths": [
@@ -5870,7 +5870,7 @@
     },
     {
       "id": "wave81-5-49989af41deb",
-      "title": "Sign in, inspect sessions and revoke access — project-room",
+      "title": "Sign in, inspect sessions and revoke access \u2014 project-room",
       "featureId": "authentication",
       "state": "needs-extension",
       "existingPaths": [
@@ -5887,7 +5887,7 @@
     },
     {
       "id": "wave81-5-cfe4e5fa6a49",
-      "title": "Author exact script source and boundaries — ScriptScreenController",
+      "title": "Author exact script source and boundaries \u2014 ScriptScreenController",
       "featureId": "script-editing",
       "state": "needs-extension",
       "existingPaths": [
@@ -5905,7 +5905,7 @@
     },
     {
       "id": "wave81-5-4f585de2fabc",
-      "title": "Seek, follow and stop playback — ScriptScreenController",
+      "title": "Seek, follow and stop playback \u2014 ScriptScreenController",
       "featureId": "playback",
       "state": "needs-extension",
       "existingPaths": [
@@ -5922,7 +5922,7 @@
     },
     {
       "id": "wave81-5-2c0785050fee",
-      "title": "Inspect responsive screen layout — ScriptScreenController",
+      "title": "Inspect responsive screen layout \u2014 ScriptScreenController",
       "featureId": "styling-layout",
       "state": "needs-extension",
       "existingPaths": [
@@ -5939,7 +5939,7 @@
     },
     {
       "id": "wave81-5-8535866746bf",
-      "title": "Recover and reconcile a local script draft — ScriptScreenController",
+      "title": "Recover and reconcile a local script draft \u2014 ScriptScreenController",
       "featureId": "script-recovery",
       "state": "unwritten",
       "existingPaths": [],
@@ -5954,7 +5954,7 @@
     },
     {
       "id": "wave81-5-1f3d29b9740b",
-      "title": "Edit duration and authored word timing — ScriptScreenController",
+      "title": "Edit duration and authored word timing \u2014 ScriptScreenController",
       "featureId": "timing",
       "state": "needs-extension",
       "existingPaths": [
@@ -5972,7 +5972,7 @@
     },
     {
       "id": "wave81-5-ea879c8cc9f5",
-      "title": "Create characters and confirm source identities — ScriptScreenController",
+      "title": "Create characters and confirm source identities \u2014 ScriptScreenController",
       "featureId": "character-catalog",
       "state": "needs-extension",
       "existingPaths": [
@@ -5990,7 +5990,7 @@
     },
     {
       "id": "wave81-5-7327e9195a8b",
-      "title": "Create, find and reopen projects and scenes — ScriptScreenController",
+      "title": "Create, find and reopen projects and scenes \u2014 ScriptScreenController",
       "featureId": "project-lifecycle",
       "state": "needs-extension",
       "existingPaths": [
@@ -6008,7 +6008,7 @@
     },
     {
       "id": "wave81-5-27c9de29988c",
-      "title": "Navigate registered app surfaces — ScriptScreenController",
+      "title": "Navigate registered app surfaces \u2014 ScriptScreenController",
       "featureId": "app-shell",
       "state": "needs-extension",
       "existingPaths": [
@@ -6026,7 +6026,7 @@
     },
     {
       "id": "wave81-5-771aa9eacf69",
-      "title": "Create and review anchored discussions — ScrivDiscussionController",
+      "title": "Create and review anchored discussions \u2014 ScrivDiscussionController",
       "featureId": "discussions",
       "state": "unwritten",
       "existingPaths": [],
@@ -6041,7 +6041,7 @@
     },
     {
       "id": "wave81-5-08e491dd27c0",
-      "title": "Author exact script source and boundaries — ScriptTextViews",
+      "title": "Author exact script source and boundaries \u2014 ScriptTextViews",
       "featureId": "script-editing",
       "state": "needs-extension",
       "existingPaths": [
@@ -6059,7 +6059,7 @@
     },
     {
       "id": "wave81-5-7f610ff8ab70",
-      "title": "Inspect responsive screen layout — ScriptTextViews",
+      "title": "Inspect responsive screen layout \u2014 ScriptTextViews",
       "featureId": "styling-layout",
       "state": "needs-extension",
       "existingPaths": [
@@ -6076,7 +6076,7 @@
     },
     {
       "id": "wave81-5-907613ef4976",
-      "title": "Create characters and confirm source identities — ScriptTextViews",
+      "title": "Create characters and confirm source identities \u2014 ScriptTextViews",
       "featureId": "character-catalog",
       "state": "needs-extension",
       "existingPaths": [
@@ -6094,7 +6094,7 @@
     },
     {
       "id": "wave81-5-0a4052c3dc76",
-      "title": "Seek, follow and stop playback — ScriptTextViews",
+      "title": "Seek, follow and stop playback \u2014 ScriptTextViews",
       "featureId": "playback",
       "state": "needs-extension",
       "existingPaths": [
@@ -6111,7 +6111,7 @@
     },
     {
       "id": "wave81-5-14246addf1e1",
-      "title": "Inspect responsive screen layout — AudioUIKitControls",
+      "title": "Inspect responsive screen layout \u2014 AudioUIKitControls",
       "featureId": "styling-layout",
       "state": "needs-extension",
       "existingPaths": [
@@ -6128,7 +6128,7 @@
     },
     {
       "id": "wave81-5-b36749a55a55",
-      "title": "Edit duration and authored word timing — AudioUIKitControls",
+      "title": "Edit duration and authored word timing \u2014 AudioUIKitControls",
       "featureId": "timing",
       "state": "needs-extension",
       "existingPaths": [
@@ -6146,7 +6146,7 @@
     },
     {
       "id": "wave81-5-3ffb5116c9ee",
-      "title": "Import audio and edit its attachment — AudioUIKitControls",
+      "title": "Import audio and edit its attachment \u2014 AudioUIKitControls",
       "featureId": "audio-library",
       "state": "needs-extension",
       "existingPaths": [
@@ -6163,7 +6163,7 @@
     },
     {
       "id": "wave81-5-e2a328cedd8a",
-      "title": "Inspect image provenance and source placement — ImageInspectorControllers",
+      "title": "Inspect image provenance and source placement \u2014 ImageInspectorControllers",
       "featureId": "image-review",
       "state": "needs-extension",
       "existingPaths": [
@@ -6180,7 +6180,7 @@
     },
     {
       "id": "wave81-5-6361a7703b64",
-      "title": "Navigate registered app surfaces — ImageInspectorControllers",
+      "title": "Navigate registered app surfaces \u2014 ImageInspectorControllers",
       "featureId": "app-shell",
       "state": "needs-extension",
       "existingPaths": [
@@ -6198,7 +6198,7 @@
     },
     {
       "id": "wave81-5-b160d43239e7",
-      "title": "Pair a bounded runtime companion session — RuntimeBootstrapXPC",
+      "title": "Pair a bounded runtime companion session \u2014 RuntimeBootstrapXPC",
       "featureId": "runtime-integration",
       "state": "unwritten",
       "existingPaths": [],
@@ -6213,7 +6213,7 @@
     },
     {
       "id": "wave81-5-4f806217c6ee",
-      "title": "Preview and commit a picture split — ImageSplitPreviewController",
+      "title": "Preview and commit a picture split \u2014 ImageSplitPreviewController",
       "featureId": "storyboard",
       "state": "needs-extension",
       "existingPaths": [
@@ -6230,7 +6230,7 @@
     },
     {
       "id": "wave81-5-71b618cfb076",
-      "title": "Navigate registered app surfaces — ScrivUIKitRouter",
+      "title": "Navigate registered app surfaces \u2014 ScrivUIKitRouter",
       "featureId": "app-shell",
       "state": "needs-extension",
       "existingPaths": [
@@ -6248,7 +6248,7 @@
     },
     {
       "id": "wave81-5-b89c602d702f",
-      "title": "Capture bounded provenance-linked evidence — ScrivCLICoverage",
+      "title": "Capture bounded provenance-linked evidence \u2014 ScrivCLICoverage",
       "featureId": "instrumentation",
       "state": "needs-extension",
       "existingPaths": [
@@ -6265,7 +6265,7 @@
     },
     {
       "id": "wave81-5-2224507fc7c6",
-      "title": "Discover and execute owned CLI scenarios — package",
+      "title": "Discover and execute owned CLI scenarios \u2014 package",
       "featureId": "testing-infrastructure",
       "state": "needs-extension",
       "existingPaths": [
@@ -6282,7 +6282,7 @@
     },
     {
       "id": "wave81-5-3eb5662bd330",
-      "title": "Place nonoverlapping cues into timeline lanes — ImagePresentationState",
+      "title": "Place nonoverlapping cues into timeline lanes \u2014 ImagePresentationState",
       "featureId": "layers",
       "state": "needs-extension",
       "existingPaths": [
@@ -6299,7 +6299,7 @@
     },
     {
       "id": "wave81-5-6256c841ff9c",
-      "title": "Sign in, inspect sessions and revoke access — email",
+      "title": "Sign in, inspect sessions and revoke access \u2014 email",
       "featureId": "authentication",
       "state": "needs-extension",
       "existingPaths": [
@@ -6316,7 +6316,7 @@
     },
     {
       "id": "wave81-5-26d01a197da1",
-      "title": "Coordinate durable edits and live collaborators — notifications",
+      "title": "Coordinate durable edits and live collaborators \u2014 notifications",
       "featureId": "collaboration",
       "state": "needs-extension",
       "existingPaths": [
@@ -6653,7 +6653,7 @@
         "tests/tracer/cli-front-door.mjs"
       ],
       "plannedActions": [
-        "Stage a private non-cloud package with one allowlisted 73-byte 2×2 PNG, no generation jobs and a visible workspace or exact inspector preview; call local-image-evidence.",
+        "Stage a private non-cloud package with one allowlisted 73-byte 2\u00d72 PNG, no generation jobs and a visible workspace or exact inspector preview; call local-image-evidence.",
         "Repeat with nonfixture bytes/hash and an out-of-scope active context."
       ],
       "expectedOutcomes": [
@@ -6754,7 +6754,7 @@
         "tests/e2e/journeys/word-timing.mjs"
       ],
       "plannedActions": [
-        "Extend journeys/word-timing with its three-word 3000 ms fixture: prepared local idle workspace, expanded Layers, no modal and unique word label. Send menu-action target that word, action Edit word timing….",
+        "Extend journeys/word-timing with its three-word 3000 ms fixture: prepared local idle workspace, expanded Layers, no modal and unique word label. Send menu-action target that word, action Edit word timing\u2026.",
         "Only after dispatch observe the direct timing form sheet with current scene/navigation/window. Repeat dispatch while the editor is open and refuse it. Cloud-connected/stale/wrong-window/nonunique-label cases use planned public fixtures or explicit static guards."
       ],
       "expectedOutcomes": [
@@ -6769,7 +6769,7 @@
       "state": "unwritten",
       "existingPaths": [],
       "plannedActions": [
-        "Plan public local collaboration/UI fixture text A😀B with a synthetic peer selecting UTF-16 offsets 1..3. Render the real Script display with no playback-word/character-link highlight, then clear peer selection through collaboration input.",
+        "Plan public local collaboration/UI fixture text A\ud83d\ude00B with a synthetic peer selecting UTF-16 offsets 1..3. Render the real Script display with no playback-word/character-link highlight, then clear peer selection through collaboration input.",
         "Statically check empty 1..1, reversed 3..1, negative, end>4 and broken-surrogate 2..3 cases against ScriptAttributedText.make and its real row caller. If transport rejects malformed values first, do not claim dynamic helper coverage or bypass it with a unit suite."
       ],
       "expectedOutcomes": [
@@ -6894,7 +6894,7 @@
       "state": "unwritten",
       "existingPaths": [],
       "plannedActions": [
-        "Plan public collaboration/UI journey for peer Ada and text A😀B: endpoint 3, endpoint 4, changed name, then empty peer list. Inspect real Script marker labels and placement after each update.",
+        "Plan public collaboration/UI journey for peer Ada and text A\ud83d\ude00B: endpoint 3, endpoint 4, changed name, then empty peer list. Inspect real Script marker labels and placement after each update.",
         "Use planned guarded workspace resize to change measured width by >0.5 points. Statically inspect negative/out-of-bounds/broken-surrogate endpoint 2, width<=1 and nonfinite caret geometry, rather than directly constructing private views."
       ],
       "expectedOutcomes": [
@@ -7301,7 +7301,7 @@
         "Set zoom below, within and above the supported range, including a value requiring two-decimal rounding; safely try non-finite input if the route permits it and relaunch the persistent workspace."
       ],
       "expectedOutcomes": [
-        "Zoom is clamped to 0.7–2.0, rounded to two decimals, rejects non-finite values, and a saved valid preference is restored."
+        "Zoom is clamped to 0.7\u20132.0, rounded to two decimals, rejects non-finite values, and a saved valid preference is restored."
       ]
     },
     {
@@ -7337,7 +7337,7 @@
         "Delay a controlled synchronization operation for project A, switch to project B and complete B, then release the old A response."
       ],
       "expectedOutcomes": [
-        "The stale A operation does not populate B’s workspace or synchronization state; cancellation does not imply a remote request was undone."
+        "The stale A operation does not populate B\u2019s workspace or synchronization state; cancellation does not imply a remote request was undone."
       ]
     },
     {
@@ -7484,7 +7484,7 @@
       "state": "unwritten",
       "existingPaths": [],
       "plannedActions": [
-        "Using controlled local service fixtures create a team, join a specified team with a valid invitation, create and copy that team’s join link, then submit an invalid invitation."
+        "Using controlled local service fixtures create a team, join a specified team with a valid invitation, create and copy that team\u2019s join link, then submit an invalid invitation."
       ],
       "expectedOutcomes": [
         "The successful operations produce their corresponding team or link effects; invalid invitation input is reported as an error."
@@ -7521,7 +7521,7 @@
         "Compare example stable IDs and literal timing tables; statically inspect all18 entry definitions and19 cue labels. Do not credit browser search/cancel/delete to this constructor."
       ],
       "expectedOutcomes": [
-        "Blank has INT. LOCATION — DAY, direction Describe the opening moment. at order0/owned0/coverage3000, dialogue Your first line. at order1, cue01A0..3000.",
+        "Blank has INT. LOCATION \u2014 DAY, direction Describe the opening moment. at order0/owned0/coverage3000, dialogue Your first line. at order1, cue01A0..3000.",
         "Example has scene-farm, character-randy/character-miyazaki/character-franklin, line-01..line-16 plus direction-08/direction-10,19 fixed cue IDs, and source-table word IDs/timings for line-08/line-10. Persistence is separate."
       ]
     },
@@ -7655,7 +7655,7 @@
         "tests/e2e/journeys/project-history.mjs"
       ],
       "plannedActions": [
-        "Plan planned public CLI-driven native Settings > Show package… for an owned saved synthetic package. Use a permitted future chooser observer/control route to inspect initial directory; cancel, reopen and choose a sibling synthetic folder/package inside the same owned parent.",
+        "Plan planned public CLI-driven native Settings > Show package\u2026 for an owned saved synthetic package. Use a permitted future chooser observer/control route to inspect initial directory; cancel, reopen and choose a sibling synthetic folder/package inside the same owned parent.",
         "Compare current project identity/URL and package bytes. Statically check projectURL.deletingLastPathComponent and ignored completion URL; do not imply the system picker itself lacks all file-management actions."
       ],
       "expectedOutcomes": [
@@ -8175,7 +8175,7 @@
       "state": "unwritten",
       "existingPaths": [],
       "plannedActions": [
-        "Use a planned owned CLI seeded character review to show an allowlisted synthetic 2×2 PNG portrait or permitted crop, inspect the rendered view, then attempt an unowned asset, invalid region and changed navigation context."
+        "Use a planned owned CLI seeded character review to show an allowlisted synthetic 2\u00d72 PNG portrait or permitted crop, inspect the rendered view, then attempt an unowned asset, invalid region and changed navigation context."
       ],
       "expectedOutcomes": [
         "The allowed synthetic image or valid crop renders in its owning mounted screen. Invalid source, region or changed ownership/context is rejected; this helper is not a general command or evidence exporter."
@@ -8244,7 +8244,7 @@
         "For one cue preview a duration scrub and finish or cancel it, then attempt a second finish. Separately try a word transfer with valid and mismatched project, scene, navigation, revision, cue, and duplicate or empty IDs."
       ],
       "expectedOutcomes": [
-        "The duration draft’s finished latch prevents a second finish and cancel does not commit. Word-transfer canApply is a stateless validation and alone does not establish one-shot mutation."
+        "The duration draft\u2019s finished latch prevents a second finish and cancel does not commit. Word-transfer canApply is a stateless validation and alone does not establish one-shot mutation."
       ]
     },
     {
@@ -8319,11 +8319,13 @@
       ],
       "plannedActions": [
         "In a disposable fixture repository list entrypoints and select an exact allowed scenario using the runner; separately force a preflight failure and run a controlled child that fails or times out.",
-        "Capture the retained run record, selected source/app identities and owned process-group cleanup result; compare a producer-declared coverage identity record only when present."
+        "Capture the retained run record, selected source/app identities and owned process-group cleanup result; compare a producer-declared coverage identity record only when present.",
+        "Through the public runner select workspace with a synthetic unsigned non-executable .app on Darwin and inspect retained prelaunch refusal evidence. Use permitted signed native runs for acceptance, and separately arrange controlled post-run/post-export signature invalidation without bypassing signing or launching modified code."
       ],
       "expectedOutcomes": [
-        "Known selected entrypoints run in their own process groups and preflight failures are reported before launch.",
-        "Evidence is retained and cleanup is reported as group termination/exit or uncertain; detached descendants and all temporary files are not promised cleaned, and ordinary source-to-app identity remains unestablished without a producer-declared record."
+        "On Darwin, an unsigned non-executable app fixture is rejected before any selected eligible native scenario starts, retains null app identity and the distinct app-signature-verification-failed blocker, and preserves the fixture bytes.",
+        "Successful identity handling for a signed bundle requires a real permitted native run. Post-run and post-export signature failures leave appUnchanged unknown and retain failure evidence. Coverage import is skipped after export identity failure.",
+        "Known selected entrypoints run in owned process groups. Evidence retains termination/exit or uncertain cleanup scope, with producer-declared source/build identity separate from cryptographic attestation."
       ]
     },
     {
@@ -8461,7 +8463,7 @@
       "state": "unwritten",
       "existingPaths": [],
       "plannedActions": [
-        "Plan planned public CLI-driven native Layers word-block secondary-click/Control-click using a future guarded physical route; inspect Edit word timing…, dismiss, then hold/drag the same real block and observe usability.",
+        "Plan planned public CLI-driven native Layers word-block secondary-click/Control-click using a future guarded physical route; inspect Edit word timing\u2026, dismiss, then hold/drag the same real block and observe usability.",
         "Statically inspect set(menu), set replacement, set nil and nil on new view; do not invent an app control to call the helper. Existing semantic menu-action is dispatch only, not evidence of native menu/long-press behavior."
       ],
       "expectedOutcomes": [
@@ -8556,10 +8558,10 @@
       "state": "unwritten",
       "existingPaths": [],
       "plannedActions": [
-        "In an owned synthetic script with one dialogue D and one direction, open D’s entry menu and choose Import audio for this dialogue with an isolated fixture; inspect the import target. Inspect the direction menu separately."
+        "In an owned synthetic script with one dialogue D and one direction, open D\u2019s entry menu and choose Import audio for this dialogue with an isolated fixture; inspect the import target. Inspect the direction menu separately."
       ],
       "expectedOutcomes": [
-        "The dialogue action dispatches importAudio with D’s ID; the direction does not offer that dialogue-only action. Waveform and trim behavior are outside this range."
+        "The dialogue action dispatches importAudio with D\u2019s ID; the direction does not offer that dialogue-only action. Waveform and trim behavior are outside this range."
       ],
       "candidateStartingPoints": [
         "tests/e2e/journeys/audio-library.mjs"
@@ -8708,7 +8710,7 @@
       ],
       "expectedOutcomes": [
         "While generating, stage uses durable progress or controller status and elapsed uses job createdAt or view fallback with no time estimate.",
-        "Requested cancellation shows Requesting cancellation… and disabled Cancelling… while activity continues. isGenerating false hides view, stops spinner, clears elapsed and invalidates timer; a windowless view also invalidates it. No task-stop guarantee follows from the button press alone."
+        "Requested cancellation shows Requesting cancellation\u2026 and disabled Cancelling\u2026 while activity continues. isGenerating false hides view, stops spinner, clears elapsed and invalidates timer; a windowless view also invalidates it. No task-stop guarantee follows from the button press alone."
       ]
     },
     {
@@ -8768,10 +8770,10 @@
         "tests/e2e/journeys/line-duration.mjs"
       ],
       "plannedActions": [
-        "Through separate controls set one line’s duration and one direction’s coverage endpoint, inspect their milliseconds and another entry, then submit an invalid duration."
+        "Through separate controls set one line\u2019s duration and one direction\u2019s coverage endpoint, inspect their milliseconds and another entry, then submit an invalid duration."
       ],
       "expectedOutcomes": [
-        "The two timing changes affect their intended targets; accepted seconds are finite, bounded to 0–3600 and rounded to milliseconds, while invalid input is rejected."
+        "The two timing changes affect their intended targets; accepted seconds are finite, bounded to 0\u20133600 and rounded to milliseconds, while invalid input is rejected."
       ]
     },
     {
@@ -8974,7 +8976,7 @@
       ],
       "expectedOutcomes": [
         "Both distinct job-scoped keys are accepted; the duplicate compound key fails and existing metadata remains intact.",
-        "Deleting job a cascades its operations without deleting b’s; the schema itself does not implement request-hash replay semantics."
+        "Deleting job a cascades its operations without deleting b\u2019s; the schema itself does not implement request-hash replay semantics."
       ]
     },
     {
@@ -8990,7 +8992,7 @@
         "Open Who is pictured for a known image, toggle a known character on, close and reopen, then toggle it off and compare an unrelated image and prompt."
       ],
       "expectedOutcomes": [
-        "The chosen image’s tag reflects each saved toggle; the unrelated image and prompt remain unchanged."
+        "The chosen image\u2019s tag reflects each saved toggle; the unrelated image and prompt remain unchanged."
       ]
     },
     {
@@ -9587,7 +9589,7 @@
       "uncertainty": "Implementation, public CLI extensions, execution and unplanned variants remain unverified. Static checks and synthetic fixtures are not native/provider execution or full-range acceptance.",
       "proposedAssertions": [
         "While generating, stage uses durable progress or controller status and elapsed uses job createdAt or view fallback with no time estimate.",
-        "Requested cancellation shows Requesting cancellation… and disabled Cancelling… while activity continues. isGenerating false hides view, stops spinner, clears elapsed and invalidates timer; a windowless view also invalidates it. No task-stop guarantee follows from the button press alone."
+        "Requested cancellation shows Requesting cancellation\u2026 and disabled Cancelling\u2026 while activity continues. isGenerating false hides view, stops spinner, clears elapsed and invalidates timer; a windowless view also invalidates it. No task-stop guarantee follows from the button press alone."
       ],
       "featureId": "generation-recovery",
       "status": "model-proposed-unreviewed",
@@ -10534,7 +10536,7 @@
       "scenarioIds": [
         "audit-v82-517336c1d22f1cae4b0f"
       ],
-      "rationale": "Replace field edits with the timeline’s tap/nearest-handle callback contract. Public journey and explicitly static checks are separated; source assertions are limited to the assigned responsibility.",
+      "rationale": "Replace field edits with the timeline\u2019s tap/nearest-handle callback contract. Public journey and explicitly static checks are separated; source assertions are limited to the assigned responsibility.",
       "confidence": "medium",
       "uncertainty": "Implementation, public CLI extensions, execution and unplanned variants remain unverified. Static checks and synthetic fixtures are not native/provider execution or full-range acceptance.",
       "proposedAssertions": [
@@ -11565,7 +11567,7 @@
       "confidence": "medium",
       "uncertainty": "Implementation, required public CLI fixture and control routes, execution, and unplanned variants remain unverified.",
       "proposedAssertions": [
-        "The chosen image’s tag reflects each saved toggle; the unrelated image and prompt remain unchanged."
+        "The chosen image\u2019s tag reflects each saved toggle; the unrelated image and prompt remain unchanged."
       ],
       "featureId": "character-catalog",
       "status": "model-proposed-unreviewed",
@@ -11921,7 +11923,7 @@
       "confidence": "medium",
       "uncertainty": "Implementation, required public CLI fixture and control routes, execution, and unplanned variants remain unverified.",
       "proposedAssertions": [
-        "The duration draft’s finished latch prevents a second finish and cancel does not commit. Word-transfer canApply is a stateless validation and alone does not establish one-shot mutation."
+        "The duration draft\u2019s finished latch prevents a second finish and cancel does not commit. Word-transfer canApply is a stateless validation and alone does not establish one-shot mutation."
       ],
       "featureId": "storyboard",
       "status": "model-proposed-unreviewed",
@@ -12507,7 +12509,7 @@
       "confidence": "medium",
       "uncertainty": "Implementation/execution and unplanned variants remain unverified.",
       "proposedAssertions": [
-        "The dialogue action dispatches importAudio with D’s ID; the direction does not offer that dialogue-only action. Waveform and trim behavior are outside this range."
+        "The dialogue action dispatches importAudio with D\u2019s ID; the direction does not offer that dialogue-only action. Waveform and trim behavior are outside this range."
       ],
       "featureId": "audio-library",
       "status": "model-proposed-unreviewed",
@@ -13005,7 +13007,7 @@
       "scenarioIds": [
         "audit-v82-21bf07f73c8e535da864"
       ],
-      "rationale": "Replace receipt/convergence claims with the range’s local UTF-16 selection rendering. Public journey and explicitly static checks are separated; source assertions are limited to the assigned responsibility.",
+      "rationale": "Replace receipt/convergence claims with the range\u2019s local UTF-16 selection rendering. Public journey and explicitly static checks are separated; source assertions are limited to the assigned responsibility.",
       "confidence": "medium",
       "uncertainty": "Implementation, public CLI extensions, execution and unplanned variants remain unverified. Static checks and synthetic fixtures are not native/provider execution or full-range acceptance.",
       "proposedAssertions": [
@@ -14848,7 +14850,7 @@
       "confidence": "medium",
       "uncertainty": "Implementation, required public CLI fixture and control routes, execution, and unplanned variants remain unverified.",
       "proposedAssertions": [
-        "Zoom is clamped to 0.7–2.0, rounded to two decimals, rejects non-finite values, and a saved valid preference is restored."
+        "Zoom is clamped to 0.7\u20132.0, rounded to two decimals, rejects non-finite values, and a saved valid preference is restored."
       ],
       "featureId": "styling-layout",
       "status": "model-proposed-unreviewed",
@@ -15508,7 +15510,7 @@
       "confidence": "medium",
       "uncertainty": "Implementation, required public CLI fixture and control routes, execution, and unplanned variants remain unverified.",
       "proposedAssertions": [
-        "The stale A operation does not populate B’s workspace or synchronization state; cancellation does not imply a remote request was undone."
+        "The stale A operation does not populate B\u2019s workspace or synchronization state; cancellation does not imply a remote request was undone."
       ],
       "featureId": "app-shell",
       "status": "model-proposed-unreviewed",
@@ -15794,7 +15796,7 @@
       "confidence": "medium",
       "uncertainty": "Implementation, required public CLI fixture and control routes, execution, and unplanned variants remain unverified.",
       "proposedAssertions": [
-        "The two timing changes affect their intended targets; accepted seconds are finite, bounded to 0–3600 and rounded to milliseconds, while invalid input is rejected."
+        "The two timing changes affect their intended targets; accepted seconds are finite, bounded to 0\u20133600 and rounded to milliseconds, while invalid input is rejected."
       ],
       "featureId": "timing",
       "status": "model-proposed-unreviewed",
@@ -18266,7 +18268,7 @@
       "confidence": "medium",
       "uncertainty": "Implementation, public CLI extensions, execution and unplanned variants remain unverified. Static checks and synthetic fixtures are not native/provider execution or full-range acceptance.",
       "proposedAssertions": [
-        "Blank has INT. LOCATION — DAY, direction Describe the opening moment. at order0/owned0/coverage3000, dialogue Your first line. at order1, cue01A0..3000.",
+        "Blank has INT. LOCATION \u2014 DAY, direction Describe the opening moment. at order0/owned0/coverage3000, dialogue Your first line. at order1, cue01A0..3000.",
         "Example has scene-farm, character-randy/character-miyazaki/character-franklin, line-01..line-16 plus direction-08/direction-10,19 fixed cue IDs, and source-table word IDs/timings for line-08/line-10. Persistence is separate."
       ],
       "featureId": "project-lifecycle",
@@ -18674,10 +18676,16 @@
       "source": {
         "path": "cli/coverage-session.mjs",
         "start": 1,
-        "end": 112,
-        "fileSha256": "239ec6b07415d95fa9f03cac7b0cdeecfd960afbdad4feb906999d125ad06f4a",
-        "spanSha256": "9936a05d991691c699ee64e85725dc33fcac9f3a48a81c080300dc88157531ba",
-        "sha256": "239ec6b07415d95fa9f03cac7b0cdeecfd960afbdad4feb906999d125ad06f4a"
+        "end": 134,
+        "fileSha256": "0da2d8a672c2aad9f003253b2eb60061f6f238514adab09caacb17919142969e",
+        "spanSha256": "c35ad6c4645b78b48900d0d8d6a1fc70c9171fa6daedb581ff653fac44c0f6fd",
+        "sha256": "0da2d8a672c2aad9f003253b2eb60061f6f238514adab09caacb17919142969e"
+      },
+      "maintenanceReview": {
+        "status": "planning-only-maintenance-review",
+        "description": "Reviewed current session observer and dual-source diff. Session-boundary verification now rechecks original build source and allowed changed host journey source before capture, finish and final identity confirmation. The existing session/build/command provenance plan still fits; stricter guards remain planned assertion work.",
+        "assertionAdequacy": "requires-separate-witness-review",
+        "executionEvidence": "not-derived-from-proposal"
       }
     },
     {
@@ -19044,7 +19052,7 @@
       "uncertainty": "Implementation, public CLI extensions, execution and unplanned variants remain unverified. Static checks and synthetic fixtures are not native/provider execution or full-range acceptance.",
       "proposedAssertions": [
         "Both distinct job-scoped keys are accepted; the duplicate compound key fails and existing metadata remains intact.",
-        "Deleting job a cascades its operations without deleting b’s; the schema itself does not implement request-hash replay semantics."
+        "Deleting job a cascades its operations without deleting b\u2019s; the schema itself does not implement request-hash replay semantics."
       ],
       "featureId": "generation-recovery",
       "status": "model-proposed-unreviewed",
@@ -20998,10 +21006,16 @@
       "source": {
         "path": "scripts/collect-cli-coverage.mjs",
         "start": 1,
-        "end": 223,
-        "fileSha256": "15e6d6f2322aa2a7eef2d46fa650f1826c8927e0eade9409405188523e8a0b65",
-        "spanSha256": "05ac6ffc72759c868e8658543c139fb8286941ad1b73c46894b17b241f32394a",
-        "sha256": "15e6d6f2322aa2a7eef2d46fa650f1826c8927e0eade9409405188523e8a0b65"
+        "end": 318,
+        "fileSha256": "33de5e275db523a943fc51d1eff4430c4fe44bd71e562a8449d92ca690f1cd9a",
+        "spanSha256": "e2b8e6647218434dfaadf561e7ae9416b4b5b082bf36ff46d0fd87bc721a84bc",
+        "sha256": "33de5e275db523a943fc51d1eff4430c4fe44bd71e562a8449d92ca690f1cd9a"
+      },
+      "maintenanceReview": {
+        "status": "planning-only-maintenance-review",
+        "description": "Reviewed complete collector dual-source comparison, host-only allowlist, original build record binding, separate analysis copy and repeated export/import source checks. Existing capture/provenance plan fits the changed coordinator. App/native source changes remain forbidden; producer declarations do not become cryptographic attestation.",
+        "assertionAdequacy": "requires-separate-witness-review",
+        "executionEvidence": "not-derived-from-proposal"
       }
     },
     {
@@ -21278,22 +21292,29 @@
       "scenarioIds": [
         "audit-v82-aec5ed9153543d0f4619"
       ],
-      "rationale": "The selected scripts/run-cli-e2e.mjs lines 1-258 implement or configure the specific behavior described by this replacement; the planned public actions or static inspection target that responsibility.",
+      "rationale": "Reviewed runner changes extend preflight identity with Darwin codesign verification and preserve a distinct signature blocker. Post-run and post-export identity checks clear appUnchanged to unknown before verification, with capture import reached only after successful export identity verification. Existing owned-group and evidence responsibilities remain planned.",
       "confidence": "medium",
-      "uncertainty": "Implementation and execution of the proposed scenario and unplanned variants remain unverified. Existing paths are starting points only.",
+      "uncertainty": "New prelaunch unsigned-fixture tooling check exists and was independently reported passing. This proposal alone establishes neither its execution nor signed acceptance, post-run/export failure behavior, native execution or measured coverage. Later signature changes and capture-failure cases require meaningful permitted scenarios.",
       "proposedAssertions": [
-        "Known selected entrypoints run in their own process groups and preflight failures are reported before launch.",
-        "Evidence is retained and cleanup is reported as group termination/exit or uncertain; detached descendants and all temporary files are not promised cleaned, and ordinary source-to-app identity remains unestablished without a producer-declared record."
+        "On Darwin, an unsigned non-executable app fixture is rejected before any selected eligible native scenario starts, retains null app identity and the distinct app-signature-verification-failed blocker, and preserves the fixture bytes.",
+        "Successful identity handling for a signed bundle requires a real permitted native run. Post-run and post-export signature failures leave appUnchanged unknown and retain failure evidence. Coverage import is skipped after export identity failure.",
+        "Known selected entrypoints run in owned process groups. Evidence retains termination/exit or uncertain cleanup scope, with producer-declared source/build identity separate from cryptographic attestation."
       ],
       "featureId": "testing-infrastructure",
       "status": "model-proposed-unreviewed",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
         "start": 1,
-        "end": 258,
-        "fileSha256": "2dcd1216038e4c1a04c6b88018bb460f4ec765d4b2cab684901bf70938cd0e36",
-        "spanSha256": "15202b441e7f277675734bea60cacc5b9a018d5c80cbb04ff0db9e1d703d87aa",
-        "sha256": "2dcd1216038e4c1a04c6b88018bb460f4ec765d4b2cab684901bf70938cd0e36"
+        "end": 285,
+        "fileSha256": "e2a945253ed481857f396e05e991ed0fa4698ff3f57bee6b0dec571362d6d72d",
+        "spanSha256": "71fa7776fe7bbbcf077b9e6d3b7bc75b4fa7d32491e8589f392c0ceb541bb051",
+        "sha256": "e2a945253ed481857f396e05e991ed0fa4698ff3f57bee6b0dec571362d6d72d"
+      },
+      "maintenanceReview": {
+        "status": "planning-only-maintenance-review",
+        "description": "Reviewed new three-part dual-source argument parsing and help alongside unchanged signature and owned-run evidence behavior. Existing runner plan remains applicable. Original build and journey source identities must be reported separately, with all three build-source arguments present and native inputs exact.",
+        "assertionAdequacy": "requires-separate-witness-review",
+        "executionEvidence": "not-derived-from-proposal"
       }
     },
     {
@@ -21312,10 +21333,16 @@
       "source": {
         "path": "scripts/run-service-journeys.mjs",
         "start": 1,
-        "end": 44,
-        "fileSha256": "1ca0f580d9a1d3b95b43ba7f93878fb0c5b34c4d5340f137a5baf811cf3b8f8d",
-        "spanSha256": "9795c458c51fbc7a76fdd220a1e255ba926e730eab5ad798c3303b18ac30f414",
-        "sha256": "1ca0f580d9a1d3b95b43ba7f93878fb0c5b34c4d5340f137a5baf811cf3b8f8d"
+        "end": 56,
+        "fileSha256": "9e951f7c5253da16fb8d97157e9d8afd79fb83b27c462660c6d5758d0c0d781e",
+        "spanSha256": "aee5096ce599319d8553be8caa39bd3c2cd4754c27bd865b75aeab130e93b72a",
+        "sha256": "9e951f7c5253da16fb8d97157e9d8afd79fb83b27c462660c6d5758d0c0d781e"
+      },
+      "maintenanceReview": {
+        "status": "planning-only-maintenance-review",
+        "description": "Reviewed service runner optional external capture root validation and per-journey output selection. Fixed thirteen-route ordering and cancellation/failure propagation remain. The service adapter instruments selected statement anchors without broadening native or whole-project coverage claims.",
+        "assertionAdequacy": "requires-separate-witness-review",
+        "executionEvidence": "not-derived-from-proposal"
       }
     },
     {
@@ -21557,10 +21584,16 @@
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
         "start": 1,
-        "end": 80,
-        "fileSha256": "869234ba5689cf77c1ee514ce2f9470007c07e7799e80188984e76c5a83cc5d0",
-        "spanSha256": "99c4a6a44a533242d165ea4fc9398fa43286c6fe698ca8da8f7132c7c09558fe",
-        "sha256": "869234ba5689cf77c1ee514ce2f9470007c07e7799e80188984e76c5a83cc5d0"
+        "end": 84,
+        "fileSha256": "7e56c9b7803c76fd0abc4fdd36783321f6d0df69917785f283e8dc0ba393dff5",
+        "spanSha256": "5073270ab66291d73985fe7af2cb2cf0e969aee098a232bc9ae415ec2c20ff1e",
+        "sha256": "7e56c9b7803c76fd0abc4fdd36783321f6d0df69917785f283e8dc0ba393dff5"
+      },
+      "maintenanceReview": {
+        "status": "planning-only-maintenance-review",
+        "description": "Reviewed exact source-copy implementation replacement with create-only copyFile plus copy-on-write request and explicit0600 mode. Existing external source identity/import isolation assertions remain applicable. Copy-on-write allocation and performance are unverified; post-copy/source verification remains required.",
+        "assertionAdequacy": "requires-separate-witness-review",
+        "executionEvidence": "not-derived-from-proposal"
       }
     }
   ],
@@ -21804,5 +21837,30 @@
       "measurement-output-isolation"
     ],
     "notice": "Exact scoped proposal update, not reviewed manual links or native execution. Preserve the historical 100% planning audit and prior integration audit obligations."
+  },
+  "scopedRunnerSignatureUpdate": {
+    "status": "reviewed-planning-amendment-not-execution",
+    "source": "scripts/run-cli-e2e.mjs",
+    "review": "Reviewed the complete 18-added/3-removed-line diff and public unsigned fixture assertions. Only this runner association, scenario plan and per-file inventory are amended. Historical totals and unrelated context pins are preserved.",
+    "addedResponsibilities": [
+      "Darwin preflight signature guard",
+      "distinct safe signature failure",
+      "unknown appUnchanged during identity rechecks",
+      "signature failure propagation before coverage import"
+    ],
+    "executionClaims": "none"
+  },
+  "scopedFinalContractMaintenance": {
+    "status": "planning-only-maintenance-review",
+    "rangeIds": [
+      "e20ffa2667aac058b17b",
+      "63785d5cf7470b30e408",
+      "aec5ed9153543d0f4619",
+      "c5dc8041ff99830395d8",
+      "measurement-output-isolation"
+    ],
+    "historicalCheckpoints": "preserved",
+    "executionClaims": "none",
+    "scope": "Existing five whole-file responsibility associations only; no new scenario, manual link or assertion promotion."
   }
 }

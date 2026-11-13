@@ -22,8 +22,8 @@
           "description": "Expected real save-error alert and failure-status state, accepted biography-only model and one local journal, with all saved package bytes unchanged before and after repaired owned-process relaunch; the alert is never dismissed and termination mode is not claimed.",
           "witness": {
             "path": "tests/e2e/journeys/save-failure-recovery.mjs",
-            "start": 156,
-            "end": 188,
+            "start": 157,
+            "end": 189,
             "sha256": "37d4e6c46b57e50099eafaf7894d5cf878c4fad551ff43c8c2a78a0ed55dceaf"
           }
         },
@@ -32,8 +32,8 @@
           "description": "Normal Projects open loads the exact accepted model/date witnesses, acknowledges pending record and writes one exact expected history revision while preserving prior history and sentinel bytes; repeated cold open changes nothing.",
           "witness": {
             "path": "tests/e2e/journeys/save-failure-recovery.mjs",
-            "start": 189,
-            "end": 209,
+            "start": 190,
+            "end": 210,
             "sha256": "8be4bc0e470c5deb86ef1f0f3d6b192433e2b41842bdd06eb60d208f9ff5ad30"
           }
         }

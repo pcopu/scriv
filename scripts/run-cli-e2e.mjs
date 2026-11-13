@@ -48,6 +48,12 @@ async function bundleIdentity(app) {
   if (!root.endsWith('.app')) throw new Error('invalid-app-bundle');
   const executable = join(root, 'Contents/MacOS/Scriv');
   if (!(await lstat(executable)).isFile()) throw new Error('missing-app-executable');
+  if (process.platform === 'darwin') {
+    try {
+      execFileSync('/usr/bin/codesign', ['--verify', '--deep', '--strict', '--all-architectures', root],
+        { stdio: 'ignore', timeout: 30000 });
+    } catch { throw new Error('app-signature-verification-failed'); }
+  }
   const paths = [];
   async function walk(dir) {
     for (const entry of await readdir(join(root, dir), { withFileTypes: true })) {
@@ -120,7 +126,7 @@ export async function main(args = process.argv.slice(2)) {
   const coverageOptions = {};
   let outputParent = tmpdir(); let timeoutMs = 120000; let app = process.env.SCRIV_E2E_APP;
   let list = false; let help = false; let coverage = false;
-  const valued = new Set(['--app', '--source-manifest', '--source-manifest-sha256', '--output-dir', '--timeout-ms', '--scenario', '--coverage-build-record', '--llvm-profdata', '--llvm-cov', '--tracer', '--coverage-max-sessions']);
+  const valued = new Set(['--app', '--source-manifest', '--source-manifest-sha256', '--output-dir', '--timeout-ms', '--scenario', '--coverage-build-record', '--coverage-build-source-root', '--coverage-build-source-manifest', '--coverage-build-source-manifest-sha256', '--llvm-profdata', '--llvm-cov', '--tracer', '--coverage-max-sessions']);
   for (let i = 0; i < args.length; i++) {
     const flag = args[i];
     if (seen.has(flag) && flag !== '--scenario') throw new Error('duplicate-option');
@@ -135,6 +141,9 @@ export async function main(args = process.argv.slice(2)) {
     else if (flag === '--source-manifest-sha256') sourceOptions.manifestSHA256 = value;
     else if (flag === '--output-dir') outputParent = resolve(value);
     else if (flag === '--coverage') coverage = true;
+    else if (flag === '--coverage-build-source-root') coverageOptions.buildSourceRoot = resolve(value);
+    else if (flag === '--coverage-build-source-manifest') (coverageOptions.buildSourceOptions ??= {}).manifest = resolve(value);
+    else if (flag === '--coverage-build-source-manifest-sha256') (coverageOptions.buildSourceOptions ??= {}).manifestSHA256 = value;
     else if (flag === '--coverage-build-record') coverageOptions.buildRecordPath = resolve(value);
     else if (['--llvm-profdata', '--llvm-cov', '--tracer'].includes(flag)) {
       if (!value.startsWith('/')) throw new Error('coverage-tool-path-must-be-absolute');
@@ -157,11 +166,15 @@ export async function main(args = process.argv.slice(2)) {
   if (!sourceOptions.manifest && sourceOptions.manifestSHA256) throw new Error('manifest-required-for-digest');
   if (sourceOptions.manifest && !/^[a-f0-9]{64}$/.test(sourceOptions.manifestSHA256 ?? '')) throw new Error('manifest-digest-required');
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 100 || timeoutMs > 3600000) throw new Error('invalid-timeout');
+  if (coverageOptions.buildSourceRoot || coverageOptions.buildSourceOptions) {
+    if (!coverageOptions.buildSourceRoot || !coverageOptions.buildSourceOptions?.manifest
+        || !/^[a-f0-9]{64}$/.test(coverageOptions.buildSourceOptions?.manifestSHA256 ?? '')) throw new Error('coverage-build-source-requires-root-manifest-and-digest');
+  }
   if (!coverage && Object.keys(coverageOptions).length) throw new Error('coverage-options-require-coverage');
   if (coverage && (!sourceOptions.manifest || !coverageOptions.buildRecordPath || !requested.length)) throw new Error('coverage-requires-pinned-build-source-and-scenarios');
   if (help) {
     if (args.length !== 1) throw new Error('help-must-be-used-alone');
-    console.log('Run through Tracer: tracer app -- test [OPTIONS]\n  --list                         Discover native scenario IDs and known restrictions as JSON; no app is launched.\n  --scenario ID                  Select an exact listed ID; repeat for a subset.\n  --app /path/ScrivAutomation.app Override SCRIV_E2E_APP. Requires macOS.\n  --output-dir /existing/path     Evidence parent outside the source tree (default: OS temp).\n  --timeout-ms 120000             Per-scenario limit, 100 through 3600000.\n  --source-manifest /external/source.json --source-manifest-sha256 SHA256\n                                 Pin exported source bytes; both options are required.\n  --coverage                     Capture each real session, export separate LCOV pairs, import through Tracer.\n                                 Requires explicit --scenario, pinned source and --coverage-build-record.\n  --coverage-build-record /external/build.json  Record produced by the coverage builder.\n  --coverage-max-sessions 64      Maximum total capture attempts, 1 through 64.\n  --llvm-profdata /absolute/tool --llvm-cov /absolute/tool\n                                 Optional compatible LLVM tools; defaults to xcrun discovery.\n  --tracer /absolute/tracer       Optional Tracer 0.1.2+ entrypoint; defaults to SCRIV_TRACER_CLI or PATH.\n  --help                         Show this help.\n\nNo selection runs all native scenarios in sorted order; subsets are labeled in evidence.\nNo app, no macOS or failed provenance means not-run, never a simulated pass.\nKnown blocked scenarios are not launched and cannot count as passing; no bypass option exists.\nExit: 0 selected scenarios passed; 1 failed; 2 not-run or invalid input.\nTooling only: tracer app -- test tooling\nDirect compatibility: node scripts/run-cli-e2e.mjs [OPTIONS]');
+    console.log('Run through Tracer: tracer app -- test [OPTIONS]\n  --list                         Discover native scenario IDs and known restrictions as JSON; no app is launched.\n  --scenario ID                  Select an exact listed ID; repeat for a subset.\n  --app /path/ScrivAutomation.app Override SCRIV_E2E_APP. Requires macOS.\n  --output-dir /existing/path     Evidence parent outside the source tree (default: OS temp).\n  --timeout-ms 120000             Per-scenario limit, 100 through 3600000.\n  --source-manifest /external/source.json --source-manifest-sha256 SHA256\n                                 Pin exported source bytes; both options are required.\n  --coverage                     Capture each real session, export separate LCOV pairs, import through Tracer.\n                                 Requires explicit --scenario, pinned source and --coverage-build-record.\n  --coverage-build-record /external/build.json  Record produced by the coverage builder.\n  --coverage-build-source-root /immutable/source --coverage-build-source-manifest /external/build-source.json\n  --coverage-build-source-manifest-sha256 SHA256\n                                 Optional original build tree; all three required. Only host test/docs/probe changes are allowed.\n  --coverage-max-sessions 64      Maximum total capture attempts, 1 through 64.\n  --llvm-profdata /absolute/tool --llvm-cov /absolute/tool\n                                 Optional compatible LLVM tools; defaults to xcrun discovery.\n  --tracer /absolute/tracer       Optional Tracer 0.1.2+ entrypoint; defaults to SCRIV_TRACER_CLI or PATH.\n  --help                         Show this help.\n\nNo selection runs all native scenarios in sorted order; subsets are labeled in evidence.\nNo app, no macOS or failed provenance means not-run, never a simulated pass.\nKnown blocked scenarios are not launched and cannot count as passing; no bypass option exists.\nExit: 0 selected scenarios passed; 1 failed; 2 not-run or invalid input.\nTooling only: tracer app -- test tooling\nDirect compatibility: node scripts/run-cli-e2e.mjs [OPTIONS]');
     return 0;
   }
   const available = await discoverScenarios();
@@ -178,6 +191,10 @@ export async function main(args = process.argv.slice(2)) {
   if (!outputReal) throw new Error('output-parent-must-exist');
   const sourceReal = await realpath(repo);
   if (outputReal === sourceReal || outputReal.startsWith(sourceReal + '/')) throw new Error('output-must-be-outside-source');
+  if (coverageOptions.buildSourceRoot) {
+    const buildSourceReal = await realpath(coverageOptions.buildSourceRoot);
+    if (outputReal === buildSourceReal || outputReal.startsWith(buildSourceReal + '/')) throw new Error('output-must-be-outside-build-source');
+  }
   await mkdir(outputReal, { recursive: true });
   const output = await mkdtemp(join(outputReal, 'scriv-cli-e2e-'));
   const path = join(output, 'evidence.json');
@@ -190,7 +207,11 @@ export async function main(args = process.argv.slice(2)) {
     if (!names.length) throw new Error('no-scenarios');
     if (names.every(name => scenarioRestrictions[name.slice(0, -4)])) throw new Error('selected-scenarios-blocked');
     if (app) {
-      try { report.app = await bundleIdentity(app); } catch { throw new Error('app-identity-unavailable'); }
+      try { report.app = await bundleIdentity(app); }
+      catch (error) {
+        if (error.message === 'app-signature-verification-failed') throw error;
+        throw new Error('app-identity-unavailable');
+      }
     }
     if (process.platform !== 'darwin') throw new Error('macos-required');
     if (!app) throw new Error('SCRIV_E2E_APP-required');
@@ -200,7 +221,8 @@ export async function main(args = process.argv.slice(2)) {
         capture = await collector.prepareCoverage({ app, output, sourceOptions, ...coverageOptions });
         report.coverage = capture.report;
         report.buildAttestation = { kind: 'producer-declared-coverage-build-record', sha256: capture.buildRecordSHA256, cryptographicallyAttested: false };
-        report.sourceToAppMatch = 'producer-declared-build-record';
+        report.sourceToAppMatch = capture.sourceProvenance.differences.length
+          ? 'producer-declared-build-record-with-host-only-journey-delta' : 'producer-declared-build-record';
       } catch { throw new Error('coverage-preflight-failed'); }
     }
     await save();
@@ -216,6 +238,7 @@ export async function main(args = process.argv.slice(2)) {
     }
     const after = await sourceIdentity(sourceOptions);
     report.sourceUnchanged = JSON.stringify(after) === JSON.stringify(report.source);
+    report.appUnchanged = null;
     report.appUnchanged = JSON.stringify(await bundleIdentity(app)) === JSON.stringify(report.app);
     if (!report.sourceUnchanged || !report.appUnchanged) report.blocker = 'inputs-changed-during-run';
     if (names.some(name => scenarioRestrictions[name.slice(0, -4)])) report.blocker ??= 'selected-scenarios-blocked';
@@ -228,17 +251,21 @@ export async function main(args = process.argv.slice(2)) {
       try {
         await collector.exportCoverage(capture, report.scenarios);
         report.sourceUnchanged = JSON.stringify(await sourceIdentity(sourceOptions)) === JSON.stringify(report.source);
+        report.appUnchanged = null;
         report.appUnchanged = JSON.stringify(await bundleIdentity(app)) === JSON.stringify(report.app);
         if (!report.sourceUnchanged || !report.appUnchanged) throw new Error('inputs-changed-during-export');
         report.sourceCheckScope = 'through capture and LLVM export, before explicit measurement import';
-      } catch { throw new Error('coverage-capture-or-export-failed'); }
+      } catch (error) {
+        if (error.message === 'app-signature-verification-failed') throw error;
+        throw new Error('coverage-capture-or-export-failed');
+      }
       await save();
       try { await collector.importCoverage(capture); }
       catch { throw new Error('coverage-import-failed'); }
       report.measurementWritesAfterSourceCheck = capture.report.imported;
     }
   } catch (error) {
-    const safe = ['selected-scenarios-blocked', 'macos-required', 'SCRIV_E2E_APP-required', 'no-scenarios', 'app-identity-unavailable', 'submodule-provenance-unsupported', 'coverage-preflight-failed', 'coverage-capture-or-export-failed', 'coverage-import-failed'];
+    const safe = ['selected-scenarios-blocked', 'macos-required', 'SCRIV_E2E_APP-required', 'no-scenarios', 'app-identity-unavailable', 'app-signature-verification-failed', 'submodule-provenance-unsupported', 'coverage-preflight-failed', 'coverage-capture-or-export-failed', 'coverage-import-failed'];
     report.blocker = safe.includes(error.message) || /^source-manifest-(?:symlink|special-file|unsafe-path|missing-file|must-be-outside-source|digest-required|digest-mismatch|invalid|content-mismatch|file-set-mismatch)$/.test(error.message) ? error.message : 'evidence-or-preflight-failed';
     report.status = report.scenarios.some(s => s.startedAt) ? 'failed' : 'not-run';
     for (const item of report.scenarios) if (item.status === 'not-run' && item.reason === 'not-started') item.reason = report.blocker;

@@ -15,40 +15,48 @@ const cloud = await realpath(process.argv[2] === '--owned-child' ? process.argv[
   process.argv[2] === '--cloud' ? process.argv[3] : join(here, '..'));
 const self = await realpath(fileURLToPath(import.meta.url));
 if (process.argv[2] !== '--owned-child') {
-  const root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-peer-signaling-')));
-  let child;
-  let timer;
+  let root, capture, child, timer, interrupted = false;
   const killOwned = signal => {
     if (child?.pid) {
       try { process.kill(-child.pid, signal); } catch (error) { if (error.code !== 'ESRCH') throw error; }
     }
   };
-  const interrupt = () => killOwned('SIGTERM');
+  const interrupt = () => { interrupted = true; killOwned('SIGTERM'); };
+  process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
   try {
-    for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
-    // Resolve installed dependencies from an owned runner, never edit the repository.
-    await copyFile(self, join(root, 'runner.mjs'));
-    await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
-    child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud], {
-      cwd: root, detached: true, stdio: 'inherit',
-      // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
-      env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
-        XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
-        WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
-    });
-    process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
-    timer = setTimeout(() => killOwned('SIGKILL'), 150_000);
-    const result = await new Promise((resolve, reject) => {
-      child.once('error', reject);
-      child.once('exit', (code, signal) => resolve({ code, signal }));
-    });
-    assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    try {
+      root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-peer-signaling-')));
+      for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
+      capture = process.env.SCRIV_SERVICE_COVERAGE_DIR
+        ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+          .prepareServiceCapture(process.env.SCRIV_SERVICE_COVERAGE_DIR, process.env.SCRIV_TRACER_CLI, { journeyPath: 'cloud/tests-e2e/peer-signaling-journey.mjs' }) : null;
+      // Resolve installed dependencies from an owned runner, never edit the repository.
+      await copyFile(self, join(root, 'runner.mjs'));
+      await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
+      assert.equal(interrupted, false, 'Cancelled during preparation; no Worker launched');
+      child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud, ...(capture ? [capture.path] : [])], {
+        cwd: root, detached: true, stdio: 'inherit',
+        // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
+        env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
+          XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
+          WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
+      });
+      timer = setTimeout(() => killOwned('SIGKILL'), 150_000);
+      const result = await new Promise((resolve, reject) => {
+        child.once('error', reject);
+        child.once('exit', (code, signal) => resolve({ code, signal }));
+      });
+      assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    } finally {
+      clearTimeout(timer); killOwned('SIGKILL');
+      if (root) await rm(root, { recursive: true, force: true });
+      console.log('Owned service process group and temporary state cleaned.');
+    }
+    assert.equal(interrupted, false, 'Cancelled before measurement import');
+    if (capture) await capture.finish(() => interrupted);
+    assert.equal(interrupted, false, 'Cancelled during measurement import; inspect preserved evidence');
   } finally {
-    clearTimeout(timer);
     process.off('SIGINT', interrupt); process.off('SIGTERM', interrupt);
-    killOwned('SIGKILL');
-    await rm(root, { recursive: true, force: true });
-    console.log('Owned service process group and temporary state cleaned.');
   }
 } else {
   const root = await realpath(process.argv[3]);
@@ -58,7 +66,10 @@ if (process.argv[2] !== '--owned-child') {
   const { Miniflare, Log, LogLevel, convertV4MiniflareOptions } = await import('miniflare');
   const { unstable_splitSqlQuery } = await import('wrangler');
   const bundle = join(root, 'worker.mjs');
-  await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
+  const capture = process.argv[5]
+    ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+      .loadServiceCapture(process.argv[5]) : null;
+  if (!capture) await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
     bundle: true, format: 'esm', platform: 'neutral', target: 'es2022',
     external: ['cloudflare:*'], logLevel: 'silent' });
   let outboundAttempts = 0;
@@ -70,14 +81,15 @@ if (process.argv[2] !== '--owned-child') {
     unsafeLocalExplorer: false, unsafeObservability: false,
     unsafeEnableSharedStorage: false, logRequests: false, log: new Log(LogLevel.ERROR),
     resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
-    workers: [{ ...common, name: 'scriv', scriptPath: bundle,
-      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test' },
+    workers: [{ ...common, name: 'scriv', ...(capture ? { script: capture.options.script } : { scriptPath: bundle }),
+      bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', ...(capture?.options.bindings ?? {}) },
       d1Databases: { DB: 'journey-db' }, r2Buckets: ['ASSETS'],
       durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
     }],
   });
   const mf = new Miniflare(config);
-  let requests = 0;
+  let requests = 0, captureStarted = false;
+  const coverageActions = [];
   try {
     const db = await mf.getD1Database('DB', 'scriv');
     const migrations = (await readdir(join(cloud, 'migrations'))).filter(name => /^\d+_.+\.sql$/.test(name)).sort();
@@ -118,7 +130,7 @@ if (process.argv[2] !== '--owned-child') {
     }
     const { createScenarioRun } = await import(pathToFileURL(runtimePath).href);
     const catalog = JSON.parse(await readFile(join(cloud, '../docs/testing/peer-signaling-steps.json'), 'utf8'));
-    const bundleSha256 = createHash('sha256').update(await readFile(bundle)).digest('hex');
+    const bundleSha256 = createHash('sha256').update(capture ? capture.options.script : await readFile(bundle)).digest('hex');
     const run = createScenarioRun({ catalog, scenarioId: 'peer-signaling-service', runId: randomUUID(), context: { build: bundleSha256, platform: process.platform, inputRoute: 'Scriv CLI loopback HTTP and WebSocket' } });
     const route = suffix => `/v1/projects/${projectId}/${suffix}`;
     const sockets = [];
@@ -129,6 +141,7 @@ if (process.argv[2] !== '--owned-child') {
       const url = new URL(path, base); assert.equal(url.origin, base.origin);
       const text = encoded ?? (body === undefined ? undefined : JSON.stringify(body));
       assert(requests++ < 160); assert(Buffer.byteLength(text ?? '') <= 131072);
+      if (capture) coverageActions.push(`${method} ${url.pathname.replace(/[0-9a-f]{8}-[0-9a-f-]{27}/gi, ':id')}`);
       const response = await fetch(url, { method, headers: { authorization: `Bearer ${actors[role].token}`, ...(text ? { 'content-type': 'application/json' } : {}) }, body: text, redirect: 'error', signal: AbortSignal.timeout(5000) });
       assert.equal(response.headers.get('cache-control'), 'no-store'); assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
       const parts = []; let size = 0;
@@ -141,6 +154,7 @@ if (process.argv[2] !== '--owned-child') {
       const { default: WebSocket } = await import('ws');
       const base = await mf.ready, url = new URL(route('socket'), base); url.protocol = 'ws:';
       assert.equal(url.hostname, '127.0.0.1');
+      if (capture) coverageActions.push('WebSocket connect /v1/projects/:id/socket');
       const ws = new WebSocket(url, { headers: { authorization: `Bearer ${actors[role].token}` }, handshakeTimeout: 5000, maxPayload: 262144 });
       const entry = { ws, messages: [], errors: 0, closed: null }; sockets.push(entry);
       ws.on('message', data => { assert(data.length <= 262144); entry.messages.push(JSON.parse(data.toString('utf8'))); assert(entry.messages.length < 200); websocketMessages++; });
@@ -159,6 +173,7 @@ if (process.argv[2] !== '--owned-child') {
     const sendSocket = async (socket, value, binary = false) => new Promise((resolve, reject) => socket.ws.send(binary ? Buffer.from(JSON.stringify(value)) : JSON.stringify(value), error => error ? reject(new Error('Local WebSocket send failed')) : resolve()));
     let result, inbox, third, forged, ownerSocket, memberSocket, viewerSocket, firstSignal, expiryAt, firstExpiryAt, preExpiryObservedAt, baseline, signalInboxBaseline;
     try {
+      if (capture) { await capture.begin(await mf.ready); captureStarted = true; }
       await run.step('create-project', async step => {
         result = await step.action('POST /v1/projects synthetic signaling team project', () => request('/v1/projects', post({ id: projectId, title: 'Synthetic peer exchange', teamId })));
         await step.expect('observed', () => { assert.equal(result.status, 201); assert.equal(result.data.project.ownerId, actors.owner.id); });
@@ -298,5 +313,9 @@ if (process.argv[2] !== '--owned-child') {
       for (const socket of sockets) socket.ws.terminate();
       assert.equal(report.status, 'passed', 'Every planned action and assertion must pass');
     }
-  } finally { await mf.dispose(); }
+  } finally {
+    try {
+      if (captureStarted) await capture.end(await mf.ready, requests, coverageActions);
+    } finally { await mf.dispose(); }
+  }
 }

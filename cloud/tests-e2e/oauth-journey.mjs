@@ -15,40 +15,48 @@ const cloud = await realpath(process.argv[2] === '--owned-child' ? process.argv[
   process.argv[2] === '--cloud' ? process.argv[3] : join(here, '..'));
 const self = await realpath(fileURLToPath(import.meta.url));
 if (process.argv[2] !== '--owned-child') {
-  const root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-oauth-')));
-  let child;
-  let timer;
+  let root, capture, child, timer, interrupted = false;
   const killOwned = signal => {
     if (child?.pid) {
       try { process.kill(-child.pid, signal); } catch (error) { if (error.code !== 'ESRCH') throw error; }
     }
   };
-  const interrupt = () => killOwned('SIGTERM');
+  const interrupt = () => { interrupted = true; killOwned('SIGTERM'); };
+  process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
   try {
-    for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
-    // Resolve installed dependencies from an owned runner, never edit the repository.
-    await copyFile(self, join(root, 'runner.mjs'));
-    await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
-    child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud], {
-      cwd: root, detached: true, stdio: 'inherit',
-      // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
-      env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
-        XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
-        WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
-    });
-    process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
-    timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
-    const result = await new Promise((resolve, reject) => {
-      child.once('error', reject);
-      child.once('exit', (code, signal) => resolve({ code, signal }));
-    });
-    assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    try {
+      root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-oauth-')));
+      for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
+      capture = process.env.SCRIV_SERVICE_COVERAGE_DIR
+        ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+          .prepareServiceCapture(process.env.SCRIV_SERVICE_COVERAGE_DIR, process.env.SCRIV_TRACER_CLI, { journeyPath: 'cloud/tests-e2e/oauth-journey.mjs' }) : null;
+      // Resolve installed dependencies from an owned runner, never edit the repository.
+      await copyFile(self, join(root, 'runner.mjs'));
+      await symlink(await realpath(join(cloud, 'node_modules')), join(root, 'node_modules'), 'dir');
+      assert.equal(interrupted, false, 'Cancelled during preparation; no Worker launched');
+      child = spawn(process.execPath, [join(root, 'runner.mjs'), '--owned-child', root, cloud, ...(capture ? [capture.path] : [])], {
+        cwd: root, detached: true, stdio: 'inherit',
+        // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
+        env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
+          XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
+          WRANGLER_SEND_METRICS: 'false', CI: '1', SCRIV_TRACER_RUNTIME: process.env.SCRIV_TRACER_RUNTIME },
+      });
+      timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
+      const result = await new Promise((resolve, reject) => {
+        child.once('error', reject);
+        child.once('exit', (code, signal) => resolve({ code, signal }));
+      });
+      assert.equal(result.code, 0, `Owned service journey failed: exit=${result.code}, signal=${result.signal}`);
+    } finally {
+      clearTimeout(timer); killOwned('SIGKILL');
+      if (root) await rm(root, { recursive: true, force: true });
+      console.log('Owned service process group and temporary state cleaned.');
+    }
+    assert.equal(interrupted, false, 'Cancelled before measurement import');
+    if (capture) await capture.finish(() => interrupted);
+    assert.equal(interrupted, false, 'Cancelled during measurement import; inspect preserved evidence');
   } finally {
-    clearTimeout(timer);
     process.off('SIGINT', interrupt); process.off('SIGTERM', interrupt);
-    killOwned('SIGKILL');
-    await rm(root, { recursive: true, force: true });
-    console.log('Owned service process group and temporary state cleaned.');
   }
 } else {
   const root = await realpath(process.argv[3]);
@@ -72,7 +80,10 @@ if (process.argv[2] !== '--owned-child') {
   const dependencyVersions={};
   for(const name of ['esbuild','miniflare','wrangler']) dependencyVersions[name]=JSON.parse(await readFile(join(cloud,'node_modules',name,'package.json'),'utf8')).version;
   const bundle = join(root, 'worker.mjs');
-  await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
+  const capture = process.argv[5]
+    ? await (await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href))
+      .loadServiceCapture(process.argv[5]) : null;
+  if (!capture) await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle,
     bundle: true, format: 'esm', platform: 'neutral', target: 'es2022',
     external: ['cloudflare:*'], logLevel: 'silent' });
   let outboundAttempts = 0, deniedOutbound = 0;
@@ -114,14 +125,15 @@ if (process.argv[2] !== '--owned-child') {
     logRequests:false,log:new Log(LogLevel.ERROR),
     resourcePersistencePath:join(root,'state'),resourceTmpPath:join(root,'tmp'),
     workers:[{name:'scriv',unsafeInspectorProxy:false,compatibilityDate:'2026-10-29',modules:true,
-      outboundService:providerFixture,scriptPath:bundle,
-      bindings:{PUBLIC_URL:'http://127.0.0.1',ENVIRONMENT:'test',GITHUB_CLIENT_ID:'synthetic-client',GITHUB_CLIENT_SECRET:'synthetic-secret'},
+      outboundService:providerFixture,...(capture ? { script: capture.options.script } : { scriptPath: bundle }),
+      bindings:{PUBLIC_URL:'http://127.0.0.1',ENVIRONMENT:'test',GITHUB_CLIENT_ID:'synthetic-client',GITHUB_CLIENT_SECRET:'synthetic-secret',...(capture?.options.bindings ?? {})},
       d1Databases:{DB:'journey-db'},r2Buckets:['ASSETS'],
       durableObjects:{PROJECTS:{className:'ProjectRoom',useSQLite:true},BILLING:{className:'BillingCoordinator',useSQLite:true}}
     }]
   });
   const mf = new Miniflare(config);
-  let requests = 0;
+  let requests = 0, captureStarted = false;
+  const coverageActions = [];
   try {
     const db = await mf.getD1Database('DB', 'scriv');
     const migrations = (await readdir(join(cloud, 'migrations'))).filter(name => /^\d+_.+\.sql$/.test(name)).sort();
@@ -133,6 +145,7 @@ if (process.argv[2] !== '--owned-child') {
       const url = new URL(path, base); assert.equal(url.origin, base.origin);
       const encoded = body === undefined ? undefined : JSON.stringify(body);
       assert(requests++ < 40); assert(Buffer.byteLength(encoded ?? '') <= 4096);
+      if (capture) coverageActions.push(`${method} ${url.pathname.replace(/[0-9a-f]{8}-[0-9a-f-]{27}/gi, ':id')}`);
       const response = await fetch(url, { method, headers: { ...(token ? { authorization: `Bearer ${token}` } : {}), ...(encoded ? { 'content-type': 'application/json' } : {}) }, body: encoded, redirect: 'manual', signal: AbortSignal.timeout(5000) });
       if (response.status === 302) return {status:302,location:new URL(response.headers.get('location'))};
       assert.equal(response.headers.get('cache-control'), 'no-store');
@@ -183,6 +196,7 @@ if (process.argv[2] !== '--owned-child') {
       assert.deepEqual(await persistedAuthState(),persistedBaseline);
     }
     let result,state,code,token,userId;
+    if (capture) { await capture.begin(await mf.ready); captureStarted = true; }
     await run.step('reject-malformed-challenge', async step => {
       result = await step.action('GET OAuth start malformed challenge', () => request('/auth/github/start?'+new URLSearchParams({codeChallenge:'!'.repeat(43),state:clientState})));
       await step.expect('observed', async () => { errorIs(result,400,'invalid_challenge'); assert.equal(outboundAttempts,0); });
@@ -341,6 +355,10 @@ if (process.argv[2] !== '--owned-child') {
     assert.deepEqual(finalRows.sessions.filter(x=>!issued.some(y=>y.row.id===x.id)),seededRows.sessions); assert.deepEqual(finalRows.users,seededRows.users);
     assert.deepEqual(await sourceManifest(join(cloud,'src')),workerSourcesBeforeBuild); assert.equal(requests,40); assert.equal(outboundAttempts,14); assert.equal(deniedOutbound,0);
     console.log(JSON.stringify({kind:'oauth-session-isolation-evidence',httpChecks:16,repeatedSignIns:2,callbackStatuses:[302,400],exchangeStatuses:[200,401],newUsers:0,newSessions:2,foreignSessionPreserved:true,originalRevokedSessionPreserved:true,internalInterleavingControlled:false,nativeScenarios:0}));
-    console.log(JSON.stringify({result:'PASS',journey:'oauth',provider:'LOCAL SIMULATION ONLY; no real GitHub login',requests,outboundAttempts,deniedOutbound,fixtureCounts,nativeScenarios:0,auxiliaryPersistence:{snapshots:persistenceSnapshots,selectQueries:persistenceSnapshots*3,tables:['users','sessions','auth_codes'],scope:'All owned synthetic rows; baseline immutable; values never logged'},workerSourcesBeforeBuild,migrationHashes,dependencyVersions,runtimeModulePins:modulePins,catalogSha256:createHash('sha256').update(await readFile(join(cloud,'../docs/testing/oauth-steps.json'))).digest('hex'),bundleSha256:createHash('sha256').update(await readFile(bundle)).digest('hex'),runtime:report}));
-  } finally { await mf.dispose(); }
+    console.log(JSON.stringify({result:'PASS',journey:'oauth',provider:'LOCAL SIMULATION ONLY; no real GitHub login',requests,outboundAttempts,deniedOutbound,fixtureCounts,nativeScenarios:0,auxiliaryPersistence:{snapshots:persistenceSnapshots,selectQueries:persistenceSnapshots*3,tables:['users','sessions','auth_codes'],scope:'All owned synthetic rows; baseline immutable; values never logged'},workerSourcesBeforeBuild,migrationHashes,dependencyVersions,runtimeModulePins:modulePins,catalogSha256:createHash('sha256').update(await readFile(join(cloud,'../docs/testing/oauth-steps.json'))).digest('hex'),bundleSha256:createHash('sha256').update(capture ? capture.options.script : await readFile(bundle)).digest('hex'),runtime:report}));
+  } finally {
+    try {
+      if (captureStarted) await capture.end(await mf.ready, requests, coverageActions);
+    } finally { await mf.dispose(); }
+  }
 }

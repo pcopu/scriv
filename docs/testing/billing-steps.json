@@ -18,8 +18,8 @@
           "description": "HTTP 200 reports free plan and status and exposes billing-customer flag to owner.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 135,
-            "end": 135,
+            "start": 164,
+            "end": 164,
             "sha256": "f197dfcb9d95f73b7d8da768280cab0cedd6229294298663d175639950e5986d"
           }
         }
@@ -42,8 +42,8 @@
           "description": "Member portal request returns 403 not_allowed before any provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 139,
-            "end": 139,
+            "start": 168,
+            "end": 168,
             "sha256": "eecc04633d5b65d3fd57bd300022142cca084cac14c640ab4baa0c51f271b63f"
           }
         }
@@ -77,8 +77,8 @@
           "description": "Outsider portal request returns 404 not_found before any provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 143,
-            "end": 143,
+            "start": 172,
+            "end": 172,
             "sha256": "c54e64cf5f8e5dc91c2d9af181bf69851f74a859101a1a7f5d79c97bfbf52650"
           }
         }
@@ -101,8 +101,8 @@
           "description": "HTTP 400 invalid_signature occurs before any provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 148,
-            "end": 148,
+            "start": 177,
+            "end": 177,
             "sha256": "c648c69ed3ad414109adc984f7216fba0d7b1b940b53a0ce431a5ed0f5a10d11"
           }
         }
@@ -156,8 +156,8 @@
           "description": "HTTP 200 reports received and ignored, with no provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 152,
-            "end": 152,
+            "start": 181,
+            "end": 181,
             "sha256": "236ce8cdf87f847de68319124b7cb885fc933e203e0b63013bbdad438fd2de12"
           }
         }
@@ -191,8 +191,8 @@
           "description": "HTTP 200 reports ignored, with no provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 156,
-            "end": 156,
+            "start": 185,
+            "end": 185,
             "sha256": "7841688d6d0c512f281ad395239e610b801dedea8806c5904bce693f72addf4a"
           }
         }
@@ -236,8 +236,8 @@
           "description": "Signed activation returns 200 and performs one accepted simulated provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 162,
-            "end": 162,
+            "start": 191,
+            "end": 191,
             "sha256": "2eb8bd59ddbc88ca66c73c773d02a9c6c30e95bf0aed6eceb03783e92fec681e"
           }
         }
@@ -261,7 +261,7 @@
             "sha256": "77dcbc7c0a8566f6282884aed4a5afe74ac977b0d3cc1a5a281b60a5508c4a3b"
           },
           "expectation": "observed",
-          "why": "A recognized event for the known synthetic customer reaches that team’s coordinator. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
+          "why": "A recognized event for the known synthetic customer reaches that team\u2019s coordinator. Synthetic local HTTP journey, restricted provider fixture; static association, not measured execution or live Stripe acceptance."
         },
         {
           "source": {
@@ -301,8 +301,8 @@
           "description": "Member team read returns team plan, active status, exact item period end, and no owner-only billing-customer field.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 166,
-            "end": 166,
+            "start": 195,
+            "end": 195,
             "sha256": "7a16ede0bb449e6ef23117f21a1089e0e2a53d11860c886f19dbd1a417ca1b1d"
           }
         }
@@ -416,8 +416,8 @@
           "description": "HTTP 201 creates the requested synthetic team project owned by the team owner.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 170,
-            "end": 170,
+            "start": 199,
+            "end": 199,
             "sha256": "c3c2a940eb2720e2b1204d132740cc9389b6eb62b19089a764e5b85e4deb9ec8"
           }
         }
@@ -440,8 +440,8 @@
           "description": "Member project read reports premium and write access with member role.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 174,
-            "end": 174,
+            "start": 203,
+            "end": 203,
             "sha256": "d3c578e85107d89bffe5adcd0dab042f102193f965769adb2c31bbd39ddb359c"
           }
         }
@@ -464,8 +464,8 @@
           "description": "Duplicate event returns 200 without another provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 178,
-            "end": 178,
+            "start": 207,
+            "end": 207,
             "sha256": "d565f513b80ed4381f4dd5ed39f00dd798fabab86b86d14d13cb5915a9760dc8"
           }
         }
@@ -519,8 +519,8 @@
           "description": "Owner read still reports active team plan.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 182,
-            "end": 182,
+            "start": 211,
+            "end": 211,
             "sha256": "7b7e31f06cb4eb8269f3586e8433ea3f30a1d38154093b692c078dafcd44321b"
           }
         }
@@ -543,8 +543,8 @@
           "description": "A new signed cancellation returns 200 and performs a second provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 187,
-            "end": 187,
+            "start": 216,
+            "end": 216,
             "sha256": "fdcf0b56c45e6563adc64d1d4ca758c567decc6f0f98ed6199c18b1fcd2c4a4d"
           }
         }
@@ -567,8 +567,8 @@
           "description": "Team read reports canceled status and free plan.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 191,
-            "end": 191,
+            "start": 220,
+            "end": 220,
             "sha256": "e9a696c3f7295e708b9c15381574e2c566402603e6e7db28e1e408227d2061e2"
           }
         }
@@ -602,8 +602,8 @@
           "description": "Member project read remains available but reports no premium or write access.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 195,
-            "end": 195,
+            "start": 224,
+            "end": 224,
             "sha256": "828f373b36c110e53a0f6ed1dc648992f6504bbcb30f90982e9a0116339702e5"
           }
         }
@@ -626,8 +626,8 @@
           "description": "The command is rejected with HTTP 403 read_only.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 199,
-            "end": 199,
+            "start": 228,
+            "end": 228,
             "sha256": "96dcfbbcfbdde4b4b5f5bd1ed5250d710665e823b5dd28dd190bdc687a5818d6"
           }
         }
@@ -650,8 +650,8 @@
           "description": "Owner project read reports no premium but retains write access and owner role.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 203,
-            "end": 203,
+            "start": 232,
+            "end": 232,
             "sha256": "f1366ce0611e3bed7761f98b73be6c7dafd674db969a6d9a77e6958470d9850d"
           }
         }
@@ -674,8 +674,8 @@
           "description": "The signed event returns 200 and triggers a fresh third provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 208,
-            "end": 208,
+            "start": 237,
+            "end": 237,
             "sha256": "2b2b0bbe9736fd704244c6233c2404d4b03c70af1cb6d6b9a7976245a43c1e9b"
           }
         }
@@ -698,8 +698,8 @@
           "description": "Team read reports team plan, trialing status, and the exact future item period end.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 212,
-            "end": 212,
+            "start": 241,
+            "end": 241,
             "sha256": "8ca756663769daf9058d80540c19571482867008f607a9aa264a8b5a8b682234"
           }
         }
@@ -722,8 +722,8 @@
           "description": "Member project read again reports premium and write access.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 216,
-            "end": 216,
+            "start": 245,
+            "end": 245,
             "sha256": "1d2ea2207dd3f2eeb87e75bc96c894afa0adc2d8bae5c64974bdc90db27b876e"
           }
         }
@@ -746,8 +746,8 @@
           "description": "The signed new event returns 502 billing_reconciliation_failed on the fourth provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 221,
-            "end": 221,
+            "start": 250,
+            "end": 250,
             "sha256": "0e6df4aa4c339c5c4ea86072e5c04a010c59f2502b39efcee64049b185078844"
           }
         }
@@ -811,8 +811,8 @@
           "description": "Team read remains trialing and entitled after the failed reconciliation.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 225,
-            "end": 225,
+            "start": 254,
+            "end": 254,
             "sha256": "1c71b0d412fd3a828b532f7432c838785d459cf02e7cbf949739e12daa4b9234"
           }
         }
@@ -835,8 +835,8 @@
           "description": "The same event now returns 200 and performs a fifth provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 229,
-            "end": 229,
+            "start": 258,
+            "end": 258,
             "sha256": "a95e735ec79c46cd61a614af1f5e6952abaf7d4ec2db4f8098082f05049d6071"
           }
         }
@@ -859,8 +859,8 @@
           "description": "Team read reports active status and team plan.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 233,
-            "end": 233,
+            "start": 262,
+            "end": 262,
             "sha256": "7b7e31f06cb4eb8269f3586e8433ea3f30a1d38154093b692c078dafcd44321b"
           }
         }
@@ -883,8 +883,8 @@
           "description": "Signed update returns 200 after a sixth simulated provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 238,
-            "end": 238,
+            "start": 267,
+            "end": 267,
             "sha256": "0549f7bfd9fdafb21fe4ee905f133a8b564aedbd04d067096264564a85167a31"
           }
         }
@@ -907,8 +907,8 @@
           "description": "Team read reports free status and free plan.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 242,
-            "end": 242,
+            "start": 271,
+            "end": 271,
             "sha256": "c6b9732919ebbeb37bf762bb5e4779ec93df90cc42b991af715f527e1f616b50"
           }
         }
@@ -952,8 +952,8 @@
           "description": "HTTP 400 invalid_signature occurs without a seventh provider request.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 247,
-            "end": 247,
+            "start": 276,
+            "end": 276,
             "sha256": "cae20653a5318495496894c9a5e76293a03d2c2b02e5b2b4fda1dd06383bff5a"
           }
         }

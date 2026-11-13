@@ -23,8 +23,8 @@
           "description": "Exact full device payloads contain independently specified descriptors sorted by descending distinct createdAt, the authenticated currentDeviceId, and onlineStatus unknown. Paid visibility includes four eligible own/teammate sessions despite one using another project; expired/revoked/outsider sessions are absent. Read-grace exposes only each actor's own sessions and reactivation restores the eligible set.",
           "witness": {
             "path": "cloud/tests-e2e/collaboration-journey.mjs",
-            "start": 198,
-            "end": 218,
+            "start": 227,
+            "end": 247,
             "sha256": "a765f36c63e1a16e1e4ee691794ba5d702f0815dc610abd853c2d83f515ff462"
           }
         },
@@ -33,8 +33,8 @@
           "description": "Public logout returns ok, removes only that device from subsequent inventory and makes that session401. Public member removal removes the teammate, rejects their team inventory404, and preserves their personal-project read access.",
           "witness": {
             "path": "cloud/tests-e2e/collaboration-journey.mjs",
-            "start": 219,
-            "end": 225,
+            "start": 248,
+            "end": 254,
             "sha256": "cb7527cbbd22d104bce7879af14425016eacbc49f2e23c802c347e5e89ec57d9"
           }
         }
@@ -102,8 +102,8 @@
           "description": "Unconfigured authorized responses have exactly expiresAt,iceServers,relayAvailable with the fixed STUN fallback and a bounded one-hour expiry. Unauthorized requests do not consume TURN quota. In one real bucket the same session succeeds20times and then receives the exact429/count21; another session of that user independently succeeds/count1.",
           "witness": {
             "path": "cloud/tests-e2e/collaboration-journey.mjs",
-            "start": 227,
-            "end": 251,
+            "start": 256,
+            "end": 280,
             "sha256": "aedc806bc7d6ffba685e60a367834ddc531da8f03e32a7034a6ab18796b438d3"
           }
         }
@@ -162,9 +162,9 @@
           "description": "The controlled callback receives the exact encoded URL,POST,fake Bearer token and ttl3600 JSON. The valid array is returned with relayAvailable true and bounded expiry. ProviderHTTP failure and non-array data each produce their exact502 envelope; the503 body is not exposed. Three controlled calls occur; the restored document remains exact and R2 empty.",
           "witness": {
             "path": "cloud/tests-e2e/collaboration-journey.mjs",
-            "start": 253,
-            "end": 289,
-            "sha256": "e5584745b6f5fa4a8e9f8128b0fe3836584f6c3b077f1602d82630aee2a590a2"
+            "start": 282,
+            "end": 322,
+            "sha256": "3ccbc3b8c44bcd5a0477c6fe952fbf1ade8d70220802d1ccca48a1f30dd6fb3e"
           }
         }
       ],

@@ -6,7 +6,7 @@
       "id": "billing-webhook-boundary-v106",
       "title": "Validate signed billing webhook boundaries",
       "preconditions": [
-        "Run complete tracer app -- test services billing. Preserve original 27 named callbacks and 22 checkout cases. Only earlier lines 377 and 380 strengthen the revoked portal response oracle; all other original lines 1–387 and footer remain exact. Append 26 HTTP checks, for 75 total within original cap 80.",
+        "Run complete tracer app -- test services billing. Preserve original 27 named callbacks and 22 checkout cases. Only earlier lines 377 and 380 strengthen the revoked portal response oracle; all other original lines 1\u2013387 and footer remain exact. Append 26 HTTP checks, for 75 total within original cap 80.",
         "Reuse the already-provisioned original team/customer and distinct checkout team/customer, existing billing receipts and existing identities. Restore the original local Miniflare provider configuration and verify observed D1/R2 state survives the configuration switch. This is not a full process restart or crash test.",
         "All new webhook requests use real loopback HTTP with no Authorization header and independently computed HMAC using the synthetic fixture secret. Only the final viewer GET uses the existing session. No new fixture writes, production helper calls, clock overrides or external services.",
         "Observe complete rows in users, sessions, teams, team_members, projects, billing_events, generation_jobs, generation_job_operations and assets, plus R2 inventory. Security-limit rows and internal Durable Object refresh state are outside the declared unchanged-state scope.",
@@ -27,9 +27,9 @@
           "description": "Eight requests with missing signature, missing or fractional timestamp, ten-minute future or stale timestamp, wrong digest, unsupported signature version or tampered body return exact 400 invalid_signature. A valid second v1 signature after an invalid one and trimmed signature fields each authenticate an ignored event. All these public webhook requests omit Authorization. Every case preserves all observed business rows and R2 inventory and makes zero provider attempts. This does not test the exact 300-second tolerance edge or secret rotation.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 388,
-            "end": 427,
-            "sha256": "45c0b8a29ec69af7c7419c6b4b26e33b92d21214b9e3387faa69eeb700815d8f"
+            "start": 421,
+            "end": 465,
+            "sha256": "be8647a361c26dfbe6825aad48e4df806c63e4ec25f60a371eae9528ec1afa32"
           }
         },
         {
@@ -37,9 +37,9 @@
           "description": "Nine validly signed invalid JSON values/event envelopes and one validly signed malformed JSON body fail with the exact status, code and message. An expanded unknown customer object is ignored. Reusing an accepted event ID for the distinct existing checkout customer returns exact retryable 502 without provider access or changes to observed state. These cases retain their distinct validation reachability: malformed signatures do not stand in for signed malformed payloads, and recognized event types reach object/customer/created-time validation.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 388,
-            "end": 444,
-            "sha256": "3462d9e6a8a4ffe95dea3ed50bf98f941147f74d27ed3f0379a3049274ac1cb2"
+            "start": 421,
+            "end": 482,
+            "sha256": "0aac66f43f6a9d0cbbc2a57fc0272f3bc1a9e106b190dbc9ceceae1341c8c940"
           }
         },
         {
@@ -47,9 +47,9 @@
           "description": "A fresh recognized event during a synthetic provider outage returns exact 502 with one expected provider attempt and no changes to observed D1 business rows or R2 inventory. Retrying the same event after recovery commits exactly one expected billing receipt and updates only the original team billing fields: active sub_synthetic, expected end/paid-until, null canceled-at and request-bounded billing_checked_at. Receipt event time is the signed value converted to milliseconds and processed_at equals that bounded update time. A further replay after the provider fixture changes to canceled makes no provider request and preserves accepted state, which an authenticated viewer reads as active Team entitlement. Prior receipts and all other observed rows remain exact. No transaction fault, propagation failure, concurrent webhook, full process restart, live provider or native execution is asserted.",
           "witness": {
             "path": "cloud/tests-e2e/billing-journey.mjs",
-            "start": 388,
-            "end": 466,
-            "sha256": "05107d2b3080b8729f87590c34ce954d19df1200c46de949f3f379c2c4e83137"
+            "start": 421,
+            "end": 504,
+            "sha256": "a6050f85add6c9fc87395d03bf01ad268df6a25ec46f4c138e71edbdf701e358"
           }
         }
       ],
