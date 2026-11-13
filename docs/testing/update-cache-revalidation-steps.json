@@ -24,8 +24,8 @@
           "description": "A matching filename-digest If-None-Match must not bypass R2 metadata or existence checks: metadata-mismatched GET and HEAD return 503 with no ETag and no-store, then the deleted object returns exact 404/Not found with no ETag and no-store. The GET error is exact Release artifact unavailable.; HEAD has no bytes. The corrupt object exists before its first two requests. These are origin revalidation checks, not revocation of previously cached bytes.",
           "witness": {
             "path": "updates/tests-e2e/update-journey.mjs",
-            "start": 241,
-            "end": 252,
+            "start": 252,
+            "end": 263,
             "sha256": "4474dffd08d78475d1319039009301e3366d0eec5d361f0e6b55a366956ad7bd"
           }
         },
@@ -34,8 +34,8 @@
           "description": "A mismatching validator on the valid inert artifact returns 200 with exact downloaded bytes, ephemeral Ed25519 verification and exact size. Matching HEAD returns bodyless 304 with no Content-Length. Both responses retain exact artifact ETag, application/zip, immutable one-year cache policy, attachment filename and no Retry-After. Conditional list, weak, wildcard, Range and CDN behavior are not covered.",
           "witness": {
             "path": "updates/tests-e2e/update-journey.mjs",
-            "start": 253,
-            "end": 262,
+            "start": 264,
+            "end": 273,
             "sha256": "178a40101fa3074b49eb69c9ea249fc041e8387124cc39c9b176e269000f6514"
           }
         },
@@ -44,8 +44,8 @@
           "description": "After synthetic restoration of the valid stable pointer, a matching feed validator still returns 200 with the exact signed feed bytes, digest ETag, XML content type and no-store. The matching feed validator does not produce a conditional 304; the complete payload is still returned. GET transport Content-Length is not asserted; byte equality is the oracle. No live signing identity, publisher, CDN, native install or Sparkle is involved.",
           "witness": {
             "path": "updates/tests-e2e/update-journey.mjs",
-            "start": 263,
-            "end": 270,
+            "start": 274,
+            "end": 281,
             "sha256": "026dbc3c6d20a9fb3dae57530ab65db96381548d3c5d1e871b1e1946ce0c7a77"
           }
         }

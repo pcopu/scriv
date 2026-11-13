@@ -60,6 +60,13 @@ check --json` for captured intervals. Do not sum repeated interval denominators
 or observed lines as unique project coverage. Uninstrumented code is unknown.
 Keep private profiles, datasets, logs, user data and local evidence out of Git.
 
+The existing update-service CLI journey also supports opt-in cumulative Worker
+measurement. Read `docs/testing/update-counter-coverage.md` before using it. Its
+denominator is selected statement-entry anchor lines in one JavaScript Worker,
+not all Worker lines or the whole project. Preserve real before/after snapshots,
+strict source/probe identities and external analysis storage. Keep its measured
+interval separate from manual links, historical planning and native results.
+
 ## Test and Fix Batches
 
 Finish the available authorized testing first and collect all findings. Fix the

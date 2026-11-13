@@ -11,37 +11,44 @@ const here = await realpath(dirname(fileURLToPath(import.meta.url)));
 const updates = await realpath(join(here, '..'));
 const self = join(here, 'update-journey.mjs');
 if (process.argv[2] !== '--owned-child') {
-  const root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-updates-')));
-  let child;
-  let timer;
+  let root, capture, child, timer, interrupted = false;
   const killOwned = signal => {
     if (child?.pid) {
       try { process.kill(-child.pid, signal); } catch (error) { if (error.code !== 'ESRCH') throw error; }
     }
   };
-  const interrupt = () => killOwned('SIGTERM');
+  const interrupt = () => { interrupted = true; killOwned('SIGTERM'); };
+  process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
   try {
-    for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
-    child = spawn(process.execPath, [self, '--owned-child', root], {
-      cwd: root, detached: true, stdio: 'inherit',
-      // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
-      env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
-        XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
-        WRANGLER_SEND_METRICS: 'false', CI: '1' },
-    });
-    process.on('SIGINT', interrupt); process.on('SIGTERM', interrupt);
-    timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
-    const result = await new Promise((resolve, reject) => {
-      child.once('error', reject);
-      child.once('exit', (code, signal) => resolve({ code, signal }));
-    });
-    assert.equal(result.code, 0, `Owned update journey failed: exit=${result.code}, signal=${result.signal}`);
+    try {
+      root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-updates-')));
+      for (const name of ['home', 'tmp', 'state']) await mkdir(join(root, name), { mode: 0o700 });
+      capture = process.env.SCRIV_UPDATES_COVERAGE_DIR
+        ? await (await import('./capture-coverage.mjs')).prepareUpdateCapture(process.env.SCRIV_UPDATES_COVERAGE_DIR, process.env.SCRIV_TRACER_CLI) : null;
+      assert.equal(interrupted, false, 'Cancelled during preparation; no Worker launched');
+      child = spawn(process.execPath, [self, '--owned-child', root, ...(capture ? [capture.path] : [])], {
+        cwd: root, detached: true, stdio: 'inherit',
+        // Deliberately no inherited credentials, proxy settings, config, or NODE_OPTIONS.
+        env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
+          XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
+          WRANGLER_SEND_METRICS: 'false', CI: '1' },
+      });
+      timer = setTimeout(() => killOwned('SIGKILL'), 90_000);
+      const result = await new Promise((resolve, reject) => {
+        child.once('error', reject);
+        child.once('exit', (code, signal) => resolve({ code, signal }));
+      });
+      assert.equal(result.code, 0, `Owned update journey failed: exit=${result.code}, signal=${result.signal}`);
+    } finally {
+      clearTimeout(timer); killOwned('SIGKILL');
+      if (root) await rm(root, { recursive: true, force: true });
+      console.log('Owned update process group and temporary state cleaned.');
+    }
+    assert.equal(interrupted, false, 'Cancelled before measurement import');
+    if (capture) await capture.finish(() => interrupted);
+    assert.equal(interrupted, false, 'Cancelled during measurement import; inspect preserved evidence');
   } finally {
-    clearTimeout(timer);
     process.off('SIGINT', interrupt); process.off('SIGTERM', interrupt);
-    killOwned('SIGKILL');
-    await rm(root, { recursive: true, force: true });
-    console.log('Owned update process group and temporary state cleaned.');
   }
 } else {
   const root = await realpath(process.argv[3]);
@@ -50,11 +57,13 @@ if (process.argv[2] !== '--owned-child') {
   const { Miniflare, Log, LogLevel, convertV4MiniflareOptions } = await import('../../cloud/node_modules/miniflare/dist/src/index.js');
   const sourcePath = join(updates, 'src/worker.mjs');
   const source = await readFile(sourcePath);
+  const capture = process.argv[4]
+    ? await (await import('./capture-coverage.mjs')).loadUpdateCapture(process.argv[4], source, root) : null;
   const digest = bytes => createHash('sha256').update(bytes).digest('hex');
   let outboundAttempts = 0;
   const mf = new Miniflare(convertV4MiniflareOptions({
     name: 'scriv-updates-journey', host: '127.0.0.1', port: 0,
-    modules: true, script: source.toString(), compatibilityDate: '2026-10-30',
+    ...(capture ? capture.options : { modules: true, script: source.toString() }), compatibilityDate: '2026-10-30',
     r2Buckets: ['RELEASES'], cf: false, telemetry: { enabled: false },
     unsafeInspectorProxy: false, unsafeLocalExplorer: false, unsafeObservability: false,
     unsafeEnableSharedStorage: false, logRequests: false, log: new Log(LogLevel.ERROR),
@@ -95,6 +104,8 @@ if (process.argv[2] !== '--owned-child') {
       assert.equal(response.headers.get('cache-control'), 'no-store');
       assert.equal(response.headers.get('retry-after'), null);
     }
+
+    if (capture) await capture.begin(base);
 
     // Start with an empty private bucket: health must not pretend a release exists.
     const health = await request('/health', 200);
@@ -268,6 +279,7 @@ if (process.argv[2] !== '--owned-child') {
     console.log(JSON.stringify({kind:'update-cache-revalidation-evidence',httpChecks:6,metadataRefusals:2,missingArtifactRefusals:1,staleValidatorFullDownload:true,matchingHeadStatus:304,matchingFeedStatus:200,nativeScenarios:0}));
     assert.equal(outboundAttempts, 0, 'No outbound requests permitted');
     assert.deepEqual(await readFile(sourcePath), source, 'Production source unchanged');
+    if (capture) await capture.end(base, requests);
     console.log(`PASS update-distribution journey: ${requests} loopback HTTP checks; zero outbound attempts.`);
     console.log(`Production worker SHA-256: ${digest(source)}`);
     console.log(`Inert artifact SHA-256: ${digest(artifact)}; signed feed SHA-256 (ephemeral per run): ${feedHash}`);
