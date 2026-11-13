@@ -1,0 +1,907 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "character-profile-field-bindings",
+      "title": "Character profile fields remain local until Save",
+      "preconditions": [
+        "Reviewed source-to-existing-assertion associations only; native results and measured execution remain separate. Guards are associated with their witnessed ordinary path, not every branch. Snapshot polling and bounded helper scrolling may repeat.",
+        "editProfile has opened and saved the isolated sample, captured its original characters and entries, and selected the frozen initialProfile fixture. No Return, alias action, dirty discard, font/layout or pixel behavior is asserted."
+      ],
+      "actions": [
+        "activate {target: snapshot \"Add character\".path}",
+        "text {target: snapshot Name field.path, text: initialDraft.name}",
+        "text {target: snapshot Biography field.path, text: initial.biography}",
+        "text {target: snapshot Appearance field.path, text: initial.appearance}",
+        "activate {target: snapshot \"Purple character colour\".path}",
+        "activate {target: snapshot \"Pink character colour\".path}",
+        "activate {target: snapshot \"Save character\".path}",
+        "{\"command\":\"persisted-projects\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Author exact name, Biography and Appearance strings through real mounted controls, inspect the draft, verify the original package is unchanged, then Save and check the exact new profile and preserved prior characters/entries.",
+          "witness": {
+            "path": "tests/e2e/journeys/character-catalog.mjs",
+            "start": 97,
+            "end": 120,
+            "sha256": "b90e1356501e78068d7c5d1483b670e38e6807cb2b53cc82a391f579528a1f1c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 41,
+            "end": 41,
+            "sha256": "c407a6e0dda4d3bfda8af6c7264a6d7ad8f35c26d40d21f70c757cc93b8a8cb0"
+          },
+          "expectation": "asserted",
+          "why": "The form binds name editing and both notes delegates, and mounts the two labeled text views used by the journey. Exact field and saved-profile assertions witness these functional connections; styling and name Return are outside this association."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 43,
+            "end": 43,
+            "sha256": "1611ea7cdada8cc08759b747593b380363c02578b84140a3f8656385b66b6375"
+          },
+          "expectation": "asserted",
+          "why": "The form binds name editing and both notes delegates, and mounts the two labeled text views used by the journey. Exact field and saved-profile assertions witness these functional connections; styling and name Return are outside this association."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 50,
+            "end": 51,
+            "sha256": "06bd4142349e54eb1f19bc728bfa2bf2b369e156a3bdbbeba52042a07218191b"
+          },
+          "expectation": "asserted",
+          "why": "The form binds name editing and both notes delegates, and mounts the two labeled text views used by the journey. Exact field and saved-profile assertions witness these functional connections; styling and name Return are outside this association."
+        }
+      ]
+    },
+    {
+      "id": "character-profile-inline-rejection",
+      "title": "Invalid profile edits remain visible without saving",
+      "preconditions": [
+        "Reviewed source-to-existing-assertion associations only; native results and measured execution remain separate. Guards are associated with their witnessed ordinary path, not every branch. Snapshot polling and bounded helper scrolling may repeat.",
+        "The existing synthetic profile is reopened and its name restored after the preceding Unicode-name refusal. The two inputs exceed respectively the field UTF-16 bound and encoded-profile bound; the saved-profile helper compares exact characters and entries."
+      ],
+      "actions": [
+        "text {target: snapshot Appearance field.path, text: fixtures.invalidAppearance}",
+        "activate {target: snapshot \"Save character\".path}",
+        "text {target: snapshot Appearance field.path, text: initial.appearance}",
+        "text {target: snapshot Biography field.path, text: fixtures.encodedBiography}",
+        "activate {target: snapshot \"Save character\".path}",
+        "{\"command\":\"persisted-projects\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Reject oversized Appearance and encoded Biography, retaining exact draft text and enabled Save while the prior persisted profile remains unchanged.",
+          "witness": {
+            "path": "tests/e2e/journeys/character-catalog.mjs",
+            "start": 159,
+            "end": 177,
+            "sha256": "7b52af6db3fa8c5e6c559b942f859f10e9031e5b70217b01e22fca45cdbaeeb9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 52,
+            "end": 52,
+            "sha256": "c8c45c9e0817a148edf1960ceedcc938f513a0c714a650659b1181e3c3c37035"
+          },
+          "expectation": "asserted",
+          "why": "The actual inline issue label is mounted and made visible with the validator message. The journey waits for each exact message and untruncated draft field; no alert or concurrent-store error is inferred."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 150,
+            "end": 150,
+            "sha256": "24a12fdfa78842d74194a1bd96aa72d9ae028a4a2fbc463ffedeaadabdd8c379"
+          },
+          "expectation": "asserted",
+          "why": "The actual inline issue label is mounted and made visible with the validator message. The journey waits for each exact message and untruncated draft field; no alert or concurrent-store error is inferred."
+        }
+      ]
+    },
+    {
+      "id": "character-profile-existing-save-fences",
+      "title": "Save exact canonical-only profile edits in the current context",
+      "preconditions": [
+        "Reviewed source-to-existing-assertion associations only; native results and measured execution remain separate. Guards are associated with their witnessed ordinary path, not every branch. Snapshot polling and bounded helper scrolling may repeat.",
+        "Earlier editProfile steps created this character and repeatedly saved/cleared/restored its exact fields. The current character has no portrait or aliases and an uncontended local edit lease. The normal context and equality-guard paths are covered; removed/stale characters, lease denial, account changes, portrait races and cancellation races remain gaps."
+      ],
+      "actions": [
+        "text {target: snapshot \"Search characters\".path, text: \"\u53f0\u8a5e\"}",
+        "activate {target: snapshot character-ribbon-${character.id}.path}",
+        "activate {target: snapshot \"Edit\".path}",
+        "{\"command\":\"snapshot\"}",
+        "text {target: snapshot \"Appearance & image direction\".path, text: \"Warm light; cafe\u0301 buttons.\\n\"}",
+        "activate {target: snapshot \"Save character\".path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "text {target: snapshot \"Search characters\".path, text: \"\u53f0\u8a5e\"}",
+        "activate {target: snapshot character-ribbon-${character.id}.path}",
+        "activate {target: snapshot \"Edit\".path}",
+        "{\"command\":\"snapshot\"}",
+        "text {target: snapshot \"Biography\".path, text: \"  caf\u00e9\\n\"}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "activate {target: snapshot \"Save character\".path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "text {target: snapshot \"Search characters\".path, text: \"\u53f0\u8a5e\"}",
+        "activate {target: snapshot character-ribbon-${character.id}.path}",
+        "activate {target: snapshot \"Edit\".path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"Cancel\".path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "text {target: snapshot \"Search characters\".path, text: \"\u53f0\u8a5e\"}",
+        "activate {target: snapshot character-ribbon-${character.id}.path}",
+        "activate {target: snapshot \"Edit\".path}",
+        "{\"command\":\"snapshot\"}",
+        "text {target: snapshot \"Appearance & image direction\".path, text: \"Warm light; caf\u00e9 buttons.\\n\"}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "activate {target: snapshot \"Save character\".path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "text {target: snapshot \"Search characters\".path, text: \"\u53f0\u8a5e\"}",
+        "activate {target: snapshot character-ribbon-${character.id}.path}",
+        "activate {target: snapshot \"Edit\".path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"Cancel\".path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Save decomposed Appearance, then independently normalize Biography and Appearance through the real editor. Each Save must persist exact UTF-16 strings, preserve other characters and all entry metadata, reopen with the saved values, and cleanly Cancel.",
+          "witness": {
+            "path": "tests/e2e/journeys/character-catalog.mjs",
+            "start": 227,
+            "end": 254,
+            "sha256": "590ac08d8c15053a740af96e72d9ea3dbb726b726d7ad2f9f1d344155b054f17"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 66,
+            "end": 66,
+            "sha256": "55947fae8c4e8b0973c7d983f9df7e225ead5234e81f78b826b661dec0d91415"
+          },
+          "expectation": "asserted",
+          "why": "Reopening reaches the current, existing character through the successful lease/context guards before inspectEditor observes enabled Save and exact fields. Error bodies, canceled acquisition and missing-character handling are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 69,
+            "end": 70,
+            "sha256": "ef98f9f0e8142b9efabea64e633caf4580c5b4c10b5a7e40908ea57092ff0f24"
+          },
+          "expectation": "asserted",
+          "why": "Reopening reaches the current, existing character through the successful lease/context guards before inspectEditor observes enabled Save and exact fields. Error bodies, canceled acquisition and missing-character handling are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 91,
+            "end": 91,
+            "sha256": "05d959142d15154310103941d45d0c1ce891fd5d48030278ceb18fad5d3b19fd"
+          },
+          "expectation": "asserted",
+          "why": "The accepted existing-profile Save uses the current navigation/account context and unchanged original authored fields, then retains the current nil portrait identity. Exact persisted character equality witnesses the normal path; no rejection branch or non-nil portrait concurrency claim."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 152,
+            "end": 152,
+            "sha256": "83dc2b8602e015f73f6d106d2a4ac572ef7dd44eddd6de204f0e5b887df9c441"
+          },
+          "expectation": "asserted",
+          "why": "The accepted existing-profile Save uses the current navigation/account context and unchanged original authored fields, then retains the current nil portrait identity. Exact persisted character equality witnesses the normal path; no rejection branch or non-nil portrait concurrency claim."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 158,
+            "end": 162,
+            "sha256": "45530762e1ba633cf016afba05a0d4efd81b6d48a48b1deb7818a4afd24135fa"
+          },
+          "expectation": "asserted",
+          "why": "The accepted existing-profile Save uses the current navigation/account context and unchanged original authored fields, then retains the current nil portrait identity. Exact persisted character equality witnesses the normal path; no rejection branch or non-nil portrait concurrency claim."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 164,
+            "end": 165,
+            "sha256": "c3ee0d6814858a789dd39cff519c6800a729c8f0131c3d8968ce2dd2eb59abb6"
+          },
+          "expectation": "asserted",
+          "why": "The accepted existing-profile Save uses the current navigation/account context and unchanged original authored fields, then retains the current nil portrait identity. Exact persisted character equality witnesses the normal path; no rejection branch or non-nil portrait concurrency claim."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 170,
+            "end": 172,
+            "sha256": "6db0b26943435afd9fa732e1353c3e2ac17d1792ac4d33367f60ba5e82383357"
+          },
+          "expectation": "asserted",
+          "why": "Save and clean Cancel close the form and allow the same character to be reopened and edited repeatedly. This associates ordinary session/task cleanup and local lease release only; it does not assert release races or competing-client behavior."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+            "start": 190,
+            "end": 190,
+            "sha256": "584c617fda3c30939c436d701eba5d6e438ef2a92b159223a0125192bff42c12"
+          },
+          "expectation": "asserted",
+          "why": "The unchanged empty alias list passes the shared form validator during each accepted canonical-only Save. This is the empty-list success path, with no alias input or alias-limit rejection credit."
+        }
+      ]
+    },
+    {
+      "id": "character-catalog-render-results",
+      "title": "Render exact character search results and restore the catalog",
+      "preconditions": [
+        "Reviewed source-to-existing-assertion associations only; native results and measured execution remain separate. Guards are associated with their witnessed ordinary path, not every branch. Snapshot polling and bounded helper scrolling may repeat.",
+        "createFindReopen has saved a uniquely named synthetic character and captured the complete resulting character list. Search uses its real UISearchBar callback; aliases, portrait pixels, automatic scrolling and responsive layout are outside this association."
+      ],
+      "actions": [
+        "text {target: snapshot Search characters.path, text: \"no-such-cli-character-91be77\"}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"Clear search\".path}",
+        "{\"command\":\"snapshot\"}",
+        "text {target: snapshot Search characters.path, text: \"cli validation z\u00e9phyr\"}",
+        "{\"command\":\"snapshot\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "A missing query yields the no-match notice and zero ribbons; Clear search restores the exact character count and empty field; a lowercased name yields one ribbon with the exact saved name.",
+          "witness": {
+            "path": "tests/e2e/journeys/character-catalog.mjs",
+            "start": 63,
+            "end": 71,
+            "sha256": "c5f2daf160f9ffa4754921f79fbe4b350185f099d43eeaaff7e6f625e9ca5e55"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharactersController.swift",
+            "start": 36,
+            "end": 36,
+            "sha256": "d29ed65d3851631603fc56276bd635a945763dffada4cc6264a69072cb0bb38f"
+          },
+          "expectation": "asserted",
+          "why": "The real searchable field is labeled and connected to this controller as delegate. The journey types through that field and asserts the resulting catalog state; search-bar styling is not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharactersController.swift",
+            "start": 129,
+            "end": 129,
+            "sha256": "456dadd16448fd43f19b26b08886640b4907c85c36131fc4f7ccbc89a881f634"
+          },
+          "expectation": "asserted",
+          "why": "Render obtains the filtered collection, selects its current/first item, rebuilds mounted ribbon controls with exact names and replaces the selected profile. Zero/full/single ribbon assertions and the no-match notice witness these ordinary rebuild paths; no layout, selection outline, portrait or automatic-scroll result is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharactersController.swift",
+            "start": 131,
+            "end": 134,
+            "sha256": "e0bfa5582f0e497e1ef4559b52b3d42a8b835933c43f3b66354ddba8701d47ac"
+          },
+          "expectation": "asserted",
+          "why": "Render obtains the filtered collection, selects its current/first item, rebuilds mounted ribbon controls with exact names and replaces the selected profile. Zero/full/single ribbon assertions and the no-match notice witness these ordinary rebuild paths; no layout, selection outline, portrait or automatic-scroll result is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharactersController.swift",
+            "start": 144,
+            "end": 144,
+            "sha256": "04820a2114f69d99b659058a79f31a7f0f1b66ad2b88bc1172c6a3700747f8c0"
+          },
+          "expectation": "asserted",
+          "why": "Render obtains the filtered collection, selects its current/first item, rebuilds mounted ribbon controls with exact names and replaces the selected profile. Zero/full/single ribbon assertions and the no-match notice witness these ordinary rebuild paths; no layout, selection outline, portrait or automatic-scroll result is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharactersController.swift",
+            "start": 149,
+            "end": 149,
+            "sha256": "e65fc33f98b16d326c399429843bd484b18edab48680c56fd71f858c676100fb"
+          },
+          "expectation": "asserted",
+          "why": "Render obtains the filtered collection, selects its current/first item, rebuilds mounted ribbon controls with exact names and replaces the selected profile. Zero/full/single ribbon assertions and the no-match notice witness these ordinary rebuild paths; no layout, selection outline, portrait or automatic-scroll result is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharactersController.swift",
+            "start": 175,
+            "end": 176,
+            "sha256": "8d55306ef092d48a1e328262d71d5707c30c08e3745bdcb69b7a0d4553df13cd"
+          },
+          "expectation": "asserted",
+          "why": "Render obtains the filtered collection, selects its current/first item, rebuilds mounted ribbon controls with exact names and replaces the selected profile. Zero/full/single ribbon assertions and the no-match notice witness these ordinary rebuild paths; no layout, selection outline, portrait or automatic-scroll result is claimed."
+        }
+      ]
+    },
+    {
+      "id": "character-review-choice-submit",
+      "title": "Choose an existing character and advance the seeded review",
+      "preconditions": [
+        "Reviewed source-to-existing-assertion associations only; native results and measured execution remain separate. Guards are associated with their witnessed ordinary path, not every branch. Snapshot polling and bounded helper scrolling may repeat.",
+        "The journey stages and opens the exact synthetic package, checks the original decoded Script previews, then completes the disabled-Save/Skip/Done/reopen chapter. Analysis is seeded; network scanning, crop pixels, new-name alerts, search filtering and stale-context/error branches are excluded."
+      ],
+      "actions": [
+        "activate {target: snapshot \"Review 1\".path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"Synthetic Avery\".path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "activate {target: snapshot character-review-save.path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"persisted-projects\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Open candidate 1 of 3, choose the known existing character, observe Save enabled, Save once, then observe candidate 2 of 2 with Save disabled and compare the exact annotation, tag and automatic portrait delta while preserving every other package field.",
+          "witness": {
+            "path": "tests/e2e/journeys/character-image-review.mjs",
+            "start": 104,
+            "end": 114,
+            "sha256": "ca9f5f94ac777160374b16b8d296ca4b563a09d53ace27d3b8ab917faa006f5b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterImageReviewController.swift",
+            "start": 114,
+            "end": 114,
+            "sha256": "dd98a48e49878d102509fa6984bff267e1861b11ece88d5ce9a5b9ee47a3544a"
+          },
+          "expectation": "asserted",
+          "why": "The review initializes the optional candidate identity, exposes the stable Save control and renders its current candidate. The helper locates that control and exact seeded candidate before and after submission; no requested-item variant or crop image result is asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterImageReviewController.swift",
+            "start": 130,
+            "end": 130,
+            "sha256": "df50e47a7944e03d82c56342626323b5f679adde9562df176fe17780eb83f639"
+          },
+          "expectation": "asserted",
+          "why": "The review initializes the optional candidate identity, exposes the stable Save control and renders its current candidate. The helper locates that control and exact seeded candidate before and after submission; no requested-item variant or crop image result is asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterImageReviewController.swift",
+            "start": 132,
+            "end": 132,
+            "sha256": "3a8a608364302763dac069f41b3aeb201b1df205f2e6dcf02088b9f66b2b9def"
+          },
+          "expectation": "asserted",
+          "why": "The review initializes the optional candidate identity, exposes the stable Save control and renders its current candidate. The helper locates that control and exact seeded candidate before and after submission; no requested-item variant or crop image result is asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterImageReviewController.swift",
+            "start": 140,
+            "end": 142,
+            "sha256": "3e240ff92fd6c4a656de327be44b12fe9b03e95bc0d4ed53a30aabe9203ba595"
+          },
+          "expectation": "asserted",
+          "why": "The review replaces its mounted content and rebuilds selectable existing-character controls from the empty-query catalog, with an exact accessible name. The real chosen control enables Save and its identity appears in the exact saved annotation/tag/portrait delta; selected-border styling and nonempty-query matching are untested."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterImageReviewController.swift",
+            "start": 188,
+            "end": 191,
+            "sha256": "0f42aab80462e5882f3f6f740838bc377f2f0a8fc2abd829acc4e4997fba8ac8"
+          },
+          "expectation": "asserted",
+          "why": "The review replaces its mounted content and rebuilds selectable existing-character controls from the empty-query catalog, with an exact accessible name. The real chosen control enables Save and its identity appears in the exact saved annotation/tag/portrait delta; selected-border styling and nonempty-query matching are untested."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterImageReviewController.swift",
+            "start": 199,
+            "end": 199,
+            "sha256": "bc2b10e90a0d74f39fdaba31080149a72046d5622f838eba4f05fc0759e5782c"
+          },
+          "expectation": "asserted",
+          "why": "The review replaces its mounted content and rebuilds selectable existing-character controls from the empty-query catalog, with an exact accessible name. The real chosen control enables Save and its identity appears in the exact saved annotation/tag/portrait delta; selected-border styling and nonempty-query matching are untested."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterImageReviewController.swift",
+            "start": 201,
+            "end": 202,
+            "sha256": "5dcce9100c83c9b86c1fa807ecbb02102b69017a8f99ef773c3c249c96971a31"
+          },
+          "expectation": "asserted",
+          "why": "The review replaces its mounted content and rebuilds selectable existing-character controls from the empty-query catalog, with an exact accessible name. The real chosen control enables Save and its identity appears in the exact saved annotation/tag/portrait delta; selected-border styling and nonempty-query matching are untested."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterImageReviewController.swift",
+            "start": 218,
+            "end": 220,
+            "sha256": "903e54ec8064a9ace0ddd1907d9e84cacd0b8409693030b4fa06c77288a197e6"
+          },
+          "expectation": "asserted",
+          "why": "The ordinary accepted submission enters the saving state and asynchronously resolves the selected current candidate. The helper observes Save enabled before dispatch and disabled on the next candidate, and mutation verifies the single exact persisted delta. In-flight modal locking, duplicate submits, context refusals and weak-self loss are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharacterImageReviewController.swift",
+            "start": 223,
+            "end": 224,
+            "sha256": "e84bc7b757fd54efc3ee8ac535380174ca9cc1d6161bc8af819cb0347485f4cf"
+          },
+          "expectation": "asserted",
+          "why": "The ordinary accepted submission enters the saving state and asynchronously resolves the selected current candidate. The helper observes Save enabled before dispatch and disabled on the next candidate, and mutation verifies the single exact persisted delta. In-flight modal locking, duplicate submits, context refusals and weak-self loss are not asserted."
+        }
+      ]
+    },
+    {
+      "id": "character-review-banner-reopen",
+      "title": "Reuse the seeded review entry point after Skip and Done",
+      "preconditions": [
+        "Reviewed source-to-existing-assertion associations only; native results and measured execution remain separate. Guards are associated with their witnessed ordinary path, not every branch. Snapshot polling and bounded helper scrolling may repeat.",
+        "The exact synthetic prior-analysis package has already been opened and its two original images checked outside the review modal. There is one image with three pending candidates. No provider run, auto-tag toggle, scanning state or new-name entry occurs."
+      ],
+      "actions": [
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"presented-alerts\"}",
+        "select {target: \"workspace-tabs\", index: snapshot workspace-tabs.segments.indexOf(\"Characters\")}",
+        "activate {target: snapshot \"Review 1\".path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot character-review-save.path}",
+        "{\"command\":\"persisted-projects\"}",
+        "activate {target: snapshot \"Skip for now\".path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "activate {target: snapshot \"Done\".path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"presented-alerts\"}",
+        "activate {target: snapshot \"Review 1\".path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "activate {target: snapshot \"Done\".path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"presented-alerts\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Open Review 1, reject disabled Save, Skip to the second candidate, Done, and reopen the first candidate; all loaded and saved package content remains exact.",
+          "witness": {
+            "path": "tests/e2e/journeys/character-image-review.mjs",
+            "start": 96,
+            "end": 103,
+            "sha256": "5dbea6974e0e4f040c1c91711f3f394801763db3e5a231a1d2763311182ba39b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharactersController.swift",
+            "start": 286,
+            "end": 288,
+            "sha256": "32c54b7c2cff3474d0779c343c44fe48b21933043b919f89215e49fcd0e440df"
+          },
+          "expectation": "asserted",
+          "why": "The review banner refresh key tracks the existing analysis state and review-image count, clears stale banner content and selects the visible one-image review branch. The real Review 1 entry point remains usable across modal reopen; other scan/availability states and banner styling are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Characters/CharactersController.swift",
+            "start": 294,
+            "end": 296,
+            "sha256": "fd9cb1eda8a6f8b311bb47546e81af8857f62d4b22fe1324a76a4034a0b5094f"
+          },
+          "expectation": "asserted",
+          "why": "The review banner refresh key tracks the existing analysis state and review-image count, clears stale banner content and selects the visible one-image review branch. The real Review 1 entry point remains usable across modal reopen; other scan/availability states and banner styling are not asserted."
+        }
+      ]
+    },
+    {
+      "id": "script-draft-ordinary-edit-lifecycle",
+      "title": "Open, edit, persist and finish one native script draft",
+      "preconditions": [
+        "Reviewed source-to-existing-assertion associations only; native results and measured execution remain separate. Guards are associated with their witnessed ordinary path, not every branch. Snapshot polling and bounded helper scrolling may repeat.",
+        "writeExactSource has opened Script and saved the isolated sample. The production Dialogue control creates exactly one fresh line with its real placeholder selected. Inputs use the existing type route. Recovery, journal failures, lease contention, context changes, IME, physical keys, exact debounce timing and internal task scheduling are excluded."
+      ],
+      "actions": [
+        "activate {target: named(nodes,\"Dialogue\").find(node => node.hittable).path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "type {target: editor.identifier, text: \"Hello there. caf\u00e9 \ud83c\udfac\"}",
+        "{\"command\":\"snapshot\"}",
+        "type {target: editor.identifier, text: \" Again.\"}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"keys\"}",
+        "{\"command\":\"key\",\"input\":\"Escape\",\"modifiers\":[]}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Consume the selected placeholder once, append through a collapsed caret, observe exact editor text and UTF-16 selection after each input, Escape to finish, then compare exact displayed/saved text, one added entry and dialogue kind.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-authoring-source.mjs",
+            "start": 22,
+            "end": 39,
+            "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 32,
+            "end": 33,
+            "sha256": "60f91ed906c64e43756f7e01caf120169c1d557b03ad90f1a7a2d6178333c6dd"
+          },
+          "expectation": "asserted",
+          "why": "The fresh unblocked entry acquires an ordinary edit session and loads its local draft. The focused native editor and exact selected placeholder witness successful acquisition/loading; no active-session switch, cancellation, failed lease or recovered-draft path is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 35,
+            "end": 41,
+            "sha256": "73f0b3f1dbbd238313aa1f54247e3776898ceec541f59eb5bc104c554386d173"
+          },
+          "expectation": "asserted",
+          "why": "The fresh unblocked entry acquires an ordinary edit session and loads its local draft. The focused native editor and exact selected placeholder witness successful acquisition/loading; no active-session switch, cancellation, failed lease or recovered-draft path is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 44,
+            "end": 50,
+            "sha256": "8bfa129dfd90e2898bd9e682ecde8295e323c813bef4e3949b304db8375ddebb"
+          },
+          "expectation": "asserted",
+          "why": "The fresh unblocked entry acquires an ordinary edit session and loads its local draft. The focused native editor and exact selected placeholder witness successful acquisition/loading; no active-session switch, cancellation, failed lease or recovered-draft path is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 57,
+            "end": 58,
+            "sha256": "86e8694e5cabd6d65a26d8c3571b49eb202488da9e57c70b9c32b9e4498f58f0"
+          },
+          "expectation": "asserted",
+          "why": "Native input reaches the valid-context/valid-range draft acceptance and change guards. Exact resulting editor and persisted strings witness this successful input route; rejected ranges, journal errors and unmatched IME fallback are outside scope."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 67,
+            "end": 68,
+            "sha256": "8b612b54102e0b6ecc92d605faa6eef4e1d7ad332fa70744b5cd802c53b4b53c"
+          },
+          "expectation": "asserted",
+          "why": "Native input reaches the valid-context/valid-range draft acceptance and change guards. Exact resulting editor and persisted strings witness this successful input route; rejected ranges, journal errors and unmatched IME fallback are outside scope."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 102,
+            "end": 107,
+            "sha256": "36f8f878dbf351bd67d7165a518369398eb88e71bd272afddf858ef5d88091da"
+          },
+          "expectation": "asserted",
+          "why": "Escape successfully finishes and detaches the current valid ordinary draft, removes editor focus and leaves exact saved/displayed text. The association covers normal guard checks and cleanup, not inactive/recovery refusal, invalid context or asynchronous release races."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 119,
+            "end": 126,
+            "sha256": "6a39e9dae72ef2eb3d323208b3f9117aad4da78a8e1141575f0b91283143a5e6"
+          },
+          "expectation": "asserted",
+          "why": "Escape successfully finishes and detaches the current valid ordinary draft, removes editor focus and leaves exact saved/displayed text. The association covers normal guard checks and cleanup, not inactive/recovery refusal, invalid context or asynchronous release races."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 256,
+            "end": 256,
+            "sha256": "6150ac3d3ed30dc20e06805984cb3bfa92906db008beab4657d8c494ce166a79"
+          },
+          "expectation": "asserted",
+          "why": "The mounted editor accepts delegate processing only for its own editor outside programmatic text assignment. The type route and exact text/caret observations witness the allowed ordinary input path; other text views and settingText rejection are untested."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 342,
+            "end": 344,
+            "sha256": "c92f1156afdcb98ba08302ada64510b342f8c75af736b24f54504ae21b0f87e4"
+          },
+          "expectation": "asserted",
+          "why": "The screen creates the entry row and coalesces session-driven refreshes while the same entry is edited and finished. The journey sees one focused editor, then its exact display text; it does not measure refresh counts or timing."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 347,
+            "end": 347,
+            "sha256": "e3ed705f5898d2edba1384b586682bc62f64b7f85f8c7ac9d5b50950eda92a68"
+          },
+          "expectation": "asserted",
+          "why": "The screen creates the entry row and coalesces session-driven refreshes while the same entry is edited and finished. The journey sees one focused editor, then its exact display text; it does not measure refresh counts or timing."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 368,
+            "end": 368,
+            "sha256": "9fb55f6ed0d6edfbfedede0a1ea56b4f99bed2c69b02d7154c83d0db3d32acfb"
+          },
+          "expectation": "asserted",
+          "why": "The screen creates the entry row and coalesces session-driven refreshes while the same entry is edited and finished. The journey sees one focused editor, then its exact display text; it does not measure refresh counts or timing."
+        }
+      ]
+    },
+    {
+      "id": "script-draft-canonical-autosave",
+      "title": "Persist a canonical-only edit before finishing",
+      "preconditions": [
+        "Reviewed source-to-existing-assertion associations only; native results and measured execution remain separate. Guards are associated with their witnessed ordinary path, not every branch. Snapshot polling and bounded helper scrolling may repeat.",
+        "writeExactSource has authored and saved the Unicode fixture, selected the decomposed accent range and changed zoom while preserving both native selection endpoints. No second selection or explicit Save/Finish occurs before the persisted-project assertion; the editor remains focused."
+      ],
+      "actions": [
+        "type {target: editor.identifier, text: \"caf\u00e9\"}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Type the composed text through the preserved selection, assert exact native text and caret, then observe exact saved source with unchanged word IDs, timing endpoints and ownership while editing continues.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-authoring-source.mjs",
+            "start": 103,
+            "end": 112,
+            "sha256": "d56093aaba27330f51151816f7e068ad3401774f0247f924cc883881f59ec850"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 128,
+            "end": 134,
+            "sha256": "bcc3975b9aff66daad7adcbf20df64ce5dae06b4664bd919c8569dd5d20c4e39"
+          },
+          "expectation": "asserted",
+          "why": "The canonical-only type operation is observed in the saved package while the editor remains focused, before Escape/Finish. The native change schedules the normal deferred flush and applies the valid current draft. Exact saved text and preserved word timing metadata witness autosave here; no exact 200 ms schedule, flush count, recovery or journal-error outcome is asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptDraftSession.swift",
+            "start": 136,
+            "end": 138,
+            "sha256": "b6de8d26c264ecdd359ecb45edeac7151f51ca1e1faf51fe0580910e4b8ba55d"
+          },
+          "expectation": "asserted",
+          "why": "The canonical-only type operation is observed in the saved package while the editor remains focused, before Escape/Finish. The native change schedules the normal deferred flush and applies the valid current draft. Exact saved text and preserved word timing metadata witness autosave here; no exact 200 ms schedule, flush count, recovery or journal-error outcome is asserted."
+        }
+      ]
+    },
+    {
+      "id": "script-refresh-retains-source",
+      "title": "Retain exact editor source and selection during zoom refresh",
+      "preconditions": [
+        "Reviewed source-to-existing-assertion associations only; native results and measured execution remain separate. Guards are associated with their witnessed ordinary path, not every branch. Snapshot polling and bounded helper scrolling may repeat.",
+        "The same writeExactSource workflow has authored its Unicode fixture, saved it, and selected the decomposed accent range immediately before this block. zoomInput is the enabled command-plus or command-minus selected from the current zoom. No second selection is issued."
+      ],
+      "actions": [
+        "key {input: zoomInput, modifiers: [\"command\"]}",
+        "{\"command\":\"snapshot\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Dispatch the enabled zoom key, observe its changed shared-zoom accessibility label, then assert exactly one same-ID editor retaining focus, exact source text and both UTF-16 selection endpoints.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-authoring-source.mjs",
+            "start": 91,
+            "end": 99,
+            "sha256": "58e386105f35052942465f3979f8cbc7abc125688e34a260341230bf179ccff5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 183,
+            "end": 187,
+            "sha256": "dcb9a40d69048398abe9f897c3e0d9008377625ca4ec75b71ea5b5d81ffc7e9c"
+          },
+          "expectation": "asserted",
+          "why": "The row builds and records its render inputs, including font size, before updating content. The zoom-driven refresh keeps the same logical editor and exact source/selection. This does not prove the cache hit rate, native object identity, playback highlighting or peer rendering."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 300,
+            "end": 302,
+            "sha256": "65ede3858d399ad6b7eef4a1b50e7f2be2e5f6b5aae5fc7098a767305606092e"
+          },
+          "expectation": "asserted",
+          "why": "The header refresh key includes the changed shared zoom and commits the refreshed header inputs. The journey observes the changed zoom label alongside preserved editor state; scene and presence variants are not asserted."
+        }
+      ]
+    },
+    {
+      "id": "script-find-key-registration",
+      "title": "Navigate and refocus script Find through registered shortcuts",
+      "preconditions": [
+        "Reviewed source-to-existing-assertion associations only; native results and measured execution remain separate. Guards are associated with their witnessed ordinary path, not every branch. Snapshot polling and bounded helper scrolling may repeat.",
+        "findReadClose has authored two distinct matching source entries, finished both editors and captured the complete mounted-line ID baseline. The field is in the current Script screen; physical keyboard events, Find-field Return and name/alias fixture variants are excluded."
+      ],
+      "actions": [
+        "activate {target: scoped(nodes)[0].path}",
+        "{\"command\":\"snapshot\"}",
+        "text {target: (await findField()).path, text: \"FiNdPrObEqUaRtZ\"}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: named(nodes,\"Next match\").find(node => node.hittable).path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: named(nodes,\"Next match\").find(node => node.hittable).path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: named(nodes,\"Previous match\").find(node => node.hittable).path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: named(nodes,\"Previous match\").find(node => node.hittable).path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"key\",\"input\":\"g\",\"modifiers\":[\"command\"]}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"key\",\"input\":\"g\",\"modifiers\":[\"command\",\"shift\"]}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"key\",\"input\":\"f\",\"modifiers\":[\"command\"]}",
+        "{\"command\":\"snapshot\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Open Find, assert empty input, search the mixed-case fixture, wrap Next/Previous, use command-G and shift-command-G, and command-F to refocus while retaining query and current count; every count check preserves all mounted lines.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-authoring-search.mjs",
+            "start": 52,
+            "end": 67,
+            "sha256": "d8344b1b95f1fba131733dccd6983854e24d487fa565f1e9b263b8810227a2d8"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 521,
+            "end": 521,
+            "sha256": "612705d92d44617f1c25f3dc3f59b4ffa65d1adbf2ccf017abece9517f5fa374"
+          },
+          "expectation": "asserted",
+          "why": "The screen registers the command-F, command-G, shift-command-G and Escape key-command set. This witness dispatches the three Find shortcuts and verifies count/refocus results; Escape behavior is covered elsewhere and registration alone is not physical input parity."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "character-profile-field-bindings",
+      "title": "Character profile fields remain local until Save",
+      "steps": [
+        "character-profile-field-bindings"
+      ]
+    },
+    {
+      "id": "character-profile-inline-rejection",
+      "title": "Invalid profile edits remain visible without saving",
+      "steps": [
+        "character-profile-inline-rejection"
+      ]
+    },
+    {
+      "id": "character-profile-existing-save-fences",
+      "title": "Save exact canonical-only profile edits in the current context",
+      "steps": [
+        "character-profile-existing-save-fences"
+      ]
+    },
+    {
+      "id": "character-catalog-render-results",
+      "title": "Render exact character search results and restore the catalog",
+      "steps": [
+        "character-catalog-render-results"
+      ]
+    },
+    {
+      "id": "character-review-choice-submit",
+      "title": "Choose an existing character and advance the seeded review",
+      "steps": [
+        "character-review-choice-submit"
+      ]
+    },
+    {
+      "id": "character-review-banner-reopen",
+      "title": "Reuse the seeded review entry point after Skip and Done",
+      "steps": [
+        "character-review-banner-reopen"
+      ]
+    },
+    {
+      "id": "script-draft-ordinary-edit-lifecycle",
+      "title": "Open, edit, persist and finish one native script draft",
+      "steps": [
+        "script-draft-ordinary-edit-lifecycle"
+      ]
+    },
+    {
+      "id": "script-draft-canonical-autosave",
+      "title": "Persist a canonical-only edit before finishing",
+      "steps": [
+        "script-draft-canonical-autosave"
+      ]
+    },
+    {
+      "id": "script-refresh-retains-source",
+      "title": "Retain exact editor source and selection during zoom refresh",
+      "steps": [
+        "script-refresh-retains-source"
+      ]
+    },
+    {
+      "id": "script-find-key-registration",
+      "title": "Navigate and refocus script Find through registered shortcuts",
+      "steps": [
+        "script-find-key-registration"
+      ]
+    }
+  ]
+}

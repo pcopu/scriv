@@ -1,0 +1,600 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "repository-roundtrip",
+      "title": "Save and reopen the full loaded document",
+      "preconditions": [
+        "Reuse the unchanged public native journey project-roundtrip, including its full setup and ordered steps; a matching automation-enabled Catalyst app and fresh owned synthetic workspace are required. This catalog adds static source/assertion associations only, not a run or measured coverage.",
+        "Actions below summarize actual ordered ScrivSession public calls; waitFor repeats snapshot, saved observers repeat persisted-projects, and reveal may scroll. No mutation retries, live account or production data. Input fixtures and assertion values remain in the pinned witness and its imported fixture modules.",
+        "A successful-path association covers the stated accepted operation only. It does not establish every inline guard failure, filesystem race, symlink substitution, contention, flush interruption, crash durability, cloud synchronization or unrelated branch.",
+        "Repeat the complete launch-to-close sequence once per frozen roundtripCases fixture. Each case owns a distinct fresh synthetic workspace; fixtures are not imported sequentially into a shared session."
+      ],
+      "actions": [
+        "ScrivSession.launch(SCRIV_E2E_APP); session.command(\"capabilities\")",
+        "session.waitFor(YAM MAN workspace header); session.command(\"key\", {input:\"s\",modifiers:[\"command\"]}); waitForSavedProject(YAM MAN)",
+        "session.command(\"import-json\", {text:test.serializePositive(input)}) for the current frozen roundtripCases fixture; session.waitFor(imported title)",
+        "session.command(\"loaded-project\"); session.command(\"loaded-project\", {path:\"not-an-accepted-parameter\"}) is rejected; session.command(\"loaded-project\")",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]}); waitForSavedProject(imported ID)",
+        "For other then imported project: session.waitFor(workspace-project); session.command(\"activate\", {target:header.path}); session.waitFor(Find a project); session.command(\"text\", {target:search.path,text:project.title}); session.waitFor(unique title footer); session.command(\"activate\", {target:Open project.path}); session.waitFor(header); session.command(\"loaded-project\"); session.command(\"presented-alerts\")",
+        "session.command(\"loaded-project\"); session.command(\"persisted-projects\"); session.close()"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The accepted fixture is independently checked, its complete encoded model equals saved JSON, opening a different project really changes identity, and reopening restores the entire loaded response including exact Date storage bits. Both projects remain saved.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/project-roundtrip-steps.mjs",
+            "start": 38,
+            "end": 64,
+            "sha256": "33ea51565b05c62b6fb6a253f8bd33decbe237f686d34984d739f553290277fa"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 63,
+            "end": 78,
+            "sha256": "1c3fbfb15c0afa12073b9f49cdbe556711f24214af41b535675989166bde8715"
+          },
+          "expectation": "observed",
+          "why": "The regular owned package takes the uncontended write-lock path before publishing the independently checked saved model. Association is normal save plumbing, not an oracle for contention or lock-hardening failure branches."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 79,
+            "end": 91,
+            "sha256": "90c838a16970b1c7c0488b31b40237e5684b76c3037b233213cb0f7449678c53"
+          },
+          "expectation": "observed",
+          "why": "Accepted project validation, package/assets/history preparation, encoding and the passing metadata-size guard support the exact persisted model and successful browser reopen. No over-limit refusal is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 93,
+            "end": 107,
+            "sha256": "0dfb0262198da6901db5bf1256d73b3159516ef7dcb62362cd82aff6e201c9b3"
+          },
+          "expectation": "observed",
+          "why": "For a valid saved project the production saver resolves revision/current members, reads the current snapshot and checks accepted revision/content before inspecting any existing history. Ordinary same-content saves are covered; stale replacement and corrupt history refusal are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 109,
+            "end": 117,
+            "sha256": "02c7c5c1d1ab9debd4705cb876d416a255cdecda7fd1957beb38894bc87cb75c"
+          },
+          "expectation": "observed",
+          "why": "The save publishes history and canonical JSON, completes its file/directory flush calls and returns successfully. Full saved/reopened content is asserted; atomic visibility under a race and crash durability are not."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 118,
+            "end": 123,
+            "sha256": "f67fc139f1f8b0a7356ee5e91d9961ea59585a547283318e44ca2bc78a35e257"
+          },
+          "expectation": "observed",
+          "why": "Successful save opens and closes the owned regular files and performs the normal successful flush path. The observable contract is completed save followed by exact reopen; injected flush failure and EINTR retry are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 125,
+            "end": 133,
+            "sha256": "3e55a6d4c4cfc9ee94769630e44b2366d9885712eeee0c48514bd734777c9676"
+          },
+          "expectation": "observed",
+          "why": "Successful flush completion and production load return the decoded, validated full model consumed by the actual project browser. Unsupported failure branches are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 227,
+            "end": 233,
+            "sha256": "bfca5620b13a3a9e65bc42e758594611e113c32972f156c4baff05ed7de0532a"
+          },
+          "expectation": "observed",
+          "why": "Normal project load opens a regular bounded package member and passes descriptor/stat checks. The independent complete loaded-model assertion supports this successful read path, not malformed-file or safety-refusal variants."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 235,
+            "end": 244,
+            "sha256": "fdf434fdd71402c55152dea7fd6ef582632a6ea0c007ba7ca03b78fdc604363c"
+          },
+          "expectation": "observed",
+          "why": "The normal bounded reader accumulates actual file bytes and returns them for production decoding. Full reopened content is compared; growth races and size-limit rejection are not established."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 262,
+            "end": 268,
+            "sha256": "7e8425318be09abf0f5bf2827227485c2580f2865ad9989e969568c39cc5ccde"
+          },
+          "expectation": "observed",
+          "why": "Normal saved-package member resolution feeds the exact canonical save/read roundtrip. Only contained nonsymlinked owned fixture members are involved, not adversarial path refusal."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CloudModels.swift",
+            "start": 36,
+            "end": 39,
+            "sha256": "cdd4eaab27f64edc7e081c7d70a4b4bb8b8a6409e5b4f26b82a1f68613eb2d3d"
+          },
+          "expectation": "observed",
+          "why": "Production JSON date encoding/decoding uses millisecond timestamps; the complete saved model and exact loaded Date bits survive actual save and browser reopen. Sorted-key byte ordering is not asserted by this witness."
+        }
+      ]
+    },
+    {
+      "id": "pending-save-replay",
+      "title": "Recover one accepted character edit through normal open",
+      "preconditions": [
+        "Reuse the unchanged public native journey save-failure-recovery, including its full setup and ordered steps; a matching automation-enabled Catalyst app and fresh owned synthetic workspace are required. This catalog adds static source/assertion associations only, not a run or measured coverage.",
+        "Actions below summarize actual ordered ScrivSession public calls; waitFor repeats snapshot, saved observers repeat persisted-projects, and reveal may scroll. No mutation retries, live account or production data. Input fixtures and assertion values remain in the pinned witness and its imported fixture modules.",
+        "A successful-path association covers the stated accepted operation only. It does not establish every inline guard failure, filesystem race, symlink substitution, contention, flush interruption, crash durability, cloud synchronization or unrelated branch.",
+        "The journey restores its exact owned synthetic directory permissions before relaunch. Its host read-only file observations are part of this existing CLI workflow, never an implementation API call. No supplied arbitrary path or production package is involved."
+      ],
+      "actions": [
+        "ScrivSession.launch(SCRIV_E2E_APP,{persistent:true}); session.command(\"capabilities\"); session.command(\"key\",{input:\"s\",modifiers:[\"command\"]}); waitForSavedProject(YAM MAN)",
+        "session.command(\"import-json\",{text:JSON.stringify(input)}); waitForSavedProject(Synthetic save recovery); Characters tab; activate character-ribbon-mara then Edit; session.command(\"text\",{target:biographyField,text:biography})",
+        "Fixture only: verify and open this owned package history-directory inode; remove only owner-write permission and require EACCES; activate Save character once",
+        "Read presented-alerts, snapshot, loaded-project and persisted-projects; read-only inspect owned canonical tree and PendingProjectSaves; restore original opened history-directory mode",
+        "session.relaunch(); session.command(\"capabilities\"); read-only inspect canonical tree and retained pending records; session.command(\"persisted-projects\")",
+        "Activate workspace-project; type expected.title into Find a project; activate Open project; wait for actual header; session.command(\"loaded-project\"); session.command(\"persisted-projects\"); read-only inspect pending records and all package bytes",
+        "session.relaunch(); repeat normal browser Open project; session.command(\"loaded-project\"); read-only compare all package bytes and empty pending records; session.close()"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The accepted biography edit changes only the independently expected biography/revision/date, canonical bytes remain unchanged during failure and before open, normal Open project publishes exactly the accepted state and one expected history event, and a second reopen preserves all package bytes with no pending records.",
+          "witness": {
+            "path": "tests/e2e/journeys/save-failure-recovery.mjs",
+            "start": 164,
+            "end": 209,
+            "sha256": "6f711fa157ec280eac0804aad57aa2222752abfe0392290774042f3a2726175b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 18,
+            "end": 24,
+            "sha256": "2e34269b278389c9ce642f63cc2e64732a62f06c80ea0e260de38e2c0e155543"
+          },
+          "expectation": "observed",
+          "why": "The real record retained after a refused save reaches normal-open recovery and passes the schema/scope/snapshot checks. Exact expected recovered state is asserted; tampered-record failures and independent hash-algorithm correctness are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 26,
+            "end": 37,
+            "sha256": "2ef48a40c0f64013ea9321fc3c9e61226ac00a9c3f24808e7382433d403a0482"
+          },
+          "expectation": "observed",
+          "why": "Recovery validates the retained accepted document, checks revision continuity, locks and reads the unchanged canonical source before deciding whether replay is needed. This fixture covers replay from the immediately preceding saved revision, not already-saved or advanced-history alternatives."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 52,
+            "end": 55,
+            "sha256": "f6b562d41400b991692d86196e65bf658baecbf0c037103a276e1438d278acab"
+          },
+          "expectation": "observed",
+          "why": "Normal-open recovery verifies the existing canonical document is the exact source revision before replay. The fixture independently proves canonical bytes remained unchanged until that open; concurrent replacement refusal is unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 57,
+            "end": 61,
+            "sha256": "4175dfaf2662727d080ab2df687506d2a9e440a04f98a81ef6e56c2c3e4a6def"
+          },
+          "expectation": "observed",
+          "why": "The checked replay invokes saveLocked once and returns; exact new canonical bytes and one new history file are observed after normal open, with old history and unrelated packages preserved."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Models.swift",
+            "start": 196,
+            "end": 203,
+            "sha256": "99bd834abb241cbda930e66827be96f4787c477898978a73370860118ebf359c"
+          },
+          "expectation": "observed",
+          "why": "The history model and initializer supply the new event whose snapshot, label, revision, finite date and nonempty ID are independently checked in the real saved history JSON. UUID entropy and timestamp precision are not asserted here."
+        }
+      ]
+    },
+    {
+      "id": "history-readback",
+      "title": "Read the saved prior revision through History",
+      "preconditions": [
+        "Reuse the unchanged public native journey local-history-read-only-review, including its full setup and ordered steps; a matching automation-enabled Catalyst app and fresh owned synthetic workspace are required. This catalog adds static source/assertion associations only, not a run or measured coverage.",
+        "Actions below summarize actual ordered ScrivSession public calls; waitFor repeats snapshot, saved observers repeat persisted-projects, and reveal may scroll. No mutation retries, live account or production data. Input fixtures and assertion values remain in the pinned witness and its imported fixture modules.",
+        "A successful-path association covers the stated accepted operation only. It does not establish every inline guard failure, filesystem race, symlink substitution, contention, flush interruption, crash durability, cloud synchronization or unrelated branch."
+      ],
+      "actions": [
+        "ScrivSession.launch(SCRIV_E2E_APP); capabilities; key Command-S; waitForSavedProject(YAM MAN)",
+        "session.command(\"import-json\",{text:JSON.stringify(history fixture)}); select Script; key Command-S; waitForSavedProject(imported title)",
+        "key Command-Return; snapshot focused script-editor-history-line; text History edited compass.; finish editor; key Command-S; waitForSavedProject(edited text); loaded-project; persisted-projects",
+        "Repeat twice: activate Script history; snapshot selected Revision before.revision; activate entry-card Technical details on/off/on; select Revision preview; snapshot original read-only text and literal summary; select Changes; inspect retained disclosure; close History; loaded-project; persisted-projects; presented-alerts",
+        "Open YAM MAN then edited project through workspace-project, Find a project text and Open project controls; loaded-project; select Script; repeat History review and close; session.close()"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The actual History sheet selects the saved prior revision, displays its exact old entry JSON and original read-only text rather than current edits, survives repeated disclosure/tab navigation, and remains correct after a real browser switch-away/reopen without changing loaded or saved models.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+            "start": 79,
+            "end": 180,
+            "sha256": "f1a23de48641b74b457de12690cfb9f94c63a1d636cadd9234b15e58f9227697"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 134,
+            "end": 151,
+            "sha256": "82ae986ddf320edd8d3921c95cf52c7df8c5cfb1709c22fab5befe49b13dacfc"
+          },
+          "expectation": "observed",
+          "why": "Normal local history enumerates accepted revision files, bounds them to the current saved revision and returns reverse revision order used by the observed prior preview. No future orphan, malformed filename or duplicate-revision fixture is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 152,
+            "end": 162,
+            "sha256": "c97163f586c3e02dd66e908e91776c43c696d6733803f3796210badaf480249f"
+          },
+          "expectation": "observed",
+          "why": "Each saved historical candidate is read, decoded, validated and placed in the result array before the displayed prior snapshot is selected. Exact old-entry payload and prior snapshot content are asserted; malformed-history failures and concurrency scheduling are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+            "start": 164,
+            "end": 167,
+            "sha256": "e07d91611c022afd37272c842610faa6dfe5d1cf2c39f2e2dd1f8449d774b090"
+          },
+          "expectation": "observed",
+          "why": "Successful history decoding returns its completed nonnil entries for the real prior-revision UI. This is the no-failure path only; thrown decode failures are excluded."
+        }
+      ]
+    },
+    {
+      "id": "fountain-model-construction",
+      "title": "Construct typed script objects through Fountain import/export",
+      "preconditions": [
+        "Reuse the unchanged public native journey script-document-roundtrip, including its full setup and ordered steps; a matching automation-enabled Catalyst app and fresh owned synthetic workspace are required. This catalog adds static source/assertion associations only, not a run or measured coverage.",
+        "Actions below summarize actual ordered ScrivSession public calls; waitFor repeats snapshot, saved observers repeat persisted-projects, and reveal may scroll. No mutation retries, live account or production data. Input fixtures and assertion values remain in the pinned witness and its imported fixture modules.",
+        "A successful-path association covers the stated accepted operation only. It does not establish every inline guard failure, filesystem race, symlink substitution, contention, flush interruption, crash durability, cloud synchronization or unrelated branch.",
+        "Run the entire existing script-document-roundtrip scenario in its declared order. This is actual parser-driven construction, not a JSON decoder claim about memberwise initializer execution. Its literal fixtures reside in script-document-roundtrip-cases.mjs."
+      ],
+      "actions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP) [public launch includes capabilities handshake; fresh synthetic root]",
+        "session.command(\"capabilities\", {})",
+        "session.waitFor(one enabled hittable workspace-tabs, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"select\", {target: tabs.path, index: tabs.segments.indexOf(\"Script\")})",
+        "session.command(\"key\", {input:\"s\",modifiers:[\"command\"]})",
+        "waitForSavedProject(session, project.title === \"YAM MAN\" && project.entries.length === 18, 15000) [persisted-projects repeats at 75 ms; only publication-pending is retryable]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"import-fountain\", {\"text\":\"\ufeff\\r\\ntItLe:\\r\\n    Midnight Ledger\\r\\n    Return\\r\\nAuthor: Test Writer\\r\\nCustom-key: ignored title-page metadata\\r\\n\\r\\n[[scriv duration=123 coverage=456]]\\r\\n\\r\\nINT. ARCHIVE - NIGHT\\r\\n\\r\\n!RUN\\r\\nINT. remains a direction.\\r\\n@camera stays still\\r\\n[[scriv duration=999]]\\r\\n\\r\\n[[scriv duration=1500 coverage=2500 duration=-1 duration=3600001 coverage=86400001 duration=NaN coverage=NaN]]\\r\\n\\r\\n@MARA (V.O.)\\r\\n(quietly)\\r\\nWe wait.\\r\\n\\r\\n[[scriv duration=0 coverage=7]]\\r\\n\\r\\n@mara (CONT'D)\\r\\nReturn now.\\r\\n\\r\\n[[scriv duration=1800 coverage=0]]\\r\\n\\r\\n.An empty interlude\\r\\n\\r\\n.The final room\\r\\n\\r\\n!CUT TO:\\r\\n\\r\\n[[scriv duration=0 coverage=0]]\",\"filename\":\"Document.fountain\"})",
+        "waitForSavedProject(session, project.id is absent from beforePackages IDs, 15000) [persisted-projects repeats at 75 ms; only publication-pending is retryable]",
+        "session.waitFor(headerIs(nodes, imported), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"import-fountain\", {text: exported.text, filename:\"Roundtrip.fountain\"})",
+        "waitForSavedProject(session, project.id is absent from beforePackages IDs, 15000) [persisted-projects repeats at 75 ms; only publication-pending is retryable]",
+        "session.waitFor(headerIs(nodes, imported), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"import-json\", {text: JSON.stringify(aliasInput)})",
+        "waitForSavedProject(session, project.id is absent from beforePackages IDs, 15000) [persisted-projects repeats at 75 ms; only publication-pending is retryable]",
+        "session.waitFor(headerIs(nodes, imported), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.waitFor(one enabled hittable workspace-tabs, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"select\", {target: tabs.path, index: tabs.segments.indexOf(\"Script\")})",
+        "session.waitFor(all imported first-scene script lines mounted, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"key\", {input:\"f\",modifiers:[\"command\"]})",
+        "session.waitFor(uniqueField(nodes) && searchField.text === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path, text:\"mArA\"})",
+        "session.waitFor(query === \"mArA\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"mArA\" && count === \"2 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"mArA\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"mArA\" && count === \"2 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"mArA\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path, text:\"nIgHtWaTcH\"})",
+        "session.waitFor(query === \"nIgHtWaTcH\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"nIgHtWaTcH\" && count === \"2 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"nIgHtWaTcH\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"nIgHtWaTcH\" && count === \"2 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"nIgHtWaTcH\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path, text:\"unfindable-6831\"})",
+        "session.waitFor(query === \"unfindable-6831\" && count === \"0 results\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"unfindable-6831\" && count === \"0 results\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"unfindable-6831\" && count === \"0 results\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"unfindable-6831\" && count === \"0 results\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"unfindable-6831\" && count === \"0 results\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path, text:\"camera\"})",
+        "session.waitFor(query === \"camera\" && count === \"1 / 1\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"camera\" && count === \"1 / 1\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"camera\" && count === \"1 / 1\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"camera\" && count === \"1 / 1\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"camera\" && count === \"1 / 1\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path, text:\"\"})",
+        "session.waitFor(query === \"\" && count === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"\" && count === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Next match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Next match\" button.path})",
+        "session.waitFor(query === \"\" && count === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"\" && count === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Previous match\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Previous match\" button.path})",
+        "session.waitFor(query === \"\" && count === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path,text:\"Nightwatch\"})",
+        "session.waitFor(query === \"Nightwatch\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.waitFor(one hittable enabled \"Close\" button, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"activate\", {target: \"Close\" button.path})",
+        "session.waitFor(no Find field or Previous/Next controls, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"key\", {input:\"f\",modifiers:[\"command\"]})",
+        "session.waitFor(uniqueField(nodes) && searchField.text === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.waitFor(uniqueField(nodes), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"text\", {target: queryField.path,text:\"Nightwatch\"})",
+        "session.waitFor(query === \"Nightwatch\" && count === \"1 / 2\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"key\", {input:\"Escape\",modifiers:[]})",
+        "session.waitFor(no Find field or Previous/Next controls, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"key\", {input:\"f\",modifiers:[\"command\"]})",
+        "session.waitFor(uniqueField(nodes) && searchField.text === \"\", 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"key\", {input:\"Escape\",modifiers:[]})",
+        "session.waitFor(no Find field or Previous/Next controls, 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"import-fountain\", {text:\"!Do not install.\",filename:\"../outside.fountain\"})",
+        "session.command(\"presented-alerts\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"import-fountain\", {\"text\":\"Author:\\n\\tTest Writer\\nCustom-key: ignored\\n\",\"filename\":\"Empty.fountain\"})",
+        "waitForSavedProject(session, project.id is absent from beforePackages IDs, 15000) [persisted-projects repeats at 75 ms; only publication-pending is retryable]",
+        "session.waitFor(headerIs(nodes, imported), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"import-fountain\", {\"text\":\"Warning: Keep the door shut.\\n\\nCUT TO:\\n\\nINT. EXIT - DAY\\n\\n!Wait.\",\"filename\":\"Plain.fountain\"})",
+        "waitForSavedProject(session, project.id is absent from beforePackages IDs, 15000) [persisted-projects repeats at 75 ms; only publication-pending is retryable]",
+        "session.waitFor(headerIs(nodes, imported), 15000) [snapshot repeats at 50 ms until true; no mutation]",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"export-fountain\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.command(\"persisted-projects\", {})",
+        "session.command(\"loaded-project\", {})",
+        "session.close() [finally; awaits owned process termination through ScrivSession.close]"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Production Fountain import constructs independently specified scenes, entries, speakers, words and cues. Literal expected payload, distinct UUIDs, default audio collections/volume, reset revision and nil cloud identity are asserted before exact export and reimport.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-document-roundtrip-steps.mjs",
+            "start": 78,
+            "end": 98,
+            "sha256": "4636f2afca1012402309da744fdc2ffe317498b57b1bd158b2cdd6fb9e8cd47b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Models.swift",
+            "start": 28,
+            "end": 28,
+            "sha256": "135f4fcbcb978a2900db7bc950d30de7dbc3e6021a5109a139cf7f72d8f8e47c"
+          },
+          "expectation": "observed",
+          "why": "Fountain dialogue construction calls retimeWords, which constructs TimedWord values. The literal text/start/end oracle and unique word identities are asserted. Authored timingSource initialization is not separately exercised by this construction fixture."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Models.swift",
+            "start": 47,
+            "end": 53,
+            "sha256": "c4961d0080c16958140a5babebaa1d1bf5975c004a049318c20415a82eba8b27"
+          },
+          "expectation": "observed",
+          "why": "Fountain parsing constructs dialogue and direction entries through this initializer. Independent payload expectations distinguish kind, source, speaker, timing bounds, empty direction words and retimed dialogue words; not every caller-supplied initializer variant is exercised."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Models.swift",
+            "start": 73,
+            "end": 75,
+            "sha256": "30f868e90f5590618dbbc10be08bd62b57a6a381eeb43ea9822cfb49133acbf8"
+          },
+          "expectation": "observed",
+          "why": "Fountain speaker creation constructs a typed character with the expected capitalized name, empty aliases and generated identity. Other profile/portrait parameters are outside this constructor witness."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Models.swift",
+            "start": 125,
+            "end": 127,
+            "sha256": "7bf27dcca4da287a44622215714470e5de6d1835111ecc38d65f95a6f61dd1d4"
+          },
+          "expectation": "observed",
+          "why": "Fountain emits the expected typed cue for each positive-duration scene with literal label, start/end and distinct identity. Nondefault image/prompt/anchor constructor inputs are not asserted here."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Models.swift",
+            "start": 154,
+            "end": 156,
+            "sha256": "b879af89508fe61ec6385b4e42ce887b245e813a0aa7fd8f1d15bdc150686311"
+          },
+          "expectation": "observed",
+          "why": "Fountain begins with a new typed project. The resulting default collections, audio volume, revision and identity envelope are verified independently. All later imported field values remain distinguished from these constructor defaults."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 1,
+            "end": 3,
+            "sha256": "f3a91b3a67d914b05325f395bbed378c3bf9336c7d9620c396cdf24550829d65"
+          },
+          "expectation": "observed",
+          "why": "Foundation and the Fountain namespace support the actual typed parser/export contract exercised by the exact literal document oracle."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 57,
+            "end": 59,
+            "sha256": "39896b15009ea511cfb98d9ad6e5c83f0a965e853489c8e88c12fc6a47e8053b"
+          },
+          "expectation": "observed",
+          "why": "The title-page helper returns its accumulated title and body offset, producing the independently asserted multiline title and retained timed body."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/Fountain.swift",
+            "start": 130,
+            "end": 134,
+            "sha256": "1b88f8e49bf99a5d5d4fff5bb1c2f933c0045b11b3cdf858661e877f8d13dc98"
+          },
+          "expectation": "observed",
+          "why": "The parser flushes remaining source, creates duration-based scene cues and returns the independently asserted complete project. Empty-scene and plain-opening companions exercise no-cue and multiple-cue outputs."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "repository-roundtrip",
+      "title": "Save and reopen the full loaded document",
+      "steps": [
+        "repository-roundtrip"
+      ]
+    },
+    {
+      "id": "pending-save-replay",
+      "title": "Recover one accepted character edit through normal open",
+      "steps": [
+        "pending-save-replay"
+      ]
+    },
+    {
+      "id": "history-readback",
+      "title": "Read the saved prior revision through History",
+      "steps": [
+        "history-readback"
+      ]
+    },
+    {
+      "id": "fountain-model-construction",
+      "title": "Construct typed script objects through Fountain import/export",
+      "steps": [
+        "fountain-model-construction"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1085 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "storyboard-word-inventory",
+      "title": "Render each source word exactly once",
+      "preconditions": [
+        "Static source/assertion associations only. Run the complete unchanged named journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace; native results and measured counters are recorded separately.",
+        "Actions retain the existing ordered public CLI sequence for this slice. Earlier fixture/setup state is required; snapshot and persistence waits may poll, and reveal may scroll. No physical input, pixel styling, drag, provider, network fetch, all-branch or release-signing claim.",
+        "Use journeys/picture-coverage --group follow after saving the startup sentinel. followFixture contains four words in two source entries and Opening/Ending placements; production import changes only its project identity/timestamp envelope. The full journey also inventories the larger startup scene at picture-follow-steps.mjs:104-123.",
+        "Membership and uniqueness are asserted. These ranges support successful construction and rebuilding, not word order, row assignment, direction-band geometry, drag registration or empty-scene behavior."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(followFixture())}",
+        "select {target: \"workspace-tabs\", index: snapshot segments.indexOf(\"Storyboard\")}",
+        "{\"command\":\"snapshot\"}"
+      ],
+      "expectations": [
+        {
+          "id": "inventory",
+          "description": "The native snapshot contains exactly the independently saved word IDs, one mounted control per word, and disabled Deselect.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/picture-follow-steps.mjs",
+            "start": 140,
+            "end": 145,
+            "sha256": "2ea9adbcecd10b0a0bfb78be69c2c0c23bc2bc3bab31588d80e14e415b443da0"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 31,
+            "end": 33,
+            "sha256": "6a7f2f3e4a3c0cc4373d6c5816737007633afdaa035f30edb9b77970bd715d3b"
+          },
+          "expectation": "inventory",
+          "why": "The controller and scroll/row containers support the mounted storyboard inventory. This covers participating declarations, not visual styling."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 36,
+            "end": 39,
+            "sha256": "5bd6949ea47d747fae97ed33578f62304f587438ca457da365518955c8c23c39"
+          },
+          "expectation": "inventory",
+          "why": "Deselect, rebuild signature, grouping columns and keyed card state participate in normal loaded storyboard construction. The inventory checks all words and the disabled Deselect control; no card geometry or count-label wording is inferred."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 42,
+            "end": 43,
+            "sha256": "ee01f75c63d93367f8bbd4ff20d11d91d59691bc744402ab6be825c2f924c98e"
+          },
+          "expectation": "inventory",
+          "why": "The shared source-word list and keyed buttons are the state used to build the independently checked exactly-once controls."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 58,
+            "end": 58,
+            "sha256": "067f68ce84c97d59aa4dc507e3f6710e667f11132f1a9c8cc2363242d308638c"
+          },
+          "expectation": "inventory",
+          "why": "The storyboard is initialized against the actual scene-scoped store used by the imported inventory."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 60,
+            "end": 62,
+            "sha256": "846c364378adfe8c19eae0007d78b357f2d62d18070178b58e6921c72162ab95"
+          },
+          "expectation": "inventory",
+          "why": "View loading creates the real Deselect control identified by the inventory assertion; its disabled initial state is independently observed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 64,
+            "end": 64,
+            "sha256": "fb25aa5f39f44d11fc4289d85b17891fb20de3385a496d35893ed842f7751f29"
+          },
+          "expectation": "inventory",
+          "why": "The heading and scroll container mount the row inventory and Deselect control. Presence is asserted, not spacing or scroll geometry."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 66,
+            "end": 66,
+            "sha256": "d1004ac7d1bfc23aba063111fd77fc296a9bfe14cdc6532867afb1cdc0792a67"
+          },
+          "expectation": "inventory",
+          "why": "The heading and scroll container mount the row inventory and Deselect control. Presence is asserted, not spacing or scroll geometry."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 77,
+            "end": 78,
+            "sha256": "db57f879f1335c390a051c2f10f37b8c72569b370dc694b9d3d4a165d956f327"
+          },
+          "expectation": "inventory",
+          "why": "Initial view loading invokes the production refresh that produces the observed inventory."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 83,
+            "end": 84,
+            "sha256": "182d3c9cf00c9e606f797f09850e4b0f2a41dc7506f3db08730b763ca79c7cf8"
+          },
+          "expectation": "inventory",
+          "why": "Refresh proceeds through the loaded-view guard for the mounted storyboard, rather than asserting the unloaded early return."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 88,
+            "end": 96,
+            "sha256": "f1b1be715d9c8f97e239ff780afbe271c4fb39b10c1c75d5ef31b62fab985dc7"
+          },
+          "expectation": "inventory",
+          "why": "The changed project signature triggers clearing and rebuilding of keyed controls from all source entries. The observed exact membership/no duplicates supports this normal rebuild path, not every signature component or deferred marquee refresh."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 97,
+            "end": 97,
+            "sha256": "b0ec14dc0b7d0343e07791564285107642234d40da075958880ba19a47d912cd"
+          },
+          "expectation": "inventory",
+          "why": "The populated fixture proceeds past the no-picture guard into the normal grouped inventory. No empty-picture UI claim."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 102,
+            "end": 110,
+            "sha256": "8df619bf6df629d650cf098d5ba1ef9fb9466540f2148e392d6d1535e36b6198"
+          },
+          "expectation": "inventory",
+          "why": "Normal grouped construction partitions the shared source list and constructs each cue card before rendering all words. The witness proves no words are lost/duplicated; it does not independently verify row boundaries or visual card distribution."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 113,
+            "end": 114,
+            "sha256": "777a8ed25b50f283cf10929ffd94b6d0ccf048f74b472ec22a2b8131b7db9e23"
+          },
+          "expectation": "inventory",
+          "why": "Each grouped row mounts its shared word strip. Exact full control membership is asserted across the mounted storyboard, not row identifiers or placement geometry."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 122,
+            "end": 126,
+            "sha256": "abf0a73b77f3ea1ce5055a3a5bb47d262738bab450cd40b8d42284a8f35e594a"
+          },
+          "expectation": "inventory",
+          "why": "Rows and shared-script flows are mounted; each source word receives its unique identifier. The complete native inventory checks membership and uniqueness, not row geometry."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 137,
+            "end": 138,
+            "sha256": "9b49e2d222d83b4d352d07d0d6ae0e7d1ef9da755113a3395da62426d7f15421"
+          },
+          "expectation": "inventory",
+          "why": "Each constructed word control is mounted and indexed once; this is directly checked by the independent complete ID inventory."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 148,
+            "end": 149,
+            "sha256": "13e1bd24214542a6bc0f9e9b9d2a47ca493c94dcbb1d370fde849da255ff4c44"
+          },
+          "expectation": "inventory",
+          "why": "The constructed shared-script stack is returned to the row that exposes the independently checked controls."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 240,
+            "end": 240,
+            "sha256": "5d237709e6e3095844c77a0338af5ce57d4379592b532a7a3c43fc2b50d6b877"
+          },
+          "expectation": "inventory",
+          "why": "The shared reference retains source word and entry identity plus its absolute start for inventory and later cue selection; structural support only."
+        }
+      ]
+    },
+    {
+      "id": "storyboard-word-selection",
+      "title": "Select and clear real storyboard words",
+      "preconditions": [
+        "Static source/assertion associations only. Run the complete unchanged named journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace; native results and measured counters are recorded separately.",
+        "Actions retain the existing ordered public CLI sequence for this slice. Earlier fixture/setup state is required; snapshot and persistence waits may poll, and reveal may scroll. No physical input, pixel styling, drag, provider, network fetch, all-branch or release-signing claim.",
+        "Use the unchanged follow journey immediately after the four-word imported inventory. Execute ordinary activation for w1, w2 and line2-word, each followed by Deselect and the disabled-control refusal. No Shift/Command selection is supplied."
+      ],
+      "actions": [
+        "snapshot {resolve: visible storyboard-word-w1}",
+        "activate {target: snapshot storyboard-word-w1.path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot storyboard-deselect.path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"activate\",\"target\":\"storyboard-deselect\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"presented-alerts\"}",
+        "snapshot {resolve: visible storyboard-word-w2}",
+        "activate {target: snapshot storyboard-word-w2.path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot storyboard-deselect.path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"activate\",\"target\":\"storyboard-deselect\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"presented-alerts\"}",
+        "snapshot {resolve: visible storyboard-word-line2-word}",
+        "activate {target: snapshot storyboard-word-line2-word.path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot storyboard-deselect.path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"activate\",\"target\":\"storyboard-deselect\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"presented-alerts\"}"
+      ],
+      "expectations": [
+        {
+          "id": "selection",
+          "description": "Each ordinary word activation enables Deselect and displays one selected word; Deselect clears the summary and disables itself. Repeating disabled activation fails, while full saved/loaded/date invariants remain exact.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/picture-follow-steps.mjs",
+            "start": 147,
+            "end": 154,
+            "sha256": "b154575e0e8e46f92cb0a176118873a9783892ca5708f13b58e26ba41df53418"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 5,
+            "end": 10,
+            "sha256": "fa26a40045e5b39e11aaa68fcdebecb34294ba07a24d1f001722c7e63aa73e8e"
+          },
+          "expectation": "selection",
+          "why": "The summary helper and its structural declarations supply empty/one-word messages observed by all three cycles. The plural alternative is not exercised."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 35,
+            "end": 35,
+            "sha256": "b3b1a5ccde1d485950ced79032c5d65e0ad4c12555001f0e1ba3c9e055b8a55e"
+          },
+          "expectation": "selection",
+          "why": "The retained selection label displays the exact one-word/empty summary checked after real selections and Deselect."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 41,
+            "end": 41,
+            "sha256": "5b1325405ce4456443b25cb0c91d42e2f649c772bce1782dabc54d1d8168a5ab"
+          },
+          "expectation": "selection",
+          "why": "The anchor is stored with the ordinarily selected word; structural support for the observed selection operation, not a Shift-range oracle."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 131,
+            "end": 134,
+            "sha256": "2ff0fa96dee76a6ae0cd5dd1d61cf24a48bd6bdc1e72ac87602971b0dab99760"
+          },
+          "expectation": "selection",
+          "why": "The mounted word callback passes the real source word through production selectWord; three ordinary native button activations produce the checked one-word/Deselect state."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 194,
+            "end": 195,
+            "sha256": "5e279bf8cc11ef20b9ac7d9674f7f8eb5d069615bb06bb0567303c14a907a5fc"
+          },
+          "expectation": "selection",
+          "why": "Ordinary selection enters this method and falls through the modifier-range condition; no Shift range union is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 199,
+            "end": 201,
+            "sha256": "be9a6dfecfce5b4e62aebdec0175529d6e276c6e72b433086558c33bf7566888"
+          },
+          "expectation": "selection",
+          "why": "The ordinary branch replaces selection with one word and updates its cue, producing the observed one-word/Deselect state. Command toggles and Shift selection remain excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 399,
+            "end": 401,
+            "sha256": "314bef74cd5856b59b313b101b67d7917ef758ccfa61ad3409e914e77bd8609c"
+          },
+          "expectation": "selection",
+          "why": "The actual UIButton subclass retains and dispatches the ordinary selection callback; modifier storage is structural support, not physical modifier evidence."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 405,
+            "end": 405,
+            "sha256": "264c9e2b7cfd57ad2b8f13dee1d98be2489014a8a3046f3f7c77dce8d61c6e37"
+          },
+          "expectation": "selection",
+          "why": "The initialized word UIButton dispatches its installed onSelect closure on semantic touchUpInside activation. This mixed physical line also configures styling; the witness supports button action wiring only, not those pixels."
+        }
+      ]
+    },
+    {
+      "id": "preview-storyboard-follow",
+      "title": "Follow the playhead without clearing selected words",
+      "preconditions": [
+        "Static source/assertion associations only. Run the complete unchanged named journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace; native results and measured counters are recorded separately.",
+        "Actions retain the existing ordered public CLI sequence for this slice. Earlier fixture/setup state is required; snapshot and persistence waits may poll, and reveal may scroll. No physical input, pixel styling, drag, provider, network fetch, all-branch or release-signing claim.",
+        "Use journeys/picture-coverage --group follow after its imported four-word fixture. The ordered slice establishes its own state: seek to 2500 before selecting line2-word, which selects Ending at 3000 while the current cue remains Opening. The existing full journey repeats this slice and repeats it after browser reopen.",
+        "selection() at picture-follow-steps.mjs:46-52 checks unmasked coverage values on w1/w2/line2-word plus Deselect/summary. preview() at 56-63 checks exact subtitle, inspection/Follow control presence, and slider 2500/max5000. Whole-model/date/package invariants are called by the enclosing step."
+      ],
+      "actions": [
+        "select {target: \"workspace-tabs\", index: snapshot segments.indexOf(\"Script\")} (ui.tab sends only when different)",
+        "{\"command\":\"snapshot\"}",
+        "slider {target: snapshot scene-playback-position.path, value: 2500}",
+        "{\"command\":\"snapshot\"}",
+        "select {target: \"workspace-tabs\", index: snapshot segments.indexOf(\"Storyboard\")} (ui.tab sends only when different)",
+        "activate {target: snapshot storyboard-word-line2-word.path}",
+        "{\"command\":\"snapshot\"}",
+        "select {target: \"workspace-tabs\", index: snapshot segments.indexOf(\"Script\")} (ui.tab sends only when different)",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"presented-alerts\"}",
+        "select {target: \"workspace-tabs\", index: snapshot segments.indexOf(\"Storyboard\")} (ui.tab sends only when different)",
+        "{\"command\":\"snapshot\"}",
+        "select {target: \"workspace-tabs\", index: snapshot segments.indexOf(\"Script\")} (ui.tab sends only when different)",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot unique hittable Follow playhead UIButton.path}",
+        "{\"command\":\"snapshot\"}",
+        "select {target: \"workspace-tabs\", index: snapshot segments.indexOf(\"Storyboard\")} (ui.tab sends only when different)",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot storyboard-deselect.path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"presented-alerts\"}"
+      ],
+      "expectations": [
+        {
+          "id": "follow",
+          "description": "Ending inspection changes back to exact Opening preview with unchanged playhead; returning to Storyboard retains one selected word, updates coverage values, and Deselect then clears it.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/picture-follow-steps.mjs",
+            "start": 85,
+            "end": 89,
+            "sha256": "dabd32fee4ef68336b93c57ba21d7461b6293bb5afaec39a464201c5cb51f1bf"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 47,
+            "end": 51,
+            "sha256": "ecee07bd4f1c5b11612851e469fc696e16efed83aba524c7ace0486b88c1aef5"
+          },
+          "expectation": "follow",
+          "why": "The current menu cue and cached shared-script input retain the values needed to refresh observed word coverage after selection changes. This is state support, not menu action or redraw-performance evidence."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 150,
+            "end": 153,
+            "sha256": "71f0af272560a97f796dd8c02da9eb1072cedc58d14acdf192206c2fcb179716"
+          },
+          "expectation": "follow",
+          "why": "Word selection resolves an applicable selected cue or the active cue at the word start; the Ending word selection and Opening follow values distinguish the successful fixture path."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 158,
+            "end": 158,
+            "sha256": "34a3049272701d253bedb9a8d9e42f4a129c5c882323ffe64a4007302e60f301"
+          },
+          "expectation": "follow",
+          "why": "The production shared-script refresh owns the value updates independently observed after cue following."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 164,
+            "end": 167,
+            "sha256": "77921eb1abcb9dd2e290f39de5c568c6175e9ebbf59bfef4e26c257c6b1f80fe"
+          },
+          "expectation": "follow",
+          "why": "The refresh captures current word/selected cue state and passes its changed-input guard, then derives per-word selected/playing/covered values. Non-playhead words independently verify coverage; unmodified-tick optimization and absent-button failures are not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 169,
+            "end": 172,
+            "sha256": "63a4668a0736fc40257adda193159e504147c27ff6011c0aee47486b7c3d6ebd"
+          },
+          "expectation": "follow",
+          "why": "The refresh captures current word/selected cue state and passes its changed-input guard, then derives per-word selected/playing/covered values. Non-playhead words independently verify coverage; unmodified-tick optimization and absent-button failures are not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 177,
+            "end": 177,
+            "sha256": "68020dc147eec5284945175759eb1f854f0e7e5eac000f46c13b4a97ad049c51"
+          },
+          "expectation": "follow",
+          "why": "The real accessibility value distinguishes the current word from the non-playhead words covered by the selected picture; color, underline and selected traits are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+            "start": 192,
+            "end": 193,
+            "sha256": "f206e17d648acc4999177e39b33de026827b714d662b159dfd92f9abb0c394ee"
+          },
+          "expectation": "follow",
+          "why": "These closures finish the shared-script refresh that exposes the asserted values."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 5,
+            "end": 12,
+            "sha256": "0901de4b1aea9543ad1584cf6c586fbcae6c0fb37d968ee28f8faadbd436bc27"
+          },
+          "expectation": "follow",
+          "why": "The Preview controller retains subtitle/state/media/metadata and rebuild signatures used by exact cue inspection and Follow control observations. No appearance or cache-performance assertion."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 21,
+            "end": 22,
+            "sha256": "4c17d97c50234d178d70d49b98231d4e5b2ebfd8ba61531118cfff7824fbce81"
+          },
+          "expectation": "follow",
+          "why": "The stopped preview resolves selected cue before current cue; follow changes that selected identity back to Opening while playhead stays fixed. The playing branch is not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 24,
+            "end": 25,
+            "sha256": "7209013a526b5017b4d5a8648b1b42257463674906ccb99392854567c63da872"
+          },
+          "expectation": "follow",
+          "why": "Normal Preview initialization mounts the controller whose exact selected cue subtitle is observed; padding and theme are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 32,
+            "end": 32,
+            "sha256": "0bd87c985fe7a183ad57b9d5484b9ba6e0b8c6da638f2df7c4a6291fbf27fe1a"
+          },
+          "expectation": "follow",
+          "why": "Subtitle, media, inspection state and metadata containers are mounted in the real Preview hierarchy. Presence is the oracle, not typography or spacing."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 37,
+            "end": 39,
+            "sha256": "6125c9baa55bc5a3092a405bab6721a238ab21f38be837d86804e5897452380c"
+          },
+          "expectation": "follow",
+          "why": "The loaded Preview refresh reads current selection and formats the exact cue subtitle and inspection state. Loaded/non-nil successful guards are included; missing-controller failures are not."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 41,
+            "end": 46,
+            "sha256": "2f27c2ffdf96e543c723975620f04da1d2477ba490239b279af33d70cfe2223a"
+          },
+          "expectation": "follow",
+          "why": "The loaded Preview refresh reads current selection and formats the exact cue subtitle and inspection state. Loaded/non-nil successful guards are included; missing-controller failures are not."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 65,
+            "end": 68,
+            "sha256": "c409abdfee5e08161f32e407d2b25505aabb045a40e85c915249020bdac63109"
+          },
+          "expectation": "follow",
+          "why": "Changed cue/inspection metadata rebuilds the real Follow playhead button. Its actual activation returns selected cue to current cue and the subsequent subtitle/coverage assertions observe that transition; other metadata inputs are not separately tested."
+        }
+      ]
+    },
+    {
+      "id": "local-image-preview",
+      "title": "Render the imported successor in Preview",
+      "preconditions": [
+        "Static source/assertion associations only. Run the complete unchanged named journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace; native results and measured counters are recorded separately.",
+        "Actions retain the existing ordered public CLI sequence for this slice. Earlier fixture/setup state is required; snapshot and persistence waits may poll, and reveal may scroll. No physical input, pixel styling, drag, provider, network fetch, all-branch or release-signing claim.",
+        "Use journeys/local-images --group versions. Save the startup sentinel, production-import audioProjectFixture with no image assets, import coral version 1, complete its inspector checks and dismiss that sheet, then run this existing blue import slice.",
+        "visible(asset) at local-images.mjs:66-84 requires exact digest, 73 bytes, successful native decoding, dimensions 2x2 and visiblePreviewCount > 0 in the active Script workspace. The bounded read-only native observer is separate from the saved model assertions."
+      ],
+      "actions": [
+        "{\"command\":\"import-local-image\",\"fixture\":\"blue\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"presented-alerts\"}",
+        "{\"command\":\"local-image-evidence\"}",
+        "{\"command\":\"loaded-project\"}"
+      ],
+      "expectations": [
+        {
+          "id": "decoded",
+          "description": "Import changes only the intended cue attachment and immutable successor asset, then the active native surface visibly decodes that exact asset and the complete loaded model equals saved content.",
+          "witness": {
+            "path": "tests/e2e/journeys/local-images.mjs",
+            "start": 86,
+            "end": 106,
+            "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 47,
+            "end": 51,
+            "sha256": "02b8c65869772a7f45411638d14b64ea2c15fcb749109ee40e9df6af5ba7749d"
+          },
+          "expectation": "decoded",
+          "why": "Changing the selected asset invalidates the media signature and mounts a UIKitAssetImageView configured with the real local URL and expected digest. The observer proves that exact asset decoded and is visibly mounted; aspect-ratio pixel correctness and missing-image branches are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 53,
+            "end": 54,
+            "sha256": "81081790064c5a58db68408b1b2dc602a4e4ea67db2d7a8276292fa5a3fb9bce"
+          },
+          "expectation": "decoded",
+          "why": "Changing the selected asset invalidates the media signature and mounts a UIKitAssetImageView configured with the real local URL and expected digest. The observer proves that exact asset decoded and is visibly mounted; aspect-ratio pixel correctness and missing-image branches are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 80,
+            "end": 80,
+            "sha256": "a92e80e31f97b3f54de2a88ddf25eea03020080ecbcdc82b4a4427b603afcd0f"
+          },
+          "expectation": "decoded",
+          "why": "A real selected asset takes the image-present metadata branch after import; no missing-image alternative is inferred."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 85,
+            "end": 85,
+            "sha256": "1d60b2bcc48717dc4c7884b2c72457206ed3989193b52b10188723ad2af0efba"
+          },
+          "expectation": "decoded",
+          "why": "The image metadata row mounts the version control subsequently used by the same versions journey. This is presence/action plumbing, not tag styling or layout."
+        }
+      ]
+    },
+    {
+      "id": "inspect-local-original",
+      "title": "Inspect the original local image",
+      "preconditions": [
+        "Static source/assertion associations only. Run the complete unchanged named journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace; native results and measured counters are recorded separately.",
+        "Actions retain the existing ordered public CLI sequence for this slice. Earlier fixture/setup state is required; snapshot and persistence waits may poll, and reveal may scroll. No physical input, pixel styling, drag, provider, network fetch, all-branch or release-signing claim.",
+        "Use journeys/local-images --group versions after importing the coral first image and completing visible(first). Current is the independently checked saved project and first is its verified local asset. The Script Preview inspector is closed before this slice."
+      ],
+      "actions": [
+        "activate {target: snapshot preview-inspect.path}",
+        "snapshot {wait: Show in script title}",
+        "local-image-evidence {bounded read-only poll for first asset decoding and visible preview}",
+        "persisted-projects; presented-alerts",
+        "import-local-image {fixture:\"blue\"} (rejected while inspector covers workspace)",
+        "persisted-projects; presented-alerts",
+        "activate {target: snapshot enabled Done.path}",
+        "snapshot {wait: preview-inspect hittable}",
+        "loaded-project"
+      ],
+      "expectations": [
+        {
+          "id": "inspect",
+          "description": "Activating the real Preview inspect button opens the source-aware image inspector; the exact first asset remains visibly decoded, import is refused under the sheet, dismissal restores Preview, and complete model remains unchanged.",
+          "witness": {
+            "path": "tests/e2e/journeys/local-images.mjs",
+            "start": 130,
+            "end": 140,
+            "sha256": "9b549d4385229275dfa1fa8177ba502d96183992b37f9c5931bfe6214dbcadb3"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 20,
+            "end": 20,
+            "sha256": "708e9184f06f0b0859c2ed9214b2c77b9034a1562c774baf649bc24639bd2c41"
+          },
+          "expectation": "inspect",
+          "why": "The retained inspect control is the actual button activated by the witness; structural support only."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 26,
+            "end": 26,
+            "sha256": "3a48bd54eb7d53ff8ce2e1590ffd3c0b69a985c3a8ebc05755b65476b6aa2f99"
+          },
+          "expectation": "inspect",
+          "why": "The installed inspect callback passes the selected asset/cue identity into the image-detail route. The actual inspector and decoded original are asserted; absent-image refusal and hint wording are not."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 31,
+            "end": 31,
+            "sha256": "446ec581e26ce667bd39242bfb1bfde1b247c17e4b8f3799beea2caf3afaf4b0"
+          },
+          "expectation": "inspect",
+          "why": "The actual inspect button is mounted in the Preview header before public activation opens the original image. Header typography and 16:9 badge appearance are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 122,
+            "end": 125,
+            "sha256": "bc99b877cee6750fb310408122200b294cff37d8d4dda8cdfb450f15a100ff75"
+          },
+          "expectation": "inspect",
+          "why": "The inspect factory builds and identifies the real compact button used by the public native activation. Its action and identity are asserted; icon appearance is not."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 127,
+            "end": 128,
+            "sha256": "84bf6a09140fdaa6eef07dbc2fc77590d49e95c8f1955f43bb5cfc5fa4918517"
+          },
+          "expectation": "inspect",
+          "why": "The inspect factory builds and identifies the real compact button used by the public native activation. Its action and identity are asserted; icon appearance is not."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 136,
+            "end": 137,
+            "sha256": "7bdd5e713983188450950bb5937d3fe2337448e688533de73b99f69c2e749b13"
+          },
+          "expectation": "inspect",
+          "why": "The shared compact factory forwards the inspect action into the production UIButton constructor. No font/inset/border assertion is made."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 147,
+            "end": 149,
+            "sha256": "aa0999ae5cb7976003c2a37480ac186f8b60111dc1b113a4d697a17c68223bf6"
+          },
+          "expectation": "inspect",
+          "why": "The constructed button is returned to Preview and mounted for the observed inspector action; structural support only."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 40,
+            "end": 40,
+            "sha256": "c20e829e461bf73bc23cd458f6d99b844f8c523a193cb3c9087a4f63b07cf462"
+          },
+          "expectation": "inspect",
+          "why": "The actual Inspect button is enabled for the selected local asset and accepts native activation, opening its original image inspector. This establishes the image-present enabled state, not the no-image disabled alternative."
+        }
+      ]
+    },
+    {
+      "id": "choose-preview-version",
+      "title": "Choose the historical image version",
+      "preconditions": [
+        "Static source/assertion associations only. Run the complete unchanged named journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace; native results and measured counters are recorded separately.",
+        "Actions retain the existing ordered public CLI sequence for this slice. Earlier fixture/setup state is required; snapshot and persistence waits may poll, and reveal may scroll. No physical input, pixel styling, drag, provider, network fetch, all-branch or release-signing claim.",
+        "Use journeys/local-images --group versions after coral original import/inspection, blue successor import, and complete decode/model checks. The selected cue currently points to blue version 2; first identifies the previously saved coral asset. The closed Script workspace exposes the actual Preview version button."
+      ],
+      "actions": [
+        "{\"command\":\"activate\",\"target\":\"preview-version\"}",
+        "activate {target: snapshot unique hittable cell whose label contains \"\\nVersion 1\".path}",
+        "{\"command\":\"activate\",\"target\":\"image-picker-use-selection\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"presented-alerts\"}",
+        "{\"command\":\"local-image-evidence\"}"
+      ],
+      "expectations": [
+        {
+          "id": "version",
+          "description": "The real version picker exposes exactly one hittable historical Version 1 cell. Choosing it changes only the target cue attachment by one revision; original asset visibly decodes and all saved fields remain accounted for.",
+          "witness": {
+            "path": "tests/e2e/journeys/local-images.mjs",
+            "start": 143,
+            "end": 155,
+            "sha256": "7bdda4dcf1c828b93a9481bebf7915de212812fa615906bee87cf8653edc1eee"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 84,
+            "end": 85,
+            "sha256": "7853f1d29cccb624561661eb6de608d98014462a3234dbd029f4d95b6b93b43c"
+          },
+          "expectation": "version",
+          "why": "The Preview version action captures the actual selected cue/asset, presents its ImagePickerViewController and mounts its button. The historical cell and exact chosen attachment are asserted; stale-context refusal is not."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 129,
+            "end": 130,
+            "sha256": "40363d879de39c61ad491af3828ba38796307b9fb399bd1d373bc540570edbac"
+          },
+          "expectation": "version",
+          "why": "The version factory constructs and identifies the native control that actually opens version choices. Its button identity/action is covered; chevron position and visual compactness are not."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 132,
+            "end": 132,
+            "sha256": "0f032ba6f1049ab89eca655e5adb3789622b0b3f948c9b860bf2adc1fe383f3d"
+          },
+          "expectation": "version",
+          "why": "The version factory constructs and identifies the native control that actually opens version choices. Its button identity/action is covered; chevron position and visual compactness are not."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 134,
+            "end": 135,
+            "sha256": "84bf6a09140fdaa6eef07dbc2fc77590d49e95c8f1955f43bb5cfc5fa4918517"
+          },
+          "expectation": "version",
+          "why": "The version factory constructs and identifies the native control that actually opens version choices. Its button identity/action is covered; chevron position and visual compactness are not."
+        }
+      ]
+    },
+    {
+      "id": "generation-direction-review",
+      "title": "Edit exact optional direction and review it",
+      "preconditions": [
+        "Static source/assertion associations only. Run the complete unchanged named journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace; native results and measured counters are recorded separately.",
+        "Actions retain the existing ordered public CLI sequence for this slice. Earlier fixture/setup state is required; snapshot and persistence waits may poll, and reveal may scroll. No physical input, pixel styling, drag, provider, network fetch, all-branch or release-signing claim.",
+        "Use journeys/generation-review --group review after unchanged startup save, production import of generation-review-fixture, and the source/people/exact-request/repeated-close checks. The original exact request, imported project, sentinel and empty jobs baseline are captured, with the review closed.",
+        "For each direction in order: composed Caf\u00e9 plus emoji/newline, decomposed Cafe plus combining acute and the same remainder, then empty string. These literal fixture values are defined at generation-review.mjs:163. Each input commits before a fresh review is opened. No Generate or clipboard action occurs.",
+        "Generic public text uses UITextView selectAll/insertText. This catalog links observed didChange/editing and presentation behavior; shouldChangeTextIn is excluded because this route does not independently establish that callback."
+      ],
+      "actions": [
+        "For each of the three ordered directions: snapshot/reveal generation-optional-direction; text {target: prompt.path,text:direction}; snapshot {wait: exact direction}",
+        "persisted-projects {wait: intended cue prompt committed}; snapshot {wait: local-recovery status absent}",
+        "snapshot {wait: generation-review-brief enabled}; activate {target: generation-review-brief.path}; snapshot {wait: Source section and reachable Done}",
+        "select {target:\"generation-review-tabs\",index:2}; snapshot {read: generation-exact-request}",
+        "activate {target: generation-review-done.path}; snapshot {wait: sheet closed, review enabled and exact direction retained}",
+        "persisted-projects; image-evidence; repeat the complete ordered slice for the next direction"
+      ],
+      "expectations": [
+        {
+          "id": "direction",
+          "description": "Each exact Unicode/empty edit changes only its cue prompt and one revision. Fresh review changes only the quoted manual override in the captured request; both complete saved projects remain exact and zero image jobs start.",
+          "witness": {
+            "path": "tests/e2e/journeys/generation-review.mjs",
+            "start": 160,
+            "end": 197,
+            "sha256": "367b64525c53f7ebe7372e8ceea3f48de0959f79e618cdbf6771998e4fb00668"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 17,
+            "end": 17,
+            "sha256": "9e057825ef6064726ab2ad29bb3bce35a9daf581464256645142088911bb7c7e"
+          },
+          "expectation": "direction",
+          "why": "Preview retains the mounted GenerationPanel child used by the actual direction/review controls."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 36,
+            "end": 36,
+            "sha256": "37743c373af6cc4cde4c8755eac02348af833d0afa69fb1c1d223353e10309b5"
+          },
+          "expectation": "direction",
+          "why": "Preview constructs and mounts the actual generation panel before public text and review activation; no provider behavior is implied."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 188,
+            "end": 189,
+            "sha256": "ba24c60a5393d6b65cf699c65555259013823a30434330eece9ba34068cbc5ec"
+          },
+          "expectation": "direction",
+          "why": "The real panel owns the native optional-direction text view whose exact input and subsequent captured request are asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 194,
+            "end": 194,
+            "sha256": "58f5d614382a635b2cf9ddbb81e21407de198091bd2ce5e83f5d1a306b1ebd43"
+          },
+          "expectation": "direction",
+          "why": "The panel retains the review button that opens each independently checked exact request."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 197,
+            "end": 206,
+            "sha256": "beb9fad056a8969499f5052a1e808bdec8a3fd69b3a579743959fac60cdf5093"
+          },
+          "expectation": "direction",
+          "why": "Scope, editing scope, retained rejected-text slot and displayed cue bind edits/reviews to the current placement. These declarations/accessors support successful accepted edits; rejected-memory drafts and stale-scope races remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 208,
+            "end": 210,
+            "sha256": "ee96da727adbf0f91742a5ded1e5fc7297cd06c958ead78b5a8ecc71aca9cfe1"
+          },
+          "expectation": "direction",
+          "why": "The native field installs this panel as its delegate and exposes the identifier used for real text input. Line-break styling is not separately asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 220,
+            "end": 224,
+            "sha256": "61323f0a7d6f1be4c84dcf9b77b238ca5f7c4ffed16fe5211435e9f9e0da3a29"
+          },
+          "expectation": "direction",
+          "why": "Actual Review activation passes current scope/presentation/context guards, ends editing and creates the review for the displayed cue. The request includes exactly the intended direction; blocked/stale context branches are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 226,
+            "end": 229,
+            "sha256": "6da4bd511dc6163b3a1b46104fa89db82c84d518c10c6f02def4deb3843be78e"
+          },
+          "expectation": "direction",
+          "why": "The captured review is fitted and presented with the identified Review button. The journey observes its real controls and closes/reopens it; no viewport-size matrix is inferred."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 231,
+            "end": 232,
+            "sha256": "5a47c75274edee5efe061a3e325563a386aa17ec63c31efd5ca2fe6ca66ff29b"
+          },
+          "expectation": "direction",
+          "why": "The optional field and Review action are mounted in the actual composer body used by the journey. Mounting is asserted, not spacing or border appearance."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 235,
+            "end": 236,
+            "sha256": "db57f879f1335c390a051c2f10f37b8c72569b370dc694b9d3d4a165d956f327"
+          },
+          "expectation": "direction",
+          "why": "Normal panel load refreshes the editable field and current review availability before the first public edit."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 238,
+            "end": 246,
+            "sha256": "ca98e040149dd5ee2034f85c43ce4bbc112b07083a2913a52f06e60ad72656bf"
+          },
+          "expectation": "direction",
+          "why": "Loaded refresh prepares the cue-scoped prompt, retains editing text and restores accepted text when no longer editing. The exact committed field and new captured review distinguish this successful current-scope path; stale-scope races are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 249,
+            "end": 250,
+            "sha256": "454d5c6e038cb76ebffcfc618b2602f88bad730afeabc5579810037732895f7f"
+          },
+          "expectation": "direction",
+          "why": "Current context/recovery readiness enables the native prompt and Review button actually used. This assertion does not activate Generate or establish its generating/needs-review alternatives."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 275,
+            "end": 275,
+            "sha256": "db432e8158a521f5b4ed9a793853b70b1a16a9fbb0badb2f053621c8aa1ee30c"
+          },
+          "expectation": "direction",
+          "why": "Beginning native editing records the current scope required by the accepted didChange path. The fixture is paused; playback-pausing behavior is not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 286,
+            "end": 292,
+            "sha256": "dad6298488565548b9c6cff554a6eeede48285104d78c60b5d2aab49ed9743d8"
+          },
+          "expectation": "direction",
+          "why": "The real text-change delegate retains accepted exact text and refreshes the panel; ending editing clears its editing scope before review. The Unicode variants and empty value are independently compared in saved content and exact requests. Refused/stale editing branches are not asserted."
+        }
+      ]
+    },
+    {
+      "id": "generation-direction-recovery",
+      "title": "Restore the retained invalid direction",
+      "preconditions": [
+        "Static source/assertion associations only. Run the complete unchanged named journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace; native results and measured counters are recorded separately.",
+        "Actions retain the existing ordered public CLI sequence for this slice. Earlier fixture/setup state is required; snapshot and persistence waits may poll, and reveal may scroll. No physical input, pixel styling, drag, provider, network fetch, all-branch or release-signing claim.",
+        "Reuse the unchanged complete journeys/cue-draft-recovery workflow and action from its existing catalog. Fresh persistent synthetic workspace, no account/network/provider, no injected journal and no storage fault.",
+        "After saving sentinel and importing generation-review-fixture, wait for editable direction and enter 29999 x plus emoji (30001 UTF-16 units); assert exact refusal and one app-owned journal. Relaunch and open the real project twice, checking exact bytes each time. Correct once to the decomposed-accent fixture string, wait for one canonical revision and empty journal, then relaunch/open a third time and assert clean exact state.",
+        "The oversize direction is accepted into local recovery but rejected for canonical publication. This does not exercise the separate in-memory unacceptedText/storage-write-failure branch, Retry/Discard actions, conflict review, crash durability or shouldChangeTextIn callback."
+      ],
+      "actions": [
+        "tracer app -- test --scenario journeys/cue-draft-recovery"
+      ],
+      "expectations": [
+        {
+          "id": "recovery",
+          "description": "The exact retained field and refusal survive two real owned cold opens without changing full canonical models; correction commits one prompt revision, clears the journal and returns clean exact text on the third cold open.",
+          "witness": {
+            "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+            "start": 71,
+            "end": 131,
+            "sha256": "06595ccbae800cca97950092be3b8545cd579e442d39380a0c1f247d911f18cc"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 191,
+            "end": 192,
+            "sha256": "4c903cd74e8513a4fc30f02ff880da986e97b93506e52791c28830ee247264e1"
+          },
+          "expectation": "recovery",
+          "why": "Status and recovery containers hold the exact local direction refusal observed during each retained-draft phase."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 253,
+            "end": 254,
+            "sha256": "ace6e13b8c0b878e81aa49f511d616a77da832af8bccb7fea891d15114e327d1"
+          },
+          "expectation": "recovery",
+          "why": "The panel refreshes status/recovery visibility and rebuilds recovery content when the cue draft state changes. Exact refusal appears after oversize input/reopen and disappears after correction; layout measurement and every signature variant are not independently asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 256,
+            "end": 257,
+            "sha256": "05cea76887e6f8373a4b0631fa6b55fd4d0799a0ca590f86f00160f05080b61b"
+          },
+          "expectation": "recovery",
+          "why": "The panel refreshes status/recovery visibility and rebuilds recovery content when the cue draft state changes. Exact refusal appears after oversize input/reopen and disappears after correction; layout measurement and every signature variant are not independently asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+            "start": 264,
+            "end": 265,
+            "sha256": "ed71a54de521415eb4a7d757a5c40e7a9d816184f29a663ffdc6adee3b7e802b"
+          },
+          "expectation": "recovery",
+          "why": "A real generationPromptIssue mounts the exact oversize notice. The fixture exercises the issue branch, not source-conflict review or retry/discard handling."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "storyboard-word-inventory",
+      "title": "Render each source word exactly once",
+      "steps": [
+        "storyboard-word-inventory"
+      ]
+    },
+    {
+      "id": "storyboard-word-selection",
+      "title": "Select and clear real storyboard words",
+      "steps": [
+        "storyboard-word-selection"
+      ]
+    },
+    {
+      "id": "preview-storyboard-follow",
+      "title": "Follow the playhead without clearing selected words",
+      "steps": [
+        "preview-storyboard-follow"
+      ]
+    },
+    {
+      "id": "local-image-preview",
+      "title": "Render the imported successor in Preview",
+      "steps": [
+        "local-image-preview"
+      ]
+    },
+    {
+      "id": "inspect-local-original",
+      "title": "Inspect the original local image",
+      "steps": [
+        "inspect-local-original"
+      ]
+    },
+    {
+      "id": "choose-preview-version",
+      "title": "Choose the historical image version",
+      "steps": [
+        "choose-preview-version"
+      ]
+    },
+    {
+      "id": "generation-direction-review",
+      "title": "Edit exact optional direction and review it",
+      "steps": [
+        "generation-direction-review"
+      ]
+    },
+    {
+      "id": "generation-direction-recovery",
+      "title": "Restore the retained invalid direction",
+      "steps": [
+        "generation-direction-recovery"
+      ]
+    }
+  ]
+}

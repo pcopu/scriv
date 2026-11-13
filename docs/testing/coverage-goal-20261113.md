@@ -6,7 +6,55 @@ Production source remains at `9d4f717`; only journey coverage, reviewed mappings
 and documentation changed in this batch. The previous two weeks of Scriv and
 `pcopu/tracerCLI` commits were reviewed before selecting work.
 
-## Current accounting
+## Latest reuse increment
+
+The next increment reuses existing journeys without changing application or test
+source. Current assertion-linked lines are **5,452 / 30,831 (17.68%)**, leaving
+25,379 below the one-trace minimum. All 2,185 links and 1,211 comment declarations
+pass integrity checks. The denominator, exclusions and minimum are unchanged.
+The planned-association milestone remains separate and complete.
+
+Five catalogs add 835 previously unlinked lines through 251 reviewed mappings:
+
+| Catalog | New included lines |
+| --- | ---: |
+| Model, persistence and Fountain | 124 |
+| Audio, word timing and Layers | 162 |
+| CLI dispatch and snapshot state | 264 |
+| Script and character state | 109 |
+| Preview and Storyboard | 176 |
+
+Independent source/assertion review removed claims for unasserted labels,
+layout, preview output and callbacks. One already-linked Storyboard range was
+omitted from the new catalog, preserving its existing explanation. All 41
+source/witness files referenced by these catalogs match the immutable native
+build source exactly. No new top-level journey was added.
+
+Nineteen selected native journeys passed across two batches. The first batch
+passed seven journeys before a 64-session measurement limit interrupted
+model-document; twelve remaining journeys, including model-document, then
+passed without capture. The original failed batch record is retained. The
+earlier workspace and short-film runs are additional results on the same build.
+Repository checks and catalog/link integrity checks passed. Native input parity,
+the denied character-alias fallback and release readiness remain unclaimed.
+
+The first batch retained 64 genuine cumulative intervals but imported only 37
+before its indented measurement dataset approached the 64 MiB cap. Tracer's
+compact serializer was independently validated in a separate analysis copy:
+all 64 intervals imported and passed measurement integrity checks, using
+15,385,206 bytes versus 66,256,967 bytes for the original 37. Duplicate imports
+preserved the old bytes; new imports preserved every original record. The
+original dataset, raw exports and manifests remain byte-identical. The cap and
+schema did not change. Some intervals belong to the interrupted journey;
+counter observations do not turn that failed run into a passing assertion.
+
+Tracer's new read-only `next` command supplies one bounded work packet with
+uncovered ranges, source snippets, candidate existing witnesses, plan actions,
+hashes and explicit continuation commands. It does not execute a journey or
+approve a mapping. The installed Tracer remains unchanged; this work uses the
+owned checkout explicitly.
+
+## First increment accounting
 
 Tracer 0.3 at `8e12583`, run explicitly from the owned checkout, reports:
 

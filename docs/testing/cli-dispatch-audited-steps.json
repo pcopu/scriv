@@ -1,0 +1,1058 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "cli-valid-session",
+      "title": "Open isolated command session",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "Valid sequential JSON requests only. No malformed JSON, missing command, oversized line, absent setup, repeated start, overlapping async request or native-accessibility route is claimed. Only the explicitly asserted capability fields are associated."
+      ],
+      "actions": [
+        "launch matching automation app --scriv-cli with the FILM-J01 persistent isolated run",
+        "capabilities"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Launch succeeds and capabilities advertise the isolated persistent workspace, disabled cloud network and required command/menu/delegate surfaces.",
+          "witness": {
+            "path": "tests/e2e/journeys/short-film.mjs",
+            "start": 14,
+            "end": 30,
+            "sha256": "f8112dbbc3f3436fb043308cd6d3ffe0c721a009912d9398acaefd8d12ac6bb4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 19,
+            "end": 21,
+            "sha256": "a692d9763d2de2972efdfdaf92e6d2e2d3cd35f935eeb1a6a6b0d4add034fb21"
+          },
+          "expectation": "observed",
+          "why": "The valid automation launch accepts the CLI argument and prepared isolated capability."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 24,
+            "end": 29,
+            "sha256": "ad8f507e84fc35927e9bc90e2878b5157359c65d73d0acdd487dbbd17e6c0909"
+          },
+          "expectation": "observed",
+          "why": "The initialized workspace accepts a bounded valid stdin request and delivers it on the main queue; oversize rejection is unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 34,
+            "end": 41,
+            "sha256": "248992801ee6ada6f7488438f7272039fbc3a3f8e8daad2c50aee1848ff55d81"
+          },
+          "expectation": "observed",
+          "why": "A valid sequential request is decoded with its response ID and accepted prepared-run/busy guards. Error and busy outcomes are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 89,
+            "end": 90,
+            "sha256": "201a3929df2e0261b8f02979e5fdeb44829f8b3a8d63f11996dd41a096d2aeed"
+          },
+          "expectation": "observed",
+          "why": "The synchronous capabilities result reaches the successful response envelope."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 93,
+            "end": 96,
+            "sha256": "144ecf58a3956f9c93362077854c314f04be5c75fe174dd61f8e02c0f88ade0b"
+          },
+          "expectation": "observed",
+          "why": "The public response is serialized and emitted through the stdio protocol consumed by the journey."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 253,
+            "end": 255,
+            "sha256": "583cb4c74a7cbc2206f1c5b14e09f7f32942b46ce038cdbc0aad88b5f35247cd"
+          },
+          "expectation": "observed",
+          "why": "The capabilities command runs with the initialized window and prepared isolated capability."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 261,
+            "end": 263,
+            "sha256": "6806a8319277ab590b1e073dd018acb114c0ba816f162318475996c13443f3df"
+          },
+          "expectation": "observed",
+          "why": "Layout and capabilities dispatch produce the observed isolation and semantic-command declaration; colocated protocol/schema fields are not all separately asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 265,
+            "end": 266,
+            "sha256": "255639825d3d749bf67482c548da1143bc288e4fc8945fd5b6286b6c3e616033"
+          },
+          "expectation": "observed",
+          "why": "Layout and capabilities dispatch produce the observed isolation and semantic-command declaration; colocated protocol/schema fields are not all separately asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 268,
+            "end": 268,
+            "sha256": "babc8494c179a5178e7e164a977ab06afb274fb01f9f105d9ea05df658750773"
+          },
+          "expectation": "observed",
+          "why": "The returned delegate-command list contains script-insert as asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 270,
+            "end": 271,
+            "sha256": "cac28f4dd33bd9dd2cd7e13c9cd4325996740ac1fd2a2f1142f34af53d4e013f"
+          },
+          "expectation": "observed",
+          "why": "The menu scopes and run identity are returned; selected scopes are asserted here and the run ID is retained for later checkpoints."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 273,
+            "end": 273,
+            "sha256": "b05f9dc0012d4d9cac99315108c54db418539fe3b9dc6c4130ce5d7b0831d038"
+          },
+          "expectation": "observed",
+          "why": "The initial persistent/non-resumed workspace flags equal the expected object."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 275,
+            "end": 275,
+            "sha256": "953704bee10343fd67a18a0d9a4f97776aae1c4388ede2c6592cc4bbdd13e256"
+          },
+          "expectation": "observed",
+          "why": "The returned command list contains every required film command. This does not prove all advertised commands."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 283,
+            "end": 284,
+            "sha256": "22d85dad07c5bb07ab387609f677203a127c2d2e9ee654f3e2e36a2ac8616057"
+          },
+          "expectation": "observed",
+          "why": "The constructed capability response is returned to the real session."
+        }
+      ]
+    },
+    {
+      "id": "cli-owned-swatch",
+      "title": "Locate and activate owned swatch",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "The existing character editor is open. Associations cover the ordinary owned-window/view traversal and accepted control target only; settings-scene ownership, hidden/covered refusal and native accessibility remain gaps."
+      ],
+      "actions": [
+        "snapshot",
+        "snapshot after locating the exact standard swatch path and label",
+        "activate target=the same standard swatch path"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Assert the complete ordered standard palette, stable unique sibling paths, enabled/hittable selected swatch and a dispatched activation.",
+          "witness": {
+            "path": "tests/e2e/journeys/short-film.mjs",
+            "start": 717,
+            "end": 735,
+            "sha256": "7fecba3207f764a865162e07a71f6cda1d3cca3ae39c6377c4bdb9ba759ec711"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 114,
+            "end": 126,
+            "sha256": "7fdad08b9418b645668f6a66842db688fe748acff68d8e88bd17d63c98effeef"
+          },
+          "expectation": "observed",
+          "why": "Owned windows and presented-controller windows provide the palette traversal. This does not claim a particular separate-window branch or settings-scene discovery."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 134,
+            "end": 145,
+            "sha256": "6b7d2fe6b0ef0ec86c804f0869b100490893af1fe2eae405585f35b47a85c5e2"
+          },
+          "expectation": "observed",
+          "why": "Visible view traversal produces the ordered path/label palette whose membership and path stability are asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 180,
+            "end": 191,
+            "sha256": "7d9c11ae29a720245c01746fa3fb261adeb6b58cde6c7ce8e5489cd042f1bac6"
+          },
+          "expectation": "observed",
+          "why": "The selected visible control is reported hittable through the owned-window, presentation, clipping and hit-test acceptance path. Rejection variants are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 551,
+            "end": 557,
+            "sha256": "e4f9ad25b580b3a3017e33460184ebc148836f2416eca0fc0e5130c81f7b750c"
+          },
+          "expectation": "observed",
+          "why": "The exact selected control passes interaction, enabled and hit-test gates before dispatch."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 635,
+            "end": 636,
+            "sha256": "628b44ccc5c00dea4e1bf08f684cc8fcc7f340a96d7adf1be3d39482636bb5b0"
+          },
+          "expectation": "observed",
+          "why": "The standard colour swatch is a UIControl registered for touchUpInside; the accepted control path sends that event and the witness requires dispatch. The primaryActionTriggered branch is unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 638,
+            "end": 638,
+            "sha256": "84d87a6ac462771db62eeb1a6797d89dd971d64a1d2fa9c362c10031c5a089d4"
+          },
+          "expectation": "observed",
+          "why": "The standard colour swatch is a UIControl registered for touchUpInside; the accepted control path sends that event and the witness requires dispatch. The primaryActionTriggered branch is unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 469,
+            "end": 469,
+            "sha256": "064796db3df6d13edd8b55016d4d637b041d1a018a5528abd4968a4e545f13c4"
+          },
+          "expectation": "observed",
+          "why": "The standard palette witness independently checks exact labels, and repeated snapshots preserve the same path/label pairs. This covers ordinary labels only; sensitive aggregation redaction is not claimed."
+        }
+      ]
+    },
+    {
+      "id": "cli-tab-snapshot",
+      "title": "Observe and select workspace tab",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "A normal nonsensitive workspace tab control is mounted; the helper is used throughout FILM-J01. Mappings cover the asserted path/identifier/label/readiness/tab fields, not every field sharing a dictionary line or sensitive redaction."
+      ],
+      "actions": [
+        "snapshot",
+        "select target=workspace-tabs index=the observed Script tab index when needed",
+        "snapshot until workspace-tabs reports the selected index"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The actual workspace contains the requested tab and the enabled, hittable control reports the requested selection.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-authoring-steps.mjs",
+            "start": 38,
+            "end": 44,
+            "sha256": "249683290f340b81a3055fa5fd8e3befed308e9401a856174929035eeb92cf27"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 461,
+            "end": 468,
+            "sha256": "8ab344172387fc3a08adf8c738ccb0537721e2ba7d3f2ea65be587e69dedb1b7"
+          },
+          "expectation": "observed",
+          "why": "Snapshot builds ordinary nonsensitive records; identifier and hittable state are consumed by readyTabs. Sensitive and aggregate-redaction true branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 471,
+            "end": 471,
+            "sha256": "c7b80e0b415de12405742297518bbeeeab63083ebddeced424b056ab9e157d49"
+          },
+          "expectation": "observed",
+          "why": "Snapshot builds ordinary nonsensitive records; identifier and hittable state are consumed by readyTabs. Sensitive and aggregate-redaction true branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 489,
+            "end": 494,
+            "sha256": "a1ea40ff72f3baa12822181aded31f6eb725800db0ddf0385a74dab399a65ad1"
+          },
+          "expectation": "observed",
+          "why": "Ordinary controls publish enabled state after presentation/ancestor checks. The selected tab readiness is asserted; disabled/covered rejection variants are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 511,
+            "end": 516,
+            "sha256": "0c980fa83a4300e5a9837308b443c69da4a6f064c0b4d29088e08fd9b5185965"
+          },
+          "expectation": "observed",
+          "why": "The actual segment titles and selected index are returned and compared after selection."
+        }
+      ]
+    },
+    {
+      "id": "cli-workspace-keys",
+      "title": "Discover and dispatch workspace Save",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "The real workspace responder chain is active. This associates enabled Save discovery and successful dispatch, not every responder subclass, modifier, focus fallback or key-rejection outcome."
+      ],
+      "actions": [
+        "keys",
+        "key input=s modifiers=[command]"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Assert that the actual workspace exposes its enabled Command-S action, then require exactly the successful dispatch response.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-authoring-steps.mjs",
+            "start": 46,
+            "end": 50,
+            "sha256": "fe0b9a3d60155d3ca9d8f73f831d1a80865b178ab9b9f6e8edfe9a824d3609c9"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 193,
+            "end": 209,
+            "sha256": "2ff416b810fa538919fd1872fb3a78e9165c9058f710eaf51468b089be3b10fe"
+          },
+          "expectation": "observed",
+          "why": "Enabled commands are collected from the current responder chain and the witness locates the workspace Save action."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 210,
+            "end": 213,
+            "sha256": "c230a30b3cfc530ae8626c0eab7e6fb226a160bf86de17446b8edda3f1d1cdd9"
+          },
+          "expectation": "observed",
+          "why": "Modifier names preserve the requested Command modifier used by the exact key comparison."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 405,
+            "end": 415,
+            "sha256": "4bd1fcfc0c0fb104904ff6c9ce4225a18c4276c4f8b4e759dbb77652046b5949"
+          },
+          "expectation": "observed",
+          "why": "keys exposes the command and key resolves and dispatches the matching action. The accepted path does not establish every inline guard failure."
+        }
+      ]
+    },
+    {
+      "id": "cli-read-packages",
+      "title": "Read exact saved synthetic packages",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "The sentinel and authored project have already been saved. Only valid owned regular packages below the limits are associated; unsafe roots, symlinks, oversized content, missing publication, descriptor errors and malformed JSON are unclaimed."
+      ],
+      "actions": [
+        "persisted-projects"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Compare the entire saved sentinel and authored project to the expected models, and compare loaded state at the chapter checkpoint.",
+          "witness": {
+            "path": "tests/e2e/journeys/short-film.mjs",
+            "start": 48,
+            "end": 57,
+            "sha256": "8debe99e8220172f942fd181a669e59560d2e1fda31e5f4f6a369cc4420237d8"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 216,
+            "end": 234,
+            "sha256": "5c08773eda8d51d1374c7c2a3c850928620056ed350e91a7ca62931c2689f752"
+          },
+          "expectation": "observed",
+          "why": "Read the configured synthetic root and eligible .scriv packages using the accepted directory/package/open path. The full exported models are compared; rejection sides are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 241,
+            "end": 251,
+            "sha256": "f0feb715101f7a7a3ae9a71564049a52e07bda0f4b9771bdea02c9028f91ea1f"
+          },
+          "expectation": "observed",
+          "why": "Read and decode bounded regular project.json bytes and return the saved objects; the complete package model comparison witnesses the valid-file path."
+        }
+      ]
+    },
+    {
+      "id": "cli-character-input",
+      "title": "Replace character field text",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "FILM-J01 creates cast profiles using ordinary Name, Biography and Appearance inputs. The helper observes exact text; composition, secure inputs, invalid target and editing refusal are unclaimed."
+      ],
+      "actions": [
+        "snapshot to locate the one requested character input",
+        "text target=the located Name, Biography or Appearance input text=the current film.cast field",
+        "snapshot until that input retains the exact text"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The located native character input retains the exact supplied UTF-16 text.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/character-catalog-steps.mjs",
+            "start": 36,
+            "end": 45,
+            "sha256": "599c3f13ae009b1610ba5eba3e32067f3b9f27d66cd1a0e993660f161c745a07"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 496,
+            "end": 498,
+            "sha256": "9478da7339993e90d794ae99b033fb46ecdcc77a21251663331900a5adf0af82"
+          },
+          "expectation": "observed",
+          "why": "Snapshot reports the ordinary text field/text view content inspected by the helper. Selection/editability/style metadata is not associated here."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 789,
+            "end": 797,
+            "sha256": "cf5b10621169cec2162228038682640e6c3308b1e59fc741c4f76ed76bab095c"
+          },
+          "expectation": "observed",
+          "why": "text accepts ordinary nonsensitive field/view input, selects existing content and inserts the replacement. Both field and view forms are used by FILM-J01 cast creation."
+        }
+      ]
+    },
+    {
+      "id": "cli-script-selection",
+      "title": "Replace exact UTF-16 selection",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "The new dialogue editor is focused and contains film.draftLine; the complete preceding add-dialogue workflow is required. Only the valid nonsensitive UITextView selection/type path is associated."
+      ],
+      "actions": [
+        "text target=current script editor text=film.draftLine",
+        "snapshot until exact draft and caret",
+        "selection target=current script editor start=the cafe-combining-accent start end=that UTF-16 span end",
+        "snapshot until exact draft and selected span",
+        "type target=current script editor text=caf\u00e9",
+        "snapshot until exact revised text and collapsed caret"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Observe the exact decomposed-text selection, then the composed caf\u00e9 replacement and caret, before finishing and observing saved revised text.",
+          "witness": {
+            "path": "tests/e2e/journeys/short-film.mjs",
+            "start": 211,
+            "end": 219,
+            "sha256": "dbd713fd99724804ee51455c3b95992875605ab0577693482625553681085db8"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 642,
+            "end": 650,
+            "sha256": "187da3ecc277e1de0b9e540f95becb8f7093dfb6e51b46df86f429f0c1a2cafc"
+          },
+          "expectation": "observed",
+          "why": "selection builds and installs the valid exact UTF-16 text range used by the composed-text replacement. Invalid and secure selection branches are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 779,
+            "end": 781,
+            "sha256": "6d63236a09570fb3909931fbb1e8c7a6bb4d8554fddda68370519c8da70c359e"
+          },
+          "expectation": "observed",
+          "why": "type accepts the supplied ordinary nonsensitive text."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 785,
+            "end": 787,
+            "sha256": "d7defe0ccd73bddedf632b2b7f031cb135e105f84f8cee5ebf75581e874f65bf"
+          },
+          "expectation": "observed",
+          "why": "The focused editable UITextView inserts the replacement into the selected range and the subsequent snapshot verifies text/caret."
+        }
+      ]
+    },
+    {
+      "id": "cli-import-images",
+      "title": "Import two synthetic image versions",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "The selected existing cue is active. Imports are awaited serially for coral then blue; unsupported fixtures, async overlap, errors and cancellation are unclaimed."
+      ],
+      "actions": [
+        "import-local-image fixture=coral",
+        "persisted-projects until exact first image asset and cue binding",
+        "import-local-image fixture=blue",
+        "persisted-projects until exact second image asset, previousVersionId and cue binding"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Each import reports dispatched/imported/cleanupVerified and produces exactly the expected image metadata, version chain and cue binding.",
+          "witness": {
+            "path": "tests/e2e/journeys/short-film.mjs",
+            "start": 254,
+            "end": 268,
+            "sha256": "ffe3212697ab3444ced0306a97bbc2e7d845a0779e8ce731a9517a7500d5732d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 68,
+            "end": 74,
+            "sha256": "f3da35e5263e484ee9c6239317f55503d79d21e46859f0df6e2ddb308ff079ec"
+          },
+          "expectation": "observed",
+          "why": "The accepted synthetic image request enters the async command, awaits the import and returns its successful result with the saved response ID."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 78,
+            "end": 80,
+            "sha256": "a0b74d68304c7d86030ee6e31cd384576b97b6b7e2bf2043ac1e15edcf1e7628"
+          },
+          "expectation": "observed",
+          "why": "The async image branch exits after scheduling its owned task; sequential subsequent commands complete after the defer clears the in-progress state."
+        }
+      ]
+    },
+    {
+      "id": "cli-pick-image-cell",
+      "title": "Activate historical image cell",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "The real image picker is open with two imported versions. Only selection of the one visible historical UICollectionViewCell is associated."
+      ],
+      "actions": [
+        "activate target=preview-version",
+        "snapshot until image picker is present",
+        "activate target=the unique hittable Version 1 cell path",
+        "activate target=image-picker-use-selection",
+        "persisted-projects until the original cue refers to firstImageID",
+        "snapshot until the picker is dismissed"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Select the unique historical Version 1 cell and assert the exact persisted cue image binding and picker dismissal.",
+          "witness": {
+            "path": "tests/e2e/journeys/short-film.mjs",
+            "start": 269,
+            "end": 276,
+            "sha256": "e97dbb2acdc1e76f29e2d054a6bdaef1df61a461afde526b0745e1379773b15f"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 624,
+            "end": 634,
+            "sha256": "a428147f4496f41893ce079eb3e2e1db4fc3e46278ba9b8467975bfe8abf9327"
+          },
+          "expectation": "observed",
+          "why": "A real collection cell resolves to its owning collection/index and is selected through the public delegate contract. Refused/invalid collection selection is unclaimed."
+        }
+      ]
+    },
+    {
+      "id": "cli-portrait-menu",
+      "title": "Describe nested portrait menu",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "The matching character is selected and its portrait menu control is visible. Only concrete menus/actions and the asserted title, attributes and on/off state are associated; bounds failures, deferred elements and mixed state are unclaimed."
+      ],
+      "actions": [
+        "menu target=character-portrait-options",
+        "menu-action target=character-portrait-options scope=character-portrait-options action=the requested portrait title characterID=current character imageID=chosen imported image"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The menu has one primary tree, the expected section count and one enabled visible action with the expected on/off state; dispatch reports the semantic menu route.",
+          "witness": {
+            "path": "tests/e2e/journeys/short-film.mjs",
+            "start": 318,
+            "end": 329,
+            "sha256": "dc1098589993e004d02d6e18357a05f6ff62885ff84346c8dce21624d93b00c5"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 522,
+            "end": 536,
+            "sha256": "192b962acc29c719f349a6e8402bf9296e1b795c2e57ffdd47a2ff06f3e0d28d"
+          },
+          "expectation": "observed",
+          "why": "The bounded menu walker describes actual nested UIMenu/UIAction titles, children, attributes and selected state compared by the witness."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 541,
+            "end": 543,
+            "sha256": "f388c57f2f53a6e5f0a242c097a4436c55706405fb35f5dbe38a5a0fdaa24c27"
+          },
+          "expectation": "observed",
+          "why": "Primary and absent secondary menu trees are serialized for the observed portrait control."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 548,
+            "end": 549,
+            "sha256": "7d465e3f0c21d5f81836c01c2e02a12d8d63afc3cde786dcf09502483556d56d"
+          },
+          "expectation": "observed",
+          "why": "The absent context tree and concrete primary/secondary trees are returned and compared."
+        }
+      ]
+    },
+    {
+      "id": "cli-import-audio",
+      "title": "Import selected-dialogue audio",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "The selected dialogue has been established by opening/finishing its real editor. The tested request imports synthetic tone into selected-dialogue and is awaited serially. Invalid data, unsafe fixtures, async overlap and error responses are unclaimed."
+      ],
+      "actions": [
+        "import-audio attachment=selected-dialogue base64=syntheticPCM({silence:false})",
+        "persisted-projects until exact asset and dialogue-linked clip"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The awaited import returns dispatched/imported/cleanupVerified; exact asset bytes/metadata and complete selected-dialogue clip placement/attachment fields are checked.",
+          "witness": {
+            "path": "tests/e2e/journeys/short-film.mjs",
+            "start": 376,
+            "end": 393,
+            "sha256": "0cd514334cc666f1d655fe0165263f115503e96c1f96b46726a26065aa0a0795"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 42,
+            "end": 46,
+            "sha256": "98328fdc950fa5893cf3005c20e35f3addbdc4ea4d430a9d05011316782011d1"
+          },
+          "expectation": "observed",
+          "why": "The valid audio request shape, payload and selected workspace enter the supported async route."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 49,
+            "end": 55,
+            "sha256": "6da410171f4de5f6453b2c0e01d23d6efa69b62099b027359a72071d6aed446f"
+          },
+          "expectation": "observed",
+          "why": "The command records in-progress state, retains the reply ID, awaits importWAV and returns its successful result; defer restores availability."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 59,
+            "end": 61,
+            "sha256": "a0b74d68304c7d86030ee6e31cd384576b97b6b7e2bf2043ac1e15edcf1e7628"
+          },
+          "expectation": "observed",
+          "why": "The asynchronous audio branch returns without falling through into synchronous command dispatch."
+        }
+      ]
+    },
+    {
+      "id": "cli-audio-slider",
+      "title": "Set audio clip volume",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "The real local-audio sheet and its imported clip are open. Only finite in-range slider updates are associated; out-of-range/NaN/wrong-target rejection is unclaimed."
+      ],
+      "actions": [
+        "snapshot to reveal the clip-volume slider",
+        "slider target=the clip volume control path value=0.375",
+        "snapshot until the slider reports 0.375",
+        "persisted-projects until the clip volume is exactly 0.375"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The completed trim is saved; setting clip volume to 0.375 produces exactly that model value, using the slider helper that also polls its native value.",
+          "witness": {
+            "path": "tests/e2e/journeys/short-film.mjs",
+            "start": 398,
+            "end": 401,
+            "sha256": "e2a525f262d6e9de4a730a36050d39f532fe722d03f9703e6e8522e4a08a5117"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 485,
+            "end": 487,
+            "sha256": "c4009d726a4053ee985a17c6d148bcce5bcc4ceb62f3c1ed922aae3234654073"
+          },
+          "expectation": "observed",
+          "why": "The control snapshot publishes actual slider value and bounds consumed by the volume helper."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 803,
+            "end": 806,
+            "sha256": "5b8f42fe05b1d16bab668bc20b0aa0218da538ef59c2e9905f6fcfb5a4f1f82b"
+          },
+          "expectation": "observed",
+          "why": "The accepted in-range numeric value is applied to UISlider and dispatched through valueChanged."
+        }
+      ]
+    },
+    {
+      "id": "cli-script-insertion",
+      "title": "Insert through mounted script delegate",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "The film dialogue editor is the exact mounted isolated editing session, with a collapsed valid end selection and existing confirmed identity/audio. Only the accepted single-line insertion is associated; guard failures, owner-search exhaustion and refused delegate insertion are unclaimed."
+      ],
+      "actions": [
+        "selection target=current dialogue editor start=film.revisedLine.length end=film.revisedLine.length",
+        "snapshot until exact caret",
+        "script-interaction-counts",
+        "script-insert target=current dialogue editor text= Ready.",
+        "script-interaction-counts",
+        "snapshot until appended text and exact caret",
+        "keys",
+        "key input=Escape modifiers=[]",
+        "persisted-projects until the exact revised dialogue"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Insertion reports delegate acceptance, increments onTextEdit once without a merge callback, displays the exact appended text/caret, and preserves confirmed identity, existing word IDs and unrelated model state.",
+          "witness": {
+            "path": "tests/e2e/journeys/short-film.mjs",
+            "start": 410,
+            "end": 426,
+            "sha256": "109bd8f62f11ca3875563b6ef60cd671875ca3d1419f89a34c8f2490c181ac02"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 686,
+            "end": 694,
+            "sha256": "d1d009882bdc6d8cc108de227357a233b5a0c0cfddfe9bc165a39b083e2e243c"
+          },
+          "expectation": "observed",
+          "why": "The accepted script insertion is tied to its real delegate row, active isolated workspace and mounted window; rejection branches on these conditions are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 697,
+            "end": 707,
+            "sha256": "6e7e02f6db3de01649c85911494132b56602c279c01624323914185da4f41abb"
+          },
+          "expectation": "observed",
+          "why": "The owning ScriptScreenController and ready current editing session are resolved before insertion. Exhaustion/stale-session variants are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 710,
+            "end": 715,
+            "sha256": "7a3e5279957baae96588b0e18e86cceb42722fc87827b1f684dd4f8f5dcc0acb"
+          },
+          "expectation": "observed",
+          "why": "The valid selected UTF-16 range is checked against both source text and UITextInput offsets before the delegate call."
+        }
+      ]
+    },
+    {
+      "id": "cli-direction-menu",
+      "title": "Dispatch owned duration menu action",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "The second-scene direction exists and Layers is expanded. This witnesses the concrete secondary menu and the positive Owned duration route, not arbitrary action dispatch or error branches."
+      ],
+      "actions": [
+        "menu target=the exact direction control path",
+        "menu-action target=that direction path action=Owned duration\u2026",
+        "snapshot until the owned duration editor shows 0.000",
+        "presented-alerts",
+        "loaded-project"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The secondary menu exactly contains the enabled visible Owned duration action, dispatch succeeds, the editor opens with exact original duration and the complete project remains unchanged.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/line-duration-steps.mjs",
+            "start": 168,
+            "end": 189,
+            "sha256": "6e41624271feae4dcab2b06e9f6f24e89409ea9385031968b2c7ecf7a495f9a0"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 580,
+            "end": 582,
+            "sha256": "32815175314d73edb6f8561307f3c565237fcfa9871e1eae2a11f47b856693e6"
+          },
+          "expectation": "observed",
+          "why": "The Owned duration menu-action branch routes the real owning control into the supported semantic dispatcher."
+        }
+      ]
+    },
+    {
+      "id": "cli-scroll-to-input",
+      "title": "Reveal character input by native scrolling",
+      "preconditions": [
+        "Existing FILM-J01 (tracer app -- test --scenario journeys/short-film), with its preceding chapters, isolated persistent workspace and matching automation build. These are source-to-assertion associations, not a new run or measured line/branch coverage.",
+        "FILM-J01 uses this helper for character fields/swatches. The scroll action is conditional on the requested view being offscreen; this association does not claim the branch ran on every window size or that clipping/covered cases pass."
+      ],
+      "actions": [
+        "snapshot to locate one requested character input",
+        "scroll target=its reachable native scroll ancestor y=ancestor offset plus target frame offset minus 20 when offscreen",
+        "snapshot until the same unique input is hittable"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The helper requires one exact target and, when scrolling is needed, a reachable ancestor and a subsequent hittable target.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/character-catalog-steps.mjs",
+            "start": 15,
+            "end": 28,
+            "sha256": "15c21ea073deb2741f87b18728c5e1e442dcfeae767345365f185e6be995ed76"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 475,
+            "end": 475,
+            "sha256": "592a2e61beae656bbd65be2757c56ab2fe105580f3fe1a01230279d66aed31a6"
+          },
+          "expectation": "observed",
+          "why": "The ordinary window-relative frame locates the native scroll ancestor and target offset."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 477,
+            "end": 477,
+            "sha256": "ab538a8d6c6a3d8db5ad1d3af648383fd550578550cb83053f1347923f0e6556"
+          },
+          "expectation": "observed",
+          "why": "The ordinary window-relative frame locates the native scroll ancestor and target offset."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 484,
+            "end": 484,
+            "sha256": "855badd29c331125f697c8be79c2e1e9535010812bee9c917f723711a8cd3b42"
+          },
+          "expectation": "observed",
+          "why": "The scroll offset supplied by snapshot is used to compute the requested native scroll position."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+            "start": 807,
+            "end": 810,
+            "sha256": "2a0646fc503064aa903a2084d714f1701170f00b4ea8cd3a238c73359b1891a0"
+          },
+          "expectation": "observed",
+          "why": "The finite scroll request clamps to the native content range and changes its vertical offset; the same target is subsequently required hittable."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "cli-valid-session",
+      "title": "Open isolated command session",
+      "steps": [
+        "cli-valid-session"
+      ]
+    },
+    {
+      "id": "cli-owned-swatch",
+      "title": "Locate and activate owned swatch",
+      "steps": [
+        "cli-owned-swatch"
+      ]
+    },
+    {
+      "id": "cli-tab-snapshot",
+      "title": "Observe and select workspace tab",
+      "steps": [
+        "cli-tab-snapshot"
+      ]
+    },
+    {
+      "id": "cli-workspace-keys",
+      "title": "Discover and dispatch workspace Save",
+      "steps": [
+        "cli-workspace-keys"
+      ]
+    },
+    {
+      "id": "cli-read-packages",
+      "title": "Read exact saved synthetic packages",
+      "steps": [
+        "cli-read-packages"
+      ]
+    },
+    {
+      "id": "cli-character-input",
+      "title": "Replace character field text",
+      "steps": [
+        "cli-character-input"
+      ]
+    },
+    {
+      "id": "cli-script-selection",
+      "title": "Replace exact UTF-16 selection",
+      "steps": [
+        "cli-script-selection"
+      ]
+    },
+    {
+      "id": "cli-import-images",
+      "title": "Import two synthetic image versions",
+      "steps": [
+        "cli-import-images"
+      ]
+    },
+    {
+      "id": "cli-pick-image-cell",
+      "title": "Activate historical image cell",
+      "steps": [
+        "cli-pick-image-cell"
+      ]
+    },
+    {
+      "id": "cli-portrait-menu",
+      "title": "Describe nested portrait menu",
+      "steps": [
+        "cli-portrait-menu"
+      ]
+    },
+    {
+      "id": "cli-import-audio",
+      "title": "Import selected-dialogue audio",
+      "steps": [
+        "cli-import-audio"
+      ]
+    },
+    {
+      "id": "cli-audio-slider",
+      "title": "Set audio clip volume",
+      "steps": [
+        "cli-audio-slider"
+      ]
+    },
+    {
+      "id": "cli-script-insertion",
+      "title": "Insert through mounted script delegate",
+      "steps": [
+        "cli-script-insertion"
+      ]
+    },
+    {
+      "id": "cli-direction-menu",
+      "title": "Dispatch owned duration menu action",
+      "steps": [
+        "cli-direction-menu"
+      ]
+    },
+    {
+      "id": "cli-scroll-to-input",
+      "title": "Reveal character input by native scrolling",
+      "steps": [
+        "cli-scroll-to-input"
+      ]
+    }
+  ]
+}

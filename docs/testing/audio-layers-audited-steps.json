@@ -1,0 +1,749 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "word-transaction",
+      "title": "Save the complete reviewed word timing transaction",
+      "preconditions": [
+        "Reuse the complete existing journey and its isolated synthetic fixture; this catalog adds no execution or test. Run through the Scriv CLI on a separately verified matching native build. Read-only polls may repeat; mutations are not retried.",
+        "Associations cover the stated accepted routes and independently asserted public outcomes. No claim of every branch on a physical line, native hardware parity, stale-context or lease races, picker behavior, audible output, waveform pixels or drag behavior."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(wordTiming fixture)}; import-audio scene PCM only for adjacent-words case",
+        "menu {target: observed Layers two word button}; menu-action {target: same button, action: Edit word timing\u2026}",
+        "text word-timing-start/end for pending edits; activate Cancel; reopen; submit overlapping draft; correct it in the same sheet",
+        "activate Save timing; persisted-projects; loaded-project; reopen the saved project and timing editor; activate Cancel"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked.",
+          "witness": {
+            "path": "tests/e2e/journeys/word-timing.mjs",
+            "start": 19,
+            "end": 38,
+            "sha256": "8ca0778f45bea2002b523778ef6d3f932cb550bb8d550a37e6f62f9581d9e946"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/WordTimingEditing.swift",
+            "start": 7,
+            "end": 12,
+            "sha256": "c3262d80927dbebb10b060f208b17857fdecd1e9dc02affddf95e51e19d8d181"
+          },
+          "expectation": "observed",
+          "why": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/WordTimingEditing.swift",
+            "start": 14,
+            "end": 15,
+            "sha256": "a0a23262c5dcd3f2435a1b43854fa90832155cbb01bc164e0116dc143b4a975e"
+          },
+          "expectation": "observed",
+          "why": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/WordTimingEditing.swift",
+            "start": 17,
+            "end": 19,
+            "sha256": "c9adf3186f6472d3015809609270fd3b3ff6e1c9d68af869207466e48fa8dbd5"
+          },
+          "expectation": "observed",
+          "why": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/WordTimingEditing.swift",
+            "start": 21,
+            "end": 24,
+            "sha256": "fdbf5bc891b617d3049e49abd9dcc2d66aff3e7b3f686f71431154d51504eefd"
+          },
+          "expectation": "observed",
+          "why": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/WordTimingEditing.swift",
+            "start": 26,
+            "end": 31,
+            "sha256": "17d0bdad6a3ab9e6495be6fe701a6638ed135b0127112634a57d6ea0d788c754"
+          },
+          "expectation": "observed",
+          "why": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 124,
+            "end": 127,
+            "sha256": "002b7a0acbf7c788801a22fd6e74306eee0534911caee48b1150c16f231f0f04"
+          },
+          "expectation": "observed",
+          "why": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 133,
+            "end": 133,
+            "sha256": "4c1dd2788300d878f3d8501f800d9bb1efa2259ef573ff091e7e3c388d0195c0"
+          },
+          "expectation": "observed",
+          "why": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 135,
+            "end": 135,
+            "sha256": "5522c42cd19c6d03d808c452720552825b7ea1c5b491b218511cac7415cf9d9b"
+          },
+          "expectation": "observed",
+          "why": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 138,
+            "end": 138,
+            "sha256": "5522c42cd19c6d03d808c452720552825b7ea1c5b491b218511cac7415cf9d9b"
+          },
+          "expectation": "observed",
+          "why": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 142,
+            "end": 143,
+            "sha256": "5fd43d6fcc492c2d3f668811ceaa270d8ce3a184b242136b942933b594b5abb9"
+          },
+          "expectation": "observed",
+          "why": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/WordTimingEditorController.swift",
+            "start": 158,
+            "end": 162,
+            "sha256": "511dfecfa72b1083a2dfd249ebad6a7d36b8a44470795cad0b98f13ffc3fe85c"
+          },
+          "expectation": "observed",
+          "why": "The actual plural setWordTimings route saves the complete reviewed draft once. Exact w2 endpoints and authored marker, optional adjacent w1 change, unchanged w3/text/cues/audio and 3000 ms owned duration are asserted against independently authored expected values. Existing guards succeed for matching words/duration and preserved identity; their rejection branches are unclaimed. The singular setter and shiftWords are not invoked."
+        }
+      ]
+    },
+    {
+      "id": "word-draft-selection",
+      "title": "Keep independent raw drafts while selecting words",
+      "preconditions": [
+        "Reuse the complete existing journey and its isolated synthetic fixture; this catalog adds no execution or test. Run through the Scriv CLI on a separately verified matching native build. Read-only polls may repeat; mutations are not retried.",
+        "Associations cover the stated accepted routes and independently asserted public outcomes. No claim of every branch on a physical line, native hardware parity, stale-context or lease races, picker behavior, audible output, waveform pixels or drag behavior."
+      ],
+      "actions": [
+        "menu-action {target: observed Layers two word button, action: Edit word timing\u2026}",
+        "activate word-timing-chip-w1; text start 0.1000; text end 0.7000; activate chip-w2; text start 1.2000; text end 1.7000",
+        "activate chip-w1; snapshot; activate chip-w2; snapshot; loaded-project; persisted-projects; activate Cancel",
+        "reopen; activate chip-w1; text end 1.2000; activate Save timing; snapshot overlap notice; activate chip-w2; text start 1.2000; revisit both chips"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Each real chip selects its own exact raw pending strings and relabels the two seconds fields for that word. Selecting away and back preserves four-decimal drafts. Cancel leaves all loaded and saved fields unchanged; an overlap notice retains the same draft for correction. Timeline rendering, selected colors, gesture handling and lease failures are unclaimed.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/word-timing-multiword.mjs",
+            "start": 61,
+            "end": 135,
+            "sha256": "ab74e305da08cd984eab5a41d533a797f07c2129a29c0ca03c2eff36bc56f6ec"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 94,
+            "end": 97,
+            "sha256": "8a3b5a2a8a8723145c02697da70627c2dba38ac7472006014aa5be24fdf1eece"
+          },
+          "expectation": "observed",
+          "why": "Each real chip selects its own exact raw pending strings and relabels the two seconds fields for that word. Selecting away and back preserves four-decimal drafts. Cancel leaves all loaded and saved fields unchanged; an overlap notice retains the same draft for correction. Timeline rendering, selected colors, gesture handling and lease failures are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 99,
+            "end": 99,
+            "sha256": "d64fefd39db7233372babb54016c8a133e10ea39c4a0fa7aa7227bd7ae32d729"
+          },
+          "expectation": "observed",
+          "why": "Each real chip selects its own exact raw pending strings and relabels the two seconds fields for that word. Selecting away and back preserves four-decimal drafts. Cancel leaves all loaded and saved fields unchanged; an overlap notice retains the same draft for correction. Timeline rendering, selected colors, gesture handling and lease failures are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 103,
+            "end": 108,
+            "sha256": "14ea0248a8a6b59e63841992c31e6efc01ff1fea2c7430bc66b8357d0d5a93a8"
+          },
+          "expectation": "observed",
+          "why": "Each real chip selects its own exact raw pending strings and relabels the two seconds fields for that word. Selecting away and back preserves four-decimal drafts. Cancel leaves all loaded and saved fields unchanged; an overlap notice retains the same draft for correction. Timeline rendering, selected colors, gesture handling and lease failures are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/WordTimingEditorController.swift",
+            "start": 28,
+            "end": 28,
+            "sha256": "99981916ac3afc4fbb57b265cf20c1355c3f9055e286b4d2d0c8e525cf0f18ba"
+          },
+          "expectation": "observed",
+          "why": "Each real chip selects its own exact raw pending strings and relabels the two seconds fields for that word. Selecting away and back preserves four-decimal drafts. Cancel leaves all loaded and saved fields unchanged; an overlap notice retains the same draft for correction. Timeline rendering, selected colors, gesture handling and lease failures are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/WordTimingEditorController.swift",
+            "start": 47,
+            "end": 48,
+            "sha256": "1aa1ff699703344435c886dcf38c5588871ffbbeb3d41ade31d1a98915af0bf0"
+          },
+          "expectation": "observed",
+          "why": "Each real chip selects its own exact raw pending strings and relabels the two seconds fields for that word. Selecting away and back preserves four-decimal drafts. Cancel leaves all loaded and saved fields unchanged; an overlap notice retains the same draft for correction. Timeline rendering, selected colors, gesture handling and lease failures are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/WordTimingEditorController.swift",
+            "start": 53,
+            "end": 53,
+            "sha256": "e6b04491469722e8363a94e4044538e013a2a217e36b1e568ba60acb7b4c8f2e"
+          },
+          "expectation": "observed",
+          "why": "Each real chip selects its own exact raw pending strings and relabels the two seconds fields for that word. Selecting away and back preserves four-decimal drafts. Cancel leaves all loaded and saved fields unchanged; an overlap notice retains the same draft for correction. Timeline rendering, selected colors, gesture handling and lease failures are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/WordTimingEditorController.swift",
+            "start": 121,
+            "end": 122,
+            "sha256": "111234c735c3a8af307d1d0d3373ba58a4f5b355262b7d7bd214c9c26546625f"
+          },
+          "expectation": "observed",
+          "why": "Each real chip selects its own exact raw pending strings and relabels the two seconds fields for that word. Selecting away and back preserves four-decimal drafts. Cancel leaves all loaded and saved fields unchanged; an overlap notice retains the same draft for correction. Timeline rendering, selected colors, gesture handling and lease failures are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/WordTimingEditorController.swift",
+            "start": 125,
+            "end": 125,
+            "sha256": "4893f40e3781eb896c82d046a08067a11e35cdf2f1dfaf26fea90b8db6676413"
+          },
+          "expectation": "observed",
+          "why": "Each real chip selects its own exact raw pending strings and relabels the two seconds fields for that word. Selecting away and back preserves four-decimal drafts. Cancel leaves all loaded and saved fields unchanged; an overlap notice retains the same draft for correction. Timeline rendering, selected colors, gesture handling and lease failures are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/WordTimingEditorController.swift",
+            "start": 142,
+            "end": 143,
+            "sha256": "5f67b027bf8fb71e39fea5415fa81ce1c349eba05e7e7f312ef06bcaacf1284a"
+          },
+          "expectation": "observed",
+          "why": "Each real chip selects its own exact raw pending strings and relabels the two seconds fields for that word. Selecting away and back preserves four-decimal drafts. Cancel leaves all loaded and saved fields unchanged; an overlap notice retains the same draft for correction. Timeline rendering, selected colors, gesture handling and lease failures are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/WordTimingEditorController.swift",
+            "start": 147,
+            "end": 148,
+            "sha256": "400a42b5ae576330900984dbe865a3332c759ba9caa76944ae7260064def2922"
+          },
+          "expectation": "observed",
+          "why": "Each real chip selects its own exact raw pending strings and relabels the two seconds fields for that word. Selecting away and back preserves four-decimal drafts. Cancel leaves all loaded and saved fields unchanged; an overlap notice retains the same draft for correction. Timeline rendering, selected colors, gesture handling and lease failures are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/WordTimingEditorController.swift",
+            "start": 152,
+            "end": 152,
+            "sha256": "4893f40e3781eb896c82d046a08067a11e35cdf2f1dfaf26fea90b8db6676413"
+          },
+          "expectation": "observed",
+          "why": "Each real chip selects its own exact raw pending strings and relabels the two seconds fields for that word. Selecting away and back preserves four-decimal drafts. Cancel leaves all loaded and saved fields unchanged; an overlap notice retains the same draft for correction. Timeline rendering, selected colors, gesture handling and lease failures are unclaimed."
+        }
+      ]
+    },
+    {
+      "id": "audio-numeric-draft",
+      "title": "Edit and cancel bounded numeric trim drafts",
+      "preconditions": [
+        "Reuse the complete existing journey and its isolated synthetic fixture; this catalog adds no execution or test. Run through the Scriv CLI on a separately verified matching native build. Read-only polls may repeat; mutations are not retried.",
+        "Associations cover the stated accepted routes and independently asserted public outcomes. No claim of every branch on a physical line, native hardware parity, stale-context or lease races, picker behavior, audible output, waveform pixels or drag behavior."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
+        "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
+        "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
+        "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed.",
+          "witness": {
+            "path": "tests/e2e/journeys/audio-library.mjs",
+            "start": 197,
+            "end": 245,
+            "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioClipEditorController.swift",
+            "start": 19,
+            "end": 26,
+            "sha256": "a6617b830c75041a927562cc8fd789758b8f8a6046b5d5106be06b5fe1cfc93b"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioClipEditorController.swift",
+            "start": 28,
+            "end": 28,
+            "sha256": "612b99e9c0eb1e904dd4634809c4f710e1cfc5f15209041396783117d81c7191"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioClipEditorController.swift",
+            "start": 31,
+            "end": 34,
+            "sha256": "eaf9354735d4b3eee1d7593f66af9af67cb3226c98b594fe386272d1a359f054"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioClipEditorController.swift",
+            "start": 37,
+            "end": 37,
+            "sha256": "e6b04491469722e8363a94e4044538e013a2a217e36b1e568ba60acb7b4c8f2e"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioClipEditorController.swift",
+            "start": 81,
+            "end": 84,
+            "sha256": "2ddaa977f623b889986e8356632f2a5e6237e241dd444c3952708fce5c495d65"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 6,
+            "end": 12,
+            "sha256": "793dfedbd1a47ce20a349846ad7c77b134879b1f9e18787bce65c3cfe3f4a7d7"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 14,
+            "end": 16,
+            "sha256": "241ed2cfb4925d2124df1d90f2fdf2fc0e1f18c1c4a66b6f3ca32747a298f713"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 27,
+            "end": 32,
+            "sha256": "518fba78e7b002f3fc5e906ca8a0d521abc75584b9107d60d8825ce5f39e5547"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 38,
+            "end": 38,
+            "sha256": "4893f40e3781eb896c82d046a08067a11e35cdf2f1dfaf26fea90b8db6676413"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 74,
+            "end": 75,
+            "sha256": "80a75b9b28bca37b61480c0e1ad9324652d76d62bad8403bb1f1e0e6584ca75e"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 77,
+            "end": 77,
+            "sha256": "e6b04491469722e8363a94e4044538e013a2a217e36b1e568ba60acb7b4c8f2e"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 81,
+            "end": 81,
+            "sha256": "e6b04491469722e8363a94e4044538e013a2a217e36b1e568ba60acb7b4c8f2e"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTimingDraft.swift",
+            "start": 85,
+            "end": 85,
+            "sha256": "ef348ee476b7fa918f9a702d0e501c9b06d66a19693bccf20a4c7e772794bf71"
+          },
+          "expectation": "observed",
+          "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
+        }
+      ]
+    },
+    {
+      "id": "audio-library-persistence",
+      "title": "Render both imported clips in the actual library",
+      "preconditions": [
+        "Reuse the complete existing journey and its isolated synthetic fixture; this catalog adds no execution or test. Run through the Scriv CLI on a separately verified matching native build. Read-only polls may repeat; mutations are not retried.",
+        "Associations cover the stated accepted routes and independently asserted public outcomes. No claim of every branch on a physical line, native hardware parity, stale-context or lease races, picker behavior, audible output, waveform pixels or drag behavior."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(audioProjectFixture())}",
+        "import-audio {attachment:selected-dialogue,base64:syntheticPCM}; persisted-projects; loaded-project",
+        "slider Playback position 3500; import-audio {attachment:scene,base64:synthetic silent PCM}; persisted-projects; loaded-project",
+        "select Script; activate preview-layers-disclosure if collapsed; activate Audio; snapshot both clip identifiers and enabled play controls; activate Close local audio; persisted-projects"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback.",
+          "witness": {
+            "path": "tests/e2e/journeys/audio-library.mjs",
+            "start": 70,
+            "end": 145,
+            "sha256": "36d626a6f1a642c9fdf88d1a4352f6e94d61dd36f1cdc57d3367dba2ea3c3ba4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 75,
+            "end": 76,
+            "sha256": "c5650d7a83230b2cf2d28ae9e18a1479f9d4597154ffddddc506e76ee0f3020b"
+          },
+          "expectation": "observed",
+          "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 78,
+            "end": 83,
+            "sha256": "c9f8e154a984614b34e4346298008d451529996df09898fc85dea4a17f947cba"
+          },
+          "expectation": "observed",
+          "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 89,
+            "end": 99,
+            "sha256": "da5503cef49677e950b4b954d131c2bb3e3666771f9fe19955d9c77c818a73aa"
+          },
+          "expectation": "observed",
+          "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 110,
+            "end": 110,
+            "sha256": "c78a2d4c1048babf885e47676b0026f30b0939dc5c8f5fa972f5a7408de863b0"
+          },
+          "expectation": "observed",
+          "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/AudioFileStore.swift",
+            "start": 18,
+            "end": 21,
+            "sha256": "0409f16bef927ecc31a657c60e17f191861990cdebaa36b2aabe1ed427bbef0d"
+          },
+          "expectation": "observed",
+          "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/AudioFileStore.swift",
+            "start": 23,
+            "end": 25,
+            "sha256": "bc452cbe35dddf8cf99001d0442aaa8e34d464ed0a6798a50293ef5ca0767219"
+          },
+          "expectation": "observed",
+          "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/AudioFileStore.swift",
+            "start": 40,
+            "end": 51,
+            "sha256": "bc0d97edae007267a15a69e161f7c917124820911116a170bdad1c9e5ef1376a"
+          },
+          "expectation": "observed",
+          "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
+        }
+      ]
+    },
+    {
+      "id": "audio-mix-refresh",
+      "title": "Change and reopen clip and master volume",
+      "preconditions": [
+        "Reuse the complete existing journey and its isolated synthetic fixture; this catalog adds no execution or test. Run through the Scriv CLI on a separately verified matching native build. Read-only polls may repeat; mutations are not retried.",
+        "Associations cover the stated accepted routes and independently asserted public outcomes. No claim of every branch on a physical line, native hardware parity, stale-context or lease races, picker behavior, audible output, waveform pixels or drag behavior."
+      ],
+      "actions": [
+        "slider Clip volume for Synthetic.wav 0.375; persisted-projects",
+        "activate Mute Synthetic.wav; persisted-projects; activate Unmute Synthetic.wav; persisted-projects",
+        "activate Close local audio; reopen Audio; snapshot volume 0.375 and Mute action; close library",
+        "slider Local audio volume 0.25; persisted-projects; activate Mute local audio; persisted-projects; activate Unmute local audio; persisted-projects; save and reopen via project browser"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain.",
+          "witness": {
+            "path": "tests/e2e/journeys/audio-library.mjs",
+            "start": 157,
+            "end": 186,
+            "sha256": "a2352cfe78250900fd4650adb1a147826473cee7ab23d7283263aec196a62c23"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTransportView.swift",
+            "start": 37,
+            "end": 38,
+            "sha256": "e0e887a9de37c282cbcc797c1ca4cb33bb2667bb9195780b7e7aa77d4ad1c827"
+          },
+          "expectation": "observed",
+          "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTransportView.swift",
+            "start": 48,
+            "end": 51,
+            "sha256": "ae4d661ff20bef80fd56b30dad03b8680d255ea7fff4b364305a8ac4186daccf"
+          },
+          "expectation": "observed",
+          "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTransportView.swift",
+            "start": 54,
+            "end": 55,
+            "sha256": "bfcbbef735119ad45fd1de532cdd68f3f129188652e5f6d75c767e8c689ea091"
+          },
+          "expectation": "observed",
+          "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTransportView.swift",
+            "start": 62,
+            "end": 64,
+            "sha256": "e69bc1d9f3d243c9a3754b117ea5ba77ba9efc82c28a2174d3ec4bfbcd0977be"
+          },
+          "expectation": "observed",
+          "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTransportView.swift",
+            "start": 72,
+            "end": 72,
+            "sha256": "842b481b2801b916002b9216eb437d154f657a83b82039919271ad52e7d98065"
+          },
+          "expectation": "observed",
+          "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioTransportView.swift",
+            "start": 76,
+            "end": 76,
+            "sha256": "5edf5f6a83356686f8dc572a7e523b626d0672ad83c98046fc678109d51a91da"
+          },
+          "expectation": "observed",
+          "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 122,
+            "end": 122,
+            "sha256": "8cfd26e5fd91054d0ba869d2a6d7e5749e113b01e9f7d950abea8a4fc904e7d6"
+          },
+          "expectation": "observed",
+          "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 248,
+            "end": 248,
+            "sha256": "9d9bfc89391eb6607d7b8ca6c285ad8528531ae68f01102b464b497eef707d4d"
+          },
+          "expectation": "observed",
+          "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
+        }
+      ]
+    },
+    {
+      "id": "layers-presentation",
+      "title": "Expand Layers and dismiss its idle sheet",
+      "preconditions": [
+        "Reuse the complete existing journey and its isolated synthetic fixture; this catalog adds no execution or test. Run through the Scriv CLI on a separately verified matching native build. Read-only polls may repeat; mutations are not retried.",
+        "Associations cover the stated accepted routes and independently asserted public outcomes. No claim of every branch on a physical line, native hardware parity, stale-context or lease races, picker behavior, audible output, waveform pixels or drag behavior."
+      ],
+      "actions": [
+        "activate preview-layers-disclosure; slider Timeline zoom minimum 0.3, maximum 2.5, original; toggle Snap to words opposite then original",
+        "activate Expand Layers; snapshot expanded help; repeat slider/toggle sequence; key Escape",
+        "activate preview-layers-disclosure; snapshot collapsed; persisted-projects; repeat the complete cycle"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Two complete cycles expose bounded zoom and snap controls, show the exact expanded help text, and let Escape close an idle expanded sheet before collapsing embedded Layers. Every saved package stays exact. This associates expanded-mode help and idle Escape dispatch only; geometry, snapping results and active drag cancellation remain unclaimed.",
+          "witness": {
+            "path": "tests/e2e/journeys/layers-review.mjs",
+            "start": 64,
+            "end": 84,
+            "sha256": "e3c29aa0510a324819d7eba3bc468e1ff21ff160d54a92b3acbaa14d9f269973"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/LayerTimelineViewController.swift",
+            "start": 14,
+            "end": 15,
+            "sha256": "9303d997dc8618416fc9b1e49032997c81899b3eca5f356fe58f8a040ef4e2c6"
+          },
+          "expectation": "observed",
+          "why": "Two complete cycles expose bounded zoom and snap controls, show the exact expanded help text, and let Escape close an idle expanded sheet before collapsing embedded Layers. Every saved package stays exact. This associates expanded-mode help and idle Escape dispatch only; geometry, snapping results and active drag cancellation remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/LayerTimelineViewController.swift",
+            "start": 32,
+            "end": 34,
+            "sha256": "22bf5769d2534e7a4872703f7c14b2b88fbc57d868cac8594471b60d4c6fc3dc"
+          },
+          "expectation": "observed",
+          "why": "Two complete cycles expose bounded zoom and snap controls, show the exact expanded help text, and let Escape close an idle expanded sheet before collapsing embedded Layers. Every saved package stays exact. This associates expanded-mode help and idle Escape dispatch only; geometry, snapping results and active drag cancellation remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/LayerTimelineViewController.swift",
+            "start": 165,
+            "end": 177,
+            "sha256": "1f635b1f270459a7f254a17dbae1a0790a18a46aa28a673b19dfaacd29edf19a"
+          },
+          "expectation": "observed",
+          "why": "Two complete cycles expose bounded zoom and snap controls, show the exact expanded help text, and let Escape close an idle expanded sheet before collapsing embedded Layers. Every saved package stays exact. This associates expanded-mode help and idle Escape dispatch only; geometry, snapping results and active drag cancellation remain unclaimed."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "word-transaction",
+      "title": "Save the complete reviewed word timing transaction",
+      "steps": [
+        "word-transaction"
+      ]
+    },
+    {
+      "id": "word-draft-selection",
+      "title": "Keep independent raw drafts while selecting words",
+      "steps": [
+        "word-draft-selection"
+      ]
+    },
+    {
+      "id": "audio-numeric-draft",
+      "title": "Edit and cancel bounded numeric trim drafts",
+      "steps": [
+        "audio-numeric-draft"
+      ]
+    },
+    {
+      "id": "audio-library-persistence",
+      "title": "Render both imported clips in the actual library",
+      "steps": [
+        "audio-library-persistence"
+      ]
+    },
+    {
+      "id": "audio-mix-refresh",
+      "title": "Change and reopen clip and master volume",
+      "steps": [
+        "audio-mix-refresh"
+      ]
+    },
+    {
+      "id": "layers-presentation",
+      "title": "Expand Layers and dismiss its idle sheet",
+      "steps": [
+        "layers-presentation"
+      ]
+    }
+  ]
+}
