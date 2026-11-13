@@ -1,0 +1,671 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "cue-journal-retain-recover-correct",
+      "title": "Retain rejected cue direction, recover twice and clear the corrected draft",
+      "preconditions": [
+        "Run the complete unchanged native journey named below with a matching automation-enabled Catalyst app and a fresh owned persistent synthetic workspace. Mapping is a static source-to-assertion association, not a native result or measured execution.",
+        "Actions describe the actual ordered public ScrivSession calls. waitFor polls snapshot at 50 ms and waitForSavedProject polls persisted-projects at 75 ms with 15 s bounds. Reveal/locate may first scroll the actual reachable ancestor. No mutation is retried. Relaunch preserves the owned root/run ID and changes the session ID; exit mode is unobserved, so no crash-durability claim.",
+        "Successful-path mappings establish only the accepted operation described. They do not establish untested guard failures, journal exhaustion, malicious files, ownership substitution, lock contention, cancellation, racing updates, fsync interruption, process-cache performance or cloud/account behavior.",
+        "EditorDraftJournal.swift was inspected but receives no mapping from these journeys: save-failure-recovery edits a character biography, cue-draft-recovery edits cue direction, and project-roundtrip imports/reopens documents. None asserts retained or replayed script-editor journal data. Normal script editing elsewhere is not cold editor-draft recovery evidence.",
+        "Use journeys/cue-draft-recovery in its complete declared order. Its literal input is 30001 UTF-16 units but only 30003 UTF-8 bytes; the corrected value contains a decomposed accent and emoji. No journal is injected or edited by the host.",
+        "The journals() helper only reads the app-owned CuePromptDrafts directory and asserts one bounded nonsymlink regular JSON file. The unchanged canonical/sentinel packages, exact loaded Date bits and empty provider jobs are asserted. This does not exercise explicit discard, manual rebase, journal storage exhaustion or physical keyboard parity."
+      ],
+      "actions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP,{persistent:true}); session.command(\"capabilities\"); waitFor(hittable workspace-tabs); session.command(\"key\",{input:\"s\",modifiers:[\"command\"]}); waitForSavedProject(title === \"YAM MAN\")",
+        "input = structuredClone(generation-review-fixture.fixture); input.title = \"Synthetic cue recovery\"; session.command(\"import-json\",{text:JSON.stringify(input)}); waitForSavedProject(title === input.title); session.command(\"loaded-project\")",
+        "waitFor(generation-optional-direction.editable === true); reviewSteps.reveal(\"generation-optional-direction\"); session.command(\"text\",{target:prompt.path,text:\"x\".repeat(29999)+\"\ud83c\udfac\"})",
+        "retained: waitFor(generation-optional-direction.text === oversized and exact 30000-UTF16 refusal); session.command(\"loaded-project\"); session.command(\"persisted-projects\"); session.command(\"presented-alerts\"); read-only journals(); session.command(\"image-evidence\")",
+        "First recovery: session.command(\"capabilities\"); session.relaunch(); session.command(\"capabilities\"); waitFor(enabled hittable workspace-project); session.command(\"activate\",{target:workspace-project.path}); waitFor(hittable Find a project); session.command(\"text\",{target:search.path,text:project.title}); waitFor(text === project.title + \" \u00b7 1 scene\"); waitFor(enabled hittable Open project); session.command(\"activate\",{target:Open project.path}); waitFor(workspace-project title === project.title and enabled/hittable); session.command(\"loaded-project\")",
+        "First retained reread: waitFor(oversized prompt and exact refusal); session.command(\"loaded-project\"); session.command(\"persisted-projects\"); session.command(\"presented-alerts\"); read-only journals() equals original exact bytes/revision; session.command(\"image-evidence\")",
+        "Second recovery: session.command(\"capabilities\"); session.relaunch(); session.command(\"capabilities\"); waitFor(enabled hittable workspace-project); session.command(\"activate\",{target:workspace-project.path}); waitFor(hittable Find a project); session.command(\"text\",{target:search.path,text:project.title}); waitFor(text === project.title + \" \u00b7 1 scene\"); waitFor(enabled hittable Open project); session.command(\"activate\",{target:Open project.path}); waitFor(workspace-project title === project.title and enabled/hittable); session.command(\"loaded-project\")",
+        "Second retained reread: waitFor(oversized prompt and exact refusal); session.command(\"loaded-project\"); session.command(\"persisted-projects\"); session.command(\"presented-alerts\"); read-only journals() equals original exact bytes/revision; session.command(\"image-evidence\")",
+        "reviewSteps.reveal(\"generation-optional-direction\"); session.command(\"text\",{target:editor.path,text:\"Cafe\\u0301 \ud83c\udfac recovery corrected\"}); waitForSavedProject(id === project.id and cues[0].prompt === corrected); waitFor(corrected prompt and no refusal/recovery-pending label); read-only journals(); session.command(\"loaded-project\")",
+        "Clean recovery: session.command(\"capabilities\"); session.relaunch(); session.command(\"capabilities\"); waitFor(enabled hittable workspace-project); session.command(\"activate\",{target:workspace-project.path}); waitFor(hittable Find a project); session.command(\"text\",{target:search.path,text:expected.title}); waitFor(text === expected.title + \" \u00b7 1 scene\"); waitFor(enabled hittable Open project); session.command(\"activate\",{target:Open project.path}); waitFor(workspace-project title === expected.title and enabled/hittable); session.command(\"loaded-project\")",
+        "waitFor(editable corrected prompt); session.command(\"loaded-project\"); session.command(\"persisted-projects\"); read-only journals(); session.command(\"image-evidence\"); finally session.close()"
+      ],
+      "expectations": [
+        {
+          "id": "retained",
+          "description": "The exact oversized prompt and refusal are visible; complete loaded/saved canonical state and Date bits stay unchanged; one exact local journal record survives both cold retries and no provider job starts.",
+          "witness": {
+            "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+            "start": 71,
+            "end": 85,
+            "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
+          }
+        },
+        {
+          "id": "corrected",
+          "description": "One corrected prompt revision changes no unrelated model fields; the recovery record is absent after save and after a third normal-open relaunch, whose complete loaded model and Date bits equal the accepted result.",
+          "witness": {
+            "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+            "start": 114,
+            "end": 131,
+            "sha256": "7fccc2d5a10ac6449a2f1704845a167a9aa5680fe40434711fd442d540bd75ac"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 18,
+            "end": 23,
+            "sha256": "b852fc36e31be62cc900a722f09a3388c4c23a23c83956a1564a1e883b7a9dea"
+          },
+          "expectation": "retained",
+          "why": "The real direction edit constructs a stable scope and filename; the retained record asserts the exact owned package path, project ID and cue ID and is recovered for that same cue. No independent SHA-256 oracle or alternate account/scope rejection is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 34,
+            "end": 43,
+            "sha256": "681c2b5d939fa144a5a81aa88049548f297b15704aab73bb1a60d861791e70b2"
+          },
+          "expectation": "retained",
+          "why": "The draft starts with the empty source prompt and receives the exact 30001-UTF16-unit input. Two normal-open recoveries retain its bytes/revision and reach the size refusal, implying the unchanged-base predicate permits application. Nonmatching-base refusal is excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 50,
+            "end": 54,
+            "sha256": "5c4fafaa9bd74950bca6145753bd48e31ef049c4b709dcce63bd8918dd518c76"
+          },
+          "expectation": "retained",
+          "why": "The authentic same-project/same-cue draft passes application identity and cue lookup before the independently expected length refusal. Wrong-scope, missing-scene and missing-cue failure branches are not covered."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 57,
+            "end": 57,
+            "sha256": "a59b75646844b95fa2ed0255010309cb7fe2a0d335b4ffdbb6dd6a33f3687c39"
+          },
+          "expectation": "retained",
+          "why": "The retained source prompt still matches the canonical cue across relaunch; application reaches the exact size refusal instead of a rebase conflict. Drift/rebase scenarios remain untested."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 60,
+            "end": 62,
+            "sha256": "4ad537e9c2a54a65f6e228367f7f97a03a830daf4c10d9676dbc2a7537e2bfdf"
+          },
+          "expectation": "retained",
+          "why": "The test enters 29999 ASCII characters plus one surrogate-pair emoji and asserts the exact UTF-16-limit refusal, full untruncated journal text and unchanged canonical model/date bits through two relaunches."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 117,
+            "end": 126,
+            "sha256": "4fbd5f648cdd36631da530e56c509317996bc524fad8a4a9c8a790b35a77204e"
+          },
+          "expectation": "retained",
+          "why": "Actual async presentation uses loadIfAvailable and actual text input saves the draft. The accepted new/matching revision is read back from private storage on cold open with exact bytes and original source prompt. Busy and CAS-refusal branches are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 129,
+            "end": 130,
+            "sha256": "7c0aae0b58a1058b39982725c31cbf9f95c1d39b4ae296bb5e430127dfebbbfa"
+          },
+          "expectation": "retained",
+          "why": "The accepted draft is encoded before replacing the owned record; the host independently decodes exact text and scope, then checks byte stability after relaunch. Same-revision changed-content rejection is not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 134,
+            "end": 134,
+            "sha256": "405b436cbff326022398a04a20c23a139cf6e64ea26535cd169847ddc56a0601"
+          },
+          "expectation": "retained",
+          "why": "The oversized canonical prompt remains below the private draft-record limit and is retained whole. This tests accepted local storage of a rejected canonical value, not the journal size-limit rejection."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 137,
+            "end": 141,
+            "sha256": "397d8d5944c950989b1988fd241932e5f7682cb291063b0865c741b771f60ccb"
+          },
+          "expectation": "retained",
+          "why": "The sole owned cue record obtains its stable target and passes total-size preparation. There are no other JSON records; the other-record capacity loop and eviction/concurrency behavior are untested."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 151,
+            "end": 155,
+            "sha256": "971175b46204862e1b2bcbcded7da2330047c28dfa4956d7c8253c836513da34"
+          },
+          "expectation": "retained",
+          "why": "The one-record save passes the count guard, writes the full JSON and completes file-attribute setup before native acceptance; independent host reads and two relaunches verify intact data. Permission bits, atomic race visibility and exhaustion are not separate oracles."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 172,
+            "end": 177,
+            "sha256": "4c2dd27872154df3ef016b6bcddcae6cac04b671d5ca5fdff8d06cbfc394c5a2"
+          },
+          "expectation": "retained",
+          "why": "Cold recovery resolves the owned regular record and passes its bounded stat check; its exact text and original source are visible again. Oversized/malformed-file rejection is excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 180,
+            "end": 186,
+            "sha256": "118a0d13f62dcb1c9d89510b29fe22d3e44dce22c1d63f3d8d813cc0fc71b527"
+          },
+          "expectation": "retained",
+          "why": "Actual file bytes are read, decoded, validated and checked for this cue scope before the UI restores the exact rejected text; unchanged full journal bytes are asserted on each cold retry. Malformed identity and concurrent file growth are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 187,
+            "end": 190,
+            "sha256": "64f286ce2a1a2fe47026ea6ea91fe1572997c67aceed245c682864b3316c3c84"
+          },
+          "expectation": "retained",
+          "why": "The real scope resolves the retained regular JSON member under private storage; the host checks its hashed filename and nonsymlink regular-file shape. No adversarial replacement or refusal is exercised."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 193,
+            "end": 202,
+            "sha256": "59a7148d2f6336973b8478d5890c6a256f47430319494066e32f752ea9fc83fb"
+          },
+          "expectation": "retained",
+          "why": "Normal member resolution and valid-draft checks admit the production-generated record that cold recovery displays exactly. Invalid UUID, epoch/date, identity and record-size fixtures are not supplied."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 206,
+            "end": 209,
+            "sha256": "77356bb0507bc88aa3f6f1ee1868b5b50b605b424711582cf00959b82ecec403"
+          },
+          "expectation": "retained",
+          "why": "Both journal directory and package path are real owned synthetic locations. Exact package-path assertions and unchanged package models support the accepted external-journal location; a journal placed inside a package is not tested."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 216,
+            "end": 218,
+            "sha256": "c77499c2584e4609c89651c35d74fb353aefd0353379ffaa8b506efc4f56871d"
+          },
+          "expectation": "retained",
+          "why": "Retain/load operations use the owned directory and normal journal lock path. This association is successful recovery plumbing only, not a replaced-directory security test."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 221,
+            "end": 225,
+            "sha256": "0788c554c782214531a989fd6381ce98561957b9c8a534114f95f76e19140d02"
+          },
+          "expectation": "retained",
+          "why": "The regular owned journal lock opens successfully and is closed after accepted retain/load operations. No malicious lock inode, descriptor failure or private-ownership enforcement is asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 228,
+            "end": 230,
+            "sha256": "e18df655bfd90364fd963f7e4b41c1b65a74901cdbc3f0935412f842adfef8d6"
+          },
+          "expectation": "retained",
+          "why": "Normal uncontended lock acquisition allows the exact retained record to be written and read. The explicit busy/EINTR/error loop bodies remain outside this mapping."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 233,
+            "end": 237,
+            "sha256": "f24dde0525e649e0d0aa380f0502ea918c630efc67451ac01247620f901c90dd"
+          },
+          "expectation": "retained",
+          "why": "Successful unlock and action return complete the actual journal save/read used by repeated exact recovery. Scheduling and contention behavior are not inferred."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 63,
+            "end": 67,
+            "sha256": "cb32d3f9cded87c0660c3069f0b3b521fb4ac67b3b23ee8142295d6473e82e87"
+          },
+          "expectation": "corrected",
+          "why": "Replacing the recovered rejected text with the exact decomposed-Unicode corrected prompt produces a candidate differing only in that cue prompt and passes its encoded-size guard. The 64KiB rejection is not exercised."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 69,
+            "end": 72,
+            "sha256": "fcaf120f585e1a7705b72d1b0555c3fe226c579924662f1557675e2c846b4b96"
+          },
+          "expectation": "corrected",
+          "why": "The accepted candidate validates and returns to canonical persistence; the independent entire-project expectation checks one prompt change, exactly one revision and unchanged unrelated fields."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/CuePromptDraftJournal.swift",
+            "start": 162,
+            "end": 171,
+            "sha256": "49cf2a20fbb0405ec510f5bf61d1618700470f1037df3b506418c821d1c6a6bf"
+          },
+          "expectation": "corrected",
+          "why": "After the corrected canonical save, the production asynchronous clear uses clearIfAvailable and removes the matching draft. Both immediate and cold clean observations require zero journal records. Busy, missing-record and stale-revision preservation alternatives are unclaimed."
+        }
+      ]
+    },
+    {
+      "id": "pending-journal-retain-normal-open",
+      "title": "Retain one accepted failed save and acknowledge exact normal-open replay",
+      "preconditions": [
+        "Run the complete unchanged native journey named below with a matching automation-enabled Catalyst app and a fresh owned persistent synthetic workspace. Mapping is a static source-to-assertion association, not a native result or measured execution.",
+        "Actions describe the actual ordered public ScrivSession calls. waitFor polls snapshot at 50 ms and waitForSavedProject polls persisted-projects at 75 ms with 15 s bounds. Reveal/locate may first scroll the actual reachable ancestor. No mutation is retried. Relaunch preserves the owned root/run ID and changes the session ID; exit mode is unobserved, so no crash-durability claim.",
+        "Successful-path mappings establish only the accepted operation described. They do not establish untested guard failures, journal exhaustion, malicious files, ownership substitution, lock contention, cancellation, racing updates, fsync interruption, process-cache performance or cloud/account behavior.",
+        "EditorDraftJournal.swift was inspected but receives no mapping from these journeys: save-failure-recovery edits a character biography, cue-draft-recovery edits cue direction, and project-roundtrip imports/reopens documents. None asserts retained or replayed script-editor journal data. Normal script editing elsewhere is not cold editor-draft recovery evidence.",
+        "Use journeys/save-failure-recovery in its complete declared order on unprivileged macOS. The only host mutation removes owner-write from the exact opened owned history-directory inode, requires EACCES and restores the original mode before relaunch. Never alter a journal record or production package.",
+        "The canonical-save refusal is a repository write failure, not a PendingProjectSaveJournal rejection. The pending journal is initially empty and remains writable. Only schema-2 one-step local recovery from an existing canonical project is covered; initial-save loss, older-already-saved records, malformed journals and multi-revision forks are untested."
+      ],
+      "actions": [
+        "ScrivSession.launch(process.env.SCRIV_E2E_APP,{persistent:true}); session.command(\"capabilities\"); inspectOwnedWorkspace(root); waitFor(hittable workspace-tabs); session.command(\"key\",{input:\"s\",modifiers:[\"command\"]}); waitForSavedProject(title === \"YAM MAN\")",
+        "input = structuredClone(generation-review-fixture.fixture); input.title = \"Synthetic save recovery\"; session.command(\"import-json\",{text:JSON.stringify(input)}); waitForSavedProject(title === input.title)",
+        "characterCatalogSteps.openCatalog({persist:false}): waitFor(unique ready workspace-tabs); session.command(\"select\",{target:tabs.path,index:tabs.segments.indexOf(\"Characters\")}); waitFor(ready Search characters)",
+        "waitFor(unique ready character-ribbon-mara); session.command(\"activate\",{target:card.path}); locate enabled Edit (scroll if needed); session.command(\"activate\",{target:Edit.path}); waitFor(Save character enabled)",
+        "locate Biography text view (scroll if needed); session.command(\"text\",{target:biographyField.path,text:\"Synthetic recovery biography. Cafe\\u0301 \ud83c\udfac\"}); waitFor(exact biography); session.command(\"persisted-projects\")",
+        "Read-only records() until empty, bounded to 15 s; read-only snapshot all Projects bytes. inspectOwnedWorkspace(root); verify/open owned package and history directory inodes; chmod the opened history directory removing only owner-write; require host access(W_OK) EACCES.",
+        "locate enabled Save character (scroll if needed); session.command(\"activate\",{target:Save character.path}) exactly once; poll session.command(\"presented-alerts\") at 50 ms up to 15 s for the exact project save-error presentation; waitFor(editor absent and Save failed recovery status)",
+        "session.command(\"loaded-project\"); session.command(\"persisted-projects\"); read-only tree(Projects); read-only records(); restore original mode through the still-verified opened history-directory inode; session.command(\"presented-alerts\")",
+        "session.command(\"capabilities\"); session.relaunch(); session.command(\"capabilities\"); read-only tree(Projects); read-only records(); session.command(\"persisted-projects\")",
+        "Normal open: waitFor(unique ready workspace-project); session.command(\"activate\",{target:workspace-project.path}); waitFor(hittable Find a project); session.command(\"text\",{target:search.path,text:expected.title}); waitFor(expected.title + \" \u00b7 1 scene\"); waitFor(unique ready Open project); session.command(\"activate\",{target:Open project.path}); waitFor(expected workspace-project title and enabled/hittable); session.command(\"loaded-project\")",
+        "session.command(\"loaded-project\"); session.command(\"persisted-projects\"); read-only records(); read-only tree(Projects), compare every old package member and exact new history/canonical payload",
+        "session.command(\"capabilities\"); session.relaunch(); session.command(\"capabilities\"); repeat Normal open through workspace-project, Find a project text, Open project and loaded-project in the same order; session.command(\"loaded-project\"); read-only tree(Projects); read-only records(); finally restore exact owned history mode if needed then session.close()"
+      ],
+      "expectations": [
+        {
+          "id": "retained",
+          "description": "Only the accepted biography/revision/date change exists in memory; all canonical package bytes are unchanged and exactly one real local schema-2 pending record contains the independently expected after snapshot and source revision.",
+          "witness": {
+            "path": "tests/e2e/journeys/save-failure-recovery.mjs",
+            "start": 164,
+            "end": 177,
+            "sha256": "d18b7fd34ca1e9753ac554b73c79de0575b09bb7e92296260c3c03440468364d"
+          }
+        },
+        {
+          "id": "replayed",
+          "description": "All canonical bytes and pending bytes remain unchanged until normal browser Open project. That open saves the exact accepted model and one history entry, clears the record, and a second cold open preserves every package byte without any pending record.",
+          "witness": {
+            "path": "tests/e2e/journeys/save-failure-recovery.mjs",
+            "start": 186,
+            "end": 209,
+            "sha256": "5e30b466921d7f2e95a1a9995ddca9c52e10fd5095518afc2079d9e481dfd3e7"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 9,
+            "end": 19,
+            "sha256": "43423c58ec80b3aa67e8dae395d994a3926275784dafd3c2bb6e0c471a6c6574"
+          },
+          "expectation": "retained",
+          "why": "The actual character save constructs the local package scope. The retained record independently asserts the owned package path, project ID, local server and nil account/cloud context. Other contexts and normalization alternatives are not exercised."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 23,
+            "end": 25,
+            "sha256": "3351b7d912ce64484789d550f720eb1895210324058dec75bea8f11654758386"
+          },
+          "expectation": "retained",
+          "why": "The immutable write-ahead record carries the actual schema and local scope asserted by the host after the canonical save fails."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 30,
+            "end": 43,
+            "sha256": "b518606861bceeb30553c07eca3e46a6d10bbe417708dfd29bc0d863c948fe3d"
+          },
+          "expectation": "retained",
+          "why": "Production creates a schema-2 accepted-change record whose source revision, full after snapshot, label and hash shapes are checked independently. Filename shape and later replay support identity continuity; hash-algorithm correctness, schema-1 compatibility and initial-save loss are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 64,
+            "end": 76,
+            "sha256": "b6409dc828391584174db430ebefcfd77a11fccd96b29acea93dc7db167fb1fe"
+          },
+          "expectation": "retained",
+          "why": "The existing private directory and default positive bounds are accepted and prepared for the real record. Independent owned-directory and file-shape checks support the normal storage path; invalid configuration, symlink refusal and exact permission enforcement are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 79,
+            "end": 87,
+            "sha256": "7390a91e997fb13a63007975b8205ff970410ffa94f67a051bf150348a9fed2e"
+          },
+          "expectation": "retained",
+          "why": "The real Save character validates/encodes and begins persisting the accepted change after the journey proves the journal is initially empty. The full after snapshot remains present despite canonical failure. Same-ID duplicate handling is excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 91,
+            "end": 93,
+            "sha256": "af6b4992787a0270f76a8fe718b3e1d22bc27572d81eaf3ab69ab22720f7beef"
+          },
+          "expectation": "retained",
+          "why": "The empty journal admits this package-local accepted change through its context checks. Conflicting contexts and divergent predecessor chains are not supplied."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 96,
+            "end": 96,
+            "sha256": "69187027a06b3d604a76f6c11e7f7c50cd148fc8fe8fbeca7be25ebecc95cf91"
+          },
+          "expectation": "retained",
+          "why": "The new record has no successor in the independently empty pre-save journal. Divergent-successor rejection remains untested."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 99,
+            "end": 103,
+            "sha256": "a78243513c3b2970ec76c1a2d2ac0a56f8d2246edbc9f09c853309399f26f652"
+          },
+          "expectation": "retained",
+          "why": "Capacity validation and installation return the real accepted record before canonical save failure. The host sees exactly one complete record and unchanged canonical bytes; full storage and conflicting installation are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 105,
+            "end": 111,
+            "sha256": "247650c308ddb7e89a361db1aa73cec72aa76bfbb18c6faaebc742f0f802af86"
+          },
+          "expectation": "replayed",
+          "why": "Normal browser open loads the retained package-specific record and later clean open finds none; exact restored canonical content, history and absence of records are asserted. Cross-package ordering and malformed-path rejection are not exercised."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 123,
+            "end": 134,
+            "sha256": "26a17f333bb0f09c211563c449cc3f13f47e85d31bd5b6a16206c668f5b32fe0"
+          },
+          "expectation": "replayed",
+          "why": "After replay, acknowledgement reads/decodes the exact retained record, matches its immutable bytes, removes it and completes the normal directory sync. The test observes exact saved state and zero records, then unchanged bytes on another reopen. A changed record, missing acknowledgement race or fsync failure is not tested."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 138,
+            "end": 148,
+            "sha256": "fdfc13b0e40e39c4287dcfc65f0816d1f7946e9288e337016d11ac9f2a4a5bbb"
+          },
+          "expectation": "replayed",
+          "why": "Replay planning reads the same-scope pending record and validates/hashes the unchanged canonical source. The test preserves every canonical byte until normal open and then expects the exact one-step successor. No absent-canonical or wrong-project path is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 160,
+            "end": 163,
+            "sha256": "ea7731ff87f4f16432ad9a621b2650ca43e7db8e7b1ba68931bc93a535ab76ad"
+          },
+          "expectation": "replayed",
+          "why": "The planner starts from the existing canonical revision and encounters the single newer pending revision. The already-saved/history branch body is not covered by this fixture."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 173,
+            "end": 175,
+            "sha256": "3b70b15987ca589457eadc4de156e89af4002fd7cd9c9a90f063111d6870a8b5"
+          },
+          "expectation": "replayed",
+          "why": "The retained schema-2 record continues from the exact prior canonical revision and hash before replay. The observable result is the independently expected single accepted biography change; missing/diverged source refusal is unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 178,
+            "end": 183,
+            "sha256": "43b09cd561349b6fb42268d1623aa7c769b40eabf73ff544a60cbb3218e43ecb"
+          },
+          "expectation": "replayed",
+          "why": "The one checked pending record advances the replay cursor and is returned for actual normal-open publication. One exact new history entry appears and the second reopen changes no bytes. Multi-record ordering is not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 185,
+            "end": 188,
+            "sha256": "4b5fe35a9f7afd8d5369161cb6cf5096c5a19babc61e5fb8c8d566b5f4de6913"
+          },
+          "expectation": "replayed",
+          "why": "Valid retained schema-2 identity and after-project scope pass the decode/replay validator. Malformed-record rejection and schema-1 behavior are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 190,
+            "end": 192,
+            "sha256": "4e1ccc1d9fd70884f4d0245930d0d88c86b1fc2982962058481478ff85dc6bb8"
+          },
+          "expectation": "replayed",
+          "why": "The decoded accepted after snapshot passes full model validation and takes the compact schema-2 branch, not a stored before snapshot. Its entire expected model is independently checked after replay."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 198,
+            "end": 200,
+            "sha256": "684f236b35869942be3473e037cd359505a3b2e5c2fe435c6f44ce086dc5dd36"
+          },
+          "expectation": "replayed",
+          "why": "The real compact source revision/hash are admitted as one contiguous change; the test asserts source revision, hash shape, exact resulting revision and full content. Noncontiguous or malformed-hash rejection is excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 205,
+            "end": 207,
+            "sha256": "b414a3591b9ccc12ad03698693d4a9a108842aafdd815e1b9d5bd606507b00b5"
+          },
+          "expectation": "replayed",
+          "why": "The authentic after snapshot passes its content-hash check before normal-open recovery. The test supplies no tampered record, so it does not claim independent digest correctness or tamper refusal."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 208,
+            "end": 212,
+            "sha256": "2ebc536ec4db5cccb0add93a8ce25d96d883009b9c9451bceadd355ffe5725f5"
+          },
+          "expectation": "retained",
+          "why": "The production-generated owned absolute package path and nonempty project ID pass scope validation. Their exact retained values are asserted; malformed path and account fixtures are not supplied."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 214,
+            "end": 217,
+            "sha256": "d7e354151f4d32bfe856a770c9a7d019aa89e2213778be7f596bf7eec510660c"
+          },
+          "expectation": "retained",
+          "why": "The local scope is accepted with nil account and cloud identity, exactly as asserted in the retained record. Cloud-server validation and false-local context rejection remain gaps."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 224,
+            "end": 228,
+            "sha256": "38d589df246eb16879621162fa276f258ed4fb4d75bc0ed6e6f78b7e8870dc1d"
+          },
+          "expectation": "retained",
+          "why": "The actual journal resides outside the owned project package, whose entire byte tree remains unchanged after canonical failure. Only the accepted location is associated, not an inside-package rejection."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 261,
+            "end": 273,
+            "sha256": "1aacc0cd3ee1dd637b13cb4e74b8d858a7d896bdd1e847bc203c328a5db02458"
+          },
+          "expectation": "replayed",
+          "why": "After process relaunch, normal open loads the retained immutable record from disk and returns its decoded accepted state. This association covers the cold read path, not cache-hit performance, eviction, identity-substitution races or failed opens."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 274,
+            "end": 287,
+            "sha256": "808859ed32dc19387c0c85ad84dea1281561d191bf3555e3d00bce3ab8de41c0"
+          },
+          "expectation": "replayed",
+          "why": "The real journal inventory yields one valid record whose decoded filename/identity is accepted for replay. Exact canonical/history output and empty records after acknowledgement are checked. Duplicate IDs and malformed filename/content rejection are unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 288,
+            "end": 290,
+            "sha256": "7fc13ddf34969694b3a1eed7cab27b712d2569fc2cd36f2f8dc6116cdf0f93df"
+          },
+          "expectation": "replayed",
+          "why": "The retained bounded regular record is successfully opened for the production reader. Missing-file and failed-open branches are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 294,
+            "end": 297,
+            "sha256": "0c28bafdc54d7bcbecb298b169828bfb4a86bacb40584f95ff363826a979a367"
+          },
+          "expectation": "replayed",
+          "why": "The actual opened record passes regular-file and maximum-size checks before decoding, with independent host regular-file/size observations. Malicious descriptor substitution and oversized rejection are not tested."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 299,
+            "end": 308,
+            "sha256": "08ee82d45fbaa8fb57e2995ac0d918a8eeaf8908691c46e30bc565b8054db8f7"
+          },
+          "expectation": "replayed",
+          "why": "The normal bounded reader obtains the real retained record bytes for production decode/replay. Exact after snapshot and canonical recovery are checked. Concurrent growth and read errors are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 309,
+            "end": 311,
+            "sha256": "832b8ba2c6f84e76a01ba697dc5ab832ab5d0fb2256dba012041bc2536479eef"
+          },
+          "expectation": "retained",
+          "why": "The new record passes the actual capacity inventory before installation; the host proves an initially empty journal then exactly one retained record. Exhaustion behavior is unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 314,
+            "end": 321,
+            "sha256": "0a06cc4be4984b42afd3a94db1932f7c93f2707a4a9144b8f7ba79ff10fbe4bf"
+          },
+          "expectation": "replayed",
+          "why": "The bounded inventory reads the owned journal and stats its one retained regular JSON member for replay. Initial empty inventory also passes before persist. No unsafe member or oversized total is supplied."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 323,
+            "end": 331,
+            "sha256": "979341f92be63ba7e677017ca9f4ec7fc5041a87fcfd9e06b6bc553142c72eb2"
+          },
+          "expectation": "replayed",
+          "why": "The one-record inventory passes byte/count limits and returns its filename for decode. The exact single record is recovered and acknowledged; high-cardinality and exhaustion branches are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 333,
+            "end": 343,
+            "sha256": "01c97dcd91ac892a146699f1d861523668d1cc6ebd8c282ed6d26a78f4950599"
+          },
+          "expectation": "retained",
+          "why": "The accepted record is written via a fresh private temporary member; the host later reads the complete immutable JSON and sees no unexpected package writes. This supports the successful write path, not exclusive-create collision, short-write recovery or crash atomicity."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 345,
+            "end": 349,
+            "sha256": "98e1bf5b4a3d49eef062f13704d1d807e501c3e050da249f413a9719610191fe"
+          },
+          "expectation": "retained",
+          "why": "The successful write loop completes all encoded record bytes and its normal file-sync call. The full independently expected after snapshot survives an owned relaunch. Zero-write, interrupted write and durability under crash are not tested."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 352,
+            "end": 358,
+            "sha256": "a0d60811934ac6a6c6dac769b030c234e2912d985c69b9a2922aeb7ceb0de7a5"
+          },
+          "expectation": "retained",
+          "why": "Successful exclusive installation and temporary unlink leave the exact retained JSON available across relaunch; normal sync calls complete. Conflicting target, EINTR/error handling and crash-durability guarantees are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+            "start": 359,
+            "end": 372,
+            "sha256": "3d01a17da678301a3fd9820fa99ed817b38b82bde988ec545e9a9b0369fc6809"
+          },
+          "expectation": "replayed",
+          "why": "The normal private-directory journal lock surrounds the real load/plan/acknowledgement operations. Exact one-time replay and clean reopen are observed; lock ownership attacks, contention, interruption and races remain untested."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "cue-journal-retain-recover-correct",
+      "title": "Retain rejected cue direction, recover twice and clear the corrected draft",
+      "steps": [
+        "cue-journal-retain-recover-correct"
+      ]
+    },
+    {
+      "id": "pending-journal-retain-normal-open",
+      "title": "Retain one accepted failed save and acknowledge exact normal-open replay",
+      "steps": [
+        "pending-journal-retain-normal-open"
+      ]
+    }
+  ]
+}

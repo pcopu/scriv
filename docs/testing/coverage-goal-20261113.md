@@ -6,7 +6,46 @@ Production source remains at `9d4f717`; only journey coverage, reviewed mappings
 and documentation changed in this batch. The previous two weeks of Scriv and
 `pcopu/tracerCLI` commits were reviewed before selecting work.
 
-## Latest reuse increment
+## Current checkpoint
+
+The second reuse increment reaches **6,176 / 30,831 assertion-linked lines
+(20.03%)**. It adds 724 previously unlinked lines and 214 reviewed associations;
+all 2,399 links and 1,211 comment declarations pass integrity checks. There are
+24,655 lines below the unchanged one-trace minimum. The denominator and source
+exclusions are unchanged. This remains manual assertion mapping, not measured
+execution coverage or goal completion.
+
+| Existing journey area | New included lines |
+| --- | ---: |
+| External analysis output and preservation | 55 |
+| CLI discovery, rejection and provenance | 39 |
+| Pending-save and cue-draft recovery journals | 325 |
+| Audio import, editing and workspace state | 71 |
+| Script splitting, merging and edit sessions | 90 |
+| Generation brief review and idle state | 144 |
+
+The six catalogs passed independent semantic review. One exact preexisting
+generation-profile mapping was omitted from the new catalog, retaining the
+original record and explanation. Empty job lists are not credited as proof of
+generation-journal recovery, and the unopened jobs screen and editor-draft
+journal remain gaps. Playback device output, drawing/dragging and unasserted
+callback, ownership and failure paths remain unclaimed.
+
+All **39 permitted native journeys** have now passed on the pinned automation
+build across the retained batches. The character-alias fallback remains blocked
+and was not retried, so this is not a complete 40-journey suite pass. The earlier
+capture-limited run remains a failed run even though its interrupted journey
+passed later. All 17 public CLI tooling checks and the separate provenance
+journey, including its 13 synthetic measurement-output checks, passed. No
+application or test source changed in either reuse increment. Repository,
+catalog and global link checks passed.
+
+Tracer's read-only `next` packet and compact measurement storage are published
+in `pcopu/tracerCLI` commit `8d0cfa5`. Its required aggregate check passed 137
+tests, with four existing Linux-only skips. The owned checkout is used
+explicitly; the installed binary and installed skill were not changed.
+
+## First reuse increment
 
 The next increment reuses existing journeys without changing application or test
 source. Current assertion-linked lines are **5,452 / 30,831 (17.68%)**, leaving

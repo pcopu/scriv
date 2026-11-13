@@ -1,0 +1,965 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "review-source-and-frame",
+      "title": "Open the exact source review in its fixed frame",
+      "preconditions": [
+        "Reuse the complete unchanged named native journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace. This catalog records static source/assertion associations; native runs, measured counters and release signing remain separate.",
+        "Actions describe actual ordered public CLI calls in the specified slice. Required preceding fixture/state is stated below; snapshot/persistence waits may poll and reveal may scroll. No provider, connection, account, clipboard, physical-input or live generation operation is introduced.",
+        "Use journeys/generation-review --group review. The native journey saves the startup YAM MAN sentinel, production-imports generation-review-fixture, verifies its entries/characters/cues and empty image jobs, captures both saved projects, and selects Script before opening Review brief.",
+        "The source fixture has authored passages and two resolved characters with no local portraits. Assertions compare every source ID/text and person-link ID with the independent fixture, the current picture title and empty-direction text; they also constrain the scroll body below the fixed header and above the fixed footer.",
+        "Current-scope checks support this unchanged live review only. No stale source/account/navigation invalidation, snapshot-only initializer, portrait loading, Copy handler, empty-source fallback or size matrix is claimed."
+      ],
+      "actions": [
+        "snapshot {wait: generation-review-brief enabled}; snapshot/reveal generation-review-brief",
+        "activate {target: snapshot generation-review-brief.path}",
+        "snapshot {wait: generation-review-tabs selected 0 and generation-review-done hittable}",
+        "persisted-projects; image-evidence"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The initial real review displays the exact imported source/people identities and picture title, no unrelated sentinel, exact empty-direction messages, three literal tabs and a positive source viewport bounded by the fixed header/footer; both saved projects and zero jobs are preserved.",
+          "witness": {
+            "path": "tests/e2e/journeys/generation-review.mjs",
+            "start": 62,
+            "end": 84,
+            "sha256": "1314920d213bf8905c96d0325a796291ad7bc84e674e41591dff76b8584043f4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 7,
+            "end": 14,
+            "sha256": "26e428438a9c011b78c411b40e6b91000c19bf4628212cc90f502e2b1074ad06"
+          },
+          "expectation": "observed",
+          "why": "The live review retains its captured snapshot, store and original cue/scene/navigation identities. These fields support the unchanged current review; no invalidation alternative is inferred."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 16,
+            "end": 16,
+            "sha256": "a7d000d27e5b5518dedba5b2dd3d172b58beb83ae46214e71f7f71a31c642377"
+          },
+          "expectation": "observed",
+          "why": "The controller retains the actual review view whose exact source content and bounded frame are observed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 18,
+            "end": 21,
+            "sha256": "102dcc2472477458bbba4ebf9ff4569a9a14100d036b6ae5dd1a2afe02e7a2fa"
+          },
+          "expectation": "observed",
+          "why": "The production store/context initializer creates the captured snapshot inputs used by the independently checked source and person identities. This fixture supplies no portrait files."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 24,
+            "end": 29,
+            "sha256": "5b655fa92cae386f739262f02fc471cf87c0fefca028fe99c714b70d14fec6c6"
+          },
+          "expectation": "observed",
+          "why": "The snapshot captures the requested context and current scope, scene, cue and image before view creation. Exact source/picture identity and a still-valid review support this normal initialization."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 43,
+            "end": 45,
+            "sha256": "8fc93352c52f3ddb69e005136dfdf4bd5611cdb6f2a7a2853df7e5fd2edaf748"
+          },
+          "expectation": "observed",
+          "why": "Normal loading creates the actual view with its captured snapshot and dismissal closure. This slice witnesses construction; clipboard closure contents on subsequent lines are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 48,
+            "end": 49,
+            "sha256": "79428e9f1ca5a701ab4056a5405596bf95029e48e1edf404b961d3b2ad25426b"
+          },
+          "expectation": "observed",
+          "why": "The built review view is mounted in the controller. The source viewport and header/footer are observed in that real hierarchy."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 53,
+            "end": 54,
+            "sha256": "db57f879f1335c390a051c2f10f37b8c72569b370dc694b9d3d4a165d956f327"
+          },
+          "expectation": "observed",
+          "why": "First load performs the current-source refresh before the asserted valid source review is shown."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 65,
+            "end": 72,
+            "sha256": "c76cf99b24ceb8f47e7580eb7e7cec4527997c8bed5fd0ae33c37a5092b47a71"
+          },
+          "expectation": "observed",
+          "why": "The unchanged live store passes current navigation/scope/scene/cue/image/context comparisons and the loaded-view guard. A false current check would clear the asserted source; no stale or snapshot-only branch is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 75,
+            "end": 77,
+            "sha256": "445f8f32cf0a4f7c68384fed0eb48bb48a5877a53bf3c9f4f58f6e234a8e3bc5"
+          },
+          "expectation": "observed",
+          "why": "The first refresh leaves this current review valid, preserving the exact source controls. Invocation of invalidate for changed source is explicitly outside this witness."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 81,
+            "end": 88,
+            "sha256": "b67f6ebf0f15866a2ee9c302f61aecfb90df6d08a82d150b597abff6a710dc44"
+          },
+          "expectation": "observed",
+          "why": "The view, tab enumeration, captured snapshot and separate header/body/scroll/footer state implement the independently observed three-tab source hierarchy and bounded viewport."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 92,
+            "end": 92,
+            "sha256": "b554c9c4745ffb1641361e24e85b58ff37bd6072994c07ccbe1211ba0b4f9873"
+          },
+          "expectation": "observed",
+          "why": "The retained picture label renders the exact 01A current-picture title checked by the source oracle."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 98,
+            "end": 99,
+            "sha256": "4213a98247cf5de72aebd118a8c626d2af1d3fea0147a7cf09bfac0d4b5cc015"
+          },
+          "expectation": "observed",
+          "why": "The review starts valid on Source; the real segment selection and source content are independently observed. Invalid-state navigation is not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 101,
+            "end": 102,
+            "sha256": "61cf3940e6eb36e9978239805d871a17905504e448dedac42e04fb91026c7260"
+          },
+          "expectation": "observed",
+          "why": "The view retains the captured snapshot used by the exact Source oracle. Its Copy closure is stored but never invoked."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 107,
+            "end": 107,
+            "sha256": "dce4090588d41a99cf4c41e990d8c7bf51a64869dc19446559ade96110c96b83"
+          },
+          "expectation": "observed",
+          "why": "The real review root identifier is used by the journey chrome and close observers."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 112,
+            "end": 113,
+            "sha256": "9a2e459db191a644e84efda73cf487ae9237005dbc31c8ffe0a72def977209e1"
+          },
+          "expectation": "observed",
+          "why": "Header/footer identities bind the independent viewport boundary assertions to the actual fixed containers."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 116,
+            "end": 117,
+            "sha256": "3dcbfc9fec63297cd20f72eff4ae3ffdce6ac2c0bcd483fe743f4acafb803165"
+          },
+          "expectation": "observed",
+          "why": "The mounted header contains the picture label whose exact current-picture text is independently checked. Title typography and close-button appearance are not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 119,
+            "end": 120,
+            "sha256": "620e48f6c74ba6c54e61e0dac1d91bfd87b54fe4679b73be40004f82789d335f"
+          },
+          "expectation": "observed",
+          "why": "The picture label is mounted and the Source tab is selected initially, matching the asserted source presentation."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 125,
+            "end": 125,
+            "sha256": "93c99915377cb9bc97837ea06afd1477aa82018dd91b76a60239d012279a0aa5"
+          },
+          "expectation": "observed",
+          "why": "The real segmented control is identified for the native literal-tab and selected-tab assertions."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 127,
+            "end": 127,
+            "sha256": "81efd2f8b96f0ac46170a5dbb3a61ea8d14515ea6f2d8ba04f524e29be3e369b"
+          },
+          "expectation": "observed",
+          "why": "The actual three-tab segmented control is mounted in the fixed header."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 133,
+            "end": 136,
+            "sha256": "7b746503b6464818bf2569d54c9fd912a535eed27247cf3f9fb5689061d5f8cf"
+          },
+          "expectation": "observed",
+          "why": "The Done footer and separately constrained header/body/exact containers are mounted. Current-frame geometry and unchanged chrome across later navigation are asserted, not decorative dividers or unavailable-state appearance."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 138,
+            "end": 144,
+            "sha256": "55e9d16630144cafb619a4885905f8c140a2a2f499893fe862a055121b6e504e"
+          },
+          "expectation": "observed",
+          "why": "The identified source scroll viewport is bounded between the independently observed fixed header and footer. This is one actual presentation, not a responsive-size or exact-inset oracle."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 150,
+            "end": 151,
+            "sha256": "a7654d83e0ec41d69092c5fa13f975df9b0eadeee97310d0ab162f799681ac20"
+          },
+          "expectation": "observed",
+          "why": "Initial Source selection renders the independently checked source passage and identity links."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 217,
+            "end": 217,
+            "sha256": "b04571d34224e5ccdad556bff110f025d4d94d2f966fdb6e8b2224eb786d2128"
+          },
+          "expectation": "observed",
+          "why": "The source builder supplies the actual passage and identity controls asserted in the mounted Source tab."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 220,
+            "end": 220,
+            "sha256": "5b991cdc786966c23d65eba3928443b2507519a7eb03adfd81b1fee539e4501b"
+          },
+          "expectation": "observed",
+          "why": "All captured passages are iterated; the complete independent source-ID/text comparison proves membership without omissions or extra sentinel source."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 230,
+            "end": 230,
+            "sha256": "f7ffe24292d4b1684d1f2e15bf33f2e7bf12b226665352b42c5410250c8c32bc"
+          },
+          "expectation": "observed",
+          "why": "Each exact source quote is placed in its passage content stack before the observed Source hierarchy is mounted; spacing is not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 232,
+            "end": 233,
+            "sha256": "bd5206d5e1e507f43d6f08913c16a51021b80ef3c7483bb0c16ddd9b4d427738"
+          },
+          "expectation": "observed",
+          "why": "The constructed passage content is added to the body; every expected native source quote is observed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 237,
+            "end": 237,
+            "sha256": "5a814435fbd4f4e86b1db888f4c610d64745bf6383a3097c8ac3319ca638d147"
+          },
+          "expectation": "observed",
+          "why": "All resolved people receive source links; the complete ordered identity-ID array is independently compared."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 242,
+            "end": 242,
+            "sha256": "79989335e2777c443d5f00f56e760bbcbfcf4efd6a4d7bb7a75bfa6863f99491"
+          },
+          "expectation": "observed",
+          "why": "Each actual person-link button is mounted in its information stack; display spacing is outside the oracle."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 244,
+            "end": 244,
+            "sha256": "9c9dc86f72ebc94bc95e2426403cf0e0fd29a08bebb89396789a5b8d74610287"
+          },
+          "expectation": "observed",
+          "why": "The person-link stack is mounted into the Source body. The link identity and later action are asserted, not avatar rendering or padding."
+        }
+      ]
+    },
+    {
+      "id": "review-person-disclosure",
+      "title": "Reveal and toggle the requested identity profile",
+      "preconditions": [
+        "Reuse the complete unchanged named native journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace. This catalog records static source/assertion associations; native runs, measured counters and release signing remain separate.",
+        "Actions describe actual ordered public CLI calls in the specified slice. Required preceding fixture/state is stated below; snapshot/persistence waits may poll and reveal may scroll. No provider, connection, account, clipboard, physical-input or live generation operation is introduced.",
+        "Use journeys/generation-review --group review after the first source/chrome assertions. The review is open and chrome records the actual header/footer/Done bounds. The independently specified people order is June, Mara, June; each source-link activation is followed by collapse and expand of that exact person.",
+        "The oracle checks requested header visibility fully within the scroll frame, complete Unicode aliases/appearance/biography, actual profile-grid membership and disappearance on collapse, plus invariant header/footer/Done geometry. Portrait pixels, profile-note wording and retained scroll offset after a toggle are not asserted."
+      ],
+      "actions": [
+        "select {target: \"generation-review-tabs\", index: 0}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"generation-source-person-june\".path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"generation-person-june\".path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"generation-person-june\".path}",
+        "{\"command\":\"snapshot\"}",
+        "select {target: \"generation-review-tabs\", index: 0}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"generation-source-person-mara\".path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"generation-person-mara\".path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"generation-person-mara\".path}",
+        "{\"command\":\"snapshot\"}",
+        "select {target: \"generation-review-tabs\", index: 0}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"generation-source-person-june\".path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"generation-person-june\".path}",
+        "{\"command\":\"snapshot\"}",
+        "activate {target: snapshot \"generation-person-june\".path}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"image-evidence\"}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Each requested source link opens People and reveals the correct fully visible expanded header; complete captured profiles appear, collapse removes that grid, expansion restores it, and fixed chrome plus saved projects/empty jobs remain unchanged.",
+          "witness": {
+            "path": "tests/e2e/journeys/generation-review.mjs",
+            "start": 87,
+            "end": 113,
+            "sha256": "aeea7df9f15faa5a85c51bd8a80c3f09f0cffcc0d48bd9ee3468548437ec00d4"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 96,
+            "end": 97,
+            "sha256": "9c1872bb3acc6ca12b680e9d94050fbcb65334d1ec35ce648df97734920e60c1"
+          },
+          "expectation": "observed",
+          "why": "Expanded identity membership and keyed header state support the exact person disclosure and reveal checks."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 167,
+            "end": 168,
+            "sha256": "d8256c4b8615a3221f1365e8c787be7f924fe5e92725d92f7ac367578ab90d0f"
+          },
+          "expectation": "observed",
+          "why": "A source identity link enters showPerson and passes its current-view/member guard for the actual requested captured person. Unknown identity and invalidated-view rejection are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 178,
+            "end": 181,
+            "sha256": "4b6f065b01fd20a2806e6ff26290ee355bcfb8ea5a4e980d1d43708cff4aca09"
+          },
+          "expectation": "observed",
+          "why": "The scheduled reveal retains the requested header only while the same valid People view still owns it. The target is then independently observed inside the viewport; retired-target/race failures are not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 186,
+            "end": 193,
+            "sha256": "df348ac7d87b1539c77fe5e8e26acf219455ea3086ff9f6e1192db05dd21647d"
+          },
+          "expectation": "observed",
+          "why": "Normal reveal settles header/content geometry and passes the positive bounds guard before scrolling the exact requested header into view. The independent frame assertions cover the successful result, not retry exhaustion or a precise layout-pass count."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 197,
+            "end": 201,
+            "sha256": "0a067141b2c55c658f55f97b58477be5e45b1c70bc16759059da296ad65f9a41"
+          },
+          "expectation": "observed",
+          "why": "The requested header rectangle is bounded and scrolled into view. Its whole native frame is checked, not a lower profile fragment; the asynchronous closure then completes."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 202,
+            "end": 204,
+            "sha256": "1b28ba67dda05e90dc30cd731434eb60957d972ccc4663b076a1955cd93b3263"
+          },
+          "expectation": "observed",
+          "why": "Actual person-button activation passes valid/current-member guards and changes the named expansion membership, directly observed as Expanded/Collapsed and profile-grid presence."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 206,
+            "end": 207,
+            "sha256": "18764b60807fc8ea2abb36de6626b4f3d8add70b82c5c809dd8fc4aba556254d"
+          },
+          "expectation": "observed",
+          "why": "A toggle rebuilds the keyed person headers and body to expose or remove the expected complete profile grid. Offset restoration is separately excluded."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 254,
+            "end": 254,
+            "sha256": "e3744d87028df3bc4d76a8a99fbf63eeeed6fd22ed950a324035f16483126c7c"
+          },
+          "expectation": "observed",
+          "why": "The People builder constructs the independently checked person-specific disclosure hierarchy."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 258,
+            "end": 263,
+            "sha256": "b127c3e11ddc26a98db1891c99e8983103ba447a7dbd4cb0690a68798d9950bd"
+          },
+          "expectation": "observed",
+          "why": "Each captured person gets a keyed native header with matching identity and expansion value; the exact requested header is activated and its state asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 275,
+            "end": 277,
+            "sha256": "e606fc4ca77614057c4639887d9eb65f0b15db9e3aacdb0785c1589bf8bb2940"
+          },
+          "expectation": "observed",
+          "why": "The header/details content is mounted and the expanded branch creates a profile only for the expanded identity. Avatar size, row alignment and spacing are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 279,
+            "end": 280,
+            "sha256": "8643f03fb703d80bdadf702c45abff8ed5f298b29571273ed373aa9e0e66c2d6"
+          },
+          "expectation": "observed",
+          "why": "The expanded profile includes the complete aliases text checked against the independent Unicode fixture; no empty-alias fallback is claimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 284,
+            "end": 285,
+            "sha256": "c0d0f278fe60f806f3fd5f83d2fa6c3440eae78c70c51ea38314d03d2f9ddc00"
+          },
+          "expectation": "observed",
+          "why": "The expanded profile includes the complete biography value checked against the fixture; descriptive note wording and empty-profile fallback are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 286,
+            "end": 290,
+            "sha256": "a2cc8aa3a2fa869fe6638b13b24f1c4cba29b17337773a567c9b306c7f7b19ca"
+          },
+          "expectation": "observed",
+          "why": "The profile receives its exact person-specific identifier and is mounted only in the expanded content. Collapse/expand assertions check its removal and reappearance."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 308,
+            "end": 310,
+            "sha256": "cdde8cdcf071d7e52859e8010504d3a3ff29b1cc0848b772113fecfc551f0d20"
+          },
+          "expectation": "observed",
+          "why": "Profile-row construction places each complete captured value in a native text view. The witness compares the text, not title width or typography."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 312,
+            "end": 313,
+            "sha256": "c01db368ae624a67f718706bf7015e3a56a38ead56b4318ac31d4c351e2eada5"
+          },
+          "expectation": "observed",
+          "why": "Each captured value is mounted in its returned profile row. Row alignment and spacing are not independently asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 315,
+            "end": 316,
+            "sha256": "ec20fb11fb5e45a3f7a207cf13e373938bdf500321d490f0f6558793c600ac10"
+          },
+          "expectation": "observed",
+          "why": "The mounted value row is returned for inclusion in the independently checked profile grid."
+        }
+      ]
+    },
+    {
+      "id": "review-exact-request",
+      "title": "Read and scroll the captured exact request",
+      "preconditions": [
+        "Reuse the complete unchanged named native journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace. This catalog records static source/assertion associations; native runs, measured counters and release signing remain separate.",
+        "Actions describe actual ordered public CLI calls in the specified slice. Required preceding fixture/state is stated below; snapshot/persistence waits may poll and reveal may scroll. No provider, connection, account, clipboard, physical-input or live generation operation is introduced.",
+        "Use journeys/generation-review --group review after all ordered person disclosure checks. People is visible with its real View exact request link. The original captured source fixture, two complete profiles, no portraits and blank manual direction are unchanged.",
+        "The oracle checks exact request prefix, every JSON-quoted source/profile/alias, no-portrait text and blank-direction suffix; native read-only/selectable/scroll behavior, reachable Copy control presence and fixed chrome are checked. Copy is never activated; no clipboard dispatch or submitted generation is claimed."
+      ],
+      "actions": [
+        "{\"command\":\"activate\",\"target\":\"generation-review-exact-link\"}",
+        "{\"command\":\"snapshot\"}",
+        "scroll {target: exact.path, y: exact.scroll.contentHeight}",
+        "{\"command\":\"select\",\"target\":\"generation-review-tabs\",\"index\":0}",
+        "{\"command\":\"select\",\"target\":\"generation-review-tabs\",\"index\":1}",
+        "{\"command\":\"select\",\"target\":\"generation-review-tabs\",\"index\":2}",
+        "{\"command\":\"snapshot\"}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The real exact-request view contains all complete quoted source and identity data with the expected prefix/suffix and no unrelated sentinel, is read-only/selectable/scrollable, retains fixed chrome after scrolling, and preserves exact text across Source/People/Exact navigation.",
+          "witness": {
+            "path": "tests/e2e/journeys/generation-review.mjs",
+            "start": 116,
+            "end": 139,
+            "sha256": "34dedd4057c6877ba3479086c6d5ab930cd5c1b34e074224242592bdc785aa22"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 90,
+            "end": 91,
+            "sha256": "2f854eb280f090c1ec86c681005729cfbd299748fa8e201aa6d7c7fd5d807db7"
+          },
+          "expectation": "observed",
+          "why": "The retained exact text view and its separate container hold the captured full request in the independently observed scroll viewport."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 303,
+            "end": 305,
+            "sha256": "302f80dbd652c49f79556253738a181d25ebe38ccac913c6c34dad64ccff771e"
+          },
+          "expectation": "observed",
+          "why": "The actual View exact request button selects the captured Exact tab and is identified/mounted for public activation. The resulting exact text is independently checked."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 317,
+            "end": 318,
+            "sha256": "e50a429487fdbad96575ff862ceb559ab5f8c3e6128b52eef6b4b3aa4f625a5d"
+          },
+          "expectation": "observed",
+          "why": "The request builder assigns the frozen snapshot text to the actual native field; its complete source/profile inputs and fixed framing are independently checked."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 323,
+            "end": 324,
+            "sha256": "f62709a733be606ee4dd2ba182878b8f647972bfcdf18c0a651b05deccd3f040"
+          },
+          "expectation": "observed",
+          "why": "The exact-request field is explicitly read-only, selectable and scrollable and has the identifier used by the native oracle."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 326,
+            "end": 326,
+            "sha256": "920bed11bb9d24a6785bddfee1c75885f69597bb0f0d4cf18c1feca3249ef176"
+          },
+          "expectation": "observed",
+          "why": "The Copy control identifier is used to check its enabled presence only. Its closure and clipboard side effects remain unmapped."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 328,
+            "end": 329,
+            "sha256": "d49d48dba3d7225e7a572bf90eba831d112aca99b6df3afb2141e6d7cb5d150b"
+          },
+          "expectation": "observed",
+          "why": "The exact text view is mounted in its dedicated container. A positive real scroll viewport and stable outer chrome are asserted; heading wording and decorative spacing are not."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 126,
+            "end": 126,
+            "sha256": "5bb8ac362d3eee99d7c69069f07d97f701fd3bdd969495a938386e9c3defe6ea"
+          },
+          "expectation": "observed",
+          "why": "Actual Source/People/Exact segmented-control changes dispatch this installed valueChanged action to select the chosen tab. The exact captured text and chrome are checked after each transition; invalid indices are not supplied."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 145,
+            "end": 145,
+            "sha256": "95a4f0e0f8f135dc13ca748c147d7ab61e69d202e2f435897062f14a44c4cc64"
+          },
+          "expectation": "observed",
+          "why": "The exact-request container shares the bounded body viewport while keeping header and footer separate. Its real positive scroll viewport and stationary outer chrome are asserted in the current presentation, not across a size matrix."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 148,
+            "end": 148,
+            "sha256": "7d560854f328afe4b7ddca6cd7cbb1f6f16cca51daa1f7857a2e40586c6ada92"
+          },
+          "expectation": "observed",
+          "why": "Normal review setup builds the captured exact-request view that the later real Exact-tab activation independently checks."
+        }
+      ]
+    },
+    {
+      "id": "review-close-reopen",
+      "title": "Close and reopen the same captured request",
+      "preconditions": [
+        "Reuse the complete unchanged named native journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace. This catalog records static source/assertion associations; native runs, measured counters and release signing remain separate.",
+        "Actions describe actual ordered public CLI calls in the specified slice. Required preceding fixture/state is stated below; snapshot/persistence waits may poll and reveal may scroll. No provider, connection, account, clipboard, physical-input or live generation operation is introduced.",
+        "Use journeys/generation-review --group review after exact-request content/scroll/navigation assertions. The current real review is on Exact request; exact.text and both complete saved projects plus empty jobs are the baseline.",
+        "The native journey closes and freshly opens in the literal route order Done, Close, priority Escape, checking source and exact request after each reopen, then closes once more with Done. No nested presented controller or stale review is introduced."
+      ],
+      "actions": [
+        "activate {target: snapshot generation-review-done.path}",
+        "snapshot {wait: review absent and generation-review-brief enabled}",
+        "persisted-projects; image-evidence",
+        "snapshot/reveal generation-review-brief; activate {target: generation-review-brief.path}",
+        "snapshot {wait: Source selected and Done hittable; compare exact source identities}",
+        "select {target:\"generation-review-tabs\",index:2}",
+        "snapshot {compare: captured exact request}",
+        "activate {target: snapshot generation-review-close.path}",
+        "snapshot {wait: review absent and generation-review-brief enabled}",
+        "persisted-projects; image-evidence",
+        "snapshot/reveal generation-review-brief; activate {target: generation-review-brief.path}",
+        "snapshot {wait: Source selected and Done hittable; compare exact source identities}",
+        "select {target:\"generation-review-tabs\",index:2}",
+        "snapshot {compare: captured exact request}",
+        "keys {require: GenerationBriefReviewController priority Escape}",
+        "key {input:\"Escape\",modifiers:[]}",
+        "snapshot {wait: review absent and generation-review-brief enabled}",
+        "persisted-projects; image-evidence",
+        "snapshot/reveal generation-review-brief; activate {target: generation-review-brief.path}",
+        "snapshot {wait: Source selected and Done hittable; compare exact source identities}",
+        "select {target:\"generation-review-tabs\",index:2}",
+        "snapshot {compare: captured exact request}",
+        "activate {target: snapshot generation-review-done.path}",
+        "snapshot {wait: review absent and generation-review-brief enabled}",
+        "persisted-projects; image-evidence"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Each Done/Close/Escape dismissal restores the composer; every fresh review shows the same captured source and exact request, with both complete saved projects and zero jobs preserved. The native responder chain exposes controller-owned priority Escape.",
+          "witness": {
+            "path": "tests/e2e/journeys/generation-review.mjs",
+            "start": 143,
+            "end": 157,
+            "sha256": "6cc508a4fd4c14e334c7f2777986ac0162800368916697a860e62c87e1bd517f"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 57,
+            "end": 57,
+            "sha256": "3a65630e3c5a81ffb43eaef19dcf034fb60d9f7d65754878add6c671f64646fa"
+          },
+          "expectation": "observed",
+          "why": "The review becomes eligible as first responder so its actual priority Escape command can be discovered and dispatched."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 64,
+            "end": 64,
+            "sha256": "11df229771cf2ebdbcede812bd64bfcdab28f8ea97371db017b8772a803695dc"
+          },
+          "expectation": "observed",
+          "why": "The real sheet requests first-responder ownership when shown; the journey verifies the owning responder type and priority Escape before actual dismissal."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 89,
+            "end": 89,
+            "sha256": "735528c8e581bd564f3b90b504e5643773633efc983d1c3b996f4656417e77ba"
+          },
+          "expectation": "observed",
+          "why": "The retained Done button is the public control repeatedly activated to dismiss the real review."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 103,
+            "end": 104,
+            "sha256": "d7bbb7fc41ba4ae96c61df59049f8d87464e7b4b622486a879d14824fad54bcc"
+          },
+          "expectation": "observed",
+          "why": "The Done button captures the real controller dismissal callback before being mounted. Actual Done closure and fresh reopen are asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 108,
+            "end": 108,
+            "sha256": "a031e50b940f22c4b03804bd77416dc68535ee79e63427423ad0bbd6f27995ec"
+          },
+          "expectation": "observed",
+          "why": "The Close button receives the same real dismissal callback; its separate native activation closes and permits a fresh exact review."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 111,
+            "end": 111,
+            "sha256": "bfd6b2c0e5afcc51eabc110fd19af92f774ebe9f0f3ca5eb8c518d1fe3c71147"
+          },
+          "expectation": "observed",
+          "why": "The Close control identifier resolves the precise real button used for the independent close route."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+            "start": 130,
+            "end": 130,
+            "sha256": "3834f1790043249b782bb8e4ce53615d41d3fc41ec0ae25c3fd5e0837384b589"
+          },
+          "expectation": "observed",
+          "why": "The Done identifier resolves the actual native dismissal control used in both the loop and final close."
+        }
+      ]
+    },
+    {
+      "id": "codex-idle-settings",
+      "title": "Observe idle Codex settings without connecting",
+      "preconditions": [
+        "Reuse the complete unchanged named native journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace. This catalog records static source/assertion associations; native runs, measured counters and release signing remain separate.",
+        "Actions describe actual ordered public CLI calls in the specified slice. Required preceding fixture/state is stated below; snapshot/persistence waits may poll and reveal may scroll. No provider, connection, account, clipboard, physical-input or live generation operation is introduced.",
+        "Use unchanged codex-setup-instructions. Its source-only guard verifies the sole activated installation disclosure changes presentation only. Launch the isolated native app, open Settings with Command-comma and select the actual Codex settings pane.",
+        "The full journey checks exact three frozen instruction labels through two open/close disclosure cycles, preserving untouched executable/endpoint field values and a disconnected/error-free setup. Only the relevant controller state declarations are associated here, not setup view implementation or connection/installation actions.",
+        "Untouched field comparisons establish preservation of observed values, not correct default preference resolution or preference writes. Empty-job observations are not evidence that GenerationJournal initialized or recovered successfully."
+      ],
+      "actions": [
+        "snapshot {wait: workspace-tabs reachable}; key {input:\",\",modifiers:[\"command\"]}",
+        "snapshot {resolve: unique hittable scriv.settings.codex}; activate {target: codex.path}; snapshot {wait: disconnected Codex pane; capture untouched runtime fields}",
+        "snapshot/scroll {reveal: codex-copy-server-command; compare frozen command label}",
+        "Repeat twice: snapshot/scroll Installation help; activate {target: codex-installation-help.path}; snapshot {wait: Expanded and install/sign-in labels mounted}",
+        "snapshot/scroll {reveal and compare: installation, sign-in, server command labels in order}",
+        "snapshot/scroll Installation help; activate {target: codex-installation-help.path}; snapshot {wait: Collapsed and install/sign-in labels absent}",
+        "snapshot/scroll {reveal and compare: server command}; snapshot {compare: disconnected/error-free state and exact untouched runtime fields}",
+        "snapshot/scroll {reveal: Installation help}; snapshot {final idle state}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The native setup remains Not connected with Check/Connect enabled, no account/model/stop/check-cancellation/error controls, and identical unfocused enabled executable/endpoint fields throughout both disclosure cycles.",
+          "witness": {
+            "path": "tests/e2e/codex-setup-instructions.mjs",
+            "start": 133,
+            "end": 158,
+            "sha256": "3e1c3a4377fc5f8062ce3fede6f1f80d467749989681925af78404f22829e885"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+            "start": 58,
+            "end": 59,
+            "sha256": "0e056f5bf8b3fd1877560bcac159b097f11eaf6385ef236c2a628c6b0d709338"
+          },
+          "expectation": "observed",
+          "why": "This main-actor observable controller supplies the actual settings presentation observed by the public native journey; declaration support only."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+            "start": 61,
+            "end": 63,
+            "sha256": "653f7a3a1995fcc78e23ef169ee8bd67af36bd362c3adc58baedf17c0b4b6051"
+          },
+          "expectation": "observed",
+          "why": "The disconnected, unmanaged, nongenerating initial state yields the independently checked Not connected status, enabled connection controls and absent stop control. No successful connection or provider transition is inferred."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+            "start": 73,
+            "end": 73,
+            "sha256": "01de5ceed17bff0afce586ed6bb2e5a15b4d2a47f253c0726195ccf7efc86e8b"
+          },
+          "expectation": "observed",
+          "why": "The initial connection-check state supplies the idle setup presentation; no check is started and the same error-free idle state is repeatedly asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+            "start": 77,
+            "end": 77,
+            "sha256": "058974f0bc335c76e4e3e746401f8b2f990499d9edafb339ac8b43c4213c3a07"
+          },
+          "expectation": "observed",
+          "why": "The initial absent controller error supports the explicitly absent setup-error control throughout the unchanged settings observations."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+            "start": 79,
+            "end": 80,
+            "sha256": "bd3b19613b66c529e29db92a1bc64014fefa6da68b56028fd186dac0fafc0e21"
+          },
+          "expectation": "observed",
+          "why": "Controller executable/endpoint storage is read into the two native fields whose complete observed values remain unchanged. This covers participating declarations/read state only, not didSet preference writes or correctness of default resolution."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+            "start": 171,
+            "end": 171,
+            "sha256": "063f10a6f318ef6b389361e11f543a4c5585e4addb91e70d2186bac0e51ab4ca"
+          },
+          "expectation": "observed",
+          "why": "The initial not-connecting state permits the actual enabled runtime fields and Check/Connect controls while the journey remains disconnected. No asynchronous connection attempt occurs."
+        }
+      ]
+    },
+    {
+      "id": "local-images-start-no-generation",
+      "title": "Import local images without starting jobs or analysis",
+      "preconditions": [
+        "Reuse the complete unchanged named native journey with its matching automation-enabled Catalyst app and fresh owned synthetic workspace. This catalog records static source/assertion associations; native runs, measured counters and release signing remain separate.",
+        "Actions describe actual ordered public CLI calls in the specified slice. Required preceding fixture/state is stated below; snapshot/persistence waits may poll and reveal may scroll. No provider, connection, account, clipboard, physical-input or live generation operation is introduced.",
+        "Use journeys/local-images --group versions after production-importing its independent synthetic project and importing/inspecting coral first. This is the existing blue successor import slice; the previous image inspector has been dismissed.",
+        "visible(asset) at local-images.mjs:66-84 polls the existing read-only local-image observer. Its generationJobCount:0 result is returned only after collect explicitly guards store.codex.jobs.isEmpty and store.codex.sharedJobs.isEmpty. The separate analysisScanning field concerns store.characterAnalysis, not CodexController.isAnalyzingCharacters; that controller field is deliberately unmapped.",
+        "The exact asset/import/model assertions remain part of the unchanged journey. No GenerationJournal success, unreadable-record recovery, generation preflight, saved-job content, jobs-screen UI or provider success follows from the absence of jobs."
+      ],
+      "actions": [
+        "{\"command\":\"import-local-image\",\"fixture\":\"blue\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"presented-alerts\"}",
+        "{\"command\":\"local-image-evidence\"}",
+        "{\"command\":\"loaded-project\"}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The exact local imported asset visibly decodes while the read-only native observer reports zero actual generation jobs and no character analysis; complete saved/loaded models match the independently allowed import mutation.",
+          "witness": {
+            "path": "tests/e2e/journeys/local-images.mjs",
+            "start": 66,
+            "end": 84,
+            "sha256": "a611dd1448f934393f6cd222c439b04079ea9c71806a8907a7c76edfe169481f"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+            "start": 83,
+            "end": 83,
+            "sha256": "99baac8ee83f404a500e971b01cf47efc3a0bb31f7a0d42ef5d74a779aec7042"
+          },
+          "expectation": "observed",
+          "why": "Successful local-image observation requires the actual local controller job collection to be empty before returning generationJobCount:0, which the journey checks during the nonprovider import. No journal-load or recovery-success claim is made."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "review-source-and-frame",
+      "title": "Open the exact source review in its fixed frame",
+      "steps": [
+        "review-source-and-frame"
+      ]
+    },
+    {
+      "id": "review-person-disclosure",
+      "title": "Reveal and toggle the requested identity profile",
+      "steps": [
+        "review-person-disclosure"
+      ]
+    },
+    {
+      "id": "review-exact-request",
+      "title": "Read and scroll the captured exact request",
+      "steps": [
+        "review-exact-request"
+      ]
+    },
+    {
+      "id": "review-close-reopen",
+      "title": "Close and reopen the same captured request",
+      "steps": [
+        "review-close-reopen"
+      ]
+    },
+    {
+      "id": "codex-idle-settings",
+      "title": "Observe idle Codex settings without connecting",
+      "steps": [
+        "codex-idle-settings"
+      ]
+    },
+    {
+      "id": "local-images-start-no-generation",
+      "title": "Import local images without starting jobs or analysis",
+      "steps": [
+        "local-images-start-no-generation"
+      ]
+    }
+  ]
+}

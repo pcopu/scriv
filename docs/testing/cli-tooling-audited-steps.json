@@ -1,0 +1,426 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "cli-discover-entrypoints",
+      "title": "Match public and direct scenario discovery",
+      "preconditions": [
+        "Existing public tooling subprocess journey (tracer app -- test tooling), with a trusted installed Tracer and isolated external artifacts. Source-to-assertion association only; no new run, measured execution, native launch or native acceptance is claimed.",
+        "Discovery only. The independent expected inventory contains actual regular native entrypoint files. No entrypoint or app is launched; symlink-injection and invalid direct-runner cases are unclaimed."
+      ],
+      "actions": [
+        "tracer app -- test --list",
+        "node scripts/run-cli-e2e.mjs --list"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The public catalog exactly matches the independently enumerated entrypoints, records all-selection counts, and equals direct-runner JSON with exit status zero.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 42,
+            "end": 60,
+            "sha256": "318a8414a83274876a07322757b9ad2b20adf2bba4503f526bcc1f1c2dd5971d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 170,
+            "end": 170,
+            "sha256": "0b840f3e04282858ef8b3089cac4ff6c783cbb1675f0cd85392afa89bd340952"
+          },
+          "expectation": "observed",
+          "why": "The public test branch reaches the already mapped real-runner dispatcher; the exact native catalog is asserted."
+        },
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 256,
+            "end": 257,
+            "sha256": "1674ec57dbd55226a5f98694ec55383a91fb7974f94917174dfd0878836309cc"
+          },
+          "expectation": "observed",
+          "why": "Direct module invocation returns the same independently checked scenario catalog and successful exit status. The colocated rejection handler is not exercised by this comparison."
+        }
+      ]
+    },
+    {
+      "id": "cli-refuse-absent-launch",
+      "title": "Preserve failed app-path routing",
+      "preconditions": [
+        "Existing public tooling subprocess journey (tracer app -- test tooling), with a trusted installed Tracer and isolated external artifacts. Source-to-assertion association only; no new run, measured execution, native launch or native acceptance is claimed.",
+        "Three deliberately absent paths are used: an .app path, the same path with a trailing slash, and a non-.app alias-shaped path. On this Mac, failure occurs at realpath before executable inspection/spawn; invalid session options and successful/native session operations are unclaimed."
+      ],
+      "actions": [
+        "tracer app -- ${externalOutput}/NotPresent.app",
+        "node cli/scriv.mjs ${externalOutput}/NotPresent.app",
+        "tracer app -- ${externalOutput}/NotPresent.app/",
+        "node cli/scriv.mjs ${externalOutput}/NotPresent.app/",
+        "tracer app -- ${externalOutput}/NotPresentAlias",
+        "node cli/scriv.mjs ${externalOutput}/NotPresentAlias"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Each public/direct invocation exits one with identical stderr and does not reject the valid legacy argument shape as an app-path syntax error.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 160,
+            "end": 167,
+            "sha256": "e03f04cc11b3e59a4a9db189220fc319eec54e7528f79023f0ce2764494f7aed"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 50,
+            "end": 54,
+            "sha256": "2d91a0316c6701e24258eb686bbe2ef34df929981024851ce0595bb95a1dc6a8"
+          },
+          "expectation": "observed",
+          "why": "The public path reaches launch with the valid persistent=false options and forwards to the private launcher. Invalid-options rejection is unclaimed."
+        },
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 56,
+            "end": 58,
+            "sha256": "0463bfb9f68281fd8674603e7ea86410fc999d922c53e027e283343a7349797d"
+          },
+          "expectation": "observed",
+          "why": "The supplied absent path reaches the platform/filesystem launch gate and fails before a process can be spawned. Only the current platform path is witnessed."
+        },
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 196,
+            "end": 198,
+            "sha256": "b34b392fdb0e16026249109d7a914869cc8c879fe10b1f9412c2b4fc798e86e4"
+          },
+          "expectation": "observed",
+          "why": "Accepted legacy app argument forms reach launch; their filesystem failure, rather than argument-shape rejection, matches direct invocation."
+        }
+      ]
+    },
+    {
+      "id": "cli-refuse-provenance-recursion",
+      "title": "Reject malformed provenance dispatch",
+      "preconditions": [
+        "Existing public tooling subprocess journey (tracer app -- test tooling), with a trusted installed Tracer and isolated external artifacts. Source-to-assertion association only; no new run, measured execution, native launch or native acceptance is claimed.",
+        "The tooling fixture explicitly varies active recursion state: extra arguments with SCRIV_CLI_TOOLING_ACTIVE=0, then no extra arguments with it set to 1. Successful provenance execution is not associated here."
+      ],
+      "actions": [
+        "tracer app -- test provenance extra with SCRIV_CLI_TOOLING_ACTIVE=0",
+        "tracer app -- test provenance with SCRIV_CLI_TOOLING_ACTIVE=1"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Both requests exit two, emit no stdout and emit the exact Invalid or nested provenance journey error.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 280,
+            "end": 285,
+            "sha256": "deac6eb145473d79930fb784667b36717f81175485d2c1253e754d1c58abef00"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scriv.mjs",
+            "start": 171,
+            "end": 172,
+            "sha256": "e07c264036f9797b3b368ffb17143021b2e1651d7781f36763e261d826b34877"
+          },
+          "expectation": "observed",
+          "why": "Both argument-count and nested-provenance refusal paths are directly asserted with independent exact error text."
+        }
+      ]
+    },
+    {
+      "id": "cli-preserve-denied-route",
+      "title": "Expose and enforce the blocked alias route",
+      "preconditions": [
+        "Existing public tooling subprocess journey (tracer app -- test tooling), with a trusted installed Tracer and isolated external artifacts. Source-to-assertion association only; no new run, measured execution, native launch or native acceptance is claimed.",
+        "The selected alias scenario is already denied by policy; the absent app path is only a sentinel to show that the restriction wins before app identification. No fallback helper or native app is run."
+      ],
+      "actions": [
+        "tracer app -- test --list --scenario character-aliases",
+        "tracer app -- test --scenario character-aliases --app ${externalOutput}/Absent.app --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Discovery equals the exact restriction record. Execution remains not-run with selected-scenarios-blocked, no app/build identity, no suite pass and the preserved restricted scenario reason.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 109,
+            "end": 122,
+            "sha256": "079a71d6e49f2c284cb628ace432fe9feb8f3dce11cc1a1f08eca884e3caf025"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "cli/scenario-restrictions.mjs",
+            "start": 3,
+            "end": 9,
+            "sha256": "e553121b7fda15c02cdb891c248f88aa74fb3e3f29c571dd3b82e3c782c38201"
+          },
+          "expectation": "observed",
+          "why": "The fixed restriction object is compared exactly, including status, reason and detail; it is not a new exception or runtime bypass."
+        },
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 191,
+            "end": 191,
+            "sha256": "26954abe226d657590ba030fd82494ae8769c26cc99515a9ad638ec1a68c4260"
+          },
+          "expectation": "observed",
+          "why": "An all-blocked selection stops before the supplied absent app can be identified and preserves not-run evidence."
+        }
+      ]
+    },
+    {
+      "id": "cli-record-missing-environment",
+      "title": "Write explicit not-run evidence outside source",
+      "preconditions": [
+        "Existing public tooling subprocess journey (tracer app -- test tooling), with a trusted installed Tracer and isolated external artifacts. Source-to-assertion association only; no new run, measured execution, native launch or native acceptance is claimed.",
+        "SCRIV_E2E_APP is removed by the tooling fixture and the output parent is an existing external temporary directory. Only this accepted output location and the missing-app outcome are associated; unsafe/missing output parents, fingerprint correctness and native process behavior remain unclaimed."
+      ],
+      "actions": [
+        "tracer app -- test --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Exactly one external evidence directory is created; its report has the complete catalog, git-working-tree mode, missing-environment blocker, no app/build identity, no started scenario and false suite/baseline completion.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 89,
+            "end": 107,
+            "sha256": "c2db7fdcae7b6a8e421392c00b93eeb747ce091386d559ba809811c06de377e8"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 38,
+            "end": 38,
+            "sha256": "8277e04dd891a4fc2edcda350d3c1a41e00e59d8d0a634a406c051e8a4679278"
+          },
+          "expectation": "observed",
+          "why": "The emitted unpinned-source mode is exactly git-working-tree. No independent correctness claim is made for unasserted fingerprint, HEAD or index values."
+        },
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 177,
+            "end": 180,
+            "sha256": "865723df71091dc297a11f0a48b7237fb47cc73dff698e5e859975758577b256"
+          },
+          "expectation": "observed",
+          "why": "The existing external output parent is resolved and accepted before the evidence directory is created there. Rejection branches and alternate filesystem layouts are unclaimed."
+        },
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 196,
+            "end": 196,
+            "sha256": "155b99c4fcc8c5940e6ad104d7a26b3a079f0b25c675fef1e383f0117d5a59f0"
+          },
+          "expectation": "observed",
+          "why": "On macOS the absent app produces the exact SCRIV_E2E_APP-required blocker asserted by the tooling journey."
+        }
+      ]
+    },
+    {
+      "id": "cli-identify-absent-bundle",
+      "title": "Keep mixed blocked and unavailable scenarios distinct",
+      "preconditions": [
+        "Existing public tooling subprocess journey (tracer app -- test tooling), with a trusted installed Tracer and isolated external artifacts. Source-to-assertion association only; no new run, measured execution, native launch or native acceptance is claimed.",
+        "The selected set contains the denied alias route and short-film, with a deliberately nonexistent app. No app contents, successful bundle identity, helper launch or mixed native execution is associated."
+      ],
+      "actions": [
+        "tracer app -- test --list --scenario character-aliases --scenario journeys/short-film",
+        "tracer app -- test --scenario character-aliases --scenario journeys/short-film --app ${externalOutput}/Absent.app --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The catalog marks only aliases restricted. Evidence preserves its restriction reason while short-film is not-run for app-identity-unavailable, with app=null and fullSuitePassed=false.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 127,
+            "end": 139,
+            "sha256": "f8310da0ac848790907f6a7929d7d2796ddc6e86cba7b3bf0fa965e0da312eab"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 46,
+            "end": 47,
+            "sha256": "000e92f912130597da544920cdd983c54d1bb1e844b7d90f41f946959d399e6d"
+          },
+          "expectation": "observed",
+          "why": "Bundle identification attempts canonical resolution of the deliberately missing app and fails before reading a bundle or executable."
+        },
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 192,
+            "end": 194,
+            "sha256": "f7c7fb465dc04f4df55d81a85486180210c680ce8570cb8ce6a8c213fb27c69f"
+          },
+          "expectation": "observed",
+          "why": "The explicit absent-app identification failure becomes app-identity-unavailable without overwriting the distinct blocked-scenario reason."
+        }
+      ]
+    },
+    {
+      "id": "cli-accept-exported-source",
+      "title": "Retain verified source mode when native capture cannot start",
+      "preconditions": [
+        "Existing public tooling subprocess journey (tracer app -- test tooling), with a trusted installed Tracer and isolated external artifacts. Source-to-assertion association only; no new run, measured execution, native launch or native acceptance is claimed.",
+        "The preceding tooling step exports the current eligible source into an external manifest and obtains its exact digest. The native app remains unset. The export verifier itself is already mapped elsewhere and is intentionally not duplicated."
+      ],
+      "actions": [
+        "node scripts/export-cli-source-manifest.mjs --output ${externalManifest} with explicit eligible untracked includes",
+        "tracer app -- test --coverage --scenario workspace --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --coverage-build-record ${externalOutput}/AbsentBuildRecord.json --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The request creates only evidence.json, records verified-exported-source-manifest mode, keeps the missing-environment blocker and reports coverage not-run with zero imports, no intervals and no build attestation.",
+          "witness": {
+            "path": "tests/tracer/cli-front-door.mjs",
+            "start": 200,
+            "end": 221,
+            "sha256": "101e6a0a5190fca4a67cc0dda6ae15296600ebd8a3d014b022d785c785ce58a8"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/run-cli-e2e.mjs",
+            "start": 32,
+            "end": 33,
+            "sha256": "038166e24484d79551a958affc1c0e7d40fdf7154ed9b0bdabd36fe0a871ea86"
+          },
+          "expectation": "observed",
+          "why": "The runner delegates the supplied manifest/digest to the existing verifier and retains its verified-exported-source-manifest result before the missing-app gate."
+        }
+      ]
+    },
+    {
+      "id": "cli-advertise-service-scope",
+      "title": "Advertise local service routes and scope",
+      "preconditions": [
+        "Existing public tooling subprocess journey (tracer app -- test tooling), with a trusted installed Tracer and isolated external artifacts. Source-to-assertion association only; no new run, measured execution, native launch or native acceptance is claimed.",
+        "The existing service discovery test checks all thirteen exact fixed catalog rows before these help calls. Discovery and help only; service execution order, process forwarding, cancellation and Worker/native behavior are unclaimed."
+      ],
+      "actions": [
+        "tracer app -- test services --list",
+        "tracer app -- test services --help",
+        "tracer actions"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The service catalog equals the independent fixed route list; service help states that it is not native app acceptance and main CLI discovery advertises test services.",
+          "witness": {
+            "path": "tests/tracer/service-discovery.mjs",
+            "start": 5,
+            "end": 23,
+            "sha256": "55975948538c2ea994a206377e4082c62b9cd354575db1c31c099942f41dedcb"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/service-catalog.mjs",
+            "start": 18,
+            "end": 19,
+            "sha256": "0e2d4b985c7b9f1a566477a99e93eaa22bfe15e22e12a26eb9a7024159c6cbc0"
+          },
+          "expectation": "observed",
+          "why": "The service usage/help strings supply the advertised route and explicit native-acceptance limitation. Full wording and execution claims in the help are not separately verified."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "cli-discover-entrypoints",
+      "title": "Match public and direct scenario discovery",
+      "steps": [
+        "cli-discover-entrypoints"
+      ]
+    },
+    {
+      "id": "cli-refuse-absent-launch",
+      "title": "Preserve failed app-path routing",
+      "steps": [
+        "cli-refuse-absent-launch"
+      ]
+    },
+    {
+      "id": "cli-refuse-provenance-recursion",
+      "title": "Reject malformed provenance dispatch",
+      "steps": [
+        "cli-refuse-provenance-recursion"
+      ]
+    },
+    {
+      "id": "cli-preserve-denied-route",
+      "title": "Expose and enforce the blocked alias route",
+      "steps": [
+        "cli-preserve-denied-route"
+      ]
+    },
+    {
+      "id": "cli-record-missing-environment",
+      "title": "Write explicit not-run evidence outside source",
+      "steps": [
+        "cli-record-missing-environment"
+      ]
+    },
+    {
+      "id": "cli-identify-absent-bundle",
+      "title": "Keep mixed blocked and unavailable scenarios distinct",
+      "steps": [
+        "cli-identify-absent-bundle"
+      ]
+    },
+    {
+      "id": "cli-accept-exported-source",
+      "title": "Retain verified source mode when native capture cannot start",
+      "steps": [
+        "cli-accept-exported-source"
+      ]
+    },
+    {
+      "id": "cli-advertise-service-scope",
+      "title": "Advertise local service routes and scope",
+      "steps": [
+        "cli-advertise-service-scope"
+      ]
+    }
+  ]
+}

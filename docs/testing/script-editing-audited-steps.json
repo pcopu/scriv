@@ -1,0 +1,766 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "script-installed-context-menu",
+      "title": "Observe the installed row menu at both scene ends",
+      "preconditions": [
+        "Reviewed source-to-existing-CLI-assertion association, not a native run or measured execution. Source guards receive only the stated witnessed path; untested branches remain gaps. Snapshot polling and bounded control-reveal scrolling may repeat.",
+        "sceneEndEligibility saved startup, created the actual two-entry blank template and derived its distinct first/last identities from numeric scene order. Rows and paths are resolved again after each Script/Storyboard transition. This observes the native menu builder; no Move, Delete, discussion, duration or import handler is dispatched."
+      ],
+      "actions": [
+        "{\"command\":\"select\",\"target\":\"workspace-tabs\",\"index\":0}",
+        "menu {target: rowForEntry(nodes, first).path}",
+        "menu {target: rowForEntry(nodes, last).path}",
+        "{\"command\":\"key\",\"input\":\"s\",\"modifiers\":[\"command\"]}",
+        "{\"command\":\"persisted-projects\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Each mounted row provides exactly one context menu. Move up/down are present once, visible and disabled only at the corresponding scene boundary. Saving and tab navigation preserve all original packages and the new project’s entries, scenes, cues and characters.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-authoring-boundaries.mjs",
+            "start": 68,
+            "end": 83,
+            "sha256": "b76d79aa2fdb6b835b08a12087559b550e7c99e5b8c9721ed2aeee49480b2b0b"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 162,
+            "end": 162,
+            "sha256": "24f7fe6e8829208d6809e0a647c9c4f91a021c783140736b6f897e5d3decf129"
+          },
+          "expectation": "asserted",
+          "why": "The row installs its public context-menu interaction and returns the configured menu provider. The menu observer requires that mounted interaction, and the journey asserts its real menu/attributes; physical presentation and all action callbacks remain untested."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+            "start": 279,
+            "end": 280,
+            "sha256": "c3f2cd01dec2469fb5139b9af28a2db1cf039048d31da8561f1d6284d49dd24f"
+          },
+          "expectation": "asserted",
+          "why": "The row installs its public context-menu interaction and returns the configured menu provider. The menu observer requires that mounted interaction, and the journey asserts its real menu/attributes; physical presentation and all action callbacks remain untested."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 367,
+            "end": 367,
+            "sha256": "4ac9e14ad881f014fc6549c9874629208af979701a3d58aff9adbab1e5f369dd"
+          },
+          "expectation": "asserted",
+          "why": "The real row provider resolves its existing entry, current lock/navigation context and action factory before constructing the observed menu. This covers builder setup for existing unlocked entries, not missing-row fallback, held locks, callback execution or arbitrary menu content."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 403,
+            "end": 406,
+            "sha256": "8905c0a7ff89a6d48b928de1ffa05d435bca1a46f18ddc2caaa1ae88ceae411f"
+          },
+          "expectation": "asserted",
+          "why": "The real row provider resolves its existing entry, current lock/navigation context and action factory before constructing the observed menu. This covers builder setup for existing unlocked entries, not missing-row fallback, held locks, callback execution or arbitrary menu content."
+        }
+      ]
+    },
+    {
+      "id": "script-open-current-local-draft",
+      "title": "Open the selected imported line without changing its model",
+      "preconditions": [
+        "Reviewed source-to-existing-CLI-assertion association, not a native run or measured execution. Source guards receive only the stated witnessed path; untested branches remain gaps. Snapshot polling and bounded control-reveal scrolling may repeat.",
+        "script-merge imported a literal isolated case and checked its entire authored payload. focusEntry has selected the exact target using existing Layers controls when needed, before this bounded witness. No recovered journal exists and the line has uncontended local editing access; cloud presence, peer events, recovery, cancellation and denied/stale leases are not asserted."
+      ],
+      "actions": [
+        "{\"command\":\"keys\"}",
+        "{\"command\":\"key\",\"input\":\"\\r\",\"modifiers\":[\"command\"]}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"loaded-project\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Observe the enabled Command-Return edit toggle, invoke it, then find exactly one same-ID focused editor with the exact imported text, editable and hittable, while the complete loaded project remains equal to the import baseline.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-merge-steps.mjs",
+            "start": 99,
+            "end": 109,
+            "sha256": "11bb3aea170e78a66bd6be5b7af014f40eada183466b0320061ccd0d5076761d"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 964,
+            "end": 967,
+            "sha256": "42e94c863fd19339e926ff097141f2c7621d4966cbfc99a67f80033be576c3ac"
+          },
+          "expectation": "asserted",
+          "why": "The ordinary edit request reads its current navigation, lifecycle, local account and nil cloud epoch identities. The successful exact-line opening witnesses their use in the local context; cross-account, cloud-epoch and context-change behavior remain gaps."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 976,
+            "end": 985,
+            "sha256": "6112e631032248f4c39bfde98c965f2a5ecaaa9ccb7c83a53a37bda58517156a"
+          },
+          "expectation": "asserted",
+          "why": "Opening resolves the current package/item scope and creates a fresh LocalEditorDraft from the existing imported entry when the scoped journal has no saved draft. The mounted editor exposes that exact source without changing the loaded project. Journal recovery, missing-package/entry errors and cross-scope isolation are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1043,
+            "end": 1044,
+            "sha256": "244c09393446cd1ec73d834eb5cdb7a5ab927a804f6b82a91125cddd18a44aaf"
+          },
+          "expectation": "asserted",
+          "why": "The local edit request captures context, records intent, acquires ordinary access and passes the current-context/noncancelled guards before enabling editing. The real editor outcome witnesses this successful path; this does not establish remote lease or presence behavior."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1047,
+            "end": 1053,
+            "sha256": "29c87e1a48258a85371eb9a4274e91e7e30604b855899e2fe58e307a0149926f"
+          },
+          "expectation": "asserted",
+          "why": "The local edit request captures context, records intent, acquires ordinary access and passes the current-context/noncancelled guards before enabling editing. The real editor outcome witnesses this successful path; this does not establish remote lease or presence behavior."
+        }
+      ]
+    },
+    {
+      "id": "script-apply-current-canonical-edit",
+      "title": "Apply an exact canonical-only edit before Finish",
+      "preconditions": [
+        "Reviewed source-to-existing-CLI-assertion association, not a native run or measured execution. Source guards receive only the stated witnessed path; untested branches remain gaps. Snapshot polling and bounded control-reveal scrolling may repeat.",
+        "writeExactSource has saved its literal Unicode fixture and preserved the decomposed-accent selection through a zoom refresh. The same local draft, lease and navigation/lifecycle remain current. No second selection or explicit Finish/Save precedes the persisted-project observation."
+      ],
+      "actions": [
+        "type {target: editor.identifier, text: \"café\"}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Type the composed spelling, observe exact editor text/caret and persisted source while editing continues, and compare unchanged word identities, endpoints and timing ownership.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-authoring-source.mjs",
+            "start": 103,
+            "end": 112,
+            "sha256": "d56093aaba27330f51151816f7e068ad3401774f0247f924cc883881f59ec850"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1014,
+            "end": 1015,
+            "sha256": "9f1e8097d8fcbaf99d264664d39506aff63dcaa8419dadd8275f64a91f191ac5"
+          },
+          "expectation": "asserted",
+          "why": "The accepted draft application checks the same navigation/lifecycle, current local lease and current saved draft revision before producing the exact canonical replacement. The exact saved result witnesses the allowed path; expired leases, replaced drafts, stale contexts, journal failures and recovery-clear ordering remain unverified."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1018,
+            "end": 1018,
+            "sha256": "10822d90617ee8989f20d526f2836f5c9d2dd5e728fd2e017a43ce84e57416c0"
+          },
+          "expectation": "asserted",
+          "why": "The accepted draft application checks the same navigation/lifecycle, current local lease and current saved draft revision before producing the exact canonical replacement. The exact saved result witnesses the allowed path; expired leases, replaced drafts, stale contexts, journal failures and recovery-clear ordering remain unverified."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1021,
+            "end": 1022,
+            "sha256": "f5c9bb3d34de5f6d6c23e466268279e99b0cb3d4074f4e73104d7eee7dba995a"
+          },
+          "expectation": "asserted",
+          "why": "The accepted draft application checks the same navigation/lifecycle, current local lease and current saved draft revision before producing the exact canonical replacement. The exact saved result witnesses the allowed path; expired leases, replaced drafts, stale contexts, journal failures and recovery-clear ordering remain unverified."
+        }
+      ]
+    },
+    {
+      "id": "script-finish-unchanged-split-draft",
+      "title": "Finish the newly split editor without another mutation",
+      "preconditions": [
+        "Reviewed source-to-existing-CLI-assertion association, not a native run or measured execution. Source guards receive only the stated witnessed path; untested branches remain gaps. Snapshot polling and bounded control-reveal scrolling may repeat.",
+        "runExactSplitFixture has just asserted the complete literal split model and captured its loaded Date witnesses. The right-hand editor holds that accepted source exactly; no dirty/recovered draft or concurrent timing edit is introduced. Display waits and Save use the existing Script helpers."
+      ],
+      "actions": [
+        "{\"command\":\"keys\"}",
+        "{\"command\":\"key\",\"input\":\"Escape\",\"modifiers\":[]}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"keys\"}",
+        "{\"command\":\"key\",\"input\":\"s\",\"modifiers\":[\"command\"]}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"loaded-project\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Escape finishes editing, both source displays match the literal split text, and explicit Save preserves the complete saved project, revision and loaded Date witnesses.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-exact-split-steps.mjs",
+            "start": 134,
+            "end": 139,
+            "sha256": "292fe32507d6d89327bc5eb5e527563dce18fee757e31bc6e331673c38098653"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1033,
+            "end": 1035,
+            "sha256": "2db3c90555cb964d13351d163f3b989fe77cf5760cf66f7b51b9c4ef7e864a35"
+          },
+          "expectation": "asserted",
+          "why": "An editor whose draft already equals the current line queues persistence without creating an Edit script revision. The post-Finish full-model/revision equality witnesses the unchanged-text path; timing changes during editing and journal-clear crash windows are not claimed."
+        }
+      ]
+    },
+    {
+      "id": "script-exact-split-preflight",
+      "title": "Validate the exact source before a literal split",
+      "preconditions": [
+        "Reviewed source-to-existing-CLI-assertion association, not a native run or measured execution. Source guards receive only the stated witnessed path; untested branches remain gaps. Snapshot polling and bounded control-reveal scrolling may repeat.",
+        "Use the existing whitespace-word-identity fixture: literal One  two\\tthree, UTF-16 offset 5, owned time 3000 ms, words with fixed IDs/times and one legacy cue. Import and exact source focus were verified immediately before this block. assertExactSplit at :16-73 compares the entire literal expected model. Invalid offsets, stale text, insufficient duration and missing entries are excluded."
+      ],
+      "actions": [
+        "{\"command\":\"selection\",\"target\":\"script-editor-a\",\"start\":5,\"end\":5}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"return\",\"target\":\"script-editor-a\"}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"loaded-project\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Dispatch one public Return delegate after selecting offset 5; observe a new focused right-hand editor and exact full split model with conserved text/duration, literal word IDs/times, cue ownership, revision and preserved creation Date witness.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-exact-split-steps.mjs",
+            "start": 120,
+            "end": 133,
+            "sha256": "34ac8dbc4cbe114b61415480d15f4bd9c83b80318ebd798b9c4d4c992a25ce35"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ScriptBoundaryEditing.swift",
+            "start": 7,
+            "end": 14,
+            "sha256": "da93f0feb45c4dd1e9da2b6895f5557d8898fc4163f912228a06f387533c6670"
+          },
+          "expectation": "asserted",
+          "why": "The split copies the project, resolves the current line, verifies exact source and a valid character boundary, checks adequate duration, then takes the dialogue branch. The frozen full-model oracle witnesses this valid whitespace-boundary operation; rejection bodies and direction behavior are outside this association."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ScriptBoundaryEditing.swift",
+            "start": 20,
+            "end": 20,
+            "sha256": "2d0e04e60878941bc59e15ddff2aa58e6f12368109a0d44e7605d182d65b1158"
+          },
+          "expectation": "asserted",
+          "why": "The split copies the project, resolves the current line, verifies exact source and a valid character boundary, checks adequate duration, then takes the dialogue branch. The frozen full-model oracle witnesses this valid whitespace-boundary operation; rejection bodies and direction behavior are outside this association."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ScriptBoundaryEditing.swift",
+            "start": 32,
+            "end": 32,
+            "sha256": "cccfe9a98de7c11ffb0f716fbe5bac6c55b5ae7afed450fb5cbcc0912240dc8d"
+          },
+          "expectation": "asserted",
+          "why": "The split copies the project, resolves the current line, verifies exact source and a valid character boundary, checks adequate duration, then takes the dialogue branch. The frozen full-model oracle witnesses this valid whitespace-boundary operation; rejection bodies and direction behavior are outside this association."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ScriptBoundaryEditing.swift",
+            "start": 146,
+            "end": 147,
+            "sha256": "09311492546103a3f03fc85319eabf3fa55cdc88ade2ea46c8211bcc09c02e8b"
+          },
+          "expectation": "asserted",
+          "why": "Exact-source checking and projected-word preflight require the unchanged UTF-16 text, adequate output duration and real source-token contributors. The literal word identities/endpoints in assertExactSplit witness successful source projection; stale-source and unmappable-token failures are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ScriptBoundaryEditing.swift",
+            "start": 159,
+            "end": 166,
+            "sha256": "3c4d814a544c16e9a88fbef9f2d20e1c295be3a58c1be059f312f279c7068175"
+          },
+          "expectation": "asserted",
+          "why": "Exact-source checking and projected-word preflight require the unchanged UTF-16 text, adequate output duration and real source-token contributors. The literal word identities/endpoints in assertExactSplit witness successful source projection; stale-source and unmappable-token failures are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1129,
+            "end": 1130,
+            "sha256": "401a73ae05aa2f9dbfa94154a6bccd7eae88f44376d1983d4c196a6d94c9ed99"
+          },
+          "expectation": "asserted",
+          "why": "The public split transaction passes its existing local editing-lease guard before the native Return outcome. Remote lease identity and denial handling are not established by this local fixture."
+        }
+      ]
+    },
+    {
+      "id": "script-zero-owned-direction-split",
+      "title": "Split a zero-owned direction without adding time",
+      "preconditions": [
+        "Reviewed source-to-existing-CLI-assertion association, not a native run or measured execution. Source guards receive only the stated witnessed path; untested branches remain gaps. Snapshot polling and bounded control-reveal scrolling may repeat.",
+        "Only the zero-owned-direction-roundtrip case enters this conditional: its exact imported direction is Keep watching with 0 ms owned time and 5000 ms coverage, followed by a 6000 ms spoken row. The actual edit toggle already focuses entry a. The generated right entry is resolved from the sole new focused editor; any reveal scroll uses the existing bounded helper."
+      ],
+      "actions": [
+        "{\"command\":\"selection\",\"target\":\"script-editor-a\",\"start\":5,\"end\":5}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"return\",\"target\":\"script-editor-a\"}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Return produces Keep  and watching in two direction rows, focuses the new right editor at offset zero and preserves both owned durations at 0 ms and both coverage durations at 5000 ms.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-merge.mjs",
+            "start": 21,
+            "end": 38,
+            "sha256": "8107f2bd4f6ca6fb2a9a3c6ee0542f3b5b6917bb836d7839d99d3fb173bc0a18"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ScriptBoundaryEditing.swift",
+            "start": 37,
+            "end": 38,
+            "sha256": "11ed94cf329c189b91375b973805b639ea8c7491f860f2a7c61e6465dbf520bb"
+          },
+          "expectation": "asserted",
+          "why": "The direction caret calculation yields a zero cut from zero owned time; the direction split assigns the observed 5000 ms coverage to both resulting rows without inventing owned time. Positive-owned direction interpolation, invalid boundaries and competing changes remain gaps."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ScriptBoundaryEditing.swift",
+            "start": 133,
+            "end": 133,
+            "sha256": "4297fa2463ce10e33769f1cfb04fcae4d84224e4feb3d27f157f8ae30427556d"
+          },
+          "expectation": "asserted",
+          "why": "The direction caret calculation yields a zero cut from zero owned time; the direction split assigns the observed 5000 ms coverage to both resulting rows without inventing owned time. Positive-owned direction interpolation, invalid boundaries and competing changes remain gaps."
+        }
+      ]
+    },
+    {
+      "id": "script-merge-existing-preflight",
+      "title": "Merge the exact existing adjacent dialogue pair",
+      "preconditions": [
+        "Reviewed source-to-existing-CLI-assertion association, not a native run or measured execution. Source guards receive only the stated witnessed path; untested branches remain gaps. Snapshot polling and bounded control-reveal scrolling may repeat.",
+        "Use the authored-words merge case: exact imported entry a contains One  with 3000 ms owned time, b contains two three with 2000 ms, and the fixture fixes all three source word IDs/timings/ownership. The actual Layers/edit-toggle route focuses b. assertMerged at support/script-merge-steps.mjs:243-298 supplies independent literal timing and full invariance assertions. Audio collections are empty."
+      ],
+      "actions": [
+        "{\"command\":\"selection\",\"target\":\"script-editor-b\",\"start\":0,\"end\":0}",
+        "{\"command\":\"script-interaction-counts\"}",
+        "{\"command\":\"delete-backward\",\"target\":\"script-editor-b\"}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"script-interaction-counts\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "DeleteBackward at the collapsed zero caret invokes the mounted merge callback once, focuses surviving entry a at its original UTF-16 offset 4, saves exact One two three with literal timing endpoints and one revision, and preserves unrelated content.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-merge.mjs",
+            "start": 39,
+            "end": 52,
+            "sha256": "fdc240f112a2f913eed0a5bdffb8db864b98a33985b96f6400e4bbeac8a5ace0"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ScriptBoundaryEditing.swift",
+            "start": 62,
+            "end": 68,
+            "sha256": "1bbe0cb1c89177262f61ed2f9747848b195990a38fe528427ad2ee9180558442"
+          },
+          "expectation": "asserted",
+          "why": "The merge starts with a copy, resolves b and its exact source, obtains the ordered current-scene entries and selects the real predecessor. The exact merged identity/text/timing oracle witnesses this ordinary same-scene pair; absent/stale entries and first-row rejection are not credited here."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1137,
+            "end": 1137,
+            "sha256": "2072d934e1ed34d0e0f02a09acfd237eeaddaac4d936d7e58e8ad2da14e8f1ee"
+          },
+          "expectation": "asserted",
+          "why": "The store resolves the predecessor identity and passes both local editing-lease checks before accepting this merge. Exact surviving/removed identities and the callback count witness the allowed transaction; remote lease failure and concurrent edits are excluded."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1142,
+            "end": 1143,
+            "sha256": "e90e60e02040d4217ba2743123cb49473a3cb82432cdd6036fc88b44e5066962"
+          },
+          "expectation": "asserted",
+          "why": "The store resolves the predecessor identity and passes both local editing-lease checks before accepting this merge. Exact surviving/removed identities and the callback count witness the allowed transaction; remote lease failure and concurrent edits are excluded."
+        }
+      ]
+    },
+    {
+      "id": "script-zero-owned-direction-merge",
+      "title": "Merge split directions with exact source coverage",
+      "preconditions": [
+        "Reviewed source-to-existing-CLI-assertion association, not a native run or measured execution. Source guards receive only the stated witnessed path; untested branches remain gaps. Snapshot polling and bounded control-reveal scrolling may repeat.",
+        "The zero-owned-direction-roundtrip case has completed the preceding Return split and asserted both direction rows at 0 ms owned/5000 ms coverage. removedID/editorID name the generated right-hand row; surviving a contains Keep . The helper assertMerged is invoked at :50 and asserts exact direction coverage at support/script-merge-steps.mjs:293-296."
+      ],
+      "actions": [
+        "selection {target: editorID of the sole new right direction, start: 0, end: 0}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"script-interaction-counts\"}",
+        "delete-backward {target: editorID of the sole new right direction}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"script-interaction-counts\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "One native merge restores Keep watching at a, focuses its original caret offset 5, removes exactly the right identity, leaves owned time at zero and coverage at 5000 ms, keeps the spoken row exact and changes one revision.",
+          "witness": {
+            "path": "tests/e2e/journeys/script-merge.mjs",
+            "start": 40,
+            "end": 52,
+            "sha256": "e113a8b890944f7e83a00310b6dc5e54b3e6d061d6a5fcb3351403fbeb39c7c0"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ScriptBoundaryEditing.swift",
+            "start": 92,
+            "end": 96,
+            "sha256": "aa87571168328eef8d9daf922b7c688ccd072b5217486d8dcb2af1425f6b2a44"
+          },
+          "expectation": "asserted",
+          "why": "The merge materializes any anchors, computes the zero-length source interval and updates the surviving direction coverage using its endpoint mapping. The zero-owned literal oracle witnesses the <=start and >=end branches and exact 5000 ms result. Interior-time scaling, positive-owned directions, nonempty audio remapping and clipping are not claimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ScriptBoundaryEditing.swift",
+            "start": 99,
+            "end": 104,
+            "sha256": "c0b35c1bb1307ba86295c9c5fa6f748cad00c46fa76dd46dbf9f35ca709ec00d"
+          },
+          "expectation": "asserted",
+          "why": "The merge materializes any anchors, computes the zero-length source interval and updates the surviving direction coverage using its endpoint mapping. The zero-owned literal oracle witnesses the <=start and >=end branches and exact 5000 ms result. Interior-time scaling, positive-owned directions, nonempty audio remapping and clipping are not claimed."
+        }
+      ]
+    },
+    {
+      "id": "script-rejected-merge-preserves-source",
+      "title": "Retain the original line after a refused merge",
+      "preconditions": [
+        "Reviewed source-to-existing-CLI-assertion association, not a native run or measured execution. Source guards receive only the stated witnessed path; untested branches remain gaps. Snapshot polling and bounded control-reveal scrolling may repeat.",
+        "Use mixed-kind-rejected, insufficient-previous-duration or different-speakers-rejected: each exact imported fixture targets b, has a previous row and acquires ordinary local editing access. Each refusal owns a fresh process and leaves its actual validation alert open; no alert dismissal or retry is attempted."
+      ],
+      "actions": [
+        "{\"command\":\"selection\",\"target\":\"script-editor-b\",\"start\":0,\"end\":0}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"delete-backward\",\"target\":\"script-editor-b\"}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"presented-alerts\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"snapshot\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "DeleteBackward presents the exact fixture-specific validation message while repeated loaded model/Date, persisted project and unrelated-package comparisons stay equal; the original source row retains one mounted text surface with its exact text.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-merge-steps.mjs",
+            "start": 215,
+            "end": 235,
+            "sha256": "79a6e87396395b336b259772d0ed89ebdfe260353a4196e8d7aaa7b92c72ccbf"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1150,
+            "end": 1150,
+            "sha256": "1bc601aa7620140719a8fb6d7030ab44d28ec95210f9a3ee665ba6b9c0905f95"
+          },
+          "expectation": "asserted",
+          "why": "A model-level refused merge returns no result rather than publishing a successful selected identity. The exact refusal and unchanged complete model/package assertions witness this return path after core rejection; missing predecessor and lease refusal are separate paths."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+            "start": 159,
+            "end": 159,
+            "sha256": "fa1751d2136db6f3f7ea1a26d0c1c16c3f4d749eac7138182f074d7242096590"
+          },
+          "expectation": "asserted",
+          "why": "When the boundary transaction returns no result, the screen requests editing of the original entry at the original zero offset. The assertion establishes retention of one original text surface and exact source after refusal; it does not establish focus or caret restoration behind the alert."
+        }
+      ]
+    },
+    {
+      "id": "script-insert-new-scene-direction",
+      "title": "Insert and author the first direction in the new scene",
+      "preconditions": [
+        "Reviewed source-to-existing-CLI-assertion association, not a native run or measured execution. Source guards receive only the stated witnessed path; untested branches remain gaps. Snapshot polling and bounded control-reveal scrolling may repeat.",
+        "createNavigateReopen has imported the complete fixture, created the new scene through its actual stored menu, Undo/Redo checked it, and selected the empty restored scene. No audio/generation operation occurs. savedMutation at :38-45 compares complete content, exact revision delta, loaded state and every package."
+      ],
+      "actions": [
+        "activate {target: snapshot \"Add direction\" button.path}",
+        "text {target: editor.identifier, text: \"A lantern flickers beside the gate.\"}",
+        "{\"command\":\"key\",\"input\":\"Escape\",\"modifiers\":[]}",
+        "{\"command\":\"key\",\"input\":\"s\",\"modifiers\":[\"command\"]}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"persisted-projects\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Add direction opens one new selected-placeholder editor. Author the literal lantern sentence and finish; the complete saved project contains exactly the new zero-owned direction with order 0, 3000 ms coverage, no words/links, and exactly two accepted revisions.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 117,
+            "end": 135,
+            "sha256": "755061bacc268bd882c4e6f2994dac40d8b16306b95971594e292b06538e9461"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectEditing.swift",
+            "start": 13,
+            "end": 15,
+            "sha256": "81bf8f169def89b3157d3db06de7f29615cfb480477bdd9269275f6ea5be9206"
+          },
+          "expectation": "asserted",
+          "why": "Insertion validates the real target scene/new identity and computes the insertion position’s scene time before ordinary cue materialization. The complete explicit mutation oracle witnesses first insertion into an empty scene and preservation of prior scene content; duplicate identities, absent scenes and nonempty target-scene anchor shifts are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivCore/ProjectEditing.swift",
+            "start": 22,
+            "end": 23,
+            "sha256": "532432dcdf7c00b53c40a34b097334b1d2815211a5e3e7bcba840b999b881b47"
+          },
+          "expectation": "asserted",
+          "why": "Insertion validates the real target scene/new identity and computes the insertion position’s scene time before ordinary cue materialization. The complete explicit mutation oracle witnesses first insertion into an empty scene and preservation of prior scene content; duplicate identities, absent scenes and nonempty target-scene anchor shifts are not asserted."
+        }
+      ]
+    },
+    {
+      "id": "script-scene-navigation-validity",
+      "title": "Select an existing scene while preserving document content",
+      "preconditions": [
+        "Reviewed source-to-existing-CLI-assertion association, not a native run or measured execution. Source guards receive only the stated witnessed path; untested branches remain gaps. Snapshot polling and bounded control-reveal scrolling may repeat.",
+        "The structure workflow has created and restored its second scene. selected(title, entries) at :66-69 checks its exact header and all source lines. Each dispatch uses the real script-scenes stored menu. Destructive/rename callbacks, unknown scenes, active playback and pending-draft navigation are excluded."
+      ],
+      "actions": [
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "menu {target: snapshot unique selected-scene button.path}",
+        "menu-action {target: snapshot unique selected-scene button.path, scope: \"script-scenes\", action: title}",
+        "{\"command\":\"snapshot\"}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"persisted-projects\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Select the named existing scene, observe its exact visible source entries and header, and preserve every loaded model/Date value and saved package.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 71,
+            "end": 79,
+            "sha256": "c2978a11b88f853a433d903aad751a38e8054422a27a0b26efb63def1bd55673"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1154,
+            "end": 1155,
+            "sha256": "9526be6ca232950fcf7ae6c39ebc13e3c8749049e7eed6bb744abf477b213c22"
+          },
+          "expectation": "asserted",
+          "why": "The scene-selection entry point validates membership before changing navigation. The exact requested scene/header/source set witnesses the existing-scene path; invalid-scene refusal is not asserted."
+        }
+      ]
+    },
+    {
+      "id": "script-undo-scene-selection-fallback",
+      "title": "Restore valid selection when Undo removes the active new scene",
+      "preconditions": [
+        "Reviewed source-to-existing-CLI-assertion association, not a native run or measured execution. Source guards receive only the stated witnessed path; untested branches remain gaps. Snapshot polling and bounded control-reveal scrolling may repeat.",
+        "The structure workflow has already imported its one-scene literal fixture, created and completely saved the new scene, and asserted that the active new scene is empty at :100-107. savedMutation at :38-45 compares complete content, the exact revision delta, loaded model and every saved package; selected at :66-69 checks the actual header and source lines. No playback or pending draft is active."
+      ],
+      "actions": [
+        "{\"command\":\"keys\"}",
+        "{\"command\":\"key\",\"input\":\"z\",\"modifiers\":[\"command\"]}",
+        "{\"command\":\"keys\"}",
+        "{\"command\":\"key\",\"input\":\"s\",\"modifiers\":[\"command\"]}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"loaded-project\"}",
+        "{\"command\":\"persisted-projects\"}",
+        "{\"command\":\"snapshot\"}"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Undo removes the newly created active scene, restores the complete original project content in one accepted revision, and shows the exact original scene header and source entries while every other package remains unchanged.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/script-structure-steps.mjs",
+            "start": 108,
+            "end": 110,
+            "sha256": "2516b20f62063a9a68cba87d648ba9f05108259950236564fde70ed9ee28553e"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1161,
+            "end": 1161,
+            "sha256": "138d7badb44b7150e1fee89a75b71337229da52ef239b67e79fcbf1d8e1eafb4"
+          },
+          "expectation": "asserted",
+          "why": "Reconciliation replaces the now-missing selected new scene with the project’s first ordered scene. The post-Undo exact original header/source assertion witnesses this fallback. Playhead reset is not separately read, and missing-all-scenes or other selection dimensions are not claimed."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "script-installed-context-menu",
+      "title": "Observe the installed row menu at both scene ends",
+      "steps": [
+        "script-installed-context-menu"
+      ]
+    },
+    {
+      "id": "script-open-current-local-draft",
+      "title": "Open the selected imported line without changing its model",
+      "steps": [
+        "script-open-current-local-draft"
+      ]
+    },
+    {
+      "id": "script-apply-current-canonical-edit",
+      "title": "Apply an exact canonical-only edit before Finish",
+      "steps": [
+        "script-apply-current-canonical-edit"
+      ]
+    },
+    {
+      "id": "script-finish-unchanged-split-draft",
+      "title": "Finish the newly split editor without another mutation",
+      "steps": [
+        "script-finish-unchanged-split-draft"
+      ]
+    },
+    {
+      "id": "script-exact-split-preflight",
+      "title": "Validate the exact source before a literal split",
+      "steps": [
+        "script-exact-split-preflight"
+      ]
+    },
+    {
+      "id": "script-zero-owned-direction-split",
+      "title": "Split a zero-owned direction without adding time",
+      "steps": [
+        "script-zero-owned-direction-split"
+      ]
+    },
+    {
+      "id": "script-merge-existing-preflight",
+      "title": "Merge the exact existing adjacent dialogue pair",
+      "steps": [
+        "script-merge-existing-preflight"
+      ]
+    },
+    {
+      "id": "script-zero-owned-direction-merge",
+      "title": "Merge split directions with exact source coverage",
+      "steps": [
+        "script-zero-owned-direction-merge"
+      ]
+    },
+    {
+      "id": "script-rejected-merge-preserves-source",
+      "title": "Retain the original line after a refused merge",
+      "steps": [
+        "script-rejected-merge-preserves-source"
+      ]
+    },
+    {
+      "id": "script-insert-new-scene-direction",
+      "title": "Insert and author the first direction in the new scene",
+      "steps": [
+        "script-insert-new-scene-direction"
+      ]
+    },
+    {
+      "id": "script-scene-navigation-validity",
+      "title": "Select an existing scene while preserving document content",
+      "steps": [
+        "script-scene-navigation-validity"
+      ]
+    },
+    {
+      "id": "script-undo-scene-selection-fallback",
+      "title": "Restore valid selection when Undo removes the active new scene",
+      "steps": [
+        "script-undo-scene-selection-fallback"
+      ]
+    }
+  ]
+}

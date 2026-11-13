@@ -1,0 +1,567 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "pcm-import-record",
+      "title": "Decode the imported synthetic PCM record",
+      "preconditions": [
+        "Reuse the complete unchanged tests/e2e/journeys/audio-library.mjs --group import journey with fresh isolated synthetic app storage and a separately verified matching automation build. This catalog does not execute the app or establish a new native result. Read-only readiness polls may repeat; mutations are issued once.",
+        "Map only the accepted routes and observable assertions described below. A mapped guard line does not claim its rejected branch. No physical-input, audible-output, device, security-scoped-picker, race, drawing, layout or drag behavior is established."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(audioProjectFixture())}",
+        "import-audio {base64: syntheticPCM().toString(\"base64\"), attachment: \"selected-dialogue\"}; persisted-projects; loaded-project",
+        "slider {target: observed Playback position control, value: 3500}; import-audio {base64: syntheticPCM({silence:true}).toString(\"base64\"), attachment:\"scene\"}; persisted-projects; loaded-project"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "The real importer returns the complete persisted AudioAsset for both independently generated four-second PCM inputs: exact content digest/file name/byte count, 16000 Hz mono metadata, original name, and every one of 512 peaks at the four known plateaus (all zero for silence). The source ranges cover successful local-file guards, immutable-copy decoding and complete chunk consumption. Rejection, cancellation, security-scope acquisition and hardware output remain unclaimed.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/audio-library-fixtures.mjs",
+            "start": 69,
+            "end": 88,
+            "sha256": "b9c0c6176bc93524367b80dd39982516f6e5253401bbc0cb1c7a6733df8f9e74"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/LocalAudioEngine.swift",
+            "start": 6,
+            "end": 8,
+            "sha256": "2b92576526e241f5b8b3ae51a2f8814401a66f20298acfde0aaf3d3ed9f40811"
+          },
+          "expectation": "asserted",
+          "why": "The real importer returns the complete persisted AudioAsset for both independently generated four-second PCM inputs: exact content digest/file name/byte count, 16000 Hz mono metadata, original name, and every one of 512 peaks at the four known plateaus (all zero for silence). The source ranges cover successful local-file guards, immutable-copy decoding and complete chunk consumption. Rejection, cancellation, security-scope acquisition and hardware output remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/LocalAudioEngine.swift",
+            "start": 11,
+            "end": 13,
+            "sha256": "773aaa4f534b4226606e07cbf83564d6020dc5a1027249a6a080839675835a6e"
+          },
+          "expectation": "asserted",
+          "why": "The real importer returns the complete persisted AudioAsset for both independently generated four-second PCM inputs: exact content digest/file name/byte count, 16000 Hz mono metadata, original name, and every one of 512 peaks at the four known plateaus (all zero for silence). The source ranges cover successful local-file guards, immutable-copy decoding and complete chunk consumption. Rejection, cancellation, security-scope acquisition and hardware output remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/LocalAudioEngine.swift",
+            "start": 15,
+            "end": 18,
+            "sha256": "3c19eaf560847922cc9c1fd581d4cbbc4f3bb5cf33dee3f043db9934423558cf"
+          },
+          "expectation": "asserted",
+          "why": "The real importer returns the complete persisted AudioAsset for both independently generated four-second PCM inputs: exact content digest/file name/byte count, 16000 Hz mono metadata, original name, and every one of 512 peaks at the four known plateaus (all zero for silence). The source ranges cover successful local-file guards, immutable-copy decoding and complete chunk consumption. Rejection, cancellation, security-scope acquisition and hardware output remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/LocalAudioEngine.swift",
+            "start": 20,
+            "end": 25,
+            "sha256": "400bda66c2cc1064a3b17d948781700fb2a915d586909f99e63d274244071add"
+          },
+          "expectation": "asserted",
+          "why": "The real importer returns the complete persisted AudioAsset for both independently generated four-second PCM inputs: exact content digest/file name/byte count, 16000 Hz mono metadata, original name, and every one of 512 peaks at the four known plateaus (all zero for silence). The source ranges cover successful local-file guards, immutable-copy decoding and complete chunk consumption. Rejection, cancellation, security-scope acquisition and hardware output remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/LocalAudioEngine.swift",
+            "start": 27,
+            "end": 50,
+            "sha256": "b84f06d9ac9de846c9b2f8e5531d28e535bd92430cb5b0809e89edcd22f4eec7"
+          },
+          "expectation": "asserted",
+          "why": "The real importer returns the complete persisted AudioAsset for both independently generated four-second PCM inputs: exact content digest/file name/byte count, 16000 Hz mono metadata, original name, and every one of 512 peaks at the four known plateaus (all zero for silence). The source ranges cover successful local-file guards, immutable-copy decoding and complete chunk consumption. Rejection, cancellation, security-scope acquisition and hardware output remain unclaimed."
+        }
+      ]
+    },
+    {
+      "id": "library-scene-cards",
+      "title": "Resolve both imported clips in the actual library",
+      "preconditions": [
+        "Reuse the complete unchanged tests/e2e/journeys/audio-library.mjs --group import journey with fresh isolated synthetic app storage and a separately verified matching automation build. This catalog does not execute the app or establish a new native result. Read-only readiness polls may repeat; mutations are issued once.",
+        "Map only the accepted routes and observable assertions described below. A mapped guard line does not claim its rejected branch. No physical-input, audible-output, device, security-scoped-picker, race, drawing, layout or drag behavior is established."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {base64: syntheticPCM().toString(\"base64\"), attachment:\"selected-dialogue\"}",
+        "slider {target: observed Playback position control, value:3500}; import-audio {base64: syntheticPCM({silence:true}).toString(\"base64\"), attachment:\"scene\"}",
+        "select Script; activate preview-layers-disclosure when its observed label is Expand Layers; activate Audio; snapshot; persisted-projects",
+        "activate Close local audio; snapshot; persisted-projects"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted.",
+          "witness": {
+            "path": "tests/e2e/journeys/audio-library.mjs",
+            "start": 130,
+            "end": 145,
+            "sha256": "5f83f4c5e97b0db2d3e5db88294d326bfdf8637c739056acc02ebed1e2f5fe6a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 20,
+            "end": 21,
+            "sha256": "75e74011e2f8ad7d318ac5c7b0b54112581c83af33d37a599463fb5f4555e7d1"
+          },
+          "expectation": "asserted",
+          "why": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 72,
+            "end": 76,
+            "sha256": "962e33c255aa2d6536a87deee729167c169664391ecb2ee06be4985572bed160"
+          },
+          "expectation": "asserted",
+          "why": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 78,
+            "end": 98,
+            "sha256": "83bf18c717f9bd0b8d052893e2824393c357e6a2287a4980d5e3dd9b390959d1"
+          },
+          "expectation": "asserted",
+          "why": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 109,
+            "end": 110,
+            "sha256": "fe87be1e1899744486b53330aeeb28c7618492cb2b4b2b0dc882998847a98cf5"
+          },
+          "expectation": "asserted",
+          "why": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 251,
+            "end": 254,
+            "sha256": "f83a5ac5c5c9cb227b6406716181205cac94888cb017d3bc1d08e3c3390228d8"
+          },
+          "expectation": "asserted",
+          "why": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1293,
+            "end": 1296,
+            "sha256": "6331785fda3154804f574843a88fb180b943f07ac620f70acde9c2973ee17cfd"
+          },
+          "expectation": "asserted",
+          "why": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted."
+        }
+      ]
+    },
+    {
+      "id": "library-close-button",
+      "title": "Dispatch the labeled library close button",
+      "preconditions": [
+        "Reuse the complete unchanged tests/e2e/journeys/audio-library.mjs --group import journey with fresh isolated synthetic app storage and a separately verified matching automation build. This catalog does not execute the app or establish a new native result. Read-only readiness polls may repeat; mutations are issued once.",
+        "Map only the accepted routes and observable assertions described below. A mapped guard line does not claim its rejected branch. No physical-input, audible-output, device, security-scoped-picker, race, drawing, layout or drag behavior is established."
+      ],
+      "actions": [
+        "select Script; activate preview-layers-disclosure if its label is Expand Layers; activate Audio",
+        "snapshot local-audio-sheet and enabled hittable Close local audio",
+        "activate {target: observed Close local audio path}; snapshot until local-audio-sheet is absent and workspace-tabs is enabled and hittable"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "The helper requires the actual labeled Close local audio button and dispatches it once, then asserts the library is absent and the workspace is reachable. This witnesses symbolButton creation, accessibility label and primary-action forwarding only. Symbol pixels, tint and size constraints are outside the association.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/audio-library-steps.mjs",
+            "start": 32,
+            "end": 44,
+            "sha256": "a0a9d50dc22985749ce8738585dfdc364b1b8cbeed9c253f311d6d090208c54a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift",
+            "start": 43,
+            "end": 44,
+            "sha256": "d6d71baba24b9c11e8f259de82dc5df020757f704a5245524e6271bc5e4f3f0f"
+          },
+          "expectation": "asserted",
+          "why": "The helper requires the actual labeled Close local audio button and dispatches it once, then asserts the library is absent and the workspace is reachable. This witnesses symbolButton creation, accessibility label and primary-action forwarding only. Symbol pixels, tint and size constraints are outside the association."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift",
+            "start": 46,
+            "end": 46,
+            "sha256": "2ca44029413bfe13af563baa21ec8a9b9135f9286d6d26a1a5862c20cd57ea18"
+          },
+          "expectation": "asserted",
+          "why": "The helper requires the actual labeled Close local audio button and dispatches it once, then asserts the library is absent and the workspace is reachable. This witnesses symbolButton creation, accessibility label and primary-action forwarding only. Symbol pixels, tint and size constraints are outside the association."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift",
+            "start": 48,
+            "end": 49,
+            "sha256": "84bf6a09140fdaa6eef07dbc2fc77590d49e95c8f1955f43bb5cfc5fa4918517"
+          },
+          "expectation": "asserted",
+          "why": "The helper requires the actual labeled Close local audio button and dispatches it once, then asserts the library is absent and the workspace is reachable. This witnesses symbolButton creation, accessibility label and primary-action forwarding only. Symbol pixels, tint and size constraints are outside the association."
+        }
+      ]
+    },
+    {
+      "id": "raw-audio-fields-and-notice",
+      "title": "Retain exact raw numeric drafts and show the attachment error",
+      "preconditions": [
+        "Reuse the complete unchanged tests/e2e/journeys/audio-library.mjs --group attachment journey with fresh isolated synthetic app storage and a separately verified matching automation build. This catalog does not execute the app or establish a new native result. Read-only readiness polls may repeat; mutations are issued once.",
+        "Map only the accepted routes and observable assertions described below. A mapped guard line does not claim its rejected branch. No physical-input, audible-output, device, security-scoped-picker, race, drawing, layout or drag behavior is established."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {base64:syntheticPCM().toString(\"base64\"),attachment:\"selected-dialogue\"}",
+        "select Script; activate preview-layers-disclosure if its label is Expand Layers; activate Audio; activate audio-clip-trim-<observed clip id>; text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; activate Close local audio",
+        "reopen the same library and clip trim; text {target: audio-placement-offset, text:\"nan\"}; loaded-project; persisted-projects",
+        "menu-action {target:\"audio-anchor\",action:\"Scene time\"}; menu {target:\"audio-anchor\"}; snapshot; loaded-project; persisted-projects; activate Cancel; activate Close local audio"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "The literal nan offset is retained after semantic Scene time dispatch. The draft keeps the original selected dialogue attachment and shows the exact placement-offset error plus the unchanged-draft explanation. Loaded model, exact Date witnesses and all saved packages remain unchanged. The raw text storage/change callback and inline notice text/visibility are associated; formatting, text styling, steppers and drawing remain unclaimed.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/audio-attachment-steps.mjs",
+            "start": 160,
+            "end": 167,
+            "sha256": "3bab6ccd673090e50937ff612d7aec8ff2ff20e1350d555c540c87ba99e34fb0"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift",
+            "start": 54,
+            "end": 55,
+            "sha256": "1006be7a70558c6a38b3378fa8b662e5bed3b35a9de2973a1c501b9e1e46262f"
+          },
+          "expectation": "asserted",
+          "why": "The literal nan offset is retained after semantic Scene time dispatch. The draft keeps the original selected dialogue attachment and shows the exact placement-offset error plus the unchanged-draft explanation. Loaded model, exact Date witnesses and all saved packages remain unchanged. The raw text storage/change callback and inline notice text/visibility are associated; formatting, text styling, steppers and drawing remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift",
+            "start": 60,
+            "end": 62,
+            "sha256": "b2f7600558fcb35c6655213ae2993f39ba0db9c1e763b869b00a0ad1300a83e8"
+          },
+          "expectation": "asserted",
+          "why": "The literal nan offset is retained after semantic Scene time dispatch. The draft keeps the original selected dialogue attachment and shows the exact placement-offset error plus the unchanged-draft explanation. Loaded model, exact Date witnesses and all saved packages remain unchanged. The raw text storage/change callback and inline notice text/visibility are associated; formatting, text styling, steppers and drawing remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift",
+            "start": 94,
+            "end": 94,
+            "sha256": "3d3ff9425121199c2325947e90fd2e0bd916b9238ab62c3fef998d4e30803bc7"
+          },
+          "expectation": "asserted",
+          "why": "The literal nan offset is retained after semantic Scene time dispatch. The draft keeps the original selected dialogue attachment and shows the exact placement-offset error plus the unchanged-draft explanation. Loaded model, exact Date witnesses and all saved packages remain unchanged. The raw text storage/change callback and inline notice text/visibility are associated; formatting, text styling, steppers and drawing remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift",
+            "start": 101,
+            "end": 104,
+            "sha256": "0ae4a893826ef2ee38e4067d356fe87cfe19ac8f16c42f5434901f0d0e33e762"
+          },
+          "expectation": "asserted",
+          "why": "The literal nan offset is retained after semantic Scene time dispatch. The draft keeps the original selected dialogue attachment and shows the exact placement-offset error plus the unchanged-draft explanation. Loaded model, exact Date witnesses and all saved packages remain unchanged. The raw text storage/change callback and inline notice text/visibility are associated; formatting, text styling, steppers and drawing remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift",
+            "start": 108,
+            "end": 108,
+            "sha256": "5870ac30f0639ae62c0a45c7d85db811af660f2092df3d626cadd64e178cb68f"
+          },
+          "expectation": "asserted",
+          "why": "The literal nan offset is retained after semantic Scene time dispatch. The draft keeps the original selected dialogue attachment and shows the exact placement-offset error plus the unchanged-draft explanation. Loaded model, exact Date witnesses and all saved packages remain unchanged. The raw text storage/change callback and inline notice text/visibility are associated; formatting, text styling, steppers and drawing remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift",
+            "start": 110,
+            "end": 111,
+            "sha256": "ff7486a239eb978598d02d47af3ce3b88c125ed2ce626df70b2871509b6ba143"
+          },
+          "expectation": "asserted",
+          "why": "The literal nan offset is retained after semantic Scene time dispatch. The draft keeps the original selected dialogue attachment and shows the exact placement-offset error plus the unchanged-draft explanation. Loaded model, exact Date witnesses and all saved packages remain unchanged. The raw text storage/change callback and inline notice text/visibility are associated; formatting, text styling, steppers and drawing remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift",
+            "start": 114,
+            "end": 116,
+            "sha256": "a515a337ef4f7d58b0dc222f131b34b193dfc91cc62a8cb8464741fd65185c61"
+          },
+          "expectation": "asserted",
+          "why": "The literal nan offset is retained after semantic Scene time dispatch. The draft keeps the original selected dialogue attachment and shows the exact placement-offset error plus the unchanged-draft explanation. Loaded model, exact Date witnesses and all saved packages remain unchanged. The raw text storage/change callback and inline notice text/visibility are associated; formatting, text styling, steppers and drawing remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift",
+            "start": 118,
+            "end": 119,
+            "sha256": "dfe125c703c1deb473b4659fba9a22b081bff6e618239a63ea3aa31f11225122"
+          },
+          "expectation": "asserted",
+          "why": "The literal nan offset is retained after semantic Scene time dispatch. The draft keeps the original selected dialogue attachment and shows the exact placement-offset error plus the unchanged-draft explanation. Loaded model, exact Date witnesses and all saved packages remain unchanged. The raw text storage/change callback and inline notice text/visibility are associated; formatting, text styling, steppers and drawing remain unclaimed."
+        }
+      ]
+    },
+    {
+      "id": "library-owned-trim-chain",
+      "title": "Observe only the currently owned trim editor",
+      "preconditions": [
+        "Reuse the complete unchanged tests/e2e/journeys/audio-library.mjs --group attachment journey with fresh isolated synthetic app storage and a separately verified matching automation build. This catalog does not execute the app or establish a new native result. Read-only readiness polls may repeat; mutations are issued once.",
+        "Map only the accepted routes and observable assertions described below. A mapped guard line does not claim its rejected branch. No physical-input, audible-output, device, security-scoped-picker, race, drawing, layout or drag behavior is established."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {base64:syntheticPCM().toString(\"base64\"),attachment:\"selected-dialogue\"}",
+        "select Script; activate preview-layers-disclosure if its label is Expand Layers; activate Audio; activate audio-clip-trim-<observed clip id>; loaded-project; persisted-projects",
+        "text audio-source-in 0.500; loaded-project; text audio-duration 2.500; loaded-project; text audio-placement-offset 0.250; loaded-project",
+        "activate audio-apply; persisted-projects; activate Close local audio; loaded-project"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "The actual library/trim-editor chain permits read-only loaded-project observations before and during its pending draft, with exact model and Date equality. One accepted Apply then persists only sourceStartMs=500, durationMs=2500 and startMs=250, retaining entryId=line1 and unrelated dates. This associates successful ownership checks for this captured library, scene and clip with the actual presented editor; it does not claim arbitrary stale or mismatched-editor rejection.",
+          "witness": {
+            "path": "tests/e2e/journeys/support/audio-attachment-steps.mjs",
+            "start": 106,
+            "end": 117,
+            "sha256": "70b7b3d1b118b8c511fdeb51bc72231b5f496f6297f68c0d7be8bd5485c215c1"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+            "start": 172,
+            "end": 179,
+            "sha256": "2e4c1d695db9563d376fbd4882ac258fccbb9e1c79ca8eaf02935c1db4a68b1c"
+          },
+          "expectation": "asserted",
+          "why": "The actual library/trim-editor chain permits read-only loaded-project observations before and during its pending draft, with exact model and Date equality. One accepted Apply then persists only sourceStartMs=500, durationMs=2500 and startMs=250, retaining entryId=line1 and unrelated dates. This associates successful ownership checks for this captured library, scene and clip with the actual presented editor; it does not claim arbitrary stale or mismatched-editor rejection."
+        }
+      ]
+    },
+    {
+      "id": "workspace-volume-restoration",
+      "title": "Restore the last nonzero master volume",
+      "preconditions": [
+        "Reuse the complete unchanged tests/e2e/journeys/audio-library.mjs --group mix journey with fresh isolated synthetic app storage and a separately verified matching automation build. This catalog does not execute the app or establish a new native result. Read-only readiness polls may repeat; mutations are issued once.",
+        "Map only the accepted routes and observable assertions described below. A mapped guard line does not claim its rejected branch. No physical-input, audible-output, device, security-scoped-picker, race, drawing, layout or drag behavior is established."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {base64:syntheticPCM().toString(\"base64\"),attachment:\"scene\"}",
+        "select Script; activate preview-layers-disclosure if its label is Expand Layers; activate Audio; slider Clip volume for Synthetic.wav 0.375; activate Mute Synthetic.wav; activate Unmute Synthetic.wav; activate Close local audio",
+        "slider {target: observed Local audio volume, value:0.25}; persisted-projects",
+        "activate Mute local audio; persisted-projects; activate Unmute local audio; persisted-projects; key command-s; open sample project; reopen saved audio project; loaded-project"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "Exact saved-model assertions observe master volume 0.25, then 0, then restoration to 0.25, each as one accepted revision; save/browser/reopen retains the full model. The current-project volume-memory storage and key are associated with this accepted path. Cross-project mute-memory isolation, nonfinite direct inputs, range-clamp rejection and audible gain are not asserted.",
+          "witness": {
+            "path": "tests/e2e/journeys/audio-library.mjs",
+            "start": 175,
+            "end": 186,
+            "sha256": "21856bc50b75847fdc35eeddc4ae97097ccca804aaeddb7361fb744dd5b7b332"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 530,
+            "end": 530,
+            "sha256": "fd469d776364f520c00e44c056c65dc2dc436cb075cad9ad1ec8312bdbe9f7a6"
+          },
+          "expectation": "asserted",
+          "why": "Exact saved-model assertions observe master volume 0.25, then 0, then restoration to 0.25, each as one accepted revision; save/browser/reopen retains the full model. The current-project volume-memory storage and key are associated with this accepted path. Cross-project mute-memory isolation, nonfinite direct inputs, range-clamp rejection and audible gain are not asserted."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1339,
+            "end": 1347,
+            "sha256": "daf38fc77634fc88d4038365a3cf20e2be8e04841cbc6bca46ad4729ed3cb323"
+          },
+          "expectation": "asserted",
+          "why": "Exact saved-model assertions observe master volume 0.25, then 0, then restoration to 0.25, each as one accepted revision; save/browser/reopen retains the full model. The current-project volume-memory storage and key are associated with this accepted path. Cross-project mute-memory isolation, nonfinite direct inputs, range-clamp rejection and audible gain are not asserted."
+        }
+      ]
+    },
+    {
+      "id": "workspace-reviewed-word-save",
+      "title": "Commit the complete reviewed adjacent-word draft",
+      "preconditions": [
+        "Reuse the complete unchanged tests/e2e/journeys/word-timing.mjs --case adjacent-words journey with fresh isolated synthetic app storage and a separately verified matching automation build. This catalog does not execute the app or establish a new native result. Read-only readiness polls may repeat; mutations are issued once.",
+        "Map only the accepted routes and observable assertions described below. A mapped guard line does not claim its rejected branch. No physical-input, audible-output, device, security-scoped-picker, race, drawing, layout or drag behavior is established."
+      ],
+      "actions": [
+        "import-json {text: JSON.stringify(word timing fixture)}; import-audio {base64:syntheticPCM().toString(\"base64\"),attachment:\"scene\"}",
+        "menu-action {target: observed Layers word two button, action:\"Edit word timing…\"}; activate word-timing-chip-w1; text word-timing-start 0.1000; text word-timing-end 0.7000; activate word-timing-chip-w2; text word-timing-start 1.2000; text word-timing-end 1.7000; revisit both chips; activate Cancel",
+        "reopen word timing; activate word-timing-chip-w1; text word-timing-end 1.2000; activate Save timing; snapshot overlap notice; activate word-timing-chip-w2; text word-timing-start 1.2000; revisit both chips; activate Save timing",
+        "persisted-projects; loaded-project; reopen word timing; activate Cancel; reopen saved project; inspect all three word chips; activate Cancel"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "The actual plural store wrapper commits one complete reviewed adjacent-word transaction: w1 ends at 1200 and w2 starts at 1200/ends at 1600 with authored markers; w3, text, cues, audio and 3000 ms owned duration remain exact. Reopening retains the saved transaction. The singular setter and phrase-shift wrapper remain outside this association.",
+          "witness": {
+            "path": "tests/e2e/journeys/word-timing.mjs",
+            "start": 19,
+            "end": 38,
+            "sha256": "8ca0778f45bea2002b523778ef6d3f932cb550bb8d550a37e6f62f9581d9e946"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1192,
+            "end": 1194,
+            "sha256": "e181f070313186b29c05fd6bad1bf822db3b9576aaea094d92c4a6b5cfee99d8"
+          },
+          "expectation": "asserted",
+          "why": "The actual plural store wrapper commits one complete reviewed adjacent-word transaction: w1 ends at 1200 and w2 starts at 1200/ends at 1600 with authored markers; w3, text, cues, audio and 3000 ms owned duration remain exact. Reopening retains the saved transaction. The singular setter and phrase-shift wrapper remain outside this association."
+        }
+      ]
+    },
+    {
+      "id": "workspace-clock-seek",
+      "title": "Rebase the scene clock through real slider dispatch",
+      "preconditions": [
+        "Reuse the complete unchanged tests/e2e/transport.mjs journey with fresh isolated synthetic app storage and a separately verified matching automation build. This catalog does not execute the app or establish a new native result. Read-only readiness polls may repeat; mutations are issued once.",
+        "Map only the accepted routes and observable assertions described below. A mapped guard line does not claim its rejected branch. No physical-input, audible-output, device, security-scoped-picker, race, drawing, layout or drag behavior is established."
+      ],
+      "actions": [
+        "import-json {text:JSON.stringify(transportClockFixture)}; snapshot exact scene-playback-position maximum 10000 and Play scene",
+        "slider {target:\"scene-playback-position\",value:1000}; snapshot; activate Play scene; snapshot three advancing clock samples",
+        "slider {target:\"scene-playback-position\",value:6000}; snapshot three advancing samples; slider {target:\"scene-playback-position\",value:200}; snapshot three advancing samples",
+        "activate Pause scene; snapshot three exact stable paused samples; activate Play scene; snapshot three advancing samples",
+        "slider {target:\"scene-playback-position\",value:9000}; snapshot advancing near-end sample; poll until Play scene; snapshot repeated exact 10000 and stopped state"
+      ],
+      "expectations": [
+        {
+          "id": "asserted",
+          "description": "The actual store seek/update path accepts finite slider positions, shows exact paused 1000, advances within independently bounded host-clock trajectories after forward/backward running seeks, remains exactly stable while paused, resumes and naturally clamps at 10000. Only accepted finite positions and observed clock values are associated. Direct NaN, zero-duration, selected-entry following and any audio-device/player behavior remain unclaimed.",
+          "witness": {
+            "path": "tests/e2e/support/transport-clock-journey.mjs",
+            "start": 83,
+            "end": 138,
+            "sha256": "484c9b2bcf029c5e13f17a46f98363f6ce136036c87cff08ca1de581bf661edd"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1093,
+            "end": 1097,
+            "sha256": "f4ceb50479fc717ccc28e795d7b3825a7a6b1d2779627dbc4c0aae7562cac138"
+          },
+          "expectation": "asserted",
+          "why": "The actual store seek/update path accepts finite slider positions, shows exact paused 1000, advances within independently bounded host-clock trajectories after forward/backward running seeks, remains exactly stable while paused, resumes and naturally clamps at 10000. Only accepted finite positions and observed clock values are associated. Direct NaN, zero-duration, selected-entry following and any audio-device/player behavior remain unclaimed."
+        },
+        {
+          "source": {
+            "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+            "start": 1101,
+            "end": 1102,
+            "sha256": "aeb5a744cbafb6a3e3cd7af48a54430d6956bc8fe22055a9f1370e44af7084b9"
+          },
+          "expectation": "asserted",
+          "why": "The actual store seek/update path accepts finite slider positions, shows exact paused 1000, advances within independently bounded host-clock trajectories after forward/backward running seeks, remains exactly stable while paused, resumes and naturally clamps at 10000. Only accepted finite positions and observed clock values are associated. Direct NaN, zero-duration, selected-entry following and any audio-device/player behavior remain unclaimed."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "pcm-import-record",
+      "title": "Decode the imported synthetic PCM record",
+      "steps": [
+        "pcm-import-record"
+      ]
+    },
+    {
+      "id": "library-scene-cards",
+      "title": "Resolve both imported clips in the actual library",
+      "steps": [
+        "library-scene-cards"
+      ]
+    },
+    {
+      "id": "library-close-button",
+      "title": "Dispatch the labeled library close button",
+      "steps": [
+        "library-close-button"
+      ]
+    },
+    {
+      "id": "raw-audio-fields-and-notice",
+      "title": "Retain exact raw numeric drafts and show the attachment error",
+      "steps": [
+        "raw-audio-fields-and-notice"
+      ]
+    },
+    {
+      "id": "library-owned-trim-chain",
+      "title": "Observe only the currently owned trim editor",
+      "steps": [
+        "library-owned-trim-chain"
+      ]
+    },
+    {
+      "id": "workspace-volume-restoration",
+      "title": "Restore the last nonzero master volume",
+      "steps": [
+        "workspace-volume-restoration"
+      ]
+    },
+    {
+      "id": "workspace-reviewed-word-save",
+      "title": "Commit the complete reviewed adjacent-word draft",
+      "steps": [
+        "workspace-reviewed-word-save"
+      ]
+    },
+    {
+      "id": "workspace-clock-seek",
+      "title": "Rebase the scene clock through real slider dispatch",
+      "steps": [
+        "workspace-clock-seek"
+      ]
+    }
+  ]
+}

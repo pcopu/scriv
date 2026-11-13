@@ -1,0 +1,345 @@
+{
+  "version": 1,
+  "kind": "scenario-step-catalog",
+  "steps": [
+    {
+      "id": "analysis-copy-readback",
+      "title": "Prepare an exact external analysis copy",
+      "preconditions": [
+        "A pinned synthetic source manifest includes an explicitly added extra directory and excludes a deleted tracked file; output is a fresh owned sibling directory.",
+        "The parent source-provenance journey invokes copied current public CLI bytes in a disposable synthetic Git fixture. These are tooling assertions; synthetic LCOV does not measure native app execution."
+      ],
+      "actions": [
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${analysisPath}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The public JSON result identifies the expected source root, manifest, worktree, file count and separate dataset path; every copied file matches its independently pinned hash, the dataset is absent, and original source metadata and bytes are unchanged.",
+          "witness": {
+            "path": "tests/tracer/measurement-output-journey.mjs",
+            "start": 19,
+            "end": 26,
+            "sha256": "c0c0dd852d9aaeac55fb9412e108b958af59e976a37db9c29aa441f25e8fee90"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 10,
+            "end": 12,
+            "sha256": "b8188e64095ebf5ab7f4815227cc40e189a95522d4a1a912eeb62ef300beab1b"
+          },
+          "expectation": "observed",
+          "why": "The CLI source root, fixed separate dataset path and SHA-256 helper feed the exact root/path/hash assertions; this claims the ordinary canonical fixture only."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 16,
+            "end": 19,
+            "sha256": "5859527f26d9e3822791e2c03306e9e8b38fa1d17e8a14134bb2892b58e5a27f"
+          },
+          "expectation": "observed",
+          "why": "Canonical fixture and output paths select the asserted external root; alternate path spelling and symlink-parent behavior are not claimed."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 23,
+            "end": 26,
+            "sha256": "4578e32daead664083205e6f5d3d2dc4e7291862f12934a53dc05a064e9446c6"
+          },
+          "expectation": "observed",
+          "why": "The supplied manifest is verified, read and decoded before output construction; the witness checks its exact digest, file list and worktree identity."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 35,
+            "end": 37,
+            "sha256": "9fb4e64b7e08beee64dcafffb0d779b5df3b7d2d0992d53bf09eb4657e358ab8"
+          },
+          "expectation": "observed",
+          "why": "The public preparation creates the external source directory used for full copied-file verification. Permission-mode guarantees are not claimed by this readback."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 39,
+            "end": 43,
+            "sha256": "4cbcea6c1d5553d404820f9d27e44f7b8db16f6f4e570561aa812c591d6be931"
+          },
+          "expectation": "observed",
+          "why": "Every manifest-listed source file is read for the asserted byte-identical copy. The supported in-budget canonical files are covered; race, oversize and copy-time mutation rejection are not claimed."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 45,
+            "end": 50,
+            "sha256": "a6de0e449a8c8f72fae88bfec671f862ca7ea81cb1e9ea21561a302150e678eb"
+          },
+          "expectation": "observed",
+          "why": "Nested destination creation, exclusive writes and post-copy checks complete the exact file-copy outcome while preserving the original source. Crash durability, ownership and concurrent writers are not claimed."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 58,
+            "end": 60,
+            "sha256": "7c2922b1403903869b73ff2daa4821fe5fecd23576788e1f6ec959ad91699340"
+          },
+          "expectation": "observed",
+          "why": "The result exposes the exact kind, root, dataset path, manifest, worktree and file count checked by the witness. The version field is not independently asserted."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 61,
+            "end": 61,
+            "sha256": "bcdb7431e206b2e2f5e05ccd33c14140cd859b454ae60cec6d2249076b23d256"
+          },
+          "expectation": "observed",
+          "why": "The sourceUnchanged field is checked together with an independent before/after source snapshot; the same-line sourceBytes value is not independently asserted."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 64,
+            "end": 65,
+            "sha256": "1bbb4bf4637f86eb956d486fb5e7986030da11137e30ee3d0b4b10617cbb31e7"
+          },
+          "expectation": "observed",
+          "why": "The prepared report returns to the public CLI readback after verification; this is the successful return only."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 67,
+            "end": 77,
+            "sha256": "458e361c40cc4c6c4a029388ca0d6c158d3c4fed110c83d7bfbb2f0181635c5a"
+          },
+          "expectation": "observed",
+          "why": "The public process consumes the actual three advertised option/value pairs and emits the verified result. This covers supported argument dispatch only, not unknown, missing or duplicate option rejection."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 78,
+            "end": 78,
+            "sha256": "73dc25a8e79ab857806ee1f73cf7e8014c8353c2a3985c4a10ca0395c0c45d15"
+          },
+          "expectation": "observed",
+          "why": "The copied script runs as the public executable entrypoint for the asserted JSON result; module-import behavior is not claimed."
+        }
+      ]
+    },
+    {
+      "id": "analysis-repository-import",
+      "title": "Import only into the prepared analysis repository",
+      "preconditions": [
+        "The synthetic pinned fixture has no analysis directory yet. Preparation and its earlier full-copy readback precede the importer continuation in the same journey. LCOV identities are explicitly synthetic, not a native executable capture.",
+        "The parent source-provenance journey invokes copied current public CLI bytes in a disposable synthetic Git fixture. These are tooling assertions; synthetic LCOV does not measure native app execution."
+      ],
+      "actions": [
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${analysisPath}",
+        "tracer --root ${analysisRoot} measure import --before ${syntheticBefore0} --after ${syntheticAfter0} --manifest ${syntheticManifest0} --sources ${externalManifest} --strip-prefix /scriv-source/ --json",
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}",
+        "tracer --root ${analysisRoot} measure import --before ${syntheticBefore1} --after ${syntheticAfter1} --manifest ${syntheticManifest1} --sources ${externalManifest} --strip-prefix /scriv-source/ --json",
+        "tracer --root ${analysisRoot} measure report --json",
+        "tracer --root ${analysisRoot} measure check --json",
+        "tracer app -- test --scenario character-aliases --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output-dir ${externalOutput}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "Two genuine public importer invocations accept explicitly synthetic LCOV in the new repository, preserve the first record, report the expected source and counters, pass integrity, and leave original source verification intact.",
+          "witness": {
+            "path": "tests/tracer/measurement-output-journey.mjs",
+            "start": 53,
+            "end": 69,
+            "sha256": "a021afc17c2d144263ba0b05991ef66877ec48738b619955a352a37faf0fd587"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 54,
+            "end": 57,
+            "sha256": "1c36e31c1c209dad2238c02b17c9d84b2ed304d4b815763a06f4e39dc3d11925"
+          },
+          "expectation": "observed",
+          "why": "The fresh local Git repository supports the subsequent real Tracer imports and root selection. Hostile inherited Git environment, hooks, remotes and template attacks are not tested here."
+        }
+      ]
+    },
+    {
+      "id": "analysis-preserve-existing",
+      "title": "Refuse an occupied analysis destination",
+      "preconditions": [
+        "The external analysis directory already holds two synthetic measurement records and the copied source.",
+        "The parent source-provenance journey invokes copied current public CLI bytes in a disposable synthetic Git fixture. These are tooling assertions; synthetic LCOV does not measure native app execution."
+      ],
+      "actions": [
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${analysisPath}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The repeat invocation exits 2 and preserves every existing analysis entry and the original source snapshot.",
+          "witness": {
+            "path": "tests/tracer/measurement-output-journey.mjs",
+            "start": 80,
+            "end": 83,
+            "sha256": "88b870f7c1063c30bfdaaef1b5bd09e2c7c5f6ea94937b62952ec49d8ee9b019"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 35,
+            "end": 35,
+            "sha256": "4a8cd2be69cbfddb7c82e6a620faceaf186c98cfe4e36d04a6f20e238302fe7f"
+          },
+          "expectation": "observed",
+          "why": "Exclusive directory creation refuses an already existing output before any copy write; the recursive analysis snapshot independently proves no overwrite."
+        }
+      ]
+    },
+    {
+      "id": "analysis-refuse-inside-source",
+      "title": "Refuse output inside the pinned source",
+      "preconditions": [
+        "The fixture root and existing source snapshot are valid; the only changed input is a destination beneath that root.",
+        "The parent source-provenance journey invokes copied current public CLI bytes in a disposable synthetic Git fixture. These are tooling assertions; synthetic LCOV does not measure native app execution."
+      ],
+      "actions": [
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${sourceRoot}/analysis-inside-source"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "The CLI exits 2, creates no inside-source output, and preserves the original source snapshot.",
+          "witness": {
+            "path": "tests/tracer/measurement-output-journey.mjs",
+            "start": 84,
+            "end": 87,
+            "sha256": "da468d6de3bc7f306424c5143ccc43493578f5c812ad9b9a193330cd46cb0803"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 13,
+            "end": 14,
+            "sha256": "79a80c427c04f7ec1dc0bcade3ab1a79c542708cda0fce261dbc621e96cc8d84"
+          },
+          "expectation": "observed",
+          "why": "The boundary predicate and guard reject the controlled descendant-output case. This does not claim every path relation or permission/owner rejection."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 20,
+            "end": 22,
+            "sha256": "44fe230b6d82a5dbbbb22a4d343e23737281f30b6ab4f9c317280b0fadc6d7c9"
+          },
+          "expectation": "observed",
+          "why": "The owned parent reaches the external-output boundary check and refuses the descendant destination; wrong UID, unsafe mode and reversed ancestor cases remain unasserted."
+        }
+      ]
+    },
+    {
+      "id": "analysis-refuse-pinned-dataset",
+      "title": "Refuse including measurement data in build source",
+      "preconditions": [
+        "The fixture first rejects an unlisted synthetic dataset; it is then explicitly included in a new valid source manifest to distinguish the reserved-path guard.",
+        "The parent source-provenance journey invokes copied current public CLI bytes in a disposable synthetic Git fixture. These are tooling assertions; synthetic LCOV does not measure native app execution."
+      ],
+      "actions": [
+        "node scripts/export-cli-source-manifest.mjs --output ${manifestIncludingDataset} --include extra --include docs",
+        "node scripts/prepare-coverage-analysis.mjs --source-manifest ${manifestIncludingDataset} --source-manifest-sha256 ${includingDatasetDigest} --output ${analysisIncludedDataset}"
+      ],
+      "expectations": [
+        {
+          "id": "observed",
+          "description": "After explicitly pinning the fixture measurement dataset, preparation exits 2 without creating output, and both copies of the existing dataset retain their bytes.",
+          "witness": {
+            "path": "tests/tracer/measurement-output-journey.mjs",
+            "start": 116,
+            "end": 131,
+            "sha256": "a1c8ad22847e1ae555ded00dcbddc1202ffb0fe201b6830fc39c66501df8b92a"
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 27,
+            "end": 27,
+            "sha256": "e6d8f7aeb3767ba0d6e193e45864ed6c2f3f5858d7c4ca1f346bd2d4491631a6"
+          },
+          "expectation": "observed",
+          "why": "The valid pinned manifest is refused because it includes the reserved dataset path. The separate maximum-file-count condition is not independently tested."
+        },
+        {
+          "source": {
+            "path": "scripts/prepare-coverage-analysis.mjs",
+            "start": 79,
+            "end": 80,
+            "sha256": "f9d8e6848eea457279aa4cf4f67bf2de51fe28ab05f8024b05ee148babadaf48"
+          },
+          "expectation": "observed",
+          "why": "The public rejection path produces the asserted exit status 2. The literal diagnostic text and every possible error source are not claimed."
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "analysis-copy-readback",
+      "title": "Prepare an exact external analysis copy",
+      "steps": [
+        "analysis-copy-readback"
+      ]
+    },
+    {
+      "id": "analysis-repository-import",
+      "title": "Import only into the prepared analysis repository",
+      "steps": [
+        "analysis-repository-import"
+      ]
+    },
+    {
+      "id": "analysis-preserve-existing",
+      "title": "Refuse an occupied analysis destination",
+      "steps": [
+        "analysis-preserve-existing"
+      ]
+    },
+    {
+      "id": "analysis-refuse-inside-source",
+      "title": "Refuse output inside the pinned source",
+      "steps": [
+        "analysis-refuse-inside-source"
+      ]
+    },
+    {
+      "id": "analysis-refuse-pinned-dataset",
+      "title": "Refuse including measurement data in build source",
+      "steps": [
+        "analysis-refuse-pinned-dataset"
+      ]
+    }
+  ]
+}
