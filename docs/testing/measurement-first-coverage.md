@@ -74,19 +74,70 @@ enabled public control with stable geometry before modal transitions; the CLI
 has no transition-completion field. The wait is bounded, mutations dispatch
 once, and production guards are unchanged.
 
-The updated native totals are **12,512 / 21,667 (57.75%) from passing runs** and
+At that checkpoint, native totals were **12,512 / 21,667 (57.75%) from passing runs** and
 **12,514 / 21,667 (57.76%) across all observations**. The two extra lines are
 router guard lines observed only in the failed attempt. There are 169 intervals
 (151 passing, 18 historical failed), five retained provenance groups, and no
 unknown outcomes. All 39 permitted current test graphs have passing evidence;
 the restricted alias route remains blocked. The independently checked raw
-counter union agrees with Tracer. Cloud/update totals below are unchanged.
+counter union agrees with Tracer. Later measurements are recorded below.
 
 Reusing the original native build with the full current test tree also exposed
 a narrow host-file classification omission. The service-only test runner is now
 an explicitly permitted host-file difference. Its exact before/after hashes are
 checked, and native source, resource, package and build-script rejection tests
 remain intact. No native inputs changed and no app rebuild was needed.
+
+## Screen and service gap follow-up
+
+The next lookup selected signed-out Discussion and Generation Jobs screens,
+the existing real Codex connection journey, and six service boundary journeys.
+Discussion navigation and three connect/disconnect cycles against an isolated
+signed-out Codex runtime added **491 unique lines from passing scenarios** on
+the retained native build, including 220 Discussion and 149 Codex-controller
+lines. No account login or generation turn was submitted. The owned runtime
+and supervisor stopped afterward, and their loopback port was confirmed closed.
+
+That build's final checkpoint is **13,003 / 21,667 (60.01%) from passing runs**
+and **13,057 / 21,667 (60.26%) across all observations**. Its 179 unique intervals
+include 158 passing and 21 failed observations across six provenance groups,
+with no unknown outcomes. The raw-counter oracle agrees for every file.
+Passing endpoint sessions retain their own outcomes even when a later scenario
+in the same invocation failed. Failed setup captures remain available.
+
+The Jobs journey exposed a CLI defect: a sheet presented from the owned Settings
+scene rendered in a native window absent from the CLI's window inventory.
+The fix follows the presented-controller chain from Settings controllers whose
+store is exactly the current workspace's store, retaining window deduplication
+and the existing active-presentation and sensitive-input checks.
+
+A fresh automation build using standalone Command Line Tools compiled and
+bundled successfully in 209.478 seconds. Developer ID timestamping, strict
+signature verification, approved-icon verification and Catalyst platform checks
+passed. Its executable SHA-256 is
+`433c9bc12251fb2931d077a64f892497f7f5618daef31b0cee460d0042e73a24`;
+its build-source manifest SHA-256 is
+`2f0b7f2920840ada8f1ba43d733687e239125422438e7814d8c50984dafb9527`.
+The source change makes the preceding whole-build union historical. Fresh-build
+acceptance and captures are tracked separately; old datasets are not rewritten
+or forced into a compatible union. Per-file lookup can still reuse an old
+observation when that requested file's current bytes match exactly.
+
+The corrected Jobs journey passed on the fresh build in 22.57 seconds with
+capture and strict pre/post signature checks. It verifies local/shared empty
+history, signed-out refresh, two close/reopen cycles and complete loaded/saved
+project preservation. Catalyst's native Done item is absent from the public
+UIView snapshot, so the test discovers and verifies the Jobs controller's
+priority Escape handler before dispatching Escape once. The failed capture
+and the separate diagnostic remain retained; the diagnostic contributes no
+measured interval.
+
+The six scoped regressions—workspace, Settings navigation, Projects, capability
+safety, local images/Discussion and default endpoint validation—also passed on
+that build in 184.893 seconds, including capture and strict pre/post signatures.
+Together with Jobs, these establish seven selected fresh-build journeys, not a
+rerun of all 39 permitted routes. The default endpoint regression did not opt
+into the separately completed live-runtime workflow.
 
 ## Working loop
 
@@ -132,7 +183,8 @@ The 67 compatible cached intervals observed 9,732 unique lines. Adding the four
 pilot intervals gives 10,364 of 21,667 instrumented lines across 150 app/Core
 files, or 47.83%. Restricting the union to passing journeys gives 10,355 lines,
 or 47.79%; nine lines occur only in an earlier failed journey. All measured
-source hashes match current application source. Original datasets were preserved.
+source hashes matched that retained capture-source checkpoint. Original datasets
+were preserved.
 
 The speculative connections were useful without being accurate predictions:
 image-evidence-isolation hit none of its 950 proposed target lines but exposed
@@ -219,8 +271,10 @@ covers the other eleven cloud routes too, selecting 1,600 statement sites on
 1,164 original anchor lines across 15 modules. No production TypeScript or
 deployment configuration changed.
 
-The twelve cloud routes together observe **1,113 / 1,164 selected anchors
-(95.62%)**; the known-passing union is identical. **51 anchors remain unobserved.**
+The twelve cloud routes together observe **1,143 / 1,164 selected anchors
+(98.20%)**; the known-passing union is identical. **21 anchors remain unobserved.**
+The focused collaboration, atomic-batch, discussions-assets, billing, OAuth and
+team-lifecycle extensions all pass and add 30 anchors to the prior checkpoint.
 The updates route remains a separate **32 / 36 (88.89%)** scope. Neither
 percentage is an overall project percentage or a percentage of all backend lines.
 
@@ -248,9 +302,17 @@ configuration, the initial billing counter closure, and a billing import stopped
 by disk exhaustion. Their repaired runs passed. The two interrupted raw billing
 phases were verified and imported into new analysis roots with separate recovery
 receipts; original partial artifacts stayed unchanged. The final service union
-contains 23 phases: 19 from passing attempts and four from failed attempts, with
-14 retained provenance groups and no unknown outcomes. Recovery added no new
+initially contained 23 phases: 19 from passing attempts and four from failed
+attempts, with 14 retained provenance groups and no unknown outcomes. Recovery added no new
 observed anchors and did not change either failed attempt to passing.
+
+The gap follow-up retains 39 phases: 31 passing and eight failed, across 22
+provenance groups with no unknown outcomes. A new billing attempt first failed
+because Miniflare translated the fixture exception into an HTTP provider error;
+the test now verifies that actual response and continues through pagination.
+The separate true fetch-rejection branch remains unobserved. Every original
+raw snapshot, failed interval, dataset, source and tool identity was preserved;
+independent raw-counter and imported-dataset comparisons agree.
 
 ## Reusable Tracer commands
 
@@ -290,26 +352,29 @@ claimed.
 
 ## Remaining measured gaps
 
-The largest native gaps are concentrated in workflows the current journeys do
-not reach. These are priorities from the actual instrumented universe, not
-estimated whole-file coverage or proof that the code is dead.
+The retained native build's passing-only checkpoint identifies these gaps.
+Its whole-build totals are historical after the CLI source change; query each
+current file before choosing more work. These are priorities from the actual
+instrumented universe, not estimated whole-file coverage or proof of dead code.
 
 | Native source | Observed / instrumented | Unobserved |
 | --- | ---: | ---: |
-| `WorkspaceStore.swift` | 1,028 / 2,352 | 1,324 |
+| `WorkspaceStore.swift` | 1,039 / 2,352 | 1,313 |
 | `CloudClient.swift` | 27 / 895 | 868 |
-| `CodexController.swift` | 6 / 873 | 867 |
+| `CodexController.swift` | 155 / 873 | 718 |
 | `ScrivCLIRunCapability.swift` | 70 / 409 | 339 |
-| `ScrivDiscussionController.swift` | 0 / 312 | 312 |
+| `ScrivDiscussionController.swift` | 220 / 312 | 92 |
 | `TeamsController.swift` | 80 / 282 | 202 |
 
 The next useful native variants are account-backed cloud/team/discussion flows
 and Codex job lifecycle/error handling, with their actual supported CLI routes,
 isolated fixtures and required runtime services checked first. A passing local
 backend journey does not establish native UI or native-client execution.
-The 51 cloud gaps are led by `project-room.ts` (26), `media.ts` (6),
-`billing.ts` (4) and `email-auth.ts` (4); the remaining 11 are distributed across
-six modules. Source ranges are available in the retained union reports.
+The 21 cloud gaps comprise eleven startup initializers, six media storage/race
+guards, two natural 24-hour alarm lines, one WebSocket error callback and one
+billing fetch-rejection line. Startup counters were already nonzero at the
+baseline; ordinary requests do not add interval observations for those sites.
+Source ranges are available in the retained union reports.
 
 These observations are line-counter increases during whole intervals, including
 polling and background work. Startup before the baseline, uninstrumented code,
@@ -337,5 +402,7 @@ planning review. That does not gate measured lookup. An unrelated preexisting
 catalog context was preserved. These catalog limits neither create execution
 credit nor invalidate the separately checked raw captures.
 
-This checkpoint publishes source and installed-skill changes. No Tracer package
-release, global CLI upgrade, Scriv application rebuild or distribution is implied.
+The earlier lookup checkpoint published Tracer source and installed-skill
+changes. The follow-up adds the separately verified Scriv automation build
+described above. Neither establishes a Tracer package release, global CLI
+upgrade, release notarization, trusted-helper behavior or app distribution.

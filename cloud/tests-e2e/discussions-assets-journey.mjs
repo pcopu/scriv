@@ -128,7 +128,7 @@ if (process.argv[2] !== '--owned-child') {
       assert.equal(base.hostname, '127.0.0.1'); assert.equal(base.protocol, 'http:'); assert(Number(base.port) > 0);
       const url = new URL(path, base); assert.equal(url.origin, base.origin);
       const encoded = body === undefined ? undefined : JSON.stringify(body);
-      assert(requests++ < 80); assert(Buffer.byteLength(encoded ?? '') <= 16384);
+      assert(requests++ < 220); assert(Buffer.byteLength(encoded ?? '') <= 16384);
       const response = await fetch(url, { method, headers: { authorization: `Bearer ${actors[role].token}`, ...(encoded ? { 'content-type': 'application/json' } : {}) }, body: encoded, redirect: 'error', signal: AbortSignal.timeout(5000) });
       // Never include response bodies or headers in errors: leases are secrets.
       assert.equal(response.status, status, `${method} ${path} status`);
@@ -185,7 +185,7 @@ if (process.argv[2] !== '--owned-child') {
     async function media(path, { role = 'owner', method = 'GET', data, type, status = 200, code } = {}) {
       const base = await mf.ready; assert.equal(base.hostname, '127.0.0.1');
       const url = new URL(path, base); assert.equal(url.origin, base.origin);
-      assert(requests++ < 80); assert((data?.length ?? 0) <= 16384);
+      assert(requests++ < 220); assert((data?.length ?? 0) <= 16384);
       const response = await fetch(url, { method, headers: { authorization: `Bearer ${actors[role].token}`, ...(type ? { 'content-type': type } : {}) }, body: data, redirect: 'error', signal: AbortSignal.timeout(5000) });
       assert.equal(response.status, status, `${method} asset status`);
       assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
@@ -238,7 +238,7 @@ if (process.argv[2] !== '--owned-child') {
       const body = streaming ? new ReadableStream({ start(controller) {
         controller.enqueue(data.subarray(0, 8)); controller.enqueue(data.subarray(8)); controller.close();
       } }) : data;
-      assert(requests++ < 80);
+      assert(requests++ < 220);
       const response = await fetch(url, { method, headers, body, ...(streaming ? { duplex: 'half' } : {}),
         redirect: 'error', signal: AbortSignal.timeout(5000) });
       assert.equal(response.status, status, label);
@@ -481,6 +481,52 @@ if (process.argv[2] !== '--owned-child') {
     const { discussionAnchorCases } = await import(pathToFileURL(join(cloud, 'tests-e2e/discussion-anchor-cases.mjs')).href);
     const anchors = await discussionAnchorCases({ base: await mf.ready, token: actors.owner.token, actor: actors.owner });
     requests += anchors.httpChecks; assert.equal(requests, 174); assert.equal(outboundAttempts, 0);
+    // Message attachments retain exact item/version references and refuse unavailable content.
+    const attachmentStart = requests, attachmentProject = randomUUID(), attachmentScene = randomUUID(), attachmentImage = randomUUID();
+    const attachmentRoute = suffix => `/v1/projects/${attachmentProject}/${suffix}`;
+    await request('/v1/projects', post({ id: attachmentProject, title: 'Synthetic message attachments', teamId }, { status: 201 }));
+    const imageData = { id: attachmentImage, version: 1, fileName: 'attachment.png', sha256: hash, mimeType: 'image/png', byteCount: content.length, characterIds: [], prompt: '', createdAt: Date.now() };
+    const attachmentCommand = { commandId: randomUUID(), sessionId: actors.owner.sessionId, epoch: 1, label: 'Attachment references', operations: [
+      { op: 'put', id: attachmentScene, kind: 'scene', expectedVersion: 0, data: { id: attachmentScene, title: 'Attached scene', order: 0 } },
+      { op: 'put', id: attachmentImage, kind: 'image', expectedVersion: 0, data: imageData },
+    ] };
+    const attachmentSaved = await request(attachmentRoute('commands'), post(attachmentCommand));
+    assert.deepEqual(attachmentSaved, { commandId: attachmentCommand.commandId, seq: 1, epoch: 1, timingVersion: 0, items: [
+      { id: attachmentScene, kind: 'scene', version: 1, data: attachmentCommand.operations[0].data, deleted: false },
+      { id: attachmentImage, kind: 'image', version: 1, data: imageData, deleted: false },
+    ] });
+    const attachmentThread = (await request(attachmentRoute('threads'), post({}, { status: 201 }))).thread;
+    const attachmentMessages = attachmentRoute(`threads/${attachmentThread.id}/messages`);
+    const attachmentInput = { id: randomUUID(), body: 'Exact attached scene and image version', attachments: [{ itemId: attachmentScene }, { itemId: attachmentImage, imageVersionId: attachmentImage }] };
+    const attachmentSentStart = Date.now(), attachmentSent = await request(attachmentMessages, post(attachmentInput, { status: 201 })), attachmentSentEnd = Date.now();
+    const attachmentMessage = attachmentSent.message;
+    assert(attachmentMessage.at >= attachmentSentStart && attachmentMessage.at <= attachmentSentEnd);
+    assert.deepEqual(attachmentMessage, { id: attachmentInput.id, threadId: attachmentThread.id, userId: actors.owner.id, name: 'Synthetic owner', body: attachmentInput.body, replyToId: null, attachments: attachmentInput.attachments, mentionedUserIds: [], at: attachmentMessage.at });
+    assert.deepEqual(await request(attachmentMessages, post(attachmentInput)), attachmentSent);
+    const attachmentBaseline = { snapshot: await request(attachmentRoute('snapshot')), events: await request(attachmentRoute('events?after=0')), messages: await request(attachmentMessages) };
+    assert.deepEqual(attachmentBaseline.messages.messages, [attachmentMessage]);
+    for (const attachments of [[{ itemId: randomUUID() }], [{ itemId: attachmentScene, imageVersionId: randomUUID() }], [{ itemId: attachmentScene, imageVersionId: attachmentScene }]]) {
+      await request(attachmentMessages, post({ id: randomUUID(), body: 'Unavailable attachment', attachments }, { status: 404, code: 'not_found' }));
+      assert.deepEqual(await request(attachmentMessages), attachmentBaseline.messages);
+      assert.deepEqual(await request(attachmentRoute('snapshot')), attachmentBaseline.snapshot);
+      assert.deepEqual(await request(attachmentRoute('events?after=0')), attachmentBaseline.events);
+    }
+    await request(attachmentRoute(`threads/${attachmentThread.id}`), { method: 'DELETE', status: 405, code: 'method_not_allowed' });
+    assert.deepEqual(await request(attachmentRoute('snapshot')), attachmentBaseline.snapshot);
+    assert.deepEqual(await request(attachmentRoute('events?after=0')), attachmentBaseline.events);
+    const imageLease = await request(attachmentRoute('leases'), post({ itemId: attachmentImage, sessionId: actors.owner.sessionId }));
+    const deleteImage = { commandId: randomUUID(), sessionId: actors.owner.sessionId, epoch: 1, label: 'Remove attached image', operations: [{ op: 'delete', id: attachmentImage, expectedVersion: 1, lease: { token: imageLease.token, fence: imageLease.fence } }] };
+    const deletedImage = await request(attachmentRoute('commands'), post(deleteImage));
+    assert.deepEqual(deletedImage, { commandId: deleteImage.commandId, seq: 4, epoch: 1, timingVersion: 0, items: [{ id: attachmentImage, kind: 'image', version: 2, data: imageData, deleted: true }] });
+    const deletedAttachmentState = { snapshot: await request(attachmentRoute('snapshot')), events: await request(attachmentRoute('events?after=0')) };
+    await request(attachmentMessages, post({ id: randomUUID(), body: 'Deleted target', attachments: [{ itemId: attachmentImage }] }, { status: 404, code: 'not_found' }));
+    await request(attachmentMessages, post({ id: randomUUID(), body: 'Deleted image version', attachments: [{ itemId: attachmentScene, imageVersionId: attachmentImage }] }, { status: 404, code: 'not_found' }));
+    assert.deepEqual(await request(attachmentMessages, post(attachmentInput)), attachmentSent);
+    assert.deepEqual(await request(attachmentMessages), attachmentBaseline.messages);
+    assert.deepEqual(await request(attachmentRoute('snapshot')), deletedAttachmentState.snapshot);
+    assert.deepEqual(await request(attachmentRoute('events?after=0')), deletedAttachmentState.events);
+    assert.equal(requests - attachmentStart, 33); assert.equal(outboundAttempts, 0);
+    console.log(JSON.stringify({ kind: 'discussion-attachment-evidence', httpChecks: requests - attachmentStart, referenceRefusals: 5, exactReceiptRetries: 2, retainedDeletedReference: true, unsupportedThreadMethod: 405 }));
     console.log(JSON.stringify({ result: 'PASS', journey: 'discussions-assets', requests, mediaBoundaryCases: mediaCases, outboundAttempts, migrations: migrations.length, bundleSha256: createHash('sha256').update(capture ? capture.options.script : await readFile(bundle)).digest('hex'), nativeScenarios: 0, loginFlowTested: false, fixture: 'four original synthetic users/sessions plus two upload users and three sessions; one synthetic active team' }));
   } finally {
     serviceObserver?.stop();

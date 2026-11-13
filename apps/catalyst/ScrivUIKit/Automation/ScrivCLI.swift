@@ -128,6 +128,14 @@ final class ScrivCLI {
             for scene in UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }) {
                 if scene.windows.contains(where: { ($0.rootViewController as? ScrivSettingsPanelController)?.store === workspace.store }) {
                     scene.windows.forEach { add($0) }
+                    // Settings sheets can own native-backed windows outside scene.windows.
+                    for settings in scene.windows.compactMap({ $0.rootViewController as? ScrivSettingsPanelController }) where settings.store === workspace.store {
+                        var controller: UIViewController? = settings
+                        while let current = controller {
+                            if let presentedWindow = current.viewIfLoaded?.window { add(presentedWindow) }
+                            controller = current.presentedViewController
+                        }
+                    }
                 }
             }
         }

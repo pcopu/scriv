@@ -119,7 +119,7 @@ if (process.argv.includes('--check-source-only')) {
     assert.equal(current.value, button.value);
     assert.equal(current.enabled, true);
     assert.equal(current.hittable, true);
-    // Only this disclosure button is activated after selecting the Codex pane.
+    // This helper activates the installation disclosure in the Codex pane.
     // Never activate check/connect/start/account/guide/copy/pairing/picker actions.
     await session.command('activate', { target: current.path });
     const after = await session.waitFor(nodes => {
@@ -132,6 +132,16 @@ if (process.argv.includes('--check-source-only')) {
   }
   try {
     await session.waitFor(nodes => byID(nodes, 'workspace-tabs').some(node => node.hittable && node.enabled));
+    // loaded-project binds its read-only model to an existing owned package.
+    // Prepare that fixture through normal Save before opening Settings.
+    const { waitForSavedProject } = await import('./support/saved-projects.mjs');
+    await session.command('key', { input: 's', modifiers: ['command'] });
+    const preparedProject = await waitForSavedProject(session, project => project.title === 'YAM MAN');
+    assert.ok(preparedProject.scenes.some(scene => scene.id === 'scene-farm'), 'The prepared package is the original synthetic farm sample');
+    const preparedModel = await session.command('loaded-project');
+    assert.deepEqual(preparedModel.project, preparedProject, 'Normal Save publishes the complete loaded model');
+    const preparedPackages = await session.command('persisted-projects');
+    assert.deepEqual(preparedPackages, [preparedProject], 'The isolated fixture contains exactly its saved startup package');
     await session.command('key', { input: ',', modifiers: ['command'] });
     const settings = await session.waitFor(nodes => byID(nodes, 'scriv.settings.codex').filter(node => node.hittable).length === 1);
     const codex = byID(settings, 'scriv.settings.codex').find(node => node.hittable);
@@ -156,6 +166,59 @@ if (process.argv.includes('--check-source-only')) {
     // Return to the top of the unchanged Settings pane with help collapsed.
     await reveal('codex-installation-help', { actionable: true });
     assertIdle(await session.command('snapshot'));
-    console.log('PASS: actual UIKit installation/sign-in/custom-server labels match all three frozen literals across repeated disclosure cycles; no commands copied or executed');
+    const jobsBaseline = await session.command('loaded-project');
+    const sorted = projects => [...projects].sort((left, right) => left.id.localeCompare(right.id));
+    const savedBaseline = sorted(await session.command('persisted-projects'));
+    assert.deepEqual(jobsBaseline, preparedModel, 'Instruction inspection preserves every prepared model field and exact date');
+    assert.deepEqual(savedBaseline, sorted(preparedPackages), 'Instruction inspection preserves the complete prepared package set');
+    assert.equal((await session.command('capabilities')).cloudIsolation.network, 'disabled');
+    const jobSources = nodes => nodes.filter(node => node.type === 'UISegmentedControl' && node.hittable
+      && node.segments?.length === 2 && node.segments[0] === 'This Mac' && node.segments[1] === 'Shared project');
+    async function settledControl(predicate) {
+      // The public snapshot exposes geometry before UIKit presentation completes.
+      // Bound settling to waitFor's deadline and never repeat a mutation.
+      let signature = '', stableSince = 0;
+      return session.waitFor(nodes => {
+        const matches = nodes.filter(node => node.hittable && node.enabled && predicate(node));
+        const next = matches.length === 1 ? JSON.stringify([matches[0].path, matches[0].frame]) : '';
+        if (!next || next !== signature) { signature = next; stableSince = Date.now(); return false; }
+        return Date.now() - stableSince >= 1000;
+      });
+    }
+    for (let cycle = 0; cycle < 2; cycle++) {
+      await reveal('codex-jobs', { actionable: true });
+      const ready = await settledControl(node => node.identifier === 'codex-jobs');
+      await session.command('activate', { target: one(paneNodes(ready), 'codex-jobs').path });
+      let nodes = await session.waitFor(nodes => jobSources(nodes).length === 1 && nodes.some(node => node.text === 'No generation jobs yet'));
+      assert.equal(jobSources(nodes)[0].selected, 0, 'Reopened generation history starts on This Mac');
+      assert.ok(nodes.some(node => node.text === 'Jobs are saved on this Mac. Reconnecting never starts a new generation.'));
+      assert.ok(nodes.some(node => node.text === 'Select an image placement, write a direction and choose Generate. Starting or reconnecting Codex never starts generation.'));
+      assert.equal(nodes.some(node => ['Inspect existing turn', 'Retry…', 'Use in original project', 'Open image'].includes(node.title) && node.hittable), false,
+        'Fresh isolated history has no executable generation job actions');
+      await session.command('select', { target: jobSources(nodes)[0].path, index: 1 });
+      nodes = await session.waitFor(nodes => nodes.some(node => node.text === 'No shared jobs for this project')
+        && jobSources(nodes).length === 1 && jobSources(nodes)[0].selected === 1);
+      assert.ok(nodes.some(node => node.text === 'Image prompts sync with the project. Local recovery paths and runtime credentials stay on their owning Mac.'));
+      const refresh = await settledControl(node => node.title === 'Refresh shared jobs');
+      await session.command('activate', { target: refresh.find(node => node.title === 'Refresh shared jobs' && node.hittable && node.enabled).path });
+      nodes = await session.waitFor(nodes => nodes.some(node => node.text === 'No shared jobs for this project') && jobSources(nodes).length === 1);
+      await session.command('select', { target: jobSources(nodes)[0].path, index: 0 });
+      await session.waitFor(nodes => nodes.some(node => node.text === 'No generation jobs yet') && jobSources(nodes).some(node => node.selected === 0));
+      // Catalyst's native navigation-bar Done item is outside the UIView snapshot.
+      // Discover the sheet's actual public Escape handler before dismissing it.
+      const closing = (await session.command('keys')).find(command => command.input === 'Escape' && command.modifiers.length === 0);
+      assert.ok(closing, 'The active responder chain offers sheet dismissal');
+      assert.equal(closing.responderType, 'ScrivGenerationJobsController');
+      assert.equal(closing.action, 'scrivEscapeSheet');
+      assert.equal(closing.wantsPriorityOverSystemBehavior, true);
+      assert.deepEqual(await session.command('key', { input: 'Escape', modifiers: [] }), { dispatched: true });
+      await session.waitFor(nodes => disconnected(nodes) && jobSources(nodes).length === 0);
+      await settledControl(node => node.identifier === 'codex-jobs');
+      assertIdle(await session.command('snapshot'));
+      assert.deepEqual(await session.command('loaded-project'), jobsBaseline, 'History navigation and signed-out refresh preserve every loaded project field/date');
+      assert.deepEqual(sorted(await session.command('persisted-projects')), savedBaseline, 'History navigation preserves all complete saved packages');
+      assert.deepEqual(await session.command('presented-alerts'), []);
+    }
+    console.log('PASS: actual UIKit installation/sign-in/custom-server labels and local/shared generation history, repeated close/reopen, disconnected runtime and complete model preservation');
   } finally { await session.close(); }
 }

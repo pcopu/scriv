@@ -102,6 +102,7 @@ if (process.argv[2] !== '--owned-child') {
         assert.deepEqual(value,{client_id:'synthetic-client',client_secret:'synthetic-secret',code:'synthetic-provider-code',redirect_uri:'http://127.0.0.1/auth/github/callback'});
         fixtureCounts.token++;
         if (providerMode === 'token-error') return reply({error:'simulated_denial'},400);
+        if (providerMode === 'malformed-token-json') return new Response('{synthetic-private-provider-marker', {headers:{'content-type':'application/json'}});
         return reply({access_token:'synthetic-provider-token'});
       }
       assert(['https://api.github.com/user','https://api.github.com/user/emails'].includes(url.href));
@@ -134,17 +135,20 @@ if (process.argv[2] !== '--owned-child') {
   const mf = new Miniflare(config);
   let requests = 0, captureStarted = false;
   const coverageActions = [];
+  let boundaryRequests = 0;
   try {
     const db = await mf.getD1Database('DB', 'scriv');
     const migrations = (await readdir(join(cloud, 'migrations'))).filter(name => /^\d+_.+\.sql$/.test(name)).sort();
     assert.deepEqual(migrations, ['0001_identity_teams.sql', '0002_generation_jobs.sql', '0003_email_auth.sql']);
     for (const name of migrations) await db.batch(unstable_splitSqlQuery(await readFile(join(cloud, 'migrations', name), 'utf8')).map(sql => db.prepare(sql)));
-    async function request(path, { method = 'GET', body, token } = {}) {
+    async function request(path, { method = 'GET', body, token, boundary = false } = {}) {
       const base = await mf.ready;
       assert.equal(base.hostname, '127.0.0.1'); assert.equal(base.protocol, 'http:'); assert(Number(base.port) > 0);
       const url = new URL(path, base); assert.equal(url.origin, base.origin);
       const encoded = body === undefined ? undefined : JSON.stringify(body);
-      assert(requests++ < 40); assert(Buffer.byteLength(encoded ?? '') <= 4096);
+      if (boundary) assert(boundaryRequests++ < 5);
+      else assert(requests++ < 40);
+      assert(Buffer.byteLength(encoded ?? '') <= 4096);
       if (capture) coverageActions.push(`${method} ${url.pathname.replace(/[0-9a-f]{8}-[0-9a-f-]{27}/gi, ':id')}`);
       const response = await fetch(url, { method, headers: { ...(token ? { authorization: `Bearer ${token}` } : {}), ...(encoded ? { 'content-type': 'application/json' } : {}) }, body: encoded, redirect: 'manual', signal: AbortSignal.timeout(5000) });
       if (response.status === 302) return {status:302,location:new URL(response.headers.get('location'))};
@@ -348,6 +352,10 @@ if (process.argv[2] !== '--owned-child') {
     assert.deepEqual({...afterSibling,sessions:afterSibling.sessions.map(x=>x.id===sibling.row.id?sibling.row:x)},beforeForeign);
     errorIs(await request('/v1/me',{token:sibling.token}),401,'session_expired');
     const remaining=await request('/auth/sessions',{token:current.token}); assert.equal(remaining.status,200); assert.equal(remaining.data.currentSessionId,current.row.id); assert.deepEqual(remaining.data.sessions,[publicSession(current.row)]);
+    const unknownBaseline = await authRows(), unknownProviderCalls = outboundAttempts;
+    errorIs(await request('/auth/unknown', {boundary:true}), 404, 'not_found');
+    errorIs(await request('/v1/unknown', {token:current.token,boundary:true}), 404, 'not_found');
+    assert.deepEqual(await authRows(), unknownBaseline); assert.equal(outboundAttempts, unknownProviderCalls);
     const logoutBefore=Date.now(); const loggedOut=await request('/auth/logout',{method:'POST',token:current.token}); const logoutAfter=Date.now(); assert.equal(loggedOut.status,200); assert.deepEqual(loggedOut.data,{ok:true});
     errorIs(await request('/v1/me',{token:current.token}),401,'session_expired');
     const finalRows=await authRows(), finalCurrent=finalRows.sessions.find(x=>x.id===current.row.id); assert(finalCurrent.revoked_at>=logoutBefore && finalCurrent.revoked_at<=logoutAfter); assert.deepEqual({...finalCurrent,revoked_at:null},current.row);
@@ -355,10 +363,28 @@ if (process.argv[2] !== '--owned-child') {
     assert.deepEqual(finalRows.sessions.filter(x=>!issued.some(y=>y.row.id===x.id)),seededRows.sessions); assert.deepEqual(finalRows.users,seededRows.users);
     assert.deepEqual(await sourceManifest(join(cloud,'src')),workerSourcesBeforeBuild); assert.equal(requests,40); assert.equal(outboundAttempts,14); assert.equal(deniedOutbound,0);
     console.log(JSON.stringify({kind:'oauth-session-isolation-evidence',httpChecks:16,repeatedSignIns:2,callbackStatuses:[302,400],exchangeStatuses:[200,401],newUsers:0,newSessions:2,foreignSessionPreserved:true,originalRevokedSessionPreserved:true,internalInterleavingControlled:false,nativeScenarios:0}));
-    console.log(JSON.stringify({result:'PASS',journey:'oauth',provider:'LOCAL SIMULATION ONLY; no real GitHub login',requests,outboundAttempts,deniedOutbound,fixtureCounts,nativeScenarios:0,auxiliaryPersistence:{snapshots:persistenceSnapshots,selectQueries:persistenceSnapshots*3,tables:['users','sessions','auth_codes'],scope:'All owned synthetic rows; baseline immutable; values never logged'},workerSourcesBeforeBuild,migrationHashes,dependencyVersions,runtimeModulePins:modulePins,catalogSha256:createHash('sha256').update(await readFile(join(cloud,'../docs/testing/oauth-steps.json'))).digest('hex'),bundleSha256:createHash('sha256').update(capture ? capture.options.script : await readFile(bundle)).digest('hex'),runtime:report}));
+    // Invalid provider JSON follows the real callback handler's generic error response.
+    const malformedBaseline = await authRows(), malformedCalls = {...fixtureCounts}, malformedAttempts = outboundAttempts;
+    providerMode = 'malformed-token-json';
+    const malformedStart = await request('/auth/github/start?' + new URLSearchParams({codeChallenge:challenge,state:clientState}), {boundary:true});
+    assert.equal(malformedStart.status,302); const malformedState = malformedStart.location.searchParams.get('state'); assert(malformedState);
+    const malformedStarted = await authRows(); assert.equal(malformedStarted.oauth_states.length,1);
+    assert.deepEqual({...malformedStarted,oauth_states:[]},malformedBaseline);
+    const malformedCallbackPath = '/auth/github/callback?' + new URLSearchParams({state:malformedState,code:'synthetic-provider-code'});
+    const malformedReply = await request(malformedCallbackPath,{boundary:true});
+    assert.equal(malformedReply.status,500);
+    assert.deepEqual(malformedReply.data,{error:{code:'internal_error',message:'The server could not complete this request. Please retry.'}});
+    assert.equal(JSON.stringify(malformedReply.data).includes('synthetic-private-provider-marker'),false);
+    assert.deepEqual(await authRows(),malformedBaseline);
+    errorIs(await request(malformedCallbackPath,{boundary:true}),400,'oauth_expired');
+    assert.deepEqual(await authRows(),malformedBaseline);
+    assert.deepEqual(fixtureCounts,{...malformedCalls,token:malformedCalls.token+1});
+    assert.equal(outboundAttempts,malformedAttempts+1); assert.equal(deniedOutbound,0); assert.equal(boundaryRequests,5);
+    console.log(JSON.stringify({kind:'oauth-public-boundary-evidence',httpChecks:boundaryRequests,unknownRouteRefusals:2,malformedProviderJSONRefusals:1,consumedStateReplays:1,newUsers:0,newSessions:0,newExchangeCodes:0,liveProvider:false}));
+    console.log(JSON.stringify({result:'PASS',journey:'oauth',provider:'LOCAL SIMULATION ONLY; no real GitHub login',requests,boundaryRequests,totalHttpChecks:requests+boundaryRequests,outboundAttempts,deniedOutbound,fixtureCounts,nativeScenarios:0,auxiliaryPersistence:{snapshots:persistenceSnapshots,selectQueries:persistenceSnapshots*3,tables:['users','sessions','auth_codes'],scope:'All owned synthetic rows; baseline immutable; values never logged'},workerSourcesBeforeBuild,migrationHashes,dependencyVersions,runtimeModulePins:modulePins,catalogSha256:createHash('sha256').update(await readFile(join(cloud,'../docs/testing/oauth-steps.json'))).digest('hex'),bundleSha256:createHash('sha256').update(capture ? capture.options.script : await readFile(bundle)).digest('hex'),runtime:report}));
   } finally {
     try {
-      if (captureStarted) await capture.end(await mf.ready, requests, coverageActions);
+      if (captureStarted) await capture.end(await mf.ready, requests + boundaryRequests, coverageActions);
     } finally { await mf.dispose(); }
   }
 }

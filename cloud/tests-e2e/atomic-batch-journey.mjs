@@ -124,7 +124,7 @@ if (process.argv[2] !== '--owned-child') {
       assert.equal(base.hostname, '127.0.0.1'); assert.equal(base.protocol, 'http:'); assert(Number(base.port) > 0);
       const url = new URL(path, base); assert.equal(url.origin, base.origin);
       const encoded = body === undefined ? undefined : JSON.stringify(body);
-      assert(requests++ < 80); assert(Buffer.byteLength(encoded ?? '') <= 16384);
+      assert(requests++ < 110); assert(Buffer.byteLength(encoded ?? '') <= 16384);
       const response = await fetch(url, { method, headers: { authorization: `Bearer ${actors[role].token}`, ...(encoded ? { 'content-type': 'application/json' } : {}) }, body: encoded, redirect: 'error', signal: AbortSignal.timeout(5000) });
       // Never include response bodies or headers in errors: leases are secrets.
       const actualStatus = response.status;
@@ -358,6 +358,39 @@ if (process.argv[2] !== '--owned-child') {
     assert.deepEqual((await db.prepare('SELECT * FROM users ORDER BY id').all()).results,initialUsers); assert.deepEqual((await db.prepare('SELECT * FROM sessions ORDER BY id').all()).results,seededSessions);
     assert.deepEqual((await bucket.list()).objects,[]); assert.equal(requests,74); assert.equal(outboundAttempts,0);
     console.log(JSON.stringify({kind:'batch-session-capacity-evidence',httpChecks:45,capacityRefusals:5,sharedUserCapacityStatus:429,crossSessionStagingStatus:409,discardedPartRequiresUpload:true,failedCommitFreesCapacity:true,successfulCommits:2,acceptedReceiptRecoveries:3,newEvents:2,originalItemsPreserved:5,syntheticAuthSessionsAdded:1,internalStagingRowsObserved:false,nativeScenarios:0,outboundAttempts}));
+    // Structural batches reuse only a lease held by the same editing session.
+    const leaseStart = requests;
+    const held = await request(route('leases'), post({ itemId: sceneA, sessionId: actors.owner.sessionId }, { role: 'owner' }));
+    assert.equal(held.status, 200);
+    assert.equal(held.data.itemId, sceneA); assert.equal(held.data.epoch, 1);
+    const leaseIdentity = (({ token, ...publicLease }) => publicLease)(held.data);
+    const editOperation = { op: 'put', id: sceneA, kind: 'scene', expectedVersion: 1, data: { ...opA.data, title: 'Owner batch with existing lease' } };
+    const editContent = JSON.stringify([editOperation]);
+    const sameSession = makeManifest([editContent], [1], { sessionId: actors.owner.sessionId, expectedTimingVersion: 2, label: 'Reuse held lease' });
+    staged(await prepare(sameSession, 'owner'), sameSession);
+    assert.equal((await upload(sameSession, editContent, 'owner')).status, 200);
+    const editStart = Date.now(), editReceipt = await commitBatch(sameSession, 'owner'), editEnd = Date.now();
+    assert.equal(editReceipt.status, 200);
+    assert.deepEqual(editReceipt.data, { commandId: sameSession.commandId, seq: 5, epoch: 1, timingVersion: 2, items: [], snapshotRequired: true });
+    const reusedState = await observe(), expectedScene = { id: sceneA, kind: 'scene', version: 2, deleted: false, data: editOperation.data };
+    assert.deepEqual(withoutLeases(reusedState.snapshot), { ...withoutLeases(stateA.snapshot), headSeq: 5, items: stateA.snapshot.items.map(row => row.id === sceneA ? expectedScene : row) });
+    const reuseEvent = reusedState.events.events.at(-1);
+    assert(reuseEvent.at >= editStart && reuseEvent.at <= editEnd);
+    assert.deepEqual(reuseEvent, { seq: 5, epoch: 1, commandId: sameSession.commandId, actorId: actors.owner.id, kind: 'command', at: reuseEvent.at, changes: [], data: { label: 'Reuse held lease', timingVersion: 2, snapshotRequired: true } });
+    assert.deepEqual(reusedState.events, { ...stateA.events, headSeq: 5, events: [...stateA.events.events, reuseEvent] });
+    assert.deepEqual(reusedState.snapshot.leases, [leaseIdentity]);
+    const competingOperation = { ...editOperation, expectedVersion: 2, data: { ...editOperation.data, title: 'Must remain locked' } };
+    const competingContent = JSON.stringify([competingOperation]);
+    const differentSession = makeManifest([competingContent], [1], { sessionId: randomUUID(), expectedTimingVersion: 2, label: 'Different editing session' });
+    staged(await prepare(differentSession, 'owner'), differentSession);
+    assert.equal((await upload(differentSession, competingContent, 'owner')).status, 200);
+    rejected(await commitBatch(differentSession, 'owner'), 423, 'item_locked');
+    const lockedState = await observe(); unchanged(reusedState, lockedState);
+    assert.deepEqual(lockedState.snapshot.leases, [leaseIdentity]);
+    const retryHeld = await request(route('leases'), post({ itemId: sceneA, sessionId: actors.owner.sessionId }, { role: 'owner' }));
+    assert.equal(retryHeld.status, 200); assert.deepEqual(retryHeld.data, held.data);
+    assert.equal(requests - leaseStart, 12); assert.equal(outboundAttempts, 0);
+    console.log(JSON.stringify({ kind: 'batch-held-lease-evidence', httpChecks: requests - leaseStart, sameSessionReuse: true, competingSessionStatus: 423, unchangedLease: true }));
     console.log(JSON.stringify({result:'PASS', journey:'atomic-batch', requests, outboundAttempts, nativeScenarios:0, runtime:report}));
   } finally {
     serviceObserver?.stop();

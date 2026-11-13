@@ -102,7 +102,8 @@ if (process.argv[2] !== '--owned-child') {
     const observer = serviceObserver;
     serviceObserver = undefined;
     observer.stop();
-    if (observer.actions.length) await capture.end(await mf.ready, observer.actions.length, observer.actions);
+    const httpCount = observer.actions.filter(action => /^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /.test(action)).length;
+    if (httpCount) await capture.end(await mf.ready, httpCount, observer.actions);
   }
   try {
     const db = await mf.getD1Database('DB', 'scriv');
@@ -128,7 +129,7 @@ if (process.argv[2] !== '--owned-child') {
       assert.equal(base.hostname, '127.0.0.1'); assert.equal(base.protocol, 'http:'); assert(Number(base.port) > 0);
       const url = new URL(path, base); assert.equal(url.origin, base.origin);
       const encoded = body === undefined ? undefined : JSON.stringify(body);
-      assert(requests++ < 110); assert(Buffer.byteLength(encoded ?? '') <= 16384);
+      assert(requests++ < 170); assert(Buffer.byteLength(encoded ?? '') <= 16384);
       const response = await fetch(url, { method, headers: { authorization: `Bearer ${actors[role].token}`, ...(encoded ? { 'content-type': 'application/json' } : {}) }, body: encoded, redirect: 'error', signal: AbortSignal.timeout(5000) });
       // Never include response bodies or headers in errors: leases are secrets.
       assert.equal(response.status, status, `${method} ${path} status`);
@@ -320,8 +321,104 @@ if (process.argv[2] !== '--owned-child') {
     assert.deepEqual((await (await mf.getR2Bucket('ASSETS', 'scriv')).list()).objects, []);
     assert.equal(deviceChecks.length, 7);
     assert.equal(outboundAttempts, 0);
-    console.log(JSON.stringify({ result: 'PASS', journey: 'collaboration', requests, deviceChecks, providerCalls, outboundAttempts, migrations: migrations.length, bundleSha256: createHash('sha256').update(capture ? capture.options.script : await readFile(bundle)).digest('hex'), nativeScenarios: 0, loginFlowTested: false, fixture: 'four synthetic users; eight synthetic sessions; two synthetic projects; local entitlement fixtures; empty R2; intercepted TURN provider only' }));
-    if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests() - captureRequestStart, 'Every ordinary request has one ordered action');
+    // Rejoin through the public invite route, then list the exact project membership.
+    const boundaryStart = requests;
+    const joinLink = await request(`/v1/teams/${teamId}/join-links`, post({ role: 'member' }, { status: 201 }));
+    await request(`/v1/join/${joinLink.token}`, post({}, { role: 'member' }));
+    const expectedMembers = ['owner', 'member', 'viewer'].map(role => ({ id: actors[role].id, name: `Synthetic ${role}`, role })).sort((a, b) => a.id.localeCompare(b.id));
+    let memberCursor = '';
+    for (let index = 0; index < expectedMembers.length; index++) {
+      const page = await request(route(`members?limit=1${memberCursor ? `&after=${memberCursor}` : ''}`));
+      const more = index + 1 < expectedMembers.length;
+      assert.deepEqual(page, { members: [expectedMembers[index]], hasMore: more, nextCursor: more ? expectedMembers[index].id : null });
+      memberCursor = expectedMembers[index].id;
+    }
+    assert.deepEqual(await request(route(`members?limit=1&after=${memberCursor}`)), { members: [], hasMore: false, nextCursor: null });
+    assert.deepEqual(await request(route('members?q=MEMBER')), { members: expectedMembers.filter(row => row.role === 'member'), hasMore: false, nextCursor: null });
+    const boundarySnapshot = await request(route('snapshot')), boundaryEvents = await request(route('events?after=0'));
+    await request(route('snapshot'), { method: 'PATCH', body: {}, status: 404, code: 'not_found' });
+    assert.deepEqual(await request(route('snapshot')), boundarySnapshot);
+    assert.deepEqual(await request(route('events?after=0')), boundaryEvents);
+    // A first import emits one snapshot-required receipt and exact immutable replay.
+    const importProject = randomUUID(), importScene = randomUUID();
+    const importedRoute = suffix => `/v1/projects/${importProject}/${suffix}`;
+    await request('/v1/projects', post({ id: importProject, title: 'Synthetic atomic import', teamId }, { status: 201 }));
+    const importInput = { commandId: randomUUID(), sessionId: actors.owner.sessionId, epoch: 1, items: [{ id: importScene, kind: 'scene', data: { id: importScene, title: 'Imported opening', order: 0 } }] };
+    const importStart = Date.now(), importReceipt = await request(importedRoute('import'), post(importInput)), importEnd = Date.now();
+    assert.deepEqual(importReceipt, { commandId: importInput.commandId, seq: 1, epoch: 1, timingVersion: 0, items: [], snapshotRequired: true });
+    const importSnapshot = await request(importedRoute('snapshot')), importEvents = await request(importedRoute('events?after=0'));
+    assert.deepEqual(importSnapshot, { projectId: importProject, headSeq: 1, epoch: 1, timingVersion: 0, items: [{ ...importInput.items[0], version: 1, deleted: false }], deletedItems: [], canImport: false, threads: [], leases: [] });
+    const importedEvent = importEvents.events[0]; assert(importedEvent.at >= importStart && importedEvent.at <= importEnd);
+    assert.deepEqual(importEvents, { events: [{ seq: 1, epoch: 1, commandId: importInput.commandId, actorId: actors.owner.id, kind: 'command', at: importedEvent.at, changes: [], data: { label: 'Import project', timingVersion: 0, snapshotRequired: true } }], headSeq: 1, epoch: 1, timingVersion: 0, hasMore: false });
+    assert.deepEqual(await request(importedRoute('import'), post(importInput)), importReceipt);
+    assert.deepEqual(await request(importedRoute('snapshot')), importSnapshot);
+    assert.deepEqual(await request(importedRoute('events?after=0')), importEvents);
+    // Removing a member with an active lease must revoke the proof immediately.
+    const removalLease = await request(route('leases'), post({ itemId, sessionId: actors.member.sessionId }, { role: 'member' }));
+    assert.equal(removalLease.itemId, itemId); assert.equal(removalLease.epoch, 2); assert(removalLease.expiresAt > Date.now());
+    await request(`/v1/teams/${teamId}/members/${actors.member.id}`, { method: 'DELETE' });
+    assert.deepEqual(await request(route('leases')), { leases: [], epoch: 2 });
+    await request(route('leases'), post({ itemId, sessionId: actors.member.sessionId }, { role: 'member', status: 404, code: 'not_found' }));
+    assert.deepEqual(await request(route('snapshot')), boundarySnapshot);
+    assert.deepEqual(await request(route('events?after=0')), boundaryEvents);
+    // Live presence and malformed frames stay ephemeral and leave the journal exact.
+    const { default: WebSocket } = await import('ws');
+    const liveSockets = [];
+    const waitForLive = async predicate => {
+      const deadline = Date.now() + 5000;
+      while (!predicate()) { assert(Date.now() < deadline, 'Live boundary response deadline'); await new Promise(resolve => setTimeout(resolve, 10)); }
+    };
+    const socketAction = label => { if (serviceObserver) serviceObserver.actions.push(label); };
+    const openLive = async role => {
+      const url = new URL(route('socket'), await mf.ready); url.protocol = 'ws:'; assert.equal(url.hostname, '127.0.0.1');
+      socketAction('WebSocket connect /v1/projects/:id/socket');
+      const ws = new WebSocket(url, { headers: { authorization: `Bearer ${actors[role].token}` }, handshakeTimeout: 5000, maxPayload: 65536 });
+      const live = { ws, messages: [], closed: null }; liveSockets.push(live);
+      ws.on('message', bytes => { assert(bytes.length <= 65536); live.messages.push(JSON.parse(bytes.toString())); assert(live.messages.length < 100); });
+      ws.on('error', () => { live.failed = true; }); ws.on('close', code => { live.closed = code; });
+      await waitForLive(() => live.failed || live.messages.some(message => message.type === 'hello')); assert.equal(live.failed, undefined);
+      const hello = live.messages.find(message => message.type === 'hello');
+      assert.equal(hello.projectId, projectId); assert.equal(hello.epoch, 2); assert.equal(hello.headSeq, 3); assert.equal(hello.deviceId, actors[role].sessionId);
+      return live;
+    };
+    const sendLive = async (live, value, binary = false) => {
+      socketAction('WebSocket send /v1/projects/:id/socket');
+      await new Promise((resolve, reject) => live.ws.send(binary ? value : JSON.stringify(value), error => error ? reject(new Error('Live boundary send failed')) : resolve()));
+    };
+    try {
+      const sender = await openLive('owner'), observer = await openLive('ownerOther');
+      const peerForSender = () => observer.messages.filter(message => message.type === 'presence').flatMap(message => message.peers).filter(peer => peer.connectionId === sender.messages.find(message => message.type === 'hello').connectionId);
+      const presence = { type: 'presence', itemId, selection: { start: 1, end: 3 }, cursor: { x: 0.25, y: 0.75 } };
+      const presenceStart = Date.now(); await sendLive(sender, presence);
+      await waitForLive(() => peerForSender().some(peer => peer.itemId === itemId));
+      const peer = peerForSender().findLast(peer => peer.itemId === itemId);
+      assert(peer.at >= presenceStart && peer.at <= Date.now());
+      assert.deepEqual(peer, { connectionId: sender.messages.find(message => message.type === 'hello').connectionId, deviceId: actors.owner.sessionId, userId: actors.owner.id, name: 'Synthetic owner', itemId, selection: presence.selection, cursor: presence.cursor, at: peer.at });
+      const rejectLive = async (value, code, binary = false) => {
+        const before = sender.messages.filter(message => message.type === 'error').length;
+        await sendLive(sender, value, binary);
+        await waitForLive(() => sender.messages.filter(message => message.type === 'error').length > before);
+        assert.equal(sender.messages.filter(message => message.type === 'error').at(-1).error.code, code); assert.equal(sender.closed, null);
+      };
+      await rejectLive(Buffer.from('{'), 'invalid_json', true);
+      await rejectLive(Buffer.from([0xc3, 0x28]), 'invalid_json', true);
+      await rejectLive({ type: 'presence', itemId: randomUUID() }, 'invalid_presence');
+      await rejectLive({ type: 'presence', selection: { start: 3, end: 2 } }, 'invalid_field');
+      await rejectLive({ type: 'presence', cursor: { x: 'invalid', y: 1 } }, 'invalid_cursor');
+      await rejectLive({ type: 'unsupported-boundary-message' }, 'unknown_message');
+      await sendLive(sender, { type: 'ping' }); await waitForLive(() => sender.messages.some(message => message.type === 'watermark'));
+      assert.deepEqual(sender.messages.findLast(message => message.type === 'watermark'), { type: 'watermark', headSeq: 3, epoch: 2, timingVersion: 1 });
+      assert.deepEqual(await request(route('snapshot')), boundarySnapshot);
+      assert.deepEqual(await request(route('events?after=0')), boundaryEvents);
+    } finally {
+      for (const live of liveSockets) live.ws.close(1000);
+      await waitForLive(() => liveSockets.every(live => live.closed !== null));
+      assert(liveSockets.every(live => live.closed === 1000));
+    }
+    assert.equal(outboundAttempts, 0);
+    console.log(JSON.stringify({ kind: 'collaboration-public-boundary-evidence', httpChecks: requests - boundaryStart, memberPages: 4, importReceipts: 1, activeLeaseRevoked: true, websocketRefusals: 6, journalUnchanged: true }));
+    console.log(JSON.stringify({ result: 'PASS', journey: 'collaboration', requests, deviceChecks, providerCalls, outboundAttempts, migrations: migrations.length, bundleSha256: createHash('sha256').update(capture ? capture.options.script : await readFile(bundle)).digest('hex'), nativeScenarios: 0, loginFlowTested: false, fixture: 'four synthetic users; eight synthetic sessions; three synthetic projects; local entitlement fixtures; empty R2; intercepted TURN provider only' }));
+    if (serviceObserver) assert.equal(serviceObserver.actions.filter(action => /^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /.test(action)).length, ordinaryRequests() - captureRequestStart, 'Every ordinary request has one ordered action');
   } finally {
     try { await endCapturePhase(); } finally { await mf.dispose(); }
   }

@@ -287,8 +287,9 @@ if (process.argv[2] !== '--owned-child') {
     let pendingProvider = [], checkoutProviderCalls = 0, checkoutCreates = 0, customerCreates = 0;
     const checkoutCases = [], checkoutKeys = [];
     const checkoutProvider = async incoming => {
+      let expected;
       try {
-        const expected = pendingProvider.shift(); assert.ok(expected, 'No unplanned provider request');
+        expected = pendingProvider.shift(); assert.ok(expected, 'No unplanned provider request');
         assert.equal(incoming.url, `https://api.stripe.com/v1${expected.path}`); assert.equal(incoming.method, expected.method);
         assert.equal(incoming.headers.get('authorization'), 'Bearer sk_test_synthetic_only');
         assert.equal(incoming.headers.get('stripe-version'), '2025-04-30.basil');
@@ -303,12 +304,13 @@ if (process.argv[2] !== '--owned-child') {
           assert.ok(!checkoutKeys.includes(key), 'Successful replacement needs a new request key'); checkoutKeys.push(key); checkoutCreates++;
         } else { assert.equal(key, expected.key ?? null); if (expected.path === '/customers') customerCreates++; }
         checkoutProviderCalls++;
-        return typeof expected.reply === 'function' ? await expected.reply() : Response.json(expected.reply);
+        if (!expected.providerThrows) return typeof expected.reply === 'function' ? await expected.reply() : Response.json(expected.reply);
       } catch { unexpectedCalls++; throw new Error('Unexpected synthetic checkout provider request'); }
+      throw new Error('Synthetic provider transport interruption');
     };
     if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests() - captureRequestStart, 'Every ordinary request has one ordered action');
     await endCapturePhase();
-    await mf.setOptions(convertV4MiniflareOptions({
+    const checkoutConfig = convertV4MiniflareOptions({
       host: '127.0.0.1', port: 0, cf: false, telemetry: { enabled: false }, unsafeLocalExplorer: false,
       unsafeObservability: false, unsafeEnableSharedStorage: false, logRequests: false, log: new Log(LogLevel.ERROR),
       resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
@@ -317,7 +319,8 @@ if (process.argv[2] !== '--owned-child') {
         d1Databases: { DB: 'journey-db' }, r2Buckets: ['ASSETS'],
         durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
       }],
-    }));
+    });
+    await mf.setOptions(checkoutConfig);
     captureRequestStart = ordinaryRequests();
     await beginCapturePhase();
     const checkoutDB = await mf.getD1Database('DB', 'scriv');
@@ -505,8 +508,23 @@ if (process.argv[2] !== '--owned-child') {
     const { billingBoundaryCases } = await import(pathToFileURL(join(cloud, 'tests-e2e/billing-boundary-cases.mjs')).href);
     const boundaryEvidence = await billingBoundaryCases({ mf, db: webhookDB, state: webhookState, event, actors, teamId, projectId, providerCount: () => providerCalls + checkoutProviderCalls });
     console.log(JSON.stringify(boundaryEvidence));
-    console.log(JSON.stringify({result:'PASS',journey:'billing',requests,providerCalls:providerCalls+checkoutProviderCalls,entitlementProviderCalls:providerCalls,checkoutProviderCalls,unexpectedCalls,nativeScenarios:0,runtime:report}));
     if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests() - captureRequestStart + boundaryEvidence.httpChecks, 'Every ordinary request has one ordered action');
+    await endCapturePhase();
+    await mf.setOptions(checkoutConfig);
+    captureRequestStart = ordinaryRequests();
+    await beginCapturePhase();
+    const paginationDB = await mf.getD1Database('DB','scriv');
+    const { billingPaginationCases } = await import(pathToFileURL(join(cloud,'tests-e2e/billing-boundary-cases.mjs')).href);
+    const paginationEvidence = await billingPaginationCases({db:paginationDB,state:webhookState,request,sendWebhook,event,
+      teamId:checkoutTeam,customer:checkoutCustomer,portalPath,portalStep,subscriptionsStep,active,terminal,
+      enqueue:steps=>{assert.equal(pendingProvider.length,0);pendingProvider=[...steps];},remaining:()=>pendingProvider.length,
+      providerCount:()=>checkoutProviderCalls,unexpectedCount:()=>unexpectedCalls});
+    console.log(JSON.stringify(paginationEvidence));
+    assert.equal(requests,80);assert.equal(unexpectedCalls,0);
+    if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests()-captureRequestStart,'Every ordinary request has one ordered action');
+    console.log(JSON.stringify({result:'PASS',journey:'billing',requests,boundaryRequests:boundaryEvidence.httpChecks,totalHttpChecks:requests+boundaryEvidence.httpChecks,providerCalls:providerCalls+checkoutProviderCalls,entitlementProviderCalls:providerCalls,checkoutProviderCalls,unexpectedCalls,nativeScenarios:0,runtime:report}));
+
+
   } finally {
     try { await endCapturePhase(); } finally { await mf.dispose(); }
   }

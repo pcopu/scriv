@@ -105,4 +105,8 @@ if (process.argv.includes('--check-source-only')) {
     await session.waitFor(disconnected);
     console.log('PASS: actual UIKit manual endpoint rejection, repeated edits/clears and disconnected state; no valid endpoint submitted');
   } finally { await session.close(); }
+  if (process.env.SCRIV_LIVE_CODEX_ALLOWED === 'yes') {
+    const { run } = await import('../live-e2e/codex-connection.mjs');
+    await run(process.env);
+  }
 }

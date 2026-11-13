@@ -161,6 +161,47 @@ async function run() {
       await invariant(current); await visible(first);
     });
     assert.deepEqual(completed, cases);
+    const discussionBaseline = await session.command('loaded-project');
+    const discussionPackages = await saved();
+    for (let cycle = 0; cycle < 2; cycle++) {
+      await ui.activate(node => node.identifier === 'preview-inspect');
+      const discuss = await ui.reveal(node => node.title === 'Discuss this version' && node.enabled !== undefined);
+      // Hittability precedes UIKit transition completion. Wait for the same
+      // inspector control to remain attached at stable geometry for one second.
+      let signature = '', stableSince = 0;
+      await session.waitFor(nodes => {
+        const target = nodes.find(node => node.path === discuss.path && node.hittable && node.enabled);
+        const next = target ? JSON.stringify(target.frame) : '';
+        if (!next || next !== signature) { signature = next; stableSince = Date.now(); return false; }
+        return Date.now() - stableSince >= 1000;
+      });
+      await session.command('activate', { target: discuss.path });
+      let nodes = await session.waitFor(nodes => nodes.some(node => node.text === 'Sign in to keep the conversation')
+        && nodes.some(node => node.label === 'Close discussion' && node.hittable && node.enabled));
+      assert.ok(nodes.some(node => node.text === 'Threads attach to lines, directions, characters and images. Shared projects include everyone on your team.'));
+      assert.ok(nodes.some(node => node.text === 'Comments stay with this image.'));
+      assert.equal(nodes.filter(node => node.title === 'Sign in to Scriv' && node.enabled && node.hittable).length, 1);
+      assert.equal(nodes.some(node => node.type === 'DiscussionComposerTextView' && node.editable && node.hittable), false, 'Signed-out discussion offers no comment composer');
+      const activity = nodes.filter(node => node.label === 'Project activity, 0 unread mentions');
+      assert.equal(activity.length, 1);
+      assert.equal(activity[0].enabled, false, 'Signed-out discussion cannot load project activity');
+      assert.deepEqual(await session.command('loaded-project'), discussionBaseline, 'Opening image discussion preserves every loaded field and date');
+      assert.deepEqual(await saved(), discussionPackages, 'Opening discussion preserves both complete saved packages');
+      const scopes = nodes.filter(node => node.type === 'UISegmentedControl' && node.hittable && node.segments?.[0] === 'Project');
+      assert.equal(scopes.length, 1);
+      assert.deepEqual(scopes[0].segments, ['Project', 'This image']);
+      assert.equal(scopes[0].selected, 1);
+      await session.command('select', { target: scopes[0].path, index: 0 });
+      await session.waitFor(nodes => nodes.some(node => node.text === 'Comments stay with this project.')
+        && nodes.some(node => node.type === 'UISegmentedControl' && node.segments?.[0] === 'Project' && node.selected === 0));
+      await ui.activate(node => node.label === 'Close discussion' && node.enabled !== undefined);
+      await session.waitFor(nodes => !nodes.some(node => node.label === 'Close discussion')
+        && nodes.some(node => node.identifier === 'preview-inspect' && node.hittable && node.enabled));
+      assert.deepEqual(await session.command('loaded-project'), discussionBaseline, 'Changing signed-out scope and closing preserves every loaded field and date');
+      assert.deepEqual(await saved(), discussionPackages, 'Discussion scope changes preserve both complete saved packages');
+      await invariant(current); await visible(first);
+    }
+    console.log('PASS: AUT-J08/local-images/signed-out-image-discussion: real inspector route, image/project scopes, close/reopen and complete model preservation');
   } catch (error) { throw new Error(`AUT-J08/local-images/${step} failed`, { cause: error }); }
   finally { await session.close(); }
 }

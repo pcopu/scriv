@@ -359,6 +359,24 @@ if (process.argv[2] !== '--owned-child') {
     const finalRows=await businessRows(); assert.deepEqual({...finalRows,projects:finalRows.projects.filter(p=>p.id!==graceProject.id)},originalRows); assert.deepEqual(finalRows.projects.find(p=>p.id===graceProject.id),archivedRow);
     assert.equal(requests,80); assert.equal(outboundAttempts,0);
     console.log(JSON.stringify({kind:'team-entitlement-grace-evidence',httpChecks:41,entitlementStates:7,projectReads:21,memberIdentityReads:7,lapsedCreateRefusals:2,ownerArchiveAfterGrace:true,originalBusinessRowsRestored:true,clockAltered:false,capabilityProjectionOnly:true,nativeScenarios:0,outboundAttempts}));
+    const invitationBaseline = await businessRows(), invitationBase = await mf.ready;
+    assert.equal(invitationBase.hostname,'127.0.0.1'); assert.equal(invitationBase.protocol,'http:');
+    assert(requests++ < 81);
+    if (capture) coverageActions.push('GET /join/:token');
+    const invitationResponse = await fetch(new URL('/join/'+memberInvite.token,invitationBase),{redirect:'error',signal:AbortSignal.timeout(5000)});
+    assert.equal(invitationResponse.status,200);
+    assert.equal(invitationResponse.headers.get('content-type'),'text/html; charset=utf-8');
+    assert.equal(invitationResponse.headers.get('cache-control'),'no-store');
+    assert.equal(invitationResponse.headers.get('referrer-policy'),'no-referrer');
+    assert.equal(invitationResponse.headers.get('content-security-policy'),"default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'");
+    const invitationReader=invitationResponse.body.getReader(),invitationParts=[];let invitationSize=0;
+    while(true){const {done,value}=await invitationReader.read();if(done)break;invitationSize+=value.length;assert(invitationSize<=16384);invitationParts.push(value);}
+    const invitationHTML=Buffer.concat(invitationParts).toString('utf8');
+    assert(invitationHTML.includes('<title>Join a Scriv team</title>'));
+    assert(invitationHTML.includes('href="scriv://join/'+memberInvite.token+'"'));
+    assert.equal([...invitationHTML.matchAll(/href=/g)].length,1);assert.equal(invitationHTML.includes('<script'),false);
+    assert.deepEqual(await businessRows(),invitationBaseline);assert.equal(outboundAttempts,0);assert.equal(requests,81);
+    console.log(JSON.stringify({kind:'team-invitation-page-evidence',httpChecks:1,exactDeepLink:true,contentSecurityPolicyChecked:true,durableStateUnchanged:true,outboundAttempts}));
     console.log(JSON.stringify({result:'PASS',journey:'team-lifecycle',requests,outboundAttempts,nativeScenarios:0,bundleSha256:createHash('sha256').update(capture ? capture.options.script : await readFile(bundle)).digest('hex'),runtime:report}));
   } finally {
     try {

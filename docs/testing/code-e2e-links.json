@@ -545,8 +545,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 169,
-        "end": 172,
+        "start": 170,
+        "end": 173,
         "sha256": "d67fda4f6bfee25fa19d31cf758baf2da83f405c48fd095bbaf07a7813ee435e"
       },
       "why": "Reads existing scene version and enforces expectedVersion: version-1 update succeeds then replay under a new command ID receives version_conflict. Creation also uses version zero elsewhere; no concurrent-race or multi-item atomicity claim. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -570,8 +570,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 421,
-        "end": 482,
+        "start": 424,
+        "end": 485,
         "sha256": "0aac66f43f6a9d0cbbc2a57fc0272f3bc1a9e106b190dbc9ceceae1341c8c940"
       },
       "why": "Authentication precedes JSON parsing and event record/id/type validation. Signed malformed raw JSON and signed null/array/missing-id/empty-type values reach their exact errors."
@@ -708,8 +708,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 148,
-        "end": 153,
+        "start": 149,
+        "end": 154,
         "sha256": "68b687dde109af66a5138b4d6089a38405586da48b54ce48c1d3774bff8f7007"
       },
       "why": "getTeam retrieves the real seeded team used by team project creation and access. Creation assigns the actual team owner and viewer listing succeeds. Missing-team rejection is not tested. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -1319,8 +1319,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 210,
-        "end": 210,
+        "start": 214,
+        "end": 214,
         "sha256": "bc92fd2d31acba4a8fd36f7688e3ce29ace10df5540c528a21f82c127b2d2ea5"
       },
       "why": "Successful callback returns the exact client state and scriv callback destination."
@@ -1393,8 +1393,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 256,
-        "end": 280,
+        "start": 257,
+        "end": 281,
         "sha256": "aedc806bc7d6ffba685e60a367834ddc531da8f03e32a7034a6ab18796b438d3"
       },
       "why": "The existing security-limit key includes the real hourly bucket and increments persisted attempts through the twenty-first refusal. expires_at is cleanup retention; no reset-time claim."
@@ -1553,8 +1553,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 381,
-        "end": 388,
+        "start": 384,
+        "end": 391,
         "sha256": "8f6f70f2b30368dbf97022e7c4cc8c601bb155557e962eebb39ec9b84ab24ca7"
       },
       "why": "Valid create response is stored and its attempt retired, observable through later lookup and fresh keys. This is the successful path, not transactional rollback, malformed response, or final-checkout owner-loss coverage."
@@ -2609,8 +2609,8 @@
       "id": "075f8247f7989103",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 760,
-        "end": 766,
+        "start": 768,
+        "end": 774,
         "sha256": "70edbf61ca4e624c0995831a11aa20cc3f54d75846ece0c208fed31e96f0dfc1"
       },
       "actions": [
@@ -2671,8 +2671,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 376,
-        "end": 380,
+        "start": 379,
+        "end": 383,
         "sha256": "4a42ed6014052d5407618932b6231795317c80ddf664b4cbcbad2811f9b498e6"
       },
       "why": "Cached receipt is retrieved and authoritatively verified; open status is reused despite elapsed local expiry. Later customer mismatch and unsafe URL cases guard the same route."
@@ -3228,8 +3228,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 214,
-        "end": 214,
+        "start": 218,
+        "end": 218,
         "sha256": "f5be804d432109d411a2bfaf8eefdda4e25bebd7d44ce3974c686fc43c5e4889"
       },
       "why": "Callback replay after success rejects consumed state with oauth_expired and no additional local provider interceptions. No external request is forwarded."
@@ -3376,8 +3376,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 389,
-        "end": 398,
+        "start": 392,
+        "end": 401,
         "sha256": "82d3d7e65528b478ba6669929b268eaad8794c602bfa990d32f610811bc09c9b"
       },
       "why": "Provider URL parsing and fixed HTTPS host/userinfo/nondefault-port rejection are exercised, plus malformed input. Explicit default HTTPS port and other normalization are not negative cases."
@@ -3455,8 +3455,8 @@
       "id": "0b5618fdeb2e0be4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 297,
-        "end": 297,
+        "start": 305,
+        "end": 305,
         "sha256": "42c475b9792fc983b1cc1b2156a5eda23f7c136eafa61bf98a274774b9f0b2d7"
       },
       "actions": [
@@ -3855,8 +3855,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 152,
-        "end": 162,
+        "start": 153,
+        "end": 163,
         "sha256": "ae91f051205fb7f6d8dbdc5f6c4b5fa00367d7e6203e246935f0b213976c71b2"
       },
       "why": "teamRole reads the real seeded viewer/member memberships and absence for outsider. Viewer can read but not write, member can write, and outsider receives not_found. Other role strings are not exercised. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -4031,8 +4031,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 421,
-        "end": 504,
+        "start": 424,
+        "end": 507,
         "sha256": "a6050f85add6c9fc87395d03bf01ad268df6a25ec46f4c138e71edbdf701e358"
       },
       "why": "A provider failure is returned as retry-required data across the RPC boundary, preserving retryability. The same event succeeds once the synthetic provider recovers."
@@ -4208,8 +4208,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 182,
-        "end": 196,
+        "start": 183,
+        "end": 197,
         "sha256": "ed23a77c6afc5fdd8b8b9f10d5a6763542a1e3e05fc8d05acfd91d6d64c45de2"
       },
       "why": "The member route parses the specified team/member, loads current owner and target roles, and accepts owner-managed membership changes. Follow-up write denial, lease release and removed-member invisibility witness that target. Missing target, owner removal, admin/self-delete and unauthorized-management failures remain untested. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -4344,8 +4344,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 182,
-        "end": 185,
+        "start": 183,
+        "end": 186,
         "sha256": "698b3ea56015a271959a0bce1a0e8490a552798ce5f59a8bf7c44ba8ec5bf849"
       },
       "why": "Owner role downgrade triggers team project lookup and ProjectRoom access refresh for this single project; the member lease disappears and subsequent new writes are denied. More than twenty projects, delivery failure, session-specific revocation and connected-socket behavior are not established. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -4913,8 +4913,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 152,
-        "end": 193,
+        "start": 153,
+        "end": 194,
         "sha256": "7fac05193080191610dfdcffe7a94b11f6f43c0f6cebbb18e09195a8e36318bc"
       },
       "why": "projectAccess accepts owner or active-team access and derives permission flags. Viewer command and restore are rejected; member writes before downgrade, loses new-write permission after downgrade, and owner restores. Trialing/admin, lapsed grace-period read, subscription rejection and personal projects are not established. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -6141,8 +6141,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 363,
-        "end": 375,
+        "start": 366,
+        "end": 378,
         "sha256": "ddf700808113b7e04ce804786c00b622255ca1a86e35e3d993780892848cd692"
       },
       "why": "Successful create requests use the exact fixed form and new per-attempt keys. Failed-create key reuse is not tested."
@@ -6268,8 +6268,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 148,
-        "end": 150,
+        "start": 149,
+        "end": 151,
         "sha256": "e393607b454eb6e2a99df4b0992469d0201150b7b97bf4ce75e01fa1c174a85f"
       },
       "why": "Successful team insert is required and serialized as 201; the witness verifies team owner and complete retry equality. It does not force the access_changed failure or independently check all generated timestamps. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -6323,8 +6323,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 363,
-        "end": 375,
+        "start": 366,
+        "end": 378,
         "sha256": "ddf700808113b7e04ce804786c00b622255ca1a86e35e3d993780892848cd692"
       },
       "why": "No-customer fixture triggers one exact customer request, persists its synthetic ID, and later calls reuse it; no customer race or invalid-ID claim."
@@ -6884,8 +6884,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 186,
-        "end": 192,
+        "start": 187,
+        "end": 193,
         "sha256": "ebe1715ca188d0b27d2976e4d62e2af263a9eaa087a6cec6cb49c4eca12170ef"
       },
       "why": "Existing changed live scene takes wanted branch, increments version, persists historical title, and records change; resulting First draft version 3 is asserted. On this compressed source line, deleted skipping, undesired-item tombstoning and unchanged-item skipping are explicitly untested. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -7269,8 +7269,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 186,
-        "end": 192,
+        "start": 187,
+        "end": 193,
         "sha256": "ebe1715ca188d0b27d2976e4d62e2af263a9eaa087a6cec6cb49c4eca12170ef"
       },
       "why": "Constructs/stores restore receipt and returns it; seq=3/epoch=2 and exact retry equality are asserted. Restore event delivery, event metadata, snapshotRequired/timingVersion meanings are not independently validated. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -7542,8 +7542,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 321,
-        "end": 327,
+        "start": 325,
+        "end": 331,
         "sha256": "a0686fa3f630387f7aa06a4dcee14b7cbf7d4013a4d92d969aa443ba9e0e1151"
       },
       "why": "Successful callbacks insert one correctly hashed exchange code with the existing user and fresh proof, then return that opaque code and client state."
@@ -8120,8 +8120,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 146,
-        "end": 198,
+        "start": 147,
+        "end": 199,
         "sha256": "8a313b5d51a253b5dee3d28e67ec180068f7380be7a7959b3e81e06c5a5f718d"
       },
       "why": "authenticate hashes the supplied valid synthetic bearer token, loads the matching unrevoked session and returns actor identity. /v1/me checks owner user.id; later access uses member/viewer/outsider identities, and after viewer logout the same token receives 401/session_expired. Invalid/missing bearer syntax, expired-by-clock sessions and unrelated identity fields are not asserted. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -8529,8 +8529,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 313,
-        "end": 320,
+        "start": 317,
+        "end": 324,
         "sha256": "911c51856d8203972ecd48f3c1205c7d1716a3af43a0d991f13d8c4bc590bfc1"
       },
       "why": "Fresh real OAuth starts persist the returned opaque state hash, independent client state, fresh proof challenge and default expiry; no random distribution or expiry rejection claim."
@@ -9091,8 +9091,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 182,
-        "end": 185,
+        "start": 183,
+        "end": 186,
         "sha256": "698b3ea56015a271959a0bce1a0e8490a552798ce5f59a8bf7c44ba8ec5bf849"
       },
       "why": "For the existing lease after downgrade, refreshAccess checks its still-valid auth session and current project permission, recording canWrite=false. The asserted empty lease list witnesses this downgrade path, not a revoked/expired/missing session, multiple leases sharing a cached permission, or projectAccess error handling. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -10346,8 +10346,8 @@
       "id": "246327578024a243",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 309,
-        "end": 310,
+        "start": 317,
+        "end": 318,
         "sha256": "390308ff98727586d6b0a3bb0587bfeeaa57fba2528d0817f1c3df41538bcc61"
       },
       "actions": [
@@ -10557,8 +10557,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 173,
-        "end": 176,
+        "start": 174,
+        "end": 177,
         "sha256": "5e4daf28024b8c5a29e6162e90a6ca0111687ec8570adb9a32ee32c76a392bf2"
       },
       "why": "Deserializes persisted scene data/version returned by current and historical snapshots; asserted titles and historical version. This does not witness other item kinds or deleted-item projection. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -10660,9 +10660,9 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 340,
-        "end": 355,
-        "sha256": "9650de58234a93da6cb68542500c3118f36221cf94b3daf482378caa336588bc"
+        "start": 344,
+        "end": 354,
+        "sha256": "17a3baf8fb2e0f39844c3c9fa299a2f42fe8904b39672fec07dfbf52e52a9787"
       },
       "why": "The same authenticated DELETE route cannot change an existing foreign-user session, but does revoke its own sibling session. Notification delivery itself is not asserted."
     },
@@ -11316,8 +11316,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 321,
-        "end": 338,
+        "start": 325,
+        "end": 342,
         "sha256": "dea8a35cddf28693863131603fe4e255b3cd989a2914f6c2e13e4dfafaf6590d"
       },
       "why": "Two valid exchanges of one real code yield exactly one session and one exact invalid-code refusal; the code row is removed. Storage faults and particular internal interleavings are not tested."
@@ -11422,8 +11422,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 157,
-        "end": 160,
+        "start": 158,
+        "end": 161,
         "sha256": "a70e9108f7beaf2b68cd96247be8fb5bd5eac98cf02e3233b2c9d18cc69128a4"
       },
       "why": "Receipt lookup serves an identical first-command retry with deep-equal result, while changed-label reuse of the same commandId rejects with 409 command_reused. This proves request-hash mismatch rejection, not another-user cached receipt theft rejection. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -12706,8 +12706,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 148,
-        "end": 196,
+        "start": 149,
+        "end": 197,
         "sha256": "8d7058e485133e38a0b3ca627eef77a41f82b412e6c4e56ab2cc871fc6b974f8"
       },
       "why": "The Worker tries team routes and matches project-subroute URLs, extracting the project ID for the real Durable Object. Creation/list/membership requests and snapshot/commands/history/restore use these routes. Invalid IDs and unrelated project routes remain gaps. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -13178,8 +13178,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 188,
-        "end": 190,
+        "start": 189,
+        "end": 191,
         "sha256": "45fed23f1a32712c36b3e6cc6f0af5b576c24fcb846307be4130fd30b16c4b4a"
       },
       "why": "Identical restore retry returns a deep-equal cached receipt. The cached owner/hash guard passes only; conflicting restore ID and cross-user reuse rejection are not witnessed. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -13324,8 +13324,8 @@
       "id": "2c7674f3905b9fe3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 497,
-        "end": 498,
+        "start": 505,
+        "end": 506,
         "sha256": "87fb4fb7b226586f934ca41449da35e916035a5fc898f5924f7efed8f1260084"
       },
       "actions": [
@@ -13405,8 +13405,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 421,
-        "end": 482,
+        "start": 424,
+        "end": 485,
         "sha256": "0aac66f43f6a9d0cbbc2a57fc0272f3bc1a9e106b190dbc9ceceae1341c8c940"
       },
       "why": "Unknown types are ignored only after signature validation. Recognized signed events reach object, customer and positive safe millisecond creation-time checks."
@@ -14200,8 +14200,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 226,
-        "end": 226,
+        "start": 230,
+        "end": 230,
         "sha256": "86281022f7aa626b6efa87fce0b14d65920be522946fa300378112db23de802b"
       },
       "why": "The exact local token/profile/email requests return competing unverified-primary and verified-secondary addresses; subsequent exchange asserts only the verified primary email is selected. All behavior is simulated, not live GitHub."
@@ -14484,8 +14484,8 @@
       "id": "31f79426db7cd75a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 363,
-        "end": 365,
+        "start": 371,
+        "end": 373,
         "sha256": "c324179813f2dec8eabeaad7a3d24683533bfd617fcd1eadbbec16ccc586f24b"
       },
       "actions": [
@@ -15489,8 +15489,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 186,
-        "end": 192,
+        "start": 187,
+        "end": 193,
         "sha256": "ebe1715ca188d0b27d2976e4d62e2af263a9eaa087a6cec6cb49c4eca12170ef"
       },
       "why": "Loads historical target and current scene, chooses desired live state and computes next sequence/epoch; response asserts seq=3/epoch=2 and snapshot asserts First draft version 3. Deleted targets, missing current rows and multi-item reconciliation excluded. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -15715,8 +15715,8 @@
       "id": "361c5c737cdd97f7",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 300,
-        "end": 303,
+        "start": 308,
+        "end": 311,
         "sha256": "be53340637c0733a61c336310c1452479c5ef1b02038be1f08dacd3fcf7c1325"
       },
       "actions": [
@@ -16741,8 +16741,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 169,
-        "end": 176,
+        "start": 170,
+        "end": 177,
         "sha256": "32b9b208a0a47a8205b226eb9d1bda4f1511c60453b41eac42326e1b1a1b1832"
       },
       "why": "Persists accepted scene update and records its before/after change; receipt version 2, current Second draft and historical First draft establish the single-item update path. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -16853,8 +16853,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 163,
-        "end": 165,
+        "start": 164,
+        "end": 166,
         "sha256": "8e393bafe81d9f5b9fa6bb237828466f2ea6065f06b7d6906d802de075e8e12b"
       },
       "why": "Fresh lease construction/persistence produces the asserted member userId, first fence and string token. There is no prior lease row, so conflict-update, expired-lease replacement, second fence increment and exact TTL behavior are excluded. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -17097,8 +17097,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 156,
-        "end": 158,
+        "start": 157,
+        "end": 159,
         "sha256": "44ab58392d0d53da153ab067a4760c15d261c7dcc51eef4a00b8886c7d2ba154"
       },
       "why": "HTTP command dispatch parses and hashes a valid first scene write before current-access checking; receipt seq=1 and item version=1 are asserted. Body-size, invalid-JSON and generation-race rejection are not exercised. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -17637,8 +17637,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 182,
-        "end": 185,
+        "start": 183,
+        "end": 186,
         "sha256": "698b3ea56015a271959a0bce1a0e8490a552798ce5f59a8bf7c44ba8ec5bf849"
       },
       "why": "The downgraded member cannot write, so refreshAccess invalidates the matching active lease; the following GET asserts no leases. Token rotation is implementation association only, not independently asserted, and lease invalidation on logout/removal is not exercised with an active lease. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -17963,8 +17963,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 182,
-        "end": 184,
+        "start": 183,
+        "end": 185,
         "sha256": "5381d34b385b75fad647e25c883162c4f27e1b5401e44ee3364e7f958c201cf3"
       },
       "why": "After membership downgrade, an identical accepted command still returns its receipt before this write guard; a new command is rejected 403 read_only. Ordinary viewer denial is separately present at witness line 132. No inactive-subscription case is inferred. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -18506,8 +18506,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 187,
-        "end": 193,
+        "start": 188,
+        "end": 194,
         "sha256": "a1e56b22e0a0990667b40189316f2eaab51a8ba3fb6c02d8042605c6e2b452c9"
       },
       "why": "Viewer restore rejects not_allowed; owner restore succeeds, advances sequence/epoch, and the later snapshot asserts First draft/version 3. A subsequent old-epoch command rejects stale_epoch through the separate command path. This associates restore delegation and receipt return, not WebSocket event or lease-broadcast delivery. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -18670,8 +18670,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 347,
-        "end": 356,
+        "start": 350,
+        "end": 359,
         "sha256": "7d8e25821f1154c976b1074518d517fce2c09d27f093c094b936f120769febb7"
       },
       "why": "HTTP status, JSON parsing and top-level object validation are independently distinguished using the price endpoint; no transport exception or null/primitive variant claim."
@@ -19558,8 +19558,8 @@
       "id": "43c1321950b21083",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 660,
-        "end": 662,
+        "start": 668,
+        "end": 670,
         "sha256": "1832dfa33320b4f95bab71ed05bc3a46952600a61a5309c015c0cb1aac09908d"
       },
       "actions": [
@@ -19871,8 +19871,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 148,
-        "end": 152,
+        "start": 149,
+        "end": 153,
         "sha256": "d621aff374604e26cedec2bac4ab8d5aaa804ccea4eb6a59c2b0e3cfab249c0a"
       },
       "why": "projectView serializes the created project. The witness checks its team-owner identity, complete exact-retry response equality and viewer list count. It does not independently assert every projected field, optional access field or timestamp. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -19901,8 +19901,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 405,
-        "end": 416,
+        "start": 408,
+        "end": 419,
         "sha256": "0761a34e7403b824540752368b85c3cb3bc7a41a3b84228d55958fab8fff5d6d"
       },
       "why": "Portal posts exact customer/return form, reauthenticates after its provider call, and validates the allowed returned URL."
@@ -20126,8 +20126,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 175,
-        "end": 176,
+        "start": 176,
+        "end": 177,
         "sha256": "37dab57a250d42f6f17f17d930819c5a7ee744a278cd220b3755f1cc078493c0"
       },
       "why": "Returns historical snapshot with asserted scene title/version. Deleted list, hasMore/nextCursor, historyEvent and other response metadata are not specifically checked. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -22023,8 +22023,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 162,
-        "end": 171,
+        "start": 163,
+        "end": 172,
         "sha256": "6f2a789d0f17cbc35fcfc5c50fe0e3bcf164492ff6e185698c5ce518fae85520"
       },
       "why": "Existing scene edits invoke lease enforcement: missing lease is rejected, acquired member lease permits update. Atomic temporary-lease acquisition is excluded. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -22423,8 +22423,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 163,
-        "end": 166,
+        "start": 164,
+        "end": 167,
         "sha256": "9acaee2e824d9b98fc6e2ef24865d147dee7e8f08996598a5b1d6734a6844f83"
       },
       "why": "Lease POST resolves valid writable actor, JSON body, item and session identifiers, existing item, access generation and transactional lease state; successful member lease and competing-owner item_locked follow. This only establishes the passing write/item/id/body/current-access guards, not their rejection cases. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -22567,8 +22567,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 175,
-        "end": 176,
+        "start": 176,
+        "end": 177,
         "sha256": "37dab57a250d42f6f17f17d930819c5a7ee744a278cd220b3755f1cc078493c0"
       },
       "why": "Loads historical scene page and projects its live scene into the page; asserted First draft version 1. Only one nondeleted item is exercised; deleted projection and page truncation excluded. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -22978,8 +22978,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 226,
-        "end": 226,
+        "start": 230,
+        "end": 230,
         "sha256": "86281022f7aa626b6efa87fce0b14d65920be522946fa300378112db23de802b"
       },
       "why": "The returned exchange code is accepted by the next correct-proof exchange; its response independently asserts the persisted synthetic name, selected email, null avatar and usable user identity. No existing-account upsert or storage-error branch is claimed."
@@ -23158,8 +23158,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 146,
-        "end": 198,
+        "start": 147,
+        "end": 199,
         "sha256": "8a313b5d51a253b5dee3d28e67ec180068f7380be7a7959b3e81e06c5a5f718d"
       },
       "why": "The Worker authenticates /v1 requests before route dispatch. Owner identity and valid actor flows pass, while the revoked viewer is rejected. This is synthetic-session handling, not provider login. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -23209,8 +23209,8 @@
       "id": "5211d001407c7455",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 811,
-        "end": 811,
+        "start": 819,
+        "end": 819,
         "sha256": "df4993a2dcd9414ca54bdbd35a37dc670f2ee5363b7c978a0f8effe92f47fa3e"
       },
       "actions": [
@@ -23505,8 +23505,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 218,
-        "end": 218,
+        "start": 222,
+        "end": 222,
         "sha256": "7d06a47cfc48fec821f3776f9bdfa418d491f5c287521436d0845a34ee82f1a5"
       },
       "why": "Malformed verifier rejected before code consumption. Local simulated-provider HTTP only, not real login or measured execution."
@@ -24129,8 +24129,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 156,
-        "end": 172,
+        "start": 157,
+        "end": 173,
         "sha256": "f575cb17cfb955783293c842112d3ebad44d2e628320742e0b34de76ba2cf7ca"
       },
       "why": "Parses valid single-scene put commands, first without and then with a token/fence lease; receipts, replay/conflict and second edit assert accepted command outcomes. No malformed input, default label, operation count boundary, duplicate operations, delete, other item kind, or expectedTimingVersion case is claimed. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -24183,8 +24183,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 152,
-        "end": 198,
+        "start": 153,
+        "end": 199,
         "sha256": "93eb0c68525b0628a40156e22e580625cb782cd49109b49d8390650fc04db55a"
       },
       "why": "projectAccess loads the real unarchived team project, resolves ownership/membership and rejects outsider or removed member with not_found. Viewer read versus write denial and owner restore use the resulting identity roles. No missing project, archived project, personal project, historical owner bypass or inactive entitlement is tested. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -24431,8 +24431,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 399,
-        "end": 404,
+        "start": 402,
+        "end": 407,
         "sha256": "25c45f2c9470f2baa4beb5b5776f0f0a94820128c36e53d3f18f404046088ef9"
       },
       "why": "Current provider synchronization precedes active and any-nonterminal subscription guards, which stop before cached lookup or creation."
@@ -25206,8 +25206,8 @@
       "id": "5975ebf27fa24190",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 293,
-        "end": 296,
+        "start": 301,
+        "end": 304,
         "sha256": "fd1208ec29481b3c0d6e820b8d3f96b24a68d9c97b1cce3368de8ecc24087688"
       },
       "actions": [
@@ -26008,8 +26008,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 381,
-        "end": 388,
+        "start": 384,
+        "end": 391,
         "sha256": "8f6f70f2b30368dbf97022e7c4cc8c601bb155557e962eebb39ec9b84ab24ca7"
       },
       "why": "Complete cached status requires matching terminal history; expired status retires the prior receipt. No invalid-status variant or storage-error claim."
@@ -26409,8 +26409,8 @@
       "id": "5df3242e94b1184f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 297,
-        "end": 297,
+        "start": 305,
+        "end": 305,
         "sha256": "42c475b9792fc983b1cc1b2156a5eda23f7c136eafa61bf98a274774b9f0b2d7"
       },
       "actions": [
@@ -27331,8 +27331,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 179,
-        "end": 180,
+        "start": 180,
+        "end": 181,
         "sha256": "902fc4b8e9965953849b2420bbcb48574f3bcce23271c7708bd529322b40cb0a"
       },
       "why": "Adds selected small command event to the HTTP page; assertion checks the single returned event. Accumulated-byte limits are not exercised. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -27992,8 +27992,8 @@
       "id": "6322edf8e4782c20",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 585,
-        "end": 585,
+        "start": 593,
+        "end": 593,
         "sha256": "117edc4441ea32d381a04f092c98a7d78b8f6368c4b4bff6ec26e4599d7db9b6"
       },
       "actions": [
@@ -28610,8 +28610,8 @@
       "id": "655bf5071a5998fd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 286,
-        "end": 289,
+        "start": 294,
+        "end": 297,
         "sha256": "75f35ed14262dd5313e36336b0b41fc4397a8fc9d4003e1c34450e150fad0d60"
       },
       "actions": [
@@ -29133,8 +29133,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 421,
-        "end": 504,
+        "start": 424,
+        "end": 507,
         "sha256": "a6050f85add6c9fc87395d03bf01ad268df6a25ec46f4c138e71edbdf701e358"
       },
       "why": "Matching active subscription selection yields exact entitlement fields, bounded checking time and one expected receipt in the successful retry. Read-only state comparisons do not assert fault-injected transaction atomicity."
@@ -29691,8 +29691,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 226,
-        "end": 226,
+        "start": 230,
+        "end": 230,
         "sha256": "86281022f7aa626b6efa87fce0b14d65920be522946fa300378112db23de802b"
       },
       "why": "Correct proof succeeds after the immediately preceding wrong proof returns invalid_code, independently proving wrong proof did not consume this code. Issued session has exact synthetic identity; no real GitHub login."
@@ -29930,8 +29930,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 197,
-        "end": 201,
+        "start": 198,
+        "end": 202,
         "sha256": "40d577aca5b861cc367d74d20d7084c091ad4eeb579f304aa7b73116d926c09c"
       },
       "why": "The Worker dispatches the logout auth route and returns its response; later same-token snapshot gets session_expired. Other auth routes and a null auth-route result are not established. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -29996,8 +29996,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 321,
-        "end": 338,
+        "start": 325,
+        "end": 342,
         "sha256": "dea8a35cddf28693863131603fe4e255b3cd989a2914f6c2e13e4dfafaf6590d"
       },
       "why": "Two callback requests for the same real state produce one successful consumption and one exact stale-state refusal, with one provider exchange; no forced internal concurrency or arbitrary race proof."
@@ -30202,8 +30202,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 182,
-        "end": 185,
+        "start": 183,
+        "end": 186,
         "sha256": "698b3ea56015a271959a0bce1a0e8490a552798ce5f59a8bf7c44ba8ec5bf849"
       },
       "why": "Membership PATCH invokes refreshTeamAccess then refreshAccess for this project and member. The prior member lease disappears from the asserted GET list. Entry increments generation, resolves project and selects matching active leases; no concurrent in-flight request observes the generation change, and sessionId-specific filtering is not established by a nonempty lease case. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -30580,8 +30580,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 164,
-        "end": 166,
+        "start": 165,
+        "end": 167,
         "sha256": "0f5d007ab4460e40f69f57f4c2ff27eb7f26ac424d01796b09a9ba916366bca3"
       },
       "why": "POST acquisition followed by another authenticated owner acquisition rejects the active lease as item_locked. The same-holder idempotent return, expiry and epoch-mismatch branches are not exercised. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -31280,8 +31280,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 256,
-        "end": 280,
+        "start": 257,
+        "end": 281,
         "sha256": "aedc806bc7d6ffba685e60a367834ddc531da8f03e32a7034a6ab18796b438d3"
       },
       "why": "After the frozen authentication and dispatch guards decline interception, public project ice-servers/devices routes reach the respective production helpers. The entire ordered scenario also asserts exact device inventories."
@@ -31290,8 +31290,8 @@
       "id": "6dbf27e5d003daa2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 227,
-        "end": 227,
+        "start": 235,
+        "end": 235,
         "sha256": "681e3a00a1c4933f6500e483ae936ef1af8a8ab9474c165a2c312b829813dc3e"
       },
       "actions": [
@@ -31595,8 +31595,8 @@
       "id": "6f0a51def3c92169",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 293,
-        "end": 295,
+        "start": 301,
+        "end": 303,
         "sha256": "cf4e8e1bce56a0b0fe308df4ff78b381d8cdbe1f2c74752423ed32f49a0dcfc1"
       },
       "actions": [
@@ -31678,8 +31678,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 177,
-        "end": 180,
+        "start": 178,
+        "end": 181,
         "sha256": "7df49998f2058fa206ad60657e953e9793e1baa401ddbf4508b975c20ab14011"
       },
       "why": "Reads ordered journal rows after the requested sequence and limit; history limit=1 yields first command, events after=1 yields second. No byte-bound or WebSocket behavior claimed. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -32279,8 +32279,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 357,
-        "end": 362,
+        "start": 360,
+        "end": 365,
         "sha256": "5ea762557f995df8ab0631e454ddcd3722ab0d60ea45feeaa62c642697ef8884"
       },
       "why": "Public owner authentication and the recheck helper re-read current role/session state; initial setup is valid and only named callbacks change it."
@@ -32322,8 +32322,8 @@
       "id": "724a58c0071879ca",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 241,
-        "end": 242,
+        "start": 249,
+        "end": 250,
         "sha256": "5fe56d9af1537141cc9dac966e206eddf55db3c329236c7912a3d0d0454c60ba"
       },
       "actions": [
@@ -33966,8 +33966,8 @@
       "id": "778df645dc921268",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 566,
-        "end": 568,
+        "start": 574,
+        "end": 576,
         "sha256": "bbfb7483c89e30c09f8be7ad92447e6b9d1d6f2dae773379043375c1afac3fe1"
       },
       "actions": [
@@ -34500,8 +34500,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 186,
-        "end": 192,
+        "start": 187,
+        "end": 193,
         "sha256": "ebe1715ca188d0b27d2976e4d62e2af263a9eaa087a6cec6cb49c4eca12170ef"
       },
       "why": "Parses valid owner restore command identifiers, epoch=1 and seq=1; restore response and resulting scene are asserted. Invalid inputs excluded; owner permission enforcement lies outside assigned source span. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -36974,8 +36974,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 227,
-        "end": 247,
+        "start": 228,
+        "end": 248,
         "sha256": "a765f36c63e1a16e1e4ee691794ba5d702f0815dc610abd853c2d83f515ff462"
       },
       "why": "Active paid and canceled/grace fixture variants distinguish the premium boolean consumed by device filtering. Trialing and every expiry edge are not claimed."
@@ -37550,8 +37550,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 206,
-        "end": 206,
+        "start": 210,
+        "end": 210,
         "sha256": "219789117af8dfceef6ac7324a8af12798b5bbadf942815145e7d25be82de771"
       },
       "why": "Public redirect preserves safe provider scope and opaque server state. Local simulated-provider HTTP only, not real login or measured execution."
@@ -37902,8 +37902,8 @@
       "id": "83f512cd665f025b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 370,
-        "end": 374,
+        "start": 378,
+        "end": 382,
         "sha256": "dab34e6acf94ea0f79a2f627ec216ce5e93c722ede15ba9a4db387898c5b1e99"
       },
       "actions": [
@@ -38001,8 +38001,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 156,
-        "end": 176,
+        "start": 157,
+        "end": 177,
         "sha256": "e01c852e29794d6dd47a6a20cc68f19b9fbdfc5cd2e792db11e16dd4e17e7210"
       },
       "why": "Scene insertion and update persist versions and title, witnessed by receipts and current/historical snapshots. Only nondeleted scene with order=0 is represented; sceneId/timing columns and deleted upsert alternatives are not validated. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -38646,8 +38646,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 182,
-        "end": 185,
+        "start": 183,
+        "end": 186,
         "sha256": "698b3ea56015a271959a0bce1a0e8490a552798ce5f59a8bf7c44ba8ec5bf849"
       },
       "why": "PATCH validates viewer role and performs guarded production D1 role downgrade, then refreshes access. A previous exact receipt remains retrievable but a new member write gets read_only, and lease listing becomes empty. Admin appointment, invalid roles and concurrent-session/membership races are not tested. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -39736,8 +39736,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 363,
-        "end": 375,
+        "start": 366,
+        "end": 378,
         "sha256": "ddf700808113b7e04ce804786c00b622255ca1a86e35e3d993780892848cd692"
       },
       "why": "Outgoing provider method/path, version/auth headers, optional form encoding and idempotency headers are checked by the strict interceptor. Transport exception handling is excluded."
@@ -39993,8 +39993,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 173,
-        "end": 176,
+        "start": 174,
+        "end": 177,
         "sha256": "5e4daf28024b8c5a29e6162e90a6ca0111687ec8570adb9a32ee32c76a392bf2"
       },
       "why": "Current snapshot dispatch reads live items; seq=1 dispatch selects historicalSnapshot. Assertions distinguish Second draft/headSeq 2 from First draft/version 1. Historical reconstruction implementation is outside this assignment. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -40003,8 +40003,8 @@
       "id": "8a0c5c83770c8e04",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 515,
-        "end": 517,
+        "start": 523,
+        "end": 525,
         "sha256": "e75ceef78142ba6150091ee1d701fe508c3750adc77fd0a8515a2abab938d0a1"
       },
       "actions": [
@@ -40123,9 +40123,9 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/discussions-assets-journey.mjs",
-        "start": 181,
+        "start": 198,
         "end": 204,
-        "sha256": "915a8c2796457353c5220a4084dbcdd0323670838757226bfdfbc829f62eac4a"
+        "sha256": "be71600c489742819951eec5262fd67966bdd8090a931493acb5150ec94092ab"
       },
       "why": "Synthetic bytes have the PNG signature. The matching PNG content type succeeds, while the same bytes labeled JPEG receive 415 invalid_media. This exercises the PNG signature decision, not image decoding or JPEG/WebP detection."
     },
@@ -40198,8 +40198,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 421,
-        "end": 465,
+        "start": 424,
+        "end": 468,
         "sha256": "be8647a361c26dfbe6825aad48e4df806c63e4ec25f60a371eae9528ec1afa32"
       },
       "why": "Real HMAC verification binds the raw body and accepts a valid secondary signature. The test independently signs raw bodies without calling production signature helpers."
@@ -40252,8 +40252,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 146,
-        "end": 146,
+        "start": 147,
+        "end": 147,
         "sha256": "634809d9181a94077ba7586810423420d261fd2f17f688b63d62ec718e3aeceb"
       },
       "why": "The /v1/me route returns the authenticated owner identity; the assertion checks user.id. Embedded teams/projects/sessionId are not independently asserted by this first request. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -40460,8 +40460,8 @@
       "id": "8cabb5a825354921",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 574,
-        "end": 575,
+        "start": 582,
+        "end": 583,
         "sha256": "1cffeee9176ea8b313df1e5be327c0e9baf50c45d829101186009b257fc8e37f"
       },
       "actions": [
@@ -41224,8 +41224,8 @@
       "id": "8fb4c08064f57176",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 720,
-        "end": 728,
+        "start": 728,
+        "end": 736,
         "sha256": "5a5f6c02a36999a9e71b9abd7481a87a0f3c1caa96b70ff0d63035f548b90ade"
       },
       "actions": [
@@ -41507,8 +41507,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 282,
-        "end": 322,
+        "start": 283,
+        "end": 323,
         "sha256": "3ccbc3b8c44bcd5a0477c6fe952fbf1ade8d70220802d1ccca48a1f30dd6fb3e"
       },
       "why": "The configured fetch contract, response.ok guard, array guard and success serialization are exercised by three controlled provider responses through real public HTTP. No live provider,timeout,malformed JSON or server validation of individual ICE entries is claimed."
@@ -41948,8 +41948,8 @@
       "id": "91f9f3a700362b1e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 232,
-        "end": 233,
+        "start": 240,
+        "end": 241,
         "sha256": "cf64e34be120ab284bd394518254d8d18b5bc1a047e451a06c2b7a1368705763"
       },
       "actions": [
@@ -42250,8 +42250,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 148,
-        "end": 162,
+        "start": 149,
+        "end": 163,
         "sha256": "91a8b7f5dd94e4d463ecbe579bbb2b24f8dfb095d90b48365ebe99ffd34d25d6"
       },
       "why": "premium evaluates the seeded active team with paid_until in the future; member creation and scene write pass and viewer write is rejected. No trialing, inactive, expired or null-team branch is established. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -42356,8 +42356,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 177,
-        "end": 180,
+        "start": 178,
+        "end": 181,
         "sha256": "7df49998f2058fa206ad60657e953e9793e1baa401ddbf4508b975c20ab14011"
       },
       "why": "history after=0 limit=1 returns exactly the first command with hasMore true; events after=1 returns exactly the second command. Both route aliases and valid cursor/limit parsing are associated; invalid cursors and limits are not exercised. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -42384,8 +42384,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 256,
-        "end": 280,
+        "start": 257,
+        "end": 281,
         "sha256": "aedc806bc7d6ffba685e60a367834ddc531da8f03e32a7034a6ab18796b438d3"
       },
       "why": "Public project access is checked before the per-session TURN quota and absent-configuration fallback. No actual STUN traffic or real clock-reset proof."
@@ -42462,8 +42462,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 177,
-        "end": 180,
+        "start": 178,
+        "end": 181,
         "sha256": "7df49998f2058fa206ad60657e953e9793e1baa401ddbf4508b975c20ab14011"
       },
       "why": "Projects persisted event command IDs into HTTP history/events responses; both requested pages assert the corresponding command ID. Other event fields and change payload contents are not individually asserted. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -42656,8 +42656,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 246,
-        "end": 246,
+        "start": 250,
+        "end": 250,
         "sha256": "4388c5bbefcd4afc9222350e4ed477267201dfe8734663b822a6b06c01b7fff3"
       },
       "why": "Cancellation returns denial and no exchange code without calling provider. Local simulated-provider HTTP only, not real login or measured execution."
@@ -42955,8 +42955,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 148,
-        "end": 152,
+        "start": 149,
+        "end": 153,
         "sha256": "d621aff374604e26cedec2bac4ab8d5aaa804ccea4eb6a59c2b0e3cfab249c0a"
       },
       "why": "The /v1/projects GET dispatch returns the current viewer-visible list; witness asserts exactly one after member creation. No project-detail, archive or rename route is tested. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -43078,8 +43078,8 @@
       "id": "96523476b3f88a7e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 518,
-        "end": 520,
+        "start": 526,
+        "end": 528,
         "sha256": "42012bb069693254b4836adeccce4487cac4e7915e8af932cba052184d7d1e3e"
       },
       "actions": [
@@ -43473,8 +43473,8 @@
       "id": "9859dc8ba1e03ff3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 521,
-        "end": 521,
+        "start": 529,
+        "end": 529,
         "sha256": "a2523414c7ecf310d709bcca45c6c26e446ef386e2e77a7301308e8d6f451af4"
       },
       "actions": [
@@ -43569,8 +43569,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 152,
-        "end": 196,
+        "start": 153,
+        "end": 197,
         "sha256": "f67ffd1f74d30aa1f74f8a909704deeaec152bb772d630cacd643e6eb6dd9a5a"
       },
       "why": "listProjects returns the accumulated list, observed as one visible viewer project then zero removed-member projects. This does not assert all serialized project fields. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -45440,8 +45440,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 186,
-        "end": 189,
+        "start": 187,
+        "end": 190,
         "sha256": "018dc0af02d1a051b85cec1f9337b7219a0ac320f9d9ec6e0034258ec42009c0"
       },
       "why": "Restore POST decodes and hashes a valid body, checks current access and looks up commandId; viewer is denied and owner succeeds with seq=3/epoch=2. Invalid body, size limit, malformed id and generation-race rejection are not exercised. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -45494,8 +45494,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 159,
-        "end": 172,
+        "start": 160,
+        "end": 173,
         "sha256": "cf0a6a50070c558ad3d521973e806517a69868e49c657a2dc5d24778c8e1e68b"
       },
       "why": "Room fetch failure conversion corresponds to asserted command_reused, read_only, lease_required, item_locked and version_conflict responses. The request helper verifies status/error code; no generic unexpected-error failure case is claimed. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -46066,8 +46066,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 177,
-        "end": 180,
+        "start": 178,
+        "end": 181,
         "sha256": "7df49998f2058fa206ad60657e953e9793e1baa401ddbf4508b975c20ab14011"
       },
       "why": "Returns HTTP event page metadata and events; history asserts hasMore=true at limit=1 and both pages assert command IDs/counts. Terminal hasMore=false, head/epoch/timing metadata and empty-page fallback are not asserted here. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -46641,8 +46641,8 @@
       "id": "a13489ce55eafe6d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 378,
-        "end": 378,
+        "start": 386,
+        "end": 386,
         "sha256": "cc0f92a36210d7cf478a1dcd404ed40f0f1956d12202059503ac6325c63a2748"
       },
       "actions": [
@@ -47390,8 +47390,8 @@
       "id": "a27cc246e1bb047b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 379,
-        "end": 382,
+        "start": 387,
+        "end": 390,
         "sha256": "ef50a51588e0c27a2f347b6fb60c111410762ad3440ffc360b3df572d5700c1a"
       },
       "actions": [
@@ -47988,8 +47988,8 @@
       "id": "a416a0a7bbca6d14",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 577,
-        "end": 579,
+        "start": 585,
+        "end": 587,
         "sha256": "274f522ebdbfcfc6f473837b2562e4f89860f01e3b2baed7f66c5ef9165449ff"
       },
       "actions": [
@@ -49146,8 +49146,8 @@
       "id": "a8a1859718227433",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 518,
-        "end": 521,
+        "start": 526,
+        "end": 529,
         "sha256": "285adb34294fce81bd951e5c421d767c26d847995706f339b90f0f7ef725b36f"
       },
       "actions": [
@@ -49756,8 +49756,8 @@
       "id": "a9f98b00df683075",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 408,
-        "end": 409,
+        "start": 416,
+        "end": 417,
         "sha256": "b117780eb4da7c07ec66eda97fc40b69084ab5a63c4347d6311e483add47d76f"
       },
       "actions": [
@@ -49942,8 +49942,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 163,
-        "end": 168,
+        "start": 164,
+        "end": 169,
         "sha256": "fea5dd74d4c5336aa4aa61dc9f08a42599d91b9df00098a090a5793b2438d37b"
       },
       "why": "Lease response serialization and public listing remove the token: acquire checks user/fence/token type; viewer public-list assertion checks token absence. Expiry boundary and other lease metadata are not asserted. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -50365,8 +50365,8 @@
       "id": "abbdc61ac1a1c484",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 502,
-        "end": 504,
+        "start": 510,
+        "end": 512,
         "sha256": "3af8be92706536575f44396134000a11adf737fae87c99c2427a9d8e13b0afd0"
       },
       "actions": [
@@ -50461,8 +50461,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 186,
-        "end": 193,
+        "start": 187,
+        "end": 194,
         "sha256": "a4cc5e6359638929a347178af7258d0ee1c47c9c1f04923f1a3c292e0a0ad545"
       },
       "why": "Checks command epoch against state after restore: owner restores epoch 1 to epoch 2 and an epoch-1 command receives stale_epoch. This is a command rejection, not the restore stale-epoch branch. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -51409,8 +51409,8 @@
       "id": "b00fa899709da474",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 246,
-        "end": 249,
+        "start": 254,
+        "end": 257,
         "sha256": "c46ad0ec258075b2f171a5bdd3469eb1e423941c7b8265b29084150377eb57fa"
       },
       "actions": [
@@ -51534,8 +51534,8 @@
       "id": "b03c02a87d317b16",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 560,
-        "end": 561,
+        "start": 568,
+        "end": 569,
         "sha256": "c26287c65561809d81e16d701452b4d3760b03e68df1ff790fc1aa675106a5d4"
       },
       "actions": [
@@ -52353,8 +52353,8 @@
       "id": "b2fef9ed10833ad5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 680,
-        "end": 685,
+        "start": 688,
+        "end": 693,
         "sha256": "dcfd6ac882e2fd986bd8ef27349510e52e7d98f883712f96d83b78faed397254"
       },
       "actions": [
@@ -52550,8 +52550,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 227,
-        "end": 247,
+        "start": 228,
+        "end": 248,
         "sha256": "a765f36c63e1a16e1e4ee691794ba5d702f0815dc610abd853c2d83f515ff462"
       },
       "why": "The access-conditioned query constructs the exact filtered, ordered public descriptor list with current session and unknown online status. No1000-row cutoff or online detection claim."
@@ -53118,8 +53118,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 173,
-        "end": 174,
+        "start": 174,
+        "end": 175,
         "sha256": "e59c0caaa109877827d31f6dad0c6e6781500a615ee3e67443b2133bb07f2888"
       },
       "why": "Current snapshot response exposes the asserted headSeq 2 and Second draft item title. Other fields on this compact source line, including tombstones, threads, import eligibility and lease contents, are not established by these assertions. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -53414,8 +53414,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 169,
-        "end": 172,
+        "start": 170,
+        "end": 173,
         "sha256": "d67fda4f6bfee25fa19d31cf758baf2da83f405c48fd095bbaf07a7813ee435e"
       },
       "why": "Valid leased second edit commits and returns seq=2/version=2, while retrying the same expectedVersion under a new commandId rejects version_conflict. Current-access guard passes; queueEvent invocation on the compact line does not establish WebSocket delivery. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -53450,8 +53450,8 @@
       "id": "b5c88e5d69c3c253",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 304,
-        "end": 304,
+        "start": 312,
+        "end": 312,
         "sha256": "425f9df57aef918b436ffdf46d77f4c629327209ce3534077644944761f9e46b"
       },
       "actions": [
@@ -53590,8 +53590,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 227,
-        "end": 247,
+        "start": 228,
+        "end": 248,
         "sha256": "a765f36c63e1a16e1e4ee691794ba5d702f0815dc610abd853c2d83f515ff462"
       },
       "why": "Team ownership, current membership and read grace admit the named readers, while removed/outsider users are refused. Supports own-only versus paid peer visibility, not write/manage permissions or grace expiration."
@@ -54053,8 +54053,8 @@
       "id": "b7e289954a6fed4e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 229,
-        "end": 229,
+        "start": 237,
+        "end": 237,
         "sha256": "c1447292d9f4946c9670570f9c6e9d1daac7aa8d94fd14168f451554d356187f"
       },
       "actions": [
@@ -54428,8 +54428,8 @@
       "id": "b9335911984aff2d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 367,
-        "end": 367,
+        "start": 375,
+        "end": 375,
         "sha256": "abc81019fd1ad08baf3b4edb48386acd2a5061c46b5c1887ce86b33a68339cbe"
       },
       "actions": [
@@ -55092,8 +55092,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 328,
-        "end": 340,
+        "start": 332,
+        "end": 344,
         "sha256": "61539561e614229b069e9ee596cbad59237fb21c201b9279924fb65a55cadea1"
       },
       "why": "New sessions independently reproduce the returned token hash and requested device name with the default duration. Other duration settings and device truncation are not claimed."
@@ -55812,8 +55812,8 @@
       "id": "bdd0dd52c0b91124",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 249,
-        "end": 249,
+        "start": 257,
+        "end": 257,
         "sha256": "b4f7aeb9f63f0a57c09c742578d82c2b9d0fe379a6c1c3a405e3274544f288ac"
       },
       "actions": [
@@ -55929,8 +55929,8 @@
       "id": "be57ab300ea7debd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 799,
-        "end": 802,
+        "start": 807,
+        "end": 810,
         "sha256": "26beb85a13d16de248d0f1e982bec88ba5075e79d6cf6af4235ef6535513e543"
       },
       "actions": [
@@ -56761,8 +56761,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 156,
-        "end": 180,
+        "start": 157,
+        "end": 181,
         "sha256": "c9dec368656bdabf4599856654d37006a2f235f70f2b7a8a747ba2a72dda1dd4"
       },
       "why": "Allocates sequential command events, updates head, records per-item history and stores command receipts. Seq/version assertions, exact receipt replay, current/historical title, and journal command IDs witness ordinary single-scene commits. snapshotRequired=true, large-batch, deletion, nonzero timing changes, rollback and crash durability are not tested. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -56955,8 +56955,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 163,
-        "end": 168,
+        "start": 164,
+        "end": 169,
         "sha256": "fea5dd74d4c5336aa4aa61dc9f08a42599d91b9df00098a090a5793b2438d37b"
       },
       "why": "Successful transaction returns the HTTP lease used by subsequent requests and observable public list. Broadcast is colocated but no sockets are opened, so this association does not establish lease notification delivery. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -58468,8 +58468,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 179,
-        "end": 180,
+        "start": 180,
+        "end": 181,
         "sha256": "902fc4b8e9965953849b2420bbcb48574f3bcce23271c7708bd529322b40cb0a"
       },
       "why": "Converts the selected second command journal row into the returned HTTP event; asserted one event with second command ID. Encoded-size computation is incidental, not a tested size limit. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -58601,8 +58601,8 @@
       "id": "c971ccb333361360",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 378,
-        "end": 378,
+        "start": 386,
+        "end": 386,
         "sha256": "cc0f92a36210d7cf478a1dcd404ed40f0f1956d12202059503ac6325c63a2748"
       },
       "actions": [
@@ -59004,8 +59004,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 175,
-        "end": 176,
+        "start": 176,
+        "end": 177,
         "sha256": "37dab57a250d42f6f17f17d930819c5a7ee744a278cd220b3755f1cc078493c0"
       },
       "why": "Reads requested historical seq=1 with default limit and no cursor; resulting item/title/version asserted. Invalid sequence/limit, explicit limit and cursor handling excluded. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -60749,8 +60749,8 @@
       "id": "d2025b83a61d59dd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 798,
-        "end": 801,
+        "start": 806,
+        "end": 809,
         "sha256": "6ccdd6df77ace49b02338e035534ba74df09e5c4910fb1989ac197764d5da3a6"
       },
       "actions": [
@@ -61076,8 +61076,8 @@
       "id": "d3bc3b06359020d1",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 376,
-        "end": 376,
+        "start": 384,
+        "end": 384,
         "sha256": "6cb3e081cf00cebc2d6bea390d1d2df1ed786518df0252b0770acc72919044ab"
       },
       "actions": [
@@ -61414,8 +61414,8 @@
       "id": "d5b6cccc9f00ced9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 173,
-        "end": 178,
+        "start": 181,
+        "end": 186,
         "sha256": "7b4399eb3bf20d3dced68f259311ccf61b8acdfcb6a6b1ba43e6f4a0426bb533"
       },
       "actions": [
@@ -62010,8 +62010,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 152,
-        "end": 196,
+        "start": 153,
+        "end": 197,
         "sha256": "f67ffd1f74d30aa1f74f8a909704deeaec152bb772d630cacd643e6eb6dd9a5a"
       },
       "why": "listProjects queries membership-visible projects and applies current access projection. Viewer sees one project; after removal member sees zero. Only successful projection and empty query results are tested, not catch-based filtering or database failures. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -62263,8 +62263,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 167,
-        "end": 168,
+        "start": 168,
+        "end": 169,
         "sha256": "a2f140b602e79c2a2580483e2832a4f8b3a6aba296757344ef67a7c118a6d5af"
       },
       "why": "Viewer GET leases returns public list whose first entry omits token. Epoch field is returned but not explicitly asserted here; nonempty public token redaction is the witness. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -62582,8 +62582,8 @@
       "id": "da70d7ffff562871",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 795,
-        "end": 798,
+        "start": 803,
+        "end": 806,
         "sha256": "9b0fe68c953cf1ee96a5fc24f650595124c613b3cb2f11f58db77a9bc57c52cb"
       },
       "actions": [
@@ -62762,8 +62762,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 153,
-        "end": 193,
+        "start": 154,
+        "end": 194,
         "sha256": "d8b02376a3ab60b93e902cdbcc11f007c21ad637a9ef9154a793e04cd13cb4c2"
       },
       "why": "The Worker allow-list accepts the selected snapshot, commands, leases, history, events and restore paths and forwards the original HTTP request to the project Durable Object. Unknown-route rejection and other allow-listed operations are not tested. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -62788,8 +62788,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 351,
-        "end": 355,
+        "start": 359,
+        "end": 363,
         "sha256": "300c013acf0b158c576458def2e0dd255b7d352aefca9d0cd77efda5c36ce014"
       },
       "why": "Public logout revokes only the authenticated current session and subsequent identity authentication fails. Notification delivery is outside the stated oracle."
@@ -63131,8 +63131,8 @@
       "id": "dc795d7a0700029a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 290,
-        "end": 290,
+        "start": 298,
+        "end": 298,
         "sha256": "662541f5fd2f4f8a1c01d7814d5b3245d9d1169c9bd1fcf34e8ee04fe6804605"
       },
       "actions": [
@@ -63703,8 +63703,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 173,
-        "end": 176,
+        "start": 174,
+        "end": 177,
         "sha256": "5e4daf28024b8c5a29e6162e90a6ca0111687ec8570adb9a32ee32c76a392bf2"
       },
       "why": "Selects latest recorded item change at or before sequence 1; historical snapshot returns First draft version 1 while current snapshot returns Second draft. Empty history, deleted items and multi-item cursor/limit behavior are not tested. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -64034,8 +64034,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 197,
-        "end": 201,
+        "start": 198,
+        "end": 202,
         "sha256": "40d577aca5b861cc367d74d20d7084c091ad4eeb579f304aa7b73116d926c09c"
       },
       "why": "POST logout authenticates the viewer, marks its session revoked and invokes access refresh before success. The following snapshot fails with 401/session_expired and terminal D1 count is exactly one revoked session. Other auth/session-management routes, elapsed expiry and WebSocket effects are not tested. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -64044,8 +64044,8 @@
       "id": "df0cb3dd47468479",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 770,
-        "end": 773,
+        "start": 778,
+        "end": 781,
         "sha256": "a6fd533bb2976ec5b7b66dcb502653131dc1c2339a1068af0a37056588ae0032"
       },
       "actions": [
@@ -64208,8 +64208,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 163,
-        "end": 168,
+        "start": 164,
+        "end": 169,
         "sha256": "fea5dd74d4c5336aa4aa61dc9f08a42599d91b9df00098a090a5793b2438d37b"
       },
       "why": "Lease route dispatch reaches member POST acquisition, competing owner POST rejection and viewer GET public list. Assertions verify member identity, fence 1, token type, item_locked and public token omission. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -64618,8 +64618,8 @@
       "id": "e100d9e3e1597b58",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 140,
-        "end": 144,
+        "start": 148,
+        "end": 152,
         "sha256": "d1390fa9af10d99d524c8775628cb6df5692c11e51cb6010923543eac5094cad"
       },
       "actions": [
@@ -64786,8 +64786,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 248,
-        "end": 254,
+        "start": 249,
+        "end": 255,
         "sha256": "cb7527cbbd22d104bce7879af14425016eacbc49f2e23c802c347e5e89ec57d9"
       },
       "why": "Public logout revokes only the authenticated synthetic session and refreshes access before returning ok; its next request401 and device exclusion distinguish successful revocation. No websocket close or racing command claim."
@@ -64828,8 +64828,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 210,
-        "end": 210,
+        "start": 214,
+        "end": 214,
         "sha256": "bc92fd2d31acba4a8fd36f7688e3ce29ace10df5540c528a21f82c127b2d2ea5"
       },
       "why": "Callback consumes started state and returns original client state. Local simulated-provider HTTP only, not real login or measured execution."
@@ -65164,8 +65164,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 197,
-        "end": 198,
+        "start": 198,
+        "end": 199,
         "sha256": "185bfe48e01dff51d9419801b312f8bef183d431d8e90454ac25b7b3d045306e"
       },
       "why": "The Worker converts the revoked viewer authentication failure into the asserted 401/session_expired response. Other exception kinds and internal error details are not asserted. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -66117,8 +66117,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 340,
-        "end": 350,
+        "start": 344,
+        "end": 354,
         "sha256": "17a3baf8fb2e0f39844c3c9fa299a2f42fe8904b39672fec07dfbf52e52a9787"
       },
       "why": "Two same-user active sessions are listed without the original revoked or unrelated-user session; currentSessionId and post-revocation list are exact."
@@ -67213,8 +67213,8 @@
       "id": "e854487f4fee66d8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 500,
-        "end": 500,
+        "start": 508,
+        "end": 508,
         "sha256": "97f462fc90f039c5470d57da43b84f5caf32b895462b9db5a7662402904e8f9c"
       },
       "actions": [
@@ -67276,8 +67276,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 194,
-        "end": 196,
+        "start": 195,
+        "end": 197,
         "sha256": "246d92ca85320e1685efbad6fb4bfa49dc72eec9d4721bc0fb4178ba4ae52d80"
       },
       "why": "DELETE performs owner-authorized production D1 removal and refreshes access; target snapshot gets not_found and project list is empty. Self-leave, admin handling, owner removal and simultaneous authorization changes are untested. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -67750,8 +67750,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 421,
-        "end": 482,
+        "start": 424,
+        "end": 485,
         "sha256": "0aac66f43f6a9d0cbbc2a57fc0272f3bc1a9e106b190dbc9ceceae1341c8c940"
       },
       "why": "Expanded unknown customer IDs are ignored; known customer dispatch uses the coordinator. Its cross-team event refusal is translated to the exact retryable webhook response."
@@ -68750,9 +68750,9 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 345,
-        "end": 352,
-        "sha256": "95d4b34e1fbd782100c913c6befb1aab4adc1cc652f74a565115fdf3f29c16dc"
+        "start": 349,
+        "end": 360,
+        "sha256": "8110355caaa6fab37ba828cdd088e48055ce9ac1b36bb3073bfd4cd195bcd932"
       },
       "why": "Correct issued bearer authenticates the existing user until its own revocation; revoking a sibling does not revoke the current bearer. Other header/expiry inputs are excluded."
     },
@@ -68797,8 +68797,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 421,
-        "end": 504,
+        "start": 424,
+        "end": 507,
         "sha256": "a6050f85add6c9fc87395d03bf01ad268df6a25ec46f4c138e71edbdf701e358"
       },
       "why": "Accepted receipt IDs are team-bound. Same-team replay refreshes access without rereading the changed provider snapshot; a cross-team reuse is refused without provider traffic."
@@ -69319,8 +69319,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 175,
-        "end": 176,
+        "start": 176,
+        "end": 177,
         "sha256": "37dab57a250d42f6f17f17d930819c5a7ee744a278cd220b3755f1cc078493c0"
       },
       "why": "Accumulates the single small historical scene into response page; asserted title/version. No byte-budget boundary claim. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -69475,8 +69475,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 153,
-        "end": 155,
+        "start": 154,
+        "end": 156,
         "sha256": "deb8f4bd960de232b621c2ccec97d99152ed6d4064acc7435f352898cd9878b0"
       },
       "why": "Project-room request setup resolves an authenticated actor and project access, initializes room metadata for the valid viewer, and returns the asserted empty snapshot; outsider membership rejection is also requested. Route-shape, current-access generation and room-identity guards pass, not rejection-tested. Logout rejection is outside this block: outer worker authentication rejects it before room dispatch. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -69903,8 +69903,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 347,
-        "end": 356,
+        "start": 350,
+        "end": 359,
         "sha256": "7d8e25821f1154c976b1074518d517fce2c09d27f093c094b936f120769febb7"
       },
       "why": "Known-valid fixed price is distinguished from unit_amount 1000. Other predicate fields are held valid, not exhaustively varied."
@@ -70413,8 +70413,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 326,
-        "end": 338,
+        "start": 330,
+        "end": 342,
         "sha256": "e2332a9055030b68fd9611dbda09bc5ca7f59648fa2912ed3719a95b0abce0a0"
       },
       "why": "The existing GitHub ID conflict retains the original user ID/creation time and unchanged profile without duplicate user creation. Changed profile-field updates are not exercised."
@@ -70714,8 +70714,8 @@
       "id": "f3142c5f6bbed5b9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 547,
-        "end": 549,
+        "start": 555,
+        "end": 557,
         "sha256": "90964b4e76c047a150ad14af6589320cf5dfa4163e529e0e9f748bdc796625e2"
       },
       "actions": [
@@ -71073,8 +71073,8 @@
       "id": "f43fd634b3462a11",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 563,
-        "end": 564,
+        "start": 571,
+        "end": 572,
         "sha256": "c803ddeb6699c76d5458d3286886abdae555235d298da3ddd88d8523cc1a7210"
       },
       "actions": [
@@ -71325,8 +71325,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 328,
-        "end": 340,
+        "start": 332,
+        "end": 344,
         "sha256": "61539561e614229b069e9ee596cbad59237fb21c201b9279924fb65a55cadea1"
       },
       "why": "Successful exchange returns the existing user and the issued token/expiry, agreeing with complete owned-D1 observations."
@@ -71350,8 +71350,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 421,
-        "end": 465,
+        "start": 424,
+        "end": 468,
         "sha256": "be8647a361c26dfbe6825aad48e4df806c63e4ec25f60a371eae9528ec1afa32"
       },
       "why": "Timestamp and signature-field parsing reject the concrete missing, fractional, stale/future and unsupported-version variants. Exact tolerance boundary is not varied."
@@ -71873,8 +71873,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 148,
-        "end": 152,
+        "start": 149,
+        "end": 153,
         "sha256": "d621aff374604e26cedec2bac4ab8d5aaa804ccea4eb6a59c2b0e3cfab249c0a"
       },
       "why": "requireTeam resolves the member and seeded team for creation; the returned team owner becomes project owner. Only successful membership/role checks are associated here, not missing-team or denied role-list branches. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -72311,8 +72311,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 162,
-        "end": 171,
+        "start": 163,
+        "end": 172,
         "sha256": "6f2a789d0f17cbc35fcfc5c50fe0e3bcf164492ff6e185698c5ce518fae85520"
       },
       "why": "Reads and enforces edit lease: missing lease receives lease_required; acquired matching member lease permits second scene edit. Wrong token/fence/user/session/epoch and expiry rejection are not separately tested, despite sharing the same assertion line. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -72572,8 +72572,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 405,
-        "end": 416,
+        "start": 408,
+        "end": 419,
         "sha256": "0761a34e7403b824540752368b85c3cb3bc7a41a3b84228d55958fab8fff5d6d"
       },
       "why": "Public owner/rate/body routing enters the serialized coordinator with client body drained; fixed-form checks in the earlier create step show adversarial fields are ignored. No rate/body-limit or malformed-route boundary claim."
@@ -73358,8 +73358,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/collaboration-journey.mjs",
-        "start": 148,
-        "end": 151,
+        "start": 149,
+        "end": 152,
         "sha256": "adc4a5e94213cf76da15f16884db54db808738212451fe2412d897f798256716"
       },
       "why": "Team project POST accepts the caller-provided ID/title/team, derives owner from team, inserts through active membership/session guards, returns exact existing retry and rejects changed-title reuse with project_exists. Only successful rate/body/title/id checks, active-team member creation, exact retry and changed-title conflict are tested; invalid inputs, generated-ID fallback, quota exhaustion, archived retry, trialing and concurrent authorization races remain gaps. Personal-project insert on line 132 is excluded. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
@@ -73677,8 +73677,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 202,
-        "end": 202,
+        "start": 206,
+        "end": 206,
         "sha256": "e648f665e4683e791e442ba9c457ef39e1a241579ad10d99e03bfb88f1aac880"
       },
       "why": "Exact-length unsupported PKCE challenge is rejected. Local simulated-provider HTTP only, not real login or measured execution."
@@ -74144,8 +74144,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/billing-journey.mjs",
-        "start": 357,
-        "end": 362,
+        "start": 360,
+        "end": 365,
         "sha256": "5ea762557f995df8ab0631e454ddcd3722ab0d60ea45feeaa62c642697ef8884"
       },
       "why": "The configured price is fetched and validated before the owner is rechecked; valid-price role loss prevents creation."
@@ -74822,8 +74822,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 321,
-        "end": 327,
+        "start": 325,
+        "end": 331,
         "sha256": "a0686fa3f630387f7aa06a4dcee14b7cbf7d4013a4d92d969aa443ba9e0e1151"
       },
       "why": "The successful callback creates one code row with exact returned-code hash, existing user ID, fresh challenge and request-bounded two-minute expiry; no session exists yet. Foreign-key enforcement and duplicate-code collision rejection are not exercised."
@@ -75211,9 +75211,9 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 328,
-        "end": 355,
-        "sha256": "a399186c39034ad242fefece04f1a139e45254314975e4b6f82e0e0f13ee485f"
+        "start": 332,
+        "end": 363,
+        "sha256": "c3a7487fb5b18298f442dfc49e491adbc99349c102f3deb57365014afef49c60"
       },
       "why": "Actual exchange, public session revocation and logout distinguish all declared session fields against independently expected hashes, actor IDs, device names and timestamps. The seeded unrelated row is preservation context, not the evidence for these writes."
     },
@@ -75438,8 +75438,8 @@
       ],
       "step": {
         "path": "cloud/tests-e2e/oauth-journey.mjs",
-        "start": 313,
-        "end": 320,
+        "start": 317,
+        "end": 324,
         "sha256": "911c51856d8203972ecd48f3c1205c7d1716a3af43a0d991f13d8c4bc590bfc1"
       },
       "why": "Fresh public OAuth starts persist the exact state_hash, client_state, challenge and expires_at fields, including independent hash and request-bounded lifetime assertions. No malformed/colliding raw SQL insert or index behavior is claimed."
@@ -78831,8 +78831,8 @@
       "id": "09dfedf5d42cfae6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 265,
-        "end": 266,
+        "start": 273,
+        "end": 274,
         "sha256": "255639825d3d749bf67482c548da1143bc288e4fc8945fd5b6286b6c3e616033"
       },
       "actions": [
@@ -78851,8 +78851,8 @@
       "id": "09fa80161b4cfe35",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 210,
-        "end": 213,
+        "start": 218,
+        "end": 221,
         "sha256": "c230a30b3cfc530ae8626c0eab7e6fb226a160bf86de17446b8edda3f1d1cdd9"
       },
       "actions": [
@@ -78871,8 +78871,8 @@
       "id": "11227d5130fffec3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 268,
-        "end": 268,
+        "start": 276,
+        "end": 276,
         "sha256": "babc8494c179a5178e7e164a977ab06afb274fb01f9f105d9ea05df658750773"
       },
       "actions": [
@@ -78891,8 +78891,8 @@
       "id": "15c186f537293b36",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 261,
-        "end": 263,
+        "start": 269,
+        "end": 271,
         "sha256": "6806a8319277ab590b1e073dd018acb114c0ba816f162318475996c13443f3df"
       },
       "actions": [
@@ -78951,8 +78951,8 @@
       "id": "29ac337b2c59b8ed",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 548,
-        "end": 549,
+        "start": 556,
+        "end": 557,
         "sha256": "7d465e3f0c21d5f81836c01c2e02a12d8d63afc3cde786dcf09502483556d56d"
       },
       "actions": [
@@ -78971,8 +78971,8 @@
       "id": "399ec5c7645e5476",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 241,
-        "end": 251,
+        "start": 249,
+        "end": 259,
         "sha256": "f0feb715101f7a7a3ae9a71564049a52e07bda0f4b9771bdea02c9028f91ea1f"
       },
       "actions": [
@@ -78990,8 +78990,8 @@
       "id": "3ca2977b041059cb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 697,
-        "end": 707,
+        "start": 705,
+        "end": 715,
         "sha256": "6e7e02f6db3de01649c85911494132b56602c279c01624323914185da4f41abb"
       },
       "actions": [
@@ -79017,8 +79017,8 @@
       "id": "4396c3c5738d31a5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 275,
-        "end": 275,
+        "start": 283,
+        "end": 283,
         "sha256": "953704bee10343fd67a18a0d9a4f97776aae1c4388ede2c6592cc4bbdd13e256"
       },
       "actions": [
@@ -79037,8 +79037,8 @@
       "id": "48e7e821f204901b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 273,
-        "end": 273,
+        "start": 281,
+        "end": 281,
         "sha256": "b05f9dc0012d4d9cac99315108c54db418539fe3b9dc6c4130ce5d7b0831d038"
       },
       "actions": [
@@ -79057,8 +79057,8 @@
       "id": "4b378e36b7419278",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 638,
-        "end": 638,
+        "start": 646,
+        "end": 646,
         "sha256": "84d87a6ac462771db62eeb1a6797d89dd971d64a1d2fa9c362c10031c5a089d4"
       },
       "actions": [
@@ -79078,8 +79078,8 @@
       "id": "4d619e5bf1e56d7a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 635,
-        "end": 636,
+        "start": 643,
+        "end": 644,
         "sha256": "628b44ccc5c00dea4e1bf08f684cc8fcc7f340a96d7adf1be3d39482636bb5b0"
       },
       "actions": [
@@ -79099,8 +79099,8 @@
       "id": "5943549a71eac804",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 193,
-        "end": 209,
+        "start": 201,
+        "end": 217,
         "sha256": "2ff416b810fa538919fd1872fb3a78e9165c9058f710eaf51468b089be3b10fe"
       },
       "actions": [
@@ -79139,8 +79139,8 @@
       "id": "6b01d0005d733bb0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 270,
-        "end": 271,
+        "start": 278,
+        "end": 279,
         "sha256": "cac28f4dd33bd9dd2cd7e13c9cd4325996740ac1fd2a2f1142f34af53d4e013f"
       },
       "actions": [
@@ -79179,8 +79179,8 @@
       "id": "6df7e095d8bd20a5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 134,
-        "end": 145,
+        "start": 142,
+        "end": 153,
         "sha256": "6b7d2fe6b0ef0ec86c804f0869b100490893af1fe2eae405585f35b47a85c5e2"
       },
       "actions": [
@@ -79200,8 +79200,8 @@
       "id": "75a01461b52b6b7a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 642,
-        "end": 650,
+        "start": 650,
+        "end": 658,
         "sha256": "187da3ecc277e1de0b9e540f95becb8f7093dfb6e51b46df86f429f0c1a2cafc"
       },
       "actions": [
@@ -79224,8 +79224,8 @@
       "id": "7656023cb4f06a0f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 283,
-        "end": 284,
+        "start": 291,
+        "end": 292,
         "sha256": "22d85dad07c5bb07ab387609f677203a127c2d2e9ee654f3e2e36a2ac8616057"
       },
       "actions": [
@@ -79266,8 +79266,8 @@
       "id": "7ef9534ffe31e8a5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 710,
-        "end": 715,
+        "start": 718,
+        "end": 723,
         "sha256": "7a3e5279957baae96588b0e18e86cceb42722fc87827b1f684dd4f8f5dcc0acb"
       },
       "actions": [
@@ -79293,8 +79293,8 @@
       "id": "7f11c250598d1cf6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 471,
-        "end": 471,
+        "start": 479,
+        "end": 479,
         "sha256": "c7b80e0b415de12405742297518bbeeeab63083ebddeced424b056ab9e157d49"
       },
       "actions": [
@@ -79314,8 +79314,8 @@
       "id": "7fd65098bf1ab87a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 789,
-        "end": 797,
+        "start": 797,
+        "end": 805,
         "sha256": "cf5b10621169cec2162228038682640e6c3308b1e59fc741c4f76ed76bab095c"
       },
       "actions": [
@@ -79335,8 +79335,8 @@
       "id": "811be6db468e45c4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 511,
-        "end": 516,
+        "start": 519,
+        "end": 524,
         "sha256": "0c980fa83a4300e5a9837308b443c69da4a6f064c0b4d29088e08fd9b5185965"
       },
       "actions": [
@@ -79356,8 +79356,8 @@
       "id": "83dab709c8cd268d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 475,
-        "end": 475,
+        "start": 483,
+        "end": 483,
         "sha256": "592a2e61beae656bbd65be2757c56ab2fe105580f3fe1a01230279d66aed31a6"
       },
       "actions": [
@@ -79377,8 +79377,8 @@
       "id": "88b3bf3302dd7830",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 461,
-        "end": 468,
+        "start": 469,
+        "end": 476,
         "sha256": "8ab344172387fc3a08adf8c738ccb0537721e2ba7d3f2ea65be587e69dedb1b7"
       },
       "actions": [
@@ -79398,8 +79398,8 @@
       "id": "8a446afa0edb42c2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 624,
-        "end": 634,
+        "start": 632,
+        "end": 642,
         "sha256": "a428147f4496f41893ce079eb3e2e1db4fc3e46278ba9b8467975bfe8abf9327"
       },
       "actions": [
@@ -79422,8 +79422,8 @@
       "id": "8a67029696cbf0b8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 484,
-        "end": 484,
+        "start": 492,
+        "end": 492,
         "sha256": "855badd29c331125f697c8be79c2e1e9535010812bee9c917f723711a8cd3b42"
       },
       "actions": [
@@ -79443,8 +79443,8 @@
       "id": "8c330d0546d11c31",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 522,
-        "end": 536,
+        "start": 530,
+        "end": 544,
         "sha256": "192b962acc29c719f349a6e8402bf9296e1b795c2e57ffdd47a2ff06f3e0d28d"
       },
       "actions": [
@@ -79463,8 +79463,8 @@
       "id": "8e093b0846960340",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 405,
-        "end": 415,
+        "start": 413,
+        "end": 423,
         "sha256": "4bd1fcfc0c0fb104904ff6c9ce4225a18c4276c4f8b4e759dbb77652046b5949"
       },
       "actions": [
@@ -79483,8 +79483,8 @@
       "id": "8fb80feb081c33b9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 779,
-        "end": 781,
+        "start": 787,
+        "end": 789,
         "sha256": "6d63236a09570fb3909931fbb1e8c7a6bb4d8554fddda68370519c8da70c359e"
       },
       "actions": [
@@ -79507,8 +79507,8 @@
       "id": "911af19a3e3714a2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 469,
-        "end": 469,
+        "start": 477,
+        "end": 477,
         "sha256": "064796db3df6d13edd8b55016d4d637b041d1a018a5528abd4968a4e545f13c4"
       },
       "actions": [
@@ -79528,8 +79528,8 @@
       "id": "9c23f545f48b7fab",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 807,
-        "end": 810,
+        "start": 815,
+        "end": 818,
         "sha256": "2a0646fc503064aa903a2084d714f1701170f00b4ea8cd3a238c73359b1891a0"
       },
       "actions": [
@@ -79569,8 +79569,8 @@
       "id": "ae3b1ca4387bcb43",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 253,
-        "end": 255,
+        "start": 261,
+        "end": 263,
         "sha256": "583cb4c74a7cbc2206f1c5b14e09f7f32942b46ce038cdbc0aad88b5f35247cd"
       },
       "actions": [
@@ -79589,8 +79589,8 @@
       "id": "b452578cf2e8a459",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 216,
-        "end": 234,
+        "start": 224,
+        "end": 242,
         "sha256": "5c08773eda8d51d1374c7c2a3c850928620056ed350e91a7ca62931c2689f752"
       },
       "actions": [
@@ -79608,8 +79608,8 @@
       "id": "c05c410e803e4d84",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 686,
-        "end": 694,
+        "start": 694,
+        "end": 702,
         "sha256": "d1d009882bdc6d8cc108de227357a233b5a0c0cfddfe9bc165a39b083e2e243c"
       },
       "actions": [
@@ -79656,8 +79656,8 @@
       "id": "c4e9fe3c3fb2bfc6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 485,
-        "end": 487,
+        "start": 493,
+        "end": 495,
         "sha256": "c4009d726a4053ee985a17c6d148bcce5bcc4ceb62f3c1ed922aae3234654073"
       },
       "actions": [
@@ -79678,8 +79678,8 @@
       "id": "cd6cec3f21c0b9f7",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 180,
-        "end": 191,
+        "start": 188,
+        "end": 199,
         "sha256": "7d9c11ae29a720245c01746fa3fb261adeb6b58cde6c7ce8e5489cd042f1bac6"
       },
       "actions": [
@@ -79699,8 +79699,8 @@
       "id": "d0f390bd0ec97fe3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 496,
-        "end": 498,
+        "start": 504,
+        "end": 506,
         "sha256": "9478da7339993e90d794ae99b033fb46ecdcc77a21251663331900a5adf0af82"
       },
       "actions": [
@@ -79720,8 +79720,8 @@
       "id": "dc2e4f6b205216c4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 803,
-        "end": 806,
+        "start": 811,
+        "end": 814,
         "sha256": "5b8f42fe05b1d16bab668bc20b0aa0218da538ef59c2e9905f6fcfb5a4f1f82b"
       },
       "actions": [
@@ -79782,8 +79782,8 @@
       "id": "df11d43f6e9dfd27",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 541,
-        "end": 543,
+        "start": 549,
+        "end": 551,
         "sha256": "f388c57f2f53a6e5f0a242c097a4436c55706405fb35f5dbe38a5a0fdaa24c27"
       },
       "actions": [
@@ -79802,8 +79802,8 @@
       "id": "e34349d8a4a70318",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 477,
-        "end": 477,
+        "start": 485,
+        "end": 485,
         "sha256": "ab538a8d6c6a3d8db5ad1d3af648383fd550578550cb83053f1347923f0e6556"
       },
       "actions": [
@@ -79823,8 +79823,8 @@
       "id": "e5c016b1314eb20b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 551,
-        "end": 557,
+        "start": 559,
+        "end": 565,
         "sha256": "e4f9ad25b580b3a3017e33460184ebc148836f2416eca0fc0e5130c81f7b750c"
       },
       "actions": [
@@ -79844,8 +79844,8 @@
       "id": "f7a936141238fbaa",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 489,
-        "end": 494,
+        "start": 497,
+        "end": 502,
         "sha256": "a1ea40ff72f3baa12822181aded31f6eb725800db0ddf0385a74dab399a65ad1"
       },
       "actions": [
@@ -79865,8 +79865,8 @@
       "id": "fab401729defa3de",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 580,
-        "end": 582,
+        "start": 588,
+        "end": 590,
         "sha256": "32815175314d73edb6f8561307f3c565237fcfa9871e1eae2a11f47b856693e6"
       },
       "actions": [
@@ -79888,8 +79888,8 @@
       "id": "fce8200a63b6d5a2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 785,
-        "end": 787,
+        "start": 793,
+        "end": 795,
         "sha256": "d7defe0ccd73bddedf632b2b7f031cb135e105f84f8cee5ebf75581e874f65bf"
       },
       "actions": [
@@ -87223,9 +87223,9 @@
       ],
       "step": {
         "path": "tests/e2e/codex-setup-instructions.mjs",
-        "start": 133,
-        "end": 158,
-        "sha256": "3e1c3a4377fc5f8062ce3fede6f1f80d467749989681925af78404f22829e885"
+        "start": 145,
+        "end": 168,
+        "sha256": "fb8fb98913235f48fdcf66426170a95b2ea55646e03dcc7bea5e179298910c22"
       },
       "why": "Controller executable/endpoint storage is read into the two native fields whose complete observed values remain unchanged. This covers participating declarations/read state only, not didSet preference writes or correctness of default resolution."
     },
@@ -87622,9 +87622,9 @@
       ],
       "step": {
         "path": "tests/e2e/codex-setup-instructions.mjs",
-        "start": 133,
-        "end": 158,
-        "sha256": "3e1c3a4377fc5f8062ce3fede6f1f80d467749989681925af78404f22829e885"
+        "start": 145,
+        "end": 168,
+        "sha256": "fb8fb98913235f48fdcf66426170a95b2ea55646e03dcc7bea5e179298910c22"
       },
       "why": "The disconnected, unmanaged, nongenerating initial state yields the independently checked Not connected status, enabled connection controls and absent stop control. No successful connection or provider transition is inferred."
     },
@@ -87714,9 +87714,9 @@
       ],
       "step": {
         "path": "tests/e2e/codex-setup-instructions.mjs",
-        "start": 133,
-        "end": 158,
-        "sha256": "3e1c3a4377fc5f8062ce3fede6f1f80d467749989681925af78404f22829e885"
+        "start": 145,
+        "end": 168,
+        "sha256": "fb8fb98913235f48fdcf66426170a95b2ea55646e03dcc7bea5e179298910c22"
       },
       "why": "The initial connection-check state supplies the idle setup presentation; no check is started and the same error-free idle state is repeatedly asserted."
     },
@@ -88455,9 +88455,9 @@
       ],
       "step": {
         "path": "tests/e2e/codex-setup-instructions.mjs",
-        "start": 133,
-        "end": 158,
-        "sha256": "3e1c3a4377fc5f8062ce3fede6f1f80d467749989681925af78404f22829e885"
+        "start": 145,
+        "end": 168,
+        "sha256": "fb8fb98913235f48fdcf66426170a95b2ea55646e03dcc7bea5e179298910c22"
       },
       "why": "This main-actor observable controller supplies the actual settings presentation observed by the public native journey; declaration support only."
     },
@@ -88569,9 +88569,9 @@
       ],
       "step": {
         "path": "tests/e2e/codex-setup-instructions.mjs",
-        "start": 133,
-        "end": 158,
-        "sha256": "3e1c3a4377fc5f8062ce3fede6f1f80d467749989681925af78404f22829e885"
+        "start": 145,
+        "end": 168,
+        "sha256": "fb8fb98913235f48fdcf66426170a95b2ea55646e03dcc7bea5e179298910c22"
       },
       "why": "The initial absent controller error supports the explicitly absent setup-error control throughout the unchanged settings observations."
     },
@@ -88911,9 +88911,9 @@
       ],
       "step": {
         "path": "tests/e2e/codex-setup-instructions.mjs",
-        "start": 133,
-        "end": 158,
-        "sha256": "3e1c3a4377fc5f8062ce3fede6f1f80d467749989681925af78404f22829e885"
+        "start": 145,
+        "end": 168,
+        "sha256": "fb8fb98913235f48fdcf66426170a95b2ea55646e03dcc7bea5e179298910c22"
       },
       "why": "The initial not-connecting state permits the actual enabled runtime fields and Check/Connect controls while the journey remains disconnected. No asynchronous connection attempt occurs."
     },
@@ -95650,11 +95650,11 @@
       "id": "1580fb77770c6b05",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 424,
-        "end": 425,
+        "start": 432,
+        "end": 433,
         "sha256": "afc35e63d44cb2dc588f844311477dacc5219d24d4e86beefeab50bb55082db8"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "158d6d2aa96d0767",
@@ -95730,11 +95730,11 @@
       "id": "16b6200ece5b77d9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 730,
-        "end": 731,
+        "start": 738,
+        "end": 739,
         "sha256": "7758267ff9cf5280f9d398a2fc4dadfd667db0bb1ac6ea64fef858b2a996b5c8"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "16c1900c3ddd220c",
@@ -95750,11 +95750,11 @@
       "id": "16f1d147f5058fca",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 306,
-        "end": 307,
+        "start": 314,
+        "end": 315,
         "sha256": "2f4e890fd72601ad06471f2bab2c9ee3be008f93c42c1af3f4fad1964ecedb70"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "1779986c0d221573",
@@ -96180,11 +96180,11 @@
       "id": "1f8b8b4294e122e0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 671,
-        "end": 675,
+        "start": 679,
+        "end": 683,
         "sha256": "1cfc9c2c2a831d6f1d26ff49879391d7fd7aa8473bb25ef0282c9c7fd83932ff"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "1f96bbb7c85097a3",
@@ -96284,7 +96284,7 @@
         "end": 14,
         "sha256": "26122fef75831a749712a677d404efaa03ae3aafde91570739dce0f97af497bb"
       },
-      "fileSha256": "42c119c5da222f24becd841a1ffd229b3c0e7b1ee83db017ea3382d876fa6458"
+      "fileSha256": "48070da789b1937b7f715e5169c6a95002d6a952c5c29754884ad29d0d7810e6"
     },
     {
       "id": "21f9903da8945bcb",
@@ -96530,11 +96530,11 @@
       "id": "2868f8ee45d7cfb2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 544,
-        "end": 546,
+        "start": 552,
+        "end": 554,
         "sha256": "26129c1a3ce0ab6f5a0b1dd0d75239e4ee6eb607861bde3c399f7e1d08f0c5a3"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "289f01119a4fa1a6",
@@ -96900,11 +96900,11 @@
       "id": "2ea8384858515016",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 657,
-        "end": 659,
+        "start": 665,
+        "end": 667,
         "sha256": "c23495ef2adcd5831a87ae9a41234c620e3b9d5c52610f24a080a1cc9a1ff436"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "2ecad3e3070cf878",
@@ -97200,11 +97200,11 @@
       "id": "3589739375bd1429",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 583,
-        "end": 584,
+        "start": 591,
+        "end": 592,
         "sha256": "4f5ce61cdddcf4dc00f140e1dd614b4782c64010a2d7c17311055e6fde69bbe7"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "35b5683f0e27971b",
@@ -97670,11 +97670,11 @@
       "id": "3f9b865fff5df89b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 600,
-        "end": 601,
+        "start": 608,
+        "end": 609,
         "sha256": "b814cae82e2b8bc0390b61861b562f788e819908e94c8894f0b6319c82e5f311"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "3fa3e1b193ffd69f",
@@ -98514,7 +98514,7 @@
         "end": 120,
         "sha256": "2ee57046ab48f4ca97bf710f031839feb29b2385a3ae0de63d0111b24a2a19ed"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "4fb22610ae030c7c",
@@ -98524,7 +98524,7 @@
         "end": 6,
         "sha256": "1cab54698e7f21f69c586ea4b0d7d9ca599a6a8c81a68cc5ea743c7f0bb15f05"
       },
-      "fileSha256": "e9a4925c7c6128401dd7f929eeef7da557e3b4e6c3ca944e43c8042009f3c4c6"
+      "fileSha256": "2f122c9d34aff84d2605af07884ac15554367953cddcd6a7e7bb84370f555e36"
     },
     {
       "id": "4ff11d50739331f9",
@@ -98790,11 +98790,11 @@
       "id": "55bed508b9f6942b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 506,
-        "end": 506,
+        "start": 514,
+        "end": 514,
         "sha256": "2d97e0600d661fa33ef65a5b0e7d45d4de32817b62fb62ff62426b3d9b0b1928"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "55c2b44496cddc70",
@@ -99030,11 +99030,11 @@
       "id": "5bb0054c34f68660",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 465,
-        "end": 465,
+        "start": 473,
+        "end": 473,
         "sha256": "071b412f011c05e1fce2a04a8a1b52b5925a1df4097f4e15f57901ceb72b5215"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "5be418cbdf468540",
@@ -99190,11 +99190,11 @@
       "id": "5eaa79b123d3637b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 774,
-        "end": 776,
+        "start": 782,
+        "end": 784,
         "sha256": "ff75034235e1e3e18922b39d9b97c26d14f65855a6ce88c76ef09c07d11f760f"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "5ecd7291d67d9961",
@@ -99340,11 +99340,11 @@
       "id": "617864d0bca8edf0",
       "source": {
         "path": "tests/e2e/codex-setup-instructions.mjs",
-        "start": 156,
-        "end": 156,
+        "start": 166,
+        "end": 166,
         "sha256": "ca0b10980a9bfd43438d1dbd7441a7683aaf1a8e52f50f7b942726e4b6185e0d"
       },
-      "fileSha256": "a4c670721f0924770c32f0bab785395b11fe5f7fa2aab223e1ce0053ce50a518"
+      "fileSha256": "8d0ed032ee60b940afc3fcd499eec6218bd625c624f2adec466e5049a541a753"
     },
     {
       "id": "618663158075da67",
@@ -100120,11 +100120,11 @@
       "id": "7246ffcf3487aed4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 609,
-        "end": 610,
+        "start": 617,
+        "end": 618,
         "sha256": "ed5b29f575f4d028c141c01056a23e43a50909a5be6a046aa8f8c710056d1bf2"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "727fe525cbd185c1",
@@ -100170,11 +100170,11 @@
       "id": "732c87b3a0fdc368",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 724,
-        "end": 726,
+        "start": 732,
+        "end": 734,
         "sha256": "1a449d417630c53324c266ae7130315bd44156f83a57819d60c5708ba85878d9"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "73616b5c2e02f15c",
@@ -100540,11 +100540,11 @@
       "id": "7a9104850cbe0ad8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 160,
-        "end": 161,
+        "start": 168,
+        "end": 169,
         "sha256": "a6a4e089542e9d6d34c6af6ba2fbd1f2b7aad6bac1f7059fc270a9d64cd3258a"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "7a94ef812f57042f",
@@ -100684,7 +100684,7 @@
         "end": 16,
         "sha256": "32fe935d2407b62dfecb4e4e6b7c32064589da55513828843d50dd0ce9b0d440"
       },
-      "fileSha256": "a4c670721f0924770c32f0bab785395b11fe5f7fa2aab223e1ce0053ce50a518"
+      "fileSha256": "8d0ed032ee60b940afc3fcd499eec6218bd625c624f2adec466e5049a541a753"
     },
     {
       "id": "7f5d866d97de7f1e",
@@ -101340,11 +101340,11 @@
       "id": "8c699be11858a1ab",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 718,
-        "end": 719,
+        "start": 726,
+        "end": 727,
         "sha256": "8d2e38632f205e5bf65857774dbb5a73cfa747510b7cdf602a6c76618cec774f"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "8c9a8208e6d2c704",
@@ -101360,11 +101360,11 @@
       "id": "8caa575b6b74421f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 214,
-        "end": 215,
+        "start": 222,
+        "end": 223,
         "sha256": "32975f8107002dab8002e2c2ab137eeca8e4d631a5edf4aac54b0c9c01e1e6fd"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "8cb5dfa4701b88d4",
@@ -101760,11 +101760,11 @@
       "id": "95d6bfd7083277ac",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 619,
-        "end": 620,
+        "start": 627,
+        "end": 628,
         "sha256": "028cd17cf4ba402da9f2ffe58cf6dc92566208cb94e8909022c583569090c5f7"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "95e745cb9bef76dc",
@@ -102534,7 +102534,7 @@
         "end": 6,
         "sha256": "0dd4ef534cddef592b0bef658a3d0299a47bc9097e0922d47b2f582897c1a8a5"
       },
-      "fileSha256": "a4c670721f0924770c32f0bab785395b11fe5f7fa2aab223e1ce0053ce50a518"
+      "fileSha256": "8d0ed032ee60b940afc3fcd499eec6218bd625c624f2adec466e5049a541a753"
     },
     {
       "id": "a40fbf97ef6f26c6",
@@ -103124,7 +103124,7 @@
         "end": 16,
         "sha256": "97b0217511a27ea0e212ec872c936881a589b60cdaa66dbd7f7e4d5d7216825a"
       },
-      "fileSha256": "e9a4925c7c6128401dd7f929eeef7da557e3b4e6c3ca944e43c8042009f3c4c6"
+      "fileSha256": "2f122c9d34aff84d2605af07884ac15554367953cddcd6a7e7bb84370f555e36"
     },
     {
       "id": "afafd369c24d8f93",
@@ -103274,7 +103274,7 @@
         "end": 95,
         "sha256": "ca63fdd642fb30f58df01ae120724eb70f8a28420d458a2c2372c3a079b459cf"
       },
-      "fileSha256": "e9a4925c7c6128401dd7f929eeef7da557e3b4e6c3ca944e43c8042009f3c4c6"
+      "fileSha256": "2f122c9d34aff84d2605af07884ac15554367953cddcd6a7e7bb84370f555e36"
     },
     {
       "id": "b3b1b729bb7bdb6d",
@@ -104014,7 +104014,7 @@
         "end": 6,
         "sha256": "417fcef5dee8a5cc03ba818f8b1bd0e4db81a6c254332e61f7922a758d170c46"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "c29991583727685a",
@@ -104660,11 +104660,11 @@
       "id": "ce7f17bf6f9d9fcc",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 235,
-        "end": 237,
+        "start": 243,
+        "end": 245,
         "sha256": "b77a0fd5a8dfa70a7e09ac8df62c344c59d36e0c4dc7855b3a8e579e0cfac9db"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "cecaa4383928653a",
@@ -104974,7 +104974,7 @@
         "end": 68,
         "sha256": "28281abde8149cce234d70e1aeec50318dd7b3bc141801b3c792807d6eae867e"
       },
-      "fileSha256": "42c119c5da222f24becd841a1ffd229b3c0e7b1ee83db017ea3382d876fa6458"
+      "fileSha256": "48070da789b1937b7f715e5169c6a95002d6a952c5c29754884ad29d0d7810e6"
     },
     {
       "id": "d5334302773e4b65",
@@ -105200,11 +105200,11 @@
       "id": "db30086d67624444",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 678,
-        "end": 679,
+        "start": 686,
+        "end": 687,
         "sha256": "3c43143d5111f17c593007d5180295f0b4de92b6732140156f45ad133f09e135"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "dbb136af6da7e865",
@@ -105294,7 +105294,7 @@
         "end": 10,
         "sha256": "43d592d63ec1f2c8e108ad1dc5685c0de81d5b8693ed50f933c5b39b3fe9952b"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "dcdb34327d09bd7e",
@@ -105492,9 +105492,9 @@
         "path": "tests/e2e/codex-setup-instructions.mjs",
         "start": 122,
         "end": 123,
-        "sha256": "fc765d14cdc434e4f542384f09caf031b361bd3b1d28c5fe7758569ee5d69a1a"
+        "sha256": "c3482224a60d58799c94c0441f51a3f7bde534d2ab768fe3f7c16329b00b1def"
       },
-      "fileSha256": "a4c670721f0924770c32f0bab785395b11fe5f7fa2aab223e1ce0053ce50a518"
+      "fileSha256": "8d0ed032ee60b940afc3fcd499eec6218bd625c624f2adec466e5049a541a753"
     },
     {
       "id": "e15c35bc01add34c",
@@ -105600,11 +105600,11 @@
       "id": "e2964558a0113ed4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 537,
-        "end": 538,
+        "start": 545,
+        "end": 546,
         "sha256": "83ebf925cf6288c9bc988e4db735e508efeac4da9cbc8232fc1597567d079149"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "e2a124d0e7504dc7",
@@ -105630,11 +105630,11 @@
       "id": "e2e6a4833e9c61f3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 479,
-        "end": 480,
+        "start": 487,
+        "end": 488,
         "sha256": "6dc62486f9385265a3aec6a50f8071a9c526238a3138cadf270059b9707faba0"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "e396823008cfe916",
@@ -105720,11 +105720,11 @@
       "id": "e52278df83ddcaa9",
       "source": {
         "path": "tests/e2e/codex-setup-instructions.mjs",
-        "start": 138,
-        "end": 138,
+        "start": 148,
+        "end": 148,
         "sha256": "5082b5f2aedd55d15860d88d67b01c57ebff09f141f7e0a6d28b9051b5a2083a"
       },
-      "fileSha256": "a4c670721f0924770c32f0bab785395b11fe5f7fa2aab223e1ce0053ce50a518"
+      "fileSha256": "8d0ed032ee60b940afc3fcd499eec6218bd625c624f2adec466e5049a541a753"
     },
     {
       "id": "e55ec31256ec9c99",
@@ -106020,11 +106020,11 @@
       "id": "eb6a512f275dd8fb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 768,
-        "end": 769,
+        "start": 776,
+        "end": 777,
         "sha256": "8d2e38632f205e5bf65857774dbb5a73cfa747510b7cdf602a6c76618cec774f"
       },
-      "fileSha256": "a4154d7c541824f003ff9f92382cb2a849abc17bed0fa3c0d5353e3031d482a7"
+      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
     },
     {
       "id": "eb6babcde670379e",
@@ -106284,7 +106284,7 @@
         "end": 73,
         "sha256": "fa5f6c6f5dec1b1af2de8f32b2d593d5b122d4c50020aa7b2de85bebcc77385a"
       },
-      "fileSha256": "42c119c5da222f24becd841a1ffd229b3c0e7b1ee83db017ea3382d876fa6458"
+      "fileSha256": "48070da789b1937b7f715e5169c6a95002d6a952c5c29754884ad29d0d7810e6"
     },
     {
       "id": "efac436237c937f8",
@@ -106494,7 +106494,7 @@
         "end": 108,
         "sha256": "7a2bbb317debcd102b4b09fb2ba8d6541fe2da8da24d78e3467de2a70f64b1ec"
       },
-      "fileSha256": "a4c670721f0924770c32f0bab785395b11fe5f7fa2aab223e1ce0053ce50a518"
+      "fileSha256": "8d0ed032ee60b940afc3fcd499eec6218bd625c624f2adec466e5049a541a753"
     },
     {
       "id": "f36f74c4097b0424",
