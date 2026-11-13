@@ -25,6 +25,42 @@ See docs/verification/appkit-retirement-20261109.md for scope and recovery.
 `scripts/build-catalyst.sh` currently calls `xcodebuild`, so it does not yet
 provide a complete Xcode-free build.
 
+## Existing Catalyst Signing Workflow
+
+The November 11, 2026 Apple Silicon automation build used standalone Apple
+Command Line Tools and the existing Developer ID Application identity in the
+Mac keychain. The retained build's signature verified on November 13 and has an
+Apple timestamp. It is a non-distributable automation candidate, not proof
+that a later source tree was signed, notarized, or tested.
+
+For this incremental build, use `scripts/rebuild-catalyst-cli.py` with a
+verified existing Scriv app template and the matching Sparkle development
+framework. It requires a new output bundle, a separate work directory, a
+signing identity, version, and build number:
+
+```bash
+python3 scripts/rebuild-catalyst-cli.py \
+  --sparkle-framework "$SPARKLE_FRAMEWORK" --template "$SCRIV_TEMPLATE" \
+  --output "$NEW_APP" --work "$NEW_WORK_DIR" --identity "$SIGNING_IDENTITY" \
+  --version "$VERSION" --build "$BUILD"
+```
+
+The script checks the template and Sparkle identity, compiles the app, Core,
+native update adapter and runtime XPC, and signs nested Sparkle components,
+plugin and XPC before the outer app. It checks the complete signature, icon and
+Catalyst platform. Add `--automation` only for isolated automation testing;
+never distribute an automation build. Confirm the exact source tree and all
+build inputs before attributing a build to a commit. Keep keys, credentials,
+local evidence and generated bundles out of the repository. An `asc` login
+does not replace the local signing identity or the Apple timestamp service.
+
+On November 13, 2026, a fresh component signing attempt and a separate minimal
+Developer ID signing probe failed with “A timestamp was expected but was not
+found.” The cause was not established. Do not disable timestamps, weaken
+security, or present a partially signed bundle as verified to bypass the
+failure. Report compilation, signing, native behavior, notarization, and
+distribution as separate outcomes.
+
 ## What Has Been Verified
 
 The 2026-11-03 investigation compiled and linked these temporary programs with
