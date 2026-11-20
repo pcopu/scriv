@@ -11,7 +11,7 @@ export const collectorPath = '/__scriv_test_coverage__/snapshot';
 export const nonceBinding = 'SCRIV_COVERAGE_NONCE';
 export const counterNotice = 'Selected original statement-entry anchor lines only; not whole-line completion, branch coverage, all source lines or whole-project coverage.';
 
-export function instrumentGeneration(source, { runId, probeSHA256, sourcePath, sources = measuredSources }) {
+export function instrumentGeneration(source, { runId, probeSHA256, sourcePath, sources = measuredSources, startup = false }) {
   assert.deepEqual(sources, sources.length === measuredSources.length ? measuredSources : serviceMeasuredSources);
   assert(sources.includes(sourcePath));
   assert.equal(typeof source, 'string'); assert(Buffer.byteLength(source) <= 1024 * 1024);
@@ -67,21 +67,24 @@ function ${prefix}hit(index) {
   ${prefix}counts[index] = value + 1;
 }
 `;
-  const footer = `\nexport function ${prefix}snapshot() {
+  // Record startup endpoints at module evaluation, inside the same closure as the request counters.
+  const start = startup ? `const ${prefix}startupBefore = [...${prefix}counts];\n` : '';
+  const end = startup ? `\nconst ${prefix}startupAfter = [...${prefix}counts];\n` : '';
+  const footer = `${end}\nexport function ${prefix}snapshot(${startup ? 'window = null' : ''}) {
   if (${prefix}generation === null) ${prefix}generation = crypto.randomUUID();
   return { version: 1, sourcePath: ${JSON.stringify(sourcePath)}, runId: ${JSON.stringify(runId)}, sourceSHA256: ${JSON.stringify(sourceSHA256)},
     siteManifestSHA256: ${JSON.stringify(siteManifestSHA256)}, probeSHA256: ${JSON.stringify(probeSHA256)},
-    generation: ${prefix}generation, sequence: ++${prefix}sequence, invalid: ${prefix}invalid,
-    counts: [...${prefix}counts] };
+    generation: ${prefix}generation, sequence: ${startup ? `window ? Number(window === 'after') : ++${prefix}sequence` : `++${prefix}sequence`}, invalid: ${prefix}invalid,
+    counts: ${startup ? `window === 'before' ? [...${prefix}startupBefore] : window === 'after' ? [...${prefix}startupAfter] : [...${prefix}counts]` : `[...${prefix}counts]`} };
 }\n`;
-  const module = header + body + footer;
+  const module = header + start + body + footer;
   assert.equal(ts.createSourceFile('instrumented.ts', module, ts.ScriptTarget.ESNext, true, ts.ScriptKind.TS).parseDiagnostics.length, 0);
   return { module, sourceSHA256, siteManifest, siteManifestBytes, siteManifestSHA256,
-    insertionLedger: { version: 1, offsetUnit: 'UTF-16 code units', header, footer, insertions,
+    insertionLedger: { version: 1, offsetUnit: 'UTF-16 code units', header: header + start, footer, insertions,
       originalExactlyRecovered: true, notice: 'Removing header, footer and recorded insertions recovers original bytes; this is not a semantics proof.' } };
 }
 
-export function generationWrapper(paths, { runId, probeSHA256, sources = measuredSources }) {
+export function generationWrapper(paths, { runId, probeSHA256, sources = measuredSources, startup = false }) {
   assert.deepEqual(sources, sources.length === measuredSources.length ? measuredSources : serviceMeasuredSources);
   assert.deepEqual(Object.keys(paths), sources);
   const indexPath = paths['cloud/src/index.ts'];
@@ -91,13 +94,15 @@ export { ProjectRoom, BillingCoordinator } from ${JSON.stringify(indexPath)};
 export default { ...worker, async fetch(request, env, context) {
   const url = new URL(request.url);
   if (url.pathname === ${JSON.stringify(collectorPath)}) {
+    ${startup ? "const window = request.headers.get('x-scriv-test-startup');" : ''}
     if (request.method !== 'GET' || url.protocol !== 'http:' || url.hostname !== '127.0.0.1' || url.search || request.body !== null
+      ${startup ? "|| (window !== null && window !== 'before' && window !== 'after')" : ''}
       || typeof env.${nonceBinding} !== 'string' || !env.${nonceBinding}
       || request.headers.get('x-scriv-test-coverage') !== env.${nonceBinding}) {
       return new Response('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } });
     }
     return Response.json({ version: 2, runId: ${JSON.stringify(runId)}, probeSHA256: ${JSON.stringify(probeSHA256)},
-      modules: [${sources.map((_, i) => `snapshot${i}()`).join(', ')}] }, { headers: { 'Cache-Control': 'no-store' } });
+      modules: [${sources.map((_, i) => `snapshot${i}(${startup ? 'window' : ''})`).join(', ')}] }, { headers: { 'Cache-Control': 'no-store' } });
   }
   return worker.fetch(request, env, context);
 } };\n`;

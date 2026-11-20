@@ -11,7 +11,11 @@ final class ScrivGenerationProgressView: UIView {
     private let spinner = UIActivityIndicatorView(style: .medium)
     private let stage = AccountUI.label("", size: 14, weight: .medium)
     private let elapsed = AccountUI.label("", size: 12, color: .secondaryLabel)
-    private let cancel = AccountUI.button("Cancel") {}
+    private lazy var cancel = AccountUI.button("Cancel") { [weak self] in
+        guard let self, self.controller.isGenerating, !self.requestedCancellation else { return }
+        self.requestedCancellation = true; self.update()
+        Task { [weak self] in await self?.controller.cancelGeneration(); self?.update() }
+    }
     private var subscription: AnyCancellable?
     private var timer: Timer?
     private var fallbackStart: Date?
@@ -26,11 +30,6 @@ final class ScrivGenerationProgressView: UIView {
         let row = AccountUI.stack([spinner, text, cancel], spacing: 12, horizontal: true)
         spinner.setContentHuggingPriority(.required, for: .horizontal); cancel.setContentHuggingPriority(.required, for: .horizontal)
         addSubview(row); row.scrivPinEdges(to: self, insets: .init(top: 13, leading: 14, bottom: 13, trailing: 14))
-        cancel.addAction(UIAction { [weak self] _ in
-            guard let self, self.controller.isGenerating, !self.requestedCancellation else { return }
-            self.requestedCancellation = true; self.update()
-            Task { [weak self] in await self?.controller.cancelGeneration(); self?.update() }
-        }, for: .touchUpInside)
         cancel.accessibilityLabel = "Cancel the current image generation"
         subscription = controller.objectWillChange.receive(on: RunLoop.main).sink { [weak self] _ in self?.update() }
         update()

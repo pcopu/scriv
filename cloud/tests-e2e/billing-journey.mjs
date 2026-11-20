@@ -522,7 +522,39 @@ if (process.argv[2] !== '--owned-child') {
     console.log(JSON.stringify(paginationEvidence));
     assert.equal(requests,80);assert.equal(unexpectedCalls,0);
     if (serviceObserver) assert.equal(serviceObserver.actions.length, ordinaryRequests()-captureRequestStart,'Every ordinary request has one ordered action');
-    console.log(JSON.stringify({result:'PASS',journey:'billing',requests,boundaryRequests:boundaryEvidence.httpChecks,totalHttpChecks:requests+boundaryEvidence.httpChecks,providerCalls:providerCalls+checkoutProviderCalls,entitlementProviderCalls:providerCalls,checkoutProviderCalls,unexpectedCalls,nativeScenarios:0,runtime:report}));
+    await endCapturePhase();
+
+    // The Node fetch fixture translates throws into HTTP 500. Dropping the
+    // owned loopback connection before sending headers tests an actual rejection.
+    const beforeTransport = await webhookState(paginationDB);
+    const checkoutWorker = checkoutConfig.workers[0];
+    let transportAttempts = 0;
+    await mf.setOptions({ ...checkoutConfig, workers: [{ ...checkoutWorker, dev: { ...checkoutWorker.dev,
+      outboundService: { type: 'node-handler', handler(incoming, outgoing) {
+        assert.equal(incoming.method, 'POST');
+        const providerURL = new URL(incoming.url, 'https://api.stripe.com');
+        assert.equal(providerURL.href, 'https://api.stripe.com/v1/billing_portal/sessions');
+        assert.equal(incoming.headers.authorization, 'Bearer sk_test_synthetic_only');
+        assert(++transportAttempts <= 2);
+        outgoing.destroy();
+      } },
+    } }] });
+    await beginCapturePhase();
+    const transportBase = await mf.ready;
+    assert.equal(transportBase.hostname, '127.0.0.1');
+    assert.equal(transportBase.protocol, 'http:');
+    const transportResponse = await fetch(new URL(portalPath, transportBase), { method: 'POST',
+      headers: { authorization: `Bearer ${actors.owner.token}` }, redirect: 'error', signal: AbortSignal.timeout(5000) });
+    assert.equal(transportResponse.status, 502);
+    assert.equal(transportResponse.headers.get('cache-control'), 'no-store');
+    const transportBody = await transportResponse.text();
+    assert(Buffer.byteLength(transportBody) < 65536);
+    assert.deepEqual(JSON.parse(transportBody), { error: { code: 'billing_provider_error', message: 'The billing provider could not be reached. Please retry.' } });
+    assert(transportAttempts > 0);
+    assert.deepEqual(await webhookState(await mf.getD1Database('DB', 'scriv')), beforeTransport);
+    if (serviceObserver) assert.equal(serviceObserver.actions.length, 1, 'Exactly one public request observes transport rejection');
+    console.log(JSON.stringify({ kind: 'billing-transport-evidence', httpChecks: 1, transportAttempts, stateUnchanged: true, liveProvider: false }));
+    console.log(JSON.stringify({result:'PASS',journey:'billing',requests,boundaryRequests:boundaryEvidence.httpChecks+1,totalHttpChecks:requests+boundaryEvidence.httpChecks+1,providerCalls:providerCalls+checkoutProviderCalls,entitlementProviderCalls:providerCalls,checkoutProviderCalls,unexpectedCalls,nativeScenarios:0,runtime:report}));
 
 
   } finally {

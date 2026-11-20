@@ -9,7 +9,7 @@ export const collectorPath = '/__scriv_test_coverage__/snapshot';
 export const nonceBinding = 'SCRIV_COVERAGE_NONCE';
 export const counterNotice = 'Selected original statement-entry anchor lines only; not whole-line completion, branch coverage, all source lines or whole-project coverage.';
 
-export function instrumentWorker(source, { runId, probeSHA256 }) {
+export function instrumentWorker(source, { runId, probeSHA256, startup = false }) {
   assert.equal(typeof source, 'string'); assert(Buffer.byteLength(source) <= 1024 * 1024);
   assert(!source.includes(prefix) && !source.includes(collectorPath));
   assert.match(runId, /^[0-9a-f-]{36}$/); assert.match(probeSHA256, /^[0-9a-f]{64}$/);
@@ -60,29 +60,32 @@ function ${prefix}hit(index) {
   ${prefix}counts[index] = value + 1;
 }
 `;
-  const footer = `\nexport function ${prefix}snapshot() {
+  // These copies bracket evaluation of the original module body.
+  const start = startup ? `const ${prefix}startupBefore = [...${prefix}counts];\n` : '';
+  const end = startup ? `\nconst ${prefix}startupAfter = [...${prefix}counts];\n` : '';
+  const footer = `${end}\nexport function ${prefix}snapshot(${startup ? 'phase = null' : ''}) {
   if (${prefix}generation === null) ${prefix}generation = crypto.randomUUID();
   return { version: 1, runId: ${JSON.stringify(runId)}, sourceSHA256: ${JSON.stringify(sourceSHA256)},
     siteManifestSHA256: ${JSON.stringify(siteManifestSHA256)}, probeSHA256: ${JSON.stringify(probeSHA256)},
-    generation: ${prefix}generation, sequence: ++${prefix}sequence, invalid: ${prefix}invalid,
-    counts: [...${prefix}counts] };
+    generation: ${prefix}generation, sequence: ${startup ? `phase ? Number(phase === 'after') : ++${prefix}sequence` : `++${prefix}sequence`}, invalid: ${prefix}invalid,
+    counts: ${startup ? `phase === 'before' ? [...${prefix}startupBefore] : phase === 'after' ? [...${prefix}startupAfter] : [...${prefix}counts]` : `[...${prefix}counts]`} };
 }\n`;
-  const module = header + body + footer;
+  const module = header + start + body + footer;
   assert.equal(ts.createSourceFile('instrumented.mjs', module, ts.ScriptTarget.ESNext, true, ts.ScriptKind.JS).parseDiagnostics.length, 0);
   const wrapper = `import worker, { ${prefix}snapshot as snapshot } from './instrumented.mjs';
 export default { async fetch(request, env, context) {
   const url = new URL(request.url);
-  if (url.pathname === ${JSON.stringify(collectorPath)}) {
-    if (request.method !== 'GET' || url.search || request.body !== null
+  if (url.pathname === ${JSON.stringify(collectorPath)}) {${startup ? "\n    const phase = request.headers.get('x-scriv-test-startup');" : ''}
+    if (request.method !== 'GET' || url.search || request.body !== null${startup ? "\n      || (phase !== null && phase !== 'before' && phase !== 'after')" : ''}
       || typeof env.${nonceBinding} !== 'string' || !env.${nonceBinding}
       || request.headers.get('x-scriv-test-coverage') !== env.${nonceBinding}) {
       return new Response('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } });
     }
-    return Response.json(snapshot(), { headers: { 'Cache-Control': 'no-store' } });
+    return Response.json(snapshot(${startup ? 'phase' : ''}), { headers: { 'Cache-Control': 'no-store' } });
   }
   return worker.fetch(request, env, context);
 } };\n`;
   return { module, wrapper, sourceSHA256, siteManifest, siteManifestBytes, siteManifestSHA256,
-    insertionLedger: { version: 1, offsetUnit: 'UTF-16 code units', header, footer, insertions,
+    insertionLedger: { version: 1, offsetUnit: 'UTF-16 code units', header: header + start, footer, insertions,
       originalExactlyRecovered: true, notice: 'Removing header, footer and recorded insertions recovers original bytes; this is not a semantics proof.' } };
 }

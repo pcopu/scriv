@@ -43,6 +43,7 @@ function tracer(capture, root, args) {
   });
 }
 export async function prepareUpdateCapture(output, selectedTracer) {
+  const startup = process.env.SCRIV_UPDATES_STARTUP_COVERAGE === '1';
   assert.equal(typeof output, 'string'); assert.equal(output, resolve(output));
   const parent = dirname(output); assert.equal(await realpath(parent), parent);
   const info = await lstat(parent); assert(info.isDirectory() && info.uid === process.getuid() && !(info.mode & 0o022));
@@ -58,7 +59,7 @@ export async function prepareUpdateCapture(output, selectedTracer) {
   for (const path of probeFiles) probe.push({ path, sha256: await hashFile(join(repository, path)) });
   const probeSHA256 = sha(JSON.stringify(probe));
   const source = await readFile(join(repository, sourcePath));
-  const built = instrumentWorker(new TextDecoder('utf-8', { fatal: true }).decode(source), { runId, probeSHA256 });
+  const built = instrumentWorker(new TextDecoder('utf-8', { fatal: true }).decode(source), { runId, probeSHA256, startup });
   assert.equal(built.sourceSHA256, sha(source));
   await write(join(output, 'original.mjs'), source);
   await write(join(output, 'instrumented.mjs'), built.module); await write(join(output, 'entry.mjs'), built.wrapper);
@@ -91,6 +92,7 @@ export async function prepareUpdateCapture(output, selectedTracer) {
   const moduleSHA256 = sha(built.module), wrapperSHA256 = sha(built.wrapper);
   const buildSHA256 = sha(JSON.stringify({ moduleSHA256, wrapperSHA256, siteManifestSHA256: built.siteManifestSHA256 }));
   const capture = { version: 1, directory: output, runId, tracer: selectedTracer, sourcePath, sourceSHA256: sha(source),
+    ...(startup ? { startup: true } : {}),
     sourceManifestSHA256: exported.manifestSHA256, probeSHA256, moduleSHA256, wrapperSHA256, buildSHA256,
     siteManifestSHA256: built.siteManifestSHA256, slotCount: built.siteManifest.sites.length, tools,
     limitations: [counterNotice, 'Instrumentation is a test-build transform, not production performance or a compiler coverage attestation.',
@@ -99,12 +101,16 @@ export async function prepareUpdateCapture(output, selectedTracer) {
       'Listed tool input hashes are producer-declared identity evidence, not a cryptographic build or complete operating-system attestation.'] };
   const version = tracer(capture, repository, ['--version']).trim(); assert.match(version, /\b0\.3(?:\b|\.)/);
   await write(join(output, 'capture.json'), json(capture));
-  return { path: join(output, 'capture.json'), finish: interrupted => finishUpdateCapture(capture, interrupted) };
+  return { path: join(output, 'capture.json'), async finish(interrupted) {
+    if (startup) await finishUpdateCapture(capture, interrupted, join(output, 'startup'));
+    await finishUpdateCapture(capture, interrupted);
+  } };
 }
 
 export async function loadUpdateCapture(path, source, temporaryRoot) {
   assert.equal(await realpath(path), resolve(path)); assert((await lstat(path)).size < 65536);
   const capture = JSON.parse(await readFile(path)); assert.equal(capture.version, 1);
+  assert(capture.startup === undefined || capture.startup === true);
   assert.equal(dirname(path), capture.directory); assert(outside(repository, capture.directory));
   assert.equal(sha(source), capture.sourceSHA256); assert.match(capture.runId, /^[0-9a-f-]{36}$/);
   const module = await readFile(join(capture.directory, 'instrumented.mjs'), 'utf8');
@@ -112,39 +118,80 @@ export async function loadUpdateCapture(path, source, temporaryRoot) {
   assert.equal(sha(module), capture.moduleSHA256); assert.equal(sha(wrapper), capture.wrapperSHA256);
   const sitesBytes = await readFile(join(capture.directory, 'sites.json')); assert.equal(sha(sitesBytes), capture.siteManifestSHA256);
   const siteManifest = JSON.parse(sitesBytes); assert.equal(siteManifest.sites.length, capture.slotCount);
-  const nonce = randomBytes(32).toString('hex'); let collectorRequests = 0, previous, baseline;
+  const nonce = randomBytes(32).toString('hex'); let collectorRequests = 0, startupRequests = 0, previous, baseline;
+  const startupDirectory = join(capture.directory, 'startup');
   const options = { modules: [{ type: 'ESModule', path: join(temporaryRoot, 'entry.mjs'), contents: wrapper },
     { type: 'ESModule', path: join(temporaryRoot, 'instrumented.mjs'), contents: module }], bindings: { [nonceBinding]: nonce } };
-  async function request(base, label, credential = nonce, status = 200) {
+  async function request(base, label, credential = nonce, status = 200, startupPhase = null) {
     assert.equal(base.hostname, '127.0.0.1'); assert.equal(base.protocol, 'http:'); assert(Number(base.port) > 0);
-    const url = new URL(collectorPath, base); assert.equal(url.origin, base.origin); assert(++collectorRequests <= 6);
+    const url = new URL(collectorPath, base); assert.equal(url.origin, base.origin);
+    const headers = credential === null ? {} : { 'x-scriv-test-coverage': credential };
+    if (startupPhase) {
+      assert(++startupRequests <= 2); headers['x-scriv-test-startup'] = startupPhase;
+    } else assert(++collectorRequests <= 6);
     const response = await fetch(url, { redirect: 'error', signal: AbortSignal.timeout(5000),
-      headers: credential === null ? {} : { 'x-scriv-test-coverage': credential } });
+      headers });
     const chunks = []; let size = 0;
     for await (const chunk of response.body) { size += chunk.length; assert(size <= 65536); chunks.push(chunk); }
     assert.equal(response.status, status); assert.equal(response.headers.get('cache-control'), 'no-store');
     const body = Buffer.concat(chunks);
     if (status !== 200) { assert.equal(body.toString(), 'Not found'); return; }
-    await write(join(capture.directory, `${label}.json`), body);
+    await write(join(startupPhase ? startupDirectory : capture.directory, `${label}.json`), body);
     const value = JSON.parse(body);
     assert.deepEqual(Object.keys(value).sort(), ['version', 'runId', 'sourceSHA256', 'siteManifestSHA256', 'probeSHA256', 'generation', 'sequence', 'invalid', 'counts'].sort());
     assert.equal(value.version, 1); assert.equal(value.runId, capture.runId);
     for (const key of ['sourceSHA256', 'siteManifestSHA256', 'probeSHA256']) assert.equal(value[key], capture[key]);
     assert.equal(value.invalid, false); assert.match(value.generation, /^[0-9a-f-]{36}$/);
-    assert.equal(value.sequence, previous ? previous.sequence + 1 : 1);
+    assert.equal(value.sequence, startupPhase ? Number(startupPhase === 'after') : previous ? previous.sequence + 1 : 1);
     assert(Array.isArray(value.counts) && value.counts.length === capture.slotCount);
     assert(value.counts.every(count => Number.isSafeInteger(count) && count >= 0));
     if (previous) {
       assert.equal(value.generation, previous.generation, 'Worker generation must not reset');
-      assert(value.counts.every((count, index) => count >= previous.counts[index]), 'Counters must not decrease');
+      if (startupPhase) assert(value.counts.every((count, index) => count <= previous.counts[index]), 'Startup counts must precede the HTTP baseline');
+      else assert(value.counts.every((count, index) => count >= previous.counts[index]), 'Counters must not decrease');
     }
-    previous = value; return value;
+    if (!startupPhase) previous = value;
+    return value;
+  }
+  async function exportInterval(directory, before, after, { runId, actions, limitations, ordinaryRequests, collectorRequests }) {
+    const lines = [...new Set(siteManifest.sites.map(site => site.line))].sort((a, b) => a - b);
+    const exportLCOV = snapshot => {
+      const totals = new Map(lines.map(line => [line, 0]));
+      for (const [index, site] of siteManifest.sites.entries()) {
+        const count = totals.get(site.line) + snapshot.counts[index]; assert(Number.isSafeInteger(count)); totals.set(site.line, count);
+      }
+      return `TN:${runId}\nSF:${sourcePath}\nVER:${capture.sourceSHA256}\n${lines.map(line => `DA:${line},${totals.get(line)}`).join('\n')}\nend_of_record\n`;
+    };
+    const beforeLCOV = exportLCOV(before), afterLCOV = exportLCOV(after);
+    await write(join(directory, 'before.lcov'), beforeLCOV); await write(join(directory, 'after.lcov'), afterLCOV);
+    const snapshot = bytes => ({ sha256: sha(bytes), runId, buildSha256: capture.buildSHA256,
+      sourceManifestSha256: capture.sourceManifestSHA256, toolchainSha256: sha(JSON.stringify(capture.tools)) });
+    const interval = { version: 1, runId, actions, counterMode: 'cumulative', counterReset: false,
+      sourceManifestSha256: capture.sourceManifestSHA256, probeSha256: capture.probeSHA256, tools: capture.tools, limitations,
+      before: snapshot(beforeLCOV), after: snapshot(afterLCOV) };
+    await write(join(directory, 'interval.json'), json(interval));
+    await write(join(directory, 'export.json'), json({ status: 'exported', ordinaryRequests, collectorRequests,
+      generation: after.generation, sites: siteManifest.sites.length, instrumentedAnchorLines: lines.length, sourceUnchanged: true,
+      notice: counterNotice }));
+    console.log(JSON.stringify({ kind: 'update-counter-capture', status: 'exported', ordinaryRequests, collectorRequests,
+      instrumentedAnchorLines: lines.length, nativeExecution: 'not-run', notice: counterNotice }));
   }
   return { options,
     async begin(base) {
       const b0 = await request(base, 'before-control');
       await request(base, 'missing-nonce', null, 404); await request(base, 'wrong-nonce', 'invalid', 404);
       baseline = await request(base, 'before'); assert.deepEqual(baseline.counts, b0.counts, 'Collector reads/refusals do not execute original probes');
+      if (capture.startup) {
+        await mkdir(startupDirectory, { mode: 0o700 });
+        const before = await request(base, 'before', nonce, 200, 'before');
+        const after = await request(base, 'after', nonce, 200, 'after');
+        assert(before.counts.every(count => count === 0), 'Startup baseline must precede every original probe');
+        assert(after.counts.some(count => count > 0), 'Require genuine startup counter deltas');
+        const limitations = capture.limitations.filter(text => text !== 'Module initialization occurs before the baseline; counter deltas do not include it.');
+        await exportInterval(startupDirectory, before, after, { runId: `${capture.runId}:startup`,
+          actions: ['Start the isolated update Worker and evaluate its original module.'], ordinaryRequests: 0, collectorRequests: startupRequests,
+          limitations: [...limitations, 'Startup endpoints bracket evaluation of the original module body in the collected Worker instance.'] });
+      }
     },
     async end(base, ordinaryRequests) {
       assert.equal(ordinaryRequests, 48); assert(baseline);
@@ -152,44 +199,24 @@ export async function loadUpdateCapture(path, source, temporaryRoot) {
       assert.deepEqual(a1.counts, after.counts, 'Repeated snapshots do not reset or increment counters');
       assert(after.counts.some((count, index) => count > baseline.counts[index]), 'Require genuine positive counter deltas');
       assert.equal(collectorRequests, 6);
-      const lines = [...new Set(siteManifest.sites.map(site => site.line))].sort((a, b) => a - b);
-      const exportLCOV = snapshot => {
-        const totals = new Map(lines.map(line => [line, 0]));
-        for (const [index, site] of siteManifest.sites.entries()) {
-          const count = totals.get(site.line) + snapshot.counts[index]; assert(Number.isSafeInteger(count)); totals.set(site.line, count);
-        }
-        return `TN:${capture.runId}\nSF:${sourcePath}\nVER:${capture.sourceSHA256}\n${lines.map(line => `DA:${line},${totals.get(line)}`).join('\n')}\nend_of_record\n`;
-      };
-      const beforeLCOV = exportLCOV(baseline), afterLCOV = exportLCOV(after);
-      await write(join(capture.directory, 'before.lcov'), beforeLCOV); await write(join(capture.directory, 'after.lcov'), afterLCOV);
-      const snapshot = bytes => ({ sha256: sha(bytes), runId: capture.runId, buildSha256: capture.buildSHA256,
-        sourceManifestSha256: capture.sourceManifestSHA256, toolchainSha256: sha(JSON.stringify(capture.tools)) });
-      const interval = { version: 1, runId: capture.runId,
+      await exportInterval(capture.directory, baseline, after, { runId: capture.runId,
         actions: ['Run the existing update-distribution journey through its 48 ordered public HTTP checks with original assertions unchanged.'],
-        counterMode: 'cumulative', counterReset: false, sourceManifestSha256: capture.sourceManifestSHA256,
-        probeSha256: capture.probeSHA256, tools: capture.tools, limitations: capture.limitations,
-        before: snapshot(beforeLCOV), after: snapshot(afterLCOV) };
-      await write(join(capture.directory, 'interval.json'), json(interval));
-      await write(join(capture.directory, 'export.json'), json({ status: 'exported', ordinaryRequests, collectorRequests,
-        generation: after.generation, sites: siteManifest.sites.length, instrumentedAnchorLines: lines.length, sourceUnchanged: true,
-        notice: counterNotice }));
-      console.log(JSON.stringify({ kind: 'update-counter-capture', status: 'exported', ordinaryRequests, collectorRequests,
-        instrumentedAnchorLines: lines.length, nativeExecution: 'not-run', notice: counterNotice }));
+        ordinaryRequests, collectorRequests, limitations: capture.limitations });
     },
   };
 }
 
-async function finishUpdateCapture(capture, interrupted = () => false) {
+async function finishUpdateCapture(capture, interrupted = () => false, directory = capture.directory) {
   capture.interrupted = interrupted;
   assert.equal(interrupted(), false, 'Capture interrupted before finalization');
-  const directory = capture.directory, manifest = join(directory, 'sources.json');
+  const manifest = join(capture.directory, 'sources.json');
   const exported = JSON.parse(await readFile(join(directory, 'export.json'))); assert.equal(exported.status, 'exported');
   await verifySourceManifest(repository, manifest, capture.sourceManifestSHA256);
-  const tools = JSON.parse(await readFile(join(directory, 'tool-inputs.json')));
+  const tools = JSON.parse(await readFile(join(capture.directory, 'tool-inputs.json')));
   for (const tool of tools.toolFiles) assert.equal(await hashFile(tool.path), tool.sha256);
   for (const input of tools.graphs) assert.equal((await graph(input.root)).sha256, input.sha256);
   for (const [name, expected] of [['instrumented.mjs', capture.moduleSHA256], ['entry.mjs', capture.wrapperSHA256], ['sites.json', capture.siteManifestSHA256]])
-    assert.equal(await hashFile(join(directory, name)), expected);
+    assert.equal(await hashFile(join(capture.directory, name)), expected);
   const interval = JSON.parse(await readFile(join(directory, 'interval.json')));
   // Real endpoints reversed, not fabricated counts. A fresh validation root must
   // reject negative deltas and remain without a measurement dataset.
@@ -215,7 +242,7 @@ async function finishUpdateCapture(capture, interrupted = () => false) {
   await write(join(directory, 'measurement-check.json'), tracer(capture, analysis.root, ['measure', 'check', '--json']));
   await verifySourceManifest(repository, manifest, capture.sourceManifestSHA256);
   const completed = { kind: 'update-measured-interval', status: 'imported', evidence: directory, analysisRoot: analysis.root,
-    ordinaryRequests: 48, collectorRequests: 6, sourceUnchanged: true, negativeDeltaControl: 'rejected',
+    ordinaryRequests: exported.ordinaryRequests, collectorRequests: exported.collectorRequests, sourceUnchanged: true, negativeDeltaControl: 'rejected',
     nativeExecution: 'not-run', notice: counterNotice };
   await write(join(directory, 'completed.json'), json(completed)); console.log(JSON.stringify(completed));
 }

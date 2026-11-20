@@ -96,11 +96,11 @@ if (process.argv[2] !== '--owned-child') {
     }],
   });
   const mf = new Miniflare(config);
-  let requests = 0;
+  let requests = 0, captureRequestStart = 0;
   let serviceObserver;
   async function beginCapture() {
     if (!capture) return;
-    await capture.begin(await mf.ready);
+    captureRequestStart = requests; await capture.begin(await mf.ready);
     const { observeServiceRequests } = await import(pathToFileURL(join(cloud, 'tests-e2e/capture-generation-coverage.mjs')).href);
     serviceObserver = observeServiceRequests();
   }
@@ -527,13 +527,94 @@ if (process.argv[2] !== '--owned-child') {
     assert.deepEqual(await request(attachmentRoute('events?after=0')), deletedAttachmentState.events);
     assert.equal(requests - attachmentStart, 33); assert.equal(outboundAttempts, 0);
     console.log(JSON.stringify({ kind: 'discussion-attachment-evidence', httpChecks: requests - attachmentStart, referenceRefusals: 5, exactReceiptRetries: 2, retainedDeletedReference: true, unsupportedThreadMethod: 405 }));
+
+    // Switch only this disposable Worker phase to a media dependency that can
+    // lose an acknowledgement or await a fixture-owned D1 state transition.
+    if (serviceObserver) {
+      const observer = serviceObserver; serviceObserver = undefined; observer.stop();
+      assert.equal(observer.actions.length, requests - captureRequestStart);
+      await capture.end(await mf.ready, observer.actions.length, observer.actions);
+    }
+    const mediaFaultStart = requests;
+    const [app] = config.workers;
+    const beforeStorageFault = await mediaState();
+    const storageUsage = database => database.prepare('SELECT storage_used FROM teams WHERE id=?').bind(teamId).first('storage_used');
+    const baselineUsage = await storageUsage(db);
+    let faultDB, putMode = 'reclaim', deferHead = false, faults = 0;
+    const controlledKeys = [], deletedKeys = [];
+    const fixtureControl = async request => {
+      const url = new URL(request.url), key = await request.text();
+      assert.equal(url.origin, 'http://media-fixture.invalid'); assert.equal(request.method, 'POST');
+      assert(key.startsWith(`projects/${projectId}/${hash}/`) && /^[0-9a-f-]{36}$/.test(key.split('/').at(-1)));
+      if (url.pathname === '/put') {
+        assert(putMode === 'reclaim' || putMode === 'lose-ack');
+        const mode = putMode; putMode = null; controlledKeys.push(key);
+        if (mode === 'reclaim') {
+          // RETURNING identifies the removed row independently of the quota trigger's changes.
+          const removed = await faultDB.prepare("DELETE FROM assets WHERE project_id=? AND object_key=? AND state='uploading' RETURNING object_key").bind(projectId, key).first('object_key');
+          assert.equal(removed, key);
+        }
+        return new Response(mode);
+      }
+      assert.equal(key, controlledKeys.at(-1));
+      if (url.pathname === '/delete') { deletedKeys.push(key); return new Response('normal'); }
+      assert.equal(url.pathname, '/head');
+      if (deferHead) { deferHead = false; faults++; return new Response('defer'); }
+      return new Response('normal');
+    };
+    const fixtureSource = await readFile(join(cloud, 'tests-e2e/media-storage-fault-fixture.mjs'), 'utf8');
+    const [fixture] = convertV4MiniflareOptions({ workers: [{ ...common, name: 'media-fault', script: fixtureSource,
+      r2Buckets: { BACKING: 'MEDIA' }, serviceBindings: { CONTROL: fixtureControl } }] }).workers;
+    await mf.setOptions({ ...config, unsafeTriggerHandlers: true, workers: [{ ...app, config: { ...app.config,
+      env: { ...app.config.env, MEDIA: { type: 'worker', worker: 'media-fault', exportName: 'MediaFault' } },
+    } }, fixture] });
+    faultDB = await mf.getD1Database('DB', 'scriv');
+    const backing = await mf.getR2Bucket('BACKING', 'media-fault');
+    const rows = async () => (await faultDB.prepare('SELECT * FROM assets ORDER BY sha256').all()).results;
+    const reservation = () => faultDB.prepare('SELECT * FROM assets WHERE project_id=? AND sha256=?').bind(projectId, hash).first();
+    const uncertain = { role: 'member', method: 'PUT', data: content, type: 'image/png', status: 503, code: 'upload_pending' };
+    await beginCapture();
+    await media(asset, uncertain);
+    assert.equal(controlledKeys.length, 1); assert.equal(await reservation(), null); assert.equal(await backing.head(controlledKeys[0]), null);
+    assert.deepEqual(deletedKeys, controlledKeys, 'The app deleted the exact late write after reclaim');
+    assert.equal(await storageUsage(faultDB), baselineUsage);
+
+    putMode = 'lose-ack';
+    await media(asset, uncertain);
+    const pending = await reservation(); assert.equal(pending?.state, 'uploading');
+    assert.equal(controlledKeys.length, 2); assert.equal(pending.object_key, controlledKeys[1]);
+    assert.notEqual(controlledKeys[0], controlledKeys[1]);
+    assert.deepEqual(Buffer.from(await (await backing.get(pending.object_key)).arrayBuffer()), content);
+    assert.equal(await storageUsage(faultDB), baselineUsage + content.length);
+    const age = Date.now() - 3600_000 - 1000;
+    await faultDB.prepare('UPDATE assets SET created_at=? WHERE object_key=?').bind(age, pending.object_key).run();
+    const staged = await reservation();
+    async function reconcile() {
+      const base = await mf.ready;
+      assert.equal(base.hostname, '127.0.0.1'); assert.equal(base.protocol, 'http:');
+      assert(requests++ < 220);
+      const response = await fetch(new URL('/cdn-cgi/local/scheduled?format=json', base), { redirect: 'error', signal: AbortSignal.timeout(5000) });
+      assert.equal(response.status, 200); assert.equal((await response.json()).outcome, 'ok');
+    }
+    deferHead = true; await reconcile();
+    assert.equal(faults, 1); assert.deepEqual(await reservation(), staged);
+    await reconcile(); assert.deepEqual(await reservation(), { ...staged, state: 'ready' });
+    await media(asset, { method: 'DELETE' });
+    assert.deepEqual(deletedKeys, controlledKeys);
+    assert.equal(await backing.head(controlledKeys[1]), null);
+    assert.deepEqual((await backing.list()).objects.map(object => object.key).sort(), beforeStorageFault.objects.map(object => object.key));
+    assert.deepEqual(await rows(), beforeStorageFault.rows); assert.equal(await storageUsage(faultDB), baselineUsage);
+    assert.equal(requests - mediaFaultStart, 5); assert.equal(outboundAttempts, 0);
+    console.log(JSON.stringify({ kind: 'media-storage-fault-evidence', httpChecks: 5, lateUploadCleaned: true,
+      acknowledgementRecovered: true, deferredReconciliation: faults, outboundAttempts }));
     console.log(JSON.stringify({ result: 'PASS', journey: 'discussions-assets', requests, mediaBoundaryCases: mediaCases, outboundAttempts, migrations: migrations.length, bundleSha256: createHash('sha256').update(capture ? capture.options.script : await readFile(bundle)).digest('hex'), nativeScenarios: 0, loginFlowTested: false, fixture: 'four original synthetic users/sessions plus two upload users and three sessions; one synthetic active team' }));
   } finally {
     serviceObserver?.stop();
     try {
       if (serviceObserver) {
-        assert.equal(serviceObserver.actions.length, requests, 'Every counted public request has one ordered capture action');
-        await capture.end(await mf.ready, requests, serviceObserver.actions);
+        const count = requests - captureRequestStart;
+        assert.equal(serviceObserver.actions.length, count, 'Every counted public request has one ordered capture action');
+        if (count) await capture.end(await mf.ready, count, serviceObserver.actions);
       }
     } finally { await mf.dispose(); }
   }

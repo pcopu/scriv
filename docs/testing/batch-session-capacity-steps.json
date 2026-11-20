@@ -29,8 +29,8 @@
           "description": "The original invalid-part draft and a new first-session draft occupy both per-user slots. Preparing a second draft from another valid auth session of that same user returns exact 429/batch_capacity. Five quota refusals, interleaved with successful prepares/commits and cleanup, distinguish freed capacity from accidentally dropping unrelated staging. At the end a probe fills the other slot, a third draft is refused, and the original invalid-part manifest remains reusable at capacity but cannot commit without valid parts. No room-wide byte/count or expiry limit is tested.",
           "witness": {
             "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
-            "start": 313,
-            "end": 359,
+            "start": 316,
+            "end": 362,
             "sha256": "b15bf7b67227a3a7113232707cb9b7d70e65f81e5da82804a8b1c092204cc6b4"
           }
         },
@@ -39,8 +39,8 @@
           "description": "An authorized different user and a second auth session of the same user cannot upload the first-session draft: both return exact 409/batch_session_changed. Original-session upload still succeeds. A different-user prepare returns command_reused without allowing takeover; same-user/different-auth-session prepare returns batch_session_changed and the old upload then reports batch_incomplete. Re-preparing that discarded draft later cannot commit until its part is uploaded again. Internal staging rows are not read.",
           "witness": {
             "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
-            "start": 318,
-            "end": 352,
+            "start": 321,
+            "end": 355,
             "sha256": "0374dc6757ca2f95de1d89e42b8c31659098631712121b0a50039a6717a56df9"
           }
         },
@@ -49,8 +49,8 @@
           "description": "After a cross-auth-session prepare refuses the first staged edit, its original-session upload is batch_incomplete. Re-preparing later yields batch_incomplete on commit until the same part is uploaded again, after which the scene commits once. This observes manifest/part disposal through public routes, not direct storage-row inspection.",
           "witness": {
             "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
-            "start": 323,
-            "end": 353,
+            "start": 326,
+            "end": 356,
             "sha256": "e57818b8a63864dd1bdca32320ea74a4a741f05587e906b88e1df784d87d0edc"
           }
         },
@@ -59,8 +59,8 @@
           "description": "A fully staged missing-reference batch is at user capacity as demonstrated by a third-draft refusal. Its commit returns exact 400/invalid_reference and leaves nonlease snapshot/full events unchanged. A fresh subsequent prepare succeeds, while a third probe is still refused, showing cleanup frees the failed draft slot without dropping the other pending draft.",
           "witness": {
             "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
-            "start": 344,
-            "end": 353,
+            "start": 347,
+            "end": 356,
             "sha256": "153a34557ea9229b1cc9275acd34664d1c6c4676905b53b53c713d8de162df4d"
           }
         },
@@ -69,8 +69,8 @@
           "description": "A committed batch can be recovered by the other live auth session of the same user with the unchanged manifest, returning its exact original snapshotRequired receipt. Different-user and changed-label replays are exact 409/command_reused. Three successful receipt recoveries do not append events, change versions or add items.",
           "witness": {
             "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
-            "start": 332,
-            "end": 359,
+            "start": 335,
+            "end": 362,
             "sha256": "e58cfc45386371e600bf2d7f058db8bfbd400d27549c52db2855153141c0c242"
           }
         },
@@ -79,8 +79,8 @@
           "description": "The two successful one-part scene batches each add exactly one authored version-one scene and one snapshotRequired event with actor, label, request-bounded timestamp and sequential head. Epoch and timing stay unchanged; every prior item/event remains exact. Receipt items and event changes are empty by contract, so actual item content is checked in the fresh snapshot.",
           "witness": {
             "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
-            "start": 313,
-            "end": 359,
+            "start": 316,
+            "end": 362,
             "sha256": "b15bf7b67227a3a7113232707cb9b7d70e65f81e5da82804a8b1c092204cc6b4"
           }
         },
@@ -89,8 +89,8 @@
           "description": "Wrong-user/session uploads of otherwise correct part bytes are refused before original-session upload succeeds. Later a typed-invalid direction part remains exact 400/direction_timing; its pending manifest is still reusable at capacity and commit is batch_incomplete. No part hash/size/JSON boundary or arbitrary replacement variant is newly claimed.",
           "witness": {
             "path": "cloud/tests-e2e/atomic-batch-journey.mjs",
-            "start": 318,
-            "end": 359,
+            "start": 321,
+            "end": 362,
             "sha256": "2990ee5bbdf2f64a2c24f19f9a5783b011cdc286f441c06a9a7074d46cc844de"
           }
         }

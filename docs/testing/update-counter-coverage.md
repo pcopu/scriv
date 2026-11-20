@@ -20,6 +20,12 @@ The collector never installs Tracer or other software. It requires the existing
 TypeScript parser, Miniflare and platform workerd packages. Do not move this work
 to a computer with a storage or access restriction to get around that restriction.
 
+Set `SCRIV_UPDATES_STARTUP_COVERAGE=1` with the same command to capture
+initialization of the isolated Worker as a second interval. The original HTTP
+interval still uses its measured request baseline and has its usual file paths.
+The `startup/` directory contains two additional collector snapshots, its own
+LCOV pair, and a distinct interval ID for the same source and build.
+
 ## What is measured
 
 The parser selects certain statement-list entries in the original JavaScript.
@@ -35,7 +41,11 @@ count increases only when those real counters increase. Multiline completion,
 branches, skipped statements, concise arrows, unprobed declaration headers, comments and all
 other uninstrumented lines are not inferred. Module initialization happens before
 the real baseline, so initialization counters may already be nonzero without
-increasing during the recorded HTTP interval. Never manufacture a zero baseline.
+increasing during the recorded HTTP interval. Startup mode reads actual counter
+copies taken inside the instrumented module before and after evaluation of its
+original body. Both must belong to the HTTP baseline's module generation and
+neither can exceed that baseline. The two authenticated reads leave the request
+counter and snapshot sequence intact.
 
 The application Worker and collector share one module-private counter instance.
 A separate test-only wrapper delegates ordinary requests to the real handler.

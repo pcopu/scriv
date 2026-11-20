@@ -1,5 +1,42 @@
 # Measurement-first coverage
 
+On November 20, all 12 cloud journeys passed in a fresh capture. The 15-module
+Worker scope observed 1,154 of 1,164 statement anchors, including 11 from real
+module initialization. Passing billing transport, media recovery and natural
+room alarm cases brought the union to **1,163 / 1,164 (99.91%)** across 24
+passing intervals. The remaining line is `cloud/src/project-room.ts:703`.
+Runs exercising clean closure, dropped transport and a TCP reset observed the
+close callback. A separate update Worker run reached **36 / 36** selected anchors
+with four startup hits and all 48 HTTP checks passing.
+
+Tracer can now rank gaps across a complete reference scope in one query:
+
+```bash
+TRACER_NO_UPDATE=1 node "$TRACER_CLI" --root "$SCRIV_SOURCE" measure gaps \
+  --capture-set "$CAPTURE_SET" --reference-root "$REFERENCE_ANALYSIS_ROOT"
+```
+
+Choose a verified analysis root listed in the capture set. The report keeps its
+instrumented denominator and admits cross-build evidence per file only when
+the source hash and instrumented line set match exactly. Changed or unavailable
+files stay visible, with failed observations and unknown outcomes tracked
+separately from passing evidence. Keep capture sets, declaration files and
+analysis roots together in persistent private storage outside the source tree.
+
+The native `journeys/codex-loopback-generation` scenario connects through the
+Settings UI to an isolated local protocol fixture. It verifies a generated PNG
+and its persisted attachment, interruption and inspection of the same turn,
+and refusal with the saved project unchanged. It uses `ws` from the existing
+locked cloud dependencies. The Cancel control now sends the interrupt through
+the same primary action that the CLI activates.
+
+Seven comparison journeys passed on the earlier November 20 build. The fixture
+passed in 8.185 seconds on the rebuilt instrumented Catalyst app, adding 916
+lines beyond those comparisons where source and instrumentation match exactly.
+It observed 53 lines in the changed Cancel view on the fresh binary. The
+reference-build report combines these targeted runs to 8,215 / 21,674 lines
+(37.90%). The earlier broad native checkpoint remains a separate measurement.
+
 On November 13, 2026, the user cleared the exhaustive manual-mapping goal and
 requested a faster workflow: connect tagged code and CLI actions provisionally,
 then run scenarios to discover the actual execution coverage.
@@ -263,7 +300,7 @@ ordinary-copy fallback. Full byte/hash checks, private permissions, create-only
 writes and copy independence remain verified. This addresses disk duplication
 without hard-linking mutable source or removing capture evidence.
 
-## Service measurements
+## November 13 service checkpoint
 
 All 13 existing service selectors passed in isolated local fixtures. Initially
 only generation and updates had counter adapters. The shared opt-in adapter now
@@ -271,11 +308,12 @@ covers the other eleven cloud routes too, selecting 1,600 statement sites on
 1,164 original anchor lines across 15 modules. No production TypeScript or
 deployment configuration changed.
 
-The twelve cloud routes together observe **1,143 / 1,164 selected anchors
-(98.20%)**; the known-passing union is identical. **21 anchors remain unobserved.**
+The twelve cloud routes together observed **1,143 / 1,164 selected anchors
+(98.20%)** with the same result in the known-passing union. At that checkpoint,
+**21 anchors remained unobserved.**
 The focused collaboration, atomic-batch, discussions-assets, billing, OAuth and
 team-lifecycle extensions all pass and add 30 anchors to the prior checkpoint.
-The updates route remains a separate **32 / 36 (88.89%)** scope. Neither
+The separate updates route then observed **32 / 36 (88.89%)**. Neither
 percentage is an overall project percentage or a percentage of all backend lines.
 
 Use the existing public service selector with a fresh external output directory:
@@ -370,7 +408,7 @@ The next useful native variants are account-backed cloud/team/discussion flows
 and Codex job lifecycle/error handling, with their actual supported CLI routes,
 isolated fixtures and required runtime services checked first. A passing local
 backend journey does not establish native UI or native-client execution.
-The 21 cloud gaps comprise eleven startup initializers, six media storage/race
+The 21 cloud gaps on November 13 comprised eleven startup initializers, six media storage/race
 guards, two natural 24-hour alarm lines, one WebSocket error callback and one
 billing fetch-rejection line. Startup counters were already nonzero at the
 baseline; ordinary requests do not add interval observations for those sites.

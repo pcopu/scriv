@@ -111,6 +111,24 @@ Only actual before/after counter increases establish observed anchors. The
 existing generation-only environment variable retains its four-module capture.
 The generation journey rejects simultaneous generation-only and shared modes.
 
+Set `SCRIV_SERVICE_STARTUP_COVERAGE=1` with shared service capture to record
+module initialization in the first phase. The test build saves the actual
+counters immediately before and after each collected module's original body
+evaluates. Two reads from the existing nonce-bound collector retrieve those
+saved endpoints and verify the same module generations as the request baseline.
+The `startup/` evidence directory and Tracer interval are separate from the
+request phase. A capture set can include both, using their full source, build
+and counter identities. The normal request interval begins at its existing
+baseline and retains its six collector checks.
+
+On November 20 the `revision-safety` pilot passed 173 public HTTP checks with
+zero outbound attempts. Tracer validated 11 startup anchors and 373 request
+anchors on the unchanged 1,164-anchor universe. Combining those two intervals
+observed 384 unique anchors in this journey. Both reversed-endpoint controls
+were rejected. The 11 startup hits correspond to gaps in the historical full
+cloud checkpoint. Its old raw artifacts are unavailable, so a full current
+cloud percentage requires a fresh aggregate run.
+
 The allowlist includes access, atomic-batch, auth, billing,
 character-image-validation, email-auth, email, generation, http, index, media,
 notifications, project-room, teams and validation. `types.ts` supplies erased

@@ -6,6 +6,7 @@ import { dirname, join, isAbsolute } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawn } from 'node:child_process';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
+import { setTimeout as delay } from 'node:timers/promises';
 
 process.on('uncaughtException', () => { console.error('Atomic batch journey failed; no response or exception details were emitted.'); process.exitCode = 1; });
 if (process.argv[2] !== '--owned-child' && (!process.env.SCRIV_TRACER_RUNTIME || !isAbsolute(process.env.SCRIV_TRACER_RUNTIME))) { console.error('Set SCRIV_TRACER_RUNTIME to the absolute path of the reviewed local Tracer runtime.'); process.exit(2); }
@@ -83,6 +84,8 @@ if (process.argv[2] !== '--owned-child') {
   const config = convertV4MiniflareOptions({
     host: '127.0.0.1', port: 0, cf: false, telemetry: { enabled: false },
     unsafeLocalExplorer: false, unsafeObservability: false,
+    // The disposable room fixture can shorten one pending batch's 24-hour TTL.
+    unsafeInspectDurableObjects: true,
     unsafeEnableSharedStorage: false, logRequests: false, log: new Log(LogLevel.ERROR),
     resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
     workers: [{ ...common, name: 'scriv', ...(capture ? { script: capture.options.script } : { scriptPath: bundle }),
@@ -391,12 +394,49 @@ if (process.argv[2] !== '--owned-child') {
     assert.equal(retryHeld.status, 200); assert.deepEqual(retryHeld.data, held.data);
     assert.equal(requests - leaseStart, 12); assert.equal(outboundAttempts, 0);
     console.log(JSON.stringify({ kind: 'batch-held-lease-evidence', httpChecks: requests - leaseStart, sameSessionReuse: true, competingSessionStatus: 423, unchangedLease: true }));
+
+    const alarmStart = requests;
+    const beforeAlarm = await observe();
+    const stagedProbe = await upload(capacityProbe, probeContent);
+    assert.equal(stagedProbe.status, 200);
+    assert.deepEqual(stagedProbe.data, { commandId: capacityProbe.commandId, partIndex: 0, staged: true });
+    const room = await mf.unsafeGetDurableObjectStorage('scriv', 'ProjectRoom', { name: projectId });
+    const pendingBatches = () => room.exec('SELECT command_id, expires_at FROM command_batches WHERE command_id IN (?, ?) ORDER BY command_id', capacityProbe.commandId, invalidManifest.commandId);
+    const pendingParts = () => room.exec('SELECT part_index FROM command_batch_parts WHERE command_id = ?', capacityProbe.commandId);
+    const pending = await pendingBatches();
+    assert.equal(pending.length, 2);
+    assert.ok(pending.every(row => row.expires_at > Date.now() + 60_000));
+    assert.deepEqual(await pendingParts(), [{ part_index: 0 }]);
+    const expiresAt = Date.now() + 2500;
+    assert.deepEqual(await room.exec('UPDATE command_batches SET expires_at = ? WHERE command_id = ? RETURNING command_id, expires_at', expiresAt, capacityProbe.commandId),
+      [{ command_id: capacityProbe.commandId, expires_at: expiresAt }]);
+    serviceObserver?.actions.push('Shorten one staged batch expiry in the disposable room fixture.');
+    // Production /batches re-preparation uses MIN(expires_at) to arm the alarm.
+    staged(await prepare(invalidManifest), invalidManifest);
+    assert.ok(Date.now() < expiresAt, 'Public preparation armed the alarm while the batch was still live');
+    assert.deepEqual(await pendingBatches(), pending.map(row => row.command_id === capacityProbe.commandId ? { ...row, expires_at: expiresAt } : row));
+    const requestsAtArm = requests;
+    const survivingBatch = pending.filter(row => row.command_id === invalidManifest.commandId);
+    let afterAlarm;
+    do {
+      await delay(75);
+      afterAlarm = await pendingBatches();
+    } while (afterAlarm.length === 2 && Date.now() < expiresAt + 5000);
+    assert.equal(requests, requestsAtArm, 'No client request can cause cleanup while awaiting the alarm');
+    assert.deepEqual(afterAlarm, survivingBatch, 'The alarm removes only the expired reservation');
+    assert.deepEqual(await pendingParts(), [], 'The alarm also removes the expired batch part');
+    serviceObserver?.actions.push('Wait for the natural room alarm; inspect the expired batch and surviving draft with read-only SQL.');
+    unchanged(await observe(), beforeAlarm);
+    assert.equal(requests - alarmStart, 6);
+    assert.equal(outboundAttempts, 0);
+    console.log(JSON.stringify({ kind: 'batch-natural-alarm-evidence', httpChecks: requests - alarmStart, expiredBatchRemoved: true, expiredPartsRemoved: true, futureBatchPreserved: true, publicRequestsDuringWait: 0 }));
     console.log(JSON.stringify({result:'PASS', journey:'atomic-batch', requests, outboundAttempts, nativeScenarios:0, runtime:report}));
   } finally {
     serviceObserver?.stop();
     try {
       if (serviceObserver) {
-        assert.equal(serviceObserver.actions.length, requests, 'Every counted public request has one ordered capture action');
+        const httpActions = serviceObserver.actions.filter(action => /^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /.test(action));
+        assert.equal(httpActions.length, requests, 'Every counted public request has one ordered HTTP capture action');
         await capture.end(await mf.ready, requests, serviceObserver.actions);
       }
     } finally { await mf.dispose(); }
