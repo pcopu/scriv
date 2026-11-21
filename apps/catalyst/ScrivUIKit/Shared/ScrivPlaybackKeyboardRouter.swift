@@ -121,7 +121,19 @@ final class ScrivUIKitApplication: UIApplication {
 #endif
     private var pressGate = ScrivKeyboardPressGate()
     private let toggleEditingSelector = NSSelectorFromString("scrivToggleScriptEditing:")
-    private var currentStore: WorkspaceStore? { (UIKitPresentation.window?.rootViewController as? ScrivWorkspaceController)?.store }
+    private var keyboardWindow: UIWindow? {
+#if SCRIV_CLI_AUTOMATION
+        if let window = ScrivCLI.shared.shortcutWindow { return window }
+#endif
+        return UIKitPresentation.window
+    }
+    private var keyboardResponder: UIResponder? {
+#if SCRIV_CLI_AUTOMATION
+        if ScrivCLI.shared.shortcutWindow != nil { return ScrivCLI.shared.shortcutResponder }
+#endif
+        return ScrivKeyboardTextContext.firstResponder(application: self)
+    }
+    private var currentStore: WorkspaceStore? { (keyboardWindow?.rootViewController as? ScrivWorkspaceController)?.store }
 
     override init() {
         super.init()
@@ -130,7 +142,7 @@ final class ScrivUIKitApplication: UIApplication {
     }
     override var keyCommands: [UIKeyCommand]? {
         guard currentStore != nil else { return super.keyCommands }
-        let responder = ScrivKeyboardTextContext.firstResponder(application: self)
+        let responder = keyboardResponder
         let context = ScrivKeyboardTextContext.state(for: responder)
         var commands: [UIKeyCommand] = context.markedText ? [] : [
             command("Increase script text size", input: "=", modifiers: .command, action: #selector(increaseScriptZoom(_:))),
@@ -140,7 +152,7 @@ final class ScrivUIKitApplication: UIApplication {
             command("Decrease script text size", input: "-", modifiers: .command, action: #selector(decreaseScriptZoom(_:)))
         ]
         if !context.editingText && !context.markedText {
-            if UIKitPresentation.window?.rootViewController?.presentedViewController == nil {
+            if keyboardWindow?.rootViewController?.presentedViewController == nil {
                 commands.append(command("Find in script", input: "f", modifiers: .command, action: #selector(findScriptFromKeyboard(_:))))
             }
             commands.append(command("Play or pause", input: " ", modifiers: [], action: #selector(togglePlaybackFromKeyboard(_:))))
@@ -170,19 +182,19 @@ final class ScrivUIKitApplication: UIApplication {
         if action == #selector(checkForUpdates(_:)) { return UIKitPresentation.presenter != nil }
         if action == #selector(showSettings(_:)) { return ScrivSettingsWindowCoordinator.shared.canShow }
         if action == #selector(findScriptFromKeyboard(_:)) {
-            let context = ScrivKeyboardTextContext.state(for: ScrivKeyboardTextContext.firstResponder(application: self))
-            return currentStore != nil && !context.editingText && !context.markedText && UIKitPresentation.window?.rootViewController?.presentedViewController == nil
+            let context = ScrivKeyboardTextContext.state(for: keyboardResponder)
+            return currentStore != nil && !context.editingText && !context.markedText && keyboardWindow?.rootViewController?.presentedViewController == nil
         }
         if action == #selector(togglePlaybackFromKeyboard(_:)) {
-            let context = ScrivKeyboardTextContext.state(for: ScrivKeyboardTextContext.firstResponder(application: self))
+            let context = ScrivKeyboardTextContext.state(for: keyboardResponder)
             return currentStore != nil && !context.editingText && !context.markedText
         }
         if action == #selector(increaseScriptZoom(_:)) || action == #selector(decreaseScriptZoom(_:)) {
-            let context = ScrivKeyboardTextContext.state(for: ScrivKeyboardTextContext.firstResponder(application: self))
+            let context = ScrivKeyboardTextContext.state(for: keyboardResponder)
             return currentStore != nil && !context.markedText
         }
         if action == #selector(toggleScriptEditingFromKeyboard(_:)) {
-            let responder = ScrivKeyboardTextContext.firstResponder(application: self)
+            let responder = keyboardResponder
             return currentStore != nil && scriptEditingTarget(responder: responder, context: ScrivKeyboardTextContext.state(for: responder)) != nil
         }
         return super.canPerformAction(action, withSender: sender)
@@ -205,12 +217,12 @@ final class ScrivUIKitApplication: UIApplication {
     override func sendEvent(_ event: UIEvent) {
         let presses = (event as? UIPressesEvent)?.allPresses ?? []
         if !presses.isEmpty {
-            let responder = ScrivKeyboardTextContext.firstResponder(application: self)
+            let responder = keyboardResponder
             let context = ScrivKeyboardTextContext.state(for: responder)
             let mayToggleEditing = scriptEditingTarget(responder: responder, context: context) != nil
             // Record a declined physical down too. Closing a modal while F is
             // held must not turn that same press into a new search command.
-            let mayFindScript = UIKitPresentation.window?.rootViewController?.presentedViewController == nil
+            let mayFindScript = keyboardWindow?.rootViewController?.presentedViewController == nil
             for press in presses {
                 guard let key = press.key, press.phase == .began else { continue }
                 let action = currentStore == nil ? nil : ScrivKeyboardPolicy.action(characters: key.characters, ignoringModifiers: key.charactersIgnoringModifiers,
@@ -238,13 +250,13 @@ final class ScrivUIKitApplication: UIApplication {
         currentStore?.adjustScriptZoom(by: -0.1)
     }
     @objc private func toggleScriptEditingFromKeyboard(_ command: UIKeyCommand) {
-        let responder = ScrivKeyboardTextContext.firstResponder(application: self)
+        let responder = keyboardResponder
         guard let target = scriptEditingTarget(responder: responder, context: ScrivKeyboardTextContext.state(for: responder)), pressGate.consume(.toggleScriptEditing) else { return }
         _ = sendAction(toggleEditingSelector, to: target, from: command, for: nil)
     }
     @objc private func findScriptFromKeyboard(_ command: UIKeyCommand) {
         guard canPerformAction(#selector(findScriptFromKeyboard(_:)), withSender: command), pressGate.consume(.findInScript) else { return }
-        (UIKitPresentation.window?.rootViewController as? ScrivWorkspaceController)?.findInScript()
+        (keyboardWindow?.rootViewController as? ScrivWorkspaceController)?.findInScript()
     }
 #if SCRIV_CLI_AUTOMATION
     /// A synthetic single stroke, not physical-event delivery. Reuse the same
@@ -253,12 +265,12 @@ final class ScrivUIKitApplication: UIApplication {
         guard CommandLine.arguments.contains("--scriv-cli"), CommandLine.arguments.contains("--screenshots"),
               let action = command.action, let input = command.input,
               canPerformAction(action, withSender: command) else { return false }
-        let context = ScrivKeyboardTextContext.state(for: ScrivKeyboardTextContext.firstResponder(application: self))
+        let context = ScrivKeyboardTextContext.state(for: keyboardResponder)
         let decision = ScrivKeyboardPolicy.action(characters: input, ignoringModifiers: input,
             modifiers: Self.modifiers(command.modifierFlags), editingText: context.editingText,
             markedText: context.markedText,
-            canToggleScriptEditing: scriptEditingTarget(responder: ScrivKeyboardTextContext.firstResponder(application: self), context: context) != nil,
-            canFindScript: UIKitPresentation.window?.rootViewController?.presentedViewController == nil)
+            canToggleScriptEditing: scriptEditingTarget(responder: keyboardResponder, context: context) != nil,
+            canFindScript: keyboardWindow?.rootViewController?.presentedViewController == nil)
         let expected: ScrivKeyboardAction?
         switch action {
         case #selector(findScriptFromKeyboard(_:)): expected = .findInScript
@@ -288,7 +300,7 @@ final class ScrivUIKitApplication: UIApplication {
     private func scriptEditingTarget(responder: UIResponder?, context: ScrivKeyboardTextContext.State) -> Any? {
         // A workspace script may still be first responder underneath a sheet.
         // Never begin or finish that obscured editor from a modal's shortcut.
-        guard !context.markedText, let root = UIKitPresentation.window?.rootViewController,
+        guard !context.markedText, let root = keyboardWindow?.rootViewController,
               root.presentedViewController == nil else { return nil }
         // Cmd-Enter may finish a script editor, never an auth/search/comment or
         // numeric field. Those controls retain their own native return behavior.

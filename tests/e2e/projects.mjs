@@ -113,6 +113,11 @@ try {
   }
   const emailField = nodes => nodes.filter(node => node.type === 'UITextField' && node.label === 'Email address' && node.hittable);
   const emailActions = nodes => nodes.filter(node => node.type === 'UIButton' && node.title === 'Continue with email');
+  const cloudIsolation = (await session.command('capabilities')).cloudIsolation;
+  assert.equal(cloudIsolation.network, 'disabled');
+  assert.equal(cloudIsolation.oauth, 'disabled');
+  const isolatedError = 'Isolated CLI cloud access is unavailable.';
+  const codeView = node => node.text === 'Check your email' || node.type === 'UITextField' && node.label === 'Verification code';
   for (let repeat = 0; repeat < 2; repeat++) {
     await session.command('activate', { target: 'workspace-project' });
     await waitForSettledControl(node => node.title === 'Sign in to Scriv…' || node.label === 'Sign in to Scriv…');
@@ -142,6 +147,19 @@ try {
     // Leave the disclosure expanded before dismissal to check fresh state on reopen.
     await click('Already used GitHub?');
     await session.waitFor(nodes => nodes.some(node => node.title === 'Continue with GitHub…' && node.enabled && node.hittable));
+    assert.ok(!nodes.some(node => node.text === isolatedError));
+    if (repeat === 0) {
+      await click('Continue with GitHub…');
+    } else {
+      const address = 'fixture@example.invalid';
+      const fields = await waitForSettledControl(node => node.type === 'UITextField' && node.label === 'Email address');
+      await session.command('text', { target: emailField(fields)[0].path, text: address });
+      await click('Continue with email');
+    }
+    await session.waitFor(nodes => nodes.some(node => node.text === isolatedError)
+      && nodes.some(node => node.title === 'Continue with email')
+      && !nodes.some(codeView));
+    assert.deepEqual(await session.command('presented-alerts'), []);
     await click('Keep writing locally');
     await session.waitFor(nodes => nodes.some(node => node.placeholder === 'Find a project' && node.hittable) && emailField(nodes).length === 0);
     await waitForSettledControl(node => node.title === 'Close Projects' || node.label === 'Close Projects');

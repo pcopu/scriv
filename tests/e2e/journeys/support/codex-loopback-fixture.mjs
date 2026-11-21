@@ -8,7 +8,9 @@ import { basename, dirname, join } from 'node:path';
 const model = 'scriv-fixture';
 const refusal = 'Synthetic image turn refused';
 const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAEElEQVR4nGP4EGADRAwQCgAsbgXx43oYYAAAAABJRU5ErkJggg==', 'base64');
+const recoveredPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAEElEQVR4nGNYEKIGRAwQCgAgzgRpm+PgmAAAAABJRU5ErkJggg==', 'base64');
 export const fixtureImageHash = createHash('sha256').update(png).digest('hex');
+export const recoveredImageHash = createHash('sha256').update(recoveredPng).digest('hex');
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 // Model the app-server protocol at its socket boundary. No backend, account,
@@ -16,7 +18,7 @@ const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 export function createCodexFixtureProtocol(root, outcomes) {
   const generation = join(root, 'Generation');
   const expected = ['initialize', 'initialized', 'account/read', 'model/list', ...outcomes.flatMap(outcome =>
-    outcome === 'cancel' ? ['thread/start', 'turn/start', 'turn/interrupt', 'thread/read'] : ['thread/start', 'turn/start'])];
+    ['cancel', 'recover'].includes(outcome) ? ['thread/start', 'turn/start', 'turn/interrupt', 'thread/read'] : ['thread/start', 'turn/start'])];
   let position = 0;
   let job;
   let count = 0;
@@ -65,10 +67,10 @@ export function createCodexFixtureProtocol(root, outcomes) {
     case 'turn/start': {
       assert.equal(params.threadId, job.threadId);
       assert.ok(params.input.length === 1 && params.input[0].type === 'text'
-        && params.input[0].text?.includes('Warm window light. Hold the room.'), 'Expected only the synthetic cue prompt');
+        && params.input[0].text?.includes(job.outcome === 'recover' ? 'know.' : 'Warm window light. Hold the room.'), 'Expected only the synthetic cue prompt');
       const replies = [reply({ turn: { id: job.turnId } }), { method: 'item/started',
         params: { threadId: job.threadId, item: { type: 'imageGeneration' } } }];
-      if (job.outcome === 'cancel') return replies;
+      if (job.outcome === 'cancel' || job.outcome === 'recover') return replies;
       const turn = { id: job.turnId, items: [] };
       if (job.outcome === 'success') {
         const savedPath = join(job.cwd, 'storyboard.png');
@@ -83,9 +85,20 @@ export function createCodexFixtureProtocol(root, outcomes) {
     }
     case 'turn/interrupt':
       assert.deepEqual(params, { threadId: job.threadId, turnId: job.turnId });
+      if (job.outcome === 'recover') {
+        // The original turn finished at the interruption boundary. Its bytes
+        // are durable, and its terminal response is only known on inspection.
+        job.savedPath = join(job.cwd, 'recovered.png');
+        await writeFile(job.savedPath, recoveredPng, { flag: 'wx', mode: 0o600 });
+      }
       return [reply({})];
     case 'thread/read':
       assert.deepEqual(params, { threadId: job.threadId, includeTurns: true });
+      if (job.outcome === 'recover') {
+        assert.ok(job.savedPath);
+        const turn = { id: job.turnId, status: 'completed', items: [{ type: 'imageGeneration', savedPath: job.savedPath }] };
+        return [reply({ thread: { id: job.threadId, turns: [turn] } })];
+      }
       return [reply({ thread: { id: job.threadId, turns: [{ id: job.turnId, status: 'interrupted' }] } })];
     default:
       throw new Error('Unhandled fixture method');

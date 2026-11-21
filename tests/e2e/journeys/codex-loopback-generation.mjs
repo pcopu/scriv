@@ -3,7 +3,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { generationContextInput } from './support/generation-context-cases.mjs';
-import { fixtureImageHash, startCodexFixture } from './support/codex-loopback-fixture.mjs';
+import { fixtureImageHash, recoveredImageHash, startCodexFixture } from './support/codex-loopback-fixture.mjs';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
 const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
@@ -78,7 +78,7 @@ try {
   const jobs = async () => (await session.command('image-evidence')).jobs;
 
   step = 'connect to the owned loopback fixture in Settings';
-  fixture = await startCodexFixture(session.root, ['success', 'cancel', 'failure']);
+  fixture = await startCodexFixture(session.root, ['success', 'cancel', 'recover', 'failure']);
   await fixture.race((async () => {
     await session.command('key', { input: ',', modifiers: ['command'] });
     // Sidebar cells use the public collection view selection route. The CLI
@@ -120,7 +120,7 @@ try {
     assert.deepEqual(saved.characters, before.characters);
     assert.deepEqual(saved.cues.filter(cue => cue.id !== 'cue'), before.cues.filter(cue => cue.id !== 'cue'));
     assert.equal(saved.images.length, 1);
-    const savedProjects = [sample, saved].sort((a, b) => a.id.localeCompare(b.id));
+    let savedProjects = [sample, saved].sort((a, b) => a.id.localeCompare(b.id));
     const unchanged = async () => assert.deepEqual((await session.command('persisted-projects'))
       .sort((a, b) => a.id.localeCompare(b.id)), savedProjects, 'Only the completed fixture job may change saved projects');
     await unchanged();
@@ -151,26 +151,73 @@ try {
     assert.equal(cancelled.outputImageID, undefined);
     assert.equal(inspected.length, 2, 'Inspection did not create a new job');
     await unchanged();
-    const escape = (await session.command('keys')).find(command => command.input === 'Escape' && command.modifiers.length === 0);
-    assert.equal(escape?.responderType, 'ScrivGenerationJobsController');
-    assert.equal(escape.action, 'scrivEscapeSheet');
-    assert.deepEqual(await session.command('key', { input: 'Escape', modifiers: [] }), { dispatched: true });
-    await session.waitFor(nodes => !nodes.some(jobsSource));
+    const closeJobs = async () => {
+      const escape = (await session.command('keys')).find(command => command.input === 'Escape' && command.modifiers.length === 0);
+      assert.equal(escape?.responderType, 'ScrivGenerationJobsController');
+      assert.equal(escape.action, 'scrivEscapeSheet');
+      assert.deepEqual(await session.command('key', { input: 'Escape', modifiers: [] }), { dispatched: true });
+      await session.waitFor(nodes => !nodes.some(jobsSource));
+    };
+    await closeJobs();
+
+    step = 'recover the finished original turn without resubmitting';
+    await selectTab('Storyboard');
+    await activate(await reveal(byID('storyboard-word-w5')));
+    await selectTab('Script');
+    const recoveryGenerate = node => node.identifier === 'generation-generate-image' && node.label === 'Generate image for 01B';
+    await activate(await reveal(recoveryGenerate));
+    const recovering = await poll(jobs, records => records.length === 3 && records.some(job =>
+      ![complete.jobID, cancelledID].includes(job.jobID) && job.status === 'running' && job.hasThreadID && job.hasTurnID));
+    const recoveryID = recovering.find(job => ![complete.jobID, cancelledID].includes(job.jobID)).jobID;
+    await activate(await reveal(cancelButton));
+    await poll(jobs, records => records.find(job => job.jobID === recoveryID)?.status === 'waiting');
+    await unchanged();
+    await activate(await reveal(byID('codex-jobs')));
+    const recoveryWindow = (await waitForControl(jobsSource)).windowPath;
+    // Jobs are newest first. Inspect the first waiting card, while the earlier
+    // cancelled card remains in the list for its separate outcome assertion.
+    const inspect = node => node.title === 'Inspect existing turn' && node.windowPath === recoveryWindow;
+    const inspectButtons = (await session.waitFor(nodes => nodes.filter(inspect).length === 2)).filter(inspect);
+    await activate(await reveal(node => inspect(node) && node.path === inspectButtons[0].path));
+    const ready = await poll(jobs, records => records.some(job => job.jobID === recoveryID
+      && job.status === 'completed' && job.artifact?.sha256 === recoveredImageHash));
+    assert.equal(ready.length, 3);
+    assert.equal(ready.find(job => job.jobID === recoveryID).attachmentVerified, false);
+    await unchanged();
+    await activate(await reveal(node => node.title === 'Use in original project' && node.windowPath === recoveryWindow));
+    const recovered = await waitForSavedProject(session, project => project.id === saved.id
+      && project.images.some(image => image.sha256 === recoveredImageHash)
+      && !!project.cues.find(cue => cue.id === 'later')?.imageId);
+    const recoveredAsset = recovered.images.find(image => image.sha256 === recoveredImageHash);
+    assert.equal(recovered.cues.find(cue => cue.id === 'later').imageId, recoveredAsset.id);
+    assert.deepEqual(recovered.entries, saved.entries);
+    assert.deepEqual(recovered.characters, saved.characters);
+    assert.deepEqual(recovered.cues.filter(cue => cue.id !== 'later'), saved.cues.filter(cue => cue.id !== 'later'));
+    const attached = await poll(jobs, records => records.some(job => job.jobID === recoveryID && job.attachmentVerified));
+    assert.equal(attached.length, 3, 'Recovery must reuse the original job');
+    assert.equal(attached.find(job => job.jobID === recoveryID).assetID, recoveredAsset.id);
+    savedProjects = [sample, recovered].sort((a, b) => a.id.localeCompare(b.id));
+    await unchanged();
+    await closeJobs();
 
     step = 'verify a refused turn changes neither the cue nor prior jobs';
+    await selectTab('Storyboard');
+    await activate(await reveal(byID('storyboard-word-w2')));
+    await selectTab('Script');
     await activate(await reveal(generate));
     const alerts = await poll(() => session.command('presented-alerts'), alerts => alerts.length > 0);
     assert.equal(alerts.length, 1);
     assert.equal(alerts[0].title, 'Scriv');
     assert.equal(alerts[0].message, 'Synthetic image turn refused');
     const finished = await jobs();
-    assert.equal(finished.length, 3);
-    const refused = finished.find(job => ![cancelledID, complete.jobID].includes(job.jobID));
+    assert.equal(finished.length, 4);
+    const refused = finished.find(job => ![cancelledID, complete.jobID, recoveryID].includes(job.jobID));
     assert.equal(refused.status, 'failed');
     assert.equal(refused.attachmentVerified, false);
     assert.equal(refused.outputImageID, undefined);
     assert.equal(refused.hasThreadID && refused.hasTurnID, true);
     assert.equal(finished.find(job => job.jobID === cancelledID).status, 'cancelled');
+    assert.equal(finished.find(job => job.jobID === recoveryID).assetID, recoveredAsset.id);
     assert.equal(finished.find(job => job.jobID === complete.jobID).assetID, imageID);
     await unchanged();
   })());

@@ -16,6 +16,21 @@ final class ScrivCLI {
     private var asynchronousCommandInProgress = false
     private var nativeAccessibility: ScrivCLIAccessibility?
 
+    // During a synchronous synthetic stroke, the owned CLI route determines
+    // the keyboard scope. Catalyst can put an auxiliary window ahead of it.
+    private(set) var shortcutWindow: UIWindow?
+    private(set) var shortcutResponder: UIResponder?
+    private func withShortcutScope<Result>(_ action: () throws -> Result) rethrows -> Result {
+        let active = ownedWindows().first(where: { $0.isKeyWindow }) ?? window
+        if let active, active === window, active.rootViewController is ScrivWorkspaceController,
+           !ownedPresentedAlerts().contains(where: { $0.viewIfLoaded?.window != nil }) {
+            shortcutWindow = active
+            shortcutResponder = ScrivKeyboardTextContext.firstResponder() ?? views().first(where: { $0.1.isFirstResponder })?.1
+        }
+        defer { shortcutWindow = nil; shortcutResponder = nil }
+        return try action()
+    }
+
     func start(window: UIWindow) {
         guard !started, ProcessInfo.processInfo.arguments.contains("--scriv-cli") else { return }
         guard (try? ScrivCLIRunCapability.requirePrepared()) != nil else {
@@ -178,10 +193,32 @@ final class ScrivCLI {
     private func requireNonsensitiveAccessibility() throws {
         guard sensitiveInputs().isEmpty else { throw Failure("Accessibility observation is unavailable while sensitive input is present") }
     }
+    private func ownedPresentedAlerts() -> [UIAlertController] {
+        var alerts: [UIAlertController] = [], seen = Set<ObjectIdentifier>()
+        func visit(_ controller: UIViewController) {
+            guard seen.insert(ObjectIdentifier(controller)).inserted else { return }
+            if let alert = controller as? UIAlertController, alert.presentingViewController != nil {
+                alerts.append(alert)
+            }
+            controller.children.forEach { visit($0) }
+            if let presented = controller.presentedViewController { visit(presented) }
+        }
+        ownedWindows().compactMap(\.rootViewController).forEach { visit($0) }
+        return alerts
+    }
     private func isInActivePresentation(_ view: UIView) -> Bool {
         guard let root = view.window?.rootViewController ?? window?.rootViewController else { return false }
         var top = root
         while let presented = top.presentedViewController { top = presented }
+        if let ownedWindow = view.window, ownedWindow === window,
+           ownedPresentedAlerts().contains(where: { alert in
+               guard let alertWindow = alert.viewIfLoaded?.window else { return false }
+               return alertWindow !== ownedWindow
+           }) {
+            // The same workspace's Catalyst alert can live in its own native
+            // window without appearing in the covered window's direct chain.
+            return false
+        }
         guard top !== root, let content = top.viewIfLoaded else { return true }
         return view === content || view.isDescendant(of: content)
     }
@@ -317,32 +354,20 @@ final class ScrivCLI {
             guard Set(request.keys).isSubset(of: ["id", "command"]) else {
                 throw Failure("Presented alert observation accepts no parameters")
             }
-            var records: [[String: Any]] = []
-            var seen = Set<ObjectIdentifier>()
-            func visit(_ controller: UIViewController) {
-                guard seen.insert(ObjectIdentifier(controller)).inserted else { return }
-                if let alert = controller as? UIAlertController,
-                   alert.presentingViewController != nil {
-                    records.append([
-                        "observation": "public-controller-presentation-state",
-                        "title": alert.title ?? "",
-                        "message": alert.message ?? "",
-                        "style": alert.preferredStyle == .alert ? "alert" : "actionSheet",
-                        "beingPresented": alert.isBeingPresented,
-                        "beingDismissed": alert.isBeingDismissed,
-                        "viewAttachedToWindow": alert.viewIfLoaded?.window != nil,
-                        "actions": alert.actions.map { action in
-                            ["title": action.title ?? "", "enabled": action.isEnabled,
-                             "style": action.style == .cancel ? "cancel" :
-                                action.style == .destructive ? "destructive" : "default"] as [String: Any]
-                        }
-                    ])
-                }
-                controller.children.forEach { visit($0) }
-                if let presented = controller.presentedViewController { visit(presented) }
+            return ownedPresentedAlerts().map { alert in
+                ["observation": "public-controller-presentation-state",
+                 "title": alert.title ?? "",
+                 "message": alert.message ?? "",
+                 "style": alert.preferredStyle == .alert ? "alert" : "actionSheet",
+                 "beingPresented": alert.isBeingPresented,
+                 "beingDismissed": alert.isBeingDismissed,
+                 "viewAttachedToWindow": alert.viewIfLoaded?.window != nil,
+                 "actions": alert.actions.map { action in
+                     ["title": action.title ?? "", "enabled": action.isEnabled,
+                      "style": action.style == .cancel ? "cancel" :
+                        action.style == .destructive ? "destructive" : "default"] as [String: Any]
+                 }] as [String: Any]
             }
-            ownedWindows().compactMap(\.rootViewController).forEach { visit($0) }
-            return records
         }
         if command == "native-accessibility-snapshot" {
             try requireNonsensitiveAccessibility()
@@ -411,16 +436,20 @@ final class ScrivCLI {
             return records
         }
         if command == "keys" {
-            return keyCommands().map { responder, key in ["input": key.input == UIKeyCommand.inputEscape ? "Escape" : key.input ?? "", "modifiers": modifierNames(key.modifierFlags), "title": key.discoverabilityTitle ?? "", "responderType": String(describing: type(of: responder)), "action": key.action.map { NSStringFromSelector($0) } ?? "", "wantsPriorityOverSystemBehavior": key.wantsPriorityOverSystemBehavior] as [String: Any] }
+            return withShortcutScope {
+                keyCommands().map { responder, key in ["input": key.input == UIKeyCommand.inputEscape ? "Escape" : key.input ?? "", "modifiers": modifierNames(key.modifierFlags), "title": key.discoverabilityTitle ?? "", "responderType": String(describing: type(of: responder)), "action": key.action.map { NSStringFromSelector($0) } ?? "", "wantsPriorityOverSystemBehavior": key.wantsPriorityOverSystemBehavior] as [String: Any] }
+            }
         }
         if command == "key" {
-            guard let input = request["input"] as? String, let modifiers = request["modifiers"] as? [String] else { throw Failure("Expected input and modifier names") }
-            let nativeInput = input == "Escape" ? UIKeyCommand.inputEscape : input
-            guard let (responder, key) = keyCommands().first(where: { $0.1.input == nativeInput && Set(modifierNames($0.1.modifierFlags)) == Set(modifiers) }) else { throw Failure("No enabled key command in the active responder chain") }
-            guard let action = key.action else { throw Failure("Key command lacks an action") }
-            let dispatched = (responder as? ScrivUIKitApplication).map { $0.performCLIKeyStroke(key) } ?? UIApplication.shared.sendAction(action, to: responder, from: key, for: nil)
-            guard dispatched else { throw Failure("Key action was not handled") }
-            return ["dispatched": true]
+            return try withShortcutScope {
+                guard let input = request["input"] as? String, let modifiers = request["modifiers"] as? [String] else { throw Failure("Expected input and modifier names") }
+                let nativeInput = input == "Escape" ? UIKeyCommand.inputEscape : input
+                guard let (responder, key) = keyCommands().first(where: { $0.1.input == nativeInput && Set(modifierNames($0.1.modifierFlags)) == Set(modifiers) }) else { throw Failure("No enabled key command in the active responder chain") }
+                guard let action = key.action else { throw Failure("Key command lacks an action") }
+                let dispatched = (responder as? ScrivUIKitApplication).map { $0.performCLIKeyStroke(key) } ?? UIApplication.shared.sendAction(action, to: responder, from: key, for: nil)
+                guard dispatched else { throw Failure("Key action was not handled") }
+                return ["dispatched": true]
+            }
         }
         if command == "end-editing" {
             var controller = (ownedWindows().first(where: { $0.isKeyWindow }) ?? window).rootViewController

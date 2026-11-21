@@ -2609,8 +2609,8 @@
       "id": "075f8247f7989103",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 768,
-        "end": 774,
+        "start": 797,
+        "end": 803,
         "sha256": "70edbf61ca4e624c0995831a11aa20cc3f54d75846ece0c208fed31e96f0dfc1"
       },
       "actions": [
@@ -3455,8 +3455,8 @@
       "id": "0b5618fdeb2e0be4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 305,
-        "end": 305,
+        "start": 342,
+        "end": 342,
         "sha256": "42c475b9792fc983b1cc1b2156a5eda23f7c136eafa61bf98a274774b9f0b2d7"
       },
       "actions": [
@@ -6180,9 +6180,9 @@
       "id": "153e524eecb4447f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 180,
-        "end": 182,
-        "sha256": "93a82ec0a59268768e87666d0dad0ff30df05d97bc46a68b04c4523182319c86"
+        "start": 192,
+        "end": 194,
+        "sha256": "64e0bf0f6c92e5cd04d6ef6c6bd8a95f63bd2bf19641ed0cf7905797112985d9"
       },
       "actions": [
         "{\"command\":\"key\",\"input\":\"=\",\"modifiers\":[\"command\"]}",
@@ -9498,8 +9498,8 @@
       "id": "2137759e1170af57",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 228,
-        "end": 231,
+        "start": 240,
+        "end": 243,
         "sha256": "1aa8fdedfe181d455540f1e1a253095095a8d28d40d1a446aea8c747928355b5"
       },
       "actions": [
@@ -10346,8 +10346,8 @@
       "id": "246327578024a243",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 317,
-        "end": 318,
+        "start": 354,
+        "end": 355,
         "sha256": "390308ff98727586d6b0a3bb0587bfeeaa57fba2528d0817f1c3df41538bcc61"
       },
       "actions": [
@@ -13324,8 +13324,8 @@
       "id": "2c7674f3905b9fe3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 505,
-        "end": 506,
+        "start": 534,
+        "end": 535,
         "sha256": "87fb4fb7b226586f934ca41449da35e916035a5fc898f5924f7efed8f1260084"
       },
       "actions": [
@@ -14484,8 +14484,8 @@
       "id": "31f79426db7cd75a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 371,
-        "end": 373,
+        "start": 396,
+        "end": 398,
         "sha256": "c324179813f2dec8eabeaad7a3d24683533bfd617fcd1eadbbec16ccc586f24b"
       },
       "actions": [
@@ -14639,9 +14639,9 @@
       "id": "326f12516d808603",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 245,
-        "end": 248,
-        "sha256": "8f7e615b55958e3b06f6d51095d29cdba422e1c86d3931a84a03f9669a17a089"
+        "start": 257,
+        "end": 260,
+        "sha256": "4dbdefbdcffe516acb5e64ad00f70e815aa477a3eadbb21fa5320b67c56ddebe"
       },
       "actions": [
         "{\"command\":\"key\",\"input\":\"f\",\"modifiers\":[\"command\"]}",
@@ -15715,8 +15715,8 @@
       "id": "361c5c737cdd97f7",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 308,
-        "end": 311,
+        "start": 345,
+        "end": 348,
         "sha256": "be53340637c0733a61c336310c1452479c5ef1b02038be1f08dacd3fcf7c1325"
       },
       "actions": [
@@ -17647,9 +17647,9 @@
       "id": "3ce248b0d179f76b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 142,
-        "end": 147,
-        "sha256": "02070ae32ff632770f48ae87a9a4915e766c62bfb622031ec12735b44bac22ba"
+        "start": 154,
+        "end": 159,
+        "sha256": "e2693da14e2629976d88403cc5522adc223c682202d0139099519647a3f4936e"
       },
       "actions": [
         "{\"command\":\"key\",\"input\":\"f\",\"modifiers\":[\"command\"]}",
@@ -19558,8 +19558,8 @@
       "id": "43c1321950b21083",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 668,
-        "end": 670,
+        "start": 697,
+        "end": 699,
         "sha256": "1832dfa33320b4f95bab71ed05bc3a46952600a61a5309c015c0cb1aac09908d"
       },
       "actions": [
@@ -19720,8 +19720,8 @@
       "id": "4470352bd0388604",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 202,
-        "end": 204,
+        "start": 214,
+        "end": 216,
         "sha256": "1d4a15271e948ff7b6565e9b7f41760ad4d7629e81da2bd3f11b9b2f062ab766"
       },
       "actions": [
@@ -23209,8 +23209,8 @@
       "id": "5211d001407c7455",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 819,
-        "end": 819,
+        "start": 848,
+        "end": 848,
         "sha256": "df4993a2dcd9414ca54bdbd35a37dc670f2ee5363b7c978a0f8effe92f47fa3e"
       },
       "actions": [
@@ -23452,8 +23452,8 @@
       "id": "52f077bb6d5b9911",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 62,
-        "end": 67,
+        "start": 77,
+        "end": 82,
         "sha256": "c5c0aa1257d8ddea894dea9d3e378c6fa879b9b67e18da1409e8af1767838ef0"
       },
       "actions": [
@@ -23748,8 +23748,8 @@
       "id": "5408e3ca6932a9b8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 89,
-        "end": 90,
+        "start": 104,
+        "end": 105,
         "sha256": "201a3929df2e0261b8f02979e5fdeb44829f8b3a8d63f11996dd41a096d2aeed"
       },
       "actions": [
@@ -25206,8 +25206,8 @@
       "id": "5975ebf27fa24190",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 301,
-        "end": 304,
+        "start": 338,
+        "end": 341,
         "sha256": "fd1208ec29481b3c0d6e820b8d3f96b24a68d9c97b1cce3368de8ecc24087688"
       },
       "actions": [
@@ -26409,8 +26409,8 @@
       "id": "5df3242e94b1184f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 305,
-        "end": 305,
+        "start": 342,
+        "end": 342,
         "sha256": "42c475b9792fc983b1cc1b2156a5eda23f7c136eafa61bf98a274774b9f0b2d7"
       },
       "actions": [
@@ -27341,8 +27341,8 @@
       "id": "61153ea3f1e3214d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 243,
-        "end": 243,
+        "start": 255,
+        "end": 255,
         "sha256": "9d2d5c4bed5c65240b49293f0a4531e41ded2f5f7f3c5115de8a82a2c4131a8f"
       },
       "actions": [
@@ -27992,8 +27992,8 @@
       "id": "6322edf8e4782c20",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 593,
-        "end": 593,
+        "start": 622,
+        "end": 622,
         "sha256": "117edc4441ea32d381a04f092c98a7d78b8f6368c4b4bff6ec26e4599d7db9b6"
       },
       "actions": [
@@ -28610,8 +28610,8 @@
       "id": "655bf5071a5998fd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 294,
-        "end": 297,
+        "start": 331,
+        "end": 334,
         "sha256": "75f35ed14262dd5313e36336b0b41fc4397a8fc9d4003e1c34450e150fad0d60"
       },
       "actions": [
@@ -31290,8 +31290,8 @@
       "id": "6dbf27e5d003daa2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 235,
-        "end": 235,
+        "start": 272,
+        "end": 272,
         "sha256": "681e3a00a1c4933f6500e483ae936ef1af8a8ab9474c165a2c312b829813dc3e"
       },
       "actions": [
@@ -31344,8 +31344,8 @@
       "id": "6dd9df6f135bf4da",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 232,
-        "end": 239,
+        "start": 244,
+        "end": 251,
         "sha256": "9997dabf3bc12646f91d7b31bb497abc1c08f2dfc024d285ed5d238ff132a655"
       },
       "actions": [
@@ -31595,8 +31595,8 @@
       "id": "6f0a51def3c92169",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 301,
-        "end": 303,
+        "start": 338,
+        "end": 340,
         "sha256": "cf4e8e1bce56a0b0fe308df4ff78b381d8cdbe1f2c74752423ed32f49a0dcfc1"
       },
       "actions": [
@@ -32322,8 +32322,8 @@
       "id": "724a58c0071879ca",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 249,
-        "end": 250,
+        "start": 286,
+        "end": 287,
         "sha256": "5fe56d9af1537141cc9dac966e206eddf55db3c329236c7912a3d0d0454c60ba"
       },
       "actions": [
@@ -33966,8 +33966,8 @@
       "id": "778df645dc921268",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 574,
-        "end": 576,
+        "start": 603,
+        "end": 605,
         "sha256": "bbfb7483c89e30c09f8be7ad92447e6b9d1d6f2dae773379043375c1afac3fe1"
       },
       "actions": [
@@ -37902,8 +37902,8 @@
       "id": "83f512cd665f025b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 378,
-        "end": 382,
+        "start": 403,
+        "end": 407,
         "sha256": "dab34e6acf94ea0f79a2f627ec216ce5e93c722ede15ba9a4db387898c5b1e99"
       },
       "actions": [
@@ -40003,8 +40003,8 @@
       "id": "8a0c5c83770c8e04",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 523,
-        "end": 525,
+        "start": 552,
+        "end": 554,
         "sha256": "e75ceef78142ba6150091ee1d701fe508c3750adc77fd0a8515a2abab938d0a1"
       },
       "actions": [
@@ -40460,8 +40460,8 @@
       "id": "8cabb5a825354921",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 582,
-        "end": 583,
+        "start": 611,
+        "end": 612,
         "sha256": "1cffeee9176ea8b313df1e5be327c0e9baf50c45d829101186009b257fc8e37f"
       },
       "actions": [
@@ -41224,8 +41224,8 @@
       "id": "8fb4c08064f57176",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 728,
-        "end": 736,
+        "start": 757,
+        "end": 765,
         "sha256": "5a5f6c02a36999a9e71b9abd7481a87a0f3c1caa96b70ff0d63035f548b90ade"
       },
       "actions": [
@@ -41948,8 +41948,8 @@
       "id": "91f9f3a700362b1e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 240,
-        "end": 241,
+        "start": 277,
+        "end": 278,
         "sha256": "cf64e34be120ab284bd394518254d8d18b5bc1a047e451a06c2b7a1368705763"
       },
       "actions": [
@@ -43078,8 +43078,8 @@
       "id": "96523476b3f88a7e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 526,
-        "end": 528,
+        "start": 555,
+        "end": 557,
         "sha256": "42012bb069693254b4836adeccce4487cac4e7915e8af932cba052184d7d1e3e"
       },
       "actions": [
@@ -43473,8 +43473,8 @@
       "id": "9859dc8ba1e03ff3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 529,
-        "end": 529,
+        "start": 558,
+        "end": 558,
         "sha256": "a2523414c7ecf310d709bcca45c6c26e446ef386e2e77a7301308e8d6f451af4"
       },
       "actions": [
@@ -45684,9 +45684,9 @@
       "id": "9f46c05f198d8c7f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 176,
-        "end": 179,
-        "sha256": "cd11d2d378a2b38f0c6deddb62b67a9f95698c2d2aebe6ec18d617dbc101d542"
+        "start": 188,
+        "end": 191,
+        "sha256": "b14a8bb4a90f43a05a5eb4a022914c76776137c9f9a9f2398be627fe78e2e6c8"
       },
       "actions": [
         "{\"command\":\"keys\"}",
@@ -46641,8 +46641,8 @@
       "id": "a13489ce55eafe6d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 386,
-        "end": 386,
+        "start": 411,
+        "end": 411,
         "sha256": "cc0f92a36210d7cf478a1dcd404ed40f0f1956d12202059503ac6325c63a2748"
       },
       "actions": [
@@ -47390,8 +47390,8 @@
       "id": "a27cc246e1bb047b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 387,
-        "end": 390,
+        "start": 412,
+        "end": 415,
         "sha256": "ef50a51588e0c27a2f347b6fb60c111410762ad3440ffc360b3df572d5700c1a"
       },
       "actions": [
@@ -47780,8 +47780,8 @@
       "id": "a34f8a0617207998",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 95,
-        "end": 95,
+        "start": 110,
+        "end": 110,
         "sha256": "7c7955ce47df56b80f5443d72c5367cc9b43868209586079763250c3136648a7"
       },
       "actions": [
@@ -47988,8 +47988,8 @@
       "id": "a416a0a7bbca6d14",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 585,
-        "end": 587,
+        "start": 614,
+        "end": 616,
         "sha256": "274f522ebdbfcfc6f473837b2562e4f89860f01e3b2baed7f66c5ef9165449ff"
       },
       "actions": [
@@ -49146,8 +49146,8 @@
       "id": "a8a1859718227433",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 526,
-        "end": 529,
+        "start": 555,
+        "end": 558,
         "sha256": "285adb34294fce81bd951e5c421d767c26d847995706f339b90f0f7ef725b36f"
       },
       "actions": [
@@ -49756,9 +49756,9 @@
       "id": "a9f98b00df683075",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 416,
-        "end": 417,
-        "sha256": "b117780eb4da7c07ec66eda97fc40b69084ab5a63c4347d6311e483add47d76f"
+        "start": 443,
+        "end": 445,
+        "sha256": "44fba8739d19abaed6d791deacb803d0666266dee6e7cc9a0b5a2723dee9d210"
       },
       "actions": [
         "ScrivSession.launch(app,{persistent:true}); capabilities verifies protocol, driver, isolation object, workspace flags, UUID identities, root suffix, unique command list and declared supported/absent commands.",
@@ -50365,8 +50365,8 @@
       "id": "abbdc61ac1a1c484",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 510,
-        "end": 512,
+        "start": 539,
+        "end": 541,
         "sha256": "3af8be92706536575f44396134000a11adf737fae87c99c2427a9d8e13b0afd0"
       },
       "actions": [
@@ -51409,8 +51409,8 @@
       "id": "b00fa899709da474",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 254,
-        "end": 257,
+        "start": 291,
+        "end": 294,
         "sha256": "c46ad0ec258075b2f171a5bdd3469eb1e423941c7b8265b29084150377eb57fa"
       },
       "actions": [
@@ -51534,8 +51534,8 @@
       "id": "b03c02a87d317b16",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 568,
-        "end": 569,
+        "start": 597,
+        "end": 598,
         "sha256": "c26287c65561809d81e16d701452b4d3760b03e68df1ff790fc1aa675106a5d4"
       },
       "actions": [
@@ -52353,8 +52353,8 @@
       "id": "b2fef9ed10833ad5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 688,
-        "end": 693,
+        "start": 717,
+        "end": 722,
         "sha256": "dcfd6ac882e2fd986bd8ef27349510e52e7d98f883712f96d83b78faed397254"
       },
       "actions": [
@@ -52883,8 +52883,8 @@
       "id": "b4623bb67b7d1f3a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 136,
-        "end": 140,
+        "start": 148,
+        "end": 152,
         "sha256": "3b5adbb0010cc2f76ab1bab05875a19f611f47cf24a27918585c5fcb44857253"
       },
       "actions": [
@@ -53450,8 +53450,8 @@
       "id": "b5c88e5d69c3c253",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 312,
-        "end": 312,
+        "start": 349,
+        "end": 349,
         "sha256": "425f9df57aef918b436ffdf46d77f4c629327209ce3534077644944761f9e46b"
       },
       "actions": [
@@ -54053,8 +54053,8 @@
       "id": "b7e289954a6fed4e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 237,
-        "end": 237,
+        "start": 274,
+        "end": 274,
         "sha256": "c1447292d9f4946c9670570f9c6e9d1daac7aa8d94fd14168f451554d356187f"
       },
       "actions": [
@@ -54428,8 +54428,8 @@
       "id": "b9335911984aff2d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 375,
-        "end": 375,
+        "start": 400,
+        "end": 400,
         "sha256": "abc81019fd1ad08baf3b4edb48386acd2a5061c46b5c1887ce86b33a68339cbe"
       },
       "actions": [
@@ -55812,8 +55812,8 @@
       "id": "bdd0dd52c0b91124",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 257,
-        "end": 257,
+        "start": 294,
+        "end": 294,
         "sha256": "b4f7aeb9f63f0a57c09c742578d82c2b9d0fe379a6c1c3a405e3274544f288ac"
       },
       "actions": [
@@ -55929,8 +55929,8 @@
       "id": "be57ab300ea7debd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 807,
-        "end": 810,
+        "start": 836,
+        "end": 839,
         "sha256": "26beb85a13d16de248d0f1e982bec88ba5075e79d6cf6af4235ef6535513e543"
       },
       "actions": [
@@ -58601,8 +58601,8 @@
       "id": "c971ccb333361360",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 386,
-        "end": 386,
+        "start": 411,
+        "end": 411,
         "sha256": "cc0f92a36210d7cf478a1dcd404ed40f0f1956d12202059503ac6325c63a2748"
       },
       "actions": [
@@ -60749,8 +60749,8 @@
       "id": "d2025b83a61d59dd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 806,
-        "end": 809,
+        "start": 835,
+        "end": 838,
         "sha256": "6ccdd6df77ace49b02338e035534ba74df09e5c4910fb1989ac197764d5da3a6"
       },
       "actions": [
@@ -61076,8 +61076,8 @@
       "id": "d3bc3b06359020d1",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 384,
-        "end": 384,
+        "start": 409,
+        "end": 409,
         "sha256": "6cb3e081cf00cebc2d6bea390d1d2df1ed786518df0252b0770acc72919044ab"
       },
       "actions": [
@@ -61178,9 +61178,9 @@
       "id": "d534c634abedde25",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 256,
-        "end": 261,
-        "sha256": "c06ecb418197eb59422f6092b361e99ed263e9b33b6da3bf39dc76cb27c3199f"
+        "start": 268,
+        "end": 273,
+        "sha256": "05bbf1377d8c2c8a7a05372869deb8b4cb92865acc7a48e7783bdfafcd74a738"
       },
       "actions": [
         "{\"command\":\"key\",\"input\":\"=\",\"modifiers\":[\"command\"]}",
@@ -61414,9 +61414,9 @@
       "id": "d5b6cccc9f00ced9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 181,
-        "end": 186,
-        "sha256": "7b4399eb3bf20d3dced68f259311ccf61b8acdfcb6a6b1ba43e6f4a0426bb533"
+        "start": 222,
+        "end": 223,
+        "sha256": "bc1c25b761075869b06cf0d0e3adcf3585617fa0285beb26e55e24957567285e"
       },
       "actions": [
         "{\"command\":\"activate\",\"target\":\"workspace-project\"}",
@@ -62582,8 +62582,8 @@
       "id": "da70d7ffff562871",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 803,
-        "end": 806,
+        "start": 832,
+        "end": 835,
         "sha256": "9b0fe68c953cf1ee96a5fc24f650595124c613b3cb2f11f58db77a9bc57c52cb"
       },
       "actions": [
@@ -63131,8 +63131,8 @@
       "id": "dc795d7a0700029a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 298,
-        "end": 298,
+        "start": 335,
+        "end": 335,
         "sha256": "662541f5fd2f4f8a1c01d7814d5b3245d9d1169c9bd1fcf34e8ee04fe6804605"
       },
       "actions": [
@@ -64044,8 +64044,8 @@
       "id": "df0cb3dd47468479",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 778,
-        "end": 781,
+        "start": 807,
+        "end": 810,
         "sha256": "a6fd533bb2976ec5b7b66dcb502653131dc1c2339a1068af0a37056588ae0032"
       },
       "actions": [
@@ -64618,8 +64618,8 @@
       "id": "e100d9e3e1597b58",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 148,
-        "end": 152,
+        "start": 163,
+        "end": 167,
         "sha256": "d1390fa9af10d99d524c8775628cb6df5692c11e51cb6010923543eac5094cad"
       },
       "actions": [
@@ -66859,8 +66859,8 @@
       "id": "e7260f0beea28d3b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 271,
-        "end": 275,
+        "start": 283,
+        "end": 287,
         "sha256": "0a940e7256d57198d7bcb71b2688eb76461b50ee1fe66672df1f103e485e7b09"
       },
       "actions": [
@@ -67213,8 +67213,8 @@
       "id": "e854487f4fee66d8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 508,
-        "end": 508,
+        "start": 537,
+        "end": 537,
         "sha256": "97f462fc90f039c5470d57da43b84f5caf32b895462b9db5a7662402904e8f9c"
       },
       "actions": [
@@ -70444,8 +70444,8 @@
       "id": "f19ff95611a4d8f2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 280,
-        "end": 281,
+        "start": 292,
+        "end": 293,
         "sha256": "0fb80120a14d9b28c02d41405f5594dd2a9124b2b3a44d898c71ac9b037920fb"
       },
       "actions": [
@@ -70714,8 +70714,8 @@
       "id": "f3142c5f6bbed5b9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 555,
-        "end": 557,
+        "start": 584,
+        "end": 586,
         "sha256": "90964b4e76c047a150ad14af6589320cf5dfa4163e529e0e9f748bdc796625e2"
       },
       "actions": [
@@ -71073,8 +71073,8 @@
       "id": "f43fd634b3462a11",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 571,
-        "end": 572,
+        "start": 600,
+        "end": 601,
         "sha256": "c803ddeb6699c76d5458d3286886abdae555235d298da3ddd88d8523cc1a7210"
       },
       "actions": [
@@ -71806,8 +71806,8 @@
       "id": "f7d895774b4d2ab4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 266,
-        "end": 267,
+        "start": 278,
+        "end": 279,
         "sha256": "ceef9821b8167eed6192ad084ed0c1b07e8110bcbf2911f302f05e44e14847d0"
       },
       "actions": [
@@ -78809,8 +78809,8 @@
       "id": "054c8b66b34eda28",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 78,
-        "end": 80,
+        "start": 93,
+        "end": 95,
         "sha256": "a0b74d68304c7d86030ee6e31cd384576b97b6b7e2bf2043ac1e15edcf1e7628"
       },
       "actions": [
@@ -78831,8 +78831,8 @@
       "id": "09dfedf5d42cfae6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 273,
-        "end": 274,
+        "start": 310,
+        "end": 311,
         "sha256": "255639825d3d749bf67482c548da1143bc288e4fc8945fd5b6286b6c3e616033"
       },
       "actions": [
@@ -78851,8 +78851,8 @@
       "id": "09fa80161b4cfe35",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 218,
-        "end": 221,
+        "start": 255,
+        "end": 258,
         "sha256": "c230a30b3cfc530ae8626c0eab7e6fb226a160bf86de17446b8edda3f1d1cdd9"
       },
       "actions": [
@@ -78871,8 +78871,8 @@
       "id": "11227d5130fffec3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 276,
-        "end": 276,
+        "start": 313,
+        "end": 313,
         "sha256": "babc8494c179a5178e7e164a977ab06afb274fb01f9f105d9ea05df658750773"
       },
       "actions": [
@@ -78891,8 +78891,8 @@
       "id": "15c186f537293b36",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 269,
-        "end": 271,
+        "start": 306,
+        "end": 308,
         "sha256": "6806a8319277ab590b1e073dd018acb114c0ba816f162318475996c13443f3df"
       },
       "actions": [
@@ -78911,8 +78911,8 @@
       "id": "176f332c4aa6d5c7",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 89,
-        "end": 90,
+        "start": 104,
+        "end": 105,
         "sha256": "201a3929df2e0261b8f02979e5fdeb44829f8b3a8d63f11996dd41a096d2aeed"
       },
       "actions": [
@@ -78931,8 +78931,8 @@
       "id": "20e3d0c144af8988",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 34,
-        "end": 41,
+        "start": 49,
+        "end": 56,
         "sha256": "248992801ee6ada6f7488438f7272039fbc3a3f8e8daad2c50aee1848ff55d81"
       },
       "actions": [
@@ -78951,8 +78951,8 @@
       "id": "29ac337b2c59b8ed",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 556,
-        "end": 557,
+        "start": 585,
+        "end": 586,
         "sha256": "7d465e3f0c21d5f81836c01c2e02a12d8d63afc3cde786dcf09502483556d56d"
       },
       "actions": [
@@ -78971,8 +78971,8 @@
       "id": "399ec5c7645e5476",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 249,
-        "end": 259,
+        "start": 286,
+        "end": 296,
         "sha256": "f0feb715101f7a7a3ae9a71564049a52e07bda0f4b9771bdea02c9028f91ea1f"
       },
       "actions": [
@@ -78990,8 +78990,8 @@
       "id": "3ca2977b041059cb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 705,
-        "end": 715,
+        "start": 734,
+        "end": 744,
         "sha256": "6e7e02f6db3de01649c85911494132b56602c279c01624323914185da4f41abb"
       },
       "actions": [
@@ -79017,8 +79017,8 @@
       "id": "4396c3c5738d31a5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 283,
-        "end": 283,
+        "start": 320,
+        "end": 320,
         "sha256": "953704bee10343fd67a18a0d9a4f97776aae1c4388ede2c6592cc4bbdd13e256"
       },
       "actions": [
@@ -79037,8 +79037,8 @@
       "id": "48e7e821f204901b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 281,
-        "end": 281,
+        "start": 318,
+        "end": 318,
         "sha256": "b05f9dc0012d4d9cac99315108c54db418539fe3b9dc6c4130ce5d7b0831d038"
       },
       "actions": [
@@ -79057,8 +79057,8 @@
       "id": "4b378e36b7419278",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 646,
-        "end": 646,
+        "start": 675,
+        "end": 675,
         "sha256": "84d87a6ac462771db62eeb1a6797d89dd971d64a1d2fa9c362c10031c5a089d4"
       },
       "actions": [
@@ -79078,8 +79078,8 @@
       "id": "4d619e5bf1e56d7a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 643,
-        "end": 644,
+        "start": 672,
+        "end": 673,
         "sha256": "628b44ccc5c00dea4e1bf08f684cc8fcc7f340a96d7adf1be3d39482636bb5b0"
       },
       "actions": [
@@ -79099,8 +79099,8 @@
       "id": "5943549a71eac804",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 201,
-        "end": 217,
+        "start": 238,
+        "end": 254,
         "sha256": "2ff416b810fa538919fd1872fb3a78e9165c9058f710eaf51468b089be3b10fe"
       },
       "actions": [
@@ -79119,8 +79119,8 @@
       "id": "5d7f3cb765d795f5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 19,
-        "end": 21,
+        "start": 34,
+        "end": 36,
         "sha256": "a692d9763d2de2972efdfdaf92e6d2e2d3cd35f935eeb1a6a6b0d4add034fb21"
       },
       "actions": [
@@ -79139,8 +79139,8 @@
       "id": "6b01d0005d733bb0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 278,
-        "end": 279,
+        "start": 315,
+        "end": 316,
         "sha256": "cac28f4dd33bd9dd2cd7e13c9cd4325996740ac1fd2a2f1142f34af53d4e013f"
       },
       "actions": [
@@ -79159,8 +79159,8 @@
       "id": "6ba50e51a5bb8ff4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 49,
-        "end": 55,
+        "start": 64,
+        "end": 70,
         "sha256": "6da410171f4de5f6453b2c0e01d23d6efa69b62099b027359a72071d6aed446f"
       },
       "actions": [
@@ -79179,8 +79179,8 @@
       "id": "6df7e095d8bd20a5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 142,
-        "end": 153,
+        "start": 157,
+        "end": 168,
         "sha256": "6b7d2fe6b0ef0ec86c804f0869b100490893af1fe2eae405585f35b47a85c5e2"
       },
       "actions": [
@@ -79200,8 +79200,8 @@
       "id": "75a01461b52b6b7a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 650,
-        "end": 658,
+        "start": 679,
+        "end": 687,
         "sha256": "187da3ecc277e1de0b9e540f95becb8f7093dfb6e51b46df86f429f0c1a2cafc"
       },
       "actions": [
@@ -79224,8 +79224,8 @@
       "id": "7656023cb4f06a0f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 291,
-        "end": 292,
+        "start": 328,
+        "end": 329,
         "sha256": "22d85dad07c5bb07ab387609f677203a127c2d2e9ee654f3e2e36a2ac8616057"
       },
       "actions": [
@@ -79244,8 +79244,8 @@
       "id": "7c8a63daaf13b328",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 68,
-        "end": 74,
+        "start": 83,
+        "end": 89,
         "sha256": "f3da35e5263e484ee9c6239317f55503d79d21e46859f0df6e2ddb308ff079ec"
       },
       "actions": [
@@ -79266,8 +79266,8 @@
       "id": "7ef9534ffe31e8a5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 718,
-        "end": 723,
+        "start": 747,
+        "end": 752,
         "sha256": "7a3e5279957baae96588b0e18e86cceb42722fc87827b1f684dd4f8f5dcc0acb"
       },
       "actions": [
@@ -79293,8 +79293,8 @@
       "id": "7f11c250598d1cf6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 479,
-        "end": 479,
+        "start": 508,
+        "end": 508,
         "sha256": "c7b80e0b415de12405742297518bbeeeab63083ebddeced424b056ab9e157d49"
       },
       "actions": [
@@ -79314,8 +79314,8 @@
       "id": "7fd65098bf1ab87a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 797,
-        "end": 805,
+        "start": 826,
+        "end": 834,
         "sha256": "cf5b10621169cec2162228038682640e6c3308b1e59fc741c4f76ed76bab095c"
       },
       "actions": [
@@ -79335,8 +79335,8 @@
       "id": "811be6db468e45c4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 519,
-        "end": 524,
+        "start": 548,
+        "end": 553,
         "sha256": "0c980fa83a4300e5a9837308b443c69da4a6f064c0b4d29088e08fd9b5185965"
       },
       "actions": [
@@ -79356,8 +79356,8 @@
       "id": "83dab709c8cd268d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 483,
-        "end": 483,
+        "start": 512,
+        "end": 512,
         "sha256": "592a2e61beae656bbd65be2757c56ab2fe105580f3fe1a01230279d66aed31a6"
       },
       "actions": [
@@ -79377,8 +79377,8 @@
       "id": "88b3bf3302dd7830",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 469,
-        "end": 476,
+        "start": 498,
+        "end": 505,
         "sha256": "8ab344172387fc3a08adf8c738ccb0537721e2ba7d3f2ea65be587e69dedb1b7"
       },
       "actions": [
@@ -79398,8 +79398,8 @@
       "id": "8a446afa0edb42c2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 632,
-        "end": 642,
+        "start": 661,
+        "end": 671,
         "sha256": "a428147f4496f41893ce079eb3e2e1db4fc3e46278ba9b8467975bfe8abf9327"
       },
       "actions": [
@@ -79422,8 +79422,8 @@
       "id": "8a67029696cbf0b8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 492,
-        "end": 492,
+        "start": 521,
+        "end": 521,
         "sha256": "855badd29c331125f697c8be79c2e1e9535010812bee9c917f723711a8cd3b42"
       },
       "actions": [
@@ -79443,8 +79443,8 @@
       "id": "8c330d0546d11c31",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 530,
-        "end": 544,
+        "start": 559,
+        "end": 573,
         "sha256": "192b962acc29c719f349a6e8402bf9296e1b795c2e57ffdd47a2ff06f3e0d28d"
       },
       "actions": [
@@ -79463,9 +79463,9 @@
       "id": "8e093b0846960340",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 413,
-        "end": 423,
-        "sha256": "4bd1fcfc0c0fb104904ff6c9ce4225a18c4276c4f8b4e759dbb77652046b5949"
+        "start": 438,
+        "end": 453,
+        "sha256": "c985acb284696831286da12ba8b55a044dcbb709eb303e9100fc2edc581f1cad"
       },
       "actions": [
         "keys",
@@ -79483,8 +79483,8 @@
       "id": "8fb80feb081c33b9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 787,
-        "end": 789,
+        "start": 816,
+        "end": 818,
         "sha256": "6d63236a09570fb3909931fbb1e8c7a6bb4d8554fddda68370519c8da70c359e"
       },
       "actions": [
@@ -79507,8 +79507,8 @@
       "id": "911af19a3e3714a2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 477,
-        "end": 477,
+        "start": 506,
+        "end": 506,
         "sha256": "064796db3df6d13edd8b55016d4d637b041d1a018a5528abd4968a4e545f13c4"
       },
       "actions": [
@@ -79528,8 +79528,8 @@
       "id": "9c23f545f48b7fab",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 815,
-        "end": 818,
+        "start": 844,
+        "end": 847,
         "sha256": "2a0646fc503064aa903a2084d714f1701170f00b4ea8cd3a238c73359b1891a0"
       },
       "actions": [
@@ -79549,8 +79549,8 @@
       "id": "aad55936cbc6fa9d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 24,
-        "end": 29,
+        "start": 39,
+        "end": 44,
         "sha256": "ad8f507e84fc35927e9bc90e2878b5157359c65d73d0acdd487dbbd17e6c0909"
       },
       "actions": [
@@ -79569,8 +79569,8 @@
       "id": "ae3b1ca4387bcb43",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 261,
-        "end": 263,
+        "start": 298,
+        "end": 300,
         "sha256": "583cb4c74a7cbc2206f1c5b14e09f7f32942b46ce038cdbc0aad88b5f35247cd"
       },
       "actions": [
@@ -79589,8 +79589,8 @@
       "id": "b452578cf2e8a459",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 224,
-        "end": 242,
+        "start": 261,
+        "end": 279,
         "sha256": "5c08773eda8d51d1374c7c2a3c850928620056ed350e91a7ca62931c2689f752"
       },
       "actions": [
@@ -79608,8 +79608,8 @@
       "id": "c05c410e803e4d84",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 694,
-        "end": 702,
+        "start": 723,
+        "end": 731,
         "sha256": "d1d009882bdc6d8cc108de227357a233b5a0c0cfddfe9bc165a39b083e2e243c"
       },
       "actions": [
@@ -79635,8 +79635,8 @@
       "id": "c347ec9905db6cb1",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 114,
-        "end": 126,
+        "start": 129,
+        "end": 141,
         "sha256": "7fdad08b9418b645668f6a66842db688fe748acff68d8e88bd17d63c98effeef"
       },
       "actions": [
@@ -79656,8 +79656,8 @@
       "id": "c4e9fe3c3fb2bfc6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 493,
-        "end": 495,
+        "start": 522,
+        "end": 524,
         "sha256": "c4009d726a4053ee985a17c6d148bcce5bcc4ceb62f3c1ed922aae3234654073"
       },
       "actions": [
@@ -79678,8 +79678,8 @@
       "id": "cd6cec3f21c0b9f7",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 188,
-        "end": 199,
+        "start": 225,
+        "end": 236,
         "sha256": "7d9c11ae29a720245c01746fa3fb261adeb6b58cde6c7ce8e5489cd042f1bac6"
       },
       "actions": [
@@ -79699,8 +79699,8 @@
       "id": "d0f390bd0ec97fe3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 504,
-        "end": 506,
+        "start": 533,
+        "end": 535,
         "sha256": "9478da7339993e90d794ae99b033fb46ecdcc77a21251663331900a5adf0af82"
       },
       "actions": [
@@ -79720,8 +79720,8 @@
       "id": "dc2e4f6b205216c4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 811,
-        "end": 814,
+        "start": 840,
+        "end": 843,
         "sha256": "5b8f42fe05b1d16bab668bc20b0aa0218da538ef59c2e9905f6fcfb5a4f1f82b"
       },
       "actions": [
@@ -79742,8 +79742,8 @@
       "id": "dca0a36ab9644ae4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 93,
-        "end": 96,
+        "start": 108,
+        "end": 111,
         "sha256": "144ecf58a3956f9c93362077854c314f04be5c75fe174dd61f8e02c0f88ade0b"
       },
       "actions": [
@@ -79762,8 +79762,8 @@
       "id": "dcfd557ca37e9e4b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 42,
-        "end": 46,
+        "start": 57,
+        "end": 61,
         "sha256": "98328fdc950fa5893cf3005c20e35f3addbdc4ea4d430a9d05011316782011d1"
       },
       "actions": [
@@ -79782,8 +79782,8 @@
       "id": "df11d43f6e9dfd27",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 549,
-        "end": 551,
+        "start": 578,
+        "end": 580,
         "sha256": "f388c57f2f53a6e5f0a242c097a4436c55706405fb35f5dbe38a5a0fdaa24c27"
       },
       "actions": [
@@ -79802,8 +79802,8 @@
       "id": "e34349d8a4a70318",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 485,
-        "end": 485,
+        "start": 514,
+        "end": 514,
         "sha256": "ab538a8d6c6a3d8db5ad1d3af648383fd550578550cb83053f1347923f0e6556"
       },
       "actions": [
@@ -79823,8 +79823,8 @@
       "id": "e5c016b1314eb20b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 559,
-        "end": 565,
+        "start": 588,
+        "end": 594,
         "sha256": "e4f9ad25b580b3a3017e33460184ebc148836f2416eca0fc0e5130c81f7b750c"
       },
       "actions": [
@@ -79844,8 +79844,8 @@
       "id": "f7a936141238fbaa",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 497,
-        "end": 502,
+        "start": 526,
+        "end": 531,
         "sha256": "a1ea40ff72f3baa12822181aded31f6eb725800db0ddf0385a74dab399a65ad1"
       },
       "actions": [
@@ -79865,8 +79865,8 @@
       "id": "fab401729defa3de",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 588,
-        "end": 590,
+        "start": 617,
+        "end": 619,
         "sha256": "32815175314d73edb6f8561307f3c565237fcfa9871e1eae2a11f47b856693e6"
       },
       "actions": [
@@ -79888,8 +79888,8 @@
       "id": "fce8200a63b6d5a2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 793,
-        "end": 795,
+        "start": 822,
+        "end": 824,
         "sha256": "d7defe0ccd73bddedf632b2b7f031cb135e105f84f8cee5ebf75581e874f65bf"
       },
       "actions": [
@@ -79912,8 +79912,8 @@
       "id": "fda23f1b0f88abb2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 59,
-        "end": 61,
+        "start": 74,
+        "end": 76,
         "sha256": "a0b74d68304c7d86030ee6e31cd384576b97b6b7e2bf2043ac1e15edcf1e7628"
       },
       "actions": [
@@ -95144,7 +95144,7 @@
         "end": 46,
         "sha256": "035faf59964b38f540ed13c7bec94d2fa55358b7ceed3ed09dc59e674d6b1069"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "06968d3457fefc9d",
@@ -95650,11 +95650,11 @@
       "id": "1580fb77770c6b05",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 432,
-        "end": 433,
+        "start": 461,
+        "end": 462,
         "sha256": "afc35e63d44cb2dc588f844311477dacc5219d24d4e86beefeab50bb55082db8"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "158d6d2aa96d0767",
@@ -95730,11 +95730,11 @@
       "id": "16b6200ece5b77d9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 738,
-        "end": 739,
+        "start": 767,
+        "end": 768,
         "sha256": "7758267ff9cf5280f9d398a2fc4dadfd667db0bb1ac6ea64fef858b2a996b5c8"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "16c1900c3ddd220c",
@@ -95750,11 +95750,11 @@
       "id": "16f1d147f5058fca",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 314,
-        "end": 315,
+        "start": 351,
+        "end": 352,
         "sha256": "2f4e890fd72601ad06471f2bab2c9ee3be008f93c42c1af3f4fad1964ecedb70"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "1779986c0d221573",
@@ -96180,11 +96180,11 @@
       "id": "1f8b8b4294e122e0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 679,
-        "end": 683,
+        "start": 708,
+        "end": 712,
         "sha256": "1cfc9c2c2a831d6f1d26ff49879391d7fd7aa8473bb25ef0282c9c7fd83932ff"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "1f96bbb7c85097a3",
@@ -96200,11 +96200,11 @@
       "id": "1fccb1ef76d40fc9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 153,
-        "end": 155,
+        "start": 165,
+        "end": 167,
         "sha256": "b062008dec23b6f2f8abe1521aec6c1bafdf1e45ddc54e82c44b4ab21bb49905"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "205f326616d52132",
@@ -96530,11 +96530,11 @@
       "id": "2868f8ee45d7cfb2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 552,
-        "end": 554,
+        "start": 581,
+        "end": 583,
         "sha256": "26129c1a3ce0ab6f5a0b1dd0d75239e4ee6eb607861bde3c399f7e1d08f0c5a3"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "289f01119a4fa1a6",
@@ -96570,11 +96570,11 @@
       "id": "28dc2d22e4ca2e4e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 282,
-        "end": 284,
+        "start": 294,
+        "end": 296,
         "sha256": "8e0509cad159c8b5906113edd6907913a0eda728dca73c07fc76b9948fb0f0ab"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "28eb60bdb031d75e",
@@ -96900,11 +96900,11 @@
       "id": "2ea8384858515016",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 665,
-        "end": 667,
+        "start": 694,
+        "end": 696,
         "sha256": "c23495ef2adcd5831a87ae9a41234c620e3b9d5c52610f24a080a1cc9a1ff436"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "2ecad3e3070cf878",
@@ -97200,11 +97200,11 @@
       "id": "3589739375bd1429",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 591,
-        "end": 592,
+        "start": 620,
+        "end": 621,
         "sha256": "4f5ce61cdddcf4dc00f140e1dd614b4782c64010a2d7c17311055e6fde69bbe7"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "35b5683f0e27971b",
@@ -97670,11 +97670,11 @@
       "id": "3f9b865fff5df89b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 608,
-        "end": 609,
+        "start": 637,
+        "end": 638,
         "sha256": "b814cae82e2b8bc0390b61861b562f788e819908e94c8894f0b6319c82e5f311"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "3fa3e1b193ffd69f",
@@ -98510,11 +98510,11 @@
       "id": "4fa9a63ddd9b010c",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 120,
-        "end": 120,
+        "start": 135,
+        "end": 135,
         "sha256": "2ee57046ab48f4ca97bf710f031839feb29b2385a3ae0de63d0111b24a2a19ed"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "4fb22610ae030c7c",
@@ -98790,11 +98790,11 @@
       "id": "55bed508b9f6942b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 514,
-        "end": 514,
+        "start": 543,
+        "end": 543,
         "sha256": "2d97e0600d661fa33ef65a5b0e7d45d4de32817b62fb62ff62426b3d9b0b1928"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "55c2b44496cddc70",
@@ -99030,11 +99030,11 @@
       "id": "5bb0054c34f68660",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 473,
-        "end": 473,
+        "start": 502,
+        "end": 502,
         "sha256": "071b412f011c05e1fce2a04a8a1b52b5925a1df4097f4e15f57901ceb72b5215"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "5be418cbdf468540",
@@ -99190,11 +99190,11 @@
       "id": "5eaa79b123d3637b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 782,
-        "end": 784,
+        "start": 811,
+        "end": 813,
         "sha256": "ff75034235e1e3e18922b39d9b97c26d14f65855a6ce88c76ef09c07d11f760f"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "5ecd7291d67d9961",
@@ -99330,11 +99330,11 @@
       "id": "61730d7ee5a871bf",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 289,
-        "end": 290,
+        "start": 301,
+        "end": 302,
         "sha256": "c69c2e6c4942d195a81e8988e4a42b703689dfbc1ac405efed3aca279eeaface"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "617864d0bca8edf0",
@@ -99910,11 +99910,11 @@
       "id": "6d133070d0058b18",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 293,
-        "end": 294,
+        "start": 305,
+        "end": 306,
         "sha256": "d57314544d048a5cd9fc9399e54b515a10aedb2e9abc56908246c82c033a78d0"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "6d3fc126068aada1",
@@ -100120,11 +100120,11 @@
       "id": "7246ffcf3487aed4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 617,
-        "end": 618,
+        "start": 646,
+        "end": 647,
         "sha256": "ed5b29f575f4d028c141c01056a23e43a50909a5be6a046aa8f8c710056d1bf2"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "727fe525cbd185c1",
@@ -100170,11 +100170,11 @@
       "id": "732c87b3a0fdc368",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 732,
-        "end": 734,
+        "start": 761,
+        "end": 763,
         "sha256": "1a449d417630c53324c266ae7130315bd44156f83a57819d60c5708ba85878d9"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "73616b5c2e02f15c",
@@ -100540,11 +100540,11 @@
       "id": "7a9104850cbe0ad8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 168,
-        "end": 169,
+        "start": 183,
+        "end": 184,
         "sha256": "a6a4e089542e9d6d34c6af6ba2fbd1f2b7aad6bac1f7059fc270a9d64cd3258a"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "7a94ef812f57042f",
@@ -100590,11 +100590,11 @@
       "id": "7de16f26688afad3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 191,
-        "end": 191,
+        "start": 203,
+        "end": 203,
         "sha256": "3d8f1c73180cd65462e36585bd770d403a59e28df84eb86e31e9202211a15ca4"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "7e0525eb0dc7cdcd",
@@ -101010,11 +101010,11 @@
       "id": "8679e014734debd3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 221,
-        "end": 222,
+        "start": 233,
+        "end": 234,
         "sha256": "ee37dfd1276b25d351748a8353928831ade1b89e2dd2f4d0f1c46acf8ebd1e17"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "868ce4ec1ad5a99f",
@@ -101154,7 +101154,7 @@
         "end": 78,
         "sha256": "e7ada345932f8b35d6e841426ca9f82307faede579a093d46d9ad168a30b759a"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "887de4181a19d399",
@@ -101340,11 +101340,11 @@
       "id": "8c699be11858a1ab",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 726,
-        "end": 727,
+        "start": 755,
+        "end": 756,
         "sha256": "8d2e38632f205e5bf65857774dbb5a73cfa747510b7cdf602a6c76618cec774f"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "8c9a8208e6d2c704",
@@ -101360,11 +101360,11 @@
       "id": "8caa575b6b74421f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 222,
-        "end": 223,
+        "start": 259,
+        "end": 260,
         "sha256": "32975f8107002dab8002e2c2ab137eeca8e4d631a5edf4aac54b0c9c01e1e6fd"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "8cb5dfa4701b88d4",
@@ -101760,11 +101760,11 @@
       "id": "95d6bfd7083277ac",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 627,
-        "end": 628,
+        "start": 656,
+        "end": 657,
         "sha256": "028cd17cf4ba402da9f2ffe58cf6dc92566208cb94e8909022c583569090c5f7"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "95e745cb9bef76dc",
@@ -102244,7 +102244,7 @@
         "end": 22,
         "sha256": "8f5e9207223e19ce1a9af2fb6ad00ca1dd8299de69fc312dcbb2e8cba6ff4073"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "9deb10c88ebbd0e6",
@@ -102384,7 +102384,7 @@
         "end": 5,
         "sha256": "a8034ec3be6035f4102a61edefd6d44ebc005c46721460fefc2f277ae045daee"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "a0be3857438fc894",
@@ -102900,11 +102900,11 @@
       "id": "ac3c4714049d1454",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 211,
-        "end": 212,
+        "start": 223,
+        "end": 224,
         "sha256": "8cdf3f025b2bb731cea68fdb448f64c1f506c1656bce8cbbf3afb9228c0ca506"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "ac437f9f7833d2b4",
@@ -103570,11 +103570,11 @@
       "id": "b93ac203151806bd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 250,
-        "end": 251,
+        "start": 262,
+        "end": 263,
         "sha256": "e4160aa58638ee4856d912e3af2bc7354df7a2da7e87765eb4eea6c02a86f0a9"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "b981bbabfc3c247d",
@@ -103844,7 +103844,7 @@
         "end": 19,
         "sha256": "a28ca75c0b7347d986cb2daa8c2ca66cbabf7d896335f928e6ae3a1f9af2dc4c"
       },
-      "fileSha256": "924e5d94dc1548ba76ae3a6f755b785275af5de0eb04b3adf10d0341aa38cc52"
+      "fileSha256": "eb53532bc873b1c4ff28ecae36661adfdca1e6d3749b7136ad525ad24d349c5f"
     },
     {
       "id": "bf718b1d18a4efb2",
@@ -104014,7 +104014,7 @@
         "end": 6,
         "sha256": "417fcef5dee8a5cc03ba818f8b1bd0e4db81a6c254332e61f7922a758d170c46"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "c29991583727685a",
@@ -104434,7 +104434,7 @@
         "end": 26,
         "sha256": "b1260d3cda1095509ca18fef574be91b2a04ed140d52b96f85632cfce82a59da"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "ca2ec815c66cbc30",
@@ -104660,11 +104660,11 @@
       "id": "ce7f17bf6f9d9fcc",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 243,
-        "end": 245,
+        "start": 280,
+        "end": 282,
         "sha256": "b77a0fd5a8dfa70a7e09ac8df62c344c59d36e0c4dc7855b3a8e579e0cfac9db"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "cecaa4383928653a",
@@ -105114,7 +105114,7 @@
         "end": 92,
         "sha256": "4d3ed079dba3998bbdf8554279e14a96e9bc785242849270b288cedfb9fb6e7d"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "d9b4a1610a20dfec",
@@ -105140,11 +105140,11 @@
       "id": "da2e355eb43703d9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivPlaybackKeyboardRouter.swift",
-        "start": 272,
-        "end": 272,
+        "start": 284,
+        "end": 284,
         "sha256": "c3a10db4902236eadf82fd66bb1833b8d08803cefaeb045e19dd357565b68b98"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "da648cc917692797",
@@ -105200,11 +105200,11 @@
       "id": "db30086d67624444",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 686,
-        "end": 687,
+        "start": 715,
+        "end": 716,
         "sha256": "3c43143d5111f17c593007d5180295f0b4de92b6732140156f45ad133f09e135"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "dbb136af6da7e865",
@@ -105294,7 +105294,7 @@
         "end": 10,
         "sha256": "43d592d63ec1f2c8e108ad1dc5685c0de81d5b8693ed50f933c5b39b3fe9952b"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "dcdb34327d09bd7e",
@@ -105600,11 +105600,11 @@
       "id": "e2964558a0113ed4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 545,
-        "end": 546,
+        "start": 574,
+        "end": 575,
         "sha256": "83ebf925cf6288c9bc988e4db735e508efeac4da9cbc8232fc1597567d079149"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "e2a124d0e7504dc7",
@@ -105630,11 +105630,11 @@
       "id": "e2e6a4833e9c61f3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 487,
-        "end": 488,
+        "start": 516,
+        "end": 517,
         "sha256": "6dc62486f9385265a3aec6a50f8071a9c526238a3138cadf270059b9707faba0"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "e396823008cfe916",
@@ -105814,7 +105814,7 @@
         "end": 115,
         "sha256": "08d489883f033bedf28b487c9b6943f4aa5f8e9694a18260a639949ddac690ec"
       },
-      "fileSha256": "489aaff22b2c38bf2ac8be53b44e920890b707e5e57b3d2caca113a4ea517057"
+      "fileSha256": "5681bc07899f6e63863947b1a29d50f0dc8df8fab5a7fc6de7dea0e3ddda55e8"
     },
     {
       "id": "e66e6c26d94de197",
@@ -106020,11 +106020,11 @@
       "id": "eb6a512f275dd8fb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 776,
-        "end": 777,
+        "start": 805,
+        "end": 806,
         "sha256": "8d2e38632f205e5bf65857774dbb5a73cfa747510b7cdf602a6c76618cec774f"
       },
-      "fileSha256": "460edebc0c33abe61f364a0a8dddf55542ebdbb48d01a27423bd501778b24eaf"
+      "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
       "id": "eb6babcde670379e",
