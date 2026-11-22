@@ -95032,9 +95032,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 76,
-        "end": 88,
-        "sha256": "4807e2f08482f0ae5d7b716b5206af370d516d28769dc4bf938951fa0114ed43"
+        "start": 155,
+        "end": 162,
+        "sha256": "2d581fb645a379a9df1c91d1158e0dbd3901709445c90433d33bc7fe5d5203b0"
       },
       "why": "The local package acquires a cloud project ID, the Worker stores the matching project row, and the signed-in discussion composer appears."
     },
@@ -95053,8 +95053,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 120,
-        "end": 132,
+        "start": 194,
+        "end": 206,
         "sha256": "77dc09069997533e69cd2c32cc86ef6eccc1ebf81b1a70fe367a6aeb55fe411f"
       },
       "why": "Opening the Worker project reuses the original local replica and preserves all script fields and the second local project."
@@ -95093,9 +95093,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 133,
-        "end": 149,
-        "sha256": "13d14a74a8ddffeea1bad99fe5754874b0d464cbf34e96d2788a8147b8b04c41"
+        "start": 232,
+        "end": 247,
+        "sha256": "96ddee1cac160719d13b60fd073bcda7884aed993141e083ed468ea143e8786b"
       },
       "why": "A second app process with no local replica downloads the entire edited script into a new saved package and verifies its worker project ID."
     },
@@ -95113,11 +95113,93 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 105,
-        "end": 132,
+        "start": 179,
+        "end": 206,
         "sha256": "31a79eb1121ba160d30d402e3b4a6c296a12b3351f9dcec6c641b7991ce1afdd"
       },
       "why": "The ordinary script edit is accepted and the reopened cloud snapshot contains the exact edited content. This verifies the successful save path."
+    },
+    {
+      "id": "64b7383cda3fd2ea",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Discussion/DiscussionPickers.swift",
+        "start": 97,
+        "end": 110,
+        "sha256": "94816cc66ee1e9d5fafd323e129e4082fd1a1f1624e3dc1f8b3f0680dac6f7b0"
+      },
+      "actions": [
+        "Open Project activity",
+        "Switch to Conversations and refresh"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 92,
+        "end": 106,
+        "sha256": "caed69533d772a777428e466ceb58cc000fd97fae8decbc8d32cfafdb71608a2"
+      },
+      "why": "The Mentions tab shows its empty state and the Conversations tab keeps the saved resolved project thread after a normal refresh."
+    },
+    {
+      "id": "8acc67c06d82e8a8",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 2420,
+        "end": 2430,
+        "sha256": "c0a744494da54de4dc7c17f13631b730335bc039d5ed9dd86fe01fee0a4f6949"
+      },
+      "actions": [
+        "Post a project discussion message",
+        "Reply through the native composer",
+        "Resolve the conversation"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 208,
+        "end": 218,
+        "sha256": "e41766c83b14f2fa96c5a60590493f004b0af45eb55dedca52e28d9a352842bc"
+      },
+      "why": "The native app displays both acknowledged messages, the reply quotes the original, and the conversation offers Reopen conversation after resolving."
+    },
+    {
+      "id": "8b479ea81e1d4361",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Discussion/DiscussionPickers.swift",
+        "start": 34,
+        "end": 41,
+        "sha256": "9d6928d755c1e77b82569a6620420d8bda2e6be50775d898e49a5cc3de4732a3"
+      },
+      "actions": [
+        "Open the discussion member picker",
+        "Search for a missing member",
+        "Filter by the owner role"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 108,
+        "end": 121,
+        "sha256": "5d75cbd4793da7da63e1cd05b59f6788926abb3af9c6d4d7a53f1b4e687f7fc1"
+      },
+      "why": "The real member list enters its no-match state and restores the exact owner from a case-insensitive role search."
+    },
+    {
+      "id": "ccf5c0afaa07afce",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Discussion/ScrivDiscussionController.swift",
+        "start": 264,
+        "end": 271,
+        "sha256": "9ff6eb8d912b2f6db568c404e02f4604be3b05ceaa2a0d56b5698c3553268aae"
+      },
+      "actions": [
+        "Switch Discussion from Project to the selected dialogue line",
+        "Post a line note and return to Project"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 220,
+        "end": 228,
+        "sha256": "8a1b4c7d695f47b4197245bcee21cc09f885159743d94e2f0a52ae8f79cb6494"
+      },
+      "why": "The line owns its own note and the original project conversation remains resolved and separate."
     }
   ],
   "commentExclusions": [

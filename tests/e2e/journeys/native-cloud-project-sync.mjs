@@ -55,6 +55,85 @@ async function openCloudFromProjects(title) {
 }
 const newReplicaContent = ({ id, createdAt, ...project }) => content(project);
 
+const openingComment = 'Does the revised question work better in this scene?';
+const replyComment = 'Yes, it makes the invoice discussion clearer.';
+async function openDiscussion() {
+  const actions = await control(node => node.label === 'Workspace actions');
+  const menu = await session.command('menu', { target: actions.path });
+  assert.ok(menu.primary[0].children.some(group => group.children?.some(action => action.title === 'Discussion' && !action.disabled)));
+  assert.deepEqual(await session.command('menu-action', {
+    target: actions.path, scope: 'workspace-discussion', action: 'Discussion',
+  }), { dispatched: true, coverage: 'semantic-menu-action' });
+}
+function discussionState(nodes) {
+  const rows = nodes.filter(node => node.type === 'DiscussionMessageCell');
+  const hasText = (row, text, type) => nodes.some(node => node.path.startsWith(row.path + '.')
+    && node.type === type && node.text === text);
+  return rows.length === 2
+    && rows.some(row => hasText(row, openingComment, 'DiscussionReadOnlyTextView'))
+    && rows.some(row => hasText(row, replyComment, 'DiscussionReadOnlyTextView') && hasText(row, openingComment, 'UILabel'));
+}
+async function compose(text, useShortcut = false) {
+  const isComposer = node => node.type === 'DiscussionComposerTextView' && node.editable && node.hittable;
+  const nodes = await session.waitFor(nodes => nodes.some(isComposer));
+  await session.command('text', { target: nodes.find(isComposer).path, text });
+  await session.waitFor(nodes => nodes.some(node => node.type === 'DiscussionComposerTextView' && node.text === text)
+    && nodes.some(node => node.label === 'Send message' && node.enabled && node.hittable));
+  if (useShortcut) {
+    const send = (await session.command('keys')).find(command => command.responderType === 'DiscussionComposerTextView'
+      && keyIs(command, '\r', ['command']));
+    assert.ok(send, 'The real focused discussion composer offers Command–Return to send');
+    await session.command('key', { input: send.input, modifiers: send.modifiers });
+  } else await click('Send message');
+  await session.waitFor(nodes => nodes.some(node => node.type === 'DiscussionComposerTextView' && node.text === '')
+    && nodes.some(node => node.type === 'DiscussionReadOnlyTextView' && node.text === text));
+}
+
+async function browseProjectActivity() {
+  await click('Project activity, 0 unread mentions', true);
+  const activity = await control(node => node.type === 'UISegmentedControl'
+    && node.segments?.join(',') === 'Mentions,Conversations', true);
+  assert.equal(activity.selected, 0);
+  const mentions = await session.waitFor(nodes => nodes.some(node => node.text === 'No one has mentioned you in this project yet.'));
+  assert.ok(mentions.some(node => node.text === 'In-app only. No email or push notification is sent.'));
+  await session.command('select', { target: activity.path, index: 1 });
+  const resolvedProject = nodes => nodes.some(node => node.text === 'Project · Resolved')
+    && !nodes.some(node => node.text === 'Loading activity…' || node.text === 'Couldn’t load activity');
+  await session.waitFor(resolvedProject);
+  await click('Refresh');
+  await session.waitFor(resolvedProject);
+  await click('Done');
+  await control(node => node.title === 'Reopen conversation');
+}
+async function browseDiscussionMembers() {
+  await click('Mention a project member', true);
+  const search = await control(node => node.placeholder === 'Search project members', true);
+  const owner = nodes => nodes.some(node => node.text === 'Scriv user (you)')
+    && nodes.some(node => node.text === 'Owner');
+  const members = await session.waitFor(owner);
+  assert.ok(members.some(node => node.text === '0 / 20'));
+  assert.ok(members.some(node => node.text === 'Mentions appear in this conversation. No email is sent.'));
+  await session.command('text', { target: search.path, text: 'No matching synthetic writer' });
+  await session.waitFor(nodes => nodes.some(node => node.text === 'No matching members.') && !owner(nodes));
+  await session.command('text', { target: search.path, text: 'oWnEr' });
+  await session.waitFor(owner);
+  await click('Done');
+  await control(node => node.label === 'Mention a project member');
+}
+
+const lineComment = 'Keep this note with the revised dialogue line.';
+async function selectDiscussionScope(index) {
+  const scope = await control(node => node.type === 'UISegmentedControl'
+    && node.segments?.length === 2 && node.segments[0] === 'Project');
+  await session.command('select', { target: scope.path, index });
+  await session.waitFor(nodes => nodes.some(node =>
+    node.text === (index === 0 ? 'Comments stay with this project.' : 'Comments stay with this line.')));
+}
+const lineOnly = (nodes, body) => {
+  const messages = nodes.filter(node => node.type === 'DiscussionReadOnlyTextView');
+  return messages.length === 1 && messages[0].text === body;
+};
+
 try {
   session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
   const capabilities = await session.command('capabilities');
@@ -74,12 +153,7 @@ try {
   await control(workspaceProject, true);
 
   step = 'create and seed the cloud project through Discussion';
-  const actions = await control(node => node.label === 'Workspace actions');
-  const menu = await session.command('menu', { target: actions.path });
-  assert.ok(menu.primary[0].children.some(group => group.children?.some(action => action.title === 'Discussion' && !action.disabled)));
-  assert.deepEqual(await session.command('menu-action', {
-    target: actions.path, scope: 'workspace-discussion', action: 'Discussion',
-  }), { dispatched: true, coverage: 'semantic-menu-action' });
+  await openDiscussion();
   await click('Save script to cloud');
   const synced = await waitForSavedProject(session, candidate => candidate.id === original.id && Boolean(candidate.cloudProjectId));
   assert.deepEqual(await fixture.projects(), [{ id: synced.cloudProjectId, title: original.title }]);
@@ -130,6 +204,31 @@ try {
   assert.deepEqual(await session.command('presented-alerts'), []);
   assert.deepEqual(await fixture.projects(), [{ id: reopened.cloudProjectId, title: reopened.title }]);
   assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === other.id), other);
+
+  step = 'post, reply to and resolve a project discussion';
+  await openDiscussion();
+  await session.waitFor(nodes => nodes.some(node => node.text === 'No comments yet')
+    && nodes.some(node => node.label === 'Send message' && node.enabled === false));
+  await compose(openingComment);
+  await click('Reply to Scriv user');
+  await session.waitFor(nodes => nodes.some(node => node.text === 'Replying to Scriv user'));
+  await compose(replyComment, true);
+  await session.waitFor(discussionState);
+  await click('Mark resolved');
+  await control(node => node.title === 'Reopen conversation');
+
+  step = 'post a note scoped to the selected dialogue line';
+  await selectDiscussionScope(1);
+  await session.waitFor(nodes => nodes.some(node => node.text === 'No comments yet')
+    && !nodes.some(node => node.type === 'DiscussionReadOnlyTextView'));
+  await compose(lineComment);
+  await session.waitFor(nodes => lineOnly(nodes, lineComment));
+  await selectDiscussionScope(0);
+  await session.waitFor(discussionState);
+  await control(node => node.title === 'Reopen conversation');
+  assert.deepEqual((await session.command('loaded-project')).project, reopened);
+  assert.deepEqual(await session.command('presented-alerts'), []);
+
   step = 'read the committed edit from a fresh native workspace';
   const firstRoot = session.root;
   await session.close();
@@ -146,8 +245,26 @@ try {
   assert.deepEqual((await session.command('loaded-project')).project, downloaded);
   assert.deepEqual(await session.command('presented-alerts'), []);
   assert.deepEqual(await fixture.projects(), [{ id: downloaded.cloudProjectId, title: downloaded.title }]);
+
+  step = 'download the thread and reopen it in the fresh workspace';
+  await openDiscussion();
+  await session.waitFor(discussionState);
+  step = 'browse the saved conversation in Project activity';
+  await browseProjectActivity();
+  await click('Reopen conversation');
+  await control(node => node.title === 'Mark resolved');
+  await session.waitFor(discussionState);
+  step = 'search the real discussion member list';
+  await browseDiscussionMembers();
+  step = 'verify the project and line threads remain separate after download';
+  await selectDiscussionScope(1);
+  await session.waitFor(nodes => lineOnly(nodes, lineComment));
+  await selectDiscussionScope(0);
+  await session.waitFor(discussionState);
+  assert.deepEqual((await session.command('loaded-project')).project, downloaded);
+  assert.deepEqual(await session.command('presented-alerts'), []);
   await fixture.assertNoOutbound();
-  console.log('PASS: native sign-in, first sync, linked script edit and warm and cold cloud reopen');
+  console.log('PASS: native sync, linked edit, project and line discussions, pickers and fresh cloud readback');
 } catch (error) {
   throw new Error('Native cloud project journey failed during ' + step, { cause: error });
 } finally {

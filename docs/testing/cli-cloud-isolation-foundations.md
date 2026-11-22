@@ -14,7 +14,12 @@ and seeds a cloud project through Discussion, edits dialogue in the native
 editor, and reopens it from the cloud project list. It verifies the complete
 edited script, the matching Worker project row, and an unchanged local project.
 A second app session starts with no local replica and downloads the same edited
-script into a new saved package. Each session verifies one synthetic code.
+script into a new saved package. The journey posts and replies in the project
+discussion, resolves the thread, and verifies its saved state through Project
+activity in the second session before reopening it. A note on the edited line
+stays separate from the project-wide thread across both sessions. The member
+picker verifies the project owner, an empty search result, and a case-insensitive
+role match. Each session verifies one synthetic code.
 Only the active native prompt for the fixture's synthetic address can consume
 its code from a separate unlinked mailbox descriptor. The normal Sign in with
 code button submits it to the Worker. General CLI text entry still refuses the
