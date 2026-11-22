@@ -126,6 +126,12 @@ manifest are separately pinned, so changing an implementation module is detected
 Private output includes `coverage/capture.json`, pinned build/source/probe/Tracer
 records and `coverage/sessions/RUN_UUID/` containing raw profiles, indexed
 profiles, LCOV, session/interval/export records and successful import receipts.
+The collector exports line counters only. The raw profiles can regenerate
+function and branch data separately. The analysis copy holds only source files
+named by the exports, with their original build hashes.
+On macOS the collector uses transparent filesystem compression when it reduces
+allocated disk blocks and preserves the exact LCOV bytes and permissions.
+The `.lcov` paths are readable by Tracer and LLVM tooling as ordinary files.
 Both capture.json and the runner's evidence.json track phases/outcomes. The
 measurement dataset stores only Tracer's validated counters and provenance, not
 the raw profile/export files. Do not publish raw captures or private evidence

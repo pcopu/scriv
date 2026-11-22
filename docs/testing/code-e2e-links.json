@@ -467,8 +467,8 @@
       "id": "009d5a089567c120",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 55,
-        "end": 56,
+        "start": 59,
+        "end": 60,
         "sha256": "dbef6493cf00560fa4ff9b5574775c52d8c6367d3f45d25aa6948f752687f192"
       },
       "actions": [
@@ -1018,8 +1018,8 @@
       "id": "01d71dccef0f0a88",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 80,
-        "end": 83,
+        "start": 91,
+        "end": 94,
         "sha256": "15999a07359dd99023f0553e004ae8736b78bfbe0361919cb6b59c1e889d2d85"
       },
       "actions": [
@@ -4218,8 +4218,8 @@
       "id": "0edc2626883b188b",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 104,
-        "end": 104,
+        "start": 115,
+        "end": 115,
         "sha256": "972b30e70a8a2949a4d787fed7d5ef55b3f5bae9e6909f78c7bebc9126eef154"
       },
       "actions": [
@@ -5212,9 +5212,9 @@
       "id": "12934e88b4963257",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 73,
-        "end": 73,
-        "sha256": "b18043f278801151313c77dc35e22ec9f5c9e350e0791f53e501fa7b9647b5e8"
+        "start": 81,
+        "end": 81,
+        "sha256": "267138ed7458c668398021119b6aff234b404cd046265ea726aad6cc044c28e6"
       },
       "actions": [
         "node scripts/export-cli-source-manifest.mjs --output ${externalManifest} --include extra",
@@ -16273,8 +16273,8 @@
       "id": "37a124a9d38e168e",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 89,
-        "end": 105,
+        "start": 100,
+        "end": 116,
         "sha256": "9f8ec71f4f2c9b5290648b6ba98887b44ee6abbca71ec30d5d6c7ed02704f17b"
       },
       "actions": [
@@ -16386,9 +16386,9 @@
       "id": "3818d30748375f57",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 64,
-        "end": 78,
-        "sha256": "d51f1cd1e5ba9c677746d7278c11f307c05a1644ac45b4fa6c3ba9ed01f67e13"
+        "start": 68,
+        "end": 89,
+        "sha256": "2246cb43ae736e563c66fa3eda6cf7891c6d4778528eaa5eb79bb699e740c86f"
       },
       "actions": [
         "node scripts/export-cli-source-manifest.mjs --output ${externalManifest} --include extra",
@@ -17476,8 +17476,8 @@
       "id": "3c666b529530cccf",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 19,
-        "end": 29,
+        "start": 21,
+        "end": 31,
         "sha256": "d57e586255043e006942cdf891b474d546770e69a03900eb026b5d91091d35ff"
       },
       "actions": [
@@ -25027,9 +25027,9 @@
       "id": "58816220b49d57a6",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 33,
-        "end": 43,
-        "sha256": "c5a5ccc9a886b0d0aef7b628e18db61b08d39bb002893430157ca99f4a2d57a1"
+        "start": 35,
+        "end": 47,
+        "sha256": "61c84165852c55f8a064913d1f694e52ec2c2c6fd40919d8bcb0d05f68c81b9a"
       },
       "actions": [
         "node scripts/export-cli-source-manifest.mjs --output ${externalManifest} --include extra",
@@ -25172,8 +25172,8 @@
       "id": "594ec0ef327733bb",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 33,
-        "end": 40,
+        "start": 35,
+        "end": 42,
         "sha256": "06f66cf717f96cae72c0a1ab1907262a0adb5febe380fb5b97ffda70be7f67d0"
       },
       "actions": [
@@ -27111,8 +27111,8 @@
       "id": "5fbb064cfeda7f7d",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 109,
-        "end": 111,
+        "start": 120,
+        "end": 122,
         "sha256": "0440aa1b2d6579716fb5381202e0bf3ea8d2532043f6dcf58d9d1befcb5a91cf"
       },
       "actions": [
@@ -28480,8 +28480,8 @@
       "id": "64e23386a08a2078",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 118,
-        "end": 118,
+        "start": 129,
+        "end": 129,
         "sha256": "3e803edba2d173b7f15e8441ed55b885da11612f80d55cad0436070f9d0e1707"
       },
       "actions": [
@@ -29725,8 +29725,8 @@
       "id": "69a98fa334b2b5f1",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 75,
-        "end": 75,
+        "start": 86,
+        "end": 86,
         "sha256": "4aa08d7d2eba74878d6c0e6c82f12b39a86c4cd9eb06cc8c8913202a77f3612d"
       },
       "actions": [
@@ -34862,8 +34862,8 @@
       "id": "7abbb29036000643",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 70,
-        "end": 70,
+        "start": 74,
+        "end": 74,
         "sha256": "fae08be32b91ff80008326a67f7f34cdcbfcd30720aac6c618da73c33b1201f5"
       },
       "actions": [
@@ -36163,8 +36163,8 @@
       "id": "7e84a6d9718bfce2",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 115,
-        "end": 115,
+        "start": 126,
+        "end": 126,
         "sha256": "3b62b47b27b5c3a7d4e39c508d91cdc437b78f21b6c1f911f7346849c0b42ef9"
       },
       "actions": [
@@ -40744,9 +40744,9 @@
       "id": "8e4b2188a2708f9b",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 71,
-        "end": 78,
-        "sha256": "98bcac7ab63ec28404be5c964c59ace084636eaee74f78fffbcd587777f55ae2"
+        "start": 75,
+        "end": 89,
+        "sha256": "a47cd99fcffa30627f14c57e3bb504188bcaa51fdf3394acacf2faa83ea73346"
       },
       "actions": [
         "node scripts/export-cli-source-manifest.mjs --output ${externalManifest} --include extra",
@@ -48302,8 +48302,8 @@
       "id": "a593b45ddabad7fd",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 57,
-        "end": 58,
+        "start": 61,
+        "end": 62,
         "sha256": "76c160f3296af0b37a15575bcc56bf8e652ab8670766296a5f7326de88ab3e42"
       },
       "actions": [
@@ -54132,8 +54132,8 @@
       "id": "b838f492a02e7b6c",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 118,
-        "end": 118,
+        "start": 129,
+        "end": 129,
         "sha256": "3e803edba2d173b7f15e8441ed55b885da11612f80d55cad0436070f9d0e1707"
       },
       "actions": [
@@ -57473,9 +57473,9 @@
       "id": "c3d93f3c44760611",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 71,
-        "end": 74,
-        "sha256": "7f9d5aaaa95ef9519ef783d323e5c1f69364bde1ef6c50f5b5256395ccad95c7"
+        "start": 81,
+        "end": 84,
+        "sha256": "eecb14cc3fd681c3b6c99e910c3a2939443a67bdde2a6afa54ed2b2242ecbe88"
       },
       "actions": [
         "node scripts/export-cli-source-manifest.mjs --output ${externalManifest} --include extra",
@@ -60972,8 +60972,8 @@
       "id": "d3279295a8a3d997",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 33,
-        "end": 41,
+        "start": 35,
+        "end": 43,
         "sha256": "157963de795ddcd6ec50e32903a0c99055c6589bd8596850589ef81acbd01515"
       },
       "actions": [
@@ -62916,9 +62916,9 @@
       "id": "dbde7f40867c4e82",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 71,
-        "end": 72,
-        "sha256": "21ff1906c9984ecada2e9e36e020b4a1fc4886a941ba30e508393a5b3c9cce31"
+        "start": 80,
+        "end": 84,
+        "sha256": "39e14b724f3b9224459b24aef0c534d43009b60e5c25b1672fedbd744c7a452e"
       },
       "actions": [
         "node scripts/export-cli-source-manifest.mjs --output ${externalManifest} --include extra",
@@ -66509,8 +66509,8 @@
       "id": "e69a9934cb85678c",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 68,
-        "end": 69,
+        "start": 72,
+        "end": 73,
         "sha256": "debb3a022dac2b67e28d66e52b3249bb5f44ff77a2e9180ccc6655d8253b9c14"
       },
       "actions": [
@@ -66738,8 +66738,8 @@
       "id": "e6d6764a1ce45659",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 48,
-        "end": 59,
+        "start": 52,
+        "end": 63,
         "sha256": "a8c09189e9430f84d351e6ba1fb449e5c7b388e85e02ed15db69bbd2f7e53b91"
       },
       "actions": [
@@ -67046,8 +67046,8 @@
       "id": "e7d248cfe9a3fd8c",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 51,
-        "end": 54,
+        "start": 55,
+        "end": 58,
         "sha256": "dc06b041be222e46cf8577723427e9c13a3e209e509d303ae29fc87d28b1a31a"
       },
       "actions": [
@@ -83608,9 +83608,9 @@
       "id": "343b37a7449c2af8",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 49,
-        "end": 54,
-        "sha256": "ca874678e37e68e3369b4cab2c270c6e3ff491d724ab0e6bd9ae1a63ea33c46a"
+        "start": 51,
+        "end": 63,
+        "sha256": "045e0c8314afac9ba6a55aed42ade8eb358b691f05e8088e90bbab41524d9311"
       },
       "actions": [
         "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${analysisPath}"
@@ -83648,7 +83648,7 @@
         "path": "scripts/prepare-coverage-analysis.mjs",
         "start": 17,
         "end": 20,
-        "sha256": "5859527f26d9e3822791e2c03306e9e8b38fa1d17e8a14134bb2892b58e5a27f"
+        "sha256": "b67930b30a4876dd8ac4be3c1baeda9123fb4cee4faf53ed17293e5870132683"
       },
       "actions": [
         "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${analysisPath}"
@@ -83685,8 +83685,8 @@
       "id": "6aa686d2ef4c3def",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 83,
-        "end": 84,
+        "start": 96,
+        "end": 97,
         "sha256": "f9d8e6848eea457279aa4cf4f67bf2de51fe28ab05f8024b05ee148babadaf48"
       },
       "actions": [
@@ -83705,9 +83705,9 @@
       "id": "803d9ce873d84006",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 40,
-        "end": 44,
-        "sha256": "4cbcea6c1d5553d404820f9d27e44f7b8db16f6f4e570561aa812c591d6be931"
+        "start": 42,
+        "end": 46,
+        "sha256": "1fd426adfab817e470c0ab0ca9279127d182f38dcab89009828df72c4c2d336f"
       },
       "actions": [
         "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${analysisPath}"
@@ -83724,8 +83724,8 @@
       "id": "960707a84a2a381f",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 58,
-        "end": 61,
+        "start": 67,
+        "end": 70,
         "sha256": "1c36e31c1c209dad2238c02b17c9d84b2ed304d4b815763a06f4e39dc3d11925"
       },
       "actions": [
@@ -83749,8 +83749,8 @@
       "id": "9c9f6cd3180f19e9",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 71,
-        "end": 81,
+        "start": 84,
+        "end": 94,
         "sha256": "458e361c40cc4c6c4a029388ca0d6c158d3c4fed110c83d7bfbb2f0181635c5a"
       },
       "actions": [
@@ -83787,9 +83787,9 @@
       "id": "4a619e6bcc6a6659",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 62,
-        "end": 64,
-        "sha256": "7c2922b1403903869b73ff2daa4821fe5fecd23576788e1f6ec959ad91699340"
+        "start": 71,
+        "end": 73,
+        "sha256": "4d1123b1e39e33d5d033c34bf7f20b62e674ba6aa3a367b46821c1bfb66a8821"
       },
       "actions": [
         "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${analysisPath}"
@@ -83806,8 +83806,8 @@
       "id": "1ec0e0004688560b",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 65,
-        "end": 65,
+        "start": 74,
+        "end": 74,
         "sha256": "bcdb7431e206b2e2f5e05ccd33c14140cd859b454ae60cec6d2249076b23d256"
       },
       "actions": [
@@ -83844,8 +83844,8 @@
       "id": "d3a0388b9bc80b38",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 36,
-        "end": 36,
+        "start": 38,
+        "end": 38,
         "sha256": "4a8cd2be69cbfddb7c82e6a620faceaf186c98cfe4e36d04a6f20e238302fe7f"
       },
       "actions": [
@@ -83863,8 +83863,8 @@
       "id": "d2af771cbe087935",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 36,
-        "end": 38,
+        "start": 38,
+        "end": 40,
         "sha256": "9fb4e64b7e08beee64dcafffb0d779b5df3b7d2d0992d53bf09eb4657e358ab8"
       },
       "actions": [
@@ -83882,8 +83882,8 @@
       "id": "5c1cb120c7ed0d4a",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 68,
-        "end": 69,
+        "start": 81,
+        "end": 82,
         "sha256": "1bbb4bf4637f86eb956d486fb5e7986030da11137e30ee3d0b4b10617cbb31e7"
       },
       "actions": [
@@ -83901,8 +83901,8 @@
       "id": "fd6c11ccdab9434a",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 82,
-        "end": 82,
+        "start": 95,
+        "end": 95,
         "sha256": "73dc25a8e79ab857806ee1f73cf7e8014c8353c2a3985c4a10ca0395c0c45d15"
       },
       "actions": [
@@ -92886,8 +92886,8 @@
       "id": "04a83360959fcfbf",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 36,
-        "end": 37,
+        "start": 38,
+        "end": 39,
         "sha256": "e3186796743cf0f9b5cd7ec24f15277f9448b28ce42d4a3404206b75c0360d5a"
       },
       "actions": [
@@ -92920,8 +92920,8 @@
       "id": "1e08e249f14312b7",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 71,
-        "end": 81,
+        "start": 84,
+        "end": 94,
         "sha256": "458e361c40cc4c6c4a029388ca0d6c158d3c4fed110c83d7bfbb2f0181635c5a"
       },
       "actions": [
@@ -92988,8 +92988,8 @@
       "id": "468a5d9692b22a53",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 83,
-        "end": 83,
+        "start": 96,
+        "end": 96,
         "sha256": "7be939bddeef3df02d5e31f8073c29aa9ebd87c0988660daa1196ed429781932"
       },
       "actions": [
@@ -93022,9 +93022,9 @@
       "id": "79e447d8a437b16e",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 62,
-        "end": 68,
-        "sha256": "4bec5d6cfa430811d8f4431c2d7d61ded8846d3cbbc4d56ce9c63bb1b1cbcee8"
+        "start": 71,
+        "end": 81,
+        "sha256": "121efae44bdd93036573e857fd34ca6aed879ff40b43e97324ea4e05a70fb702"
       },
       "actions": [
         "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${analysisPath}",
@@ -93090,9 +93090,9 @@
       "id": "be74730dc339ed12",
       "source": {
         "path": "scripts/prepare-coverage-analysis.mjs",
-        "start": 49,
-        "end": 54,
-        "sha256": "ca874678e37e68e3369b4cab2c270c6e3ff491d724ab0e6bd9ae1a63ea33c46a"
+        "start": 51,
+        "end": 63,
+        "sha256": "045e0c8314afac9ba6a55aed42ade8eb358b691f05e8088e90bbab41524d9311"
       },
       "actions": [
         "node scripts/prepare-coverage-analysis.mjs --source-manifest ${externalManifest} --source-manifest-sha256 ${digest} --output ${analysisPath}",
@@ -93124,8 +93124,8 @@
       "id": "e33b46c28ebfed39",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 118,
-        "end": 118,
+        "start": 129,
+        "end": 129,
         "sha256": "3e803edba2d173b7f15e8441ed55b885da11612f80d55cad0436070f9d0e1707"
       },
       "actions": [
@@ -93158,8 +93158,8 @@
       "id": "e576513fda3b11f8",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 86,
-        "end": 86,
+        "start": 97,
+        "end": 97,
         "sha256": "6f41106cb5344d1a6a3b1d702f8ee0419124dddd0f2650499015c7fc2bc52c1c"
       },
       "actions": [
@@ -93192,8 +93192,8 @@
       "id": "e6c9c2a84e9276f8",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 48,
-        "end": 55,
+        "start": 52,
+        "end": 59,
         "sha256": "8bacbf6c8d9dddab5a56f631d94d02383018790585129f084d7195e1aa9fbba2"
       },
       "actions": [
@@ -93226,8 +93226,8 @@
       "id": "f077e036b04efc5d",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 56,
-        "end": 57,
+        "start": 60,
+        "end": 61,
         "sha256": "01293d8f0623090826fbe0888afdd21927cc9a3060a6a90f59ddab25fb6e8192"
       },
       "actions": [
@@ -93260,8 +93260,8 @@
       "id": "fb0a9d0e256eb739",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 107,
-        "end": 114,
+        "start": 118,
+        "end": 125,
         "sha256": "4debc7b314e4f68277c25940d0032fd731aaa5d93e0b1670f58b52271bd194c0"
       },
       "actions": [
@@ -95447,16 +95447,6 @@
       "fileSha256": "b91538030c5f9cea3de008d5f87654bb1bf274180aa99db7ec31ac77ce2d3ef8"
     },
     {
-      "id": "3170cf5f42a3fd9e",
-      "source": {
-        "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 15,
-        "end": 15,
-        "sha256": "caa1268e6b30f59c4d78c99f39183f1e5399695a5b9d44a6d59a9e8d0e6b95bd"
-      },
-      "fileSha256": "cf94acbce35b5a8c879dae62bc779f1c4c6381f3e4d4c7943888fc7cc36f076e"
-    },
-    {
       "id": "0f2602b656d75aea",
       "source": {
         "path": "cloud/src/project-room.ts",
@@ -95887,6 +95877,16 @@
       "fileSha256": "0078d35a12ad5aa354ad8fc6632d733bf70a59006f3b009432f400bad8c76d16"
     },
     {
+      "id": "1aa7143aba47ac38",
+      "source": {
+        "path": "tests/e2e/journeys/generation-review.mjs",
+        "start": 10,
+        "end": 11,
+        "sha256": "57dab41c27317c255fda92dabd2cdbbd9b02ad2c2222da2e5f047cb43439a601"
+      },
+      "fileSha256": "a48f5b77d3833d0c33669521e53d91a7e44b145cf1602a4decddec429f950a3d"
+    },
+    {
       "id": "1ae6fec09b65c6e9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Discussion/ScrivDiscussionController.swift",
@@ -95954,7 +95954,7 @@
         "end": 2,
         "sha256": "1b7b2cdeaa567b23dfcca260e688e241d59626f9ee7246c8d93535a267e52e29"
       },
-      "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3"
+      "fileSha256": "a5a52a44cd676264523e6935bf8a6c368471baa9436ee2722a4c6bb644ed891f"
     },
     {
       "id": "1c4b7e119c9a4043",
@@ -96277,16 +96277,6 @@
       "fileSha256": "4b5f1355a32207f5997cbc6be7b9bc1204791d2b27c6309db36c5cdaf78f0434"
     },
     {
-      "id": "258b00723c1d182a",
-      "source": {
-        "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 13,
-        "end": 14,
-        "sha256": "26122fef75831a749712a677d404efaa03ae3aafde91570739dce0f97af497bb"
-      },
-      "fileSha256": "48070da789b1937b7f715e5169c6a95002d6a952c5c29754884ad29d0d7810e6"
-    },
-    {
       "id": "21f9903da8945bcb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Account/ScrivRuntimeBootstrapCoordinator.swift",
@@ -96295,16 +96285,6 @@
         "sha256": "26f85933da819fd89d06c559af8e80b6f75d5439576cd2d1e7bb52177f1501b6"
       },
       "fileSha256": "d99f33bd9ffe7d652d190622f773e580bb97f6f305d51f457cd076e530601b27"
-    },
-    {
-      "id": "d838804fc809e39f",
-      "source": {
-        "path": "tests/e2e/settings-navigation.mjs",
-        "start": 33,
-        "end": 33,
-        "sha256": "510b093438d0992189eb68702b185b2612afdb26551e8b3c6c3add4b65861fe0"
-      },
-      "fileSha256": "94f632e605bceee664719a2a647a85a48ebcc9b9599e48cddaa49af960fb775b"
     },
     {
       "id": "22ea57854d92ac24",
@@ -96395,6 +96375,16 @@
         "sha256": "f306b9abe7b4369bbafeff154cd6e638725162ebcf1f5d7a7dbea2baf01b5475"
       },
       "fileSha256": "8995cbe3772d9d28885e16dc7106840ec8be0f6563e2f73593222d0b11be00d0"
+    },
+    {
+      "id": "258b00723c1d182a",
+      "source": {
+        "path": "tests/e2e/journeys/local-images.mjs",
+        "start": 13,
+        "end": 14,
+        "sha256": "26122fef75831a749712a677d404efaa03ae3aafde91570739dce0f97af497bb"
+      },
+      "fileSha256": "48070da789b1937b7f715e5169c6a95002d6a952c5c29754884ad29d0d7810e6"
     },
     {
       "id": "258d607537b2d0a0",
@@ -96495,6 +96485,16 @@
         "sha256": "3bba0b7ebadf33b465732ae06b93de35b7f53385c09832ebeda5bc546da071f4"
       },
       "fileSha256": "c7cfabb167413c943103cdcf5ea5729cbdd4ddd19146e1ba59bc55b5a1d00be5"
+    },
+    {
+      "id": "278f917b4e95c97d",
+      "source": {
+        "path": "tests/e2e/journeys/generation-review.mjs",
+        "start": 163,
+        "end": 164,
+        "sha256": "94ba366961e0032bd7f51be1ab914ee232e8831ef14415db7c0f28aaa6453319"
+      },
+      "fileSha256": "a48f5b77d3833d0c33669521e53d91a7e44b145cf1602a4decddec429f950a3d"
     },
     {
       "id": "27d2ad891158ec49",
@@ -97007,6 +97007,16 @@
       "fileSha256": "c120e1d2a165d20ef2316c06a778bb5f7c65c14ea2ffb338b838f3ab7cc1c08f"
     },
     {
+      "id": "3170cf5f42a3fd9e",
+      "source": {
+        "path": "tests/e2e/journeys/audio-library.mjs",
+        "start": 15,
+        "end": 15,
+        "sha256": "caa1268e6b30f59c4d78c99f39183f1e5399695a5b9d44a6d59a9e8d0e6b95bd"
+      },
+      "fileSha256": "cf94acbce35b5a8c879dae62bc779f1c4c6381f3e4d4c7943888fc7cc36f076e"
+    },
+    {
       "id": "3176e1bfe9a5c974",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
@@ -97207,6 +97217,16 @@
       "fileSha256": "3cbb77b32dc90c7c54c23754eda913c22f6ddbc07db459260d1ce3581e42df93"
     },
     {
+      "id": "358f7a06cdc04bce",
+      "source": {
+        "path": "scripts/collect-cli-coverage.mjs",
+        "start": 68,
+        "end": 69,
+        "sha256": "936c001ad29cd2301b0b5b3141c0b92a919a8a59578aaa27f5de600ed7e0e648"
+      },
+      "fileSha256": "9d5fde87bf500cebf75d1258e8e6af9338f3332321adbcd261c81302fcce6008"
+    },
+    {
       "id": "35b5683f0e27971b",
       "source": {
         "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
@@ -97360,11 +97380,11 @@
       "id": "39e758cb13d04ddc",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 32,
-        "end": 32,
+        "start": 34,
+        "end": 34,
         "sha256": "407df18fc540371cdbb9c8fad9097492942b55ca846b03a0bdadcd12bb2cc59b"
       },
-      "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3"
+      "fileSha256": "a5a52a44cd676264523e6935bf8a6c368471baa9436ee2722a4c6bb644ed891f"
     },
     {
       "id": "3a38b821450ab380",
@@ -98247,16 +98267,6 @@
       "fileSha256": "f8c784fb76061700304a9c27ca6aed2c8a1217d7097e24d2000c2dfdd0388049"
     },
     {
-      "id": "d8b2a5a4d8f1067a",
-      "source": {
-        "path": "tests/e2e/project-creation.mjs",
-        "start": 25,
-        "end": 26,
-        "sha256": "a4c59c49b8ea19bcfac9bd406e6ac7b0fca89c2ca938926a043d786a053c301b"
-      },
-      "fileSha256": "879877cfba8c6b821e4ae06d02c96ce04652f0eac7bdb6eed6c1acd9f3520607"
-    },
-    {
       "id": "4ae13027c3ccc417",
       "source": {
         "path": "tests/e2e/character-aliases.mjs",
@@ -98707,16 +98717,6 @@
       "fileSha256": "e422c0ff5e876f60436bf375f491c66ee11b9f3159a90b50d968e36a6f21545b"
     },
     {
-      "id": "57a7a2fba7aa19e4",
-      "source": {
-        "path": "scripts/run-cli-e2e.mjs",
-        "start": 116,
-        "end": 117,
-        "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
-      },
-      "fileSha256": "e2a945253ed481857f396e05e991ed0fa4698ff3f57bee6b0dec571362d6d72d"
-    },
-    {
       "id": "54cfa9807f83ab3a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/ScrivUIKitRouter.swift",
@@ -98745,16 +98745,6 @@
         "sha256": "6581f882720e77771e8554d0edb82037dfcfd6bb8b5f1059acc29e67cee39f5d"
       },
       "fileSha256": "b5ed44464be45a88573a0b7d7807471ab92da5c8b25efad81b9dcb5d8024f287"
-    },
-    {
-      "id": "596df4c902f187da",
-      "source": {
-        "path": "scripts/run-cli-e2e.mjs",
-        "start": 189,
-        "end": 189,
-        "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
-      },
-      "fileSha256": "e2a945253ed481857f396e05e991ed0fa4698ff3f57bee6b0dec571362d6d72d"
     },
     {
       "id": "55632a5c85d40c5a",
@@ -98887,6 +98877,16 @@
       "fileSha256": "764f9a7a6bbf3ca45753ec99b53692d0fa5cad2156ccad021dd5adee067e3ec9"
     },
     {
+      "id": "57a7a2fba7aa19e4",
+      "source": {
+        "path": "scripts/run-cli-e2e.mjs",
+        "start": 116,
+        "end": 117,
+        "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
+      },
+      "fileSha256": "e2a945253ed481857f396e05e991ed0fa4698ff3f57bee6b0dec571362d6d72d"
+    },
+    {
       "id": "58267d3510d79430",
       "source": {
         "path": "apps/catalyst/RuntimeAdapter/ScrivRuntimeBootstrapAdapter.swift",
@@ -98955,6 +98955,16 @@
         "sha256": "38fa652d763e6589f7b0e696ff43143028614a6c0804f5e3999656a5d78090f1"
       },
       "fileSha256": "210038b86c852f5dccae67cc7c3f8087e093e23d7dcbd87bc37b2163d9bef21f"
+    },
+    {
+      "id": "596df4c902f187da",
+      "source": {
+        "path": "scripts/run-cli-e2e.mjs",
+        "start": 189,
+        "end": 189,
+        "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
+      },
+      "fileSha256": "e2a945253ed481857f396e05e991ed0fa4698ff3f57bee6b0dec571362d6d72d"
     },
     {
       "id": "59c64d2ace520826",
@@ -99607,16 +99617,6 @@
       "fileSha256": "f839f0bd6e43ff95d4ae4940f0a90f98030e438a8e0b2c45eb52e55592387a7d"
     },
     {
-      "id": "a9010c1f35e61786",
-      "source": {
-        "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 11,
-        "end": 13,
-        "sha256": "03092b24eae36c7e9d0868da08214920d11afa47c7be90a0cc2bfe89d0b426d2"
-      },
-      "fileSha256": "cf94acbce35b5a8c879dae62bc779f1c4c6381f3e4d4c7943888fc7cc36f076e"
-    },
-    {
       "id": "6612d91eb36efcb2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIImport.swift",
@@ -99957,16 +99957,6 @@
       "fileSha256": "c22cef9d48bc3570918a31e26882f32df2dcbc6dfd258817a4f33761f865d43d"
     },
     {
-      "id": "6dea53bfea9dbc86",
-      "source": {
-        "path": "scripts/collect-cli-coverage.mjs",
-        "start": 137,
-        "end": 137,
-        "sha256": "64b42861c5851f8e02f73c3666f0991bcda0269b34023dc60482887c61d2b92b"
-      },
-      "fileSha256": "9ed04dbdf5dc1d9101800291f7bb0cc0d1b2d00ec9e3bd7aa184fa7357328fe3"
-    },
-    {
       "id": "6e17e24e733006dd",
       "source": {
         "path": "updates/scripts/release.py",
@@ -100110,11 +100100,11 @@
       "id": "7227fce363b5286c",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 103,
-        "end": 103,
+        "start": 114,
+        "end": 114,
         "sha256": "6ef78efbec5639a3184c4a322d594fa7b524332ea21a0a1e7d28176f33a33ee0"
       },
-      "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3"
+      "fileSha256": "a5a52a44cd676264523e6935bf8a6c368471baa9436ee2722a4c6bb644ed891f"
     },
     {
       "id": "7246ffcf3487aed4",
@@ -100517,16 +100507,6 @@
       "fileSha256": "f664d1755a131de42fb1a06156f5eeba2ccebffddfe36858a814a128ebbaf237"
     },
     {
-      "id": "7e3301c314adb44d",
-      "source": {
-        "path": "scripts/run-cli-e2e.mjs",
-        "start": 77,
-        "end": 78,
-        "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
-      },
-      "fileSha256": "e2a945253ed481857f396e05e991ed0fa4698ff3f57bee6b0dec571362d6d72d"
-    },
-    {
       "id": "7a663fbae289e6f0",
       "source": {
         "path": "apps/runtime-bridge/Sources/ScrivRuntimeCompanion/main.swift",
@@ -100625,6 +100605,16 @@
         "sha256": "2cb928df005d5805335dadceb44ca17ab54b580098c15a9353257bef5a73a1fd"
       },
       "fileSha256": "5a90ca49651938c579d0f8aae806ade78ff6771a7b3331eb70776c27a2cd2626"
+    },
+    {
+      "id": "7e3301c314adb44d",
+      "source": {
+        "path": "scripts/run-cli-e2e.mjs",
+        "start": 77,
+        "end": 78,
+        "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
+      },
+      "fileSha256": "e2a945253ed481857f396e05e991ed0fa4698ff3f57bee6b0dec571362d6d72d"
     },
     {
       "id": "7e4a8f19915d9b4e",
@@ -101667,6 +101657,16 @@
       "fileSha256": "8372f63a942808147ad1a4a17198f7601ac568cdbf122023f709280807fe02db"
     },
     {
+      "id": "944737997e16957f",
+      "source": {
+        "path": "tests/e2e/journeys/local-images.mjs",
+        "start": 68,
+        "end": 68,
+        "sha256": "28281abde8149cce234d70e1aeec50318dd7b3bc141801b3c792807d6eae867e"
+      },
+      "fileSha256": "48070da789b1937b7f715e5169c6a95002d6a952c5c29754884ad29d0d7810e6"
+    },
+    {
       "id": "94a5e4014507cd3e",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
@@ -101817,6 +101817,16 @@
       "fileSha256": "c57e2c95396ddd730dcbda1992f29d16cb8bc34e98f2a9129815610be420bf6a"
     },
     {
+      "id": "9669da48463dfea3",
+      "source": {
+        "path": "tests/e2e/journeys/generation-review.mjs",
+        "start": 174,
+        "end": 176,
+        "sha256": "ac691d53034ef546daa772bfc79ae139f74547cb198b2f8fa71211ce6a557880"
+      },
+      "fileSha256": "a48f5b77d3833d0c33669521e53d91a7e44b145cf1602a4decddec429f950a3d"
+    },
+    {
       "id": "9670bc197e6e0b93",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
@@ -101945,16 +101955,6 @@
         "sha256": "fe129f36595c9911ae7f39ac189dd8a07a0f4d4953afd346a186dc2a66f7603d"
       },
       "fileSha256": "a97d44605d0612671dbc4fe4975a2441c8d5245721b0eb67daa4f229f9a48ea0"
-    },
-    {
-      "id": "278f917b4e95c97d",
-      "source": {
-        "path": "tests/e2e/journeys/generation-review.mjs",
-        "start": 163,
-        "end": 164,
-        "sha256": "94ba366961e0032bd7f51be1ab914ee232e8831ef14415db7c0f28aaa6453319"
-      },
-      "fileSha256": "a48f5b77d3833d0c33669521e53d91a7e44b145cf1602a4decddec429f950a3d"
     },
     {
       "id": "98fba29169b135cd",
@@ -102267,6 +102267,16 @@
       "fileSha256": "6536edb5a2c45bb45d34ea3f692928ce3e82fe390e247440a052d0115273446b"
     },
     {
+      "id": "9e19e97580cd82db",
+      "source": {
+        "path": "tests/e2e/journeys/generation-review.mjs",
+        "start": 133,
+        "end": 133,
+        "sha256": "a9e39d0fa0415d929a7c21cd1c759d9de45fe3f67cd7f151412964a24b15f724"
+      },
+      "fileSha256": "a48f5b77d3833d0c33669521e53d91a7e44b145cf1602a4decddec429f950a3d"
+    },
+    {
       "id": "9e1aa36d93cb808a",
       "source": {
         "path": "apps/mac/Sources/ScrivCore/GenerationJournal.swift",
@@ -102495,6 +102505,16 @@
         "sha256": "e2fe89445ea3274ee5bb064b9442e47ebcf872dfb8b5e8797ebcd250de9b6968"
       },
       "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356"
+    },
+    {
+      "id": "a3449e334da438ae",
+      "source": {
+        "path": "tests/e2e/projects.mjs",
+        "start": 19,
+        "end": 19,
+        "sha256": "a28ca75c0b7347d986cb2daa8c2ca66cbabf7d896335f928e6ae3a1f9af2dc4c"
+      },
+      "fileSha256": "eb53532bc873b1c4ff28ecae36661adfdca1e6d3749b7136ad525ad24d349c5f"
     },
     {
       "id": "a360be545eec64b6",
@@ -102755,6 +102775,16 @@
         "sha256": "ee4b474d406317cc544a86b8f7a7f7592f81471302b3db6804340b09b8122e37"
       },
       "fileSha256": "c38aae0bb62558663a59397c86879007b9f367f14877cbd672ae2fe25fd9c160"
+    },
+    {
+      "id": "a9010c1f35e61786",
+      "source": {
+        "path": "tests/e2e/journeys/audio-library.mjs",
+        "start": 11,
+        "end": 13,
+        "sha256": "03092b24eae36c7e9d0868da08214920d11afa47c7be90a0cc2bfe89d0b426d2"
+      },
+      "fileSha256": "cf94acbce35b5a8c879dae62bc779f1c4c6381f3e4d4c7943888fc7cc36f076e"
     },
     {
       "id": "a91c8e5c3c1b4f25",
@@ -103097,16 +103127,6 @@
       "fileSha256": "2d813b55f759ac9c672848834d2ac411de5b144efd0e773324c9c5a3d1573851"
     },
     {
-      "id": "af2f9b0a25dd7560",
-      "source": {
-        "path": "scripts/collect-cli-coverage.mjs",
-        "start": 47,
-        "end": 48,
-        "sha256": "936c001ad29cd2301b0b5b3141c0b92a919a8a59578aaa27f5de600ed7e0e648"
-      },
-      "fileSha256": "9ed04dbdf5dc1d9101800291f7bb0cc0d1b2d00ec9e3bd7aa184fa7357328fe3"
-    },
-    {
       "id": "af7295a03d13bec0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Account/ScrivRuntimeBootstrapCoordinator.swift",
@@ -103295,16 +103315,6 @@
         "sha256": "38bacd660b2fc00a922a71617e0cc8c48c6e50cdc4a725d7af9792bdc52e43ef"
       },
       "fileSha256": "2bef80dee3fbda018a380af8fb40199b134021d0005dc9a7b024a929e0577f8c"
-    },
-    {
-      "id": "9e19e97580cd82db",
-      "source": {
-        "path": "tests/e2e/journeys/generation-review.mjs",
-        "start": 133,
-        "end": 133,
-        "sha256": "a9e39d0fa0415d929a7c21cd1c759d9de45fe3f67cd7f151412964a24b15f724"
-      },
-      "fileSha256": "a48f5b77d3833d0c33669521e53d91a7e44b145cf1602a4decddec429f950a3d"
     },
     {
       "id": "b3feaf6544ba9756",
@@ -103707,14 +103717,24 @@
       "fileSha256": "413befd9123b09c52df96f63570ad220f4fd54012c1cde8510ebab91648a73cb"
     },
     {
+      "id": "bc0c5d7330a2bc5a",
+      "source": {
+        "path": "scripts/collect-cli-coverage.mjs",
+        "start": 158,
+        "end": 158,
+        "sha256": "64b42861c5851f8e02f73c3666f0991bcda0269b34023dc60482887c61d2b92b"
+      },
+      "fileSha256": "9d5fde87bf500cebf75d1258e8e6af9338f3332321adbcd261c81302fcce6008"
+    },
+    {
       "id": "bc1833afa9de227d",
       "source": {
         "path": "scripts/export-cli-source-manifest.mjs",
-        "start": 87,
-        "end": 88,
+        "start": 98,
+        "end": 99,
         "sha256": "b8bcff6d290db17011d2df8a4c4ad270b368b1a82d2fb523796bde2d7fc8ea73"
       },
-      "fileSha256": "7c6ffd30cf6cdea286c81fd25967b3eeac2a8496cf29d217af1675700e95cde3"
+      "fileSha256": "a5a52a44cd676264523e6935bf8a6c368471baa9436ee2722a4c6bb644ed891f"
     },
     {
       "id": "bcb0dcfbfc4696cb",
@@ -103835,16 +103855,6 @@
         "sha256": "31f36c0cdd3b54f79e048adf99736cbd9c8276835cb756b28ddc970f9c18c1c7"
       },
       "fileSha256": "8bbf182c4a416affc7d6859efb5edf001795fcdcaf3dd875a020abd5f61b688d"
-    },
-    {
-      "id": "a3449e334da438ae",
-      "source": {
-        "path": "tests/e2e/projects.mjs",
-        "start": 19,
-        "end": 19,
-        "sha256": "a28ca75c0b7347d986cb2daa8c2ca66cbabf7d896335f928e6ae3a1f9af2dc4c"
-      },
-      "fileSha256": "eb53532bc873b1c4ff28ecae36661adfdca1e6d3749b7136ad525ad24d349c5f"
     },
     {
       "id": "bf718b1d18a4efb2",
@@ -104154,7 +104164,7 @@
         "end": 1,
         "sha256": "55e9b601fd66ab814c615457d88c73bccb6dca1c69745f73b953e71646f7edf2"
       },
-      "fileSha256": "9ed04dbdf5dc1d9101800291f7bb0cc0d1b2d00ec9e3bd7aa184fa7357328fe3"
+      "fileSha256": "9d5fde87bf500cebf75d1258e8e6af9338f3332321adbcd261c81302fcce6008"
     },
     {
       "id": "c590f6c5735d4de5",
@@ -104227,16 +104237,6 @@
       "fileSha256": "4b5f1355a32207f5997cbc6be7b9bc1204791d2b27c6309db36c5cdaf78f0434"
     },
     {
-      "id": "c6f620669df95ed6",
-      "source": {
-        "path": "scripts/collect-cli-coverage.mjs",
-        "start": 228,
-        "end": 228,
-        "sha256": "a514b5d4ca41a462b57b7bf3c9e9beb4773dde77896f14574b9a559b3ec891c6"
-      },
-      "fileSha256": "9ed04dbdf5dc1d9101800291f7bb0cc0d1b2d00ec9e3bd7aa184fa7357328fe3"
-    },
-    {
       "id": "c71e3aa8bd849a21",
       "source": {
         "path": "apps/mac/Sources/ScrivCore/Models.swift",
@@ -104255,16 +104255,6 @@
         "sha256": "11bc38daa12babccbe0a36864a79d09993f2ff06cc6054842801f35e7c58991f"
       },
       "fileSha256": "9fab007114108e4f0a7cd38e11f0b475466f066e449ee5c952918118d28deece"
-    },
-    {
-      "id": "1aa7143aba47ac38",
-      "source": {
-        "path": "tests/e2e/journeys/generation-review.mjs",
-        "start": 10,
-        "end": 11,
-        "sha256": "57dab41c27317c255fda92dabd2cdbbd9b02ad2c2222da2e5f047cb43439a601"
-      },
-      "fileSha256": "a48f5b77d3833d0c33669521e53d91a7e44b145cf1602a4decddec429f950a3d"
     },
     {
       "id": "c77598eb45c8ade5",
@@ -104937,6 +104927,16 @@
       "fileSha256": "4c963481c2fbaf862f48fddf1921a5b8b7e4861714e67d8371c88352ee3a8017"
     },
     {
+      "id": "d39d7e829d2d451d",
+      "source": {
+        "path": "scripts/collect-cli-coverage.mjs",
+        "start": 310,
+        "end": 311,
+        "sha256": "3783407c8fa2e370e33c649034cab7229cb4f2cba92f6cb8ddafd46df97b346a"
+      },
+      "fileSha256": "9d5fde87bf500cebf75d1258e8e6af9338f3332321adbcd261c81302fcce6008"
+    },
+    {
       "id": "d3d06c2c105c4ee0",
       "source": {
         "path": "tests/e2e/character-aliases.mjs",
@@ -104965,16 +104965,6 @@
         "sha256": "5d68d305347b145f142cc597e1e6440122fbb5ff3be027862a0c8be6e496a94c"
       },
       "fileSha256": "4dd4d7d29065efd6dc9096b87ed48fe742a81553f5b42984c067d4f62ca34e53"
-    },
-    {
-      "id": "944737997e16957f",
-      "source": {
-        "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 68,
-        "end": 68,
-        "sha256": "28281abde8149cce234d70e1aeec50318dd7b3bc141801b3c792807d6eae867e"
-      },
-      "fileSha256": "48070da789b1937b7f715e5169c6a95002d6a952c5c29754884ad29d0d7810e6"
     },
     {
       "id": "d5334302773e4b65",
@@ -105085,6 +105075,36 @@
         "sha256": "788351a5032616ee97a26b370857792bd69c813dfdb08ea0f94697348ad9f2c3"
       },
       "fileSha256": "b007f1a4fc5922968d1686fd6638992334e0ed58a5d6222b6cb1e71d53bd2a80"
+    },
+    {
+      "id": "d838804fc809e39f",
+      "source": {
+        "path": "tests/e2e/settings-navigation.mjs",
+        "start": 33,
+        "end": 33,
+        "sha256": "510b093438d0992189eb68702b185b2612afdb26551e8b3c6c3add4b65861fe0"
+      },
+      "fileSha256": "94f632e605bceee664719a2a647a85a48ebcc9b9599e48cddaa49af960fb775b"
+    },
+    {
+      "id": "d8ab343c9c1592c1",
+      "source": {
+        "path": "tests/e2e/journeys/local-images.mjs",
+        "start": 73,
+        "end": 73,
+        "sha256": "fa5f6c6f5dec1b1af2de8f32b2d593d5b122d4c50020aa7b2de85bebcc77385a"
+      },
+      "fileSha256": "48070da789b1937b7f715e5169c6a95002d6a952c5c29754884ad29d0d7810e6"
+    },
+    {
+      "id": "d8b2a5a4d8f1067a",
+      "source": {
+        "path": "tests/e2e/project-creation.mjs",
+        "start": 25,
+        "end": 26,
+        "sha256": "a4c59c49b8ea19bcfac9bd406e6ac7b0fca89c2ca938926a043d786a053c301b"
+      },
+      "fileSha256": "879877cfba8c6b821e4ae06d02c96ce04652f0eac7bdb6eed6c1acd9f3520607"
     },
     {
       "id": "d8b9641f3b6a7492",
@@ -105677,16 +105697,6 @@
       "fileSha256": "6c112d37797cc8cd361547e1a2c04042cedcf66dffe4cc542595eb90a5ac1386"
     },
     {
-      "id": "9669da48463dfea3",
-      "source": {
-        "path": "tests/e2e/journeys/generation-review.mjs",
-        "start": 174,
-        "end": 176,
-        "sha256": "ac691d53034ef546daa772bfc79ae139f74547cb198b2f8fa71211ce6a557880"
-      },
-      "fileSha256": "a48f5b77d3833d0c33669521e53d91a7e44b145cf1602a4decddec429f950a3d"
-    },
-    {
       "id": "e4d1fd47ffa9bce6",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/LocalAudioEngine.swift",
@@ -105945,16 +105955,6 @@
         "sha256": "feebb382eff5c6e83e36e44447c95cfc80a9eb9a823fbf5b60c8ee1594c4a9fc"
       },
       "fileSha256": "a4c8fe91a718be89e15def601f4e86b370d4832208dea7e0c99b55902f7c9f66"
-    },
-    {
-      "id": "e9685122768075a6",
-      "source": {
-        "path": "scripts/collect-cli-coverage.mjs",
-        "start": 276,
-        "end": 277,
-        "sha256": "3783407c8fa2e370e33c649034cab7229cb4f2cba92f6cb8ddafd46df97b346a"
-      },
-      "fileSha256": "9ed04dbdf5dc1d9101800291f7bb0cc0d1b2d00ec9e3bd7aa184fa7357328fe3"
     },
     {
       "id": "e97b608e47defb40",
@@ -106227,6 +106227,16 @@
       "fileSha256": "6c73ff4650e90dd606cd4655883ae76d0bc6fe91ed2f75e4fa9dca61251376d5"
     },
     {
+      "id": "ee826c15d4214490",
+      "source": {
+        "path": "scripts/collect-cli-coverage.mjs",
+        "start": 248,
+        "end": 248,
+        "sha256": "a514b5d4ca41a462b57b7bf3c9e9beb4773dde77896f14574b9a559b3ec891c6"
+      },
+      "fileSha256": "9d5fde87bf500cebf75d1258e8e6af9338f3332321adbcd261c81302fcce6008"
+    },
+    {
       "id": "eed11b6a99974033",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
@@ -106275,16 +106285,6 @@
         "sha256": "33166621542729c05c71dd169ec9f6ee8e8ac6cf14aa66d639f17fb2219865fe"
       },
       "fileSha256": "47a7dc97b0b4711ba4d16ecd060d53193fa527e2f410888f1c6d63ee6f93bf2f"
-    },
-    {
-      "id": "d8ab343c9c1592c1",
-      "source": {
-        "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 73,
-        "end": 73,
-        "sha256": "fa5f6c6f5dec1b1af2de8f32b2d593d5b122d4c50020aa7b2de85bebcc77385a"
-      },
-      "fileSha256": "48070da789b1937b7f715e5169c6a95002d6a952c5c29754884ad29d0d7810e6"
     },
     {
       "id": "efac436237c937f8",

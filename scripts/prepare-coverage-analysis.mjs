@@ -14,7 +14,7 @@ const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const required = condition => { if (!condition) throw new Error('coverage-analysis-invalid'); };
 const outside = (root, path) => { const rel = relative(root, path); return rel === '..' || rel.startsWith('../'); };
 
-export async function prepareAnalysisRoot(sourceRoot, manifestPath, manifestSHA256, output) {
+export async function prepareAnalysisRoot(sourceRoot, manifestPath, manifestSHA256, output, measuredPaths) {
   sourceRoot = await realpath(sourceRoot);
   const parent = await realpath(dirname(resolve(output)));
   output = join(parent, basename(resolve(output)));
@@ -26,9 +26,11 @@ export async function prepareAnalysisRoot(sourceRoot, manifestPath, manifestSHA2
   required(sha(bytes) === manifestSHA256);
   const manifest = JSON.parse(bytes);
   required(manifest.files.length <= 10000 && !manifest.files.some(file => file.path === dataset));
+  const files = measuredPaths === undefined ? manifest.files : manifest.files.filter(file => measuredPaths.has(file.path));
+  required(files.length > 0 && (measuredPaths === undefined || files.length === measuredPaths.size));
   // Fail before allocating output if the snapshot exceeds this deliberate budget.
   let total = 0;
-  for (const file of manifest.files) {
+  for (const file of files) {
     const info = await lstat(join(sourceRoot, file.path));
     required(info.isFile() && !info.isSymbolicLink() && info.size <= 64 * 1024 * 1024);
     total += info.size; required(total <= 512 * 1024 * 1024);
@@ -37,7 +39,7 @@ export async function prepareAnalysisRoot(sourceRoot, manifestPath, manifestSHA2
   const root = join(output, 'source');
   await mkdir(root, { mode: 0o700 });
   let copiedBytes = 0;
-  for (const file of manifest.files) {
+  for (const file of files) {
     const input = join(sourceRoot, file.path), target = join(root, file.path);
     required(await realpath(input) === input);
     const contents = await readFile(input);
@@ -49,8 +51,15 @@ export async function prepareAnalysisRoot(sourceRoot, manifestPath, manifestSHA2
     await copyFile(input, target, constants.COPYFILE_EXCL | constants.COPYFILE_FICLONE);
     await chmod(target, 0o600);
   }
-  const copy = await verifySourceManifest(root, manifestPath, manifestSHA256);
-  required(copy.worktreeSHA256 === identity.worktreeSHA256 && copiedBytes === total);
+  let copyManifestPath = manifestPath, copyManifestSHA256 = manifestSHA256;
+  if (measuredPaths !== undefined) {
+    copyManifestPath = join(output, 'analysis-sources.json');
+    const copyBytes = JSON.stringify({ ...manifest, files }, null, 2) + '\n';
+    copyManifestSHA256 = sha(copyBytes);
+    await writeFile(copyManifestPath, copyBytes, { flag: 'wx', mode: 0o600 });
+  }
+  const copy = await verifySourceManifest(root, copyManifestPath, copyManifestSHA256);
+  required(copy.worktreeSHA256 === sha(JSON.stringify(files)) && copiedBytes === total);
   await verifySourceManifest(sourceRoot, manifestPath, manifestSHA256);
   // Tracer requires a repository root. Make empty local metadata only: no copied
   // Git history, template hooks, remotes, staging or commits, and no inherited GIT_* routing.
@@ -61,9 +70,13 @@ export async function prepareAnalysisRoot(sourceRoot, manifestPath, manifestSHA2
     { cwd: root, env, timeout: 30000, maxBuffer: 65536, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim())) === root);
   const report = { version: 1, kind: 'scriv-external-coverage-analysis', root,
     dataset: join(root, dataset), sourceManifestSHA256: manifestSHA256,
-    worktreeSHA256: identity.worktreeSHA256, fileCount: identity.fileCount,
+    worktreeSHA256: identity.worktreeSHA256, fileCount: copy.fileCount,
     sourceBytes: total, sourceUnchanged: true,
     notice: 'Exact source copy for Tracer measurement storage; not a new build, capture or attestation.' };
+  if (measuredPaths !== undefined) {
+    Object.assign(report, { scope: 'lcov-source-files', buildFileCount: identity.fileCount,
+      analysisManifestSHA256: copyManifestSHA256, analysisWorktreeSHA256: copy.worktreeSHA256 });
+  }
   await writeFile(join(output, 'analysis.json'), JSON.stringify(report, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
   return report;
 }

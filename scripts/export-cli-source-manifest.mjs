@@ -2,12 +2,14 @@
 /** Exported working-tree identity, not a Git checkout or a build attestation. */
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { createReadStream } from 'node:fs';
 import { lstat, readdir, readFile, realpath, writeFile } from 'node:fs/promises';
 import { dirname, resolve, relative, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const repository = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sha = data => createHash('sha256').update(data).digest('hex');
+const verificationBatchSize = 8;
 const excludedDirectory = /^(?:\.git|\.tracer|\.build|node_modules|\.wrangler|dist|build|coverage|\.swiftpm|xcuserdata|test-results|playwright-report|__pycache__)$/i;
 const excludedFile = /^(?:\.DS_Store|\.env(?:\..*)?|\.dev\.vars(?:\..*)?|credentials(?:\..*)?|secrets?(?:\..*)?|.*\.(?:p12|p8|pem|key|mobileprovision|xcuserstate|log|pyc))$/i;
 export function safeSourcePath(path) {
@@ -39,7 +41,9 @@ async function entryFor(root, path) {
     if (info.isSymbolicLink()) throw new Error('source-manifest-symlink');
     if (i === parts.length - 1 ? !info.isFile() : !info.isDirectory()) throw new Error('source-manifest-special-file');
   }
-  return { path, sha256: sha(await readFile(current)) };
+  const hash = createHash('sha256');
+  for await (const chunk of createReadStream(current)) hash.update(chunk);
+  return { path, sha256: hash.digest('hex') };
 }
 function outside(root, path) {
   const rel = relative(root, path);
@@ -68,9 +72,16 @@ export async function verifySourceManifest(root, manifestPath, expectedSHA256) {
   const paths = manifest.files.map(entry => entry?.path);
   if (paths.some(path => !safeSourcePath(path))) throw new Error('source-manifest-unsafe-path');
   if (new Set(paths).size !== paths.length || JSON.stringify(paths) !== JSON.stringify([...paths].sort())) throw new Error('source-manifest-invalid');
-  for (const entry of manifest.files) {
-    if (!/^[a-f0-9]{64}$/.test(entry.sha256 ?? '')) throw new Error('source-manifest-invalid');
-    if ((await entryFor(root, entry.path)).sha256 !== entry.sha256) throw new Error('source-manifest-content-mismatch');
+  // Recheck every pinned file at every boundary, with bounded open streams.
+  // Inspect results in manifest order so concurrent failures keep the same precedence.
+  for (let offset = 0; offset < manifest.files.length; offset += verificationBatchSize) {
+    const batch = manifest.files.slice(offset, offset + verificationBatchSize);
+    const checks = await Promise.allSettled(batch.map(async entry => {
+      if (!/^[a-f0-9]{64}$/.test(entry.sha256 ?? '')) throw new Error('source-manifest-invalid');
+      if ((await entryFor(root, entry.path)).sha256 !== entry.sha256) throw new Error('source-manifest-content-mismatch');
+    }));
+    const failure = checks.find(result => result.status === 'rejected');
+    if (failure) throw failure.reason;
   }
   if (JSON.stringify(await sourceFiles(root)) !== JSON.stringify(paths)) throw new Error('source-manifest-file-set-mismatch');
   return { mode: 'verified-exported-source-manifest', baseCommit: manifest.baseCommit, baseCommitStatus: 'producer-declared-not-consumer-git-verified', manifestSHA256: expectedSHA256,

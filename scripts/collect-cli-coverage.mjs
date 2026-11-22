@@ -3,15 +3,16 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { createHash, randomUUID } from 'node:crypto';
 import { constants } from 'node:fs';
-import { access, lstat, realpath, readFile, writeFile, mkdir, readdir, rename } from 'node:fs/promises';
+import { access, lstat, realpath, readFile, writeFile, mkdir, mkdtemp, readdir, rename, rm } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { hashFile, probeIdentity, verifyCoverageContextSources } from '../cli/coverage-session.mjs';
 import { prepareAnalysisRoot } from './prepare-coverage-analysis.mjs';
-import { verifySourceManifest } from './export-cli-source-manifest.mjs';
+import { safeSourcePath, verifySourceManifest } from './export-cli-source-manifest.mjs';
 
 const execute = promisify(execFile);
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const coveragePrefix = '/scriv-source/';
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value);
 const required = condition => { if (!condition) throw new Error('coverage-provenance-invalid'); };
@@ -21,6 +22,26 @@ async function input(path, maximum = 8 * 1024 * 1024) {
   return readFile(path);
 }
 async function write(path, data) { await writeFile(path, data, { flag: 'wx', mode: 0o600 }); }
+async function writeLcov(path, bytes) {
+  await write(path, bytes);
+  if (process.platform !== 'darwin') return;
+  let staging;
+  try {
+    staging = await mkdtemp(join(dirname(path), '.lcov-'));
+    const candidate = join(staging, basename(path));
+    await execute('/usr/bin/ditto', ['--hfsCompression', path, candidate], { timeout: 30000, maxBuffer: 65536 });
+    const compressed = await lstat(candidate), original = await lstat(path);
+    // Transparent filesystem compression keeps the import path and hashed bytes.
+    if (compressed.blocks < original.blocks && compressed.mode === original.mode
+      && (await input(candidate, bytes.length)).equals(bytes)) {
+      await rename(candidate, path);
+    }
+  } catch {
+    // The original export remains available if compression is unavailable.
+  } finally {
+    if (staging) await rm(staging, { recursive: true, force: true }).catch(() => {});
+  }
+}
 export async function saveCoverageStatus(capture) {
   const temporary = join(capture.directory, 'capture.next.json');
   await write(temporary, JSON.stringify(capture.report, null, 2) + '\n');
@@ -129,7 +150,7 @@ export async function prepareCoverage({ app, output, sourceOptions, buildSourceR
   const executableSHA256 = await hashFile(executable);
   required(build.version === 1 && build.kind === 'scriv-coverage-build' && build.sourceUnchanged === true
     && build.sourceManifestSha256 === buildSourceOptions.manifestSHA256 && build.executableSha256 === executableSHA256
-    && build.coveragePrefix === '/scriv-source/' && Array.isArray(build.limitations));
+    && build.coveragePrefix === coveragePrefix && Array.isArray(build.limitations));
   const findLLVM = async (configured, name) => configured || (await execute('xcrun', ['--find', name], { encoding: 'utf8', timeout: 30000, maxBuffer: 65536 })).stdout.trim();
   const profdata = await tool('llvm-profdata', await findLLVM(llvmProfdata, 'llvm-profdata'));
   const cov = await tool('llvm-cov', await findLLVM(llvmCov, 'llvm-cov'));
@@ -150,17 +171,15 @@ export async function prepareCoverage({ app, output, sourceOptions, buildSourceR
   await write(join(directory, 'source-comparison.json'), JSON.stringify(sourceProvenance, null, 2) + '\n');
   await write(join(directory, 'probe-sources.json'), JSON.stringify(probe, null, 2) + '\n');
   await write(join(directory, 'tracer-sources.json'), JSON.stringify(tracerCLI.packageIdentity, null, 2) + '\n');
-  const analysis = await prepareAnalysisRoot(buildSourceRoot, join(directory, 'build-sources.json'),
-    buildSourceOptions.manifestSHA256, join(directory, 'analysis'));
   const capture = { directory, executable, executableSHA256, sourceManifestSHA256: buildSourceOptions.manifestSHA256,
     journeySourceManifestSHA256: sourceOptions.manifestSHA256, sourceInputs, sourceProvenance,
-    buildRecordSHA256: sha(buildBytes), probe, invocationID: randomUUID(), maximumSessions, analysis,
+    buildRecordSHA256: sha(buildBytes), probe, invocationID: randomUUID(), maximumSessions,
     profdata, cov, tracerCLI, tools: [profdata, cov, tracerCLI, ...(tracerCLI.node ? [tracerCLI.node] : [])], intervals: [] };
   capture.report = { status: 'ready', invocationID: capture.invocationID, buildRecordSHA256: capture.buildRecordSHA256,
     sourceManifestSHA256: capture.sourceManifestSHA256, journeySourceManifestSHA256: capture.journeySourceManifestSHA256,
     sourceProvenance, probeSHA256: probe.sha256, maximumSessions,
     tools: capture.tools.map(tool => tool.identity), intervals: [], imported: 0,
-    tracerPackageSHA256: tracerCLI.packageIdentity.sha256, analysis,
+    tracerPackageSHA256: tracerCLI.packageIdentity.sha256,
     limitations: ['Producer-declared build record binds source and signed executable; this is not a cryptographic attestation.',
       'Each real app session has a separate cumulative pair; different processes are never merged.',
       'Counter increases include polling, transport, capture and background work, not action causality or assertion proof.',
@@ -214,6 +233,7 @@ export async function exportCoverage(capture, scenarios) {
   }
   required(new Set(records.map(row => row.record.slot)).size === records.length);
   for (const scenario of scenarios.filter(item => item.startedAt)) required(records.some(row => row.scenario === scenario));
+  const measuredPaths = new Set();
   for (const { directory, record, scenario } of records.sort((a, b) => a.record.slot - b.record.slot)) {
     const interval = { runID: record.runID, workspaceID: record.workspaceID, scenario: record.scenario, scenarioStatus: scenario.status, status: 'exporting', imported: false };
     capture.report.intervals.push(interval);
@@ -228,9 +248,17 @@ export async function exportCoverage(capture, scenarios) {
       // Each cumulative profile is indexed independently. Never merge the pair.
       await execute(capture.profdata.executable, ['merge', '-sparse', raw, '-o', indexed], { timeout: 120000, maxBuffer: 65536 });
       const indexedBytes = await input(indexed, 64 * 1024 * 1024);
-      const result = await execute(capture.cov.executable, ['export', capture.executable, `-instr-profile=${indexed}`, '-format=lcov'], { timeout: 120000, maxBuffer: 64 * 1024 * 1024, encoding: 'buffer' });
+      // Tracer imports line counters. Keep the raw profiles for re-exporting
+      // function and branch data when a separate analysis needs it.
+      const result = await execute(capture.cov.executable, ['export', capture.executable, `-instr-profile=${indexed}`,
+        '-format=lcov', '-skip-functions', '-skip-branches'], { timeout: 120000, maxBuffer: 64 * 1024 * 1024, encoding: 'buffer' });
       required(result.stdout.length > 0);
-      await write(join(directory, `${phase}.lcov`), result.stdout);
+      await writeLcov(join(directory, `${phase}.lcov`), result.stdout);
+      for (const [, source] of result.stdout.toString('utf8').matchAll(/^SF:([^\r\n]+)\r?$/gm)) {
+        const path = source.slice(coveragePrefix.length);
+        required(source.startsWith(coveragePrefix) && safeSourcePath(path));
+        measuredPaths.add(path);
+      }
       profiles[phase] = { rawSHA256: metadata.sha256, indexedSHA256: sha(indexedBytes), lcovSHA256: sha(result.stdout) };
     }
     await verifyTools(capture);
@@ -252,6 +280,12 @@ export async function exportCoverage(capture, scenarios) {
     capture.intervals.push({ directory, interval });
     await saveCoverageStatus(capture);
   }
+  // The full build manifest remains the import identity. Only files named by
+  // the actual exports belong in the separate analysis copy.
+  capture.analysis = await prepareAnalysisRoot(capture.sourceProvenance.buildSourceRoot,
+    join(capture.directory, 'build-sources.json'), capture.sourceManifestSHA256,
+    join(capture.directory, 'analysis'), measuredPaths);
+  capture.report.analysis = capture.analysis;
   await verifyCaptureSources(capture);
   capture.report.status = 'exported';
   await saveCoverageStatus(capture);
@@ -270,7 +304,7 @@ export async function importCoverage(capture) {
     try { result = await execute(capture.tracerCLI.executable, [...capture.tracerCLI.prefix, '--root', capture.analysis.root, 'measure', 'import',
       '--before', join(directory, 'before.lcov'), '--after', join(directory, 'after.lcov'),
       '--manifest', join(directory, 'interval.json'), '--sources', join(capture.directory, 'build-sources.json'),
-      '--strip-prefix', '/scriv-source/', '--json'], { cwd: capture.analysis.root, timeout: 120000, maxBuffer: 1024 * 1024,
+      '--strip-prefix', coveragePrefix, '--json'], { cwd: capture.analysis.root, timeout: 120000, maxBuffer: 1024 * 1024,
       env: { ...process.env, TRACER_NO_UPDATE: '1' } }); }
     catch (error) { interval.status = 'import-outcome-uncertain'; await saveCoverageStatus(capture); throw error; }
     // Preserve each successful import receipt. A later failure does not undo or

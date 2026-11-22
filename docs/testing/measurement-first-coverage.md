@@ -288,17 +288,19 @@ Both complete manifests are checked at preflight, at each actual session
 boundary, and through export/import. Only explicitly enumerated host files,
 test directories and documentation may differ. Native sources, resources,
 packages and build scripts must match. Each capture retains both full manifests
-and their exact difference list. The imported analysis copy uses original build
-source. The model-document journey needs 23 sessions; earlier incomplete capture
+and their exact difference list. The imported analysis copy contains the original
+build bytes for the source files named by the actual LCOV exports. The
+model-document journey needs 23 sessions; earlier incomplete capture
 was retained, and its complete passing run now supplies all those observations.
 
 Read the produced `evidence.json`; `coverage.analysis.root` identifies the
 external source copy containing the imported dataset. Run `measure check` and
 `measure report` on that root. All output stays outside pinned source.
-Analysis copies request independent filesystem clones where supported, with an
-ordinary-copy fallback. Full byte/hash checks, private permissions, create-only
-writes and copy independence remain verified. This addresses disk duplication
-without hard-linking mutable source or removing capture evidence.
+The analysis copy records its own file list and digest in `analysis-sources.json`
+and `analysis.json`. The complete producer manifest still supplies the import
+identity. Analysis copies request independent filesystem clones where supported,
+with an ordinary-copy fallback. Keep the original pinned build source, raw
+profiles, LCOV pairs and imported datasets for replay and comparison.
 
 ## November 13 service checkpoint
 
