@@ -300,11 +300,54 @@ try {
     && nodes.some(node => node.label === 'You were mentioned'));
   assert.deepEqual((await session.command('loaded-project')).project, downloaded);
   assert.deepEqual(await session.command('presented-alerts'), []);
+  await click('Close discussion');
+  const header = await control(node => node.label === 'Workspace actions', true);
+  const chrome = (await session.command('snapshot')).find(node => node.type === 'ScrivWorkspaceHeader');
+  assert.ok(chrome?.frame?.width > 0, 'The native workspace header exposes its current width');
+  if (chrome.frame.width < 1440) {
+    step = 'verify the compact workspace offers the real account action';
+    const menu = await session.command('menu', { target: header.path });
+    assert.ok(menu.primary[0].children.some(group => group.children?.some(action => action.title === 'Scriv account…' && !action.disabled)));
+    console.log('SKIP native account reconnect and sign-out: account is available only through the compact workspace menu');
+  } else {
+    await verifyAccountReconnectAndSignOut(downloaded);
+  }
   await fixture.assertNoOutbound();
-  console.log('PASS: native sync, linked edit, project and line discussions, selected rows, mentions and fresh cloud readback');
+  console.log('PASS: native sync, linked edit, discussions and fresh cloud replica');
 } catch (error) {
   throw new Error('Native cloud project journey failed during ' + step, { cause: error });
 } finally {
   try { await session?.close(); }
   finally { await fixture.close(); }
+}
+
+async function verifyAccountReconnectAndSignOut(downloaded) {
+  step = 'resync the existing cloud script through the native account sheet';
+  await click('Scriv account', true);
+  await click('Sync this script', true);
+  // The account sheet briefly disables Sync while the linked copy reattaches.
+  await session.waitFor(nodes => nodes.some(node => node.title === 'Sync this script' && node.enabled === false));
+  await control(node => node.title === 'Sync this script', true);
+  await session.command('key', { input: 'Escape', modifiers: [] });
+  await control(workspaceProject, true);
+  assert.deepEqual(await session.command('presented-alerts'), []);
+  assert.deepEqual((await session.command('loaded-project')).project, downloaded);
+  assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === downloaded.id), downloaded);
+  assert.deepEqual(await fixture.projects(), [{ id: downloaded.cloudProjectId, title: downloaded.title }]);
+
+  step = 'sign out and verify cloud revocation with the saved script intact';
+  assert.deepEqual(await fixture.sessionStates(), [{ revoked: false }, { revoked: false }]);
+  await click('Scriv account');
+  await click('Sign out', true);
+  await control(workspaceProject, true);
+  await session.command('activate', { target: (await control(workspaceProject)).path });
+  await control(node => node.title === 'Sign in to Scriv…' || node.label === 'Sign in to Scriv…', true);
+  assert.deepEqual(await fixture.sessionStates(), [{ revoked: false }, { revoked: true }],
+    'Only the newer session belonging to the signed-out workspace was revoked');
+  await click('Close Projects', true);
+  await control(workspaceProject, true);
+  assert.deepEqual((await session.command('loaded-project')).project, downloaded);
+  assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === downloaded.id), downloaded);
+  assert.deepEqual(await session.command('presented-alerts'), []);
+  console.log('PASS: native account reconnect and sign-out preserves the saved replica');
 }

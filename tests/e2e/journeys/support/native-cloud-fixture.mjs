@@ -64,6 +64,7 @@ export async function startNativeCloudFixture() {
       deliveries: async () => (await response('status')).deliveries,
       takeCode: () => response('take-code'),
       projects: () => response('projects'),
+      sessionStates: () => response('session-states'),
       assertNoOutbound: async () => assert.equal((await response('status')).outbound, 0),
       close,
     };
@@ -125,6 +126,9 @@ async function startWorker(root) {
       projects: async () => (await db.prepare(
         'SELECT projects.id, projects.title FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.id',
       ).bind(nativeFixtureEmail).all()).results,
+      sessionStates: async () => (await db.prepare(
+        'SELECT revoked_at IS NOT NULL AS revoked FROM sessions JOIN users ON sessions.user_id = users.id WHERE users.email = ? ORDER BY sessions.created_at, sessions.id',
+      ).bind(nativeFixtureEmail).all()).results.map(({ revoked }) => ({ revoked: Boolean(revoked) })),
       close: () => fixture.dispose() };
   } catch (error) { await fixture?.dispose(); throw error; }
 }
@@ -134,7 +138,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
   const worker = await startWorker(process.argv[3]);
   try {
     process.on('message', async message => {
-      const operations = { status: worker.status, 'take-code': worker.takeCode, projects: worker.projects };
+      const operations = { status: worker.status, 'take-code': worker.takeCode, projects: worker.projects, 'session-states': worker.sessionStates };
       assert.ok(Object.hasOwn(operations, message));
       const result = await operations[message]();
       if (process.connected) process.send(result);

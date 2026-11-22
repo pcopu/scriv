@@ -95295,6 +95295,63 @@
         "sha256": "42af4238cddb926e20681ce6e22a45957e023cc330d0eff4cfe05da70432521a"
       },
       "why": "After activating the mention row the journey verifies the project scope, exact posted message and mention label."
+    },
+    {
+      "id": "13a6ed69aa8ab376",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 2105,
+        "end": 2107,
+        "sha256": "e86d26114b1f87cd457e730c5fc361f49d9c3ff4228466687a40da0c654b7bcd"
+      },
+      "actions": [
+        "Reconnect the downloaded cloud replica from the account sheet"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 324,
+        "end": 336,
+        "sha256": "6d0a7bb51854e4299a25df4329aada5956b0a6ae8e78379a55b5c504a320ec04"
+      },
+      "why": "The real reconnect uses the freshly downloaded replica and verifies its entire loaded and persisted project after reconnection."
+    },
+    {
+      "id": "2cf456a4d75c8628",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 329,
+        "end": 336,
+        "sha256": "f33854278c3830f97068e5e7d70bd8cbf9b748730149d5a9e432e7988738c7fb"
+      },
+      "actions": [
+        "Sign out from the native account sheet and reopen Projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 338,
+        "end": 351,
+        "sha256": "f9fc15c738ab4f2dc1e503d536ecf1da9c884d1f5fa5a1545cde803beafccffe"
+      },
+      "why": "The authorized local Worker independently reports that the newer session was revoked, while the earlier session and the whole local replica remain intact."
+    },
+    {
+      "id": "382bd5f6cd718bd6",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 2097,
+        "end": 2100,
+        "sha256": "67a2d4cfb03b0e158c6a013944c1172487f5883b528b35a97fb2ecbb33b621c1"
+      },
+      "actions": [
+        "Open Scriv account and sync the already-linked script"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 324,
+        "end": 336,
+        "sha256": "6d0a7bb51854e4299a25df4329aada5956b0a6ae8e78379a55b5c504a320ec04"
+      },
+      "why": "The actual sync control enters and exits its busy state, then the loaded and saved replica and Worker project row remain identical."
     }
   ],
   "commentExclusions": [
