@@ -168,8 +168,23 @@ if (process.argv.includes('--list-cases')) {
     assert.equal(conflicting[0].record.sourcePrompt, intervening);
     assert.equal(conflicting[0].record.text, oversized);
     await session.command('end-editing');
-    await review.history();
+    await review.tab('Storyboard');
+    // Focus can settle asynchronously after leaving the editor. Wait for the
+    // workspace action and dispatch Undo once, without retrying a mutation.
+    const undoReady = async () => {
+      const key = (await session.command('keys')).find(key => key.input === 'z' && key.modifiers.length === 1 && key.modifiers[0] === 'command');
+      return key?.responderType === 'ScrivWorkspaceController' && key.action === 'undoProject';
+    };
+    const undoDeadline = performance.now() + 5000;
+    let canUndo = await undoReady();
+    while (!canUndo && performance.now() < undoDeadline) {
+      await new Promise(resolve => setTimeout(resolve, 50));
+      canUndo = await undoReady();
+    }
+    assert.ok(canUndo, 'Workspace Undo is available after leaving the direction editor');
+    assert.deepEqual(await session.command('key', { input: 'z', modifiers: ['command'] }), { dispatched: true });
     const restored = await savedDirection(accepted, corrected, true);
+    await review.tab('Script');
     await session.waitFor(nodes => nodes.some(node => node.text === reviewStatus)
       && byID(nodes, 'generation-optional-direction')?.editable === true);
     assert.deepEqual(await journals(), conflicting, 'Undo keeps the exact original draft for explicit review');
