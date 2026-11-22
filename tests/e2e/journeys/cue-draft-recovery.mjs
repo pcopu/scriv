@@ -5,13 +5,15 @@ import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { fixture } from './support/generation-review-fixture.mjs';
 import { nodeWithID as byID, sortedProjects, reviewSteps } from './support/generation-review-steps.mjs';
+import { coverageSteps } from './support/picture-coverage-steps.mjs';
 
 // Real public input -> retained invalid draft -> owned cold reload -> correction.
 // No crash window, injected journal, production API, provider or alert dispatch.
 const oversized = 'x'.repeat(29999) + '🎬'; // 30,001 UTF-16 units, 30,003 UTF-8 bytes.
 const corrected = 'Cafe\u0301 🎬 recovery corrected';
 const refusal = 'Image direction exceeds 30,000 UTF-16 characters. Shorten the draft before applying it; the exact draft remains saved on this Mac.';
-const cases = ['retain-rejected-direction', 'cold-recovery', 'repeated-cold-recovery', 'correct-and-save', 'cold-clean-state'];
+const cases = ['retain-rejected-direction', 'cold-recovery', 'repeated-cold-recovery', 'correct-and-save', 'cold-clean-state',
+  'review-recovered-direction-after-undo'];
 assert.ok(process.argv.slice(2).every(arg => arg === '--list-cases'), 'Unknown argument');
 if (process.argv.includes('--list-cases')) {
   console.log(JSON.stringify({ journey: 'cue-draft-recovery', nativeVerified: false, status: 'prepared-not-run', cases,
@@ -130,6 +132,65 @@ if (process.argv.includes('--list-cases')) {
     assert.deepEqual(await journals(), []);
     assert.deepEqual((await session.command('image-evidence')).jobs, []);
     console.log('PASS: cue-draft-recovery: rejected text retained across two owned relaunches, corrected once and clean on third reopen');
+
+    stage = cases[5];
+    const review = coverageSteps(session);
+    const intervening = 'Canonical direction before Undo';
+    const recovery = 'Recovered direction after Undo 🎬';
+    const reviewStatus = 'Recovered direction — review before replacing the current prompt.';
+    async function enterDirection(text) {
+      const field = await reviewSteps(session).reveal('generation-optional-direction');
+      assert.equal(field.editable, true);
+      await session.command('text', { target: field.path, text });
+      await session.waitFor(nodes => byID(nodes, 'generation-optional-direction')?.text === text);
+    }
+    async function savedDirection(previous, text, restoredByUndo = false) {
+      const actual = await waitForSavedProject(session, value => value.id === previous.id && value.cues[0].prompt === text);
+      const next = structuredClone(previous);
+      next.cues[0].prompt = text;
+      next.revision += 1; next.modifiedAt = actual.modifiedAt;
+      // Undo backfills mention metadata on these two legacy dialogue entries.
+      if (restoredByUndo) {
+        for (const entry of next.entries) entry.characterLinks = [];
+      }
+      assert.ok(Number.isFinite(actual.modifiedAt) && actual.modifiedAt >= previous.modifiedAt);
+      assert.deepEqual(actual, next, 'Only the expected changes are present in the new revision');
+      return actual;
+    }
+    await enterDirection(intervening);
+    const accepted = await savedDirection(expected, intervening);
+    await session.waitFor(nodes => !nodes.some(node => node.text === 'Direction saved in local recovery until the project save completes.'));
+    assert.deepEqual(await journals(), []);
+    await enterDirection(oversized);
+    await session.waitFor(nodes => nodes.some(node => node.text === refusal));
+    const conflicting = await journals();
+    assert.equal(conflicting.length, 1);
+    assert.equal(conflicting[0].record.sourcePrompt, intervening);
+    assert.equal(conflicting[0].record.text, oversized);
+    await session.command('end-editing');
+    await review.history();
+    const restored = await savedDirection(accepted, corrected, true);
+    await session.waitFor(nodes => nodes.some(node => node.text === reviewStatus)
+      && byID(nodes, 'generation-optional-direction')?.editable === true);
+    assert.deepEqual(await journals(), conflicting, 'Undo keeps the exact original draft for explicit review');
+    await enterDirection(recovery);
+    await session.waitFor(nodes => nodes.some(node => node.text === reviewStatus));
+    const revisedDraft = await journals();
+    assert.equal(revisedDraft.length, 1);
+    assert.equal(revisedDraft[0].record.sourcePrompt, intervening);
+    assert.equal(revisedDraft[0].record.text, recovery);
+    assert.deepEqual((await session.command('loaded-project')).project, restored);
+    assert.deepEqual(sortedProjects(await session.command('persisted-projects')), sortedProjects([sentinel, restored]));
+    await review.activate(node => node.title === 'Use this draft' || node.label === 'Use this draft');
+    const rebased = await savedDirection(restored, recovery);
+    await session.waitFor(nodes => !nodes.some(node => node.text === reviewStatus
+      || node.text === 'Direction saved in local recovery until the project save completes.'));
+    assert.deepEqual(await journals(), []);
+    assert.deepEqual((await session.command('loaded-project')).project, rebased);
+    assert.deepEqual(sortedProjects(await session.command('persisted-projects')), sortedProjects([sentinel, rebased]));
+    assert.deepEqual(await session.command('presented-alerts'), []);
+    assert.deepEqual((await session.command('image-evidence')).jobs, []);
+    console.log('PASS: cue-draft-recovery: workspace Undo retains the draft until Use this draft explicitly commits it');
   } catch (error) { throw new Error(`cue-draft-recovery/${stage}; no uncertain mutation retried`, { cause: error }); }
   finally { await session.close(); } // Release lease/process; preserve synthetic data, no recursive deletion.
 }
