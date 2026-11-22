@@ -23,6 +23,14 @@ it through UIKit and completes the same acknowledgement as OK.
 See [the JSON validation journey](json-model-validation.md) for the checks
 before and after acknowledgement.
 
+`acknowledge-cloud-save-error` accepts the exact observed message from a failed
+edit in the active cloud-linked workspace. It is available only in a run with
+an owned loopback Worker. It acknowledges the workspace's single attached error
+using the same path as OK. The saved edit stays in the outbox until the user
+chooses **Retry saved cloud commands** in Account. The cloud project journey checks the
+same edit and receipt across both requests and verifies the result in a fresh
+workspace.
+
 - Alias Add/Cancel are `UIAlertAction` objects in `CharacterEditorController`.
   The current `activate` and
   `accessibility-activate` commands can only use real observed qualifying views.

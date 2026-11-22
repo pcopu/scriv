@@ -55,7 +55,12 @@ final class WorkspaceStore: ObservableObject {
         if codex.journalError != nil { return "Generation recovery needs attention" }
         return nil
     }
+#if SCRIV_CLI_AUTOMATION
+    @Published var errorMessage: String? { didSet { cliCloudSaveError = nil } }
+    private var cliCloudSaveError: (navigation: Int, projectID: String, message: String)?
+#else
     @Published var errorMessage: String?
+#endif
     @Published var history: [HistoryEntry] = []
     @Published var cloudHistory: [CloudEvent] = [] { didSet { ingestMentionHistory() } }
     @Published var showDiscussion = false
@@ -921,7 +926,15 @@ final class WorkspaceStore: ObservableObject {
                 self.hasConflicts = !self.dirtyItems.isEmpty
                 self.recordCheckpoint()
                 for id in changed where !self.editingIntents.contains(id) { await self.cloud.releaseLease(id) }
-            } catch { guard self.navigationGeneration == navigation, self.project.id == after.id else { return }; self.errorMessage = error.localizedDescription; self.hasConflicts = true; self.syncStatus = "Draft saved locally — needs review" }
+            } catch {
+                guard self.navigationGeneration == navigation, self.project.id == after.id else { return }
+                let message = error.localizedDescription
+                self.errorMessage = message
+#if SCRIV_CLI_AUTOMATION
+                self.cliCloudSaveError = (navigation, after.id, message)
+#endif
+                self.hasConflicts = true; self.syncStatus = "Draft saved locally — needs review"
+            }
             if self.navigationGeneration == navigation, self.project.id == after.id { self.isSyncing = self.isProjectSynchronizing }
         }
     }
@@ -1934,7 +1947,15 @@ final class WorkspaceStore: ObservableObject {
     }
 #if SCRIV_CLI_AUTOMATION
     func acknowledgeCLIImportError(_ message: String, alert: UIAlertController) -> Bool {
-        errorMessage == message && errorPresenter.acknowledgeCLIImportError(message, alert: alert)
+        errorMessage == message && errorPresenter.acknowledgeCLIError(message, alert: alert)
+    }
+    func acknowledgeCLICloudSaveError(_ message: String, alert: UIAlertController) -> Bool {
+        guard let failure = cliCloudSaveError, failure.navigation == navigationGeneration,
+              failure.projectID == project.id, failure.message == message, errorMessage == message,
+              let cloudProjectID = project.cloudProjectId, cloud.projectId == cloudProjectID,
+              hasConflicts, !isSyncing, errorPresenter.acknowledgeCLIError(message, alert: alert) else { return false }
+        cliCloudSaveError = nil
+        return true
     }
 #endif
     func exportScript() {

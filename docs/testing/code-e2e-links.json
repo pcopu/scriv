@@ -340,8 +340,8 @@
       "id": "0060ca73b3c36517",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 613,
-        "end": 613,
+        "start": 618,
+        "end": 618,
         "sha256": "54cdd15167cd2651fde410542e49ee98fd6ee71fe1de27b54e2fbb7dd873cfb0"
       },
       "actions": [
@@ -718,8 +718,8 @@
       "id": "01666a2573c27b95",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1924,
-        "end": 1927,
+        "start": 1937,
+        "end": 1940,
         "sha256": "a8a2c5579238035752af411c51b7db44077e9041421bf9f1027cb8079bd6b854"
       },
       "actions": [
@@ -1104,8 +1104,8 @@
       "id": "024fe33e6e1f0c42",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1919,
-        "end": 1922,
+        "start": 1932,
+        "end": 1935,
         "sha256": "86f06f1c516d642e522d6ad0390780ba6f7c225baee3cea482b14e07a17348f9"
       },
       "actions": [
@@ -1403,8 +1403,8 @@
       "id": "03357893dd5498e2",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2459,
-        "end": 2459,
+        "start": 2480,
+        "end": 2480,
         "sha256": "74781b2e45b037eac03f280b70f22f222fd44b9479ec763aa0b78010e0b12c77"
       },
       "actions": [
@@ -1467,8 +1467,8 @@
       "id": "0367d84e0eb7f7b2",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1276,
-        "end": 1276,
+        "start": 1289,
+        "end": 1289,
         "sha256": "3a7ba7acb459f5d6261d4046a748ea6f3894994282cd566a0127d7505ff901a6"
       },
       "actions": [
@@ -1701,8 +1701,8 @@
       "id": "040034b178ce0017",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 894,
-        "end": 894,
+        "start": 899,
+        "end": 899,
         "sha256": "e91e7d9a00999c71388f8a8d3310d9aa05f28e109f80ce6a0e4bc527ded92934"
       },
       "actions": [
@@ -2609,8 +2609,8 @@
       "id": "075f8247f7989103",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 888,
-        "end": 894,
+        "start": 902,
+        "end": 908,
         "sha256": "70edbf61ca4e624c0995831a11aa20cc3f54d75846ece0c208fed31e96f0dfc1"
       },
       "actions": [
@@ -2766,8 +2766,8 @@
       "id": "08e992f365b1bb28",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1455,
-        "end": 1457,
+        "start": 1468,
+        "end": 1470,
         "sha256": "fb91f9596bd75f51130c76272df19a96f61f473569e33355a4fe81fd1aeb2d05"
       },
       "actions": [
@@ -2894,8 +2894,8 @@
       "id": "7db647cd21290a38",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1745,
-        "end": 1745,
+        "start": 1758,
+        "end": 1758,
         "sha256": "758aca4760b9c59e860b8f853204f306ee9e7decb8c951c7165a254d9306b4a4"
       },
       "actions": [
@@ -3455,8 +3455,8 @@
       "id": "0b5618fdeb2e0be4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 349,
-        "end": 349,
+        "start": 352,
+        "end": 352,
         "sha256": "42c475b9792fc983b1cc1b2156a5eda23f7c136eafa61bf98a274774b9f0b2d7"
       },
       "actions": [
@@ -3792,8 +3792,8 @@
       "id": "0d0a13078d8fa91b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 784,
-        "end": 785,
+        "start": 789,
+        "end": 790,
         "sha256": "340850c45e57ffe05fe82ba6d94437b9bb74f279fa67cd85a8bf29765b83cb39"
       },
       "actions": [
@@ -3930,8 +3930,8 @@
       "id": "0dffca1027d18168",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1745,
-        "end": 1745,
+        "start": 1758,
+        "end": 1758,
         "sha256": "758aca4760b9c59e860b8f853204f306ee9e7decb8c951c7165a254d9306b4a4"
       },
       "actions": [
@@ -4449,8 +4449,8 @@
       "id": "0fe36b0ac13c9324",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1380,
-        "end": 1380,
+        "start": 1393,
+        "end": 1393,
         "sha256": "3a7cec41dfa7c5c2b33d50af7681b8f9b385864c86c2a52224084f03387cc6eb"
       },
       "actions": [
@@ -4665,8 +4665,8 @@
       "id": "1116965106b77958",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1349,
-        "end": 1349,
+        "start": 1362,
+        "end": 1362,
         "sha256": "23f59266ff5a5d0b230e417bf80956cc0fec381d5786a79b2f7885113dec0f29"
       },
       "actions": [
@@ -5156,8 +5156,8 @@
       "id": "124bad32486dabc8",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1929,
-        "end": 1930,
+        "start": 1942,
+        "end": 1943,
         "sha256": "22a527b6ba3900e03d6a7993e2a13e1352c42b83396f18df8f64f3266e8a19c3"
       },
       "actions": [
@@ -5853,8 +5853,8 @@
       "id": "148d8a1446192e07",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1146,
-        "end": 1149,
+        "start": 1159,
+        "end": 1162,
         "sha256": "cd76a632f0800d5ed2dfd6fa3bcc3dfb3d383cd5a39860aee256de1fed3a3ff3"
       },
       "actions": [
@@ -6353,8 +6353,8 @@
       "id": "16376d19d8991bef",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1388,
-        "end": 1389,
+        "start": 1401,
+        "end": 1402,
         "sha256": "be6a43dc4dee2a2e22cc4fe7720f4547ae2f237c83e7a035e3ec696e5f1fc364"
       },
       "actions": [
@@ -6379,8 +6379,8 @@
       "id": "16823c16d1a75d9c",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1236,
-        "end": 1239,
+        "start": 1249,
+        "end": 1252,
         "sha256": "e3ba5921c19b9fba89f1556dd7c5a60ca7fdbc25eaef7d325e05e061d626fc24"
       },
       "actions": [
@@ -6419,8 +6419,8 @@
       "id": "16f0b9cc7a00fa49",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1208,
-        "end": 1208,
+        "start": 1221,
+        "end": 1221,
         "sha256": "41d4b2e9dc02fa16a3d707133a36b65e1509c9d852a5b96f5228bebe8c5e7e04"
       },
       "actions": [
@@ -6927,8 +6927,8 @@
       "id": "190620919247854d",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1224,
-        "end": 1224,
+        "start": 1237,
+        "end": 1237,
         "sha256": "b56fe3596a9c841a75b400d2b3f553f94bc9a9a1793a78a9de7d9dd89603fec9"
       },
       "actions": [
@@ -7353,8 +7353,8 @@
       "id": "1b00f4abf0d7ffe5",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1345,
-        "end": 1345,
+        "start": 1358,
+        "end": 1358,
         "sha256": "bf832e67b1b8e35cbb3353298aa57292965aa9e1c9fe51c755845f6b91ac8bc6"
       },
       "actions": [
@@ -8488,8 +8488,8 @@
       "id": "1ebb6f05dd021323",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1156,
-        "end": 1158,
+        "start": 1169,
+        "end": 1171,
         "sha256": "b3393d2fa81ffc4f132877bdc190d172effc2a915926cc03c6e1365c0ec3008a"
       },
       "actions": [
@@ -8586,8 +8586,8 @@
       "id": "1f57b2441a720e19",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1172,
-        "end": 1173,
+        "start": 1185,
+        "end": 1186,
         "sha256": "ef6fdd713e66fb76d34c03c87fdb422c6f55ab72565958916becd862e27505ca"
       },
       "actions": [
@@ -9301,8 +9301,8 @@
       "id": "20274c3eafab6dff",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1124,
-        "end": 1128,
+        "start": 1137,
+        "end": 1141,
         "sha256": "fde19084a5cc305bc1f7f4be1b96548412f62e2027c075803421d4d2d895ecf3"
       },
       "actions": [
@@ -10346,8 +10346,8 @@
       "id": "246327578024a243",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 361,
-        "end": 362,
+        "start": 364,
+        "end": 365,
         "sha256": "390308ff98727586d6b0a3bb0587bfeeaa57fba2528d0817f1c3df41538bcc61"
       },
       "actions": [
@@ -11587,8 +11587,8 @@
       "id": "275c8449d0c27d2c",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1398,
-        "end": 1404,
+        "start": 1411,
+        "end": 1417,
         "sha256": "1c590da0edb812fc673bd7798be58be60292d9a00d54d06e7bfd0353b4bf52b3"
       },
       "actions": [
@@ -12426,8 +12426,8 @@
       "id": "2a4ddd722aae1d69",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2615,
-        "end": 2616,
+        "start": 2636,
+        "end": 2637,
         "sha256": "65dd561264d9dceb260adcf07be509bdbd388635d2be1b33a72daa739c13467f"
       },
       "actions": [
@@ -12571,8 +12571,8 @@
       "id": "2b2469a0fed9b030",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2447,
-        "end": 2448,
+        "start": 2468,
+        "end": 2469,
         "sha256": "35c8758914b23174034f419d26f815e138ab16d6ff00d4c8551c2c623b60ea4e"
       },
       "actions": [
@@ -13274,8 +13274,8 @@
       "id": "2c4c6be839a74fa2",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 481,
-        "end": 481,
+        "start": 486,
+        "end": 486,
         "sha256": "41663d27387e11b3b5ab35a8b822dfe9835568290de6179652d380284afb0c3f"
       },
       "actions": [
@@ -13324,8 +13324,8 @@
       "id": "2c7674f3905b9fe3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 558,
-        "end": 559,
+        "start": 572,
+        "end": 573,
         "sha256": "87fb4fb7b226586f934ca41449da35e916035a5fc898f5924f7efed8f1260084"
       },
       "actions": [
@@ -13879,8 +13879,8 @@
       "id": "2f4c61a7378173ae",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1424,
-        "end": 1425,
+        "start": 1437,
+        "end": 1438,
         "sha256": "ea053a93537a932455835973019cf8cbc21fe6ad3ba2424cecbfbac740ac45dd"
       },
       "actions": [
@@ -13933,8 +13933,8 @@
       "id": "2fdc183d955d8500",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1990,
-        "end": 1994,
+        "start": 2011,
+        "end": 2015,
         "sha256": "7718e5d489d97485fb3e6a670547deb62184633c8489365b173e603441449752"
       },
       "actions": [
@@ -14037,8 +14037,8 @@
       "id": "300d59775c225fc3",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1846,
-        "end": 1848,
+        "start": 1859,
+        "end": 1861,
         "sha256": "f6dbadfb79ee37905f616eacd26e207b24b3f4c9fea91b5fd7b5c5edea1b3b66"
       },
       "actions": [
@@ -14484,8 +14484,8 @@
       "id": "31f79426db7cd75a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 420,
-        "end": 422,
+        "start": 434,
+        "end": 436,
         "sha256": "c324179813f2dec8eabeaad7a3d24683533bfd617fcd1eadbbec16ccc586f24b"
       },
       "actions": [
@@ -14806,8 +14806,8 @@
       "id": "33610db33e91780a",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1349,
-        "end": 1349,
+        "start": 1362,
+        "end": 1362,
         "sha256": "23f59266ff5a5d0b230e417bf80956cc0fec381d5786a79b2f7885113dec0f29"
       },
       "actions": [
@@ -14853,8 +14853,8 @@
       "id": "33b1c18bc85d1ae6",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 613,
-        "end": 613,
+        "start": 618,
+        "end": 618,
         "sha256": "54cdd15167cd2651fde410542e49ee98fd6ee71fe1de27b54e2fbb7dd873cfb0"
       },
       "actions": [
@@ -15715,8 +15715,8 @@
       "id": "361c5c737cdd97f7",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 352,
-        "end": 355,
+        "start": 355,
+        "end": 358,
         "sha256": "be53340637c0733a61c336310c1452479c5ef1b02038be1f08dacd3fcf7c1325"
       },
       "actions": [
@@ -16420,8 +16420,8 @@
       "id": "383724340c9aab24",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1984,
-        "end": 1988,
+        "start": 2005,
+        "end": 2009,
         "sha256": "bfd265ba89040e8e6405a651dd57ad978a889d2a96858f2f8ccc1633ddd52552"
       },
       "actions": [
@@ -17668,8 +17668,8 @@
       "id": "3d0c970eabde0694",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1794,
-        "end": 1800,
+        "start": 1807,
+        "end": 1813,
         "sha256": "e558969d931487e4db270e5ff79c24f94c69515aa11d68528167bcc92ce76976"
       },
       "actions": [
@@ -18189,8 +18189,8 @@
       "id": "3eb7828e4bb40e51",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2005,
-        "end": 2006,
+        "start": 2026,
+        "end": 2027,
         "sha256": "96ffafd503d746408117fe3310d41b5046581890321b3db01998b881c3d3d885"
       },
       "actions": [
@@ -19423,8 +19423,8 @@
       "id": "42f9de0b03bd16da",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1388,
-        "end": 1393,
+        "start": 1401,
+        "end": 1406,
         "sha256": "1572de04b71a140843b05780f273e14a181a5315469af1354b1ef5fd8e697e71"
       },
       "actions": [
@@ -19558,8 +19558,8 @@
       "id": "43c1321950b21083",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 788,
-        "end": 790,
+        "start": 802,
+        "end": 804,
         "sha256": "1832dfa33320b4f95bab71ed05bc3a46952600a61a5309c015c0cb1aac09908d"
       },
       "actions": [
@@ -20063,8 +20063,8 @@
       "id": "4574583ac15f648b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 821,
-        "end": 824,
+        "start": 826,
+        "end": 829,
         "sha256": "e0c169de2a8ca04568031165ff3e07e3d3300fc82b9dff018ed3a1873f3de169"
       },
       "actions": [
@@ -20326,8 +20326,8 @@
       "id": "460fb2e24229a4ff",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 452,
-        "end": 452,
+        "start": 457,
+        "end": 457,
         "sha256": "014fa3c07cf744321ed82462735eef14d271146d1af0216749837ac44ed057cb"
       },
       "actions": [
@@ -20590,8 +20590,8 @@
       "id": "468416cd8aa02488",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 617,
-        "end": 617,
+        "start": 622,
+        "end": 622,
         "sha256": "c447711524bd2e9351cf365e1dd994057a6acd5c54e826eb7252b1187e007602"
       },
       "actions": [
@@ -21022,8 +21022,8 @@
       "id": "47ae903bd5b126d4",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1331,
-        "end": 1332,
+        "start": 1344,
+        "end": 1345,
         "sha256": "cf912d0eea76a37d9d89209a1b8f0fbed46bfe58dcbc2346cfd4cc316a464adc"
       },
       "actions": [
@@ -21574,8 +21574,8 @@
       "id": "4af2a3fb003a00b1",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1131,
-        "end": 1134,
+        "start": 1144,
+        "end": 1147,
         "sha256": "c3ecc6dafa15965d96082efb139266639c1a37f597a485478412963e1c292968"
       },
       "actions": [
@@ -21898,8 +21898,8 @@
       "id": "4cf2878ebe1e3cfa",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1819,
-        "end": 1819,
+        "start": 1832,
+        "end": 1832,
         "sha256": "822ccd6493f970f650cfd97ef6541f4d4ce12b7dff2e8f40a2cc896516c7dee9"
       },
       "actions": [
@@ -22767,8 +22767,8 @@
       "id": "50c71ca5a7c1e6cb",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1125,
-        "end": 1127,
+        "start": 1138,
+        "end": 1140,
         "sha256": "ab506e5c1cf17d9e681852abbf090e5ec1f83a5c8d7d040ae1fd7fae65ee4bd6"
       },
       "actions": [
@@ -22927,8 +22927,8 @@
       "id": "50f6f8db02d5f294",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 877,
-        "end": 890,
+        "start": 882,
+        "end": 895,
         "sha256": "8a3ee76fcd075f6fa63e439ac7b611db4fd2c6fb06e1cfbdfe18fd931f45cc98"
       },
       "actions": [
@@ -23209,8 +23209,8 @@
       "id": "5211d001407c7455",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 939,
-        "end": 939,
+        "start": 953,
+        "end": 953,
         "sha256": "df4993a2dcd9414ca54bdbd35a37dc670f2ee5363b7c978a0f8effe92f47fa3e"
       },
       "actions": [
@@ -24501,8 +24501,8 @@
       "id": "a91fa8a4249955c3",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1832,
-        "end": 1832,
+        "start": 1845,
+        "end": 1845,
         "sha256": "3923f29b744dca3544bc78bd7a4793b32afabfc557ea9d77f9771da5e32eee06"
       },
       "actions": [
@@ -25206,8 +25206,8 @@
       "id": "5975ebf27fa24190",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 345,
-        "end": 348,
+        "start": 348,
+        "end": 351,
         "sha256": "fd1208ec29481b3c0d6e820b8d3f96b24a68d9c97b1cce3368de8ecc24087688"
       },
       "actions": [
@@ -25883,8 +25883,8 @@
       "id": "5bd4e68591bcc0b6",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1327,
-        "end": 1329,
+        "start": 1340,
+        "end": 1342,
         "sha256": "9f8023fbf2373e98e776e7b7b692b48e27bdcb9f3fab50bfb70b6fe1331f9ed9"
       },
       "actions": [
@@ -25909,8 +25909,8 @@
       "id": "5bf3a8b01b8cd2d8",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1230,
-        "end": 1233,
+        "start": 1243,
+        "end": 1246,
         "sha256": "942489fa9c463d5a788383874e615b59a830c3b4682c1a3a6a9b59ec7df097e5"
       },
       "actions": [
@@ -26294,8 +26294,8 @@
       "id": "5d6c037925859aa0",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1420,
-        "end": 1422,
+        "start": 1433,
+        "end": 1435,
         "sha256": "492636e66b4d87c6e7bc3c174e1e753d3ce7dc6545f673ed5ea59fdd0b8903c3"
       },
       "actions": [
@@ -26409,8 +26409,8 @@
       "id": "5df3242e94b1184f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 349,
-        "end": 349,
+        "start": 352,
+        "end": 352,
         "sha256": "42c475b9792fc983b1cc1b2156a5eda23f7c136eafa61bf98a274774b9f0b2d7"
       },
       "actions": [
@@ -26795,8 +26795,8 @@
       "id": "5ed0ca4c17c2ccbd",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1102,
-        "end": 1102,
+        "start": 1115,
+        "end": 1115,
         "sha256": "e91e81dce72077f2b34ec6868de820427c160d99d975267a298aafc41721d0e9"
       },
       "actions": [
@@ -26931,8 +26931,8 @@
       "id": "5f310da5320b1cb0",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1407,
-        "end": 1410,
+        "start": 1420,
+        "end": 1423,
         "sha256": "29a804c7e7c0307f2b8b13942cfac337a60b57b49b834202aca22a8f7647321e"
       },
       "actions": [
@@ -27992,8 +27992,8 @@
       "id": "6322edf8e4782c20",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 688,
-        "end": 688,
+        "start": 702,
+        "end": 702,
         "sha256": "117edc4441ea32d381a04f092c98a7d78b8f6368c4b4bff6ec26e4599d7db9b6"
       },
       "actions": [
@@ -28586,8 +28586,8 @@
       "id": "6533438c8f8154a6",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1108,
-        "end": 1123,
+        "start": 1121,
+        "end": 1136,
         "sha256": "f4db8ab8d410d9a0780347af24b538e37176662d1918f6a39e4c6578d1ab5cd5"
       },
       "actions": [
@@ -28610,8 +28610,8 @@
       "id": "655bf5071a5998fd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 338,
-        "end": 341,
+        "start": 341,
+        "end": 344,
         "sha256": "75f35ed14262dd5313e36336b0b41fc4397a8fc9d4003e1c34450e150fad0d60"
       },
       "actions": [
@@ -28722,8 +28722,8 @@
       "id": "65c3b3a04c6b614b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1932,
-        "end": 1932,
+        "start": 1945,
+        "end": 1945,
         "sha256": "a85cc3a6ed86635885a4d548792e312eaccc3a91fc5d295d05010fe04c6c339f"
       },
       "actions": [
@@ -29010,8 +29010,8 @@
       "id": "66dc04bd2802c0b8",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1319,
-        "end": 1321,
+        "start": 1332,
+        "end": 1334,
         "sha256": "21b8b519fc4823fdc7503d00af6e7cd3651d8b7812ef9b174a0caacc2b5ba7d4"
       },
       "actions": [
@@ -30637,8 +30637,8 @@
       "id": "6c60792eb45810fe",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 620,
-        "end": 623,
+        "start": 625,
+        "end": 628,
         "sha256": "69182adc0bdc460533dcd1516a30c21e5c2e538b6fba1bdbea002dc254f43ee5"
       },
       "actions": [
@@ -30897,8 +30897,8 @@
       "id": "6d3cef93280517a3",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2457,
-        "end": 2457,
+        "start": 2478,
+        "end": 2478,
         "sha256": "87a59fa272dfc547a1ceea5a66f62f1601b94c3b3cea51d8e8c137a1f71e0239"
       },
       "actions": [
@@ -30949,8 +30949,8 @@
       "id": "6d59aaa527dbaf4c",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 864,
-        "end": 866,
+        "start": 869,
+        "end": 871,
         "sha256": "6128917255dd12de0c0bf916066459d5b059a677ba5264d411ba137d2202943f"
       },
       "actions": [
@@ -31031,8 +31031,8 @@
       "id": "6dad662d8cd423f1",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1202,
-        "end": 1203,
+        "start": 1215,
+        "end": 1216,
         "sha256": "4f7665da3966d23f6cb84d78bfad82ff32bbaf78c1cd495e2ab28689b3da4ce5"
       },
       "actions": [
@@ -31519,8 +31519,8 @@
       "id": "6e838cafaf3f1475",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 361,
-        "end": 365,
+        "start": 366,
+        "end": 370,
         "sha256": "416f7ec5a6cacb63c58a90ea42273e18aa7fc4d061c59457e90db5f875100fec"
       },
       "actions": [
@@ -31595,8 +31595,8 @@
       "id": "6f0a51def3c92169",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 345,
-        "end": 347,
+        "start": 348,
+        "end": 350,
         "sha256": "cf4e8e1bce56a0b0fe308df4ff78b381d8cdbe1f2c74752423ed32f49a0dcfc1"
       },
       "actions": [
@@ -31615,8 +31615,8 @@
       "id": "6f544a53f29b3b8a",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 418,
-        "end": 422,
+        "start": 423,
+        "end": 427,
         "sha256": "696abae4eeffb0e0e8343f3ea65cca4c471fcf3d36f04902e651066a6cb64212"
       },
       "actions": [
@@ -32095,8 +32095,8 @@
       "id": "71133d5473809620",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 903,
-        "end": 905,
+        "start": 908,
+        "end": 910,
         "sha256": "1c2d372268131cc8b9baf9c202d3c11290805b0b2c930169dc9e7c891e23664e"
       },
       "actions": [
@@ -32434,8 +32434,8 @@
       "id": "72ab3d44bf59ab38",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1419,
-        "end": 1425,
+        "start": 1432,
+        "end": 1438,
         "sha256": "3a9b1002041dde543e945c44bbc82f4acef5322ce9187a1e7fbd344fe85189b8"
       },
       "actions": [
@@ -32783,8 +32783,8 @@
       "id": "739f349acff08a6a",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1124,
-        "end": 1128,
+        "start": 1137,
+        "end": 1141,
         "sha256": "fde19084a5cc305bc1f7f4be1b96548412f62e2027c075803421d4d2d895ecf3"
       },
       "actions": [
@@ -33966,8 +33966,8 @@
       "id": "778df645dc921268",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 669,
-        "end": 671,
+        "start": 683,
+        "end": 685,
         "sha256": "bbfb7483c89e30c09f8be7ad92447e6b9d1d6f2dae773379043375c1afac3fe1"
       },
       "actions": [
@@ -34188,8 +34188,8 @@
       "id": "78a6fce372a24038",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1944,
-        "end": 1948,
+        "start": 1965,
+        "end": 1969,
         "sha256": "19ae5674e372a729979c5b5af5df045128ce5292687144ce28871c0451425a9a"
       },
       "actions": [
@@ -34721,8 +34721,8 @@
       "id": "7a366529db627d07",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 357,
-        "end": 357,
+        "start": 362,
+        "end": 362,
         "sha256": "cb4d0849f03f96ed4ca52143eb95894810c3a09dd307966621b6cb295d957858"
       },
       "actions": [
@@ -35819,8 +35819,8 @@
       "id": "7d51352c6f1ba403",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1075,
-        "end": 1075,
+        "start": 1088,
+        "end": 1088,
         "sha256": "ee830b8d2ec7561edba38ff7919483d22cee6da3e146fa4172c806a495df9d45"
       },
       "actions": [
@@ -36298,8 +36298,8 @@
       "id": "7efbf82975d9638f",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1327,
-        "end": 1332,
+        "start": 1340,
+        "end": 1345,
         "sha256": "356d4899e931acf690d0b79de02885fff2099de838c9858e0255d1e97f1d41f5"
       },
       "actions": [
@@ -36320,8 +36320,8 @@
       "id": "7efd9cc183cf9a80",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1839,
-        "end": 1839,
+        "start": 1852,
+        "end": 1852,
         "sha256": "a1ee5631c36e4406792295d4973eecb0f9ec4fe6b3547d9799ff31133e10b483"
       },
       "actions": [
@@ -36591,8 +36591,8 @@
       "id": "7fde26a2b9ca5256",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1928,
-        "end": 1932,
+        "start": 1941,
+        "end": 1945,
         "sha256": "845053ced87ff5777ae051aaa36f70601a326a4c77c76287935a5197ac0a29ac"
       },
       "actions": [
@@ -37229,8 +37229,8 @@
       "id": "817b92153513d58e",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1801,
-        "end": 1801,
+        "start": 1814,
+        "end": 1814,
         "sha256": "556451e4e15e10e3bdb5be381e38da7ac95da54c94e981d04478203d3ec843f2"
       },
       "actions": [
@@ -37730,8 +37730,8 @@
       "id": "82e1e78d9cf4463d",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1817,
-        "end": 1817,
+        "start": 1830,
+        "end": 1830,
         "sha256": "88b1dd8a2e928290c4a7e266f542227e1ef7ffc3d4646db2988db39737e80bef"
       },
       "actions": [
@@ -37902,8 +37902,8 @@
       "id": "83f512cd665f025b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 427,
-        "end": 431,
+        "start": 441,
+        "end": 445,
         "sha256": "dab34e6acf94ea0f79a2f627ec216ce5e93c722ede15ba9a4db387898c5b1e99"
       },
       "actions": [
@@ -38217,8 +38217,8 @@
       "id": "84e55c60916917af",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1924,
-        "end": 1927,
+        "start": 1937,
+        "end": 1940,
         "sha256": "a8a2c5579238035752af411c51b7db44077e9041421bf9f1027cb8079bd6b854"
       },
       "actions": [
@@ -39796,8 +39796,8 @@
       "id": "8986e2a4ee4be4cb",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1327,
-        "end": 1329,
+        "start": 1340,
+        "end": 1342,
         "sha256": "9f8023fbf2373e98e776e7b7b692b48e27bdcb9f3fab50bfb70b6fe1331f9ed9"
       },
       "actions": [
@@ -40003,8 +40003,8 @@
       "id": "8a0c5c83770c8e04",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 576,
-        "end": 578,
+        "start": 590,
+        "end": 592,
         "sha256": "e75ceef78142ba6150091ee1d701fe508c3750adc77fd0a8515a2abab938d0a1"
       },
       "actions": [
@@ -40460,8 +40460,8 @@
       "id": "8cabb5a825354921",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 677,
-        "end": 678,
+        "start": 691,
+        "end": 692,
         "sha256": "1cffeee9176ea8b313df1e5be327c0e9baf50c45d829101186009b257fc8e37f"
       },
       "actions": [
@@ -40530,8 +40530,8 @@
       "id": "8d5743aa7d7a170a",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 802,
-        "end": 802,
+        "start": 807,
+        "end": 807,
         "sha256": "e8eb432f992b6506874bc5633b0a0ae431731b5b368496d7cfa8f665ef06d29f"
       },
       "actions": [
@@ -41202,8 +41202,8 @@
       "id": "8f97c310c9c23048",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1924,
-        "end": 1927,
+        "start": 1937,
+        "end": 1940,
         "sha256": "a8a2c5579238035752af411c51b7db44077e9041421bf9f1027cb8079bd6b854"
       },
       "actions": [
@@ -41224,8 +41224,8 @@
       "id": "8fb4c08064f57176",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 848,
-        "end": 856,
+        "start": 862,
+        "end": 870,
         "sha256": "5a5f6c02a36999a9e71b9abd7481a87a0f3c1caa96b70ff0d63035f548b90ade"
       },
       "actions": [
@@ -42031,8 +42031,8 @@
       "id": "9225c194dadee30b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 857,
-        "end": 857,
+        "start": 862,
+        "end": 862,
         "sha256": "c0333602b89ed3652b8478e3cd9ebe3fdadd44e0ef434d362559cf6a697beb6a"
       },
       "actions": [
@@ -43027,8 +43027,8 @@
       "id": "96217a5c39a74e30",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 845,
-        "end": 866,
+        "start": 850,
+        "end": 871,
         "sha256": "31041c441ec285e8805e6af44d46c69868d817fe2548dc68e5f0bf05d5305a11"
       },
       "actions": [
@@ -43078,8 +43078,8 @@
       "id": "96523476b3f88a7e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 595,
-        "end": 597,
+        "start": 609,
+        "end": 611,
         "sha256": "42012bb069693254b4836adeccce4487cac4e7915e8af932cba052184d7d1e3e"
       },
       "actions": [
@@ -43473,8 +43473,8 @@
       "id": "9859dc8ba1e03ff3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 598,
-        "end": 598,
+        "start": 612,
+        "end": 612,
         "sha256": "a2523414c7ecf310d709bcca45c6c26e446ef386e2e77a7301308e8d6f451af4"
       },
       "actions": [
@@ -43743,8 +43743,8 @@
       "id": "9992774e65bf97dd",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 857,
-        "end": 857,
+        "start": 862,
+        "end": 862,
         "sha256": "c0333602b89ed3652b8478e3cd9ebe3fdadd44e0ef434d362559cf6a697beb6a"
       },
       "actions": [
@@ -43775,8 +43775,8 @@
       "id": "99c8cf68a74eb246",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1791,
-        "end": 1794,
+        "start": 1804,
+        "end": 1807,
         "sha256": "2e8a77b7a878db42573f93cda8c9198c0964c7324d11f5c164722255dda447d4"
       },
       "actions": [
@@ -44201,8 +44201,8 @@
       "id": "9a331348fd2de165",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1943,
-        "end": 1948,
+        "start": 1964,
+        "end": 1969,
         "sha256": "8865257ff67a296f7a085d77a6a43c5ea0bd0fd26071460b540c384f8cf543be"
       },
       "actions": [
@@ -44459,8 +44459,8 @@
       "id": "9a40d7f7a695673f",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1887,
-        "end": 1896,
+        "start": 1900,
+        "end": 1909,
         "sha256": "90014e4ad256993e5f09f3f30bc39f5b72317db8d4171c601c3e5614bc210e81"
       },
       "actions": [
@@ -45045,8 +45045,8 @@
       "id": "9cfd173c7e7aa379",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1138,
-        "end": 1140,
+        "start": 1151,
+        "end": 1153,
         "sha256": "b3d36080ef80e6942663a17cdf35a47fc2ecd391acc721e3503163c0ebd0817a"
       },
       "actions": [
@@ -45974,8 +45974,8 @@
       "id": "9f9f3329173da403",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1992,
-        "end": 1994,
+        "start": 2013,
+        "end": 2015,
         "sha256": "42d74d78a8d23785226c5184a87731c155ef880a4698a1cb887c71ea0397bc19"
       },
       "actions": [
@@ -46133,8 +46133,8 @@
       "id": "a00d471e1d00b58c",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1109,
-        "end": 1109,
+        "start": 1122,
+        "end": 1122,
         "sha256": "57d3a1db1ba0f3adb93d46b1d22f909429109f1312e876d8941f9c417449f99f"
       },
       "actions": [
@@ -46641,8 +46641,8 @@
       "id": "a13489ce55eafe6d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 435,
-        "end": 435,
+        "start": 449,
+        "end": 449,
         "sha256": "cc0f92a36210d7cf478a1dcd404ed40f0f1956d12202059503ac6325c63a2748"
       },
       "actions": [
@@ -47103,8 +47103,8 @@
       "id": "a1ce6e432602739b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 791,
-        "end": 797,
+        "start": 796,
+        "end": 802,
         "sha256": "ae4f2f0588b59732431d9c47e883705120138a8b3ae91668c8d3ec819bad8cde"
       },
       "actions": [
@@ -47174,8 +47174,8 @@
       "id": "a1fc2b84de91de21",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 483,
-        "end": 484,
+        "start": 488,
+        "end": 489,
         "sha256": "7c3a832f11cdb40983892eeb47bcb97b36f21e04073aa7f1f7928e9c05e92db0"
       },
       "actions": [
@@ -47221,8 +47221,8 @@
       "id": "a23de764121d2601",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1773,
-        "end": 1775,
+        "start": 1786,
+        "end": 1788,
         "sha256": "9a6ae3e6dbb83c0ac28b85086d148d343f1d4828e30537e9fc28b126bc3ef1ac"
       },
       "actions": [
@@ -47390,8 +47390,8 @@
       "id": "a27cc246e1bb047b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 436,
-        "end": 439,
+        "start": 450,
+        "end": 453,
         "sha256": "ef50a51588e0c27a2f347b6fb60c111410762ad3440ffc360b3df572d5700c1a"
       },
       "actions": [
@@ -47411,8 +47411,8 @@
       "id": "a29b6600a0b2099a",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 893,
-        "end": 894,
+        "start": 898,
+        "end": 899,
         "sha256": "f4a646969cfff77df7572e4baee25f8a5cf34f30e72e7bd48f219853eaa470ac"
       },
       "actions": [
@@ -47988,8 +47988,8 @@
       "id": "a416a0a7bbca6d14",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 680,
-        "end": 682,
+        "start": 694,
+        "end": 696,
         "sha256": "274f522ebdbfcfc6f473837b2562e4f89860f01e3b2baed7f66c5ef9165449ff"
       },
       "actions": [
@@ -48241,8 +48241,8 @@
       "id": "a4cbfffab28a54a3",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1808,
-        "end": 1808,
+        "start": 1821,
+        "end": 1821,
         "sha256": "d4a9dd1d1fac1991a7df64aa87e4577fa18c9bef5fc07694815d48360429d55a"
       },
       "actions": [
@@ -48810,8 +48810,8 @@
       "id": "a7ba04b86318c813",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 770,
-        "end": 772,
+        "start": 775,
+        "end": 777,
         "sha256": "4f8657544ccd0b3c3e381eab359977f8677662226ad3d121093e90fecbe337cc"
       },
       "actions": [
@@ -49117,8 +49117,8 @@
       "id": "a8959261f2c35d3e",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1817,
-        "end": 1817,
+        "start": 1830,
+        "end": 1830,
         "sha256": "88b1dd8a2e928290c4a7e266f542227e1ef7ffc3d4646db2988db39737e80bef"
       },
       "actions": [
@@ -49146,8 +49146,8 @@
       "id": "a8a1859718227433",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 595,
-        "end": 598,
+        "start": 609,
+        "end": 612,
         "sha256": "285adb34294fce81bd951e5c421d767c26d847995706f339b90f0f7ef725b36f"
       },
       "actions": [
@@ -49556,8 +49556,8 @@
       "id": "a9d5730c68ed0f93",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1940,
-        "end": 1941,
+        "start": 1961,
+        "end": 1962,
         "sha256": "c0b8fde54c8d1a918321f8acb3b509dedb6c74debaf90dd7b8956e62abe0bca6"
       },
       "actions": [
@@ -49756,8 +49756,8 @@
       "id": "a9f98b00df683075",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 467,
-        "end": 469,
+        "start": 481,
+        "end": 483,
         "sha256": "44fba8739d19abaed6d791deacb803d0666266dee6e7cc9a0b5a2723dee9d210"
       },
       "actions": [
@@ -50365,8 +50365,8 @@
       "id": "abbdc61ac1a1c484",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 563,
-        "end": 565,
+        "start": 577,
+        "end": 579,
         "sha256": "3af8be92706536575f44396134000a11adf737fae87c99c2427a9d8e13b0afd0"
       },
       "actions": [
@@ -51259,8 +51259,8 @@
       "id": "afcfe5814ba6bdba",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1824,
-        "end": 1826,
+        "start": 1837,
+        "end": 1839,
         "sha256": "fd5da44f133c4dad6d3ff4fd67fa123233da48d26757a63d3aec75b3310a2f11"
       },
       "actions": [
@@ -51534,8 +51534,8 @@
       "id": "b03c02a87d317b16",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 663,
-        "end": 664,
+        "start": 677,
+        "end": 678,
         "sha256": "c26287c65561809d81e16d701452b4d3760b03e68df1ff790fc1aa675106a5d4"
       },
       "actions": [
@@ -52214,8 +52214,8 @@
       "id": "b29748448fe9c8d9",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1125,
-        "end": 1127,
+        "start": 1138,
+        "end": 1140,
         "sha256": "ab506e5c1cf17d9e681852abbf090e5ec1f83a5c8d7d040ae1fd7fae65ee4bd6"
       },
       "actions": [
@@ -52353,8 +52353,8 @@
       "id": "b2fef9ed10833ad5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 808,
-        "end": 813,
+        "start": 822,
+        "end": 827,
         "sha256": "dcfd6ac882e2fd986bd8ef27349510e52e7d98f883712f96d83b78faed397254"
       },
       "actions": [
@@ -53450,8 +53450,8 @@
       "id": "b5c88e5d69c3c253",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 356,
-        "end": 356,
+        "start": 359,
+        "end": 359,
         "sha256": "425f9df57aef918b436ffdf46d77f4c629327209ce3534077644944761f9e46b"
       },
       "actions": [
@@ -53893,8 +53893,8 @@
       "id": "b7a56eb8ac816606",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2615,
-        "end": 2616,
+        "start": 2636,
+        "end": 2637,
         "sha256": "65dd561264d9dceb260adcf07be509bdbd388635d2be1b33a72daa739c13467f"
       },
       "actions": [
@@ -54311,8 +54311,8 @@
       "id": "b8a384e5c83a517b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1349,
-        "end": 1349,
+        "start": 1362,
+        "end": 1362,
         "sha256": "23f59266ff5a5d0b230e417bf80956cc0fec381d5786a79b2f7885113dec0f29"
       },
       "actions": [
@@ -54358,8 +54358,8 @@
       "id": "b8c15e8bfa888fe0",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1276,
-        "end": 1276,
+        "start": 1289,
+        "end": 1289,
         "sha256": "3a7ba7acb459f5d6261d4046a748ea6f3894994282cd566a0127d7505ff901a6"
       },
       "actions": [
@@ -54428,8 +54428,8 @@
       "id": "b9335911984aff2d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 424,
-        "end": 424,
+        "start": 438,
+        "end": 438,
         "sha256": "abc81019fd1ad08baf3b4edb48386acd2a5061c46b5c1887ce86b33a68339cbe"
       },
       "actions": [
@@ -54644,8 +54644,8 @@
       "id": "ba1df87c70c1ca38",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1269,
-        "end": 1274,
+        "start": 1282,
+        "end": 1287,
         "sha256": "a71a11f04d418b6687de10f58fa6084a986061b9c331bf8ed19d25d46e63256b"
       },
       "actions": [
@@ -55368,8 +55368,8 @@
       "id": "bc656486db42bb2d",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1331,
-        "end": 1332,
+        "start": 1344,
+        "end": 1345,
         "sha256": "cf912d0eea76a37d9d89209a1b8f0fbed46bfe58dcbc2346cfd4cc316a464adc"
       },
       "actions": [
@@ -55543,8 +55543,8 @@
       "id": "bcfdfe11b92710f7",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1311,
-        "end": 1316,
+        "start": 1324,
+        "end": 1329,
         "sha256": "5f97563eeedafadaacc9d154351f326da8f1a62c56487ea29778b4901c9ab919"
       },
       "actions": [
@@ -55929,8 +55929,8 @@
       "id": "be57ab300ea7debd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 927,
-        "end": 930,
+        "start": 941,
+        "end": 944,
         "sha256": "26beb85a13d16de248d0f1e982bec88ba5075e79d6cf6af4235ef6535513e543"
       },
       "actions": [
@@ -56214,8 +56214,8 @@
       "id": "c01542440119f134",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1414,
-        "end": 1425,
+        "start": 1427,
+        "end": 1438,
         "sha256": "5a80a24c7becd9f1d744f5d0a1f664037ca4f8bf4fa86f3caa2ad69fa5ea5404"
       },
       "actions": [
@@ -56343,8 +56343,8 @@
       "id": "c074b92ff5ce85f0",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1113,
-        "end": 1114,
+        "start": 1126,
+        "end": 1127,
         "sha256": "adf866387c3df0025d7f86d32e6a8e4ae2be94409c0f2c98de9acc9c80fbb031"
       },
       "actions": [
@@ -56866,8 +56866,8 @@
       "id": "c18bb22b028ae262",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1340,
-        "end": 1347,
+        "start": 1353,
+        "end": 1360,
         "sha256": "00eef968f7786f5e236fe7166c0619374f91c423bf4cdfe35e4f8a2564f403d5"
       },
       "actions": [
@@ -57123,8 +57123,8 @@
       "id": "c2e7664f2a503d89",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1171,
-        "end": 1174,
+        "start": 1184,
+        "end": 1187,
         "sha256": "3f3b8deaa36f3fed0417458c6f66ea5b9fd73fc4e410065bc338735cb4cf429d"
       },
       "actions": [
@@ -57448,8 +57448,8 @@
       "id": "c3c759c09dc34e83",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1986,
-        "end": 1988,
+        "start": 2007,
+        "end": 2009,
         "sha256": "a033e5c53251f10ac17a7f968963b89cd4bb1f11b47695a5345a5ac80c10114b"
       },
       "actions": [
@@ -57601,8 +57601,8 @@
       "id": "c4b300f2fb1b568b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1125,
-        "end": 1127,
+        "start": 1138,
+        "end": 1140,
         "sha256": "ab506e5c1cf17d9e681852abbf090e5ec1f83a5c8d7d040ae1fd7fae65ee4bd6"
       },
       "actions": [
@@ -57953,8 +57953,8 @@
       "id": "c5d365e0dd88abf7",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1207,
-        "end": 1207,
+        "start": 1220,
+        "end": 1220,
         "sha256": "07270792f2f4cf9e52db7f75a707c842c692dc19c705155a26abd3d54fd6ee26"
       },
       "actions": [
@@ -58157,8 +58157,8 @@
       "id": "c70bb3d8fb1f1835",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1172,
-        "end": 1173,
+        "start": 1185,
+        "end": 1186,
         "sha256": "ef6fdd713e66fb76d34c03c87fdb422c6f55ab72565958916becd862e27505ca"
       },
       "actions": [
@@ -58374,8 +58374,8 @@
       "id": "c8509926f7a1cb40",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1198,
-        "end": 1198,
+        "start": 1211,
+        "end": 1211,
         "sha256": "979d3d8b524a98c50888e8a5043cd7334613922ddc4a228a88c35bfc3208eff5"
       },
       "actions": [
@@ -58601,8 +58601,8 @@
       "id": "c971ccb333361360",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 435,
-        "end": 435,
+        "start": 449,
+        "end": 449,
         "sha256": "cc0f92a36210d7cf478a1dcd404ed40f0f1956d12202059503ac6325c63a2748"
       },
       "actions": [
@@ -58804,8 +58804,8 @@
       "id": "ca43746968e88a37",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1998,
-        "end": 2001,
+        "start": 2019,
+        "end": 2022,
         "sha256": "44cbd5f07b15892eebb7e268a126afacab4cddad423ce27008d3e007d25766c0"
       },
       "actions": [
@@ -60182,8 +60182,8 @@
       "id": "cf55bb9227553346",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1842,
-        "end": 1849,
+        "start": 1855,
+        "end": 1862,
         "sha256": "1a04c74e6fa68d955ed2e004317c060d6cd01f18fed97484f9bf709981bdd4df"
       },
       "actions": [
@@ -60749,8 +60749,8 @@
       "id": "d2025b83a61d59dd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 926,
-        "end": 929,
+        "start": 940,
+        "end": 943,
         "sha256": "6ccdd6df77ace49b02338e035534ba74df09e5c4910fb1989ac197764d5da3a6"
       },
       "actions": [
@@ -61076,8 +61076,8 @@
       "id": "d3bc3b06359020d1",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 433,
-        "end": 433,
+        "start": 447,
+        "end": 447,
         "sha256": "6cb3e081cf00cebc2d6bea390d1d2df1ed786518df0252b0770acc72919044ab"
       },
       "actions": [
@@ -61461,8 +61461,8 @@
       "id": "d5f865424de983da",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1221,
-        "end": 1227,
+        "start": 1234,
+        "end": 1240,
         "sha256": "b96c2664a01b07c57aea06b551a2fc68084d99635316ca855922661ea306175a"
       },
       "actions": [
@@ -61534,8 +61534,8 @@
       "id": "62cc01ea0bfc9dc2",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1839,
-        "end": 1839,
+        "start": 1852,
+        "end": 1852,
         "sha256": "a1ee5631c36e4406792295d4973eecb0f9ec4fe6b3547d9799ff31133e10b483"
       },
       "actions": [
@@ -61555,8 +61555,8 @@
       "id": "d6c26f6545ff88e5",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2000,
-        "end": 2001,
+        "start": 2021,
+        "end": 2022,
         "sha256": "983538e234cb89aade1e4f99432a8e8f7a7b3a4869c7a784a148a4f6154296cf"
       },
       "actions": [
@@ -61861,8 +61861,8 @@
       "id": "d820d27479c11bd1",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 447,
-        "end": 450,
+        "start": 452,
+        "end": 455,
         "sha256": "575bad9a8cdb061990dae6beedbac2fb43ae8b0220f6cb1659a208c547cea583"
       },
       "actions": [
@@ -62376,8 +62376,8 @@
       "id": "d9bf981fa635867c",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1231,
-        "end": 1232,
+        "start": 1244,
+        "end": 1245,
         "sha256": "a0aadd42cb9d29372a675cee942956c5496dc662bb1389f14373c72733738e5e"
       },
       "actions": [
@@ -62510,8 +62510,8 @@
       "id": "da076d19a48e101c",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1407,
-        "end": 1407,
+        "start": 1420,
+        "end": 1420,
         "sha256": "4efffa4730bae23ffb0b42af4884e4242aaced1ee73ab9a4406f30afb3af6470"
       },
       "actions": [
@@ -62534,8 +62534,8 @@
       "id": "da1b5fbd04df259a",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1206,
-        "end": 1206,
+        "start": 1219,
+        "end": 1219,
         "sha256": "ad74568dcaba1f4c649f4287e2eaeccfa4249ff00efde554f2ca383d91c4f7bb"
       },
       "actions": [
@@ -62582,8 +62582,8 @@
       "id": "da70d7ffff562871",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 923,
-        "end": 926,
+        "start": 937,
+        "end": 940,
         "sha256": "9b0fe68c953cf1ee96a5fc24f650595124c613b3cb2f11f58db77a9bc57c52cb"
       },
       "actions": [
@@ -62798,8 +62798,8 @@
       "id": "db7f9411ab198357",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1098,
-        "end": 1099,
+        "start": 1111,
+        "end": 1112,
         "sha256": "c9ac475fb5b49a3a2e0f70f2541978b093d63ae6b89e24bf66190392f1c835b9"
       },
       "actions": [
@@ -62890,8 +62890,8 @@
       "id": "dbc4fdda45bd4242",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1932,
-        "end": 1933,
+        "start": 1945,
+        "end": 1946,
         "sha256": "5cb2d84b8079a570c076aba609086c590ea3047e8e5890ce3a76651be18bbbc6"
       },
       "actions": [
@@ -63131,8 +63131,8 @@
       "id": "dc795d7a0700029a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 342,
-        "end": 342,
+        "start": 345,
+        "end": 345,
         "sha256": "662541f5fd2f4f8a1c01d7814d5b3245d9d1169c9bd1fcf34e8ee04fe6804605"
       },
       "actions": [
@@ -63771,8 +63771,8 @@
       "id": "de953a9983e5c344",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1039,
-        "end": 1039,
+        "start": 1052,
+        "end": 1052,
         "sha256": "6b6a71d0c6aefe6dc6745dd8b06b230f6e5214ce2631848537fd166bf33e7fdc"
       },
       "actions": [
@@ -64044,8 +64044,8 @@
       "id": "df0cb3dd47468479",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 898,
-        "end": 901,
+        "start": 912,
+        "end": 915,
         "sha256": "a6fd533bb2976ec5b7b66dcb502653131dc1c2339a1068af0a37056588ae0032"
       },
       "actions": [
@@ -65587,8 +65587,8 @@
       "id": "e420b03a6509cbf4",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1342,
-        "end": 1347,
+        "start": 1355,
+        "end": 1360,
         "sha256": "2bef2da54f99ee0b4aaea67a4c068af8fc56366b2f8d137216d89db0b6447edb"
       },
       "actions": [
@@ -67213,8 +67213,8 @@
       "id": "e854487f4fee66d8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 561,
-        "end": 561,
+        "start": 575,
+        "end": 575,
         "sha256": "97f462fc90f039c5470d57da43b84f5caf32b895462b9db5a7662402904e8f9c"
       },
       "actions": [
@@ -67375,8 +67375,8 @@
       "id": "e8dd6ae9e8f9e941",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1271,
-        "end": 1273,
+        "start": 1284,
+        "end": 1286,
         "sha256": "67a82a9e7777889b100d39be2b97436865d94c669b5a06d5401081b2535b53db"
       },
       "actions": [
@@ -68386,8 +68386,8 @@
       "id": "eb71b944fb8f3a41",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1832,
-        "end": 1833,
+        "start": 1845,
+        "end": 1846,
         "sha256": "2a2577f48b642219932a599f853fded75913d07ca375fdb7c99cdbb14cef011b"
       },
       "actions": [
@@ -69727,8 +69727,8 @@
       "id": "ef69e4e3d3653ce8",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1118,
-        "end": 1118,
+        "start": 1131,
+        "end": 1131,
         "sha256": "7b15c931b666d3abaab55cc4248a6920c1f3de7dbeffce43a0fd62b2dd790b92"
       },
       "actions": [
@@ -69985,8 +69985,8 @@
       "id": "f099cb3455161711",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 487,
-        "end": 487,
+        "start": 492,
+        "end": 492,
         "sha256": "08e7cb6636cf02f200d84de2bc1585e17c5cbcba4c4234b3df6eec682cb0b123"
       },
       "actions": [
@@ -70603,8 +70603,8 @@
       "id": "f263ae9506a3275b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1095,
-        "end": 1097,
+        "start": 1108,
+        "end": 1110,
         "sha256": "efcb95e43f8f29c82dcd360bcaa257b76ff997c6ef43064a3318f91084285053"
       },
       "actions": [
@@ -70695,8 +70695,8 @@
       "id": "f2f3cad689dbd5bc",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1324,
-        "end": 1332,
+        "start": 1337,
+        "end": 1345,
         "sha256": "d957af39f3e5afb6fbdcd93b3d7eafd5b71fe843506b86ecf0e3a446fa33bad5"
       },
       "actions": [
@@ -70714,8 +70714,8 @@
       "id": "f3142c5f6bbed5b9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 624,
-        "end": 626,
+        "start": 638,
+        "end": 640,
         "sha256": "90964b4e76c047a150ad14af6589320cf5dfa4163e529e0e9f748bdc796625e2"
       },
       "actions": [
@@ -71073,8 +71073,8 @@
       "id": "f43fd634b3462a11",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 666,
-        "end": 667,
+        "start": 680,
+        "end": 681,
         "sha256": "c803ddeb6699c76d5458d3286886abdae555235d298da3ddd88d8523cc1a7210"
       },
       "actions": [
@@ -71683,8 +71683,8 @@
       "id": "f7ba13b1f3d51d88",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 271,
-        "end": 277,
+        "start": 276,
+        "end": 282,
         "sha256": "57719e23f1e75a295d1159e002578e2cd4ee8fdc56ac85a1db83325c49ae4b23"
       },
       "actions": [
@@ -72778,8 +72778,8 @@
       "id": "fb859a15baa6bed6",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1037,
-        "end": 1037,
+        "start": 1050,
+        "end": 1050,
         "sha256": "4cf41ec9c53ea473ff2f2b02d88ed5524252942797904c3451b491dad4f403d1"
       },
       "actions": [
@@ -73264,8 +73264,8 @@
       "id": "fd500a005dc03f57",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1075,
-        "end": 1075,
+        "start": 1088,
+        "end": 1088,
         "sha256": "ee830b8d2ec7561edba38ff7919483d22cee6da3e146fa4172c806a495df9d45"
       },
       "actions": [
@@ -73687,8 +73687,8 @@
       "id": "fec0081d62af98f9",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1193,
-        "end": 1193,
+        "start": 1206,
+        "end": 1206,
         "sha256": "8c59adbae0c277b58ff07ced94b3caa82b9f9b1f24be5b8167a89a68b1e5e8fe"
       },
       "actions": [
@@ -78951,8 +78951,8 @@
       "id": "29ac337b2c59b8ed",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 625,
-        "end": 626,
+        "start": 639,
+        "end": 640,
         "sha256": "7d465e3f0c21d5f81836c01c2e02a12d8d63afc3cde786dcf09502483556d56d"
       },
       "actions": [
@@ -78990,8 +78990,8 @@
       "id": "3ca2977b041059cb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 825,
-        "end": 835,
+        "start": 839,
+        "end": 849,
         "sha256": "6e7e02f6db3de01649c85911494132b56602c279c01624323914185da4f41abb"
       },
       "actions": [
@@ -79057,8 +79057,8 @@
       "id": "4b378e36b7419278",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 766,
-        "end": 766,
+        "start": 780,
+        "end": 780,
         "sha256": "84d87a6ac462771db62eeb1a6797d89dd971d64a1d2fa9c362c10031c5a089d4"
       },
       "actions": [
@@ -79078,8 +79078,8 @@
       "id": "4d619e5bf1e56d7a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 763,
-        "end": 764,
+        "start": 777,
+        "end": 778,
         "sha256": "628b44ccc5c00dea4e1bf08f684cc8fcc7f340a96d7adf1be3d39482636bb5b0"
       },
       "actions": [
@@ -79200,8 +79200,8 @@
       "id": "75a01461b52b6b7a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 770,
-        "end": 778,
+        "start": 784,
+        "end": 792,
         "sha256": "187da3ecc277e1de0b9e540f95becb8f7093dfb6e51b46df86f429f0c1a2cafc"
       },
       "actions": [
@@ -79224,8 +79224,8 @@
       "id": "7656023cb4f06a0f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 335,
-        "end": 336,
+        "start": 338,
+        "end": 339,
         "sha256": "22d85dad07c5bb07ab387609f677203a127c2d2e9ee654f3e2e36a2ac8616057"
       },
       "actions": [
@@ -79266,8 +79266,8 @@
       "id": "7ef9534ffe31e8a5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 838,
-        "end": 843,
+        "start": 852,
+        "end": 857,
         "sha256": "7a3e5279957baae96588b0e18e86cceb42722fc87827b1f684dd4f8f5dcc0acb"
       },
       "actions": [
@@ -79293,8 +79293,8 @@
       "id": "7f11c250598d1cf6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 532,
-        "end": 532,
+        "start": 546,
+        "end": 546,
         "sha256": "c7b80e0b415de12405742297518bbeeeab63083ebddeced424b056ab9e157d49"
       },
       "actions": [
@@ -79314,8 +79314,8 @@
       "id": "7fd65098bf1ab87a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 917,
-        "end": 925,
+        "start": 931,
+        "end": 939,
         "sha256": "cf5b10621169cec2162228038682640e6c3308b1e59fc741c4f76ed76bab095c"
       },
       "actions": [
@@ -79335,8 +79335,8 @@
       "id": "811be6db468e45c4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 572,
-        "end": 577,
+        "start": 586,
+        "end": 591,
         "sha256": "0c980fa83a4300e5a9837308b443c69da4a6f064c0b4d29088e08fd9b5185965"
       },
       "actions": [
@@ -79356,8 +79356,8 @@
       "id": "83dab709c8cd268d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 536,
-        "end": 536,
+        "start": 550,
+        "end": 550,
         "sha256": "592a2e61beae656bbd65be2757c56ab2fe105580f3fe1a01230279d66aed31a6"
       },
       "actions": [
@@ -79377,8 +79377,8 @@
       "id": "88b3bf3302dd7830",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 522,
-        "end": 529,
+        "start": 536,
+        "end": 543,
         "sha256": "8ab344172387fc3a08adf8c738ccb0537721e2ba7d3f2ea65be587e69dedb1b7"
       },
       "actions": [
@@ -79398,8 +79398,8 @@
       "id": "8a446afa0edb42c2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 727,
-        "end": 737,
+        "start": 741,
+        "end": 751,
         "sha256": "a428147f4496f41893ce079eb3e2e1db4fc3e46278ba9b8467975bfe8abf9327"
       },
       "actions": [
@@ -79422,8 +79422,8 @@
       "id": "8a67029696cbf0b8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 545,
-        "end": 545,
+        "start": 559,
+        "end": 559,
         "sha256": "855badd29c331125f697c8be79c2e1e9535010812bee9c917f723711a8cd3b42"
       },
       "actions": [
@@ -79443,8 +79443,8 @@
       "id": "8c330d0546d11c31",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 599,
-        "end": 613,
+        "start": 613,
+        "end": 627,
         "sha256": "192b962acc29c719f349a6e8402bf9296e1b795c2e57ffdd47a2ff06f3e0d28d"
       },
       "actions": [
@@ -79463,8 +79463,8 @@
       "id": "8e093b0846960340",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 462,
-        "end": 477,
+        "start": 476,
+        "end": 491,
         "sha256": "c985acb284696831286da12ba8b55a044dcbb709eb303e9100fc2edc581f1cad"
       },
       "actions": [
@@ -79483,8 +79483,8 @@
       "id": "8fb80feb081c33b9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 907,
-        "end": 909,
+        "start": 921,
+        "end": 923,
         "sha256": "6d63236a09570fb3909931fbb1e8c7a6bb4d8554fddda68370519c8da70c359e"
       },
       "actions": [
@@ -79507,8 +79507,8 @@
       "id": "911af19a3e3714a2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 530,
-        "end": 530,
+        "start": 544,
+        "end": 544,
         "sha256": "064796db3df6d13edd8b55016d4d637b041d1a018a5528abd4968a4e545f13c4"
       },
       "actions": [
@@ -79528,8 +79528,8 @@
       "id": "9c23f545f48b7fab",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 935,
-        "end": 938,
+        "start": 949,
+        "end": 952,
         "sha256": "2a0646fc503064aa903a2084d714f1701170f00b4ea8cd3a238c73359b1891a0"
       },
       "actions": [
@@ -79608,8 +79608,8 @@
       "id": "c05c410e803e4d84",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 814,
-        "end": 822,
+        "start": 828,
+        "end": 836,
         "sha256": "d1d009882bdc6d8cc108de227357a233b5a0c0cfddfe9bc165a39b083e2e243c"
       },
       "actions": [
@@ -79656,8 +79656,8 @@
       "id": "c4e9fe3c3fb2bfc6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 546,
-        "end": 548,
+        "start": 560,
+        "end": 562,
         "sha256": "c4009d726a4053ee985a17c6d148bcce5bcc4ceb62f3c1ed922aae3234654073"
       },
       "actions": [
@@ -79699,8 +79699,8 @@
       "id": "d0f390bd0ec97fe3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 557,
-        "end": 559,
+        "start": 571,
+        "end": 573,
         "sha256": "9478da7339993e90d794ae99b033fb46ecdcc77a21251663331900a5adf0af82"
       },
       "actions": [
@@ -79720,8 +79720,8 @@
       "id": "dc2e4f6b205216c4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 931,
-        "end": 934,
+        "start": 945,
+        "end": 948,
         "sha256": "5b8f42fe05b1d16bab668bc20b0aa0218da538ef59c2e9905f6fcfb5a4f1f82b"
       },
       "actions": [
@@ -79782,8 +79782,8 @@
       "id": "df11d43f6e9dfd27",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 618,
-        "end": 620,
+        "start": 632,
+        "end": 634,
         "sha256": "f388c57f2f53a6e5f0a242c097a4436c55706405fb35f5dbe38a5a0fdaa24c27"
       },
       "actions": [
@@ -79802,8 +79802,8 @@
       "id": "e34349d8a4a70318",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 538,
-        "end": 538,
+        "start": 552,
+        "end": 552,
         "sha256": "ab538a8d6c6a3d8db5ad1d3af648383fd550578550cb83053f1347923f0e6556"
       },
       "actions": [
@@ -79823,8 +79823,8 @@
       "id": "e5c016b1314eb20b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 628,
-        "end": 634,
+        "start": 642,
+        "end": 648,
         "sha256": "e4f9ad25b580b3a3017e33460184ebc148836f2416eca0fc0e5130c81f7b750c"
       },
       "actions": [
@@ -79844,8 +79844,8 @@
       "id": "f7a936141238fbaa",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 550,
-        "end": 555,
+        "start": 564,
+        "end": 569,
         "sha256": "a1ea40ff72f3baa12822181aded31f6eb725800db0ddf0385a74dab399a65ad1"
       },
       "actions": [
@@ -79865,8 +79865,8 @@
       "id": "fab401729defa3de",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 683,
-        "end": 685,
+        "start": 697,
+        "end": 699,
         "sha256": "32815175314d73edb6f8561307f3c565237fcfa9871e1eae2a11f47b856693e6"
       },
       "actions": [
@@ -79888,8 +79888,8 @@
       "id": "fce8200a63b6d5a2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 913,
-        "end": 915,
+        "start": 927,
+        "end": 929,
         "sha256": "d7defe0ccd73bddedf632b2b7f031cb135e105f84f8cee5ebf75581e874f65bf"
       },
       "actions": [
@@ -85858,8 +85858,8 @@
       "id": "1e25f4ca72271bb8",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1093,
-        "end": 1097,
+        "start": 1106,
+        "end": 1110,
         "sha256": "f4ceb50479fc717ccc28e795d7b3825a7a6b1d2779627dbc4c0aae7562cac138"
       },
       "actions": [
@@ -86053,8 +86053,8 @@
       "id": "84e07a58a14adbe6",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1339,
-        "end": 1347,
+        "start": 1352,
+        "end": 1360,
         "sha256": "daf38fc77634fc88d4038365a3cf20e2be8e04841cbc6bca46ad4729ed3cb323"
       },
       "actions": [
@@ -86292,8 +86292,8 @@
       "id": "d4993ffe95ef9b73",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1101,
-        "end": 1102,
+        "start": 1114,
+        "end": 1115,
         "sha256": "aeb5a744cbafb6a3e3cd7af48a54430d6956bc8fe22055a9f1370e44af7084b9"
       },
       "actions": [
@@ -86337,8 +86337,8 @@
       "id": "d9202a4b708a7061",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1293,
-        "end": 1296,
+        "start": 1306,
+        "end": 1309,
         "sha256": "6331785fda3154804f574843a88fb180b943f07ac620f70acde9c2973ee17cfd"
       },
       "actions": [
@@ -86380,8 +86380,8 @@
       "id": "db738af57f71b7a2",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 530,
-        "end": 530,
+        "start": 535,
+        "end": 535,
         "sha256": "fd469d776364f520c00e44c056c65dc2dc436cb075cad9ad1ec8312bdbe9f7a6"
       },
       "actions": [
@@ -86402,8 +86402,8 @@
       "id": "e5fd88a878fb7edc",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1192,
-        "end": 1194,
+        "start": 1205,
+        "end": 1207,
         "sha256": "e181f070313186b29c05fd6bad1bf822db3b9576aaea094d92c4a6b5cfee99d8"
       },
       "actions": [
@@ -86468,8 +86468,8 @@
       "id": "034de5876b954110",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1018,
-        "end": 1018,
+        "start": 1031,
+        "end": 1031,
         "sha256": "10822d90617ee8989f20d526f2836f5c9d2dd5e728fd2e017a43ce84e57416c0"
       },
       "actions": [
@@ -86513,8 +86513,8 @@
       "id": "0432d75024df7b0b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1161,
-        "end": 1161,
+        "start": 1174,
+        "end": 1174,
         "sha256": "138d7badb44b7150e1fee89a75b71337229da52ef239b67e79fcbf1d8e1eafb4"
       },
       "actions": [
@@ -86563,8 +86563,8 @@
       "id": "09ead4336c2f2570",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1021,
-        "end": 1022,
+        "start": 1034,
+        "end": 1035,
         "sha256": "f5c9bb3d34de5f6d6c23e466268279e99b0cb3d4074f4e73104d7eee7dba995a"
       },
       "actions": [
@@ -86631,8 +86631,8 @@
       "id": "16e801414196480d",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1137,
-        "end": 1137,
+        "start": 1150,
+        "end": 1150,
         "sha256": "2072d934e1ed34d0e0f02a09acfd237eeaddaac4d936d7e58e8ad2da14e8f1ee"
       },
       "actions": [
@@ -86655,8 +86655,8 @@
       "id": "175abc6be3e6d3ed",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1154,
-        "end": 1155,
+        "start": 1167,
+        "end": 1168,
         "sha256": "9526be6ca232950fcf7ae6c39ebc13e3c8749049e7eed6bb744abf477b213c22"
       },
       "actions": [
@@ -86872,8 +86872,8 @@
       "id": "4b018d9639470517",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1033,
-        "end": 1035,
+        "start": 1046,
+        "end": 1048,
         "sha256": "2db3c90555cb964d13351d163f3b989fe77cf5760cf66f7b51b9c4ef7e864a35"
       },
       "actions": [
@@ -86899,8 +86899,8 @@
       "id": "4da2d1acdfc0f969",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1014,
-        "end": 1015,
+        "start": 1027,
+        "end": 1028,
         "sha256": "9f1e8097d8fcbaf99d264664d39506aff63dcaa8419dadd8275f64a91f191ac5"
       },
       "actions": [
@@ -86920,8 +86920,8 @@
       "id": "54c873ee48fa37b4",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1150,
-        "end": 1150,
+        "start": 1163,
+        "end": 1163,
         "sha256": "1bc601aa7620140719a8fb6d7030ab44d28ec95210f9a3ee665ba6b9c0905f95"
       },
       "actions": [
@@ -86945,8 +86945,8 @@
       "id": "552641bbd4586a8a",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1142,
-        "end": 1143,
+        "start": 1155,
+        "end": 1156,
         "sha256": "e90e60e02040d4217ba2743123cb49473a3cb82432cdd6036fc88b44e5066962"
       },
       "actions": [
@@ -87018,8 +87018,8 @@
       "id": "6e2015060a0280d7",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1047,
-        "end": 1053,
+        "start": 1060,
+        "end": 1066,
         "sha256": "29c87e1a48258a85371eb9a4274e91e7e30604b855899e2fe58e307a0149926f"
       },
       "actions": [
@@ -87041,8 +87041,8 @@
       "id": "95a73f0a0cb50f64",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 964,
-        "end": 967,
+        "start": 977,
+        "end": 980,
         "sha256": "42e94c863fd19339e926ff097141f2c7621d4966cbfc99a67f80033be576c3ac"
       },
       "actions": [
@@ -87064,8 +87064,8 @@
       "id": "9d6f3f9ad9d82dce",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1129,
-        "end": 1130,
+        "start": 1142,
+        "end": 1143,
         "sha256": "401a73ae05aa2f9dbfa94154a6bccd7eae88f44376d1983d4c196a6d94c9ed99"
       },
       "actions": [
@@ -87112,8 +87112,8 @@
       "id": "b332f65710e031b1",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 976,
-        "end": 985,
+        "start": 989,
+        "end": 998,
         "sha256": "6112e631032248f4c39bfde98c965f2a5ecaaa9ccb7c83a53a37bda58517156a"
       },
       "actions": [
@@ -87160,8 +87160,8 @@
       "id": "e50c0704c4db8479",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1043,
-        "end": 1044,
+        "start": 1056,
+        "end": 1057,
         "sha256": "244c09393446cd1ec73d834eb5cdb7a5ab927a804f6b82a91125cddd18a44aaf"
       },
       "actions": [
@@ -90251,8 +90251,8 @@
       "id": "43729008a8e51dab",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1025,
-        "end": 1027,
+        "start": 1038,
+        "end": 1040,
         "sha256": "91f3f4f9dfb8505be849d562b4f439eddd9d7a5d99cdf11a36cc2172b9030707"
       },
       "actions": [
@@ -90295,8 +90295,8 @@
       "id": "54d9e552ed75af29",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 982,
-        "end": 985,
+        "start": 995,
+        "end": 998,
         "sha256": "658ec39002f4ab2da38d1df955b05cc8fab68685347361ef989495e6f0375cc1"
       },
       "actions": [
@@ -90339,8 +90339,8 @@
       "id": "6208a387ed615586",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1008,
-        "end": 1010,
+        "start": 1021,
+        "end": 1023,
         "sha256": "a482e5384fdfd47d8d301cd4f6f42a9132c71e75608ce04d2a465b1c8ad7dde4"
       },
       "actions": [
@@ -90735,8 +90735,8 @@
       "id": "a50922c47ee180a2",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1000,
-        "end": 1002,
+        "start": 1013,
+        "end": 1015,
         "sha256": "45c1f0f83ce30ee93b70dbcd78b2830ef7a1d547e5a372fd4d14499b63e42d5b"
       },
       "actions": [
@@ -90955,8 +90955,8 @@
       "id": "cfd14cf0779d4d25",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1033,
-        "end": 1035,
+        "start": 1046,
+        "end": 1048,
         "sha256": "2db3c90555cb964d13351d163f3b989fe77cf5760cf66f7b51b9c4ef7e864a35"
       },
       "actions": [
@@ -91043,8 +91043,8 @@
       "id": "f866b30e993d0877",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 992,
-        "end": 992,
+        "start": 1005,
+        "end": 1005,
         "sha256": "09035ab9721b3352e1c64f894e6c4c5fb9f380a543c6258af15a06ddc2e3613c"
       },
       "actions": [
@@ -91259,8 +91259,8 @@
       "id": "26efb4e55883485b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1077,
-        "end": 1083,
+        "start": 1090,
+        "end": 1096,
         "sha256": "d609ccfdfb61b054fa81351ffc9c157c4400397ed78c449f55e231ff4c915b81"
       },
       "actions": [
@@ -91287,8 +91287,8 @@
       "id": "2c888f299906ff32",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1383,
-        "end": 1391,
+        "start": 1396,
+        "end": 1404,
         "sha256": "833b1fd3d49595f508a13f33ca5b2a53e72d332716536b8578f896f537f79ce9"
       },
       "actions": [
@@ -91343,8 +91343,8 @@
       "id": "5951e4d297759f68",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1351,
-        "end": 1354,
+        "start": 1364,
+        "end": 1367,
         "sha256": "c7d10b03dfeef8c4a6f1787e5c524a33d1fe1cce8205bd6141792ca4613713cf"
       },
       "actions": [
@@ -91599,8 +91599,8 @@
       "id": "197ff0d78abdf318",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2457,
-        "end": 2457,
+        "start": 2478,
+        "end": 2478,
         "sha256": "87a59fa272dfc547a1ceea5a66f62f1601b94c3b3cea51d8e8c137a1f71e0239"
       },
       "actions": [
@@ -91887,8 +91887,8 @@
       "id": "5ad74bc3e70954fd",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1817,
-        "end": 1817,
+        "start": 1830,
+        "end": 1830,
         "sha256": "88b1dd8a2e928290c4a7e266f542227e1ef7ffc3d4646db2988db39737e80bef"
       },
       "actions": [
@@ -92510,8 +92510,8 @@
       "id": "4def5b8c3047f33f",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1839,
-        "end": 1839,
+        "start": 1852,
+        "end": 1852,
         "sha256": "a1ee5631c36e4406792295d4973eecb0f9ec4fe6b3547d9799ff31133e10b483"
       },
       "actions": [
@@ -92651,8 +92651,8 @@
       "id": "e3f0dc98d40ff331",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1826,
-        "end": 1826,
+        "start": 1839,
+        "end": 1839,
         "sha256": "c6c250988f0b8744da96ca8cf5659cb1e2dea1aa998f3a83041f9ae68a0ac199"
       },
       "actions": [
@@ -92698,8 +92698,8 @@
       "id": "e7c7f25d1a19d7e4",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1832,
-        "end": 1832,
+        "start": 1845,
+        "end": 1845,
         "sha256": "3923f29b744dca3544bc78bd7a4793b32afabfc557ea9d77f9771da5e32eee06"
       },
       "actions": [
@@ -92839,8 +92839,8 @@
       "id": "f53701bf3919fc0b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1745,
-        "end": 1745,
+        "start": 1758,
+        "end": 1758,
         "sha256": "758aca4760b9c59e860b8f853204f306ee9e7decb8c951c7165a254d9306b4a4"
       },
       "actions": [
@@ -93969,8 +93969,8 @@
       "id": "686fac74675cb568",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1271,
-        "end": 1274,
+        "start": 1284,
+        "end": 1287,
         "sha256": "2c2be3331e4dd97e4944933986a21cf935058b6bf18605114508638b7a5e26d4"
       },
       "actions": [
@@ -94157,8 +94157,8 @@
       "id": "b99a982c276e1c41",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1269,
-        "end": 1269,
+        "start": 1282,
+        "end": 1282,
         "sha256": "dd676db3d8912557d65b735cc9ef765c52c3fbc43562d5060442ba59e4ef7408"
       },
       "actions": [
@@ -94204,8 +94204,8 @@
       "id": "f2facb46f14b660e",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1265,
-        "end": 1266,
+        "start": 1278,
+        "end": 1279,
         "sha256": "362613ab92c7577c0c3a7250154363e626e7c078ef04b2bfb916258ec4f1efe8"
       },
       "actions": [
@@ -94899,8 +94899,8 @@
       "id": "e560aff4a06d1e63",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 381,
-        "end": 388,
+        "start": 386,
+        "end": 393,
         "sha256": "3b57b44b0c88d2dd862933bd6f6629593b763d26a4e1247038a88986c54145ac"
       },
       "actions": [
@@ -94920,8 +94920,8 @@
       "id": "05d9ad3eebda9c31",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 407,
-        "end": 417,
+        "start": 410,
+        "end": 420,
         "sha256": "2ff32aee8f943418ab5ab45c0596f41a3829f614d7c8c6aa7b1f9027abd2faf1"
       },
       "actions": [
@@ -94943,7 +94943,7 @@
         "path": "apps/catalyst/ScrivUIKit/Shared/WorkspaceErrorPresenter.swift",
         "start": 50,
         "end": 57,
-        "sha256": "b66864b7653236444a03049b5c557167999bad2470681531d8c54763e8562c88"
+        "sha256": "22386a5e3d5b657f158d7895001567ba0f37663d99bef7a40f9d7ad6486a4ebd"
       },
       "actions": [
         "Observe the attached owned JSON validation error, acknowledge it through the application CLI and wait for the main workspace to be available.",
@@ -94963,7 +94963,7 @@
         "path": "apps/catalyst/ScrivUIKit/Shared/WorkspaceErrorPresenter.swift",
         "start": 50,
         "end": 57,
-        "sha256": "b66864b7653236444a03049b5c557167999bad2470681531d8c54763e8562c88"
+        "sha256": "22386a5e3d5b657f158d7895001567ba0f37663d99bef7a40f9d7ad6486a4ebd"
       },
       "actions": [
         "Import and reopen valid documents through the real project browser, then observe each attached rejection in the same run.",
@@ -95022,8 +95022,8 @@
       "id": "027a2e98f7850b23",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2129,
-        "end": 2151,
+        "start": 2150,
+        "end": 2172,
         "sha256": "2cf8b0f69eae716d07aee22ce14558bb730ba56e9787189cb0372e0e668ee8c5"
       },
       "actions": [
@@ -95032,8 +95032,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 180,
-        "end": 187,
+        "start": 183,
+        "end": 190,
         "sha256": "2d581fb645a379a9df1c91d1158e0dbd3901709445c90433d33bc7fe5d5203b0"
       },
       "why": "The local package acquires a cloud project ID, the Worker stores the matching project row, and the signed-in discussion composer appears."
@@ -95042,8 +95042,8 @@
       "id": "22b05ed3bc0cd8ba",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2234,
-        "end": 2255,
+        "start": 2255,
+        "end": 2276,
         "sha256": "f6796e4e1ab40c29ded83de44590a540a1a0aa9b772fe4980bd1e24c3bec23ea"
       },
       "actions": [
@@ -95053,8 +95053,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 219,
-        "end": 231,
+        "start": 223,
+        "end": 235,
         "sha256": "77dc09069997533e69cd2c32cc86ef6eccc1ebf81b1a70fe367a6aeb55fe411f"
       },
       "why": "Opening the Worker project reuses the original local replica and preserves all script fields and the second local project."
@@ -95073,8 +95073,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 41,
-        "end": 47,
+        "start": 44,
+        "end": 50,
         "sha256": "c2de74e1d6427291d2e107ed8e54f2fe6ffaffca09d0ea25aba7c72e616f6042"
       },
       "why": "The synthetic Worker accepts the exact challenge and the native app dismisses the sign-in prompt. Ordinary text routes remain refused."
@@ -95083,8 +95083,8 @@
       "id": "43ebfb9828cfc6ac",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2251,
-        "end": 2255,
+        "start": 2272,
+        "end": 2276,
         "sha256": "87a8748aed412fdc1927fa4d09a04c1c2677e8b2de84570844c0a0c5ab04fa33"
       },
       "actions": [
@@ -95093,8 +95093,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 259,
-        "end": 274,
+        "start": 263,
+        "end": 278,
         "sha256": "c26e34774395fbffd391ed451198bac0421f5be51fdb0955c945680f5bcb08bf"
       },
       "why": "A second app process with no local replica downloads the entire edited script into a new saved package and verifies its worker project ID."
@@ -95114,10 +95114,10 @@
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
         "start": 204,
-        "end": 231,
-        "sha256": "31a79eb1121ba160d30d402e3b4a6c296a12b3351f9dcec6c641b7991ce1afdd"
+        "end": 235,
+        "sha256": "4c45116d78c9f36d340486d6ca90103b9fe0f25430dcfba6002031d90cc65961"
       },
-      "why": "The ordinary script edit is accepted and the reopened cloud snapshot contains the exact edited content. This verifies the successful save path."
+      "why": "The ordinary native edit is committed in the owned Worker. The same pending command receives its original receipt on reconnect. The reopened cloud snapshot contains the complete edited content."
     },
     {
       "id": "64b7383cda3fd2ea",
@@ -95133,8 +95133,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 100,
-        "end": 112,
+        "start": 103,
+        "end": 115,
         "sha256": "062f1988b761e0528eba5ed7544407837ec493cf9a0a8ff1d59369efccc6ac99"
       },
       "why": "The Mentions tab shows its empty state and the Conversations tab keeps the saved resolved project thread after a normal refresh."
@@ -95143,8 +95143,8 @@
       "id": "8acc67c06d82e8a8",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2420,
-        "end": 2430,
+        "start": 2441,
+        "end": 2451,
         "sha256": "c0a744494da54de4dc7c17f13631b730335bc039d5ed9dd86fe01fee0a4f6949"
       },
       "actions": [
@@ -95154,8 +95154,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 235,
-        "end": 245,
+        "start": 239,
+        "end": 249,
         "sha256": "e41766c83b14f2fa96c5a60590493f004b0af45eb55dedca52e28d9a352842bc"
       },
       "why": "The native app displays both acknowledged messages, the reply quotes the original, and the conversation offers Reopen conversation after resolving."
@@ -95175,8 +95175,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 120,
-        "end": 131,
+        "start": 123,
+        "end": 134,
         "sha256": "58f86faf9de1f3b94e5ffa5626499e6698e21ec57f4ac1fca035eacaa726cfe5"
       },
       "why": "The real member list enters its no-match state and restores the exact owner from a case-insensitive role search."
@@ -95195,8 +95195,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 247,
-        "end": 255,
+        "start": 251,
+        "end": 259,
         "sha256": "8a1b4c7d695f47b4197245bcee21cc09f885159743d94e2f0a52ae8f79cb6494"
       },
       "why": "The line owns its own note and the original project conversation remains resolved and separate."
@@ -95214,8 +95214,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 132,
-        "end": 143,
+        "start": 135,
+        "end": 146,
         "sha256": "d6963f95fd540d2e683ba13772ea6768d128c7a73bb5de63ef3754e6153c5b17"
       },
       "why": "The journey witnesses both selection branches through the picker count and checks the retained selection in the draft."
@@ -95224,8 +95224,8 @@
       "id": "ba5b2175984c650b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 745,
-        "end": 752,
+        "start": 759,
+        "end": 766,
         "sha256": "1d7746eb5eaebda72973d221f800db972e6e3b424a80945f188eb40d50f1334d"
       },
       "actions": [
@@ -95233,8 +95233,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 92,
-        "end": 98,
+        "start": 95,
+        "end": 101,
         "sha256": "b09fd351161853888568e5f22c24bec76a800c01259dd972289f0e5eb72a4e46"
       },
       "why": "The journey requires the invalid request to fail before activating the same visible row successfully."
@@ -95243,8 +95243,8 @@
       "id": "bf4911ad6040ca0a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 757,
-        "end": 760,
+        "start": 771,
+        "end": 774,
         "sha256": "16c01113dbe9bb0ece4603282db9180a9e16ee5446fc4cf80a59bdf4f69e0291"
       },
       "actions": [
@@ -95252,8 +95252,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 132,
-        "end": 143,
+        "start": 135,
+        "end": 146,
         "sha256": "d6963f95fd540d2e683ba13772ea6768d128c7a73bb5de63ef3754e6153c5b17"
       },
       "why": "The count alternates between one and zero after each selection and the composer shows the selected member when the picker closes."
@@ -95271,8 +95271,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 113,
-        "end": 118,
+        "start": 116,
+        "end": 121,
         "sha256": "cb196561db925622def196b33288cdcc11e0c309e79ef0557de0726851acf7cd"
       },
       "why": "The journey sees the line scope and exact line message before switching back to the resolved project discussion."
@@ -95290,8 +95290,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 291,
-        "end": 306,
+        "start": 295,
+        "end": 310,
         "sha256": "42af4238cddb926e20681ce6e22a45957e023cc330d0eff4cfe05da70432521a"
       },
       "why": "After activating the mention row the journey verifies the project scope, exact posted message and mention label."
@@ -95300,8 +95300,8 @@
       "id": "13a6ed69aa8ab376",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2105,
-        "end": 2107,
+        "start": 2126,
+        "end": 2128,
         "sha256": "e86d26114b1f87cd457e730c5fc361f49d9c3ff4228466687a40da0c654b7bcd"
       },
       "actions": [
@@ -95309,8 +95309,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 322,
-        "end": 334,
+        "start": 371,
+        "end": 383,
         "sha256": "dad4a101ba6705826aeadd0d816ce5065452648bd433ca7a44880b3f83034194"
       },
       "why": "The real reconnect uses the freshly downloaded replica and verifies its entire loaded and persisted project after reconnection."
@@ -95328,8 +95328,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 336,
-        "end": 349,
+        "start": 385,
+        "end": 398,
         "sha256": "7d6a87e3ade08eb4a149c3a515c5c011b8bd381d2f2ffe1ecc3b354a1ff47f14"
       },
       "why": "The authorized local Worker independently reports that the newer session was revoked, while the earlier session and the whole local replica remain intact."
@@ -95338,8 +95338,8 @@
       "id": "382bd5f6cd718bd6",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2097,
-        "end": 2100,
+        "start": 2118,
+        "end": 2121,
         "sha256": "67a2d4cfb03b0e158c6a013944c1172487f5883b528b35a97fb2ecbb33b621c1"
       },
       "actions": [
@@ -95347,8 +95347,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 322,
-        "end": 334,
+        "start": 371,
+        "end": 383,
         "sha256": "dad4a101ba6705826aeadd0d816ce5065452648bd433ca7a44880b3f83034194"
       },
       "why": "The actual sync control enters and exits its busy state, then the loaded and saved replica and Worker project row remain identical."
@@ -95357,8 +95357,8 @@
       "id": "0804ad906d7b43de",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 641,
-        "end": 654,
+        "start": 655,
+        "end": 668,
         "sha256": "60e07b3316a73d32889bf0a2021a34745520a1d3ae8702d163e63e32c4ad8709"
       },
       "actions": [
@@ -95366,8 +95366,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 362,
-        "end": 372,
+        "start": 411,
+        "end": 421,
         "sha256": "033dc17a4baab545ac8416acba1f1f50e59f7f881d7582cc75f1df3656ead4fd"
       },
       "why": "The signed-out workspace sees each malformed, mismatched or out-of-scope request refused before any presentation."
@@ -95385,8 +95385,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 420,
-        "end": 429,
+        "start": 469,
+        "end": 478,
         "sha256": "1fbc7322aaeab9e4fa0785f3b502660b5f4531c9e3bc50d2a81ae99944489df7"
       },
       "why": "The owner name, role, team title and inactive plan are read from the real mounted sheet after the Worker loads team details."
@@ -95404,8 +95404,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 387,
-        "end": 402,
+        "start": 436,
+        "end": 451,
         "sha256": "38998050687396ac008884b4f15d2dc47790feb78413ee966731820a6a6df60c"
       },
       "why": "The journey reads exact original and edited script text from public read-only snapshots and verifies that the complete loaded model is unchanged."
@@ -95423,8 +95423,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 405,
-        "end": 417,
+        "start": 454,
+        "end": 466,
         "sha256": "968f9b6b086944385e275b6179ea86a1c35aec7e76f390fdd279c2e713826dc9"
       },
       "why": "The real discussion event displays the dedicated message, keeps Restore disabled, and offers no script snapshot."
@@ -95442,8 +95442,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 393,
-        "end": 398,
+        "start": 442,
+        "end": 447,
         "sha256": "27bd18a472446ec6b56a3bbd60b2b48ae158c0148856cf2672a47af25fa32ff8"
       },
       "why": "The two visually resolved rows show different independently known script text, proving that activation selected the intended revision."
@@ -95461,8 +95461,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 433,
-        "end": 436,
+        "start": 482,
+        "end": 485,
         "sha256": "a4146540f26469c2bd74ea2a7647d14d3205bb52a336995c65b2a7edcc79f823"
       },
       "why": "The mounted invitation view shows that the free team requires activation and keeps link creation disabled."
@@ -95561,6 +95561,77 @@
         "sha256": "45a50ec45a290986157429a8e7e119bc4fc238fa9d3db59502f057ddbdac7cb3"
       },
       "why": "The selected first model and second-page model appear exactly once in the real menu."
+    },
+    {
+      "id": "0c6711b1a4742df3",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 422,
+        "end": 432,
+        "sha256": "18349d4aeae42228c8413e4d675662e982d0c3b567e8f75a9c8c07bc1228e0c8"
+      },
+      "actions": [
+        "capabilities",
+        "acknowledge-cloud-save-error with a different message",
+        "presented-alerts",
+        "acknowledge-cloud-save-error with the exact visible message",
+        "presented-alerts",
+        "loaded-project",
+        "repeat acknowledge-cloud-save-error after closing the alert"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 347,
+        "end": 356,
+        "sha256": "5995afe4a1b483b01baf7c3d0e3a31eb041d5fc125652b48589525be80bf356a"
+      },
+      "why": "The isolated cloud edit error is advertised and can be acknowledged once. A wrong message and a stale repeat are refused. The owned attachment goes away and the complete edit remains saved."
+    },
+    {
+      "id": "1c71c11a91d0bacb",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1952,
+        "end": 1959,
+        "sha256": "970e2f87f05dd78a7a94338d1ba685712b1b5d60d13e065ee5ddfcbc96dc7f6d"
+      },
+      "actions": [
+        "presented-alerts",
+        "acknowledge-cloud-save-error with the exact visible message",
+        "loaded-project",
+        "observe the private run outbox"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 347,
+        "end": 356,
+        "sha256": "5995afe4a1b483b01baf7c3d0e3a31eb041d5fc125652b48589525be80bf356a"
+      },
+      "why": "The displayed cloud-save failure belongs to the active linked workspace. Acknowledgement leaves the loaded model and original pending command intact."
+    },
+    {
+      "id": "5419e9d8e5ed0739",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 560,
+        "end": 571,
+        "sha256": "eea8ef409724cdf2ddad011a3b065379d5436f61092d6c2ed36aa6c6bfbac6f4"
+      },
+      "actions": [
+        "menu-action workspace-panels Scriv account\u2026",
+        "activate Retry saved cloud commands",
+        "wait for Sync this script to become available",
+        "key Escape",
+        "loaded-project",
+        "persisted-projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 358,
+        "end": 367,
+        "sha256": "d47ad8cfd7afa135e15e1726c9079dd503800a3ea9f50bb715ff3c41124ea41f"
+      },
+      "why": "The same native workspace reconnects through Account. The real Worker confirms receipt identity and the matching pending record disappears. The complete loaded and saved project remains intact."
     }
   ],
   "commentExclusions": [
@@ -95608,11 +95679,11 @@
       "id": "01aead09a907d4bd",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 988,
-        "end": 991,
+        "start": 1001,
+        "end": 1004,
         "sha256": "95f0dfcd9e57382c1001f6bcba5922a43c99522186736054991adb899c25d334"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "027c9c980ee4e52e",
@@ -95628,11 +95699,11 @@
       "id": "030313b95be52b1b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2451,
-        "end": 2452,
+        "start": 2472,
+        "end": 2473,
         "sha256": "bad43ecfffa50589ddfdc9e59c98dc41ffd3f86557eb23893b000341f68fcbaf"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "0311a623f741d0d4",
@@ -95658,11 +95729,11 @@
       "id": "0330b94113abe7ba",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 588,
-        "end": 589,
+        "start": 593,
+        "end": 594,
         "sha256": "7eeef7163013a09683503655444f5bdf513f5df785480ad4aba5ce4cb04614fa"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "033a8aeb54e65dfe",
@@ -96008,11 +96079,11 @@
       "id": "0b2ff314ec3751ed",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1030,
-        "end": 1032,
+        "start": 1043,
+        "end": 1045,
         "sha256": "e2469aead4b01b05abc28ff96820f810e5bd199b57ec8cb652972e457d4cff36"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "0b3bda424791f183",
@@ -96058,11 +96129,11 @@
       "id": "0c6259bbcf7d65a3",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 600,
-        "end": 601,
+        "start": 605,
+        "end": 606,
         "sha256": "6d6eaf362a36b9dd1e00715865756c3c152749b28c58026ae2b956045bda503a"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "0ca653243681407e",
@@ -96118,11 +96189,11 @@
       "id": "0d94f2fece0b8bba",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1537,
-        "end": 1537,
+        "start": 1550,
+        "end": 1550,
         "sha256": "78a8b4d143c7639681231ab7f5d84872238f1efc2911a4609bea975bca491188"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "0eb789d38fa95eef",
@@ -96328,11 +96399,11 @@
       "id": "1580fb77770c6b05",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 485,
-        "end": 486,
+        "start": 499,
+        "end": 500,
         "sha256": "afc35e63d44cb2dc588f844311477dacc5219d24d4e86beefeab50bb55082db8"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "158d6d2aa96d0767",
@@ -96408,11 +96479,11 @@
       "id": "16b6200ece5b77d9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 858,
-        "end": 859,
+        "start": 872,
+        "end": 873,
         "sha256": "7758267ff9cf5280f9d398a2fc4dadfd667db0bb1ac6ea64fef858b2a996b5c8"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "16c1900c3ddd220c",
@@ -96428,11 +96499,11 @@
       "id": "16f1d147f5058fca",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 358,
-        "end": 359,
+        "start": 361,
+        "end": 362,
         "sha256": "2f4e890fd72601ad06471f2bab2c9ee3be008f93c42c1af3f4fad1964ecedb70"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "1779986c0d221573",
@@ -96858,21 +96929,21 @@
       "id": "1f8b8b4294e122e0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 799,
-        "end": 803,
+        "start": 813,
+        "end": 817,
         "sha256": "1cfc9c2c2a831d6f1d26ff49879391d7fd7aa8473bb25ef0282c9c7fd83932ff"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "1f96bbb7c85097a3",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 465,
-        "end": 466,
+        "start": 470,
+        "end": 471,
         "sha256": "f33a68da5c31a6772153f9aa9f7ba42519c0877f203d9966c6b9b511e5c6ec25"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "1fccb1ef76d40fc9",
@@ -97208,11 +97279,11 @@
       "id": "2868f8ee45d7cfb2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 621,
-        "end": 623,
+        "start": 635,
+        "end": 637,
         "sha256": "26129c1a3ce0ab6f5a0b1dd0d75239e4ee6eb607861bde3c399f7e1d08f0c5a3"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "289f01119a4fa1a6",
@@ -97242,7 +97313,7 @@
         "end": 53,
         "sha256": "7f062849b9f1cd52dec629ffcb2288d462064665694fa2ee6b72ec4c871cc043"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "28dc2d22e4ca2e4e",
@@ -97538,11 +97609,11 @@
       "id": "2ddd9c274a6fd0c0",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 726,
-        "end": 727,
+        "start": 731,
+        "end": 732,
         "sha256": "faf537efa64f7298b944db62c09cd2f6b386f66e83fe992590e33d1533bea8c1"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "2e0eb6550faf01eb",
@@ -97578,11 +97649,11 @@
       "id": "2ea8384858515016",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 785,
-        "end": 787,
+        "start": 799,
+        "end": 801,
         "sha256": "c23495ef2adcd5831a87ae9a41234c620e3b9d5c52610f24a080a1cc9a1ff436"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "2ecad3e3070cf878",
@@ -97598,11 +97669,11 @@
       "id": "2fb5eddceeebaec3",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2109,
-        "end": 2110,
+        "start": 2130,
+        "end": 2131,
         "sha256": "7341c21ac6e9cbf9a1e27c9eb8b9e766191aec732d54529858c53d6b19229133"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "2ff54851da984d7f",
@@ -97878,21 +97949,21 @@
       "id": "35130390e2f4a02d",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1884,
-        "end": 1886,
+        "start": 1897,
+        "end": 1899,
         "sha256": "5cb0d8b4e66268f1e778722aedc510c73dd42e7a120440cec42ca6eb2480796f"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "3589739375bd1429",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 686,
-        "end": 687,
+        "start": 700,
+        "end": 701,
         "sha256": "4f5ce61cdddcf4dc00f140e1dd614b4782c64010a2d7c17311055e6fde69bbe7"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "358f7a06cdc04bce",
@@ -97978,11 +98049,11 @@
       "id": "37527f77547c6ea9",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1460,
-        "end": 1460,
+        "start": 1473,
+        "end": 1473,
         "sha256": "33fe7a43338ce836529c46f4494cdf0ebc82ab1440da38d9c73adef0cabacdfe"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "3784786355d35402",
@@ -98368,11 +98439,11 @@
       "id": "3f9b865fff5df89b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 703,
-        "end": 704,
+        "start": 717,
+        "end": 718,
         "sha256": "b814cae82e2b8bc0390b61861b562f788e819908e94c8894f0b6319c82e5f311"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "3fa3e1b193ffd69f",
@@ -98438,11 +98509,11 @@
       "id": "4094f408b79fc900",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 411,
-        "end": 412,
+        "start": 416,
+        "end": 417,
         "sha256": "14af89094f20059d83c3778958787aec1386ccbdd6f759b97983f32ac14823a0"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "4098efde967a5c60",
@@ -98498,11 +98569,11 @@
       "id": "40f69a615d8447d5",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 333,
-        "end": 334,
+        "start": 338,
+        "end": 339,
         "sha256": "2f41aec4aa93eb283646db850273fb4b8c7ff0fca35ec8e00b0abd2fa6b9f00f"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "412e335af2122cd8",
@@ -98698,11 +98769,11 @@
       "id": "462249d328341ff0",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 206,
-        "end": 207,
+        "start": 211,
+        "end": 212,
         "sha256": "dfb77e46e95276e4f833799c78792cec18d689ce8cbd56bf1f38a92c90e691af"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "4642ae0fef5b4c3b",
@@ -99148,21 +99219,21 @@
       "id": "4e496d83d8718d91",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1639,
-        "end": 1639,
+        "start": 1652,
+        "end": 1652,
         "sha256": "ece4d29f5248ec380b31d1ae33574f2587e16c6d1411b3e5086aaf99a10eb7b4"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "4f42e39311e99a8a",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 162,
-        "end": 163,
+        "start": 167,
+        "end": 168,
         "sha256": "cd5c45decf8454b5831f11b993317b41adc30e60e8e491016af90bda49f811ed"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "4f81fd65ae3cee94",
@@ -99202,7 +99273,7 @@
         "end": 136,
         "sha256": "2ee57046ab48f4ca97bf710f031839feb29b2385a3ae0de63d0111b24a2a19ed"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "4fb22610ae030c7c",
@@ -99268,11 +99339,11 @@
       "id": "5192af89801423a6",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2078,
-        "end": 2079,
+        "start": 2099,
+        "end": 2100,
         "sha256": "adc2f24ebc01967fbb18747b48f7f71a00d7b00ea10f038cfb8e3cefa2a10799"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "51a623a3e3b16af9",
@@ -99328,11 +99399,11 @@
       "id": "531b3ec5651f1d10",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2422,
-        "end": 2422,
+        "start": 2443,
+        "end": 2443,
         "sha256": "5ba5f6f0c7d5954b95fdab215a82834553824f4bed499a4225241d86ac64c2fe"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "531faa3942b7ca8b",
@@ -99408,11 +99479,11 @@
       "id": "552494d555a31862",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1045,
-        "end": 1046,
+        "start": 1058,
+        "end": 1059,
         "sha256": "3d80f326a26a1ea90e27ed81c84cfbc2395389aebc964298e6d23f2daa156d94"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "55604d1277bb9d16",
@@ -99458,11 +99529,11 @@
       "id": "55bed508b9f6942b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 567,
-        "end": 567,
+        "start": 581,
+        "end": 581,
         "sha256": "2d97e0600d661fa33ef65a5b0e7d45d4de32817b62fb62ff62426b3d9b0b1928"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "55c2b44496cddc70",
@@ -99478,11 +99549,11 @@
       "id": "55ecf8562c3c3611",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 476,
-        "end": 477,
+        "start": 481,
+        "end": 482,
         "sha256": "742819368cf0266b8dc91547414025b99a348f4d0519480cfbdedc9b0c3dfbaf"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "55fd4b463fdc6fb6",
@@ -99718,11 +99789,11 @@
       "id": "5bb0054c34f68660",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 526,
-        "end": 526,
+        "start": 540,
+        "end": 540,
         "sha256": "071b412f011c05e1fce2a04a8a1b52b5925a1df4097f4e15f57901ceb72b5215"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "5be418cbdf468540",
@@ -99878,11 +99949,11 @@
       "id": "5eaa79b123d3637b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 902,
-        "end": 904,
+        "start": 916,
+        "end": 918,
         "sha256": "ff75034235e1e3e18922b39d9b97c26d14f65855a6ce88c76ef09c07d11f760f"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "5ecd7291d67d9961",
@@ -99968,11 +100039,11 @@
       "id": "6072c91a7a74d1ec",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2338,
-        "end": 2338,
+        "start": 2359,
+        "end": 2359,
         "sha256": "7e288e02ec62577867691831d74c6c8d168acb497ea5753c9ad24777be007c6b"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "60c712c4d5f1db17",
@@ -99988,11 +100059,11 @@
       "id": "60e0303afb083293",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1103,
-        "end": 1105,
+        "start": 1116,
+        "end": 1118,
         "sha256": "4111f9dd7914cce5baac46b49ea172e4de9d07478382a9d14f97eff5bebf04fa"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "6115ea739422f3ca",
@@ -100068,11 +100139,11 @@
       "id": "61f176cb1d95a453",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 349,
-        "end": 350,
+        "start": 354,
+        "end": 355,
         "sha256": "2e396a3813435e87a2f38dacb845121bdf0f7ad55a0c7ee5bf09dcdea51071d4"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "61fce38e601437a8",
@@ -100088,11 +100159,11 @@
       "id": "6207cfc09c3248de",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 618,
-        "end": 618,
+        "start": 623,
+        "end": 623,
         "sha256": "d3e66d81a577275dc7f064dd09e9ec205fe7a964567a70c9b1b354ae1732794f"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "620ed673c79cd491",
@@ -100248,11 +100319,11 @@
       "id": "64c67ab1bf6e5035",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1541,
-        "end": 1542,
+        "start": 1554,
+        "end": 1555,
         "sha256": "36d82f3ef54cc9c121b6f2e0d5931b8f87ab86cbff5868cbd6675e63b1171f23"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "64c88a787a2dcb38",
@@ -100328,11 +100399,11 @@
       "id": "6699d29041a694ed",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1852,
-        "end": 1854,
+        "start": 1865,
+        "end": 1867,
         "sha256": "9ebf3cbdd42fda8c851b5a076224e86c4308cf2c712990517f904b996459babe"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "66b472767f1be80d",
@@ -100718,11 +100789,11 @@
       "id": "7026e3ccc812986f",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1355,
-        "end": 1356,
+        "start": 1368,
+        "end": 1369,
         "sha256": "538dafbf080f611d963240f1ed392b48b2dda077ef73ceea354272b4042e207c"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "7057f212c0beea56",
@@ -100758,11 +100829,11 @@
       "id": "71b0baa240cc79a3",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1390,
-        "end": 1390,
+        "start": 1403,
+        "end": 1403,
         "sha256": "e7c71af891ca05ce9664a1c7c55d87a0a50da245b180b4de908fbbe6c8d57169"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "71d635ab4c189457",
@@ -100788,11 +100859,11 @@
       "id": "7246ffcf3487aed4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 712,
-        "end": 713,
+        "start": 726,
+        "end": 727,
         "sha256": "ed5b29f575f4d028c141c01056a23e43a50909a5be6a046aa8f8c710056d1bf2"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "727fe525cbd185c1",
@@ -100838,11 +100909,11 @@
       "id": "732c87b3a0fdc368",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 852,
-        "end": 854,
+        "start": 866,
+        "end": 868,
         "sha256": "1a449d417630c53324c266ae7130315bd44156f83a57819d60c5708ba85878d9"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "73616b5c2e02f15c",
@@ -101028,11 +101099,11 @@
       "id": "7742225dae55714d",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2184,
-        "end": 2184,
+        "start": 2205,
+        "end": 2205,
         "sha256": "194b87fce31af1a1ebf571d992e8e2f29f646485e837a2e695a4c0e9eb5c2aea"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "7744a182af92b14a",
@@ -101202,7 +101273,7 @@
         "end": 185,
         "sha256": "a6a4e089542e9d6d34c6af6ba2fbd1f2b7aad6bac1f7059fc270a9d64cd3258a"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "7a94ef812f57042f",
@@ -101638,11 +101709,11 @@
       "id": "852ebee41318c21d",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 262,
-        "end": 264,
+        "start": 267,
+        "end": 269,
         "sha256": "4b8c224e49913604f71deb3df09f93380998dc9f7efee265fd5cdac879a6de3a"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "85ab30fd04fee2ac",
@@ -101798,11 +101869,11 @@
       "id": "87ea95064a201834",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1758,
-        "end": 1760,
+        "start": 1771,
+        "end": 1773,
         "sha256": "3a231d0e53169c1b3287d067a74c589c1e7a11fbeb66d69366a92b83a8f7a792"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "8811764d570217a9",
@@ -102008,11 +102079,11 @@
       "id": "8c699be11858a1ab",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 846,
-        "end": 847,
+        "start": 860,
+        "end": 861,
         "sha256": "8d2e38632f205e5bf65857774dbb5a73cfa747510b7cdf602a6c76618cec774f"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "8c9a8208e6d2c704",
@@ -102032,7 +102103,7 @@
         "end": 261,
         "sha256": "32975f8107002dab8002e2c2ab137eeca8e4d631a5edf4aac54b0c9c01e1e6fd"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "8cb5dfa4701b88d4",
@@ -102068,11 +102139,11 @@
       "id": "8d094bbb243e7ef8",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1189,
-        "end": 1190,
+        "start": 1202,
+        "end": 1203,
         "sha256": "fb9dd5685f706fd34446c384fe58cfd3e79ae3b6e4dba666fcc4a331351c4fd2"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "8dab03cd5b00e60e",
@@ -102158,11 +102229,11 @@
       "id": "8f7a1e1317e66510",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2002,
-        "end": 2004,
+        "start": 2023,
+        "end": 2025,
         "sha256": "82097ce9bfba9f98175964302c834962e13262e5825d927e036cabf9627b3e8e"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "8fd4ea10b6a0f58e",
@@ -102348,11 +102419,11 @@
       "id": "94a5e4014507cd3e",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1702,
-        "end": 1702,
+        "start": 1715,
+        "end": 1715,
         "sha256": "3ba69021feb5e9c8f554366c73721dd6cd626bc6c043cc2def4e9ce36800c767"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "94e21e26084ecad6",
@@ -102438,11 +102509,11 @@
       "id": "95d6bfd7083277ac",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 722,
-        "end": 723,
+        "start": 736,
+        "end": 737,
         "sha256": "028cd17cf4ba402da9f2ffe58cf6dc92566208cb94e8909022c583569090c5f7"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "95e745cb9bef76dc",
@@ -102508,11 +102579,11 @@
       "id": "9670bc197e6e0b93",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1507,
-        "end": 1508,
+        "start": 1520,
+        "end": 1521,
         "sha256": "d14083930cc1d073f83366a3a1c17c9e3f2d9f646f4fe349ad731673a83a4b6f"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "96f21ccf6577bc70",
@@ -102652,7 +102723,7 @@
         "end": 17,
         "sha256": "065e531bc9ab07c47fe91e411d4f919d4b4cf76040bc374f4faa273e34abe92a"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "99283b5c8a783e91",
@@ -102808,11 +102879,11 @@
       "id": "9bbe95a642fe4a7b",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 228,
-        "end": 229,
+        "start": 233,
+        "end": 234,
         "sha256": "5f823815adb2d98f470c9c5dd787135f978b674775097243e27cd89ef50ddc26"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "9bfc30c7f67f1257",
@@ -103178,11 +103249,11 @@
       "id": "a25191ea3d1f8184",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1080,
-        "end": 1081,
+        "start": 1093,
+        "end": 1094,
         "sha256": "e2fe89445ea3274ee5bb064b9442e47ebcf872dfb8b5e8797ebcd250de9b6968"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "a3449e334da438ae",
@@ -103288,21 +103359,21 @@
       "id": "a4abeacc7c670fd4",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2208,
-        "end": 2209,
+        "start": 2229,
+        "end": 2230,
         "sha256": "92075fc63b3aaf190a6c7f2c90dbd7959c9cdf4b446b6c9d1b78a7b2d264892b"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "a4d61c3cb01cc718",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2443,
-        "end": 2443,
+        "start": 2464,
+        "end": 2464,
         "sha256": "dc09d548d85eec3ea2b309849ca670b95d1e1bf3d2511e7944616a6d8db5a48f"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "a5088e3a17ea6422",
@@ -103388,11 +103459,11 @@
       "id": "a7661aa2acb67cd8",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1475,
-        "end": 1476,
+        "start": 1488,
+        "end": 1489,
         "sha256": "5d949c6f44ccb011cafd2c25f2e6d8f69b7f1fa96bd821ca91ccd376f0d5a7fb"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "a7681700b2feb4c6",
@@ -103618,21 +103689,21 @@
       "id": "ac437f9f7833d2b4",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 77,
-        "end": 78,
+        "start": 82,
+        "end": 83,
         "sha256": "031a824a68e15435b5e22e6e7d4c321e30fc9f9e512eae6c392cc8d322faa0aa"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "ac734816131e41b7",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2161,
-        "end": 2162,
+        "start": 2182,
+        "end": 2183,
         "sha256": "02ef394e9ab0a085c2b3f77b0147b65cdbe9807dd7244d68f3e7359b0bb95549"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "aca041c2ac1141bf",
@@ -103998,11 +104069,11 @@
       "id": "b3feaf6544ba9756",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 720,
-        "end": 720,
+        "start": 725,
+        "end": 725,
         "sha256": "da7856e4997669df37cdb09dccf0860fae8bbad39f8201fc45502bd1b78258cb"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "b40691fce4624da4",
@@ -104038,11 +104109,11 @@
       "id": "b47f0f03d0f66738",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1468,
-        "end": 1470,
+        "start": 1481,
+        "end": 1483,
         "sha256": "92b966c8d06995d2d904645750c90d78774b107a6cfbc38e5472751223ef07c6"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "b48464cb8bd65f1e",
@@ -104368,11 +104439,11 @@
       "id": "bb48f4cdf39b30eb",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1012,
-        "end": 1013,
+        "start": 1025,
+        "end": 1026,
         "sha256": "a1a4b8ad27356d19ea93c75c48aecfed06efc65ab14b5eec0a4b9c848bad0ff8"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "bbfd8ef7345e41cf",
@@ -104428,11 +104499,11 @@
       "id": "bcdc0b6372e6a165",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1437,
-        "end": 1437,
+        "start": 1450,
+        "end": 1450,
         "sha256": "7d22d1dc3959edcb41ad5ebd3858e0707d380fb7bff22b134a8d87fa8bc4c60a"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "bd0e699cbf6be371",
@@ -104498,21 +104569,21 @@
       "id": "bed5c28057d1d9e6",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1246,
-        "end": 1246,
+        "start": 1259,
+        "end": 1259,
         "sha256": "107031f67fad590553ff15a98344fe60f3de02d0230a9459b57f14e5e308d135"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "bf2a1fc020ab52da",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 488,
-        "end": 490,
+        "start": 493,
+        "end": 495,
         "sha256": "4cdbca79ffce722e0ebba8aaf0119f65daec4d760e62f795c557ef6e3f0d6f83"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "bf31c649317ac382",
@@ -104578,11 +104649,11 @@
       "id": "c071a16dd9cccc07",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 815,
-        "end": 817,
+        "start": 820,
+        "end": 822,
         "sha256": "9a3dd244ebc15b39b66911ea998023f6c1b13e2fa3c871c92984a9a526b4e392"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "c09405f2def8575f",
@@ -104692,7 +104763,7 @@
         "end": 6,
         "sha256": "417fcef5dee8a5cc03ba818f8b1bd0e4db81a6c254332e61f7922a758d170c46"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "c29991583727685a",
@@ -104722,7 +104793,7 @@
         "end": 5,
         "sha256": "6c82eac82e6fb7ff5a9d49a6d275e72b9e81fa81671c93f44a444a43f9c50b50"
       },
-      "fileSha256": "40faa2d784679386b37152758f312eb2970e28d843fa21d3cca203fdc3c6a0a0"
+      "fileSha256": "889efaff89c79daf98cb94907032dc3d415ba8dcbe2912397d65bdb46c1718d1"
     },
     {
       "id": "c2bc6406180511ed",
@@ -104738,11 +104809,11 @@
       "id": "c379194a32b108dc",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1447,
-        "end": 1448,
+        "start": 1460,
+        "end": 1461,
         "sha256": "482a43612f7d34ad5f1c6fa89d7d328c3d2c06725f6e5dedd45ddfadb6f93542"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "c3871897522af5a7",
@@ -105058,11 +105129,11 @@
       "id": "c969de24131cf75d",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 647,
-        "end": 647,
+        "start": 652,
+        "end": 652,
         "sha256": "51cbe4639b50f9978e8a217c8a7d12b7f5b0fda778fd6e1605660a8a68eed203"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "c98288130864948d",
@@ -105322,7 +105393,7 @@
         "end": 283,
         "sha256": "b77a0fd5a8dfa70a7e09ac8df62c344c59d36e0c4dc7855b3a8e579e0cfac9db"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "cecaa4383928653a",
@@ -105398,11 +105469,11 @@
       "id": "d003138bbc942362",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1636,
-        "end": 1636,
+        "start": 1649,
+        "end": 1649,
         "sha256": "ba2a24eafea404c9dc4a8c0b8e8f0e3754041fbfaa637b86cff47bdea5f3b5ea"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "d011055c3a598785",
@@ -105548,11 +105619,11 @@
       "id": "d2645118380a8e44",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2592,
-        "end": 2593,
+        "start": 2613,
+        "end": 2614,
         "sha256": "4a06bd4d34e6b47da15ec998f433fd73c3a6770266d8d264c514e9f9ab3301cc"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "d2ca545b764ea896",
@@ -105568,11 +105639,11 @@
       "id": "d2d37e556be55d21",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 95,
-        "end": 95,
+        "start": 100,
+        "end": 100,
         "sha256": "1597ccab4c60ecc0134cf5ae581c3221c995613d6246d2dadbe95787dff04d49"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "d2d99918ac4d1911",
@@ -105858,21 +105929,21 @@
       "id": "db085727bd0281d7",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 859,
-        "end": 860,
+        "start": 864,
+        "end": 865,
         "sha256": "3b55a861d7ab70e690e06ee018853b6d8c7daee4e8247d7b41d14616febd2f55"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "db1a619df18cf989",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1585,
-        "end": 1585,
+        "start": 1598,
+        "end": 1598,
         "sha256": "7e8cd09ae0ba40d6ef454e541b001041f71ffedc2519f74882756ec54fc0573a"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "db28df66bf40e82c",
@@ -105888,11 +105959,11 @@
       "id": "db30086d67624444",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 806,
-        "end": 807,
+        "start": 820,
+        "end": 821,
         "sha256": "3c43143d5111f17c593007d5180295f0b4de92b6732140156f45ad133f09e135"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "dbb136af6da7e865",
@@ -105958,11 +106029,11 @@
       "id": "dc368da440239f1f",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2234,
-        "end": 2234,
+        "start": 2255,
+        "end": 2255,
         "sha256": "c8bd63c1b906407f638cb20d785d13209ffb9b86bc8b275eea9123f7e0234102"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "dc402e89f5335007",
@@ -105982,7 +106053,7 @@
         "end": 10,
         "sha256": "43d592d63ec1f2c8e108ad1dc5685c0de81d5b8693ed50f933c5b39b3fe9952b"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "dcdb34327d09bd7e",
@@ -106032,17 +106103,17 @@
         "end": 46,
         "sha256": "0068d5cce0636930e75b0b68dea6e58d3b3038f55bfbe48052ed8c2bbfb9445a"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "dd7cf78a61eafa1e",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1564,
-        "end": 1565,
+        "start": 1577,
+        "end": 1578,
         "sha256": "a8574b6246171b074d158fed3f2b39faf22f0366692f2da475a5d510697f70ed"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "dd9cd3a1b215fa48",
@@ -106098,11 +106169,11 @@
       "id": "deca6e9828eea447",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 358,
-        "end": 359,
+        "start": 363,
+        "end": 364,
         "sha256": "26d640147312a4cdb76f7806954c66ef691db62baf6e32b64581973544dc3c6a"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "defebb9c2c5583e1",
@@ -106288,11 +106359,11 @@
       "id": "e2964558a0113ed4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 614,
-        "end": 615,
+        "start": 628,
+        "end": 629,
         "sha256": "83ebf925cf6288c9bc988e4db735e508efeac4da9cbc8232fc1597567d079149"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "e2a124d0e7504dc7",
@@ -106318,11 +106389,11 @@
       "id": "e2e6a4833e9c61f3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 540,
-        "end": 541,
+        "start": 554,
+        "end": 555,
         "sha256": "6dc62486f9385265a3aec6a50f8071a9c526238a3138cadf270059b9707faba0"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "e396823008cfe916",
@@ -106468,11 +106539,11 @@
       "id": "e5f5d62bf29fd8b1",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2203,
-        "end": 2203,
+        "start": 2224,
+        "end": 2224,
         "sha256": "060795f5faca28cb699308daf745165aa1df1d366f33686d7b62dbe026bad543"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "e5fc0f0289941d82",
@@ -106538,11 +106609,11 @@
       "id": "e78df67f8b8f57c1",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2144,
-        "end": 2145,
+        "start": 2165,
+        "end": 2166,
         "sha256": "0606b747cf8aaba315f1dc433fadad67263875dea7d68521f7e7dca67439fa51"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "e7fc2203d063a515",
@@ -106688,11 +106759,11 @@
       "id": "eb6a512f275dd8fb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 896,
-        "end": 897,
+        "start": 910,
+        "end": 911,
         "sha256": "8d2e38632f205e5bf65857774dbb5a73cfa747510b7cdf602a6c76618cec774f"
       },
-      "fileSha256": "06daed04f79dd7d7f3079a0f37eeb3e5626521fc61134878b88833ff20448c46"
+      "fileSha256": "0d1697e55d244f6c5aa5184800ef2aacab9a6a963a03206d766de880fe82b0f2"
     },
     {
       "id": "eb6babcde670379e",
@@ -106808,11 +106879,11 @@
       "id": "ecc8d790627fe1fd",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 968,
-        "end": 969,
+        "start": 981,
+        "end": 982,
         "sha256": "dcdd329b9a974e8744c667c4cda651b050663b7ab066bad189e4922baad5707a"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "ecd91e686d573a36",
@@ -106998,11 +107069,11 @@
       "id": "eff65557f5ea9dcd",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 713,
-        "end": 714,
+        "start": 718,
+        "end": 719,
         "sha256": "3718da083ea1c29fb9488420e8574b577f313a68ebcd621687df1b3ba1026925"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "f045ece5520cb972",
@@ -107098,11 +107169,11 @@
       "id": "f23a9bd8cd572ab8",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2504,
-        "end": 2504,
+        "start": 2525,
+        "end": 2525,
         "sha256": "30d097030d879150cf1e532d2ff4134b6e33bb32a418a55859d52aa19ef0fc24"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "f243b0708781f828",
@@ -107198,21 +107269,21 @@
       "id": "f463c5052de8cfb0",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 2469,
-        "end": 2469,
+        "start": 2490,
+        "end": 2490,
         "sha256": "5f3fc09c9de0bf2cfd4a61cb980feedf1d2171223ef44374736ae9570f35a573"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "f4b0011815a87750",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 87,
-        "end": 88,
+        "start": 92,
+        "end": 93,
         "sha256": "b14237244267002c15ea1f189bb4e0abb02a733246f044cc44dc6792c49182b1"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "f4b50fceb2297e18",
@@ -107378,11 +107449,11 @@
       "id": "f909a38d3c3ba271",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1687,
-        "end": 1688,
+        "start": 1700,
+        "end": 1701,
         "sha256": "7c190a1fbbc3635659f6c87ce73edb77b45bce0bdcb20d191b69d54e78849d2e"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "f99665e61e6a68a8",
@@ -107488,11 +107559,11 @@
       "id": "fd436d292a698e9d",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 891,
-        "end": 892,
+        "start": 896,
+        "end": 897,
         "sha256": "b0027b40da255ab426967f59d3861009949ca2b4ac7ac9414f42bc7bf0359984"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "fd45f537a04d3bd5",
@@ -107568,11 +107639,11 @@
       "id": "ff0b7b5affd531ba",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1866,
-        "end": 1867,
+        "start": 1879,
+        "end": 1880,
         "sha256": "a57bba3acc2f20b4ed25ed6d1cee57a485372733f2e4eb43307c688f82fd1983"
       },
-      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
+      "fileSha256": "1afc3eb65842131723ea88a17a53831f6e07f7490b0bb050ca1d5a32dc1eb7a2"
     },
     {
       "id": "ff53a632d52c871e",

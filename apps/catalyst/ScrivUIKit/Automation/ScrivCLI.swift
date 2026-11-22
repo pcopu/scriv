@@ -324,6 +324,9 @@ final class ScrivCLI {
                 for key in ["syntheticFixtureCommands", "commands"] {
                     result[key] = (result[key] as? [String] ?? []) + ["receive-fixture-email-code"]
                 }
+                for key in ["semanticApplicationCommands", "commands"] {
+                    result[key] = (result[key] as? [String] ?? []) + ["acknowledge-cloud-save-error"]
+                }
             }
 #if SCRIV_CLI_COVERAGE
             result["coverage"] = ["schemaVersion": 1, "format": "llvm-profraw",
@@ -415,6 +418,17 @@ final class ScrivCLI {
             }
             rejectedJSONImport = nil
             return ["dispatched": true]
+        }
+        if command == "acknowledge-cloud-save-error" {
+            let alerts = ownedPresentedAlerts()
+            guard run.approvedOrigin != nil, Set(request.keys) == ["id", "command", "message"],
+                  let message = request["message"] as? String,
+                  let workspace = window.rootViewController as? ScrivWorkspaceController,
+                  workspace.viewIfLoaded?.window === window, alerts.count == 1, let alert = alerts.first,
+                  workspace.store.acknowledgeCLICloudSaveError(message, alert: alert) else {
+                throw Failure("Cloud save error acknowledgement is unavailable")
+            }
+            return ["acknowledged": true]
         }
         if command == "export-fountain" {
             guard Set(request.keys).isSubset(of: ["id", "command"]),

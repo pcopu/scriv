@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { fork } from 'node:child_process';
 import { createHash, randomBytes } from 'node:crypto';
-import { mkdtemp, mkdir, readFile, readdir, realpath, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 const cloud = fileURLToPath(new URL('../../../../cloud/', import.meta.url));
 export const nativeFixtureEmail = 'synthetic-native@example.invalid';
 export const nativeFixtureTeam = 'Synthetic Story Team';
+export const lostCloudEditReceipt = 'The cloud edit receipt could not be delivered. Try syncing again.';
 
 export async function startNativeCloudFixture() {
   const require = createRequire(join(cloud, 'package.json'));
@@ -68,6 +69,9 @@ export async function startNativeCloudFixture() {
       createFreeTeam: () => response('create-free-team'),
       projects: () => response('projects'),
       sessionStates: () => response('session-states'),
+      loseNextEditReceipt: projectId => response(['lose-edit-receipt', projectId]),
+      editReceiptState: () => response('edit-receipt-state'),
+      matchesPendingEdit: payload => response(['matches-pending-edit', payload]),
       assertNoOutbound: async () => assert.equal((await response('status')).outbound, 0),
       close,
     };
@@ -91,12 +95,51 @@ async function startWorker(root) {
     const bundle = join(root, 'worker.mjs');
     await build({ entryPoints: [join(cloud, 'src/index.ts')], outfile: bundle, bundle: true,
       format: 'esm', platform: 'neutral', target: 'es2022', external: ['cloudflare:*'], logLevel: 'silent' });
+    const harness = join(root, 'native-worker.mjs');
+    // Forward the exact request to the real Worker before dropping its first
+    // receipt. Control is private RPC, with no additional public HTTP route.
+    await writeFile(harness, `import { WorkerEntrypoint } from 'cloudflare:workers';
+      import worker from './worker.mjs';
+      export * from './worker.mjs';
+      let target;
+      let pending;
+      let receipt;
+      let attempts = 0;
+      export default class extends WorkerEntrypoint {
+        async fetch(request) {
+          const upstream = () => worker.fetch(request, this.env, this.ctx);
+          if (!target || request.method !== 'POST' || new URL(request.url).pathname !== target) return upstream();
+          const payload = await request.clone().json();
+          if (receipt && attempts >= 2 && payload.commandId !== receipt.commandId) return upstream();
+          const serialized = JSON.stringify(payload);
+          if (pending !== undefined && pending !== serialized) throw new Error('The saved edit changed before its receipt was retried');
+          pending = serialized;
+          const response = await upstream();
+          if (!response.ok) return response;
+          const observed = await response.clone().json();
+          if (observed.commandId !== payload.commandId || !Number.isSafeInteger(observed.seq)
+              || receipt && JSON.stringify(observed) !== JSON.stringify(receipt)) throw new Error('The Worker returned a different edit receipt');
+          receipt = observed;
+          attempts++;
+          if (attempts !== 1) return response;
+          return Response.json({ error: { code: 'receipt_unavailable', message: ${JSON.stringify(lostCloudEditReceipt)} } }, { status: 503 });
+        }
+        scheduled(event) { return worker.scheduled(event, this.env, this.ctx); }
+        loseEditReceipt(projectId) {
+          if (target || typeof projectId !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(projectId)) throw new Error('A single owned project is required');
+          target = '/v1/projects/' + projectId + '/commands';
+          return true;
+        }
+        editReceiptState() { return { attempts, commandID: receipt?.commandId ?? null, sequence: receipt?.seq ?? null }; }
+        matchesPendingEdit(payload) { return pending !== undefined && pending === JSON.stringify(payload); }
+      }`, { mode: 0o600 });
     const denyOutbound = () => { outbound++; throw new Error('Unexpected fixture outbound request'); };
     const common = { unsafeInspectorProxy: false, compatibilityDate: '2026-10-29', modules: true, outboundService: denyOutbound };
     fixture = new Miniflare(convertV4MiniflareOptions({ host: '127.0.0.1', port: 0, cf: false, telemetry: { enabled: false },
       unsafeLocalExplorer: false, unsafeObservability: false, unsafeEnableSharedStorage: false, logRequests: false,
       log: new Log(LogLevel.ERROR), resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
-      workers: [{ ...common, name: 'scriv', scriptPath: bundle,
+      workers: [{ ...common, name: 'scriv', modulesRoot: root,
+        modules: [{ type: 'ESModule', path: harness }, { type: 'ESModule', path: bundle }],
         bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', EMAIL_FROM: 'sender@example.invalid' },
         serviceBindings: { EMAIL: 'local-mailbox' }, d1Databases: { DB: 'native-journey-db' }, r2Buckets: ['ASSETS'],
         durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
@@ -124,6 +167,7 @@ async function startWorker(root) {
     assert.deepEqual(migrations, ['0001_identity_teams.sql', '0002_generation_jobs.sql', '0003_email_auth.sql']);
     for (const name of migrations) await db.batch(unstable_splitSqlQuery(await readFile(join(cloud, 'migrations', name), 'utf8')).map(sql => db.prepare(sql)));
     const mailbox = await fixture.getWorker('local-mailbox');
+    const nativeWorker = await fixture.getWorker('scriv');
     async function post(path, expectedStatus, body, token) {
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers.Authorization = `Bearer ${token}`;
@@ -151,6 +195,9 @@ async function startWorker(root) {
       }
     }
     return { origin: base.origin, createFreeTeam, status: async () => ({ deliveries: await mailbox.count(), outbound }),
+      loseEditReceipt: projectId => nativeWorker.loseEditReceipt(projectId),
+      editReceiptState: () => nativeWorker.editReceiptState(),
+      matchesPendingEdit: payload => nativeWorker.matchesPendingEdit(payload),
       takeCode: () => mailbox.takeCode(),
       projects: async () => (await db.prepare(
         'SELECT projects.id, projects.title FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.id',
@@ -167,9 +214,12 @@ if (process.argv[2] === '--owned-worker' && process.send) {
   const worker = await startWorker(process.argv[3]);
   try {
     process.on('message', async message => {
-      const operations = { status: worker.status, 'take-code': worker.takeCode, 'create-free-team': worker.createFreeTeam, projects: worker.projects, 'session-states': worker.sessionStates };
-      assert.ok(Object.hasOwn(operations, message));
-      const result = await operations[message]();
+      const [operation, value] = Array.isArray(message) ? message : [message];
+      const operations = { status: worker.status, 'take-code': worker.takeCode, 'create-free-team': worker.createFreeTeam,
+        projects: worker.projects, 'session-states': worker.sessionStates, 'lose-edit-receipt': worker.loseEditReceipt,
+        'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit };
+      assert.ok(Object.hasOwn(operations, operation));
+      const result = await operations[operation](value);
       if (process.connected) process.send(result);
     });
     if (process.connected) process.send({ origin: worker.origin });

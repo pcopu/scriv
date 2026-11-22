@@ -47,7 +47,7 @@ final class WorkspaceErrorPresenter {
     }
 
 #if SCRIV_CLI_AUTOMATION
-    func acknowledgeCLIImportError(_ message: String, alert: UIAlertController) -> Bool {
+    func acknowledgeCLIError(_ message: String, alert: UIAlertController) -> Bool {
         guard active?.message == message, activeAlert === alert, alert.presentingViewController != nil,
               alert.viewIfLoaded?.window != nil, !alert.isBeingPresented, !alert.isBeingDismissed,
               alert.presentedViewController == nil, alert.message == message else { return false }

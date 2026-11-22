@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
+import { readFile, readdir } from 'node:fs/promises';
+import { join } from 'node:path';
 import { ScrivSession } from '../../../cli/scriv.mjs';
+import { observePresentedError } from '../support/presented-error.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
-import { nativeFixtureEmail, nativeFixtureTeam, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
+import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Requires a verified automation-enabled Catalyst app');
@@ -203,10 +206,10 @@ try {
   await script.waitEditor(editorID, line.text, line.text.length);
   const addition = ' Ask about the invoice.';
   const revisedText = line.text + addition;
+  await fixture.loseNextEditReceipt(synced.cloudProjectId);
   await session.command('type', { target: editorID, text: addition });
   await script.waitEditor(editorID, revisedText, revisedText.length);
   await script.finishEditor();
-  await script.displayed(line.id, revisedText, { finished: true });
   const edited = await waitForSavedProject(session, candidate => candidate.id === synced.id
     && candidate.entries.some(entry => entry.id === line.id && entry.text === revisedText));
   assert.equal(edited.cloudProjectId, synced.cloudProjectId);
@@ -214,7 +217,8 @@ try {
   for (const previous of synced.entries.filter(entry => entry.id !== line.id)) {
     assert.equal(edited.entries.find(entry => entry.id === previous.id)?.text, previous.text);
   }
-  assert.deepEqual(await session.command('presented-alerts'), []);
+  await verifySavedCloudEditRetry(edited);
+  await script.displayed(line.id, revisedText, { finished: true });
 
   step = 'open the cloud project after switching to a distinct local project';
   await session.command('key', { input: 'n', modifiers: ['command'] });
@@ -317,6 +321,51 @@ try {
 } finally {
   try { await session?.close(); }
   finally { await fixture.close(); }
+}
+
+async function verifySavedCloudEditRetry(edited) {
+  step = 'retain the edit while its cloud receipt is unavailable';
+  const { alert } = await observePresentedError(session, lostCloudEditReceipt);
+  assert.deepEqual(alert.actions, [{ title: 'OK', enabled: true, style: 'default' }]);
+  const first = await fixture.editReceiptState();
+  assert.equal(first.attempts, 1, 'The edit was sent once and committed by the real Worker');
+  assert.ok(Number.isSafeInteger(first.sequence) && first.sequence > 0);
+
+  const outbox = join(session.root, 'Outbox');
+  const [scope, ...others] = await readdir(outbox);
+  assert.match(scope, /^[0-9a-f]{64}$/);
+  assert.deepEqual(others, []);
+  const directory = join(outbox, scope);
+  const pendingName = first.commandID + '.json';
+  assert.deepEqual(await readdir(directory), [pendingName]);
+  const pending = JSON.parse(await readFile(join(directory, pendingName), 'utf8'));
+  assert.equal(pending.projectId, edited.cloudProjectId);
+  assert.equal(pending.endpoint, 'commands');
+  assert.equal(pending.payload.commandId, first.commandID);
+  assert.equal(await fixture.matchesPendingEdit(pending.payload), true, 'Outbox contains the exact submitted edit');
+
+  step = 'acknowledge the saved cloud edit error and retry via the native account sheet';
+  assert.ok((await session.command('capabilities')).semanticApplicationCommands.includes('acknowledge-cloud-save-error'));
+  await assert.rejects(session.command('acknowledge-cloud-save-error', { message: 'Different cloud error' }), /Cloud save error acknowledgement is unavailable/);
+  assert.deepEqual(await session.command('presented-alerts'), [alert]);
+  assert.deepEqual(await session.command('acknowledge-cloud-save-error', { message: lostCloudEditReceipt }), { acknowledged: true });
+  await control(workspaceProject, true);
+  assert.deepEqual(await session.command('presented-alerts'), []);
+  assert.deepEqual((await session.command('loaded-project')).project, edited);
+  assert.deepEqual(await readdir(directory), [pendingName], 'Acknowledgement alone leaves the edit pending');
+  await assert.rejects(session.command('acknowledge-cloud-save-error', { message: lostCloudEditReceipt }), /Cloud save error acknowledgement is unavailable/);
+
+  await openWorkspacePanel('Scriv account…');
+  await click('Retry saved cloud commands', true);
+  await control(node => node.title === 'Sync this script', true);
+  await session.command('key', { input: 'Escape', modifiers: [] });
+  await control(workspaceProject, true);
+  assert.deepEqual(await session.command('presented-alerts'), []);
+  assert.deepEqual(await fixture.editReceiptState(), { ...first, attempts: 2 });
+  assert.deepEqual(await readdir(directory), [], 'The original receipt clears the exact pending edit');
+  assert.deepEqual((await session.command('loaded-project')).project, edited);
+  assert.deepEqual((await session.command('persisted-projects')).find(project => project.id === edited.id), edited);
+  console.log('PASS: native reconnect retries the exact saved edit and receives the original cloud receipt');
 }
 
 async function verifyAccountReconnectAndSignOut(downloaded) {
