@@ -1,5 +1,24 @@
 # CLI cloud isolation foundations
 
+## Local Worker fixture
+
+`tracer app -- test --scenario journeys/native-cloud-sign-in` uses the locked
+cloud development dependencies. It runs two fresh Catalyst sessions against
+one owned, loopback-only Worker. The default session shows the offline error
+and sends zero messages. The fixture session requests one code for a synthetic
+address, verifies delivery and the native code prompt, then cancels. Both
+sessions check the complete loaded project and saved package. The fixture
+keeps only the delivery count in memory.
+
+The scenario passes the exact loopback origin in an unlinked, read-only
+descriptor tied to the fresh run's UUID. The automation app validates it
+before constructing its cloud client. Ordinary CLI sessions stay offline.
+Persistent and resumed sessions reject fixture grants. Both launch modes keep
+OAuth and peer transport disabled. The scenario ends at cancellation before
+code verification or project sync.
+
+## Original isolation checkpoint
+
 Status: implementation and source review only. No login/team journey is enabled
 or certified by this change.
 The existing 27 eligible native entrypoints and 43 retired legacy methods are

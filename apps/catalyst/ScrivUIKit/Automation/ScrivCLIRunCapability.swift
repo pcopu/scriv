@@ -15,13 +15,12 @@ final class ScrivCLIRunCapability {
     private static let maximumWorkspaceDepth = 32
     private static let persistentMarker = ".scriv-cli-persistent"
     private static let sessionLock = ".scriv-cli-session.lock"
+    private static let cloudFixtureFlag = "--scriv-cli-cloud-fixture"
     let runID: UUID
     let sessionID: UUID
     let persistent: Bool
     let resumed: Bool
     let root: URL
-    // Foundations only: no argument/environment/command grants a cloud origin.
-    // A future reviewed local fixture can supply a strictly validated origin.
     let approvedOrigin: URL?
     private let namedRoot: URL
     private let rootFD: Int32
@@ -49,8 +48,9 @@ final class ScrivCLIRunCapability {
         let arguments = CommandLine.arguments
         let freshPersistent = arguments.contains("--scriv-cli-persistent")
         let resumed = arguments.contains("--scriv-cli-resume")
+        let cloudFixture = arguments.contains(cloudFixtureFlag)
         guard arguments.contains("--scriv-cli") else {
-            guard !freshPersistent, !resumed else { throw Failure() }
+            guard !freshPersistent, !resumed, !cloudFixture else { throw Failure() }
             return
         }
         guard prepared == nil, arguments.contains("--screenshots"),
@@ -65,6 +65,8 @@ final class ScrivCLIRunCapability {
         }
         guard !resumed || sessionID != runID else { throw Failure() }
         let persistent = freshPersistent || resumed
+        guard !cloudFixture || (!persistent && sessionID == runID) else { throw Failure() }
+        let approvedOrigin = cloudFixture ? try readCloudFixtureOrigin(3, runID: runID) : nil
 
         // Duplicate FD3 before any open can occupy that descriptor. Never lock
         // the inherited root: flock would share the driver's open description.
@@ -129,7 +131,7 @@ final class ScrivCLIRunCapability {
         }
         let run = try ScrivCLIRunCapability(runID: runID, sessionID: sessionID, persistent: persistent, resumed: resumed,
                                            root: root, namedRoot: namedRoot, rootFD: rootFD, outboxFD: outboxFD,
-                                           lockFD: lockFD, markerFD: markerFD, approvedOrigin: nil)
+                                           lockFD: lockFD, markerFD: markerFD, approvedOrigin: approvedOrigin)
         transferred = true
         guard setenv("SCRIV_VERIFICATION_ROOT", root.path, 1) == 0,
               setenv("SCRIV_CLI_SESSION_ID", sessionID.uuidString.lowercased(), 1) == 0 else { throw Failure() }
@@ -150,6 +152,25 @@ final class ScrivCLIRunCapability {
         guard raw.count == 36, let value = UUID(uuidString: raw),
               raw.lowercased() == value.uuidString.lowercased() else { throw Failure() }
         return value
+    }
+    private static func readCloudFixtureOrigin(_ descriptor: Int32, runID: UUID) throws -> URL {
+        defer { close(descriptor) }
+        var info = stat()
+        let flags = fcntl(descriptor, F_GETFL)
+        // FD3 carries an unlinked, read-only grant for this fresh app process.
+        guard flags >= 0, flags & O_ACCMODE == O_RDONLY, fstat(descriptor, &info) == 0,
+              info.st_uid == geteuid(), info.st_nlink == 0, info.st_mode == S_IFREG | 0o600,
+              (1...128).contains(info.st_size) else { throw Failure() }
+        var bytes = Data(count: Int(info.st_size))
+        let count = bytes.withUnsafeMutableBytes { pread(descriptor, $0.baseAddress, $0.count, 0) }
+        guard count == bytes.count, let grant = String(data: bytes, encoding: .utf8) else { throw Failure() }
+        let fields = grant.split(separator: "\n", omittingEmptySubsequences: false)
+        guard fields.count == 4, fields[0] == "ScrivCLICloudFixture-v1",
+              fields[1] == runID.uuidString.lowercased(), fields[3].isEmpty,
+              let origin = URL(string: String(fields[2])),
+              let port = origin.port, fields[2] == "http://127.0.0.1:\(port)" else { throw Failure() }
+        try validateLoopbackOrigin(origin)
+        return origin
     }
     private static func markerBytes(_ runID: UUID) -> Data {
         Data(("ScrivCLIWorkspace-v1\n" + runID.uuidString.lowercased() + "\n").utf8)
@@ -232,6 +253,7 @@ final class ScrivCLIRunCapability {
               let session = getenv("SCRIV_CLI_SESSION_ID"), String(cString: session) == sessionID.uuidString.lowercased(),
               CommandLine.arguments.contains("--scriv-cli-resume") == resumed,
               CommandLine.arguments.contains("--scriv-cli-persistent") == (persistent && !resumed),
+              CommandLine.arguments.contains(Self.cloudFixtureFlag) == (approvedOrigin != nil),
               let path = getenv("SCRIV_VERIFICATION_ROOT"), String(cString: path) == root.path,
               namedRoot.resolvingSymlinksInPath() == namedRoot,
               root.resolvingSymlinksInPath() == namedRoot else { throw Failure() }

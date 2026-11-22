@@ -2,9 +2,10 @@
 import { spawn } from 'node:child_process';
 import { serviceUsage } from '../scripts/service-catalog.mjs';
 import { createInterface } from 'node:readline';
-import { realpath, stat, lstat } from 'node:fs/promises';
+import { realpath, stat, lstat, mkdtemp, open, unlink, rmdir, writeFile } from 'node:fs/promises';
 import { randomUUID, createHash } from 'node:crypto';
-import { createReadStream } from 'node:fs';
+import { constants, createReadStream } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { basename, isAbsolute, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { retainOwnedWorkspace, validateOwnedWorkspace, inspectOwnedWorkspace } from './owned-workspace.mjs';
@@ -13,6 +14,23 @@ async function executableDigest(path) {
   const hash = createHash('sha256');
   for await (const chunk of createReadStream(path)) hash.update(chunk);
   return hash.digest('hex');
+}
+
+async function openCloudFixtureGrant(runID, origin) {
+  const directory = await mkdtemp(join(tmpdir(), 'scriv-cloud-grant-'));
+  const path = join(directory, 'grant');
+  let handle;
+  try {
+    await writeFile(path, `ScrivCLICloudFixture-v1\n${runID}\n${origin}\n`, { flag: 'wx', mode: 0o600 });
+    try { handle = await open(path, constants.O_RDONLY | constants.O_NOFOLLOW); }
+    finally { await unlink(path); }
+    await rmdir(directory);
+    return handle;
+  } catch (error) {
+    await handle?.close();
+    await rmdir(directory).catch(() => {});
+    throw error;
+  }
 }
 
 /** One actual Catalyst app per session. No mock backend or in-process model. */
@@ -49,11 +67,16 @@ export class ScrivSession {
   }
   static async launch(app, options = {}) {
     if (!options || typeof options !== 'object' || Array.isArray(options)
-        || Object.keys(options).some(key => key !== 'persistent')
+        || Object.keys(options).some(key => key !== 'persistent' && key !== 'cloudFixtureOrigin')
         || options.persistent !== undefined && typeof options.persistent !== 'boolean') throw new Error('Invalid session options');
-    return ScrivSession.#launch(app, options.persistent === true, null);
+    const { cloudFixtureOrigin } = options;
+    if (cloudFixtureOrigin !== undefined) {
+      const origin = typeof cloudFixtureOrigin === 'string' && /^http:\/\/127\.0\.0\.1:([1-9][0-9]{0,4})$/.exec(cloudFixtureOrigin);
+      if (options.persistent || !origin || Number(origin[1]) > 65535 || origin[0] !== cloudFixtureOrigin) throw new Error('Invalid session options');
+    }
+    return ScrivSession.#launch(app, options.persistent === true, null, cloudFixtureOrigin);
   }
-  static async #launch(app, persistent, workspace) {
+  static async #launch(app, persistent, workspace, cloudFixtureOrigin) {
     if (process.platform !== 'darwin') throw new Error('Actual Scriv E2E requires macOS and an automation-enabled Catalyst build. No fallback driver is used.');
     const bundle = await realpath(app);
     if (!bundle.endsWith('.app')) throw new Error('Pass the automation .app bundle');
@@ -71,17 +94,24 @@ export class ScrivSession {
     delete env.SCRIV_E2E_COVERAGE_CONTEXT; // Host collector metadata is not an app input.
     for (const key of ['SCRIV_CLI_RESUME', 'SCRIV_CLI_RESUME_FD', 'SCRIV_CLI_WORKSPACE', 'SCRIV_CLI_PERSISTENT']) delete env[key];
     const arguments_ = ['--screenshots', '--scriv-cli', ...(persistent ? [workspace ? '--scriv-cli-resume' : '--scriv-cli-persistent'] : [])];
-    const child = spawn(executable, arguments_, {
-      env, stdio: ['pipe', 'pipe', 'pipe', ...(workspace ? [workspace.handle.fd] : [])]
-    });
-    const session = new ScrivSession(child, null);
+    const grant = cloudFixtureOrigin ? await openCloudFixtureGrant(runID, cloudFixtureOrigin) : null;
+    if (grant) arguments_.push('--scriv-cli-cloud-fixture');
+    const inherited = workspace?.handle ?? grant;
+    let session;
     try {
+      try {
+        const child = spawn(executable, arguments_, {
+          env, stdio: ['pipe', 'pipe', 'pipe', ...(inherited ? [inherited.fd] : [])]
+        });
+        session = new ScrivSession(child, null);
+      } finally { await grant?.close(); }
       const capabilities = await session.command('capabilities', {}, 30000);
       const root = capabilities.verificationRoot;
       if (capabilities.runID !== runID || typeof root !== 'string' || !isAbsolute(root)
           || basename(root) !== `ScrivVerification-CLI-${runID}`) throw new Error('App did not confirm this isolated run');
       if (capabilities.sessionID !== sessionID || capabilities.workspace?.persistent !== persistent
           || capabilities.workspace?.resumed !== Boolean(workspace)) throw new Error('App did not confirm this process and workspace mode');
+      if (grant && capabilities.cloudIsolation?.network !== 'loopback-only') throw new Error('App did not confirm isolated Worker access');
       const info = await lstat(root);
       if (!info.isDirectory() || info.isSymbolicLink()) throw new Error('Isolated app root is not a real directory');
       session.root = await realpath(root);
@@ -99,7 +129,7 @@ export class ScrivSession {
       }
       if (workspace) session.#workspace = workspace;
       return session;
-    } catch (error) { await session.close(); throw error; }
+    } catch (error) { await session?.close(); throw error; }
   }
   command(command, parameters = {}, timeout = 15000) {
     if (this.#stopping) return Promise.reject(new Error('Session is closing or relaunching'));
