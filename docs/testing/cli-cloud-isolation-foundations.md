@@ -23,13 +23,19 @@ removes, and re-adds the project owner. The journey posts the mention, opens it
 from the line thread through Project activity, and verifies the original project
 discussion and saved project. CLI `activate` dispatches visible single-select
 rows in these two discussion pickers through their UIKit selection handlers.
-Each session verifies one synthetic code. When the workspace shows the account
-toolbar button, the second session uses the account sheet to sync the linked
-script and sign out. The loaded and saved projects stay equal to the downloaded
-copy after each action. The Worker fixture checks that the second sign-in was
-revoked and the first remains active, using ordered revocation flags that expose
-no session identifiers or tokens. A compact workspace checks that the account
-menu item is present and reports the sheet actions as skipped.
+Each session verifies one synthetic code. The CLI `workspace-panels` scope
+opens Account, History, Teams and sharing, and Generation history from their
+existing Workspace actions menu. The second app session opens Account through
+this menu, syncs the linked script, and signs out. The loaded and saved projects
+stay equal to the downloaded copy after each action. The Worker fixture checks
+revocation using ordered flags that expose no identifiers or tokens.
+
+The journey selects actual Cloud History rows to compare the imported and
+edited script in read-only previews. It verifies that a discussion event leaves
+Restore disabled. The fixture sets up a free team through the public Worker and
+revokes its setup session. The native Teams sheet verifies the owner's role and
+that creating invitations requires an active plan. The same app session checks
+the empty local and shared generation history views.
 Only the active native prompt for the fixture's synthetic address can consume
 its code from a separate unlinked mailbox descriptor. The normal Sign in with
 code button submits it to the Worker. General CLI text entry still refuses the

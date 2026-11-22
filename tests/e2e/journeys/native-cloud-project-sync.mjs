@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
-import { nativeFixtureEmail, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
+import { nativeFixtureEmail, nativeFixtureTeam, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Requires a verified automation-enabled Catalyst app');
@@ -157,11 +157,14 @@ const lineOnly = (nodes, body) => {
 };
 
 try {
+  step = 'set up the original free team through the owned Worker';
+  assert.deepEqual(await fixture.createFreeTeam(), { name: nativeFixtureTeam, role: 'owner', plan: 'free', billingCustomer: false });
   session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
   const capabilities = await session.command('capabilities');
   assert.equal(capabilities.cloudIsolation.network, 'loopback-only');
   assert.ok(capabilities.syntheticFixtureCommands.includes('receive-fixture-email-code'), 'The owned synthetic mailbox action is missing');
   assert.ok(capabilities.semanticMenuActionScopes.includes('workspace-discussion'), 'The workspace discussion menu route is missing');
+  await verifyPanelRefusals();
   await assert.rejects(session.command('receive-fixture-email-code'), /synthetic sign-in mailbox is unavailable/);
   await control(workspaceProject);
   await session.command('key', { input: 's', modifiers: ['command'] });
@@ -170,7 +173,7 @@ try {
   assert.deepEqual(await fixture.projects(), []);
 
   step = 'verify the owned email challenge';
-  await signIn(1);
+  await signIn(2);
   await click('Close Projects', true);
   await control(workspaceProject, true);
 
@@ -227,6 +230,8 @@ try {
   assert.deepEqual(await fixture.projects(), [{ id: reopened.cloudProjectId, title: reopened.title }]);
   assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === other.id), other);
 
+  await verifyCloudRevisions(line.text, revisedText);
+
   step = 'post, reply to and resolve a project discussion';
   await openDiscussion();
   await session.waitFor(nodes => nodes.some(node => node.text === 'No comments yet')
@@ -259,7 +264,7 @@ try {
   await control(workspaceProject);
   const localBefore = await session.command('persisted-projects');
   assert.ok(localBefore.every(project => project.id !== edited.id && !project.cloudProjectId), 'The new workspace has no cloud replica');
-  await signIn(2);
+  await signIn(3);
   await openCloudFromProjects(original.title);
   const downloaded = await waitForSavedProject(session, candidate => candidate.cloudProjectId === edited.cloudProjectId);
   assert.notEqual(downloaded.id, edited.id, 'Opening the remote script creates a separate local replica');
@@ -301,17 +306,10 @@ try {
   assert.deepEqual((await session.command('loaded-project')).project, downloaded);
   assert.deepEqual(await session.command('presented-alerts'), []);
   await click('Close discussion');
-  const header = await control(node => node.label === 'Workspace actions', true);
-  const chrome = (await session.command('snapshot')).find(node => node.type === 'ScrivWorkspaceHeader');
-  assert.ok(chrome?.frame?.width > 0, 'The native workspace header exposes its current width');
-  if (chrome.frame.width < 1440) {
-    step = 'verify the compact workspace offers the real account action';
-    const menu = await session.command('menu', { target: header.path });
-    assert.ok(menu.primary[0].children.some(group => group.children?.some(action => action.title === 'Scriv account…' && !action.disabled)));
-    console.log('SKIP native account reconnect and sign-out: account is available only through the compact workspace menu');
-  } else {
-    await verifyAccountReconnectAndSignOut(downloaded);
-  }
+  await verifyDiscussionHistory();
+  await verifyFreeTeam();
+  await verifyGenerationHistory();
+  await verifyAccountReconnectAndSignOut(downloaded);
   await fixture.assertNoOutbound();
   console.log('PASS: native sync, linked edit, discussions and fresh cloud replica');
 } catch (error) {
@@ -323,7 +321,7 @@ try {
 
 async function verifyAccountReconnectAndSignOut(downloaded) {
   step = 'resync the existing cloud script through the native account sheet';
-  await click('Scriv account', true);
+  await openWorkspacePanel('Scriv account…');
   await click('Sync this script', true);
   // The account sheet briefly disables Sync while the linked copy reattaches.
   await session.waitFor(nodes => nodes.some(node => node.title === 'Sync this script' && node.enabled === false));
@@ -336,13 +334,13 @@ async function verifyAccountReconnectAndSignOut(downloaded) {
   assert.deepEqual(await fixture.projects(), [{ id: downloaded.cloudProjectId, title: downloaded.title }]);
 
   step = 'sign out and verify cloud revocation with the saved script intact';
-  assert.deepEqual(await fixture.sessionStates(), [{ revoked: false }, { revoked: false }]);
-  await click('Scriv account');
+  assert.deepEqual(await fixture.sessionStates(), [{ revoked: true }, { revoked: false }, { revoked: false }]);
+  await openWorkspacePanel('Scriv account…');
   await click('Sign out', true);
   await control(workspaceProject, true);
   await session.command('activate', { target: (await control(workspaceProject)).path });
   await control(node => node.title === 'Sign in to Scriv…' || node.label === 'Sign in to Scriv…', true);
-  assert.deepEqual(await fixture.sessionStates(), [{ revoked: false }, { revoked: true }],
+  assert.deepEqual(await fixture.sessionStates(), [{ revoked: true }, { revoked: false }, { revoked: true }],
     'Only the newer session belonging to the signed-out workspace was revoked');
   await click('Close Projects', true);
   await control(workspaceProject, true);
@@ -350,4 +348,102 @@ async function verifyAccountReconnectAndSignOut(downloaded) {
   assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === downloaded.id), downloaded);
   assert.deepEqual(await session.command('presented-alerts'), []);
   console.log('PASS: native account reconnect and sign-out preserves the saved replica');
+}
+
+
+async function openWorkspacePanel(title) {
+  const button = await control(node => node.label === 'Workspace actions', true);
+  const menu = await session.command('menu', { target: button.path });
+  assert.ok(menu.primary[0].children.some(group => group.children?.some(action => action.title === title && !action.disabled)));
+  assert.deepEqual(await session.command('menu-action', { target: button.path, scope: 'workspace-panels', action: title }),
+    { dispatched: true, coverage: 'semantic-menu-action' });
+}
+
+async function verifyPanelRefusals() {
+  step = 'refuse unsupported or mismatched workspace menu requests';
+  assert.ok((await session.command('capabilities')).semanticMenuActionScopes.includes('workspace-panels'));
+  const menu = await control(node => node.label === 'Workspace actions');
+  const project = await control(workspaceProject);
+  const select = { target: menu.path, scope: 'workspace-panels', action: 'History…' };
+  for (const args of [
+    { ...select, action: 'Scriv account…' }, { ...select, action: 'New project' },
+    { ...select, unexpected: true }, { ...select, target: project.path },
+  ]) await assert.rejects(session.command('menu-action', args), /Workspace panel action is unavailable/);
+  assert.deepEqual(await session.command('presented-alerts'), []);
+}
+
+function historyRows(nodes, title) {
+  return nodes.filter(row => row.type === 'HistoryEventCell' && row.hittable
+    && nodes.some(child => child.path.startsWith(row.path + '.') && child.text === title));
+}
+async function selectSegment(labels, index) {
+  const segment = await control(node => node.type === 'UISegmentedControl' && node.segments?.join('|') === labels, true);
+  await session.command('select', { target: segment.path, index });
+}
+function assertReadOnlyScript(text) {
+  return session.waitFor(nodes => nodes.some(node => node.type === 'ScriptTextView' && node.text === text && node.editable === false && node.hittable));
+}
+
+async function verifyCloudRevisions(original, edited) {
+  step = 'compare the prior import and edited script in native cloud history';
+  const before = await session.command('loaded-project');
+  await openWorkspacePanel('History…');
+  await selectSegment('This Mac|Cloud', 1);
+  await selectSegment('Changes|Revision preview', 1);
+  for (const [title, text] of [['Import project', original], ['Edit script', edited]]) {
+    const nodes = await session.waitFor(nodes => historyRows(nodes, title).length === 1);
+    const { path: target } = historyRows(nodes, title)[0];
+    await assert.rejects(session.command('activate', { target, unexpected: true }), /History row cannot be selected/);
+    assert.deepEqual(await session.command('activate', { target }), { dispatched: true });
+    await assertReadOnlyScript(text);
+  }
+  await click('Close', true);
+  await control(workspaceProject, true);
+  assert.deepEqual(await session.command('loaded-project'), before);
+}
+
+async function verifyDiscussionHistory() {
+  step = 'review a discussion event without offering script restore';
+  await openWorkspacePanel('History…');
+  await selectSegment('This Mac|Cloud', 1);
+  const nodes = await session.waitFor(nodes => historyRows(nodes, 'Send message').length > 0);
+  const target = historyRows(nodes, 'Send message').reduce((a, b) => a.frame.y < b.frame.y ? a : b).path;
+  assert.deepEqual(await session.command('activate', { target }), { dispatched: true });
+  const activity = await session.waitFor(nodes => nodes.some(node => node.text === 'This event is not a script restore point. Restoring never rewinds the conversation.'));
+  assert.ok(activity.some(node => node.title === 'Restore revision…' && node.enabled === false));
+  await selectSegment('Changes|Revision preview', 1);
+  await session.waitFor(nodes => nodes.some(node => node.text === 'No script snapshot is available for this event.'));
+  await click('Close', true);
+  await control(workspaceProject, true);
+}
+
+async function verifyFreeTeam() {
+  step = 'review free-team membership and invitation availability';
+  await openWorkspacePanel('Teams and sharing…');
+  const owner = nodes => nodes.some(node => node.text === 'Members (1)')
+    && nodes.some(node => node.text === 'Scriv user (you)') && nodes.some(node => node.text === 'Owner of this team');
+  const members = await session.waitFor(owner);
+  assert.ok(members.some(node => node.title === nativeFixtureTeam));
+  assert.ok(members.some(node => node.text === 'Not active'));
+  await click('Refresh members', true);
+  await session.waitFor(owner);
+  await selectSegment('Overview|Members|Invitations', 0);
+  await session.waitFor(nodes => nodes.some(node => node.text === 'One plan for the whole team')
+    && nodes.some(node => node.text === 'This project is not shared with this team'));
+  await selectSegment('Overview|Members|Invitations', 2);
+  const invitations = await session.waitFor(nodes => nodes.some(node => node.text === 'No invitation links yet.'));
+  assert.ok(invitations.some(node => node.text === 'Activate Team first'));
+  assert.ok(invitations.some(node => node.title === 'Create & copy link' && node.enabled === false));
+  await click('Done', true);
+  await control(workspaceProject, true);
+}
+
+async function verifyGenerationHistory() {
+  step = 'review empty local and shared generation history';
+  await openWorkspacePanel('Generation history…');
+  await session.waitFor(nodes => nodes.some(node => node.text === 'No generation jobs yet'));
+  await selectSegment('This Mac|Shared project', 1);
+  await session.waitFor(nodes => nodes.some(node => node.text === 'No shared jobs for this project'));
+  await session.command('key', { input: 'Escape', modifiers: [] });
+  await control(workspaceProject, true);
 }

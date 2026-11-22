@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { fork } from 'node:child_process';
+import { createHash, randomBytes } from 'node:crypto';
 import { mkdtemp, mkdir, readFile, readdir, realpath, rm } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
@@ -8,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const cloud = fileURLToPath(new URL('../../../../cloud/', import.meta.url));
 export const nativeFixtureEmail = 'synthetic-native@example.invalid';
+export const nativeFixtureTeam = 'Synthetic Story Team';
 
 export async function startNativeCloudFixture() {
   const require = createRequire(join(cloud, 'package.json'));
@@ -63,6 +65,7 @@ export async function startNativeCloudFixture() {
       origin,
       deliveries: async () => (await response('status')).deliveries,
       takeCode: () => response('take-code'),
+      createFreeTeam: () => response('create-free-team'),
       projects: () => response('projects'),
       sessionStates: () => response('session-states'),
       assertNoOutbound: async () => assert.equal((await response('status')).outbound, 0),
@@ -121,7 +124,33 @@ async function startWorker(root) {
     assert.deepEqual(migrations, ['0001_identity_teams.sql', '0002_generation_jobs.sql', '0003_email_auth.sql']);
     for (const name of migrations) await db.batch(unstable_splitSqlQuery(await readFile(join(cloud, 'migrations', name), 'utf8')).map(sql => db.prepare(sql)));
     const mailbox = await fixture.getWorker('local-mailbox');
-    return { origin: base.origin, status: async () => ({ deliveries: await mailbox.count(), outbound }),
+    async function post(path, expectedStatus, body, token) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers.Authorization = `Bearer ${token}`;
+      const response = await fixture.dispatchFetch(new URL(path, base), {
+        method: 'POST', headers, body: JSON.stringify(body), redirect: 'error',
+      });
+      assert.equal(response.status, expectedStatus, `Unexpected fixture status for ${path}`);
+      return response.json();
+    }
+    async function createFreeTeam() {
+      // Set up an existing free-team owner through the public Worker. Only the
+      // test adapter ever sees this setup session's code or credential.
+      const codeVerifier = randomBytes(32).toString('base64url');
+      const codeChallenge = createHash('sha256').update(codeVerifier).digest('base64url');
+      const { challengeId } = await post('/auth/email/request', 202, { email: nativeFixtureEmail, codeChallenge });
+      const code = await mailbox.takeCode();
+      assert.ok(typeof code === 'string' && /^\d{6}$/.test(code), 'Fixture delivery must contain a code');
+      const { token } = await post('/auth/email/verify', 200, { challengeId, code, codeVerifier, deviceName: 'Team fixture setup' });
+      assert.ok(typeof token === 'string' && token.length > 0, 'Fixture authorization was issued');
+      try {
+        const { team } = await post('/v1/teams', 201, { name: nativeFixtureTeam }, token);
+        return { name: team.name, role: team.role, plan: team.plan, billingCustomer: team.billingCustomer };
+      } finally {
+        await post('/auth/logout', 200, {}, token);
+      }
+    }
+    return { origin: base.origin, createFreeTeam, status: async () => ({ deliveries: await mailbox.count(), outbound }),
       takeCode: () => mailbox.takeCode(),
       projects: async () => (await db.prepare(
         'SELECT projects.id, projects.title FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.id',
@@ -138,7 +167,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
   const worker = await startWorker(process.argv[3]);
   try {
     process.on('message', async message => {
-      const operations = { status: worker.status, 'take-code': worker.takeCode, projects: worker.projects, 'session-states': worker.sessionStates };
+      const operations = { status: worker.status, 'take-code': worker.takeCode, 'create-free-team': worker.createFreeTeam, projects: worker.projects, 'session-states': worker.sessionStates };
       assert.ok(Object.hasOwn(operations, message));
       const result = await operations[message]();
       if (process.connected) process.send(result);

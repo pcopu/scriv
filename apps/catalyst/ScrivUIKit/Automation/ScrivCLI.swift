@@ -314,7 +314,7 @@ final class ScrivCLI {
                     "syntheticFixtureCommands": ["stage-package-fixture"],
                     "publicDelegateCommands": ["return", "script-insert", "script-delete-selection"],
                     "publicTextInputCommands": ["delete-backward"],
-                    "semanticMenuActionScopes": ["script-zoom", "layers-direction-duration", "audio-anchor", "layers-word-timing", "image-inspector-prompt-disclosure", "script-scenes", "storyboard-merge", "character-portrait-options", "workspace-discussion"],
+                    "semanticMenuActionScopes": ["script-zoom", "layers-direction-duration", "audio-anchor", "layers-word-timing", "image-inspector-prompt-disclosure", "script-scenes", "storyboard-merge", "character-portrait-options", "workspace-discussion", "workspace-panels"],
                     "runID": run.runID.uuidString.lowercased(),
                     "sessionID": run.sessionID.uuidString.lowercased(),
                     "workspace": ["persistent": run.persistent, "resumed": run.resumed],
@@ -634,19 +634,29 @@ final class ScrivCLI {
         guard isHittable(view) else { throw Failure("Target is clipped, covered, or not hittable; scroll it into view first") }
         switch command {
         case "menu-action":
-            if request["scope"] as? String == "workspace-discussion" {
+            let scope = request["scope"] as? String
+            if scope == "workspace-discussion" || scope == "workspace-panels" {
+                let discussion = scope == "workspace-discussion"
+                let unavailable = discussion ? "Workspace discussion action is unavailable" : "Workspace panel action is unavailable"
                 guard Set(request.keys).isSubset(of: ["id", "command", "target", "scope", "action"]),
                       let title = request["action"] as? String,
                       let button = view as? UIButton,
                       let workspace = window.rootViewController as? ScrivWorkspaceController,
                       workspace.presentedViewController == nil,
                       workspace.ownsCLIActionMenu(button),
-                      let menu = button.menu else { throw Failure("Workspace discussion action is unavailable") }
-                let expected = workspace.store.showDiscussion ? "Hide discussion" : "Discussion"
+                      let menu = button.menu else { throw Failure(unavailable) }
+                if discussion {
+                    let expected = workspace.store.showDiscussion ? "Hide discussion" : "Discussion"
+                    guard title == expected || title.hasPrefix(expected + " (") else { throw Failure(unavailable) }
+                } else {
+                    let panels = ["History…", "Teams and sharing…", "Generation history…"]
+                    guard panels.contains(title) || (title == "Scriv account…" && workspace.store.account != nil)
+                    else { throw Failure(unavailable) }
+                }
                 let actions = menu.children.compactMap { $0 as? UIMenu }.filter { $0.options.contains(.displayInline) }
                     .flatMap { $0.children.compactMap { $0 as? UIAction } }
-                    .filter { $0.title == title && ($0.title == expected || $0.title.hasPrefix(expected + " (")) && $0.attributes.isEmpty }
-                guard actions.count == 1, let action = actions.first else { throw Failure("Workspace discussion action is unavailable") }
+                    .filter { $0.title == title && $0.attributes.isEmpty }
+                guard actions.count == 1, let action = actions.first else { throw Failure(unavailable) }
                 button.sendAction(action)
                 return ["dispatched": true, "coverage": "semantic-menu-action"]
             }
@@ -730,18 +740,19 @@ final class ScrivCLI {
                 while parent != nil && !(parent is UITableView) { parent = parent?.superview }
                 if let table = parent as? UITableView, let delegate = table.delegate,
                    let picker = delegate as? ScrivScreenController,
-                   picker is UIKitDiscussionMentionPicker || picker is UIKitDiscussionActivityController {
+                   picker is UIKitDiscussionMentionPicker || picker is UIKitDiscussionActivityController || picker is HistoryController {
+                    let unavailable = picker is HistoryController ? "History row cannot be selected" : "Discussion picker row cannot be selected"
                     guard Set(request.keys).isSubset(of: ["id", "command", "target"]),
                           table.allowsSelection, !table.isEditing, !table.allowsMultipleSelection,
                           let index = table.indexPath(for: cell), table.cellForRow(at: index) === cell,
                           let pickerView = picker.viewIfLoaded, table.isDescendant(of: pickerView),
                           picker.requireCurrentContext(),
                           delegate.tableView?(table, shouldHighlightRowAt: index) != false else {
-                        throw Failure("Discussion picker row cannot be selected")
+                        throw Failure(unavailable)
                     }
                     if delegate.responds(to: #selector(UITableViewDelegate.tableView(_:willSelectRowAt:))),
                        delegate.tableView?(table, willSelectRowAt: index) != index {
-                        throw Failure("Discussion picker row cannot be selected")
+                        throw Failure(unavailable)
                     }
                     // Programmatic selection doesn't notify the delegate.
                     table.selectRow(at: index, animated: false, scrollPosition: .none)

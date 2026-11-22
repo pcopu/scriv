@@ -20,7 +20,7 @@ export const historyReviewManifest = {
       'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift::change/queueSave',
       'apps/mac/Sources/ScrivCore/ProjectRepository.swift::save'],
   }],
-  excluded: ['Arbitrary UITableView revision selection: activate supports UIControl and UICollectionViewCell, not UITableViewCell.',
+  excluded: ['Explicit revision selection is exercised in the native cloud project journey.',
     'Restore confirmation Cancel/Restore execution and restore undo/redo: UIAlertAction public accessibility activation is not native-verified; no private handler dispatch.',
     'Cloud history, account/provider access, journal corruption/recovery, process restart and crash durability.'],
 };
