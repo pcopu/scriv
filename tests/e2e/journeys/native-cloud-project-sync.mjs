@@ -89,7 +89,15 @@ async function compose(text, useShortcut = false) {
     && nodes.some(node => node.type === 'DiscussionReadOnlyTextView' && node.text === text));
 }
 
-async function browseProjectActivity() {
+async function selectActivityRow(text) {
+  const rows = nodes => nodes.filter(row => row.type === 'UITableViewCell' && row.hittable
+    && nodes.some(child => child.path.startsWith(row.path + '.') && child.type === 'UILabel' && child.text === text));
+  const nodes = await session.waitFor(nodes => rows(nodes).length === 1);
+  const target = rows(nodes)[0].path;
+  await assert.rejects(session.command('activate', { target, unexpected: true }), /Discussion picker row cannot be selected/);
+  assert.deepEqual(await session.command('activate', { target }), { dispatched: true });
+}
+async function browseProjectActivity(lineTitle) {
   await click('Project activity, 0 unread mentions', true);
   const activity = await control(node => node.type === 'UISegmentedControl'
     && node.segments?.join(',') === 'Mentions,Conversations', true);
@@ -102,8 +110,12 @@ async function browseProjectActivity() {
   await session.waitFor(resolvedProject);
   await click('Refresh');
   await session.waitFor(resolvedProject);
-  await click('Done');
+  await selectActivityRow(lineTitle);
+  await session.waitFor(nodes => nodes.some(node => node.text === 'Comments stay with this line.')
+    && lineOnly(nodes, lineComment));
+  await selectDiscussionScope(0);
   await control(node => node.title === 'Reopen conversation');
+  await session.waitFor(discussionState);
 }
 async function browseDiscussionMembers() {
   await click('Mention a project member', true);
@@ -117,8 +129,18 @@ async function browseDiscussionMembers() {
   await session.waitFor(nodes => nodes.some(node => node.text === 'No matching members.') && !owner(nodes));
   await session.command('text', { target: search.path, text: 'oWnEr' });
   await session.waitFor(owner);
+  for (const [label, count] of [
+    ['Mention Scriv user, owner', '1 / 20'],
+    ['Remove mention of Scriv user, owner', '0 / 20'],
+    ['Mention Scriv user, owner', '1 / 20'],
+  ]) {
+    const matches = nodes => nodes.filter(node => node.type === 'UITableViewCell' && node.label === label && node.hittable);
+    const nodes = await session.waitFor(nodes => matches(nodes).length === 1);
+    assert.deepEqual(await session.command('activate', { target: matches(nodes)[0].path }), { dispatched: true });
+    await session.waitFor(nodes => nodes.some(node => node.text === count));
+  }
   await click('Done');
-  await control(node => node.label === 'Mention a project member');
+  await control(node => node.label === 'Remove mention of Scriv user');
 }
 
 const lineComment = 'Keep this note with the revised dialogue line.';
@@ -250,7 +272,7 @@ try {
   await openDiscussion();
   await session.waitFor(discussionState);
   step = 'browse the saved conversation in Project activity';
-  await browseProjectActivity();
+  await browseProjectActivity(revisedText);
   await click('Reopen conversation');
   await control(node => node.title === 'Mark resolved');
   await session.waitFor(discussionState);
@@ -261,10 +283,25 @@ try {
   await session.waitFor(nodes => lineOnly(nodes, lineComment));
   await selectDiscussionScope(0);
   await session.waitFor(discussionState);
+  step = 'send a mention and jump to it from a separate line thread';
+  await control(node => node.label === 'Remove mention of Scriv user');
+  const mention = 'Please check the revised line in this project.';
+  await compose(mention);
+  const posted = await session.waitFor(nodes => nodes.some(node => node.label === 'You were mentioned'));
+  assert.ok(!posted.some(node => node.label === 'Remove mention of Scriv user'), 'Posting clears the selected member from the draft');
+  await selectDiscussionScope(1);
+  await session.waitFor(nodes => lineOnly(nodes, lineComment));
+  const activity = await control(node => node.label.startsWith('Project activity, '), true);
+  await session.command('activate', { target: activity.path });
+  await control(node => node.type === 'UISegmentedControl' && node.segments?.[0] === 'Mentions', true);
+  await selectActivityRow(mention);
+  await session.waitFor(nodes => nodes.some(node => node.text === 'Comments stay with this project.')
+    && nodes.some(node => node.type === 'DiscussionReadOnlyTextView' && node.text === mention)
+    && nodes.some(node => node.label === 'You were mentioned'));
   assert.deepEqual((await session.command('loaded-project')).project, downloaded);
   assert.deepEqual(await session.command('presented-alerts'), []);
   await fixture.assertNoOutbound();
-  console.log('PASS: native sync, linked edit, project and line discussions, pickers and fresh cloud readback');
+  console.log('PASS: native sync, linked edit, project and line discussions, selected rows, mentions and fresh cloud readback');
 } catch (error) {
   throw new Error('Native cloud project journey failed during ' + step, { cause: error });
 } finally {

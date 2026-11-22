@@ -18,8 +18,12 @@ script into a new saved package. The journey posts and replies in the project
 discussion, resolves the thread, and verifies its saved state through Project
 activity in the second session before reopening it. A note on the edited line
 stays separate from the project-wide thread across both sessions. The member
-picker verifies the project owner, an empty search result, and a case-insensitive
-role match. Each session verifies one synthetic code.
+picker verifies an empty search and a case-insensitive role match, then adds,
+removes, and re-adds the project owner. The journey posts the mention, opens it
+from the line thread through Project activity, and verifies the original project
+discussion and saved project. CLI `activate` dispatches visible single-select
+rows in these two discussion pickers through their UIKit selection handlers.
+Each session verifies one synthetic code.
 Only the active native prompt for the fixture's synthetic address can consume
 its code from a separate unlinked mailbox descriptor. The normal Sign in with
 code button submits it to the Worker. General CLI text entry still refuses the

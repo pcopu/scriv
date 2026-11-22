@@ -725,6 +725,30 @@ final class ScrivCLI {
                 collection.delegate?.collectionView?(collection, didSelectItemAt: index)
                 return ["dispatched": true]
             }
+            if let cell = view as? UITableViewCell {
+                var parent = cell.superview
+                while parent != nil && !(parent is UITableView) { parent = parent?.superview }
+                if let table = parent as? UITableView, let delegate = table.delegate,
+                   let picker = delegate as? ScrivScreenController,
+                   picker is UIKitDiscussionMentionPicker || picker is UIKitDiscussionActivityController {
+                    guard Set(request.keys).isSubset(of: ["id", "command", "target"]),
+                          table.allowsSelection, !table.isEditing, !table.allowsMultipleSelection,
+                          let index = table.indexPath(for: cell), table.cellForRow(at: index) === cell,
+                          let pickerView = picker.viewIfLoaded, table.isDescendant(of: pickerView),
+                          picker.requireCurrentContext(),
+                          delegate.tableView?(table, shouldHighlightRowAt: index) != false else {
+                        throw Failure("Discussion picker row cannot be selected")
+                    }
+                    if delegate.responds(to: #selector(UITableViewDelegate.tableView(_:willSelectRowAt:))),
+                       delegate.tableView?(table, willSelectRowAt: index) != index {
+                        throw Failure("Discussion picker row cannot be selected")
+                    }
+                    // Programmatic selection doesn't notify the delegate.
+                    table.selectRow(at: index, animated: false, scrollPosition: .none)
+                    delegate.tableView?(table, didSelectRowAt: index)
+                    return ["dispatched": true]
+                }
+            }
             guard let control = view as? UIControl else { throw Failure("Activation currently requires a UIControl") }
             if control.allControlEvents.contains(.primaryActionTriggered) {
                 control.sendActions(for: .primaryActionTriggered)
