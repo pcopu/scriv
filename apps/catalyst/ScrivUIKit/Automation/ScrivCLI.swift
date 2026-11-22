@@ -314,12 +314,17 @@ final class ScrivCLI {
                     "syntheticFixtureCommands": ["stage-package-fixture"],
                     "publicDelegateCommands": ["return", "script-insert", "script-delete-selection"],
                     "publicTextInputCommands": ["delete-backward"],
-                    "semanticMenuActionScopes": ["script-zoom", "layers-direction-duration", "audio-anchor", "layers-word-timing", "image-inspector-prompt-disclosure", "script-scenes", "storyboard-merge", "character-portrait-options"],
+                    "semanticMenuActionScopes": ["script-zoom", "layers-direction-duration", "audio-anchor", "layers-word-timing", "image-inspector-prompt-disclosure", "script-scenes", "storyboard-merge", "character-portrait-options", "workspace-discussion"],
                     "runID": run.runID.uuidString.lowercased(),
                     "sessionID": run.sessionID.uuidString.lowercased(),
                     "workspace": ["persistent": run.persistent, "resumed": run.resumed],
                     "verificationRoot": run.root.path,
                     "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "import-json", "acknowledge-json-import-error"]] as [String: Any]
+            if run.approvedOrigin != nil {
+                for key in ["syntheticFixtureCommands", "commands"] {
+                    result[key] = (result[key] as? [String] ?? []) + ["receive-fixture-email-code"]
+                }
+            }
 #if SCRIV_CLI_COVERAGE
             result["coverage"] = ["schemaVersion": 1, "format": "llvm-profraw",
                 "cumulative": true, "maximumSnapshots": 2, "maximumSnapshotBytes": 16 * 1024 * 1024,
@@ -571,6 +576,22 @@ final class ScrivCLI {
                 return item
             }
         }
+        if command == "receive-fixture-email-code" {
+            var top = window.rootViewController
+            while let presented = top?.presentedViewController { top = presented }
+            guard Set(request.keys).isSubset(of: ["id", "command"]), run.approvedOrigin != nil,
+                  let workspace = window.rootViewController as? ScrivWorkspaceController,
+                  let sheet = top as? UINavigationController,
+                  !sheet.isBeingPresented, !sheet.isBeingDismissed,
+                  let signIn = sheet.visibleViewController as? ScrivSignInController,
+                  signIn.store === workspace.store,
+                  let view = signIn.viewIfLoaded, let owned = view.window,
+                  ownedWindows().contains(where: { $0 === owned }), isInActivePresentation(view) else {
+                throw Failure("An owned synthetic sign-in mailbox is unavailable")
+            }
+            try signIn.receiveFixtureEmailCode(run)
+            return ["delivered": true]
+        }
         guard let selector = request["target"] as? String else { throw Failure("Missing target identifier or path") }
         let matches = views().filter { $0.0 == selector || $0.1.accessibilityIdentifier == selector }
         guard matches.count == 1, let view = matches.first?.1 else { throw Failure("Target must match exactly one visible view") }
@@ -613,6 +634,22 @@ final class ScrivCLI {
         guard isHittable(view) else { throw Failure("Target is clipped, covered, or not hittable; scroll it into view first") }
         switch command {
         case "menu-action":
+            if request["scope"] as? String == "workspace-discussion" {
+                guard Set(request.keys).isSubset(of: ["id", "command", "target", "scope", "action"]),
+                      let title = request["action"] as? String,
+                      let button = view as? UIButton,
+                      let workspace = window.rootViewController as? ScrivWorkspaceController,
+                      workspace.presentedViewController == nil,
+                      workspace.ownsCLIActionMenu(button),
+                      let menu = button.menu else { throw Failure("Workspace discussion action is unavailable") }
+                let expected = workspace.store.showDiscussion ? "Hide discussion" : "Discussion"
+                let actions = menu.children.compactMap { $0 as? UIMenu }.filter { $0.options.contains(.displayInline) }
+                    .flatMap { $0.children.compactMap { $0 as? UIAction } }
+                    .filter { $0.title == title && ($0.title == expected || $0.title.hasPrefix(expected + " (")) && $0.attributes.isEmpty }
+                guard actions.count == 1, let action = actions.first else { throw Failure("Workspace discussion action is unavailable") }
+                button.sendAction(action)
+                return ["dispatched": true, "coverage": "semantic-menu-action"]
+            }
             if ScrivCLICharacterPortraitMenu.canHandle(request) {
                 return try ScrivCLICharacterPortraitMenu.dispatch(view: view, window: window, windows: ownedWindows(), request: request)
             }

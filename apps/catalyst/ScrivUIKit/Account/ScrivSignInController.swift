@@ -173,6 +173,17 @@ final class ScrivSignInController: ScrivScreenController, UITextFieldDelegate {
         guard !busy, !ownedElsewhere, !store.cloud.emailSignIn.isExpired(at: Date()), let entered = try? EmailSignInFlow.normalizedCode(code.text ?? "") else { return }
         browserError = nil; run { [weak self] in guard let self else { return }; await self.store.verifyEmailCode(entered, ownerID: self.ownerID); self.code.text = "" }
     }
+#if SCRIV_CLI_AUTOMATION
+    func receiveFixtureEmailCode(_ run: ScrivCLIRunCapability) throws {
+        let flow = store.cloud.emailSignIn
+        guard visible, !closing, !busy, let origin = run.approvedOrigin, origin == store.cloud.baseURL,
+              flow.email == "synthetic-native@example.invalid", flow.challengeID != nil,
+              store.cloud.signInOwnerID == ownerID, !flow.isExpired(at: Date()),
+              code.window != nil, code.text?.isEmpty != false else { throw ScrivCLIRunCapability.Failure() }
+        code.text = try run.takeFixtureEmailCode()
+        updateControls()
+    }
+#endif
     private func github() {
         guard !busy, !ownedElsewhere else { return }; browserError = nil
         run { [weak self] in guard let self else { return }; do { try await self.store.signInWithGitHub(ownerID: self.ownerID) } catch is CancellationError {} catch { self.browserError = error.localizedDescription } }

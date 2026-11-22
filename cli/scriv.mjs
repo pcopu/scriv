@@ -19,15 +19,19 @@ async function executableDigest(path) {
 async function openCloudFixtureGrant(runID, origin) {
   const directory = await mkdtemp(join(tmpdir(), 'scriv-cloud-grant-'));
   const path = join(directory, 'grant');
-  let handle;
+  const mailbox = join(directory, 'mailbox');
+  let handle, reader, writer;
   try {
     await writeFile(path, `ScrivCLICloudFixture-v1\n${runID}\n${origin}\n`, { flag: 'wx', mode: 0o600 });
     try { handle = await open(path, constants.O_RDONLY | constants.O_NOFOLLOW); }
     finally { await unlink(path); }
+    writer = await open(mailbox, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600);
+    try { reader = await open(mailbox, constants.O_RDONLY | constants.O_NOFOLLOW); }
+    finally { await unlink(mailbox); }
     await rmdir(directory);
-    return handle;
+    return { handle, reader, writer };
   } catch (error) {
-    await handle?.close();
+    await Promise.allSettled([handle?.close(), reader?.close(), writer?.close()]);
     await rmdir(directory).catch(() => {});
     throw error;
   }
@@ -37,6 +41,7 @@ async function openCloudFixtureGrant(runID, origin) {
 export class ScrivSession {
   #child; #pending = new Map(); #sequence = 0; #closed = false; #exited = false; #reader; #coverage = null; #closing = null;
   #workspace = null; #stopping = false; #relaunching = false; #uncertain = false;
+  #fixtureMailbox = null;
   constructor(child, root) {
     this.#child = child; this.root = root;
     this.#reader = createInterface({ input: child.stdout });
@@ -96,15 +101,20 @@ export class ScrivSession {
     const arguments_ = ['--screenshots', '--scriv-cli', ...(persistent ? [workspace ? '--scriv-cli-resume' : '--scriv-cli-persistent'] : [])];
     const grant = cloudFixtureOrigin ? await openCloudFixtureGrant(runID, cloudFixtureOrigin) : null;
     if (grant) arguments_.push('--scriv-cli-cloud-fixture');
-    const inherited = workspace?.handle ?? grant;
+    const inherited = grant ? [grant.handle.fd, grant.reader.fd] : workspace ? [workspace.handle.fd] : [];
     let session;
     try {
       try {
         const child = spawn(executable, arguments_, {
-          env, stdio: ['pipe', 'pipe', 'pipe', ...(inherited ? [inherited.fd] : [])]
+          env, stdio: ['pipe', 'pipe', 'pipe', ...inherited]
         });
         session = new ScrivSession(child, null);
-      } finally { await grant?.close(); }
+        session.#fixtureMailbox = grant?.writer ?? null;
+      } finally {
+        if (grant) {
+          await Promise.all([grant.handle.close(), grant.reader.close(), session ? undefined : grant.writer.close()]);
+        }
+      }
       const capabilities = await session.command('capabilities', {}, 30000);
       const root = capabilities.verificationRoot;
       if (capabilities.runID !== runID || typeof root !== 'string' || !isAbsolute(root)
@@ -135,6 +145,17 @@ export class ScrivSession {
     if (this.#stopping) return Promise.reject(new Error('Session is closing or relaunching'));
     return this.#issue(command, parameters, timeout);
   }
+  async deliverFixtureEmailCode(code) {
+    if (!this.#fixtureMailbox || this.#stopping || this.#closed || this.#uncertain
+        || typeof code !== 'string' || code.length !== 6 || !/^[0-9]{6}$/.test(code)) {
+      throw new Error('An owned synthetic sign-in mailbox is unavailable');
+    }
+    const mailbox = this.#fixtureMailbox;
+    this.#fixtureMailbox = null;
+    try { await mailbox.writeFile(code, 'ascii'); }
+    finally { await mailbox.close(); }
+    return this.command('receive-fixture-email-code');
+  }
   #issue(command, parameters = {}, timeout = 15000) {
     if (this.#closed) return Promise.reject(new Error('Session is closed'));
     const observed = this.#coverage?.record(command);
@@ -160,7 +181,11 @@ export class ScrivSession {
     this.#stopping = true;
     this.#closing ??= (async () => {
       try { await this.#closeOnce(); }
-      finally { const workspace = this.#workspace; this.#workspace = null; await workspace?.handle.close(); }
+      finally {
+        const workspace = this.#workspace, mailbox = this.#fixtureMailbox;
+        this.#workspace = null; this.#fixtureMailbox = null;
+        await Promise.all([workspace?.handle.close(), mailbox?.close()]);
+      }
     })();
     return this.#closing;
   }

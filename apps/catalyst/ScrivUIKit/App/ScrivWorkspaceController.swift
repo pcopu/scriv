@@ -102,6 +102,9 @@ final class ScrivWorkspaceController: ScrivScreenController {
         chrome.codexButton.addAction(UIAction { [weak self] _ in self?.showCodexPopup(from: self?.chrome.codexButton) }, for: .primaryActionTriggered)
         chrome.moreButton.menu = workspaceMenu(); chrome.moreButton.showsMenuAsPrimaryAction = true
     }
+#if SCRIV_CLI_AUTOMATION
+    func ownsCLIActionMenu(_ button: UIButton) -> Bool { button === chrome.moreButton }
+#endif
     @objc func findInScript() {
         guard presentedViewController == nil else { return }
         UIKitPresentation.finishEditing(in: store)

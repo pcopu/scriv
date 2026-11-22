@@ -62,6 +62,8 @@ export async function startNativeCloudFixture() {
     return {
       origin,
       deliveries: async () => (await response('status')).deliveries,
+      takeCode: () => response('take-code'),
+      projects: () => response('projects'),
       assertNoOutbound: async () => assert.equal((await response('status')).outbound, 0),
       close,
     };
@@ -96,15 +98,19 @@ async function startWorker(root) {
         durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
       }, { ...common, name: 'local-mailbox', script: `import { WorkerEntrypoint } from 'cloudflare:workers';
         let delivered = 0;
+        let code;
         export default class extends WorkerEntrypoint {
           async send(message) {
+            const match = /^Your Scriv sign-in code is ([0-9]{6})\\./.exec(message.text);
             if (message.to !== ${JSON.stringify(nativeFixtureEmail)} || message.from.email !== 'sender@example.invalid'
-                || message.subject !== 'Your Scriv sign-in code' || !/^Your Scriv sign-in code is [0-9]{6}\\./.test(message.text)) {
+                || message.subject !== 'Your Scriv sign-in code' || !match || code) {
               throw new Error('Invalid synthetic delivery');
             }
+            code = match[1];
             delivered++;
           }
           async count() { return delivered; }
+          async takeCode() { const value = code; code = undefined; return value ?? null; }
         }` }],
     }));
     const base = await fixture.ready;
@@ -114,7 +120,12 @@ async function startWorker(root) {
     assert.deepEqual(migrations, ['0001_identity_teams.sql', '0002_generation_jobs.sql', '0003_email_auth.sql']);
     for (const name of migrations) await db.batch(unstable_splitSqlQuery(await readFile(join(cloud, 'migrations', name), 'utf8')).map(sql => db.prepare(sql)));
     const mailbox = await fixture.getWorker('local-mailbox');
-    return { origin: base.origin, status: async () => ({ deliveries: await mailbox.count(), outbound }), close: () => fixture.dispose() };
+    return { origin: base.origin, status: async () => ({ deliveries: await mailbox.count(), outbound }),
+      takeCode: () => mailbox.takeCode(),
+      projects: async () => (await db.prepare(
+        'SELECT projects.id, projects.title FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.id',
+      ).bind(nativeFixtureEmail).all()).results,
+      close: () => fixture.dispose() };
   } catch (error) { await fixture?.dispose(); throw error; }
 }
 
@@ -123,8 +134,10 @@ if (process.argv[2] === '--owned-worker' && process.send) {
   const worker = await startWorker(process.argv[3]);
   try {
     process.on('message', async message => {
-      assert.equal(message, 'status');
-      process.send(await worker.status());
+      const operations = { status: worker.status, 'take-code': worker.takeCode, projects: worker.projects };
+      assert.ok(Object.hasOwn(operations, message));
+      const result = await operations[message]();
+      if (process.connected) process.send(result);
     });
     if (process.connected) process.send({ origin: worker.origin });
     await disconnected;

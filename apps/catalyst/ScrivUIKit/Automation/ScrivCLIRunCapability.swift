@@ -27,21 +27,24 @@ final class ScrivCLIRunCapability {
     private let outboxFD: Int32
     private let lockFD: Int32
     private let markerFD: Int32
+    private var fixtureMailboxFD: Int32
     private var scopes: [String: Int32] = [:]
 
     private init(runID: UUID, sessionID: UUID, persistent: Bool, resumed: Bool,
                  root: URL, namedRoot: URL, rootFD: Int32, outboxFD: Int32,
-                 lockFD: Int32, markerFD: Int32, approvedOrigin: URL?) throws {
+                 lockFD: Int32, markerFD: Int32, approvedOrigin: URL?, fixtureMailboxFD: Int32) throws {
         if let approvedOrigin { try Self.validateLoopbackOrigin(approvedOrigin) }
         self.runID = runID; self.sessionID = sessionID
         self.persistent = persistent; self.resumed = resumed
         self.root = root; self.namedRoot = namedRoot
         self.rootFD = rootFD; self.outboxFD = outboxFD
         self.lockFD = lockFD; self.markerFD = markerFD; self.approvedOrigin = approvedOrigin
+        self.fixtureMailboxFD = fixtureMailboxFD
     }
     deinit {
         for fd in scopes.values { close(fd) }
         if markerFD >= 0 { close(markerFD) }
+        if fixtureMailboxFD >= 0 { close(fixtureMailboxFD) }
         close(lockFD); close(outboxFD); close(rootFD)
     }
     static func prepare() throws {
@@ -71,11 +74,17 @@ final class ScrivCLIRunCapability {
         // Duplicate FD3 before any open can occupy that descriptor. Never lock
         // the inherited root: flock would share the driver's open description.
         var rootFD: Int32 = -1, outboxFD: Int32 = -1, lockFD: Int32 = -1, markerFD: Int32 = -1
+        var fixtureMailboxFD: Int32 = -1
         var transferred = false
         defer {
             if !transferred {
-                for fd in [markerFD, lockFD, outboxFD, rootFD] where fd >= 0 { close(fd) }
+                for fd in [fixtureMailboxFD, markerFD, lockFD, outboxFD, rootFD] where fd >= 0 { close(fd) }
             }
+        }
+        if cloudFixture {
+            fixtureMailboxFD = 4
+            guard try cloudFixtureDescriptor(4).st_size == 0,
+                  fcntl(4, F_SETFD, FD_CLOEXEC) == 0 else { throw Failure() }
         }
         if resumed {
             rootFD = fcntl(3, F_DUPFD_CLOEXEC, 4)
@@ -131,7 +140,8 @@ final class ScrivCLIRunCapability {
         }
         let run = try ScrivCLIRunCapability(runID: runID, sessionID: sessionID, persistent: persistent, resumed: resumed,
                                            root: root, namedRoot: namedRoot, rootFD: rootFD, outboxFD: outboxFD,
-                                           lockFD: lockFD, markerFD: markerFD, approvedOrigin: approvedOrigin)
+                                           lockFD: lockFD, markerFD: markerFD, approvedOrigin: approvedOrigin,
+                                           fixtureMailboxFD: fixtureMailboxFD)
         transferred = true
         guard setenv("SCRIV_VERIFICATION_ROOT", root.path, 1) == 0,
               setenv("SCRIV_CLI_SESSION_ID", sessionID.uuidString.lowercased(), 1) == 0 else { throw Failure() }
@@ -153,14 +163,18 @@ final class ScrivCLIRunCapability {
               raw.lowercased() == value.uuidString.lowercased() else { throw Failure() }
         return value
     }
-    private static func readCloudFixtureOrigin(_ descriptor: Int32, runID: UUID) throws -> URL {
-        defer { close(descriptor) }
+    private static func cloudFixtureDescriptor(_ descriptor: Int32) throws -> stat {
         var info = stat()
         let flags = fcntl(descriptor, F_GETFL)
-        // FD3 carries an unlinked, read-only grant for this fresh app process.
         guard flags >= 0, flags & O_ACCMODE == O_RDONLY, fstat(descriptor, &info) == 0,
-              info.st_uid == geteuid(), info.st_nlink == 0, info.st_mode == S_IFREG | 0o600,
-              (1...128).contains(info.st_size) else { throw Failure() }
+              info.st_uid == geteuid(), info.st_nlink == 0, info.st_mode == S_IFREG | 0o600 else { throw Failure() }
+        return info
+    }
+    private static func readCloudFixtureOrigin(_ descriptor: Int32, runID: UUID) throws -> URL {
+        // FD3 carries an unlinked, read-only grant for this fresh app process.
+        defer { close(descriptor) }
+        let info = try cloudFixtureDescriptor(descriptor)
+        guard (1...128).contains(info.st_size) else { throw Failure() }
         var bytes = Data(count: Int(info.st_size))
         let count = bytes.withUnsafeMutableBytes { pread(descriptor, $0.baseAddress, $0.count, 0) }
         guard count == bytes.count, let grant = String(data: bytes, encoding: .utf8) else { throw Failure() }
@@ -171,6 +185,17 @@ final class ScrivCLIRunCapability {
               let port = origin.port, fields[2] == "http://127.0.0.1:\(port)" else { throw Failure() }
         try validateLoopbackOrigin(origin)
         return origin
+    }
+    func takeFixtureEmailCode() throws -> String {
+        try validate()
+        let fd = fixtureMailboxFD
+        guard approvedOrigin != nil, fd >= 0, try Self.cloudFixtureDescriptor(fd).st_size == 6 else { throw Failure() }
+        fixtureMailboxFD = -1
+        defer { close(fd) }
+        var bytes = [UInt8](repeating: 0, count: 6)
+        let count = bytes.withUnsafeMutableBytes { pread(fd, $0.baseAddress, $0.count, 0) }
+        guard count == bytes.count, bytes.allSatisfy({ (48...57).contains($0) }) else { throw Failure() }
+        return String(decoding: bytes, as: UTF8.self)
     }
     private static func markerBytes(_ runID: UUID) -> Data {
         Data(("ScrivCLIWorkspace-v1\n" + runID.uuidString.lowercased() + "\n").utf8)
