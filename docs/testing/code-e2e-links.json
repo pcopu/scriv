@@ -6517,8 +6517,8 @@
       "id": "17b44354a00bcc7a",
       "source": {
         "path": "scripts/rebuild-catalyst-cli.py",
-        "start": 118,
-        "end": 120,
+        "start": 119,
+        "end": 121,
         "sha256": "3d9aad26d764c60350758de96d39199e6330c24527cc29968be1534ee2289943"
       },
       "actions": [
@@ -95749,11 +95749,11 @@
       "id": "03407a9411c20116",
       "source": {
         "path": "scripts/rebuild-catalyst-cli.py",
-        "start": 154,
-        "end": 155,
+        "start": 155,
+        "end": 156,
         "sha256": "5a1e807db8b141fe737e5c7ddc275a2c4588f8705a6d46239f6a58f870c50dd0"
       },
-      "fileSha256": "a83fa52f5e6902a05c947e30613e69387ccae989dd49fda81434406257f69c6c"
+      "fileSha256": "8cf5c46e9db8dc8907a3b6fa44ee7d64a1756f58dedcfdc7a586d6b88a06ecc8"
     },
     {
       "id": "03889dd70aad63d7",
@@ -99369,11 +99369,11 @@
       "id": "527a95590c13f0aa",
       "source": {
         "path": "scripts/rebuild-catalyst-cli.py",
-        "start": 197,
-        "end": 198,
+        "start": 198,
+        "end": 199,
         "sha256": "46fc1b50032630a5dfd45ca518ae8efe49f4d60454a910216e3061ab835c62d8"
       },
-      "fileSha256": "a83fa52f5e6902a05c947e30613e69387ccae989dd49fda81434406257f69c6c"
+      "fileSha256": "8cf5c46e9db8dc8907a3b6fa44ee7d64a1756f58dedcfdc7a586d6b88a06ecc8"
     },
     {
       "id": "52fc4aca19b54849",
@@ -102329,11 +102329,11 @@
       "id": "9238cd7c5c88b722",
       "source": {
         "path": "scripts/rebuild-catalyst-cli.py",
-        "start": 243,
-        "end": 244,
+        "start": 246,
+        "end": 247,
         "sha256": "3b311f9e7c39e0ef8cfe903ba7dad508666c35023cc21df2bf4eb07fd83a88a5"
       },
-      "fileSha256": "a83fa52f5e6902a05c947e30613e69387ccae989dd49fda81434406257f69c6c"
+      "fileSha256": "8cf5c46e9db8dc8907a3b6fa44ee7d64a1756f58dedcfdc7a586d6b88a06ecc8"
     },
     {
       "id": "923de11420f4f63a",
@@ -102463,7 +102463,7 @@
         "end": 29,
         "sha256": "b0046cf39d03ab69ed50c2c85da08064c5c9bd761a4122c524af292261f8aa98"
       },
-      "fileSha256": "a83fa52f5e6902a05c947e30613e69387ccae989dd49fda81434406257f69c6c"
+      "fileSha256": "8cf5c46e9db8dc8907a3b6fa44ee7d64a1756f58dedcfdc7a586d6b88a06ecc8"
     },
     {
       "id": "95688a8177bf4861",
@@ -103959,11 +103959,11 @@
       "id": "b14f2e00e452a08e",
       "source": {
         "path": "scripts/rebuild-catalyst-cli.py",
-        "start": 211,
-        "end": 211,
-        "sha256": "0c38f7aa1a669eb7654c2bbcf049999f1e7d711a61709c16ea11482843713190"
+        "start": 212,
+        "end": 213,
+        "sha256": "444eeeee276b6b81980b6fdf57a77a154c9892b81058517ffbdfac003b9a2ba1"
       },
-      "fileSha256": "a83fa52f5e6902a05c947e30613e69387ccae989dd49fda81434406257f69c6c"
+      "fileSha256": "8cf5c46e9db8dc8907a3b6fa44ee7d64a1756f58dedcfdc7a586d6b88a06ecc8"
     },
     {
       "id": "b21d6c9361989394",
@@ -104773,7 +104773,7 @@
         "end": 69,
         "sha256": "216a27a5fb2913d33ac1ec49aa669fd0a7a43ea0626398c61bdf05185f33fdba"
       },
-      "fileSha256": "a83fa52f5e6902a05c947e30613e69387ccae989dd49fda81434406257f69c6c"
+      "fileSha256": "8cf5c46e9db8dc8907a3b6fa44ee7d64a1756f58dedcfdc7a586d6b88a06ecc8"
     },
     {
       "id": "c29b183758384039",
@@ -107503,7 +107503,7 @@
         "end": 50,
         "sha256": "ff0e1b0c78fedec1137c42089bb8c4375c0924e9521763657d4796b3493dccc0"
       },
-      "fileSha256": "a83fa52f5e6902a05c947e30613e69387ccae989dd49fda81434406257f69c6c"
+      "fileSha256": "8cf5c46e9db8dc8907a3b6fa44ee7d64a1756f58dedcfdc7a586d6b88a06ecc8"
     },
     {
       "id": "fb367612644028dd",

@@ -54,7 +54,12 @@ python3 scripts/rebuild-catalyst-cli.py \
 The builder verifies the exact source manifest before compilation and after
 final signing, icon and platform checks. It then hashes the signed executable
 into a create-only record with source-manifest hash, executable hash and the
-`/scriv-source/` coverage prefix. Its existing parent must be owned by the user
+`/scriv-source/` coverage prefix. Coverage builds use atomic Swift counter
+increments in the Catalyst app and ScrivCore and record that mode as
+`counterUpdates: "atomic"`. Existing records without this field remain usable.
+The app can capture snapshots while work is in flight. Tracer validates each
+before/after pair at import.
+The record's existing parent must be owned by the user
 and not writable by others; use canonical paths, such as `/private/tmp` on macOS,
 not symlinked `/tmp`. Noncoverage builds do not require these options.
 

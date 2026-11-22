@@ -93,6 +93,7 @@ def write_coverage_record(path, directory_fd, executable, digest, forbidden):
         'executableSha256': executable_sha,
         'sourceUnchanged': True,
         'coveragePrefix': '/scriv-source/',
+        'counterUpdates': 'atomic',
         'limitations': [
             'Producer-declared integrity, not cryptographic attestation.',
             'Helper/template assets are not instrumented.',
@@ -208,8 +209,10 @@ def main():
               '-module-cache-path', work / 'module-cache', '-O', '-whole-module-optimization']
     catalyst = ['-target', 'arm64-apple-ios17.0-macabi', '-Fsystem', support / 'System/Library/Frameworks',
                 '-I', support / 'usr/lib/swift', '-Xclang-linker', '-isysroot', '-Xclang-linker', sdk]
-    # Do not put instrumentation in common: the native XPC/helper stays normal.
+    # Keep helpers uninstrumented. Atomic increments preserve counts when the
+    # same app/Core code runs on multiple threads.
     coverage_flags = ['-profile-generate', '-profile-coverage-mapping',
+                      '-Xllvm', '-instrprof-atomic-counter-update-all',
                       '-coverage-prefix-map', f'{ROOT}=/scriv-source'] if args.coverage else []
     coverage_inputs = []
     coverage_defines = []
