@@ -95466,6 +95466,101 @@
         "sha256": "a4146540f26469c2bd74ea2a7647d14d3205bb52a336995c65b2a7edcc79f823"
       },
       "why": "The mounted invitation view shows that the free team requires activation and keeps link creation disabled."
+    },
+    {
+      "id": "01789c506a6ba178",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 867,
+        "end": 870,
+        "sha256": "3d0725dd2db91287b9e5d085faa62405dc0d32f0a11f14a1d197325992a1556d"
+      },
+      "actions": [
+        "Inspect the original turn after reconnect before the runtime has listed it"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 187,
+        "end": 190,
+        "sha256": "14265268c9f3db277c4a24413cc0a013b381ba8cf1a890d8c542c14cb1ba1870"
+      },
+      "why": "The real panel explains why the same job stays waiting, and the route verifies its identity and unchanged persistent projects."
+    },
+    {
+      "id": "1003edcc3ecde3d5",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 878,
+        "end": 881,
+        "sha256": "e46521714358e95d0fec655a65a96e6061f00e07268a3dc74073d39690d5f59e"
+      },
+      "actions": [
+        "Inspect the saved completed turn whose local image is absent"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 254,
+        "end": 269,
+        "sha256": "c522aa35dfb148dbbb3b526c2a47703dd7c6360053d0e2ea3d9eeebace990dc4"
+      },
+      "why": "The mounted jobs panel reports the missing local image. The original job has no attachment or artifact and all saved projects remain identical."
+    },
+    {
+      "id": "203f1af68dc657fa",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 885,
+        "end": 887,
+        "sha256": "5352c0ba75f83c4a7fbbd016a1d7ad9031ea39633d95e78e4d4f7d93ac4913c4"
+      },
+      "actions": [
+        "Inspect again when the same runtime reports the original turn running"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 191,
+        "end": 199,
+        "sha256": "d11334e4559821ae47c839d09e717ff7a7dd0e24d88ab22b0fbd07753127cdfa"
+      },
+      "why": "The running result keeps the original job waiting. A later inspection observes cancellation of the same turn without creating another job."
+    },
+    {
+      "id": "b2b78e2ea8a882d0",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 857,
+        "end": 859,
+        "sha256": "7cbbecd83ccddae9d32d86b8e09eba3f70222bb6f24acbee7a4ccca8e32260bb"
+      },
+      "actions": [
+        "Inspect the saved turn from Generation Jobs after the loopback transport closes"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 168,
+        "end": 177,
+        "sha256": "b18b7a0d0db1d073391bc3145f28e3b54d50ca5dda2e6c9edea2f18a5ffe48b6"
+      },
+      "why": "The visible disconnected state and original waiting job are verified before reconnect, and the saved projects remain identical."
+    },
+    {
+      "id": "b5664916c82e74e5",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 377,
+        "end": 388,
+        "sha256": "1a282ca1d2d04aa71a8d9a03bf6190efca32c2a767aa8216f44be5b893151874"
+      },
+      "actions": [
+        "Reconnect to the same local runtime and inspect the model choices"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 179,
+        "end": 185,
+        "sha256": "45a50ec45a290986157429a8e7e119bc4fc238fa9d3db59502f057ddbdac7cb3"
+      },
+      "why": "The selected first model and second-page model appear exactly once in the real menu."
     }
   ],
   "commentExclusions": [

@@ -78,7 +78,7 @@ try {
   const jobs = async () => (await session.command('image-evidence')).jobs;
 
   step = 'connect to the owned loopback fixture in Settings';
-  fixture = await startCodexFixture(session.root, ['success', 'cancel', 'recover', 'failure']);
+  fixture = await startCodexFixture(session.root, ['success', 'cancel', 'recover', 'missing-artifact', 'failure']);
   await fixture.race((async () => {
     await session.command('key', { input: ',', modifiers: ['command'] });
     // Sidebar cells use the public collection view selection route. The CLI
@@ -139,18 +139,24 @@ try {
     await activate(await reveal(cancelButton));
     await poll(jobs, records => records.find(job => job.jobID === cancelledID)?.status === 'waiting');
 
-    step = 'inspect the prior turn in Generation Jobs';
-    await activate(await reveal(byID('codex-jobs')));
     const jobsSource = node => node.type === 'UISegmentedControl' && node.segments?.join('|') === 'This Mac|Shared project';
-    const jobsWindow = (await waitForControl(jobsSource)).windowPath;
-    await activate(await reveal(node => node.title === 'Inspect existing turn' && node.windowPath === jobsWindow));
-    const inspected = await poll(jobs, records => records.find(job => job.jobID === cancelledID)?.status === 'cancelled');
-    const cancelled = inspected.find(job => job.jobID === cancelledID);
-    assert.equal(cancelled.hasThreadID && cancelled.hasTurnID, true);
-    assert.equal(cancelled.attachmentVerified, false);
-    assert.equal(cancelled.outputImageID, undefined);
-    assert.equal(inspected.length, 2, 'Inspection did not create a new job');
-    await unchanged();
+    const openJobs = async () => {
+      await activate(await reveal(byID('codex-jobs')));
+      return (await waitForControl(jobsSource)).windowPath;
+    };
+    const inspectOriginal = async windowPath => activate(await reveal(node =>
+      node.title === 'Inspect existing turn' && node.windowPath === windowPath));
+    const verifyWaiting = async (windowPath, progress) => {
+      await session.waitFor(nodes => nodes.some(node => node.windowPath === windowPath && node.text === progress));
+      const records = await jobs();
+      assert.equal(records.length, 2);
+      const original = records.find(job => job.jobID === cancelledID);
+      assert.equal(original.status, 'waiting');
+      assert.equal(original.hasThreadID && original.hasTurnID, true);
+      assert.equal(original.attachmentVerified, false);
+      await unchanged();
+    };
+
     const closeJobs = async () => {
       const escape = (await session.command('keys')).find(command => command.input === 'Escape' && command.modifiers.length === 0);
       assert.equal(escape?.responderType, 'ScrivGenerationJobsController');
@@ -158,6 +164,40 @@ try {
       assert.deepEqual(await session.command('key', { input: 'Escape', modifiers: [] }), { dispatched: true });
       await session.waitFor(nodes => !nodes.some(jobsSource));
     };
+
+    step = 'inspect the saved turn while the owned runtime connection is lost';
+    await waitForControl(generate);
+    await fixture.dropAfterCancellation();
+    await session.waitFor(nodes => nodes.some(node => node.identifier === 'codex-connection-status' && node.text === 'Not connected')
+      && nodes.some(node => node.text === 'Codex connection closed.'));
+    const disconnectedJobs = await openJobs();
+    await inspectOriginal(disconnectedJobs);
+    await verifyWaiting(disconnectedJobs, 'Connect the original runtime to inspect its saved turn. Nothing was resubmitted.');
+    assert.deepEqual(await session.command('presented-alerts'), []);
+    await closeJobs();
+
+    step = 'reconnect through Settings and check both pages of the model catalog';
+    await activate(await reveal(byID('codex-connect')));
+    const modelButton = await waitForControl(node => node.identifier === 'codex-model' && node.label === 'Model: scriv-fixture');
+    const catalog = await session.command('menu', { target: modelButton.path });
+    assert.deepEqual(catalog.primary[0].children.map(({ title, state }) => ({ title, state })), [
+      { title: 'scriv-fixture', state: 'on' }, { title: 'scriv-fixture-extra', state: 'off' },
+    ]);
+
+    step = 'recheck the same turn until the original cancellation is confirmed';
+    const reconnectedJobs = await openJobs();
+    await inspectOriginal(reconnectedJobs);
+    await verifyWaiting(reconnectedJobs, 'The original turn is not visible yet. No new generation was submitted.');
+    await inspectOriginal(reconnectedJobs);
+    await verifyWaiting(reconnectedJobs, 'Original turn is still in progress. Inspect again later; do not submit a duplicate.');
+    await inspectOriginal(reconnectedJobs);
+    const inspected = await poll(jobs, records => records.find(job => job.jobID === cancelledID)?.status === 'cancelled');
+    const cancelled = inspected.find(job => job.jobID === cancelledID);
+    assert.equal(cancelled.hasThreadID && cancelled.hasTurnID, true);
+    assert.equal(cancelled.attachmentVerified, false);
+    assert.equal(cancelled.outputImageID, undefined);
+    assert.equal(inspected.length, 2, 'Inspection did not create a new job');
+    await unchanged();
     await closeJobs();
 
     step = 'recover the finished original turn without resubmitting';
@@ -172,13 +212,14 @@ try {
     await activate(await reveal(cancelButton));
     await poll(jobs, records => records.find(job => job.jobID === recoveryID)?.status === 'waiting');
     await unchanged();
-    await activate(await reveal(byID('codex-jobs')));
-    const recoveryWindow = (await waitForControl(jobsSource)).windowPath;
-    // Jobs are newest first. Inspect the first waiting card, while the earlier
-    // cancelled card remains in the list for its separate outcome assertion.
-    const inspect = node => node.title === 'Inspect existing turn' && node.windowPath === recoveryWindow;
-    const inspectButtons = (await session.waitFor(nodes => nodes.filter(inspect).length === 2)).filter(inspect);
-    await activate(await reveal(node => inspect(node) && node.path === inspectButtons[0].path));
+    const inspectLatest = async windowPath => {
+      // The newest pending card precedes the earlier cancelled card.
+      const inspect = node => node.title === 'Inspect existing turn' && node.windowPath === windowPath;
+      const buttons = (await session.waitFor(nodes => nodes.filter(inspect).length === 2)).filter(inspect);
+      await activate(await reveal(node => inspect(node) && node.path === buttons[0].path));
+    };
+    const recoveryWindow = await openJobs();
+    await inspectLatest(recoveryWindow);
     const ready = await poll(jobs, records => records.some(job => job.jobID === recoveryID
       && job.status === 'completed' && job.artifact?.sha256 === recoveredImageHash));
     assert.equal(ready.length, 3);
@@ -200,6 +241,33 @@ try {
     await unchanged();
     await closeJobs();
 
+    step = 'inspect a completed turn that has no local image';
+    await selectTab('Storyboard');
+    await activate(await reveal(byID('storyboard-word-w2')));
+    await selectTab('Script');
+    await activate(await reveal(generate));
+    const existingIDs = attached.map(job => job.jobID);
+    const unknown = jobs => jobs.find(job => !existingIDs.includes(job.jobID));
+    const pendingMissing = await poll(jobs, records => records.length === 4 && unknown(records)?.hasTurnID
+      && unknown(records)?.status === 'running');
+    const missingID = unknown(pendingMissing).jobID;
+    await activate(await reveal(cancelButton));
+    await poll(jobs, records => records.find(job => job.jobID === missingID)?.status === 'waiting');
+    const missingWindow = await openJobs();
+    await inspectLatest(missingWindow);
+    await session.waitFor(nodes => nodes.some(node => node.windowPath === missingWindow
+      && node.text === 'The saved turn completed without a valid local image'));
+    const missing = await jobs();
+    assert.equal(missing.length, 4, 'Checking the missing image did not create another job');
+    const originalMissing = missing.find(job => job.jobID === missingID);
+    assert.equal(originalMissing.status, 'failed');
+    assert.equal(originalMissing.hasThreadID && originalMissing.hasTurnID, true);
+    assert.equal(originalMissing.attachmentVerified, false);
+    assert.equal(originalMissing.outputImageID, undefined);
+    assert.equal(originalMissing.artifact, undefined);
+    await unchanged();
+    await closeJobs();
+
     step = 'verify a refused turn changes neither the cue nor prior jobs';
     await selectTab('Storyboard');
     await activate(await reveal(byID('storyboard-word-w2')));
@@ -210,20 +278,21 @@ try {
     assert.equal(alerts[0].title, 'Scriv');
     assert.equal(alerts[0].message, 'Synthetic image turn refused');
     const finished = await jobs();
-    assert.equal(finished.length, 4);
-    const refused = finished.find(job => ![cancelledID, complete.jobID, recoveryID].includes(job.jobID));
+    assert.equal(finished.length, 5);
+    const refused = finished.find(job => ![cancelledID, complete.jobID, recoveryID, missingID].includes(job.jobID));
     assert.equal(refused.status, 'failed');
     assert.equal(refused.attachmentVerified, false);
     assert.equal(refused.outputImageID, undefined);
     assert.equal(refused.hasThreadID && refused.hasTurnID, true);
     assert.equal(finished.find(job => job.jobID === cancelledID).status, 'cancelled');
+    assert.deepEqual(finished.find(job => job.jobID === missingID), originalMissing);
     assert.equal(finished.find(job => job.jobID === recoveryID).assetID, recoveredAsset.id);
     assert.equal(finished.find(job => job.jobID === complete.jobID).assetID, imageID);
     await unchanged();
   })());
   await fixture.close();
   fixture = undefined;
-  console.log('PASS: native Codex loopback fixture generation, cancellation, recovery inspection and refusal');
+  console.log('PASS: native Codex loopback fixture generation, cancellation, reconnect, recovery inspection and refusal');
 } catch (error) {
   failed = true;
   throw new Error(`Codex loopback generation failed while trying to ${step}`, { cause: error });

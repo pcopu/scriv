@@ -25,10 +25,14 @@ analysis roots together in persistent private storage outside the source tree.
 
 The native `journeys/codex-loopback-generation` scenario connects through the
 Settings UI to an isolated local protocol fixture. It verifies a generated PNG
-and its persisted attachment, interruption and inspection of the same turn,
-and refusal with the saved project unchanged. It uses `ws` from the existing
-locked cloud dependencies. The Cancel control now sends the interrupt through
-the same primary action that the CLI activates.
+and its persisted attachment, interruption, and inspection of the same turn.
+After the fixture drops the socket, the journey checks disconnected inspection,
+reconnects through Settings, and verifies the two-page model catalog. Repeated
+inspection keeps the original job through missing and running states, then
+confirms cancellation. A completed turn with a missing image and a refused
+turn both leave the saved project unchanged. It uses `ws` from the existing
+locked cloud dependencies. The Cancel control sends the interrupt through the
+same primary action that the CLI activates.
 
 Seven comparison journeys passed on the earlier November 20 build. The fixture
 passed in 8.185 seconds on the rebuilt instrumented Catalyst app, adding 916

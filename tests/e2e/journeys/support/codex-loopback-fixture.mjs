@@ -6,6 +6,8 @@ import { createRequire } from 'node:module';
 import { basename, dirname, join } from 'node:path';
 
 const model = 'scriv-fixture';
+const secondModel = 'scriv-fixture-extra';
+const catalogCursor = 'fixture-catalog-page-2';
 const refusal = 'Synthetic image turn refused';
 const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAEElEQVR4nGP4EGADRAwQCgAsbgXx43oYYAAAAABJRU5ErkJggg==', 'base64');
 const recoveredPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAEElEQVR4nGNYEKIGRAwQCgAgzgRpm+PgmAAAAABJRU5ErkJggg==', 'base64');
@@ -17,9 +19,15 @@ const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 // tools, credentials, arbitrary file names, or real model are available here.
 export function createCodexFixtureProtocol(root, outcomes) {
   const generation = join(root, 'Generation');
-  const expected = ['initialize', 'initialized', 'account/read', 'model/list', ...outcomes.flatMap(outcome =>
-    ['cancel', 'recover'].includes(outcome) ? ['thread/start', 'turn/start', 'turn/interrupt', 'thread/read'] : ['thread/start', 'turn/start'])];
+  const handshake = ['initialize', 'initialized', 'account/read', 'model/list'];
+  const expected = [...handshake, ...outcomes.flatMap(outcome => {
+    const turn = ['thread/start', 'turn/start'];
+    if (outcome === 'cancel') return [...turn, 'turn/interrupt', 'transport-drop', ...handshake, 'model/list', 'thread/read', 'thread/read', 'thread/read'];
+    if (outcome === 'recover' || outcome === 'missing-artifact') return [...turn, 'turn/interrupt', 'thread/read'];
+    return turn;
+  })];
   let position = 0;
+  let reconnecting = false;
   let job;
   let count = 0;
   const requestIDs = new Set();
@@ -42,9 +50,16 @@ export function createCodexFixtureProtocol(root, outcomes) {
     case 'account/read':
       assert.equal(params.refreshToken, false);
       return [reply({ account: null, requiresOpenaiAuth: false })];
-    case 'model/list':
+    case 'model/list': {
       assert.equal(params.includeHidden, false);
-      return [reply({ data: [{ id: model, model, isDefault: true, inputModalities: ['text', 'image'] }], nextCursor: null })];
+      const defaultModel = { id: model, model, isDefault: true, inputModalities: ['text', 'image'] };
+      if (params.cursor === undefined) {
+        return [reply({ data: [defaultModel], nextCursor: reconnecting ? catalogCursor : null })];
+      }
+      assert.equal(params.cursor, catalogCursor);
+      const extraModel = { id: secondModel, model: secondModel, inputModalities: ['text'] };
+      return [reply({ data: [defaultModel, extraModel], nextCursor: null })];
+    }
     case 'thread/start': {
       // Resolve the app-created directory and tie it to this session's owned
       // verification root. A foreign path or symlink cannot receive an image.
@@ -61,7 +76,7 @@ export function createCodexFixtureProtocol(root, outcomes) {
         && !jobDirectories.has(cwd), 'Expected a fresh app-owned job directory');
       jobDirectories.add(cwd);
       const outcome = outcomes[count++];
-      job = { outcome, cwd, threadId: `fixture-thread-${count}`, turnId: `fixture-turn-${count}` };
+      job = { outcome, cwd, threadId: `fixture-thread-${count}`, turnId: `fixture-turn-${count}`, inspections: 0 };
       return [reply({ thread: { id: job.threadId } })];
     }
     case 'turn/start': {
@@ -70,7 +85,7 @@ export function createCodexFixtureProtocol(root, outcomes) {
         && params.input[0].text?.includes(job.outcome === 'recover' ? 'know.' : 'Warm window light. Hold the room.'), 'Expected only the synthetic cue prompt');
       const replies = [reply({ turn: { id: job.turnId } }), { method: 'item/started',
         params: { threadId: job.threadId, item: { type: 'imageGeneration' } } }];
-      if (job.outcome === 'cancel' || job.outcome === 'recover') return replies;
+      if (['cancel', 'recover', 'missing-artifact'].includes(job.outcome)) return replies;
       const turn = { id: job.turnId, items: [] };
       if (job.outcome === 'success') {
         const savedPath = join(job.cwd, 'storyboard.png');
@@ -99,12 +114,25 @@ export function createCodexFixtureProtocol(root, outcomes) {
         const turn = { id: job.turnId, status: 'completed', items: [{ type: 'imageGeneration', savedPath: job.savedPath }] };
         return [reply({ thread: { id: job.threadId, turns: [turn] } })];
       }
-      return [reply({ thread: { id: job.threadId, turns: [{ id: job.turnId, status: 'interrupted' }] } })];
+      if (job.outcome === 'missing-artifact') {
+        const turn = { id: job.turnId, status: 'completed', items: [] };
+        return [reply({ thread: { id: job.threadId, turns: [turn] } })];
+      }
+      const inspection = job.inspections++;
+      const turns = inspection === 0 ? [] : [{ id: job.turnId, status: inspection === 1 ? 'inProgress' : 'interrupted' }];
+      return [reply({ thread: { id: job.threadId, turns } })];
     default:
       throw new Error('Unhandled fixture method');
     }
   }
-  return { receive, assertComplete: () => assert.equal(position, expected.length, 'Exact fixture request sequence completed') };
+  return {
+    receive,
+    dropTransport() {
+      assert.equal(expected[position++], 'transport-drop', 'Only the scheduled cancellation can drop the owned socket');
+      reconnecting = true;
+    },
+    assertComplete: () => assert.equal(position, expected.length, 'Exact fixture request sequence completed'),
+  };
 }
 
 export async function startCodexFixture(root, outcomes) {
@@ -116,6 +144,7 @@ export async function startCodexFixture(root, outcomes) {
   await once(server, 'listening');
   let failure;
   let connections = 0;
+  let reconnectAllowed = false;
   let pending = Promise.resolve();
   const failed = new Promise((_, reject) => { server.once('error', reject); });
   // Retain failures for race()/close() without an unhandled rejection if no
@@ -125,8 +154,8 @@ export async function startCodexFixture(root, outcomes) {
   server.on('error', error => { failure ??= error; });
   server.on('connection', socket => {
     socket.on('error', fail);
-    if (++connections !== 1) {
-      fail(new Error('Fixture allows only the owned app connection'));
+    if (++connections > (reconnectAllowed ? 2 : 1) || server.clients.size !== 1) {
+      fail(new Error('Fixture permits only the original owned connection and its scheduled reconnect'));
       socket.terminate();
       return;
     }
@@ -143,12 +172,24 @@ export async function startCodexFixture(root, outcomes) {
   return {
     endpoint: `ws://127.0.0.1:${server.address().port}`,
     race: promise => Promise.race([failed, promise]),
+    async dropAfterCancellation() {
+      await pending;
+      if (failure) throw failure;
+      assert.equal(connections, 1);
+      assert.equal(server.clients.size, 1);
+      protocol.dropTransport();
+      const [socket] = server.clients;
+      const closed = once(socket, 'close');
+      socket.terminate();
+      await closed;
+      reconnectAllowed = true;
+    },
     async close() {
       for (const socket of server.clients) socket.terminate();
       await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
       await pending;
       if (failure) throw new Error('The local Codex fixture rejected the connection or request sequence', { cause: failure });
-      assert.equal(connections, 1, 'Exactly one app connected to its fixture');
+      assert.equal(connections, 2, 'The same app made exactly one original connection and one reconnect');
       protocol.assertComplete();
     },
   };
