@@ -15,8 +15,12 @@ changes permissions, queries other applications or reads store error variables.
 
 ## Current route audit
 
-The current implementation does not add an alert-dispatch command, modify
-UIKit alert presentation, retry the native helper or weaken signing/security.
+The separate `acknowledge-json-import-error` command recognizes the owning
+workspace's presented error from its rejected `import-json`. It dismisses the
+controller through UIKit and completes the same acknowledgement as OK. This
+route is specific to JSON import errors. `presented-alerts` stays read-only.
+See [the JSON validation journey](json-model-validation.md) for the checks
+before and after acknowledgement.
 
 - Alias Add/Cancel are `UIAlertAction` objects in `CharacterEditorController`.
   The current `activate` and

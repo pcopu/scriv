@@ -4,12 +4,10 @@ import { characterCases, frozenID, expectedError, model, sourceFields, stableFie
 import { additionalTests } from './support/json-additional-cases.mjs';
 import { projectValidationExtensionTests } from './support/json-project-validation-extension.mjs';
 import { validationAcceptanceTests } from './support/json-validation-acceptance-cases.mjs';
-import { runJSONValidationCase } from './support/json-validation-steps.mjs';
+import { runJSONValidationCases } from './support/json-validation-steps.mjs';
 
-// IJ-02 JSON validation portion. One table and shared real-app steps, not a
-// subprocess wrapper around the old slices. Fountain's verified portion is
-// unchanged. Invalid-alert cases MUST remain isolated until real dismissal is
-// supported. Public-controller state is not pixel or physical-input evidence.
+// IJ-02 JSON validation. Each document uses the same production import path.
+// A matching app can acknowledge a rejection before trying the next document.
 const modelTests = modelCases.map((fixture, index) => ({
   group: 'model', key: `model/${index + 1}`, id: fixture.id, name: fixture.name,
   error: fixture.error,
@@ -93,13 +91,13 @@ if (args.includes('--list-cases')) {
       successfulValidationLines, contextualAssertionLines, coverage, retirementAllowed, inputBytes }) => ({
       group, key, id, name, error, assertionLines, successfulValidationLines, contextualAssertionLines,
       coverage, retirementAllowed, inputBytes, acceptanceOnly: !!acceptanceOnly,
-      isolation: acceptanceOnly ? 'fresh-app-per-accepted-document' : 'fresh-app-per-invalid-document',
+      isolation: 'owned-session-with-verified-rejection-dismissal-or-fresh-app',
     })),
   }, null, 2));
 } else {
   assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to a verified automation-enabled Catalyst bundle');
-  const roots = new Set();
-  for (const test of selected) await runJSONValidationCase(process.env.SCRIV_E2E_APP, test, roots);
-  assert.equal(roots.size, selected.length, 'Every selected document case used a unique isolated app run');
-  console.log(`PASS: IJ-02 JSON validation, ${selected.length} isolated cases; no pixel, picker, native bridge or alert-dismissal coverage`);
+  const fresh = process.env.SCRIV_JSON_VALIDATION_ISOLATION === 'fresh';
+  const sessions = await runJSONValidationCases(process.env.SCRIV_E2E_APP, selected, { fresh });
+  if (fresh) assert.equal(sessions, selected.length, 'Each selected document used a fresh owned app');
+  console.log(`PASS: IJ-02 JSON validation, ${selected.length} cases in ${sessions} owned app sessions`);
 }

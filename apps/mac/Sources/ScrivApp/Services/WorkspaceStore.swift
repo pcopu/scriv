@@ -1932,6 +1932,11 @@ final class WorkspaceStore: ObservableObject {
             try TimingEngine.validate(imported); install(imported)
         } catch { errorMessage = error.localizedDescription }
     }
+#if SCRIV_CLI_AUTOMATION
+    func acknowledgeCLIImportError(_ message: String, in workspace: ScrivWorkspaceController) -> Bool {
+        errorMessage == message && errorPresenter.acknowledgeCLIImportError(message, in: workspace)
+    }
+#endif
     func exportScript() {
         finishEditing()
 #if targetEnvironment(macCatalyst)

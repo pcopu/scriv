@@ -15,6 +15,7 @@ final class ScrivCLI {
     private var started = false
     private var asynchronousCommandInProgress = false
     private var nativeAccessibility: ScrivCLIAccessibility?
+    private var rejectedJSONImport: (projectID: String, message: String)?
 
     // During a synchronous synthetic stroke, the owned CLI route determines
     // the keyboard scope. Catalyst can put an auxiliary window ahead of it.
@@ -308,7 +309,7 @@ final class ScrivCLI {
             var result: [String: Any] = ["protocol": 1, "driver": "UIKit controls", "completeInterfaceParity": false, "imageEvidenceSchemaVersion": 1,
                     "scriptInteractionCountsSchemaVersion": 1,
                     "cloudIsolation": run.publicStatus,
-                    "semanticApplicationCommands": ["import-local-image", "import-audio", "import-fountain", "export-fountain", "import-json"],
+                    "semanticApplicationCommands": ["import-local-image", "import-audio", "import-fountain", "export-fountain", "import-json", "acknowledge-json-import-error"],
                     "syntheticFixtureCommands": ["stage-package-fixture"],
                     "publicDelegateCommands": ["return", "script-insert", "script-delete-selection"],
                     "publicTextInputCommands": ["delete-backward"],
@@ -317,7 +318,7 @@ final class ScrivCLI {
                     "sessionID": run.sessionID.uuidString.lowercased(),
                     "workspace": ["persistent": run.persistent, "resumed": run.resumed],
                     "verificationRoot": run.root.path,
-                    "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "import-json"]] as [String: Any]
+                    "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "import-json", "acknowledge-json-import-error"]] as [String: Any]
 #if SCRIV_CLI_COVERAGE
             result["coverage"] = ["schemaVersion": 1, "format": "llvm-profraw",
                 "cumulative": true, "maximumSnapshots": 2, "maximumSnapshotBytes": 16 * 1024 * 1024,
@@ -390,7 +391,22 @@ final class ScrivCLI {
                   let workspace = window.rootViewController as? ScrivWorkspaceController else {
                 throw Failure("JSON import accepts only synthetic text")
             }
-            return try ScrivCLIImport.importJSON(text: text, workspace: workspace)
+            let result = try ScrivCLIImport.importJSON(text: text, workspace: workspace)
+            rejectedJSONImport = nil
+            if result["projectChanged"] as? Bool == false, let message = workspace.store.errorMessage {
+                rejectedJSONImport = (workspace.store.project.id, message)
+            }
+            return result
+        }
+        if command == "acknowledge-json-import-error" {
+            guard Set(request.keys).isSubset(of: ["id", "command"]),
+                  let rejection = rejectedJSONImport, let workspace = window.rootViewController as? ScrivWorkspaceController,
+                  workspace.viewIfLoaded?.window === window, workspace.store.project.id == rejection.projectID,
+                  workspace.store.acknowledgeCLIImportError(rejection.message, in: workspace) else {
+                throw Failure("No owned JSON import error can be acknowledged")
+            }
+            rejectedJSONImport = nil
+            return ["dispatched": true]
         }
         if command == "export-fountain" {
             guard Set(request.keys).isSubset(of: ["id", "command"]),

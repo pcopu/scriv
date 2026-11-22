@@ -24,22 +24,27 @@ accepted project. A validation failure is caught by production code and sent to
 the real `WorkspaceErrorPresenter`. A `projectChanged: false` response alone is
 **not** a pass.
 
-Each invalid case gets a fresh real app session. The scenario first imports the
-corresponding valid JSON, requires a new project identity, exact authored payload
-in its saved package, and the mounted workspace title. This preserves the
-successful validation performed by the original anchor fixture. It then imports
-the invalid copy, requires the exact error in a stable attached public
-UIAlertController titled Scriv with one enabled OK action, and compares the full
-saved project set twice. Workspace tabs must be blocked and the accepted project
-title unchanged. This is public controller presentation state, not pixels or
-accessibility reachability. The original rendered-label assumption failed on
-Catalyst and is not claimed. See public-alert-observation.md for diagnosis.
-No private store error, native helper, handler invocation or mutation retry is
-used. Each invalid document has its own fresh app session.
+The scenario first imports the corresponding valid JSON, requires a new project
+identity, compares the exact authored payload in its saved package and checks
+the mounted workspace title. It then imports the invalid copy and requires the
+exact error in a stable attached public `UIAlertController` titled Scriv with
+one enabled OK action. Workspace tabs must be blocked and the accepted project
+title unchanged. The scenario compares the complete saved project set and the
+loaded model, including its exact date bits, twice before acknowledgement.
 
-This is semantic document import coverage. It does not claim OS picker,
-security-scoped external access, pointer/keyboard-event, alert-dismissal,
-screenshots/pixel layout, cold reopen or exhaustive invalid-model coverage.
+An app advertising `acknowledge-json-import-error` can run the cases in one
+owned process. The command takes no arguments and closes only the current
+error presented by that session's rejected `import-json`. It uses UIKit
+dismissal and the presenter's same acknowledgement as OK. The scenario checks
+that the workspace is available again, duplicate acknowledgement fails, and
+all saved projects and the loaded model are unchanged. Older apps use a fresh
+process per case. Set `SCRIV_JSON_VALIDATION_ISOLATION=fresh` when measuring the
+separate launch per case on the same app. Tracer captures one cumulative
+interval per real process, so the shared run measures the complete journey.
+
+The import and acknowledgement evidence describes public controller behavior.
+Picker security scope, physical input and pixel behavior need separate checks.
+See public-alert-observation.md for the original rendered-label diagnosis.
 
 ## Frozen baseline
 
