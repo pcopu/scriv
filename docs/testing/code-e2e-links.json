@@ -95032,8 +95032,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 63,
-        "end": 75,
+        "start": 76,
+        "end": 88,
         "sha256": "4807e2f08482f0ae5d7b716b5206af370d516d28769dc4bf938951fa0114ed43"
       },
       "why": "The local package acquires a cloud project ID, the Worker stores the matching project row, and the signed-in discussion composer appears."
@@ -95053,9 +95053,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 77,
-        "end": 94,
-        "sha256": "3e9eb2467fc68855274285f864f15dfeca1caa73d7500e3eebfa069b29d25843"
+        "start": 120,
+        "end": 132,
+        "sha256": "77dc09069997533e69cd2c32cc86ef6eccc1ebf81b1a70fe367a6aeb55fe411f"
       },
       "why": "Opening the Worker project reuses the original local replica and preserves all script fields and the second local project."
     },
@@ -95073,11 +95073,51 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 53,
-        "end": 61,
-        "sha256": "8747606d6e7dfc88758e335bd690bf145d781df45ae1f2d689df5ddcc66c44c7"
+        "start": 41,
+        "end": 47,
+        "sha256": "c2de74e1d6427291d2e107ed8e54f2fe6ffaffca09d0ea25aba7c72e616f6042"
       },
       "why": "The synthetic Worker accepts the exact challenge and the native app dismisses the sign-in prompt. Ordinary text routes remain refused."
+    },
+    {
+      "id": "43ebfb9828cfc6ac",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 2251,
+        "end": 2255,
+        "sha256": "87a8748aed412fdc1927fa4d09a04c1c2677e8b2de84570844c0a0c5ab04fa33"
+      },
+      "actions": [
+        "Sign in from a fresh isolated workspace",
+        "Open the edited script from Scriv Cloud"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 133,
+        "end": 149,
+        "sha256": "13d14a74a8ddffeea1bad99fe5754874b0d464cbf34e96d2788a8147b8b04c41"
+      },
+      "why": "A second app process with no local replica downloads the entire edited script into a new saved package and verifies its worker project ID."
+    },
+    {
+      "id": "46af64847b47fdc9",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 503,
+        "end": 512,
+        "sha256": "a0bccfb47cd76459e4a3ffd0dd9d23d156655b8e46147de8c4e4b70f0556bffe"
+      },
+      "actions": [
+        "Append dialogue through the native script editor",
+        "Finish editing and reopen the linked cloud script"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 105,
+        "end": 132,
+        "sha256": "31a79eb1121ba160d30d402e3b4a6c296a12b3351f9dcec6c641b7991ce1afdd"
+      },
+      "why": "The ordinary script edit is accepted and the reopened cloud snapshot contains the exact edited content. This verifies the successful save path."
     }
   ],
   "commentExclusions": [

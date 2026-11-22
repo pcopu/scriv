@@ -9,15 +9,16 @@ and sends zero messages. The fixture session requests one code for a synthetic
 address, verifies delivery and the native code prompt, then cancels. Both
 sessions check the complete loaded project and saved package.
 
-`tracer app -- test --scenario journeys/native-cloud-project-sync` uses the
-same Worker to verify a single synthetic code, create and seed a cloud project
-through Discussion, and reopen it from the cloud project list. It confirms the
-Worker's project row, checks the entire reopened script and the saved package,
-and checks that a second local project stays intact. The fixture transfers the
-code through a separate unlinked mailbox descriptor. Only the active native
-prompt for the fixture's synthetic address can consume it, once. The normal
-Sign in with code button submits it to the Worker. General CLI text entry
-still refuses this protected field, and snapshots redact its contents.
+`tracer app -- test --scenario journeys/native-cloud-project-sync` creates
+and seeds a cloud project through Discussion, edits dialogue in the native
+editor, and reopens it from the cloud project list. It verifies the complete
+edited script, the matching Worker project row, and an unchanged local project.
+A second app session starts with no local replica and downloads the same edited
+script into a new saved package. Each session verifies one synthetic code.
+Only the active native prompt for the fixture's synthetic address can consume
+its code from a separate unlinked mailbox descriptor. The normal Sign in with
+code button submits it to the Worker. General CLI text entry still refuses the
+protected field, and snapshots redact its contents.
 
 The scenario passes the exact loopback origin in an unlinked, read-only
 descriptor tied to the fresh run's UUID. The automation app validates it
