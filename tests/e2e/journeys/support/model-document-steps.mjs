@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { ScrivSession } from '../../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../../support/saved-projects.mjs';
-import { observePresentedError } from '../../support/presented-error.mjs';
+import { acknowledgeJSONImportError, jsonImportAcknowledgement, observePresentedError } from '../../support/presented-error.mjs';
 import { payload } from './model-document-cases.mjs';
 
 const sorted = items => [...items].sort((a, b) => a.id.localeCompare(b.id));
@@ -33,23 +33,42 @@ async function presentedMessage(session) {
   } while (Date.now() < deadline);
   throw new Error('Decoder failure did not present a nonempty public error');
 }
-export async function runModelDocument(test, roots) {
-  // STEP launch begin
-  const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
+export async function runModelDocuments(app, tests, { fresh }) {
+  const roots = new Set();
+  let next = 0;
+  while (next < tests.length) {
+    // STEP launch begin
+    const session = await ScrivSession.launch(app);
+    try {
+      assert.equal(typeof session.root, 'string'); assert.ok(!roots.has(session.root)); roots.add(session.root);
+      // STEP launch end
+      // STEP setup begin
+      const capabilities = await session.command('capabilities');
+      for (const name of ['import-json', 'loaded-project', 'persisted-projects', 'presented-alerts', 'key', 'snapshot', 'text', 'activate']) {
+        assert.ok(capabilities.commands.includes(name), `Requires ${name}`);
+      }
+      assert.equal(capabilities.cloudIsolation.network, 'disabled');
+      await session.waitFor(nodes => header(nodes, 'YAM MAN'));
+      await session.command('key', { input: 's', modifiers: ['command'] });
+      const sample = await waitForSavedProject(session, p => p.title === 'YAM MAN');
+      assert.deepEqual(await session.command('persisted-projects'), [sample]);
+      assert.deepEqual(await session.command('presented-alerts'), []);
+      // STEP setup end
+
+      const reuse = !fresh && capabilities.commands.includes(jsonImportAcknowledgement)
+        && capabilities.jsonImportAcknowledgementScope === 'owned-presentations';
+      const end = reuse ? tests.length : next + 1;
+      let saved = [sample];
+      for (; next < end; next++) saved = await runModelDocument(session, tests[next], sample, saved, reuse);
+    } finally { await session.close(); }
+  }
+  return roots.size;
+}
+
+async function runModelDocument(session, test, sample, priorPackages, reuse) {
   try {
-    assert.equal(typeof session.root, 'string'); assert.ok(!roots.has(session.root)); roots.add(session.root);
-    // STEP launch end
-    // STEP setup begin
-    const capabilities = await session.command('capabilities');
-    for (const name of ['import-json', 'loaded-project', 'persisted-projects', 'presented-alerts', 'key', 'snapshot', 'text', 'activate']) {
-      assert.ok(capabilities.commands.includes(name), `Requires ${name}`);
-    }
-    await session.waitFor(nodes => header(nodes, 'YAM MAN'));
-    await session.command('key', { input: 's', modifiers: ['command'] });
-    const sample = await waitForSavedProject(session, p => p.title === 'YAM MAN');
-    assert.deepEqual(await session.command('persisted-projects'), [sample]);
+    assert.deepEqual(sorted(await session.command('persisted-projects')), priorPackages);
     assert.deepEqual(await session.command('presented-alerts'), []);
-    // STEP setup end
     // STEP import begin
     const input = test.make(); input.title = `Model ${test.key}`;
     const start = Date.now();
@@ -70,7 +89,7 @@ export async function runModelDocument(test, roots) {
     const saved = await waitForSavedProject(session, p => p.id === actual.id);
     assert.deepEqual(saved, actual);
     const packages = sorted(await session.command('persisted-projects'));
-    assert.deepEqual(packages, sorted([sample, actual]), 'Only the accepted model was added; the complete startup project metadata is unchanged');
+    assert.deepEqual(packages, sorted([...priorPackages, actual]), 'Only the accepted model was added and all prior project metadata is unchanged');
     assert.deepEqual(await session.command('loaded-project'), before);
     assert.deepEqual(await session.command('presented-alerts'), []);
     // STEP import end
@@ -99,7 +118,15 @@ export async function runModelDocument(test, roots) {
       assert.deepEqual(await session.command('loaded-project'), before, 'Rejected document leaves every loaded field and Date bit unchanged');
       assert.deepEqual(sorted(await session.command('persisted-projects')), packages, 'Repeated public reads prove no persisted project metadata mutation');
       // STEP reject end
+      if (reuse) {
+        await acknowledgeJSONImportError(session);
+        assert.deepEqual(await session.command('loaded-project'), before, 'Acknowledgement preserves the complete loaded model and date bits');
+        assert.deepEqual(sorted(await session.command('persisted-projects')), packages, 'Acknowledgement preserves every saved project');
+      }
     }
-  } finally { await session.close(); }
-  console.log(`PASS: model-document/${test.key}; public semantic import and complete model observation`);
+    console.log(`PASS: model-document/${test.key}; public semantic import and complete model observation`);
+    return packages;
+  } catch (error) {
+    throw new Error(`model-document/${test.key} failed`, { cause: error });
+  }
 }

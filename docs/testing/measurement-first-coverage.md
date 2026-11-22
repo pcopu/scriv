@@ -289,9 +289,10 @@ boundary, and through export/import. Only explicitly enumerated host files,
 test directories and documentation may differ. Native sources, resources,
 packages and build scripts must match. Each capture retains both full manifests
 and their exact difference list. The imported analysis copy contains the original
-build bytes for the source files named by the actual LCOV exports. The
-model-document journey needs 23 sessions; earlier incomplete capture
-was retained, and its complete passing run now supplies all those observations.
+build bytes for the source files named by the actual LCOV exports. Model
+Document uses one session on apps advertising JSON import error
+acknowledgement across owned presentations. `SCRIV_JSON_VALIDATION_ISOLATION=fresh` retains the 23-session
+control for comparing coverage and timing on the same app.
 
 Read the produced `evidence.json`; `coverage.analysis.root` identifies the
 external source copy containing the imported dataset. Run `measure check` and

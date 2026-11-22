@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 
+export const jsonImportAcknowledgement = 'acknowledge-json-import-error';
+
 // Read-only public UIAlertController presentation state, not pixel visibility,
 // accessibility reachability or action invocation. No store error hooks.
 export async function observePresentedError(session, message) {
@@ -19,4 +21,10 @@ export async function observePresentedError(session, message) {
     if (Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, Math.min(50, deadline - Date.now())));
   } while (Date.now() < deadline);
   throw new Error('Exact production error did not reach a stable attached public UIAlertController');
+}
+
+export async function acknowledgeJSONImportError(session) {
+  assert.deepEqual(await session.command(jsonImportAcknowledgement), { dispatched: true });
+  await session.waitFor(nodes => nodes.some(node => node.identifier === 'workspace-tabs' && node.enabled && node.hittable));
+  assert.deepEqual(await session.command('presented-alerts'), []);
 }

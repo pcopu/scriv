@@ -1933,8 +1933,8 @@ final class WorkspaceStore: ObservableObject {
         } catch { errorMessage = error.localizedDescription }
     }
 #if SCRIV_CLI_AUTOMATION
-    func acknowledgeCLIImportError(_ message: String, in workspace: ScrivWorkspaceController) -> Bool {
-        errorMessage == message && errorPresenter.acknowledgeCLIImportError(message, in: workspace)
+    func acknowledgeCLIImportError(_ message: String, alert: UIAlertController) -> Bool {
+        errorMessage == message && errorPresenter.acknowledgeCLIImportError(message, alert: alert)
     }
 #endif
     func exportScript() {

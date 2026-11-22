@@ -596,8 +596,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "ImageCue Codable declaration and stored properties: the child must equal id child, sceneId s, label Child, startMs=endMs=4000, empty prompt, startAnchor note/0, authoredDurationMs 1500; imageId is absent. Full authored payload also preserves the parent cue. Only stored accepted cue representation is associated, not durationMs, initializer/equality, image resolution, active selection, anchor creation or invalid guard behavior. Preconditions and concrete inputs are in json-additional-cases.mjs, json-model-cases.mjs and json-validation-acceptance-cases.mjs, invoked by json-validation.mjs. Reviewed static association only; current native scenario not-run, not measured coverage or all-branch validation."
@@ -2114,8 +2114,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact audio-duplicate-clip mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -2609,8 +2609,8 @@
       "id": "075f8247f7989103",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 813,
-        "end": 819,
+        "start": 816,
+        "end": 822,
         "sha256": "70edbf61ca4e624c0995831a11aa20cc3f54d75846ece0c208fed31e96f0dfc1"
       },
       "actions": [
@@ -3064,8 +3064,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "IJ-02: compatibility/dormant-cue: Already-authored terminal direction has zero owned time, source offset 0, scene duration 4,000 and anchored cue start=end 4,000 with authored extent 1,500. Exact unchanged payload is accepted by the special anchored scene-end zero projection branch. No anchor creation, reorder, activeCue, later insertion or unanchored-zero acceptance is inferred. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage."
@@ -3455,8 +3455,8 @@
       "id": "0b5618fdeb2e0be4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 343,
-        "end": 343,
+        "start": 344,
+        "end": 344,
         "sha256": "42c475b9792fc983b1cc1b2156a5eda23f7c136eafa61bf98a274774b9f0b2d7"
       },
       "actions": [
@@ -3801,9 +3801,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
     },
@@ -5386,8 +5386,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "ScrivProject Codable shape and stored envelope/collections: audioContainer supplies schemaVersion 1, title Untitled, one scene, two fully specified dialogue entries, empty characters/images/cues and explicit audio asset/clip metadata with audioVolume 1. Complete authored-payload equality preserves these exact collections and values. The helper requires a newly assigned import identity, revision 0, finite new dates with modifiedAt equal createdAt, no cloudProjectId, and exact saved/loaded equality. The incoming ID and Date values are intentionally reset, not claimed preserved; nonempty character/image/cue models and real audio bytes are not established by this link. Preconditions and concrete inputs are in json-additional-cases.mjs, json-model-cases.mjs and json-validation-acceptance-cases.mjs, invoked by json-validation.mjs. Reviewed static association only; current native scenario not-run, not measured coverage or all-branch validation."
@@ -6014,9 +6014,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "This exact minimal-legacy fixture decodes required empty project collections and omitted audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted."
     },
@@ -10083,9 +10083,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Accepted dialogue preserves authored timing with gaps and unowned trailing time, source links and speaker; zero-owned direction preserves coverage. This asserts successful validation, not editing or every rejected timing variant."
     },
@@ -10346,8 +10346,8 @@
       "id": "246327578024a243",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 355,
-        "end": 356,
+        "start": 356,
+        "end": 357,
         "sha256": "390308ff98727586d6b0a3bb0587bfeeaa57fba2528d0817f1c3df41538bcc61"
       },
       "actions": [
@@ -10634,8 +10634,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 97,
+        "start": 78,
+        "end": 96,
         "sha256": "566eda2470b608292fc82884e75b8f8a867c9236de42e31af7e66d7dae6a2ca3"
       },
       "why": "IJ-02: project-validation-extension/captured-prompt: Original and latest captured prompts survive positive import; replacing only the latest captured prompt with 30,001 ASCII characters fails. Exact prompt-limit error and complete loaded/saved invariance are asserted through stored image metadata validation. This is the UTF-16 bound, not pre-generation validation or a provider submission. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage."
@@ -11745,8 +11745,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "IJ-02 additional/4 supplies one explicit voice asset (4000 ms, 48000 Hz stereo, four peaks), one second-entry clip (250 ms offset, 500 ms source start, 3500 ms duration) and volume 1. json-additional-cases.mjs:18-33,58-64,82-94 constructs the input and compares its complete authored fields. The shared witness checks accepted saved and loaded models and repeated read invariance. The AudioAsset Codable field block preserves the entire nonempty metadata payload, including waveform. This does not exercise this type\u2019s explicit initializer or install/decode audio bytes. Static reviewed source-to-existing-CLI-assertion association only; native scenario remains not-run. No measured execution, branch-complete validation, physical-input parity or legacy retirement claim. Actions are copied exactly from the existing template, including repetitions; polling remains dynamic."
@@ -12782,9 +12782,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "This accepted fixture preserves exact maximum file bytes, duration, sample rate, channels, waveform count and originalName length; whole authored payload equality excludes normalization. No media bytes or playback claim."
     },
@@ -13324,8 +13324,8 @@
       "id": "2c7674f3905b9fe3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 550,
-        "end": 551,
+        "start": 553,
+        "end": 554,
         "sha256": "87fb4fb7b226586f934ca41449da35e916035a5fc898f5924f7efed8f1260084"
       },
       "actions": [
@@ -14078,8 +14078,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "IJ-02: additional/4: Explicit audio assets, clip and volume are decoded and survive production import/save with exact authored payload and repeated loaded/saved invariance. The fixture has metadata only; no audio file is installed, decoded or played. This is the present-field path, not nil defaults. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage."
@@ -14484,8 +14484,8 @@
       "id": "31f79426db7cd75a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 412,
-        "end": 414,
+        "start": 415,
+        "end": 417,
         "sha256": "c324179813f2dec8eabeaad7a3d24683533bfd617fcd1eadbbec16ccc586f24b"
       },
       "actions": [
@@ -14715,8 +14715,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact schema-future mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -14763,8 +14763,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 93,
+        "start": 78,
+        "end": 92,
         "sha256": "4f9e1213c24c48f434ee7e0adf0c365ea8f025f0cce7d5839949d93c31b8b8c7"
       },
       "why": "IJ-02: json-model-cases or json-character-cases fixture missing anchor entry: parent anchor entryId becomes missing, rejecting the missing-entry predicate only; other conjunctions not inferred. Fresh session accepted positive counterpart first; invalid input dispatch reports projectChanged:false, exact public error and complete unchanged loaded/saved models including Date bits. observePresentedError polls snapshots; no alert dismissal. Reviewed static association only, not native execution or measured coverage."
@@ -15715,8 +15715,8 @@
       "id": "361c5c737cdd97f7",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 346,
-        "end": 349,
+        "start": 347,
+        "end": 350,
         "sha256": "be53340637c0733a61c336310c1452479c5ef1b02038be1f08dacd3fcf7c1325"
       },
       "actions": [
@@ -16323,8 +16323,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "ScrivProject CodingKeys/container and required schemaVersion/id/title decode: the accepted additional/4 input has schemaVersion 1, synthetic ID json-anchor-fixture and title Untitled. Exact authored-payload equality preserves version/title, while the helper explicitly checks that import replaces the input identity. This is a successful well-formed keyed decoding path and model shape association, not missing-key, wrong-type, or original-ID preservation evidence. Remaining CodingKeys cases on the declaration are context only, not individual branch credit. Preconditions and concrete inputs are in json-additional-cases.mjs, json-model-cases.mjs and json-validation-acceptance-cases.mjs, invoked by json-validation.mjs. Reviewed static association only; current native scenario not-run, not measured coverage or all-branch validation."
@@ -19558,8 +19558,8 @@
       "id": "43c1321950b21083",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 713,
-        "end": 715,
+        "start": 716,
+        "end": 718,
         "sha256": "1832dfa33320b4f95bab71ed05bc3a46952600a61a5309c015c0cb1aac09908d"
       },
       "actions": [
@@ -20392,8 +20392,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 98,
+        "end": 103,
         "sha256": "8f6e773f0417badd8ffbac37750d04ac2a6752b3847afc152e8abff262fb3e65"
       },
       "why": "Real project browser switch-away/reopen invokes repository decode and validation; whole model and exact Date storage bits match previously observed accepted baseline. No direct repository invocation or package corruption claim."
@@ -20963,8 +20963,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 97,
+        "start": 78,
+        "end": 96,
         "sha256": "566eda2470b608292fc82884e75b8f8a867c9236de42e31af7e66d7dae6a2ca3"
       },
       "why": "IJ-02: project-validation-extension/utf16-prompt: Positive 15,000 emoji is exactly 30,000 UTF-16 units and survives unchanged; appended ASCII raises it to 30,001. Exact prompt-limit error and complete loaded/saved invariance are asserted through stored image metadata validation. This is the UTF-16 bound, not pre-generation validation or a provider submission. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage."
@@ -21222,8 +21222,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact word-id-cross-entry-duplicate mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -22283,9 +22283,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Complete fixture preserves all character fields and populated portrait/crop semantics through synthesized Codable; declaration support only, not convenience initializer/equality coverage."
     },
@@ -22936,9 +22936,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
     },
@@ -23209,8 +23209,8 @@
       "id": "5211d001407c7455",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 864,
-        "end": 864,
+        "start": 867,
+        "end": 867,
         "sha256": "df4993a2dcd9414ca54bdbd35a37dc670f2ee5363b7c978a0f8effe92f47fa3e"
       },
       "actions": [
@@ -25206,8 +25206,8 @@
       "id": "5975ebf27fa24190",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 339,
-        "end": 342,
+        "start": 340,
+        "end": 343,
         "sha256": "fd1208ec29481b3c0d6e820b8d3f96b24a68d9c97b1cce3368de8ecc24087688"
       },
       "actions": [
@@ -25512,8 +25512,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact audio-duplicate-asset mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -26409,8 +26409,8 @@
       "id": "5df3242e94b1184f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 343,
-        "end": 343,
+        "start": 344,
+        "end": 344,
         "sha256": "42c475b9792fc983b1cc1b2156a5eda23f7c136eafa61bf98a274774b9f0b2d7"
       },
       "actions": [
@@ -26472,8 +26472,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact null-required-date mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is intentionally locale-independent; only nonempty stable public decoder error is asserted."
@@ -26860,8 +26860,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact revision-negative-before-reset mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -27183,8 +27183,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "IJ-02: compatibility/dormant-cue: Imported already-authored zero-owned terminal direction offset 0 satisfies the explicit direction exception; stored cue end is clipped to sceneDuration 4,000 while authored extent 1,500 survives. Exact payload survives production validator/import/save. This invokes validate, not resolve/materialize/setCueAnchor or a move operation. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage."
@@ -27209,8 +27209,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "Required scene/entry/character/image/cue decode assignments and decoder completion: this accepted dormant fixture contains one scene, five explicit entries, empty characters/images and two fully asserted anchored cues; all three explicit audio fields are empty/empty/1. verifyPositive compares the complete authored payload and child cue, then the helper compares complete saved/loaded projects and repeats read-only invariance. This covers positive decoding of these concrete populated/empty collections and the present audio-field branch only; missing audio defaults have separate existing evidence. Nonempty image/character decoding, malformed types, missing required fields and invalid-input guards are not inferred. Preconditions and concrete inputs are in json-additional-cases.mjs, json-model-cases.mjs and json-validation-acceptance-cases.mjs, invoked by json-validation.mjs. Reviewed static association only; current native scenario not-run, not measured coverage or all-branch validation."
@@ -27582,8 +27582,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "ScriptScene Codable declaration and stored id/title/order: audioContainer changes the single scene ID to scene while preserving literal title Untitled scene and order 0 from anchoredFixture. verifyPositive compares every authored payload field, including this complete scene, and the helper compares the complete loaded and saved models. No initializer/default-argument execution is inferred. Preconditions and concrete inputs are in json-additional-cases.mjs, json-model-cases.mjs and json-validation-acceptance-cases.mjs, invoked by json-validation.mjs. Reviewed static association only; current native scenario not-run, not measured coverage or all-branch validation."
@@ -27992,8 +27992,8 @@
       "id": "6322edf8e4782c20",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 638,
-        "end": 638,
+        "start": 641,
+        "end": 641,
         "sha256": "117edc4441ea32d381a04f092c98a7d78b8f6368c4b4bff6ec26e4599d7db9b6"
       },
       "actions": [
@@ -28286,8 +28286,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 98,
+        "end": 103,
         "sha256": "8f6e773f0417badd8ffbac37750d04ac2a6752b3847afc152e8abff262fb3e65"
       },
       "why": "Real project browser switch-away/reopen invokes repository decode and validation; whole model and exact Date storage bits match previously observed accepted baseline. No direct repository invocation or package corruption claim."
@@ -28610,8 +28610,8 @@
       "id": "655bf5071a5998fd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 332,
-        "end": 335,
+        "start": 333,
+        "end": 336,
         "sha256": "75f35ed14262dd5313e36336b0b41fc4397a8fc9d4003e1c34450e150fad0d60"
       },
       "actions": [
@@ -28769,9 +28769,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Complete accepted document installs through second validation; no rejection branch is claimed by this accepted case."
     },
@@ -29493,8 +29493,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact speaker-missing mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -30058,8 +30058,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact audio-clip-duration-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -30749,9 +30749,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Explicit null portrait ID and crop decode to omitted optional fields; all remaining character fields retain exact input."
     },
@@ -31595,8 +31595,8 @@
       "id": "6f0a51def3c92169",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 339,
-        "end": 341,
+        "start": 340,
+        "end": 342,
         "sha256": "cf4e8e1bce56a0b0fe308df4ff78b381d8cdbe1f2c74752423ed32f49a0dcfc1"
       },
       "actions": [
@@ -32366,8 +32366,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 93,
+        "start": 78,
+        "end": 92,
         "sha256": "4f9e1213c24c48f434ee7e0adf0c365ea8f025f0cce7d5839949d93c31b8b8c7"
       },
       "why": "IJ-02: json-model-cases or json-character-cases fixture anchor without authored duration: only parent.authoredDurationMs removed, rejecting unpaired anchor/extent. Fresh session accepted positive counterpart first; invalid input dispatch reports projectChanged:false, exact public error and complete unchanged loaded/saved models including Date bits. observePresentedError polls snapshots; no alert dismissal. Reviewed static association only, not native execution or measured coverage."
@@ -33609,9 +33609,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Explicit null generationPrompt and previousVersionId become omitted optional fields; nested image date is retained."
     },
@@ -33966,8 +33966,8 @@
       "id": "778df645dc921268",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 619,
-        "end": 621,
+        "start": 622,
+        "end": 624,
         "sha256": "bbfb7483c89e30c09f8be7ad92447e6b9d1d6f2dae773379043375c1afac3fe1"
       },
       "actions": [
@@ -35255,8 +35255,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "TimedWord Codable shape and stored id/text/startMs/endMs/optional timingSource: audioContainer has first-word/One/0/2000 and second-word/Two/0/3000, with timingSource absent. Whole authored-payload equality retains these exact endpoints and the absent optional marker. Only this concrete estimated-word representation is associated; authored timingSource values, initializer behavior and UTF-16 equality implementation are not tested. Preconditions and concrete inputs are in json-additional-cases.mjs, json-model-cases.mjs and json-validation-acceptance-cases.mjs, invoked by json-validation.mjs. Reviewed static association only; current native scenario not-run, not measured coverage or all-branch validation."
@@ -36070,8 +36070,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 97,
+        "start": 78,
+        "end": 96,
         "sha256": "566eda2470b608292fc82884e75b8f8a867c9236de42e31af7e66d7dae6a2ca3"
       },
       "why": "IJ-02: project-validation-extension/audio-filename: Only asset.fileName changes from its content-addressed .wav name to ../outside.wav. Extension remains supported; equality to sha256+extension rejects. Exact metadata error and complete loaded/saved invariance are asserted. No filesystem traversal is attempted and other waveform/size predicates are not claimed. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage."
@@ -36153,8 +36153,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "ScriptTimeAnchor Codable declaration and entryId/offsetMs properties: the literal child anchor is {entryId:note,offsetMs:0}, while the retained parent points to a at offset 0. Exact full payload equality and the explicit complete child-cue assertion preserve these records. No anchor initializer, creation, resolution, nonzero offset or invalid guard is claimed. Preconditions and concrete inputs are in json-additional-cases.mjs, json-model-cases.mjs and json-validation-acceptance-cases.mjs, invoked by json-validation.mjs. Reviewed static association only; current native scenario not-run, not measured coverage or all-branch validation."
@@ -36219,8 +36219,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 97,
+        "start": 78,
+        "end": 96,
         "sha256": "566eda2470b608292fc82884e75b8f8a867c9236de42e31af7e66d7dae6a2ca3"
       },
       "why": "IJ-02: project-validation-extension/audio-trim: Only sourceStartMs changes 500\u21924000, equal to the 4000 ms asset end. The strict sourceStartMs<asset.durationMs predicate fails first, before duration subtraction. Exact audio-clip error, projectChanged:false and repeated unchanged complete loaded/saved models including Date bits are asserted. No audible output or audio-byte decoding claim. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage. This additional narrow association covers the exact thrown validation message, which observePresentedError compares on the real alert. It does not add another trace for the same input or cover unrelated predicates. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -36329,9 +36329,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "After a valid local import is installed, queueSave(value,label:\"Create project\") publishes its complete metadata to the owned project package. The model-document witness compares the entire persisted project, loaded project and package set. Only queueSave publication on line 1839 is associated; the co-located onProjectChanged callback and navigation, history, playback and discussion reset semantics are not asserted."
     },
@@ -36491,8 +36491,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 97,
+        "start": 78,
+        "end": 96,
         "sha256": "566eda2470b608292fc82884e75b8f8a867c9236de42e31af7e66d7dae6a2ca3"
       },
       "why": "IJ-02: project-validation-extension/audio-filename: Only asset.fileName changes from its content-addressed .wav name to ../outside.wav. Extension remains supported; equality to sha256+extension rejects. Exact metadata error and complete loaded/saved invariance are asserted. No filesystem traversal is attempted and other waveform/size predicates are not claimed. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage. This additional narrow association covers the exact thrown validation message, which observePresentedError compares on the real alert. It does not add another trace for the same input or cover unrelated predicates. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -37902,8 +37902,8 @@
       "id": "83f512cd665f025b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 419,
-        "end": 423,
+        "start": 422,
+        "end": 426,
         "sha256": "dab34e6acf94ea0f79a2f627ec216ce5e93c722ede15ba9a4db387898c5b1e99"
       },
       "actions": [
@@ -38207,8 +38207,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "EntryKind raw-value declaration: the anchored fixture has both direction and dialogue entries and the dormant counterpart appends another direction. The full authored-payload comparison preserves each kind verbatim; no unknown enum value or CaseIterable ordering is asserted. Preconditions and concrete inputs are in json-additional-cases.mjs, json-model-cases.mjs and json-validation-acceptance-cases.mjs, invoked by json-validation.mjs. Reviewed static association only; current native scenario not-run, not measured coverage or all-branch validation."
@@ -38264,9 +38264,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Import validates source envelope before fresh UUID, nil cloud ID, revision0 and equal reset dates within call window; every authored field remains exact."
     },
@@ -38344,9 +38344,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Two immutable image metadata versions, generation prompt and portrait crop validate and preserve exact values; no bytes/file checks, failed crop, provider or generation claim."
     },
@@ -38814,8 +38814,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact wrong-audio-array-type mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is intentionally locale-independent; only nonempty stable public decoder error is asserted."
@@ -40003,8 +40003,8 @@
       "id": "8a0c5c83770c8e04",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 568,
-        "end": 570,
+        "start": 571,
+        "end": 573,
         "sha256": "e75ceef78142ba6150091ee1d701fe508c3750adc77fd0a8515a2abab938d0a1"
       },
       "actions": [
@@ -40460,8 +40460,8 @@
       "id": "8cabb5a825354921",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 627,
-        "end": 628,
+        "start": 630,
+        "end": 631,
         "sha256": "1cffeee9176ea8b313df1e5be327c0e9baf50c45d829101186009b257fc8e37f"
       },
       "actions": [
@@ -41145,8 +41145,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 98,
+        "end": 103,
         "sha256": "8f6e773f0417badd8ffbac37750d04ac2a6752b3847afc152e8abff262fb3e65"
       },
       "why": "Real project browser switch-away/reopen invokes repository decode and validation; whole model and exact Date storage bits match previously observed accepted baseline. No direct repository invocation or package corruption claim."
@@ -41214,8 +41214,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 68,
+        "start": 50,
+        "end": 67,
         "sha256": "098bce5c997a7ac9176a964401cf54019322eb0e63cca9473ede66ff0129b2e8"
       },
       "why": "IJ-02: each rejecting fixture starts a fresh app; accepted JSON counterpart must receive a new identity and preserve its expected full model and Date observations. Inputs are specific case serializer results in the witness caller. Reviewed static association only; this Linux audit did not run the native test."
@@ -41224,8 +41224,8 @@
       "id": "8fb4c08064f57176",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 773,
-        "end": 781,
+        "start": 776,
+        "end": 784,
         "sha256": "5a5f6c02a36999a9e71b9abd7481a87a0f3c1caa96b70ff0d63035f548b90ade"
       },
       "actions": [
@@ -43068,8 +43068,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 97,
+        "start": 78,
+        "end": 96,
         "sha256": "566eda2470b608292fc82884e75b8f8a867c9236de42e31af7e66d7dae6a2ca3"
       },
       "why": "IJ-02: project-validation-extension/image-lineage: Only first image previousVersionId is set to existing v2, whose version 2 is not below version 1. Existing-predecessor/lower-version guard rejects backward lineage with exact error and complete unchanged loaded/saved models. Missing predecessor is a separate untested case. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage."
@@ -43078,8 +43078,8 @@
       "id": "96523476b3f88a7e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 571,
-        "end": 573,
+        "start": 574,
+        "end": 576,
         "sha256": "42012bb069693254b4836adeccce4487cac4e7915e8af932cba052184d7d1e3e"
       },
       "actions": [
@@ -43320,9 +43320,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "This exact explicit-null-defaults fixture decodes required empty project collections and explicit null audio arrays/volume to empty arrays and volume1. Reset envelope is separately asserted."
     },
@@ -43473,8 +43473,8 @@
       "id": "9859dc8ba1e03ff3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 574,
-        "end": 574,
+        "start": 577,
+        "end": 577,
         "sha256": "a2523414c7ecf310d709bcca45c6c26e446ef386e2e77a7301308e8d6f451af4"
       },
       "actions": [
@@ -46123,9 +46123,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Accepted document traverses audio-first validation, schema, valid identity/revision/date, unique heterogeneous IDs and valid scene/character guard success. Negative schema/revision are separate assertions."
     },
@@ -46641,8 +46641,8 @@
       "id": "a13489ce55eafe6d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 427,
-        "end": 427,
+        "start": 430,
+        "end": 430,
         "sha256": "cc0f92a36210d7cf478a1dcd404ed40f0f1956d12202059503ac6325c63a2748"
       },
       "actions": [
@@ -47112,9 +47112,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
     },
@@ -47390,8 +47390,8 @@
       "id": "a27cc246e1bb047b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 428,
-        "end": 431,
+        "start": 431,
+        "end": 434,
         "sha256": "ef50a51588e0c27a2f347b6fb60c111410762ad3440ffc360b3df572d5700c1a"
       },
       "actions": [
@@ -47420,9 +47420,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
     },
@@ -47476,8 +47476,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 97,
+        "start": 78,
+        "end": 96,
         "sha256": "566eda2470b608292fc82884e75b8f8a867c9236de42e31af7e66d7dae6a2ca3"
       },
       "why": "IJ-02: project-validation-extension/audio-entry: Only entryId changes second\u2192removed; missing referenced entry fails the bounded same-scene reference predicate. Exact audio-clip error and whole loaded/saved invariance are asserted. Other volume/duration/asset predicates are not individually tested. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage."
@@ -47988,8 +47988,8 @@
       "id": "a416a0a7bbca6d14",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 630,
-        "end": 632,
+        "start": 633,
+        "end": 635,
         "sha256": "274f522ebdbfcfc6f473837b2562e4f89860f01e3b2baed7f66c5ef9165449ff"
       },
       "actions": [
@@ -48041,8 +48041,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact audio-start-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -48529,8 +48529,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact missing-required-scenes mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is intentionally locale-independent; only nonempty stable public decoder error is asserted."
@@ -48819,9 +48819,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
     },
@@ -49146,8 +49146,8 @@
       "id": "a8a1859718227433",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 571,
-        "end": 574,
+        "start": 574,
+        "end": 577,
         "sha256": "285adb34294fce81bd951e5c421d767c26d847995706f339b90f0f7ef725b36f"
       },
       "actions": [
@@ -49205,8 +49205,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "IJ-02 additional/4 supplies one explicit voice asset (4000 ms, 48000 Hz stereo, four peaks), one second-entry clip (250 ms offset, 500 ms source start, 3500 ms duration) and volume 1. json-additional-cases.mjs:18-33,58-64,82-94 constructs the input and compares its complete authored fields. The shared witness checks accepted saved and loaded models and repeated read invariance. The AudioClip Codable field block preserves the explicit anchored clip. Nil-entry decoding alternatives and explicit initializer defaults are not inferred. Static reviewed source-to-existing-CLI-assertion association only; native scenario remains not-run. No measured execution, branch-complete validation, physical-input parity or legacy retirement claim. Actions are copied exactly from the existing template, including repetitions; polling remains dynamic."
@@ -49756,8 +49756,8 @@
       "id": "a9f98b00df683075",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 459,
-        "end": 461,
+        "start": 462,
+        "end": 464,
         "sha256": "44fba8739d19abaed6d791deacb803d0666266dee6e7cc9a0b5a2723dee9d210"
       },
       "actions": [
@@ -50365,8 +50365,8 @@
       "id": "abbdc61ac1a1c484",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 555,
-        "end": 557,
+        "start": 558,
+        "end": 560,
         "sha256": "3af8be92706536575f44396134000a11adf737fae87c99c2427a9d8e13b0afd0"
       },
       "actions": [
@@ -51050,8 +51050,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact audio-waveform-too-many mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -51129,8 +51129,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 97,
+        "start": 78,
+        "end": 96,
         "sha256": "566eda2470b608292fc82884e75b8f8a867c9236de42e31af7e66d7dae6a2ca3"
       },
       "why": "IJ-02: project-validation-extension/audio-entry: Only entryId changes second\u2192removed; missing referenced entry fails the bounded same-scene reference predicate. Exact audio-clip error and whole loaded/saved invariance are asserted. Other volume/duration/asset predicates are not individually tested. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage. This additional narrow association covers the exact thrown validation message, which observePresentedError compares on the real alert. It does not add another trace for the same input or cover unrelated predicates. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -51268,9 +51268,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
     },
@@ -51534,8 +51534,8 @@
       "id": "b03c02a87d317b16",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 613,
-        "end": 614,
+        "start": 616,
+        "end": 617,
         "sha256": "c26287c65561809d81e16d701452b4d3760b03e68df1ff790fc1aa675106a5d4"
       },
       "actions": [
@@ -51606,8 +51606,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 98,
+        "end": 103,
         "sha256": "8f6e773f0417badd8ffbac37750d04ac2a6752b3847afc152e8abff262fb3e65"
       },
       "why": "Real project browser switch-away/reopen invokes repository decode and validation; whole model and exact Date storage bits match previously observed accepted baseline. No direct repository invocation or package corruption claim."
@@ -52296,8 +52296,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact audio-cross-scene-entry mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -52353,8 +52353,8 @@
       "id": "b2fef9ed10833ad5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 733,
-        "end": 738,
+        "start": 736,
+        "end": 741,
         "sha256": "dcfd6ac882e2fd986bd8ef27349510e52e7d98f883712f96d83b78faed397254"
       },
       "actions": [
@@ -52922,8 +52922,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "ScriptEntry Codable shape and stored fields: anchoredFixture plus dormantCueFixture explicitly supplies IDs a,b,c,d,note, scene s, orders 0 through 4, direction/dialogue kinds, exact text, owned and coverage durations, purple colors and exact word arrays. characterId and characterLinks are absent and must stay absent under complete authored-payload equality. The fixture-specific checks additionally pin all entry IDs/orders/owned durations and terminal coverage 1500. This associates serialization of these present and absent fields only, not constructors, arbitrary speakers/links, equality, or editing. Preconditions and concrete inputs are in json-additional-cases.mjs, json-model-cases.mjs and json-validation-acceptance-cases.mjs, invoked by json-validation.mjs. Reviewed static association only; current native scenario not-run, not measured coverage or all-branch validation."
@@ -52979,9 +52979,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "1000ms scene plus empty scene validate; anchored cue preserves authored1500ms while resolved end is scene1000ms. No overlap-negative claim."
     },
@@ -53440,8 +53440,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "IJ-02 additional/4 supplies one explicit voice asset (4000 ms, 48000 Hz stereo, four peaks), one second-entry clip (250 ms offset, 500 ms source start, 3500 ms duration) and volume 1. json-additional-cases.mjs:18-33,58-64,82-94 constructs the input and compares its complete authored fields. The shared witness checks accepted saved and loaded models and repeated read invariance. The asset validation loop accepts the complete valid content-addressed metadata, duration/sample/channel/waveform/name fixture. No rejecting predicate, boundary, other extension or decoder behavior is claimed. Static reviewed source-to-existing-CLI-assertion association only; native scenario remains not-run. No measured execution, branch-complete validation, physical-input parity or legacy retirement claim. Actions are copied exactly from the existing template, including repetitions; polling remains dynamic."
@@ -53450,8 +53450,8 @@
       "id": "b5c88e5d69c3c253",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 350,
-        "end": 350,
+        "start": 351,
+        "end": 351,
         "sha256": "425f9df57aef918b436ffdf46d77f4c629327209ce3534077644944761f9e46b"
       },
       "actions": [
@@ -53936,8 +53936,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "IJ-02: additional/5: All three audio fields are omitted in serialized input. The accepted saved and loaded model has exactly empty audioAssets, empty audioClips and volume 1, with every other authored field preserved. This is the missing-key default path, not explicit null or malformed audio field handling. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage."
@@ -54418,8 +54418,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact audio-sample-rate-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -54428,8 +54428,8 @@
       "id": "b9335911984aff2d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 416,
-        "end": 416,
+        "start": 419,
+        "end": 419,
         "sha256": "abc81019fd1ad08baf3b4edb48386acd2a5061c46b5c1887ce86b33a68339cbe"
       },
       "actions": [
@@ -55802,8 +55802,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 97,
+        "start": 78,
+        "end": 96,
         "sha256": "566eda2470b608292fc82884e75b8f8a867c9236de42e31af7e66d7dae6a2ca3"
       },
       "why": "IJ-02: project-validation-extension/audio-trim: Only sourceStartMs changes 500\u21924000, equal to the 4000 ms asset end. The strict sourceStartMs<asset.durationMs predicate fails first, before duration subtraction. Exact audio-clip error, projectChanged:false and repeated unchanged complete loaded/saved models including Date bits are asserted. No audible output or audio-byte decoding claim. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage."
@@ -55929,8 +55929,8 @@
       "id": "be57ab300ea7debd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 852,
-        "end": 855,
+        "start": 855,
+        "end": 858,
         "sha256": "26beb85a13d16de248d0f1e982bec88ba5075e79d6cf6af4235ef6535513e543"
       },
       "actions": [
@@ -56163,8 +56163,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 93,
+        "start": 78,
+        "end": 92,
         "sha256": "4f9e1213c24c48f434ee7e0adf0c365ea8f025f0cce7d5839949d93c31b8b8c7"
       },
       "why": "IJ-02: json-model-cases or json-character-cases fixture anchored zero projection before scene end: parent endMs equals its startMs0 before total scene end; zero coverage rejected, not permitted scene-end dormant cue. Fresh session accepted positive counterpart first; invalid input dispatch reports projectChanged:false, exact public error and complete unchanged loaded/saved models including Date bits. observePresentedError polls snapshots; no alert dismissal. Reviewed static association only, not native execution or measured coverage."
@@ -56204,8 +56204,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact audio-byte-count-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -58601,8 +58601,8 @@
       "id": "c971ccb333361360",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 427,
-        "end": 427,
+        "start": 430,
+        "end": 430,
         "sha256": "cc0f92a36210d7cf478a1dcd404ed40f0f1956d12202059503ac6325c63a2748"
       },
       "actions": [
@@ -58713,8 +58713,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact unknown-word-timing-enum mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is intentionally locale-independent; only nonempty stable public decoder error is asserted."
@@ -58885,8 +58885,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact audio-volume-high mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -60007,8 +60007,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 98,
+        "end": 103,
         "sha256": "8f6e773f0417badd8ffbac37750d04ac2a6752b3847afc152e8abff262fb3e65"
       },
       "why": "Real project browser switch-away/reopen invokes repository decode and validation; whole model and exact Date storage bits match previously observed accepted baseline. No direct repository invocation or package corruption claim."
@@ -60033,8 +60033,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "IJ-02 additional/4 supplies one explicit voice asset (4000 ms, 48000 Hz stereo, four peaks), one second-entry clip (250 ms offset, 500 ms source start, 3500 ms duration) and volume 1. json-additional-cases.mjs:18-33,58-64,82-94 constructs the input and compares its complete authored fields. The shared witness checks accepted saved and loaded models and repeated read invariance. Production TimingEngine validation directly calls this assets/clips overload, which accepts finite volume, bounded collection sizes and unique IDs. The separate validate(_ project:) wrapper at lines 93\u201395 is not associated with this JSON import path. Only the valid singleton success path is associated, not duplicate/limit/error behavior. Static reviewed source-to-existing-CLI-assertion association only; native scenario remains not-run. No measured execution, branch-complete validation, physical-input parity or legacy retirement claim. Actions are copied exactly from the existing template, including repetitions; polling remains dynamic."
@@ -60749,8 +60749,8 @@
       "id": "d2025b83a61d59dd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 851,
-        "end": 854,
+        "start": 854,
+        "end": 857,
         "sha256": "6ccdd6df77ace49b02338e035534ba74df09e5c4910fb1989ac197764d5da3a6"
       },
       "actions": [
@@ -61076,8 +61076,8 @@
       "id": "d3bc3b06359020d1",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 425,
-        "end": 425,
+        "start": 428,
+        "end": 428,
         "sha256": "6cb3e081cf00cebc2d6bea390d1d2df1ed786518df0252b0770acc72919044ab"
       },
       "actions": [
@@ -61599,8 +61599,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 93,
+        "start": 78,
+        "end": 92,
         "sha256": "4f9e1213c24c48f434ee7e0adf0c365ea8f025f0cce7d5839949d93c31b8b8c7"
       },
       "why": "IJ-02: json-model-cases or json-character-cases fixture word identity duplicated across entries: entries[2].words[0].id duplicates the first entry word ID; global word uniqueness, not item identities. Fresh session accepted positive counterpart first; invalid input dispatch reports projectChanged:false, exact public error and complete unchanged loaded/saved models including Date bits. observePresentedError polls snapshots; no alert dismissal. Reviewed static association only, not native execution or measured coverage."
@@ -61647,8 +61647,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 93,
+        "start": 78,
+        "end": 92,
         "sha256": "4f9e1213c24c48f434ee7e0adf0c365ea8f025f0cce7d5839949d93c31b8b8c7"
       },
       "why": "IJ-02: json-model-cases or json-character-cases fixture canonical-equivalent source mismatch: valid range spans decomposed e+combining acute but link.text is composed \u00e9. Exact code-unit mismatch rejects; canonical equivalence is not invalid globally. Fresh session accepted positive counterpart first; invalid input dispatch reports projectChanged:false, exact public error and complete unchanged loaded/saved models including Date bits. observePresentedError polls snapshots; no alert dismissal. Reviewed static association only, not native execution or measured coverage."
@@ -62500,8 +62500,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 93,
+        "start": 78,
+        "end": 92,
         "sha256": "4f9e1213c24c48f434ee7e0adf0c365ea8f025f0cce7d5839949d93c31b8b8c7"
       },
       "why": "A UTF-16 span inside an emoji surrogate pair cannot become a valid Swift String range. Preconditions: json-validation.mjs:29-49 wires literal characterCases. For source83-88 use missing character and duplicate overlapping link. For source171 use split Unicode surrogate: source \ud83d\ude42 Randy and malformed annotation location1/length1/text x after accepting location3/length5 Randy. Canonical generic invalid-import sequence is reused byte-for-byte. These are three real fixture branches but one declared action sequence, not manufactured trace counts. No empty/oversized ID, generic range, alert dismissal, pixels or physical input claim. Static reviewed CLI witness only; no native run, measured coverage or branch-complete claim."
@@ -62582,8 +62582,8 @@
       "id": "da70d7ffff562871",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 848,
-        "end": 851,
+        "start": 851,
+        "end": 854,
         "sha256": "9b0fe68c953cf1ee96a5fc24f650595124c613b3cb2f11f58db77a9bc57c52cb"
       },
       "actions": [
@@ -62845,8 +62845,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 97,
+        "start": 78,
+        "end": 96,
         "sha256": "566eda2470b608292fc82884e75b8f8a867c9236de42e31af7e66d7dae6a2ca3"
       },
       "why": "IJ-02: project-validation-extension/utf16-prompt: Positive 15,000 emoji is exactly 30,000 UTF-16 units and survives unchanged; appended ASCII raises it to 30,001. validateStorage forwards the existing generationPrompt to validate during document import; the exact prompt-limit error is observed. Does not construct/regenerate the prompt, start generation or test encodedImageSize rejection. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage."
@@ -62906,8 +62906,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 97,
+        "start": 78,
+        "end": 96,
         "sha256": "566eda2470b608292fc82884e75b8f8a867c9236de42e31af7e66d7dae6a2ca3"
       },
       "why": "IJ-02: invalid serialized counterpart must not install or alter any saved/loaded project and presents a public error controller. Alert dismissal, accessibility activation, pixels and later recovery are not claimed. Reviewed static association only; this Linux audit did not run the native test."
@@ -63131,8 +63131,8 @@
       "id": "dc795d7a0700029a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 336,
-        "end": 336,
+        "start": 337,
+        "end": 337,
         "sha256": "662541f5fd2f4f8a1c01d7814d5b3245d9d1169c9bd1fcf34e8ee04fe6804605"
       },
       "actions": [
@@ -63266,8 +63266,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 93,
+        "start": 78,
+        "end": 92,
         "sha256": "4f9e1213c24c48f434ee7e0adf0c365ea8f025f0cce7d5839949d93c31b8b8c7"
       },
       "why": "IJ-02: json-model-cases or json-character-cases fixture orphan cue scene: only cues[0].sceneId becomes missing; rejected missing-scene predicate. Fresh session accepted positive counterpart first; invalid input dispatch reports projectChanged:false, exact public error and complete unchanged loaded/saved models including Date bits. observePresentedError polls snapshots; no alert dismissal. Reviewed static association only, not native execution or measured coverage."
@@ -64044,8 +64044,8 @@
       "id": "df0cb3dd47468479",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 823,
-        "end": 826,
+        "start": 826,
+        "end": 829,
         "sha256": "a6fd533bb2976ec5b7b66dcb502653131dc1c2339a1068af0a37056588ae0032"
       },
       "actions": [
@@ -64154,8 +64154,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 93,
+        "start": 78,
+        "end": 92,
         "sha256": "4f9e1213c24c48f434ee7e0adf0c365ea8f025f0cce7d5839949d93c31b8b8c7"
       },
       "why": "IJ-02: json-model-cases or json-character-cases fixture Int.max range: rawJSON preserves location and length as exact9223372036854775807 digits, so bounds guard rejects; not a JavaScript number rounding or decoder-error test. Fresh session accepted positive counterpart first; invalid input dispatch reports projectChanged:false, exact public error and complete unchanged loaded/saved models including Date bits. observePresentedError polls snapshots; no alert dismissal. Reviewed static association only, not native execution or measured coverage."
@@ -64240,8 +64240,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 97,
+        "start": 78,
+        "end": 96,
         "sha256": "566eda2470b608292fc82884e75b8f8a867c9236de42e31af7e66d7dae6a2ca3"
       },
       "why": "IJ-02: project-validation-extension/captured-prompt: Original and latest captured prompts survive positive import; replacing only the latest captured prompt with 30,001 ASCII characters fails. validateStorage forwards the existing generationPrompt to validate during document import; the exact prompt-limit error is observed. Does not construct/regenerate the prompt, start generation or test encodedImageSize rejection. Real driver json-validation.mjs selects this fixture and calls runJSONValidationCase; only observations of the launched app are the oracle, not portable input checks. Reviewed static association only, not native execution or measured coverage."
@@ -64712,9 +64712,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Required project fields and present audio collections/volume decode; envelope identity/revision/dates are subsequently reset by import, never falsely preserved."
     },
@@ -64931,9 +64931,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Complete fixture preserves typed metadata, relative/nil entry IDs, silent/muted states and lower sample/channel/byte bounds; upper audio boundaries, playback and placement calculations are not asserted by this case."
     },
@@ -65750,9 +65750,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Explicit null cue anchor and authored extent decode to absent fields; legacy nonanchored 0..1000 cue validates inside1000ms scene. No anchored or overlap-negative claim."
     },
@@ -65772,8 +65772,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 93,
+        "start": 78,
+        "end": 92,
         "sha256": "4f9e1213c24c48f434ee7e0adf0c365ea8f025f0cce7d5839949d93c31b8b8c7"
       },
       "why": "Validation tracks annotation IDs and rejects the missing-character and duplicate-ID fixtures without installing the invalid project. Preconditions: json-validation.mjs:29-49 wires literal characterCases. For source83-88 use missing character and duplicate overlapping link. For source171 use split Unicode surrogate: source \ud83d\ude42 Randy and malformed annotation location1/length1/text x after accepting location3/length5 Randy. Canonical generic invalid-import sequence is reused byte-for-byte. These are three real fixture branches but one declared action sequence, not manufactured trace counts. No empty/oversized ID, generic range, alert dismissal, pixels or physical input claim. Static reviewed CLI witness only; no native run, measured coverage or branch-complete claim."
@@ -67213,8 +67213,8 @@
       "id": "e854487f4fee66d8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 553,
-        "end": 553,
+        "start": 556,
+        "end": 556,
         "sha256": "97f462fc90f039c5470d57da43b84f5caf32b895462b9db5a7662402904e8f9c"
       },
       "actions": [
@@ -68395,9 +68395,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "ScrivCLIImport.perform calls importScript(from:), which validates and installs a fresh zero-revision local document. install persists its initial journal record and queues its normal package save. Complete loaded and persisted model equality plus exact package-set equality independently witness successful publication. This supports normal local journal/save plumbing only; no failed save, conflicting record, already-existing package, restore/replay race, cloud scope, status label or non-Catalyst branch is asserted."
     },
@@ -68589,9 +68589,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Captured prompt, millisecond nested dates and previous version survive in this complete fixture."
     },
@@ -69078,8 +69078,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 79,
-        "end": 93,
+        "start": 78,
+        "end": 92,
         "sha256": "4f9e1213c24c48f434ee7e0adf0c365ea8f025f0cce7d5839949d93c31b8b8c7"
       },
       "why": "IJ-02: json-model-cases or json-character-cases fixture unanchored parent overlaps anchored child: remove only parent anchor and duration; valid legacy parent precedes overlapping anchored child, which fails legacyEnd rule. Not generic overlap rejection. Fresh session accepted positive counterpart first; invalid input dispatch reports projectChanged:false, exact public error and complete unchanged loaded/saved models including Date bits. observePresentedError polls snapshots; no alert dismissal. Reviewed static association only, not native execution or measured coverage."
@@ -70714,8 +70714,8 @@
       "id": "f3142c5f6bbed5b9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 600,
-        "end": 602,
+        "start": 603,
+        "end": 605,
         "sha256": "90964b4e76c047a150ad14af6589320cf5dfa4163e529e0e9f748bdc796625e2"
       },
       "actions": [
@@ -71073,8 +71073,8 @@
       "id": "f43fd634b3462a11",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 616,
-        "end": 617,
+        "start": 619,
+        "end": 620,
         "sha256": "c803ddeb6699c76d5458d3286886abdae555235d298da3ddd88d8523cc1a7210"
       },
       "actions": [
@@ -72828,8 +72828,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 88,
-        "end": 100,
+        "start": 107,
+        "end": 119,
         "sha256": "fd6a5bb87300c371788ede006bdd0119207f922c64479fb76cac65b37bc35cd3"
       },
       "why": "Exact audio-waveform-negative mutation reaches the production decoder/validator after the accepted counterpart. Whole loaded model/date bits and both persisted project metadata objects remain unchanged. Error wording is exact specified validator message."
@@ -73580,8 +73580,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 74,
+        "start": 50,
+        "end": 73,
         "sha256": "4c93a9b29db7b5dba4ee2d44680771cf5996f9b232da05f498b5193318ed35b0"
       },
       "why": "IJ-02 additional/4 supplies one explicit voice asset (4000 ms, 48000 Hz stereo, four peaks), one second-entry clip (250 ms offset, 500 ms source start, 3500 ms duration) and volume 1. json-additional-cases.mjs:18-33,58-64,82-94 constructs the input and compares its complete authored fields. The shared witness checks accepted saved and loaded models and repeated read invariance. The clip validation loop accepts its known scene, source asset and existing second entry, valid trim and volume. This association is only the full valid fixture path, not every invalid metadata combination. Static reviewed source-to-existing-CLI-assertion association only; native scenario remains not-run. No measured execution, branch-complete validation, physical-input parity or legacy retirement claim. Actions are copied exactly from the existing template, including repetitions; polling remains dynamic."
@@ -73753,9 +73753,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/model-document-steps.mjs",
-        "start": 54,
-        "end": 75,
-        "sha256": "710db135c41477f1ad976f63f09bee25118190420847e0e31c1212e7cb88dddc"
+        "start": 73,
+        "end": 94,
+        "sha256": "83716e2be77be7658b5ff66706caff7e93043c2d8ae51a7886f23ca7830e9ca7"
       },
       "why": "Complete exact image fields plus absent characterAnalysis preserve synthesized Codable metadata; no image bytes or analysis-provider execution."
     },
@@ -78871,8 +78871,8 @@
       "id": "11227d5130fffec3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 314,
-        "end": 314,
+        "start": 315,
+        "end": 315,
         "sha256": "babc8494c179a5178e7e164a977ab06afb274fb01f9f105d9ea05df658750773"
       },
       "actions": [
@@ -78951,8 +78951,8 @@
       "id": "29ac337b2c59b8ed",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 601,
-        "end": 602,
+        "start": 604,
+        "end": 605,
         "sha256": "7d465e3f0c21d5f81836c01c2e02a12d8d63afc3cde786dcf09502483556d56d"
       },
       "actions": [
@@ -78990,8 +78990,8 @@
       "id": "3ca2977b041059cb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 750,
-        "end": 760,
+        "start": 753,
+        "end": 763,
         "sha256": "6e7e02f6db3de01649c85911494132b56602c279c01624323914185da4f41abb"
       },
       "actions": [
@@ -79017,8 +79017,8 @@
       "id": "4396c3c5738d31a5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 321,
-        "end": 321,
+        "start": 322,
+        "end": 322,
         "sha256": "2cd370c882d391afebdb8d864ab8f28f696b06f3a4c56900c34bc861647f9e67"
       },
       "actions": [
@@ -79037,8 +79037,8 @@
       "id": "48e7e821f204901b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 319,
-        "end": 319,
+        "start": 320,
+        "end": 320,
         "sha256": "b05f9dc0012d4d9cac99315108c54db418539fe3b9dc6c4130ce5d7b0831d038"
       },
       "actions": [
@@ -79057,8 +79057,8 @@
       "id": "4b378e36b7419278",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 691,
-        "end": 691,
+        "start": 694,
+        "end": 694,
         "sha256": "84d87a6ac462771db62eeb1a6797d89dd971d64a1d2fa9c362c10031c5a089d4"
       },
       "actions": [
@@ -79078,8 +79078,8 @@
       "id": "4d619e5bf1e56d7a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 688,
-        "end": 689,
+        "start": 691,
+        "end": 692,
         "sha256": "628b44ccc5c00dea4e1bf08f684cc8fcc7f340a96d7adf1be3d39482636bb5b0"
       },
       "actions": [
@@ -79139,8 +79139,8 @@
       "id": "6b01d0005d733bb0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 316,
-        "end": 317,
+        "start": 317,
+        "end": 318,
         "sha256": "cac28f4dd33bd9dd2cd7e13c9cd4325996740ac1fd2a2f1142f34af53d4e013f"
       },
       "actions": [
@@ -79200,8 +79200,8 @@
       "id": "75a01461b52b6b7a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 695,
-        "end": 703,
+        "start": 698,
+        "end": 706,
         "sha256": "187da3ecc277e1de0b9e540f95becb8f7093dfb6e51b46df86f429f0c1a2cafc"
       },
       "actions": [
@@ -79224,8 +79224,8 @@
       "id": "7656023cb4f06a0f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 329,
-        "end": 330,
+        "start": 330,
+        "end": 331,
         "sha256": "22d85dad07c5bb07ab387609f677203a127c2d2e9ee654f3e2e36a2ac8616057"
       },
       "actions": [
@@ -79266,8 +79266,8 @@
       "id": "7ef9534ffe31e8a5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 763,
-        "end": 768,
+        "start": 766,
+        "end": 771,
         "sha256": "7a3e5279957baae96588b0e18e86cceb42722fc87827b1f684dd4f8f5dcc0acb"
       },
       "actions": [
@@ -79293,8 +79293,8 @@
       "id": "7f11c250598d1cf6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 524,
-        "end": 524,
+        "start": 527,
+        "end": 527,
         "sha256": "c7b80e0b415de12405742297518bbeeeab63083ebddeced424b056ab9e157d49"
       },
       "actions": [
@@ -79314,8 +79314,8 @@
       "id": "7fd65098bf1ab87a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 842,
-        "end": 850,
+        "start": 845,
+        "end": 853,
         "sha256": "cf5b10621169cec2162228038682640e6c3308b1e59fc741c4f76ed76bab095c"
       },
       "actions": [
@@ -79335,8 +79335,8 @@
       "id": "811be6db468e45c4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 564,
-        "end": 569,
+        "start": 567,
+        "end": 572,
         "sha256": "0c980fa83a4300e5a9837308b443c69da4a6f064c0b4d29088e08fd9b5185965"
       },
       "actions": [
@@ -79356,8 +79356,8 @@
       "id": "83dab709c8cd268d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 528,
-        "end": 528,
+        "start": 531,
+        "end": 531,
         "sha256": "592a2e61beae656bbd65be2757c56ab2fe105580f3fe1a01230279d66aed31a6"
       },
       "actions": [
@@ -79377,8 +79377,8 @@
       "id": "88b3bf3302dd7830",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 514,
-        "end": 521,
+        "start": 517,
+        "end": 524,
         "sha256": "8ab344172387fc3a08adf8c738ccb0537721e2ba7d3f2ea65be587e69dedb1b7"
       },
       "actions": [
@@ -79398,8 +79398,8 @@
       "id": "8a446afa0edb42c2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 677,
-        "end": 687,
+        "start": 680,
+        "end": 690,
         "sha256": "a428147f4496f41893ce079eb3e2e1db4fc3e46278ba9b8467975bfe8abf9327"
       },
       "actions": [
@@ -79422,8 +79422,8 @@
       "id": "8a67029696cbf0b8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 537,
-        "end": 537,
+        "start": 540,
+        "end": 540,
         "sha256": "855badd29c331125f697c8be79c2e1e9535010812bee9c917f723711a8cd3b42"
       },
       "actions": [
@@ -79443,8 +79443,8 @@
       "id": "8c330d0546d11c31",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 575,
-        "end": 589,
+        "start": 578,
+        "end": 592,
         "sha256": "192b962acc29c719f349a6e8402bf9296e1b795c2e57ffdd47a2ff06f3e0d28d"
       },
       "actions": [
@@ -79463,8 +79463,8 @@
       "id": "8e093b0846960340",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 454,
-        "end": 469,
+        "start": 457,
+        "end": 472,
         "sha256": "c985acb284696831286da12ba8b55a044dcbb709eb303e9100fc2edc581f1cad"
       },
       "actions": [
@@ -79483,8 +79483,8 @@
       "id": "8fb80feb081c33b9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 832,
-        "end": 834,
+        "start": 835,
+        "end": 837,
         "sha256": "6d63236a09570fb3909931fbb1e8c7a6bb4d8554fddda68370519c8da70c359e"
       },
       "actions": [
@@ -79507,8 +79507,8 @@
       "id": "911af19a3e3714a2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 522,
-        "end": 522,
+        "start": 525,
+        "end": 525,
         "sha256": "064796db3df6d13edd8b55016d4d637b041d1a018a5528abd4968a4e545f13c4"
       },
       "actions": [
@@ -79528,8 +79528,8 @@
       "id": "9c23f545f48b7fab",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 860,
-        "end": 863,
+        "start": 863,
+        "end": 866,
         "sha256": "2a0646fc503064aa903a2084d714f1701170f00b4ea8cd3a238c73359b1891a0"
       },
       "actions": [
@@ -79608,8 +79608,8 @@
       "id": "c05c410e803e4d84",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 739,
-        "end": 747,
+        "start": 742,
+        "end": 750,
         "sha256": "d1d009882bdc6d8cc108de227357a233b5a0c0cfddfe9bc165a39b083e2e243c"
       },
       "actions": [
@@ -79656,8 +79656,8 @@
       "id": "c4e9fe3c3fb2bfc6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 538,
-        "end": 540,
+        "start": 541,
+        "end": 543,
         "sha256": "c4009d726a4053ee985a17c6d148bcce5bcc4ceb62f3c1ed922aae3234654073"
       },
       "actions": [
@@ -79699,8 +79699,8 @@
       "id": "d0f390bd0ec97fe3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 549,
-        "end": 551,
+        "start": 552,
+        "end": 554,
         "sha256": "9478da7339993e90d794ae99b033fb46ecdcc77a21251663331900a5adf0af82"
       },
       "actions": [
@@ -79720,8 +79720,8 @@
       "id": "dc2e4f6b205216c4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 856,
-        "end": 859,
+        "start": 859,
+        "end": 862,
         "sha256": "5b8f42fe05b1d16bab668bc20b0aa0218da538ef59c2e9905f6fcfb5a4f1f82b"
       },
       "actions": [
@@ -79782,8 +79782,8 @@
       "id": "df11d43f6e9dfd27",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 594,
-        "end": 596,
+        "start": 597,
+        "end": 599,
         "sha256": "f388c57f2f53a6e5f0a242c097a4436c55706405fb35f5dbe38a5a0fdaa24c27"
       },
       "actions": [
@@ -79802,8 +79802,8 @@
       "id": "e34349d8a4a70318",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 530,
-        "end": 530,
+        "start": 533,
+        "end": 533,
         "sha256": "ab538a8d6c6a3d8db5ad1d3af648383fd550578550cb83053f1347923f0e6556"
       },
       "actions": [
@@ -79823,8 +79823,8 @@
       "id": "e5c016b1314eb20b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 604,
-        "end": 610,
+        "start": 607,
+        "end": 613,
         "sha256": "e4f9ad25b580b3a3017e33460184ebc148836f2416eca0fc0e5130c81f7b750c"
       },
       "actions": [
@@ -79844,8 +79844,8 @@
       "id": "f7a936141238fbaa",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 542,
-        "end": 547,
+        "start": 545,
+        "end": 550,
         "sha256": "a1ea40ff72f3baa12822181aded31f6eb725800db0ddf0385a74dab399a65ad1"
       },
       "actions": [
@@ -79865,8 +79865,8 @@
       "id": "fab401729defa3de",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 633,
-        "end": 635,
+        "start": 636,
+        "end": 638,
         "sha256": "32815175314d73edb6f8561307f3c565237fcfa9871e1eae2a11f47b856693e6"
       },
       "actions": [
@@ -79888,8 +79888,8 @@
       "id": "fce8200a63b6d5a2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 838,
-        "end": 840,
+        "start": 841,
+        "end": 843,
         "sha256": "d7defe0ccd73bddedf632b2b7f031cb135e105f84f8cee5ebf75581e874f65bf"
       },
       "actions": [
@@ -94920,9 +94920,9 @@
       "id": "05d9ad3eebda9c31",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 401,
-        "end": 409,
-        "sha256": "a2102dcacb5361713344a83fa0f23360318cbb425482d67b6773ab618c6a8882"
+        "start": 402,
+        "end": 412,
+        "sha256": "2ff32aee8f943418ab5ab45c0596f41a3829f614d7c8c6aa7b1f9027abd2faf1"
       },
       "actions": [
         "Import an invalid counterpart and observe its attached error.",
@@ -94931,9 +94931,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 98,
-        "end": 107,
-        "sha256": "d630d0e8df69df294c60e284143ac0384db3bcea16271daf423378d988632d73"
+        "start": 97,
+        "end": 104,
+        "sha256": "82e344a528dbb7a09a22f7e62b7dcbf698e99bdb681099e6835c931c6b6531b1"
       },
       "why": "The scope guard rejects an extra target, the real owned rejection is acknowledged once, and normal workspace interaction returns. The complete loaded model and all packages are checked after dismissal."
     },
@@ -94942,8 +94942,8 @@
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/WorkspaceErrorPresenter.swift",
         "start": 50,
-        "end": 58,
-        "sha256": "5020b02e1d149c9612ba628b6d38a1108500a6a4a54ed5f187ba8195f74cef68"
+        "end": 57,
+        "sha256": "b66864b7653236444a03049b5c557167999bad2470681531d8c54763e8562c88"
       },
       "actions": [
         "Observe the attached owned JSON validation error, acknowledge it through the application CLI and wait for the main workspace to be available.",
@@ -94951,11 +94951,31 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 100,
-        "end": 107,
-        "sha256": "c719d13ca8b60846fbe78498e81eabbd8e8532044dca8036cf0b11cc751af543"
+        "start": 99,
+        "end": 104,
+        "sha256": "266ca11f0d07a0f1798b7f31f14864a201e1f89a78f9e3a55ca0c4f891ee624a"
       },
       "why": "This verifies public UIKit dismissal of the workspace import error and its shared acknowledgement. The assertion concerns the mounted controller lifecycle and persisted state."
+    },
+    {
+      "id": "62333813b4e08cf8",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Shared/WorkspaceErrorPresenter.swift",
+        "start": 50,
+        "end": 57,
+        "sha256": "b66864b7653236444a03049b5c557167999bad2470681531d8c54763e8562c88"
+      },
+      "actions": [
+        "Import and reopen valid documents through the real project browser, then observe each attached rejection in the same run.",
+        "Acknowledge each owned JSON rejection, wait for the workspace, and compare every saved project and the exact loaded model and date bits."
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/model-document-steps.mjs",
+        "start": 121,
+        "end": 124,
+        "sha256": "4b8ccb287462ae2aed3245049ff3fc0240263bf9da14488f20dcfe522ce60c4d"
+      },
+      "why": "The exact owned alert is dismissed through UIKit after ordinary browser and import interaction. Every acknowledgement preserves the loaded model and all previously saved projects."
     }
   ],
   "commentExclusions": [
@@ -95007,7 +95027,7 @@
         "end": 991,
         "sha256": "95f0dfcd9e57382c1001f6bcba5922a43c99522186736054991adb899c25d334"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "027c9c980ee4e52e",
@@ -95027,7 +95047,7 @@
         "end": 2452,
         "sha256": "bad43ecfffa50589ddfdc9e59c98dc41ffd3f86557eb23893b000341f68fcbaf"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "0311a623f741d0d4",
@@ -95057,7 +95077,7 @@
         "end": 589,
         "sha256": "7eeef7163013a09683503655444f5bdf513f5df785480ad4aba5ce4cb04614fa"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "033a8aeb54e65dfe",
@@ -95407,7 +95427,7 @@
         "end": 1032,
         "sha256": "e2469aead4b01b05abc28ff96820f810e5bd199b57ec8cb652972e457d4cff36"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "0b3bda424791f183",
@@ -95457,7 +95477,7 @@
         "end": 601,
         "sha256": "6d6eaf362a36b9dd1e00715865756c3c152749b28c58026ae2b956045bda503a"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "0ca653243681407e",
@@ -95517,7 +95537,7 @@
         "end": 1537,
         "sha256": "78a8b4d143c7639681231ab7f5d84872238f1efc2911a4609bea975bca491188"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "0eb789d38fa95eef",
@@ -95683,11 +95703,11 @@
       "id": "139ee178f1a1f439",
       "source": {
         "path": "tests/e2e/support/presented-error.mjs",
-        "start": 3,
-        "end": 4,
+        "start": 5,
+        "end": 6,
         "sha256": "4ce71b4c0e09aa1c377d5c13312c80774d8d37c40a2c3227cf22891c685e4d44"
       },
-      "fileSha256": "f410f2cee6c1cadc40ecd391a52eab82a4cd4fdf8937fa95159ede2a4f635c04"
+      "fileSha256": "465f3a1fe93b951527f2d2d4c98317a9391aecfa49d3cd868e25c46bde24d8d2"
     },
     {
       "id": "14070ada6645e4d2",
@@ -95723,11 +95743,11 @@
       "id": "1580fb77770c6b05",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 477,
-        "end": 478,
+        "start": 480,
+        "end": 481,
         "sha256": "afc35e63d44cb2dc588f844311477dacc5219d24d4e86beefeab50bb55082db8"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "158d6d2aa96d0767",
@@ -95803,11 +95823,11 @@
       "id": "16b6200ece5b77d9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 783,
-        "end": 784,
+        "start": 786,
+        "end": 787,
         "sha256": "7758267ff9cf5280f9d398a2fc4dadfd667db0bb1ac6ea64fef858b2a996b5c8"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "16c1900c3ddd220c",
@@ -95823,11 +95843,11 @@
       "id": "16f1d147f5058fca",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 352,
-        "end": 353,
+        "start": 353,
+        "end": 354,
         "sha256": "2f4e890fd72601ad06471f2bab2c9ee3be008f93c42c1af3f4fad1964ecedb70"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "1779986c0d221573",
@@ -96263,11 +96283,11 @@
       "id": "1f8b8b4294e122e0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 724,
-        "end": 728,
+        "start": 727,
+        "end": 731,
         "sha256": "1cfc9c2c2a831d6f1d26ff49879391d7fd7aa8473bb25ef0282c9c7fd83932ff"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "1f96bbb7c85097a3",
@@ -96277,7 +96297,7 @@
         "end": 466,
         "sha256": "f33a68da5c31a6772153f9aa9f7ba42519c0877f203d9966c6b9b511e5c6ec25"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "1fccb1ef76d40fc9",
@@ -96393,11 +96413,11 @@
       "id": "2331ecd2f76bbd73",
       "source": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 44,
-        "end": 45,
+        "start": 43,
+        "end": 44,
         "sha256": "9e0ef44ad1034c4cfa6bfd3bf6e77542aca68a8b57ec425762783018ea3adc98"
       },
-      "fileSha256": "d5d2a921996c2959083e5c79ee9665e13a1cf1963ee43707fd8c1d2294bb4e4e"
+      "fileSha256": "865fdb0b1112ab4801d8a041bc8ab008df37101248bc52e0970f4d2edafcd14b"
     },
     {
       "id": "23bebb1a8c50da54",
@@ -96613,11 +96633,11 @@
       "id": "2868f8ee45d7cfb2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 597,
-        "end": 599,
+        "start": 600,
+        "end": 602,
         "sha256": "26129c1a3ce0ab6f5a0b1dd0d75239e4ee6eb607861bde3c399f7e1d08f0c5a3"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "289f01119a4fa1a6",
@@ -96647,7 +96667,7 @@
         "end": 53,
         "sha256": "7f062849b9f1cd52dec629ffcb2288d462064665694fa2ee6b72ec4c871cc043"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "28dc2d22e4ca2e4e",
@@ -96947,7 +96967,7 @@
         "end": 727,
         "sha256": "faf537efa64f7298b944db62c09cd2f6b386f66e83fe992590e33d1533bea8c1"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "2e0eb6550faf01eb",
@@ -96983,11 +97003,11 @@
       "id": "2ea8384858515016",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 710,
-        "end": 712,
+        "start": 713,
+        "end": 715,
         "sha256": "c23495ef2adcd5831a87ae9a41234c620e3b9d5c52610f24a080a1cc9a1ff436"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "2ecad3e3070cf878",
@@ -97007,7 +97027,7 @@
         "end": 2110,
         "sha256": "7341c21ac6e9cbf9a1e27c9eb8b9e766191aec732d54529858c53d6b19229133"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "2ff54851da984d7f",
@@ -97287,17 +97307,17 @@
         "end": 1886,
         "sha256": "5cb0d8b4e66268f1e778722aedc510c73dd42e7a120440cec42ca6eb2480796f"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "3589739375bd1429",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 636,
-        "end": 637,
+        "start": 639,
+        "end": 640,
         "sha256": "4f5ce61cdddcf4dc00f140e1dd614b4782c64010a2d7c17311055e6fde69bbe7"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "358f7a06cdc04bce",
@@ -97387,7 +97407,7 @@
         "end": 1460,
         "sha256": "33fe7a43338ce836529c46f4494cdf0ebc82ab1440da38d9c73adef0cabacdfe"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "3784786355d35402",
@@ -97773,11 +97793,11 @@
       "id": "3f9b865fff5df89b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 653,
-        "end": 654,
+        "start": 656,
+        "end": 657,
         "sha256": "b814cae82e2b8bc0390b61861b562f788e819908e94c8894f0b6319c82e5f311"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "3fa3e1b193ffd69f",
@@ -97847,7 +97867,7 @@
         "end": 412,
         "sha256": "14af89094f20059d83c3778958787aec1386ccbdd6f759b97983f32ac14823a0"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "4098efde967a5c60",
@@ -97907,7 +97927,7 @@
         "end": 334,
         "sha256": "2f41aec4aa93eb283646db850273fb4b8c7ff0fca35ec8e00b0abd2fa6b9f00f"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "412e335af2122cd8",
@@ -98107,7 +98127,7 @@
         "end": 207,
         "sha256": "dfb77e46e95276e4f833799c78792cec18d689ce8cbd56bf1f38a92c90e691af"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "4642ae0fef5b4c3b",
@@ -98557,7 +98577,7 @@
         "end": 1639,
         "sha256": "ece4d29f5248ec380b31d1ae33574f2587e16c6d1411b3e5086aaf99a10eb7b4"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "4f42e39311e99a8a",
@@ -98567,7 +98587,7 @@
         "end": 163,
         "sha256": "cd5c45decf8454b5831f11b993317b41adc30e60e8e491016af90bda49f811ed"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "4f81fd65ae3cee94",
@@ -98607,7 +98627,7 @@
         "end": 136,
         "sha256": "2ee57046ab48f4ca97bf710f031839feb29b2385a3ae0de63d0111b24a2a19ed"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "4fb22610ae030c7c",
@@ -98677,7 +98697,7 @@
         "end": 2079,
         "sha256": "adc2f24ebc01967fbb18747b48f7f71a00d7b00ea10f038cfb8e3cefa2a10799"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "51a623a3e3b16af9",
@@ -98737,7 +98757,7 @@
         "end": 2422,
         "sha256": "5ba5f6f0c7d5954b95fdab215a82834553824f4bed499a4225241d86ac64c2fe"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "531faa3942b7ca8b",
@@ -98817,7 +98837,7 @@
         "end": 1046,
         "sha256": "3d80f326a26a1ea90e27ed81c84cfbc2395389aebc964298e6d23f2daa156d94"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "55604d1277bb9d16",
@@ -98863,11 +98883,11 @@
       "id": "55bed508b9f6942b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 559,
-        "end": 559,
+        "start": 562,
+        "end": 562,
         "sha256": "2d97e0600d661fa33ef65a5b0e7d45d4de32817b62fb62ff62426b3d9b0b1928"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "55c2b44496cddc70",
@@ -98887,7 +98907,7 @@
         "end": 477,
         "sha256": "742819368cf0266b8dc91547414025b99a348f4d0519480cfbdedc9b0c3dfbaf"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "55fd4b463fdc6fb6",
@@ -99123,11 +99143,11 @@
       "id": "5bb0054c34f68660",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 518,
-        "end": 518,
+        "start": 521,
+        "end": 521,
         "sha256": "071b412f011c05e1fce2a04a8a1b52b5925a1df4097f4e15f57901ceb72b5215"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "5be418cbdf468540",
@@ -99283,11 +99303,11 @@
       "id": "5eaa79b123d3637b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 827,
-        "end": 829,
+        "start": 830,
+        "end": 832,
         "sha256": "ff75034235e1e3e18922b39d9b97c26d14f65855a6ce88c76ef09c07d11f760f"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "5ecd7291d67d9961",
@@ -99377,7 +99397,7 @@
         "end": 2338,
         "sha256": "7e288e02ec62577867691831d74c6c8d168acb497ea5753c9ad24777be007c6b"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "60c712c4d5f1db17",
@@ -99397,7 +99417,7 @@
         "end": 1105,
         "sha256": "4111f9dd7914cce5baac46b49ea172e4de9d07478382a9d14f97eff5bebf04fa"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "6115ea739422f3ca",
@@ -99477,7 +99497,7 @@
         "end": 350,
         "sha256": "2e396a3813435e87a2f38dacb845121bdf0f7ad55a0c7ee5bf09dcdea51071d4"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "61fce38e601437a8",
@@ -99497,7 +99517,7 @@
         "end": 618,
         "sha256": "d3e66d81a577275dc7f064dd09e9ec205fe7a964567a70c9b1b354ae1732794f"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "620ed673c79cd491",
@@ -99657,7 +99677,7 @@
         "end": 1542,
         "sha256": "36d82f3ef54cc9c121b6f2e0d5931b8f87ab86cbff5868cbd6675e63b1171f23"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "64c88a787a2dcb38",
@@ -99737,7 +99757,7 @@
         "end": 1854,
         "sha256": "9ebf3cbdd42fda8c851b5a076224e86c4308cf2c712990517f904b996459babe"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "66b472767f1be80d",
@@ -100127,7 +100147,7 @@
         "end": 1356,
         "sha256": "538dafbf080f611d963240f1ed392b48b2dda077ef73ceea354272b4042e207c"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "7057f212c0beea56",
@@ -100167,7 +100187,7 @@
         "end": 1390,
         "sha256": "e7c71af891ca05ce9664a1c7c55d87a0a50da245b180b4de908fbbe6c8d57169"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "71d635ab4c189457",
@@ -100193,11 +100213,11 @@
       "id": "7246ffcf3487aed4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 662,
-        "end": 663,
+        "start": 665,
+        "end": 666,
         "sha256": "ed5b29f575f4d028c141c01056a23e43a50909a5be6a046aa8f8c710056d1bf2"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "727fe525cbd185c1",
@@ -100243,11 +100263,11 @@
       "id": "732c87b3a0fdc368",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 777,
-        "end": 779,
+        "start": 780,
+        "end": 782,
         "sha256": "1a449d417630c53324c266ae7130315bd44156f83a57819d60c5708ba85878d9"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "73616b5c2e02f15c",
@@ -100437,7 +100457,7 @@
         "end": 2184,
         "sha256": "194b87fce31af1a1ebf571d992e8e2f29f646485e837a2e695a4c0e9eb5c2aea"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "7744a182af92b14a",
@@ -100607,7 +100627,7 @@
         "end": 185,
         "sha256": "a6a4e089542e9d6d34c6af6ba2fbd1f2b7aad6bac1f7059fc270a9d64cd3258a"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "7a94ef812f57042f",
@@ -101047,7 +101067,7 @@
         "end": 264,
         "sha256": "4b8c224e49913604f71deb3df09f93380998dc9f7efee265fd5cdac879a6de3a"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "85ab30fd04fee2ac",
@@ -101207,7 +101227,7 @@
         "end": 1760,
         "sha256": "3a231d0e53169c1b3287d067a74c589c1e7a11fbeb66d69366a92b83a8f7a792"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "8811764d570217a9",
@@ -101413,11 +101433,11 @@
       "id": "8c699be11858a1ab",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 771,
-        "end": 772,
+        "start": 774,
+        "end": 775,
         "sha256": "8d2e38632f205e5bf65857774dbb5a73cfa747510b7cdf602a6c76618cec774f"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "8c9a8208e6d2c704",
@@ -101437,7 +101457,7 @@
         "end": 261,
         "sha256": "32975f8107002dab8002e2c2ab137eeca8e4d631a5edf4aac54b0c9c01e1e6fd"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "8cb5dfa4701b88d4",
@@ -101477,7 +101497,7 @@
         "end": 1190,
         "sha256": "fb9dd5685f706fd34446c384fe58cfd3e79ae3b6e4dba666fcc4a331351c4fd2"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "8dab03cd5b00e60e",
@@ -101567,7 +101587,7 @@
         "end": 2004,
         "sha256": "82097ce9bfba9f98175964302c834962e13262e5825d927e036cabf9627b3e8e"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "8fd4ea10b6a0f58e",
@@ -101757,7 +101777,7 @@
         "end": 1702,
         "sha256": "3ba69021feb5e9c8f554366c73721dd6cd626bc6c043cc2def4e9ce36800c767"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "94e21e26084ecad6",
@@ -101843,11 +101863,11 @@
       "id": "95d6bfd7083277ac",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 672,
-        "end": 673,
+        "start": 675,
+        "end": 676,
         "sha256": "028cd17cf4ba402da9f2ffe58cf6dc92566208cb94e8909022c583569090c5f7"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "95e745cb9bef76dc",
@@ -101917,7 +101937,7 @@
         "end": 1508,
         "sha256": "d14083930cc1d073f83366a3a1c17c9e3f2d9f646f4fe349ad731673a83a4b6f"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "96f21ccf6577bc70",
@@ -102057,7 +102077,7 @@
         "end": 17,
         "sha256": "065e531bc9ab07c47fe91e411d4f919d4b4cf76040bc374f4faa273e34abe92a"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "99283b5c8a783e91",
@@ -102153,11 +102173,11 @@
       "id": "9ad8d7bb2bdc8844",
       "source": {
         "path": "tests/e2e/journeys/support/json-validation-steps.mjs",
-        "start": 51,
-        "end": 51,
+        "start": 50,
+        "end": 50,
         "sha256": "bcc3b0e18c6f1683b03e21c5c4da00d6ce3c3b798ac76ae45491c48188d08e2f"
       },
-      "fileSha256": "d5d2a921996c2959083e5c79ee9665e13a1cf1963ee43707fd8c1d2294bb4e4e"
+      "fileSha256": "865fdb0b1112ab4801d8a041bc8ab008df37101248bc52e0970f4d2edafcd14b"
     },
     {
       "id": "9b06e1bf142fcca9",
@@ -102217,7 +102237,7 @@
         "end": 229,
         "sha256": "5f823815adb2d98f470c9c5dd787135f978b674775097243e27cd89ef50ddc26"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "9bfc30c7f67f1257",
@@ -102587,7 +102607,7 @@
         "end": 1081,
         "sha256": "e2fe89445ea3274ee5bb064b9442e47ebcf872dfb8b5e8797ebcd250de9b6968"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "a3449e334da438ae",
@@ -102697,7 +102717,7 @@
         "end": 2209,
         "sha256": "92075fc63b3aaf190a6c7f2c90dbd7959c9cdf4b446b6c9d1b78a7b2d264892b"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "a4d61c3cb01cc718",
@@ -102707,7 +102727,7 @@
         "end": 2443,
         "sha256": "dc09d548d85eec3ea2b309849ca670b95d1e1bf3d2511e7944616a6d8db5a48f"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "a5088e3a17ea6422",
@@ -102797,7 +102817,7 @@
         "end": 1476,
         "sha256": "5d949c6f44ccb011cafd2c25f2e6d8f69b7f1fa96bd821ca91ccd376f0d5a7fb"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "a7681700b2feb4c6",
@@ -103027,7 +103047,7 @@
         "end": 78,
         "sha256": "031a824a68e15435b5e22e6e7d4c321e30fc9f9e512eae6c392cc8d322faa0aa"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "ac734816131e41b7",
@@ -103037,7 +103057,7 @@
         "end": 2162,
         "sha256": "02ef394e9ab0a085c2b3f77b0147b65cdbe9807dd7244d68f3e7359b0bb95549"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "aca041c2ac1141bf",
@@ -103407,7 +103427,7 @@
         "end": 720,
         "sha256": "da7856e4997669df37cdb09dccf0860fae8bbad39f8201fc45502bd1b78258cb"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "b40691fce4624da4",
@@ -103447,7 +103467,7 @@
         "end": 1470,
         "sha256": "92b966c8d06995d2d904645750c90d78774b107a6cfbc38e5472751223ef07c6"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "b48464cb8bd65f1e",
@@ -103777,7 +103797,7 @@
         "end": 1013,
         "sha256": "a1a4b8ad27356d19ea93c75c48aecfed06efc65ab14b5eec0a4b9c848bad0ff8"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "bbfd8ef7345e41cf",
@@ -103837,7 +103857,7 @@
         "end": 1437,
         "sha256": "7d22d1dc3959edcb41ad5ebd3858e0707d380fb7bff22b134a8d87fa8bc4c60a"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "bd0e699cbf6be371",
@@ -103907,7 +103927,7 @@
         "end": 1246,
         "sha256": "107031f67fad590553ff15a98344fe60f3de02d0230a9459b57f14e5e308d135"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "bf2a1fc020ab52da",
@@ -103917,7 +103937,7 @@
         "end": 490,
         "sha256": "4cdbca79ffce722e0ebba8aaf0119f65daec4d760e62f795c557ef6e3f0d6f83"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "bf31c649317ac382",
@@ -103987,7 +104007,7 @@
         "end": 817,
         "sha256": "9a3dd244ebc15b39b66911ea998023f6c1b13e2fa3c871c92984a9a526b4e392"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "c09405f2def8575f",
@@ -104097,7 +104117,7 @@
         "end": 6,
         "sha256": "417fcef5dee8a5cc03ba818f8b1bd0e4db81a6c254332e61f7922a758d170c46"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "c29991583727685a",
@@ -104127,7 +104147,7 @@
         "end": 5,
         "sha256": "6c82eac82e6fb7ff5a9d49a6d275e72b9e81fa81671c93f44a444a43f9c50b50"
       },
-      "fileSha256": "ff4bee68536b93c69617397045140595c95aef91fe2b71c63a161b4d9451722c"
+      "fileSha256": "40faa2d784679386b37152758f312eb2970e28d843fa21d3cca203fdc3c6a0a0"
     },
     {
       "id": "c2bc6406180511ed",
@@ -104147,7 +104167,7 @@
         "end": 1448,
         "sha256": "482a43612f7d34ad5f1c6fa89d7d328c3d2c06725f6e5dedd45ddfadb6f93542"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "c3871897522af5a7",
@@ -104467,7 +104487,7 @@
         "end": 647,
         "sha256": "51cbe4639b50f9978e8a217c8a7d12b7f5b0fda778fd6e1605660a8a68eed203"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "c98288130864948d",
@@ -104727,7 +104747,7 @@
         "end": 283,
         "sha256": "b77a0fd5a8dfa70a7e09ac8df62c344c59d36e0c4dc7855b3a8e579e0cfac9db"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "cecaa4383928653a",
@@ -104807,7 +104827,7 @@
         "end": 1636,
         "sha256": "ba2a24eafea404c9dc4a8c0b8e8f0e3754041fbfaa637b86cff47bdea5f3b5ea"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "d011055c3a598785",
@@ -104957,7 +104977,7 @@
         "end": 2593,
         "sha256": "4a06bd4d34e6b47da15ec998f433fd73c3a6770266d8d264c514e9f9ab3301cc"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "d2ca545b764ea896",
@@ -104977,7 +104997,7 @@
         "end": 95,
         "sha256": "1597ccab4c60ecc0134cf5ae581c3221c995613d6246d2dadbe95787dff04d49"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "d2d99918ac4d1911",
@@ -105267,7 +105287,7 @@
         "end": 860,
         "sha256": "3b55a861d7ab70e690e06ee018853b6d8c7daee4e8247d7b41d14616febd2f55"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "db1a619df18cf989",
@@ -105277,7 +105297,7 @@
         "end": 1585,
         "sha256": "7e8cd09ae0ba40d6ef454e541b001041f71ffedc2519f74882756ec54fc0573a"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "db28df66bf40e82c",
@@ -105293,11 +105313,11 @@
       "id": "db30086d67624444",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 731,
-        "end": 732,
+        "start": 734,
+        "end": 735,
         "sha256": "3c43143d5111f17c593007d5180295f0b4de92b6732140156f45ad133f09e135"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "dbb136af6da7e865",
@@ -105367,7 +105387,7 @@
         "end": 2234,
         "sha256": "c8bd63c1b906407f638cb20d785d13209ffb9b86bc8b275eea9123f7e0234102"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "dc402e89f5335007",
@@ -105387,7 +105407,7 @@
         "end": 10,
         "sha256": "43d592d63ec1f2c8e108ad1dc5685c0de81d5b8693ed50f933c5b39b3fe9952b"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "dcdb34327d09bd7e",
@@ -105437,7 +105457,7 @@
         "end": 46,
         "sha256": "0068d5cce0636930e75b0b68dea6e58d3b3038f55bfbe48052ed8c2bbfb9445a"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "dd7cf78a61eafa1e",
@@ -105447,7 +105467,7 @@
         "end": 1565,
         "sha256": "a8574b6246171b074d158fed3f2b39faf22f0366692f2da475a5d510697f70ed"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "dd9cd3a1b215fa48",
@@ -105507,7 +105527,7 @@
         "end": 359,
         "sha256": "26d640147312a4cdb76f7806954c66ef691db62baf6e32b64581973544dc3c6a"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "defebb9c2c5583e1",
@@ -105693,11 +105713,11 @@
       "id": "e2964558a0113ed4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 590,
-        "end": 591,
+        "start": 593,
+        "end": 594,
         "sha256": "83ebf925cf6288c9bc988e4db735e508efeac4da9cbc8232fc1597567d079149"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "e2a124d0e7504dc7",
@@ -105723,11 +105743,11 @@
       "id": "e2e6a4833e9c61f3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 532,
-        "end": 533,
+        "start": 535,
+        "end": 536,
         "sha256": "6dc62486f9385265a3aec6a50f8071a9c526238a3138cadf270059b9707faba0"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "e396823008cfe916",
@@ -105877,7 +105897,7 @@
         "end": 2203,
         "sha256": "060795f5faca28cb699308daf745165aa1df1d366f33686d7b62dbe026bad543"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "e5fc0f0289941d82",
@@ -105947,7 +105967,7 @@
         "end": 2145,
         "sha256": "0606b747cf8aaba315f1dc433fadad67263875dea7d68521f7e7dca67439fa51"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "e7fc2203d063a515",
@@ -106093,11 +106113,11 @@
       "id": "eb6a512f275dd8fb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 821,
-        "end": 822,
+        "start": 824,
+        "end": 825,
         "sha256": "8d2e38632f205e5bf65857774dbb5a73cfa747510b7cdf602a6c76618cec774f"
       },
-      "fileSha256": "6b3d5522d62d44d6b0e5a34687fd2e463c3dc38cd842535441d5514117e09386"
+      "fileSha256": "aa8179da66ca139483f917019a5bc6b4d59ee7a1329b889e819fcf5a7f68d7dd"
     },
     {
       "id": "eb6babcde670379e",
@@ -106217,7 +106237,7 @@
         "end": 969,
         "sha256": "dcdd329b9a974e8744c667c4cda651b050663b7ab066bad189e4922baad5707a"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "ecd91e686d573a36",
@@ -106407,7 +106427,7 @@
         "end": 714,
         "sha256": "3718da083ea1c29fb9488420e8574b577f313a68ebcd621687df1b3ba1026925"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "f045ece5520cb972",
@@ -106507,7 +106527,7 @@
         "end": 2504,
         "sha256": "30d097030d879150cf1e532d2ff4134b6e33bb32a418a55859d52aa19ef0fc24"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "f243b0708781f828",
@@ -106607,7 +106627,7 @@
         "end": 2469,
         "sha256": "5f3fc09c9de0bf2cfd4a61cb980feedf1d2171223ef44374736ae9570f35a573"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "f4b0011815a87750",
@@ -106617,7 +106637,7 @@
         "end": 88,
         "sha256": "b14237244267002c15ea1f189bb4e0abb02a733246f044cc44dc6792c49182b1"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "f4b50fceb2297e18",
@@ -106787,7 +106807,7 @@
         "end": 1688,
         "sha256": "7c190a1fbbc3635659f6c87ce73edb77b45bce0bdcb20d191b69d54e78849d2e"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "f99665e61e6a68a8",
@@ -106897,7 +106917,7 @@
         "end": 892,
         "sha256": "b0027b40da255ab426967f59d3861009949ca2b4ac7ac9414f42bc7bf0359984"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "fd45f537a04d3bd5",
@@ -106977,7 +106997,7 @@
         "end": 1867,
         "sha256": "a57bba3acc2f20b4ed25ed6d1cee57a485372733f2e4eb43307c688f82fd1983"
       },
-      "fileSha256": "c33bc777c51d7a14b6e04dfc3b75f923ead050a2409d7477707766623e71d8b0"
+      "fileSha256": "8f05cd240e554662d3feabff4ab3b3d4664de4fc59fd2eaa10361871bcea0a89"
     },
     {
       "id": "ff53a632d52c871e",

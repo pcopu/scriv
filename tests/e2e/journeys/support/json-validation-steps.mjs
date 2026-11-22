@@ -1,10 +1,9 @@
 import assert from 'node:assert/strict';
 import { ScrivSession } from '../../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../../support/saved-projects.mjs';
-import { observePresentedError } from '../../support/presented-error.mjs';
+import { acknowledgeJSONImportError, jsonImportAcknowledgement as acknowledge, observePresentedError } from '../../support/presented-error.mjs';
 
 const sorted = projects => [...projects].sort((left, right) => left.id.localeCompare(right.id));
-const acknowledge = 'acknowledge-json-import-error';
 const acknowledgementUnavailable = /No owned JSON import error can be acknowledged/;
 
 export async function runJSONValidationCases(app, tests, { fresh }) {
@@ -98,9 +97,7 @@ async function runJSONValidationCase(session, test, sample, initial, reuse) {
     if (reuse) {
       await assert.rejects(session.command(acknowledge, { target: 'unrelated' }), acknowledgementUnavailable);
       await observePresentedError(session, test.error);
-      assert.deepEqual(await session.command(acknowledge), { dispatched: true });
-      await session.waitFor(nodes => nodes.some(node => node.identifier === 'workspace-tabs' && node.enabled && node.hittable));
-      assert.deepEqual(await session.command('presented-alerts'), []);
+      await acknowledgeJSONImportError(session);
       await assert.rejects(session.command(acknowledge), acknowledgementUnavailable);
       assert.deepEqual(sorted(await session.command('persisted-projects')), before);
       assert.deepEqual(await session.command('loaded-project'), loadedBefore,

@@ -310,6 +310,7 @@ final class ScrivCLI {
                     "scriptInteractionCountsSchemaVersion": 1,
                     "cloudIsolation": run.publicStatus,
                     "semanticApplicationCommands": ["import-local-image", "import-audio", "import-fountain", "export-fountain", "import-json", "acknowledge-json-import-error"],
+                    "jsonImportAcknowledgementScope": "owned-presentations",
                     "syntheticFixtureCommands": ["stage-package-fixture"],
                     "publicDelegateCommands": ["return", "script-insert", "script-delete-selection"],
                     "publicTextInputCommands": ["delete-backward"],
@@ -399,10 +400,12 @@ final class ScrivCLI {
             return result
         }
         if command == "acknowledge-json-import-error" {
+            let alerts = ownedPresentedAlerts()
             guard Set(request.keys).isSubset(of: ["id", "command"]),
                   let rejection = rejectedJSONImport, let workspace = window.rootViewController as? ScrivWorkspaceController,
                   workspace.viewIfLoaded?.window === window, workspace.store.project.id == rejection.projectID,
-                  workspace.store.acknowledgeCLIImportError(rejection.message, in: workspace) else {
+                  alerts.count == 1, let alert = alerts.first,
+                  workspace.store.acknowledgeCLIImportError(rejection.message, alert: alert) else {
                 throw Failure("No owned JSON import error can be acknowledged")
             }
             rejectedJSONImport = nil

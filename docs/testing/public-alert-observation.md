@@ -15,10 +15,11 @@ changes permissions, queries other applications or reads store error variables.
 
 ## Current route audit
 
-The separate `acknowledge-json-import-error` command recognizes the owning
-workspace's presented error from its rejected `import-json`. It dismisses the
-controller through UIKit and completes the same acknowledgement as OK. This
-route is specific to JSON import errors. `presented-alerts` stays read-only.
+The separate `acknowledge-json-import-error` command finds the rejected
+`import-json` alert among the workspace's owned presentations. The alert must
+be the exact one held by the workspace's error presenter. The command dismisses
+it through UIKit and completes the same acknowledgement as OK.
+`presented-alerts` provides read-only observation.
 See [the JSON validation journey](json-model-validation.md) for the checks
 before and after acknowledgement.
 
