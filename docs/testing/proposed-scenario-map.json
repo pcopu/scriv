@@ -5421,15 +5421,43 @@
       "id": "wave81-4-s054",
       "title": "Edits a picture cue anchor and offset against a script entry",
       "featureId": "storyboard",
-      "state": "needs-extension",
+      "state": "existing",
       "existingPaths": [
+        "tests/e2e/journeys/picture-source.mjs"
+      ],
+      "candidateStartingPoints": [
         "tests/e2e/journeys/picture-coverage.mjs"
       ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+        "symbol": "UIKitStoryboardCard.actions"
+      },
+      "actionIds": ["storyboard-picture-source", "picture-source-entry", "text", "activate", "persisted-projects"],
       "plannedActions": [
-        "Choose a script entry and offset for a picture anchor, adjust the stepper, save or cancel."
+        "Open Picture source from the Storyboard card. Cancel, save an unchanged draft, reject invalid offsets, choose a different source and save a valid offset."
       ],
       "expectedOutcomes": [
         "The chosen anchor and valid offset are applied to the intended cue on save; cancellation leaves the cue unchanged."
+      ]
+    },
+    {
+      "id": "wave81-4-s054-stepper",
+      "title": "Adjusts the Picture source offset with the stepper",
+      "featureId": "storyboard",
+      "state": "needs-extension",
+      "existingPaths": [
+        "tests/e2e/journeys/picture-source.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Images/CueAnchorViewController.swift",
+        "symbol": "CueAnchorViewController.viewDidLoad"
+      },
+      "actionIds": [],
+      "plannedActions": [
+        "Use the offset stepper after selecting an owned script entry, then save the picture source."
+      ],
+      "expectedOutcomes": [
+        "The control adjusts the displayed draft in millisecond steps. The saved anchor and picture position reflect the stepped offset."
       ]
     },
     {
@@ -11527,11 +11555,12 @@
     {
       "rangeId": "02d5b84a79c6b0f2eb56",
       "scenarioIds": [
-        "wave81-4-s054"
+        "wave81-4-s054",
+        "wave81-4-s054-stepper"
       ],
       "rationale": "The proposed scenario exercises edits a picture cue anchor and offset against a script entry.",
       "confidence": "medium",
-      "uncertainty": "Existing family is a navigation lead only; exact witness and branch support require review.",
+      "uncertainty": "The Picture source scenario exercises the source menu, typed offset validation, cancellation and saved placement. The stepper, zero-owned directions and lease failure still need scenarios. Consult runtime measurements for observed lines.",
       "proposedAssertions": [
         "The chosen anchor and valid offset are applied to the intended cue on save; cancellation leaves the cue unchanged."
       ],
@@ -11540,10 +11569,10 @@
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/CueAnchorViewController.swift",
         "start": 1,
-        "end": 92,
-        "fileSha256": "c624efc88620188ea802c183313c91613ae36cf2fa99391a5f1913617ed205c8",
-        "spanSha256": "f8027a2a8854516aef56f3e513692fde11850217658209af6b302728fd42d0f2",
-        "sha256": "c624efc88620188ea802c183313c91613ae36cf2fa99391a5f1913617ed205c8"
+        "end": 95,
+        "fileSha256": "556f3de89e9201dc0e7669919bbb3f073a70d20d49edaaf186c791d46d49a403",
+        "spanSha256": "0343022e9963aff7cb0e2b3f492a9bfad6bf444f975b6447c86374c5a485dec2",
+        "sha256": "556f3de89e9201dc0e7669919bbb3f073a70d20d49edaaf186c791d46d49a403"
       }
     },
     {

@@ -28,6 +28,9 @@ import ScrivCore
             picture.heightAnchor.constraint(equalToConstant: 116).isActive = true; picture.widthAnchor.constraint(equalToConstant: 220).isActive = true; picture.layer.cornerRadius = 8; content.addArrangedSubview(ImageUI.row([picture, ImageUI.spacer()]))
         }
         content.addArrangedSubview(ImageUI.label("Follow this script entry", size: 16, weight: .regular)); source.showsMenuAsPrimaryAction = true; source.configuration?.image = UIImage(systemName: "chevron.down"); source.configuration?.imagePlacement = .trailing; source.contentHorizontalAlignment = .leading; source.configuration?.titleLineBreakMode = .byTruncatingTail; content.addArrangedSubview(source)
+        #if SCRIV_CLI_AUTOMATION
+        source.accessibilityIdentifier = "picture-source-entry"
+        #endif
         let quoteCard = ImageUI.card(quote, padding: 14); quoteCard.backgroundColor = ScrivUIKitTheme.inset; content.addArrangedSubview(quoteCard); content.addArrangedSubview(ImageUI.label("Offset from entry", size: 16, weight: .regular))
         offset.widthAnchor.constraint(equalToConstant: 108).isActive = true; offset.keyboardType = .decimalPad; offset.accessibilityLabel = "Offset from entry, seconds"
         offset.addAction(UIAction { [weak self] _ in
@@ -90,3 +93,26 @@ import ScrivCore
         (entry.kind == .direction ? "Direction" : project.character(entry.characterId)?.name ?? "Dialogue") + " · " + (entry.text.isEmpty ? "Untitled entry" : String(entry.text.prefix(100)))
     }
 }
+
+#if SCRIV_CLI_AUTOMATION
+extension CueAnchorViewController {
+    func cliSourceEntryAction(for button: UIButton, title: String) -> UIAction? {
+        guard button === source, ready, !closed, contextIsCurrent,
+              store.selectedSceneID == original.sceneId,
+              store.project.cues.first(where: { $0.id == original.id }) == original,
+              let content = viewIfLoaded, let window = content.window,
+              button.window === window, button.isDescendant(of: content),
+              button.showsMenuAsPrimaryAction, ScrivSecondaryMenu.menu(of: button) == nil,
+              let menu = button.menu, menu.title.isEmpty, menu.options.isEmpty else { return nil }
+        let entries = store.project.entries(in: original.sceneId)
+        let actions = menu.children.compactMap { $0 as? UIAction }
+        guard menu.children.count == entries.count, actions.count == entries.count,
+              zip(actions, entries).allSatisfy({ action, entry in
+                  action.title == Self.entryLabel(entry, project: store.project) && action.attributes.isEmpty
+                      && action.state == (entry.id == entryID ? .on : .off)
+              }) else { return nil }
+        let matching = actions.filter { $0.title == title }
+        return matching.count == 1 ? matching.first : nil
+    }
+}
+#endif

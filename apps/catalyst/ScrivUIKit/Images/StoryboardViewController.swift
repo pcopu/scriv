@@ -470,7 +470,7 @@ fileprivate struct StoryboardWordReference { let word: TimedWord; let entryID: S
 extension StoryboardViewController {
     /// Read-only witness for the mounted card's captured production menu context.
     /// Never constructs actions or calls a menu handler/model operation.
-    func cliValidatedMergeCue(for button: UIButton) -> ImageCue? {
+    func cliValidatedPictureCue(for button: UIButton) -> (cue: ImageCue, canMerge: Bool)? {
         let currentSignature: [AnyHashable] = [store.navigationContext, store.selectedSceneID,
             store.project.revision, store.sceneCues, store.sceneEntries, store.project.images,
             columns, store.peerTransferStatus]
@@ -487,13 +487,13 @@ extension StoryboardViewController {
               button.accessibilityLabel == "Picture actions for " + card.cue.label,
               button.currentTitle == nil || button.currentTitle == "",
               button.showsMenuAsPrimaryAction,
-              let index = store.sceneCues.firstIndex(where: { $0.id == card.cue.id }),
-              index + 1 < store.sceneCues.count,
-              TimingEngine.canMoveBoundary(store.project, leftCueId: card.cue.id,
-                rightCueId: store.sceneCues[index + 1].id) else { return nil }
+              let index = store.sceneCues.firstIndex(where: { $0.id == card.cue.id }) else { return nil }
         // Signature equality binds all captured neighboring cues and images to
         // the last rebuild. A pending refresh cannot authorize a stale menu.
-        return card.cue
+        let canMerge = index + 1 < store.sceneCues.count
+            && TimingEngine.canMoveBoundary(store.project, leftCueId: card.cue.id,
+                rightCueId: store.sceneCues[index + 1].id)
+        return (card.cue, canMerge)
     }
 }
 #endif
