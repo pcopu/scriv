@@ -36,6 +36,7 @@ export async function main() {
     assert.match(actions.stdout, /tracer app -- test --list/);
     assert.match(actions.stdout, /tracer app -- test tooling/);
     assert.match(actions.stdout, /tracer app -- test compact --archive/);
+    assert.match(actions.stdout, /"command":"relaunch-recover"/);
     assert.equal(run(['app', '--', '--help']).stdout, actions.stdout);
     const help = run(['app', '--', 'test', '--help']).stdout;
     assert.ok(/No app, no macOS or failed provenance means not-run/.test(help) && /--coverage-build-record/.test(help) && /--coverage-startup/.test(help));

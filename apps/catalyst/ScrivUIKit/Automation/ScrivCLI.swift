@@ -306,6 +306,11 @@ final class ScrivCLI {
 #endif
         ownedWindows().forEach { $0.layoutIfNeeded() }
         if command == "capabilities" {
+            var workspace = ["persistent": run.persistent, "resumed": run.resumed]
+            if run.startupRecovery {
+                workspace["startupRecovery"] = true
+                workspace["bootstrapping"] = (window.rootViewController as? ScrivWorkspaceController)?.store.isBootstrapping ?? true
+            }
             var result: [String: Any] = ["protocol": 1, "driver": "UIKit controls", "completeInterfaceParity": false, "imageEvidenceSchemaVersion": 1,
                     "scriptInteractionCountsSchemaVersion": 1,
                     "cloudIsolation": run.publicStatus,
@@ -317,7 +322,7 @@ final class ScrivCLI {
                     "semanticMenuActionScopes": ["script-zoom", "layers-direction-duration", "audio-anchor", "layers-word-timing", "image-inspector-prompt-disclosure", "script-scenes", "script-entries", "storyboard-merge", "storyboard-picture-source", "picture-source-entry", "storyboard-remove-placement", "character-portrait-options", "character-delete", "workspace-discussion", "workspace-panels"],
                     "runID": run.runID.uuidString.lowercased(),
                     "sessionID": run.sessionID.uuidString.lowercased(),
-                    "workspace": ["persistent": run.persistent, "resumed": run.resumed],
+                    "workspace": workspace,
                     "verificationRoot": run.root.path,
                     "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "import-json", "acknowledge-json-import-error"]] as [String: Any]
             if run.approvedOrigin != nil {

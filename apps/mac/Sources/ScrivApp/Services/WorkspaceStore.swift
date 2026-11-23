@@ -572,7 +572,6 @@ final class WorkspaceStore: ObservableObject {
         return .shared
     }
 #endif
-    private var bootstrapTask: Task<Void, Never>?
     private var peerTask: Task<Void, Never>?
     private var peerProjectId: String?
     private struct LocalAssetStamp: Equatable { let modified: Date; let size: Int; let hash: String }
@@ -685,7 +684,7 @@ final class WorkspaceStore: ObservableObject {
         peerMedia.onTransferError = { [weak self] peer, hash, error in self?.peerTransferFailed(peer:peer,hash:hash,error:error) }
         peerMedia.onError = { [weak self] error in self?.peerTransferStatus = error.localizedDescription }
         peerMedia.$status.sink { [weak self] value in self?.peerTransferStatus = value }.store(in:&cancellables)
-        bootstrapTask = Task { [weak self] in await self?.bootstrap() }
+        Task { [weak self] in await self?.bootstrap() }
         if !verificationMode {
             generationMonitor = Task { [weak self] in
                 while !Task.isCancelled {
@@ -711,7 +710,13 @@ final class WorkspaceStore: ObservableObject {
 #if targetEnvironment(macCatalyst)
         startupTrace.record(.bootstrapBegin)
         defer { isBootstrapping = false; startupTrace.record(.bootstrapEnd) }
-        if skipStartupRecovery {
+#if SCRIV_CLI_AUTOMATION
+        let recoveryRun = try? ScrivCLIRunCapability.requirePrepared()
+        let recoverOwnedPending = recoveryRun?.startupRecovery == true
+#else
+        let recoverOwnedPending = false
+#endif
+        if skipStartupRecovery && !recoverOwnedPending {
             startupTrace.record(.verificationBootstrapSkipped)
             // Isolated verification only: start playback on launch so the running
             // app's playback cost can be measured without synthetic input events.
@@ -736,7 +741,11 @@ final class WorkspaceStore: ObservableObject {
             let journal = try pendingSaveJournal()
             let pending = try journal.allPackages()
             startupTrace.record(.pendingInventoryEnd)
-            if let path = startupDefaults.string(forKey:"lastProjectURL"),
+#if SCRIV_CLI_AUTOMATION
+            if let recoveryRun, recoverOwnedPending { try recoveryRun.validateStartupRecoveryPackages(pending) }
+#endif
+            let lastOpenedPath = recoverOwnedPending ? nil : startupDefaults.string(forKey:"lastProjectURL")
+            if let path = lastOpenedPath,
                FileManager.default.fileExists(atPath:path) || pending.contains(where: { $0.path == path }) {
                 try await open(URL(fileURLWithPath:path))
             } else if let package = try pending.first(where: { url in
@@ -744,7 +753,7 @@ final class WorkspaceStore: ObservableObject {
                 return pendingScopeIsAuthorized(record.scope)
             }) {
                 try await open(package)
-            } else {
+            } else if !recoverOwnedPending {
                 guard let package = projectURL else { throw ScrivError.invalid("The initial project has no package location.") }
                 try persistInitialProject(project,at:package)
                 queueSave(project,label:"Create project")
@@ -756,6 +765,10 @@ final class WorkspaceStore: ObservableObject {
             return
         }
         isBootstrapping = false
+        if recoverOwnedPending {
+            refreshLocalProjects()
+            return
+        }
 #else
         if verificationMode { return }
         if let path = ScrivPreferences.standard.string(forKey:"lastProjectURL"), FileManager.default.fileExists(atPath:path) {
@@ -2461,14 +2474,6 @@ final class WorkspaceStore: ObservableObject {
         var value: [String:JSONValue] = ["itemId":.string(itemId)]
         if let imageVersionId { value["imageVersionId"] = .string(imageVersionId) }
         if discussionAttachments.count < 8, !discussionAttachments.contains(.object(value)) { discussionAttachments.append(.object(value)) }
-    }
-    /// Deterministic local sample used by the native visual-verification runner.
-    func prepareSampleForScreenshot() async {
-        await bootstrapTask?.value
-        await flushPendingSaves()
-        install(.example())
-        do { try await installSampleImages(); await flushPendingSaves() } catch { errorMessage = error.localizedDescription }
-        selectedEntryID = "line-08"; selectedCueID = "cue-08c"; playheadMs = 29_400
     }
     private func installSampleImages() async throws {
         guard let package = projectURL, project.images.isEmpty else { return }

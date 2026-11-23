@@ -84,9 +84,9 @@ export class ScrivSession {
       if (options.persistent || cloudFixtureOrigin !== undefined || !origin || Number(origin[1]) < 1024
           || Number(origin[1]) > 65535 || origin[0] !== codexAnalysisFixtureOrigin) throw new Error('Invalid session options');
     }
-    return ScrivSession.#launch(app, options.persistent === true, null, cloudFixtureOrigin, codexAnalysisFixtureOrigin);
+    return ScrivSession.#launch(app, options.persistent === true, null, { cloudFixtureOrigin, codexAnalysisFixtureOrigin });
   }
-  static async #launch(app, persistent, workspace, cloudFixtureOrigin, codexAnalysisFixtureOrigin) {
+  static async #launch(app, persistent, workspace, { cloudFixtureOrigin, codexAnalysisFixtureOrigin, recoverPending = false } = {}) {
     if (process.platform !== 'darwin') throw new Error('Actual Scriv E2E requires macOS and an automation-enabled Catalyst build. No fallback driver is used.');
     const bundle = await realpath(app);
     if (!bundle.endsWith('.app')) throw new Error('Pass the automation .app bundle');
@@ -107,6 +107,7 @@ export class ScrivSession {
     if (codexAnalysisFixtureOrigin) env.SCRIV_CLI_CODEX_ANALYSIS_FIXTURE = codexAnalysisFixtureOrigin;
     for (const key of ['SCRIV_CLI_RESUME', 'SCRIV_CLI_RESUME_FD', 'SCRIV_CLI_WORKSPACE', 'SCRIV_CLI_PERSISTENT']) delete env[key];
     const arguments_ = ['--screenshots', '--scriv-cli', ...(persistent ? [workspace ? '--scriv-cli-resume' : '--scriv-cli-persistent'] : [])];
+    if (recoverPending) arguments_.push('--scriv-cli-recover-pending');
     if (process.env.SCRIV_E2E_COVERAGE_CONTEXT && process.env.SCRIV_E2E_COVERAGE_STARTUP === '1') arguments_.push('--scriv-cli-coverage-startup');
     const grant = cloudFixtureOrigin ? await openCloudFixtureGrant(runID, cloudFixtureOrigin) : null;
     if (grant) arguments_.push('--scriv-cli-cloud-fixture');
@@ -124,12 +125,24 @@ export class ScrivSession {
           await Promise.all([grant.handle.close(), grant.reader.close(), session ? undefined : grant.writer.close()]);
         }
       }
-      const capabilities = await session.command('capabilities', {}, 30000);
+      let capabilities = await session.command('capabilities', {}, 30000);
       const root = capabilities.verificationRoot;
       if (capabilities.runID !== runID || typeof root !== 'string' || !isAbsolute(root)
           || basename(root) !== `ScrivVerification-CLI-${runID}`) throw new Error('App did not confirm this isolated run');
       if (capabilities.sessionID !== sessionID || capabilities.workspace?.persistent !== persistent
           || capabilities.workspace?.resumed !== Boolean(workspace)) throw new Error('App did not confirm this process and workspace mode');
+      if (recoverPending) {
+        const deadline = Date.now() + 30000;
+        while (capabilities.workspace?.startupRecovery === true && capabilities.workspace.bootstrapping === true
+            && Date.now() < deadline) {
+          await new Promise(resolve => setTimeout(resolve, 25));
+          capabilities = await session.command('capabilities', {}, Math.max(1, deadline - Date.now()));
+        }
+        // Startup snapshots must include completed recovery before any scenario input.
+        if (capabilities.workspace?.startupRecovery !== true || capabilities.workspace.bootstrapping !== false) {
+          throw new Error('App did not confirm completion of owned startup recovery');
+        }
+      }
       if (grant && capabilities.cloudIsolation?.network !== 'loopback-only') throw new Error('App did not confirm isolated Worker access');
       const info = await lstat(root);
       if (!info.isDirectory() || info.isSymbolicLink()) throw new Error('Isolated app root is not a real directory');
@@ -198,7 +211,9 @@ export class ScrivSession {
     })();
     return this.#closing;
   }
-  async relaunch(...args) {
+  relaunch(...args) { return this.#relaunch(args, false); }
+  relaunchRecoveringPendingSaves(...args) { return this.#relaunch(args, true); }
+  async #relaunch(args, recoverPending) {
     if (args.length || !this.#workspace || this.#closed || this.#stopping || this.#pending.size || this.#uncertain) throw new Error('Relaunch requires a live persistent session with no arguments, pending commands or uncertain outcomes');
     this.#stopping = true; this.#relaunching = true;
     const workspace = this.#workspace; this.#workspace = null;
@@ -208,7 +223,7 @@ export class ScrivSession {
       this.#closing ??= this.#closeOnce(); await this.#closing;
       if (!this.#exited) throw new Error('Prior app exit was not confirmed');
       await validateOwnedWorkspace(workspace);
-      return await ScrivSession.#launch(workspace.bundle, true, workspace);
+      return await ScrivSession.#launch(workspace.bundle, true, workspace, { recoverPending });
     } catch (error) { await workspace.handle.close(); throw error; }
     finally { this.#relaunching = false; }
   }
@@ -259,7 +274,7 @@ async function main(args = process.argv.slice(2)) {
   }
   const app = args[0];
   if (!app || args.includes('--help')) {
-    console.log('Scriv CLI through Tracer\n  tracer actions\n  tracer app -- test --list\n  tracer app -- test --scenario ID --group NAME --app /path/to/ScrivAutomation.app\n  tracer app -- test [--scenario ID ...] --app /path/to/ScrivAutomation.app\n  tracer app -- test --help\n  tracer app -- test tooling\n  tracer app -- test provenance\n  tracer app -- test compact --archive /absolute/archived-runs [--apply]\n  ' + serviceUsage + '\n  tracer app -- /path/to/ScrivAutomation.app [--persistent-workspace]\n  tracer app -- workspace inspect /absolute/owned/root\n\nPersistent mode permits the host JSON command {"command":"relaunch"} with no arguments. It retains only this process-owned synthetic workspace; no path-based resume or reset exists. workspace inspect is read-only and never grants resume authority.\n\nThe last form preserves JSON-line control: {"command":"snapshot"} or {"command":"select","target":"workspace-tabs","index":1}. Results are JSON lines.\nCharacter portraits use menu-action with scope/target character-portrait-options, exact action title, characterID and imageID. The supported operation is stored public menu-action dispatch, not a native menu click or alert action.\nNative tests/control require a real automation-enabled Catalyst build on macOS. Tooling journeys check the public CLI, not native app behavior.\nDirect compatibility: node cli/scriv.mjs /path/to/ScrivAutomation.app');
+    console.log('Scriv CLI through Tracer\n  tracer actions\n  tracer app -- test --list\n  tracer app -- test --scenario ID --group NAME --app /path/to/ScrivAutomation.app\n  tracer app -- test [--scenario ID ...] --app /path/to/ScrivAutomation.app\n  tracer app -- test --help\n  tracer app -- test tooling\n  tracer app -- test provenance\n  tracer app -- test compact --archive /absolute/archived-runs [--apply]\n  ' + serviceUsage + '\n  tracer app -- /path/to/ScrivAutomation.app [--persistent-workspace]\n  tracer app -- workspace inspect /absolute/owned/root\n\nPersistent mode permits the host JSON commands {"command":"relaunch"} and {"command":"relaunch-recover"} with no arguments. Recovery checks the retained workspace for pending local saves at startup. Both commands use only this process-owned synthetic workspace. workspace inspect is read-only and never grants resume authority.\n\nThe last form preserves JSON-line control: {"command":"snapshot"} or {"command":"select","target":"workspace-tabs","index":1}. Results are JSON lines.\nCharacter portraits use menu-action with scope/target character-portrait-options, exact action title, characterID and imageID. The supported operation is stored public menu-action dispatch, not a native menu click or alert action.\nNative tests/control require a real automation-enabled Catalyst build on macOS. Tooling journeys check the public CLI, not native app behavior.\nDirect compatibility: node cli/scriv.mjs /path/to/ScrivAutomation.app');
     return app ? 0 : 2;
   }
   if (!(args.length === 1 || args.length === 2 && args[1] === '--persistent-workspace')
@@ -270,9 +285,9 @@ async function main(args = process.argv.slice(2)) {
     for await (const line of createInterface({ input: process.stdin })) {
       try {
         const { command, ...parameters } = JSON.parse(line);
-        if (command === 'relaunch') {
+        if (command === 'relaunch' || command === 'relaunch-recover') {
           if (Object.keys(parameters).length) throw new Error('Relaunch accepts no path, token or other parameters');
-          session = await session.relaunch();
+          session = command === 'relaunch-recover' ? await session.relaunchRecoveringPendingSaves() : await session.relaunch();
           console.log(JSON.stringify({ ok: true, result: await session.command('capabilities') }));
         } else console.log(JSON.stringify({ ok: true, result: await session.command(command, parameters) }));
       } catch (error) { console.log(JSON.stringify({ ok: false, error: error.message })); process.exitCode = 1; }

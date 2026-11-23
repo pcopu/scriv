@@ -16,10 +16,12 @@ final class ScrivCLIRunCapability {
     private static let persistentMarker = ".scriv-cli-persistent"
     private static let sessionLock = ".scriv-cli-session.lock"
     private static let cloudFixtureFlag = "--scriv-cli-cloud-fixture"
+    private static let startupRecoveryFlag = "--scriv-cli-recover-pending"
     let runID: UUID
     let sessionID: UUID
     let persistent: Bool
     let resumed: Bool
+    let startupRecovery: Bool
     let root: URL
     let approvedOrigin: URL?
     private let namedRoot: URL
@@ -30,12 +32,12 @@ final class ScrivCLIRunCapability {
     private var fixtureMailboxFD: Int32
     private var scopes: [String: Int32] = [:]
 
-    private init(runID: UUID, sessionID: UUID, persistent: Bool, resumed: Bool,
+    private init(runID: UUID, sessionID: UUID, persistent: Bool, resumed: Bool, startupRecovery: Bool,
                  root: URL, namedRoot: URL, rootFD: Int32, outboxFD: Int32,
                  lockFD: Int32, markerFD: Int32, approvedOrigin: URL?, fixtureMailboxFD: Int32) throws {
         if let approvedOrigin { try Self.validateLoopbackOrigin(approvedOrigin) }
         self.runID = runID; self.sessionID = sessionID
-        self.persistent = persistent; self.resumed = resumed
+        self.persistent = persistent; self.resumed = resumed; self.startupRecovery = startupRecovery
         self.root = root; self.namedRoot = namedRoot
         self.rootFD = rootFD; self.outboxFD = outboxFD
         self.lockFD = lockFD; self.markerFD = markerFD; self.approvedOrigin = approvedOrigin
@@ -52,8 +54,9 @@ final class ScrivCLIRunCapability {
         let freshPersistent = arguments.contains("--scriv-cli-persistent")
         let resumed = arguments.contains("--scriv-cli-resume")
         let cloudFixture = arguments.contains(cloudFixtureFlag)
+        let startupRecovery = arguments.contains(startupRecoveryFlag)
         guard arguments.contains("--scriv-cli") else {
-            guard !freshPersistent, !resumed, !cloudFixture else { throw Failure() }
+            guard !freshPersistent, !resumed, !cloudFixture, !startupRecovery else { throw Failure() }
             return
         }
         guard prepared == nil, arguments.contains("--screenshots"),
@@ -68,7 +71,7 @@ final class ScrivCLIRunCapability {
         }
         guard !resumed || sessionID != runID else { throw Failure() }
         let persistent = freshPersistent || resumed
-        guard !cloudFixture || (!persistent && sessionID == runID) else { throw Failure() }
+        guard !cloudFixture || (!persistent && sessionID == runID), !startupRecovery || resumed else { throw Failure() }
         let approvedOrigin = cloudFixture ? try readCloudFixtureOrigin(3, runID: runID) : nil
 
         // Duplicate FD3 before any open can occupy that descriptor. Never lock
@@ -139,6 +142,7 @@ final class ScrivCLIRunCapability {
             try validateMarker(markerFD, parent: rootFD, runID: runID)
         }
         let run = try ScrivCLIRunCapability(runID: runID, sessionID: sessionID, persistent: persistent, resumed: resumed,
+                                           startupRecovery: startupRecovery,
                                            root: root, namedRoot: namedRoot, rootFD: rootFD, outboxFD: outboxFD,
                                            lockFD: lockFD, markerFD: markerFD, approvedOrigin: approvedOrigin,
                                            fixtureMailboxFD: fixtureMailboxFD)
@@ -279,6 +283,7 @@ final class ScrivCLIRunCapability {
               CommandLine.arguments.contains("--scriv-cli-resume") == resumed,
               CommandLine.arguments.contains("--scriv-cli-persistent") == (persistent && !resumed),
               CommandLine.arguments.contains(Self.cloudFixtureFlag) == (approvedOrigin != nil),
+              CommandLine.arguments.contains(Self.startupRecoveryFlag) == startupRecovery,
               let path = getenv("SCRIV_VERIFICATION_ROOT"), String(cString: path) == root.path,
               namedRoot.resolvingSymlinksInPath() == namedRoot,
               root.resolvingSymlinksInPath() == namedRoot else { throw Failure() }
@@ -301,6 +306,23 @@ final class ScrivCLIRunCapability {
         guard fstat(descriptor, &candidate) == 0, fstat(rootFD, &retained) == 0,
               Self.privateDirectory(candidate), Self.privateDirectory(retained),
               Self.sameFile(candidate, retained) else { throw Failure() }
+    }
+    func validateStartupRecoveryPackages(_ packages: [URL]) throws {
+        try validate()
+        let projects = root.appendingPathComponent("Projects", isDirectory: true)
+        let canonical = namedRoot.appendingPathComponent("Projects", isDirectory: true)
+        guard startupRecovery, resumed, approvedOrigin == nil,
+              projects.resolvingSymlinksInPath().path == canonical.path else { throw Failure() }
+        // A journal can describe native bookmarks or a package that has never
+        // been published. Recovery here may only open immediate UUID packages
+        // belonging to this already validated synthetic workspace.
+        for package in packages {
+            guard package.isFileURL, package.pathExtension == "scriv",
+                  UUID(uuidString: package.deletingPathExtension().lastPathComponent) != nil,
+                  package.deletingLastPathComponent().path == projects.path,
+                  package.resolvingSymlinksInPath().path == canonical.appendingPathComponent(package.lastPathComponent).path
+            else { throw Failure() }
+        }
     }
     var publicStatus: [String: Any] {
         ["credentials": "process-memory", "outbox": "private-run-root", "network": approvedOrigin == nil ? "disabled" : "loopback-only",
