@@ -142,9 +142,12 @@ profiles, LCOV, session/interval/export records and successful import receipts.
 The collector exports line counters only. The raw profiles can regenerate
 function and branch data separately. The analysis copy holds only source files
 named by the exports, with their original build hashes.
-On macOS the collector uses transparent filesystem compression when it reduces
-allocated disk blocks and preserves the exact LCOV bytes and permissions.
-The `.lcov` paths are readable by Tracer and LLVM tooling as ordinary files.
+On macOS the collector uses transparent filesystem compression for the raw and
+indexed profiles, LCOV exports and final Tracer dataset when it reduces
+allocated blocks and preserves exact bytes and permissions. Tracer and LLVM
+can read the original paths directly. The capture receipt records the number of
+allocated bytes saved. Use one retained pinned checkout and build for all
+compatible runs and keep the per-run analysis roots limited to measured files.
 Both capture.json and the runner's evidence.json track phases/outcomes. The
 measurement dataset stores only Tracer's validated counters and provenance, not
 the raw profile/export files. Do not publish raw captures or private evidence
@@ -161,6 +164,19 @@ identity. To inspect results, use the recorded canonical root:
 tracer --root EXTERNAL_ANALYSIS_ROOT measure report --json
 tracer --root EXTERNAL_ANALYSIS_ROOT measure check --json
 ```
+
+For existing archived Scriv snapshots on macOS, preview the large duplicated
+coverage maps that can be compressed, then apply to the same archive while no
+process is writing it:
+
+```sh
+tracer app -- test compact --archive /absolute/archived-runs
+tracer app -- test compact --archive /absolute/archived-runs --apply
+```
+
+This preserves paths, bytes and permissions. The result reports how many files
+were compacted and the reduction in allocated blocks. Check filesystem free
+space separately because archived snapshots can already share blocks.
 
 Each invocation has its own create-only analysis root and dataset. Multiple
 sessions within that invocation import separate intervals into that dataset.

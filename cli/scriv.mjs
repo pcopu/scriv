@@ -6,8 +6,8 @@ import { realpath, stat, lstat, mkdtemp, open, unlink, rmdir, writeFile } from '
 import { randomUUID, createHash } from 'node:crypto';
 import { constants, createReadStream } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { basename, isAbsolute, join, resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { retainOwnedWorkspace, validateOwnedWorkspace, inspectOwnedWorkspace } from './owned-workspace.mjs';
 
 async function executableDigest(path) {
@@ -232,6 +232,11 @@ async function main(args = process.argv.slice(2)) {
     console.log(JSON.stringify(await inspectOwnedWorkspace(args[2]))); return 0;
   }
   if (args[0] === 'test') {
+    if (args[1] === 'compact') {
+      const { compactArchive } = await import('../scripts/compact-cli-archive.mjs');
+      console.log(JSON.stringify(await compactArchive(args.slice(2), resolve(dirname(fileURLToPath(import.meta.url)), '..'))));
+      return 0;
+    }
     if (args[1] === 'provenance') {
       if (process.env.SCRIV_CLI_TOOLING_ACTIVE === '1' || args.length !== 2) throw new Error('Invalid or nested provenance journey');
       const { main } = await import('../tests/tracer/source-provenance-journey.mjs');
@@ -254,7 +259,7 @@ async function main(args = process.argv.slice(2)) {
   }
   const app = args[0];
   if (!app || args.includes('--help')) {
-    console.log('Scriv CLI through Tracer\n  tracer actions\n  tracer app -- test --list\n  tracer app -- test [--scenario ID ...] --app /path/to/ScrivAutomation.app\n  tracer app -- test --help\n  tracer app -- test tooling\n  tracer app -- test provenance\n  ' + serviceUsage + '\n  tracer app -- /path/to/ScrivAutomation.app [--persistent-workspace]\n  tracer app -- workspace inspect /absolute/owned/root\n\nPersistent mode permits the host JSON command {"command":"relaunch"} with no arguments. It retains only this process-owned synthetic workspace; no path-based resume or reset exists. workspace inspect is read-only and never grants resume authority.\n\nThe last form preserves JSON-line control: {"command":"snapshot"} or {"command":"select","target":"workspace-tabs","index":1}. Results are JSON lines.\nCharacter portraits use menu-action with scope/target character-portrait-options, exact action title, characterID and imageID. The supported operation is stored public menu-action dispatch, not a native menu click or alert action.\nNative tests/control require a real automation-enabled Catalyst build on macOS. Tooling journeys check the public CLI, not native app behavior.\nDirect compatibility: node cli/scriv.mjs /path/to/ScrivAutomation.app');
+    console.log('Scriv CLI through Tracer\n  tracer actions\n  tracer app -- test --list\n  tracer app -- test [--scenario ID ...] --app /path/to/ScrivAutomation.app\n  tracer app -- test --help\n  tracer app -- test tooling\n  tracer app -- test provenance\n  tracer app -- test compact --archive /absolute/archived-runs [--apply]\n  ' + serviceUsage + '\n  tracer app -- /path/to/ScrivAutomation.app [--persistent-workspace]\n  tracer app -- workspace inspect /absolute/owned/root\n\nPersistent mode permits the host JSON command {"command":"relaunch"} with no arguments. It retains only this process-owned synthetic workspace; no path-based resume or reset exists. workspace inspect is read-only and never grants resume authority.\n\nThe last form preserves JSON-line control: {"command":"snapshot"} or {"command":"select","target":"workspace-tabs","index":1}. Results are JSON lines.\nCharacter portraits use menu-action with scope/target character-portrait-options, exact action title, characterID and imageID. The supported operation is stored public menu-action dispatch, not a native menu click or alert action.\nNative tests/control require a real automation-enabled Catalyst build on macOS. Tooling journeys check the public CLI, not native app behavior.\nDirect compatibility: node cli/scriv.mjs /path/to/ScrivAutomation.app');
     return app ? 0 : 2;
   }
   if (!(args.length === 1 || args.length === 2 && args[1] === '--persistent-workspace')

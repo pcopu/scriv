@@ -3,10 +3,11 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { createHash, randomUUID } from 'node:crypto';
 import { constants } from 'node:fs';
-import { access, lstat, realpath, readFile, writeFile, mkdir, mkdtemp, readdir, rename, rm } from 'node:fs/promises';
+import { access, lstat, realpath, readFile, writeFile, mkdir, readdir, rename } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { hashFile, probeIdentity, verifyCoverageContextSources } from '../cli/coverage-session.mjs';
+import { compactFile } from './compact-cli-archive.mjs';
 import { prepareAnalysisRoot } from './prepare-coverage-analysis.mjs';
 import { safeSourcePath, verifySourceManifest } from './export-cli-source-manifest.mjs';
 
@@ -22,26 +23,6 @@ async function input(path, maximum = 8 * 1024 * 1024) {
   return readFile(path);
 }
 async function write(path, data) { await writeFile(path, data, { flag: 'wx', mode: 0o600 }); }
-async function writeLcov(path, bytes) {
-  await write(path, bytes);
-  if (process.platform !== 'darwin') return;
-  let staging;
-  try {
-    staging = await mkdtemp(join(dirname(path), '.lcov-'));
-    const candidate = join(staging, basename(path));
-    await execute('/usr/bin/ditto', ['--hfsCompression', path, candidate], { timeout: 30000, maxBuffer: 65536 });
-    const compressed = await lstat(candidate), original = await lstat(path);
-    // Transparent filesystem compression keeps the import path and hashed bytes.
-    if (compressed.blocks < original.blocks && compressed.mode === original.mode
-      && (await input(candidate, bytes.length)).equals(bytes)) {
-      await rename(candidate, path);
-    }
-  } catch {
-    // The original export remains available if compression is unavailable.
-  } finally {
-    if (staging) await rm(staging, { recursive: true, force: true }).catch(() => {});
-  }
-}
 export async function saveCoverageStatus(capture) {
   const temporary = join(capture.directory, 'capture.next.json');
   await write(temporary, JSON.stringify(capture.report, null, 2) + '\n');
@@ -103,7 +84,7 @@ async function verifyTools(capture) {
 // including all app resources, packages and build scripts, must remain exact.
 const hostProbePaths = new Set(['cli/scriv.mjs', 'cli/owned-workspace.mjs', 'cli/scenario-restrictions.mjs',
   'cli/coverage-profile.mjs', 'cli/coverage-session.mjs', 'scripts/run-cli-e2e.mjs', 'scripts/run-service-journeys.mjs',
-  'scripts/collect-cli-coverage.mjs', 'scripts/export-cli-source-manifest.mjs', 'scripts/prepare-coverage-analysis.mjs']);
+  'scripts/collect-cli-coverage.mjs', 'scripts/compact-cli-archive.mjs', 'scripts/export-cli-source-manifest.mjs', 'scripts/prepare-coverage-analysis.mjs']);
 function hostOnlyChange(path) {
   return path === 'AGENTS.md' || hostProbePaths.has(path)
     || ['tests/e2e/', 'tests/tracer/', 'cloud/tests-e2e/', 'updates/tests-e2e/', 'docs/'].some(prefix => path.startsWith(prefix));
@@ -236,6 +217,7 @@ export async function exportCoverage(capture, scenarios) {
   required(new Set(records.map(row => row.record.slot)).size === records.length);
   for (const scenario of scenarios.filter(item => item.startedAt)) required(records.some(row => row.scenario === scenario));
   const measuredPaths = new Set();
+  capture.report.allocatedBytesSaved = 0;
   for (const { directory, record, scenario } of records.sort((a, b) => a.record.slot - b.record.slot)) {
     const interval = { runID: record.runID, workspaceID: record.workspaceID, scenario: record.scenario,
       scenarioStatus: scenario.status, status: 'exporting', imported: false, ...(capture.startup && { scope: 'startup' }) };
@@ -256,7 +238,9 @@ export async function exportCoverage(capture, scenarios) {
       const result = await execute(capture.cov.executable, ['export', capture.executable, `-instr-profile=${indexed}`,
         '-format=lcov', '-skip-functions', '-skip-branches'], { timeout: 120000, maxBuffer: 64 * 1024 * 1024, encoding: 'buffer' });
       required(result.stdout.length > 0);
-      await writeLcov(join(directory, `${phase}.lcov`), result.stdout);
+      const lcov = join(directory, `${phase}.lcov`);
+      await write(lcov, result.stdout);
+      for (const path of [raw, indexed, lcov]) capture.report.allocatedBytesSaved += await compactFile(path);
       for (const [, source] of result.stdout.toString('utf8').matchAll(/^SF:([^\r\n]+)\r?$/gm)) {
         const path = source.slice(coveragePrefix.length);
         required(source.startsWith(coveragePrefix) && safeSourcePath(path));
@@ -322,6 +306,7 @@ export async function importCoverage(capture) {
   await verifyCaptureSources(capture);
   await verifySourceManifest(capture.sourceProvenance.buildSourceRoot, join(capture.directory, 'build-sources.json'), capture.sourceManifestSHA256);
   await verifySourceManifest(capture.sourceProvenance.journeySourceRoot, join(capture.directory, 'journey-sources.json'), capture.journeySourceManifestSHA256);
+  capture.report.allocatedBytesSaved += await compactFile(capture.analysis.dataset);
   capture.report.status = 'imported';
   await saveCoverageStatus(capture);
 }

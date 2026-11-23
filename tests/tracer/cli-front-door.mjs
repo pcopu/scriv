@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { assertServiceDiscovery } from './service-discovery.mjs';
 import { spawnSync } from 'node:child_process';
-import { mkdtemp, realpath, readFile, readdir, mkdir, writeFile, symlink, link, chmod } from 'node:fs/promises';
+import { mkdtemp, realpath, readFile, readdir, mkdir, writeFile, symlink, link, chmod, lstat, rm } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
@@ -35,6 +35,7 @@ export async function main() {
     const actions = run(['actions']);
     assert.match(actions.stdout, /tracer app -- test --list/);
     assert.match(actions.stdout, /tracer app -- test tooling/);
+    assert.match(actions.stdout, /tracer app -- test compact --archive/);
     assert.equal(run(['app', '--', '--help']).stdout, actions.stdout);
     const help = run(['app', '--', 'test', '--help']).stdout;
     assert.ok(/No app, no macOS or failed provenance means not-run/.test(help) && /--coverage-build-record/.test(help) && /--coverage-startup/.test(help));
@@ -58,6 +59,45 @@ export async function main() {
     const direct = spawnSync(process.execPath, ['scripts/run-cli-e2e.mjs', '--list'], { cwd: root, env, encoding: 'utf8', timeout: 30000 });
     assert.equal(direct.status, 0);
     assert.deepEqual(JSON.parse(direct.stdout), catalog);
+  });
+  await journey('compact archived coverage maps without changing readable evidence', async () => {
+    const archive = join(output, 'archive');
+    const snapshot = join(archive, 'batch', 'source');
+    const maps = join(snapshot, 'docs', 'testing');
+    await mkdir(maps, { recursive: true, mode: 0o700 });
+    await writeFile(join(snapshot, 'package.json'), '{"name":"scriv"}');
+    await writeFile(join(snapshot, 'tracer.json'), '{}');
+    const bytes = Buffer.from(JSON.stringify({ observations: 'a retained source assertion\n'.repeat(24000) }));
+    const report = join(maps, 'code-e2e-links.json');
+    const outside = join(output, 'outside.json');
+    await writeFile(report, bytes, { mode: 0o600 });
+    await writeFile(outside, bytes);
+    await symlink(outside, join(maps, 'assertion-journey-map-native.json'));
+    await symlink(snapshot, join(archive, 'linked-snapshot'));
+    await link(outside, join(maps, 'assertion-journey-map-services.json'));
+    await writeFile(join(maps, 'unrelated.json'), bytes);
+    const before = await lstat(report), args = ['app', '--', 'test', 'compact', '--archive', archive];
+    const preview = JSON.parse(run(args).stdout);
+    assert.equal(preview.mode, 'preview');
+    assert.deepEqual(preview.candidates, ['batch/source/docs/testing/code-e2e-links.json']);
+    assert.equal(preview.filesCompacted, 0);
+    assert.equal((await lstat(report)).ino, before.ino);
+    run(['app', '--', 'test', 'compact', '--archive', root, '--apply'], 2);
+    run([...args, '--archive', archive], 2);
+    if (process.platform === 'darwin') {
+      const applied = JSON.parse(run([...args, '--apply']).stdout);
+      const after = await lstat(report);
+      assert.equal(applied.mode, 'apply');
+      assert.equal(applied.filesCompacted, Number(after.blocks < before.blocks));
+      assert.equal(applied.allocatedBytesSaved, (before.blocks - after.blocks) * 512);
+      assert.equal(after.mode, before.mode);
+      assert.equal(Math.trunc(after.mtimeMs), Math.trunc(before.mtimeMs));
+      assert.deepEqual(await readFile(report), bytes);
+      assert.deepEqual(await readFile(outside), bytes);
+      assert.equal(JSON.parse(run([...args, '--apply']).stdout).filesCompacted, 0);
+    } else run([...args, '--apply'], 2);
+    await rm(archive, { recursive: true });
+    await rm(outside);
   });
   await journey('select exact IDs in stable native-runner order', () => {
     const ids = [catalog.scenarios.at(-1).id, catalog.scenarios[0].id];
