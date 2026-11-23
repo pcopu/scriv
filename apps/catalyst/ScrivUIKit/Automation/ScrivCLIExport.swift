@@ -1,9 +1,9 @@
 #if SCRIV_CLI_AUTOMATION
 import UIKit
 import Darwin
+import ScrivCore
 
-/// Captures the actual application's synchronous Fountain-file handoff. It
-/// does not call a serializer, choose an external destination or copy a file.
+/// Observes the files produced by Scriv at the actual export handoff.
 @MainActor
 enum ScrivCLIExport {
     private struct Failure: LocalizedError {
@@ -14,6 +14,89 @@ enum ScrivCLIExport {
     static func exportFountain(workspace: ScrivWorkspaceController) throws -> [String: Any] {
         do { return try perform(workspace: workspace) }
         catch { throw Failure() } // Never return underlying errors or local paths.
+    }
+
+    static func exportProject(workspace: ScrivWorkspaceController) async throws -> [String: Any] {
+        let run = try ScrivCLIRunCapability.requirePrepared()
+        let root = run.root.resolvingSymlinksInPath()
+        let rootFD = try directory(root)
+        defer { close(rootFD) }
+        let store = workspace.store
+        let projectID = store.project.id
+        let navigation = store.navigationContext
+        guard UUID(uuidString: projectID) != nil else { throw Failure() }
+        let packageName = projectID + ".scriv"
+        let expectedPackage = run.root.appendingPathComponent("Projects").appendingPathComponent(packageName)
+        let projectsFD = try childDirectory("Projects", parent: rootFD)
+        defer { close(projectsFD) }
+        let packageFD = try childDirectory(packageName, parent: projectsFD)
+        defer { close(packageFD) }
+        func validateContext() throws {
+            try run.validateRootDescriptor(rootFD)
+            guard run.approvedOrigin == nil, store.project.cloudProjectId == nil,
+                  store.account == nil, store.cloud.account == nil, !store.isBootstrapping,
+                  store.navigationContext == navigation, store.project.id == projectID,
+                  store.projectURL?.standardizedFileURL.path == expectedPackage.path,
+                  workspace.viewIfLoaded?.window != nil, workspace.presentedViewController == nil,
+                  store.errorMessage == nil, !store.isPlaying,
+                  childMatches("Projects", parent: rootFD, descriptor: projectsFD),
+                  childMatches(packageName, parent: projectsFD, descriptor: packageFD) else { throw Failure() }
+        }
+        try validateContext()
+        let stagingName = "ScrivExport-" + UUID().uuidString
+        let staging = root.appendingPathComponent(stagingName, isDirectory: true)
+        let url = try await store.stageProjectExportForCLI {
+            try validateContext()
+            guard mkdirat(rootFD, stagingName, 0o700) == 0 else { throw Failure() }
+            return staging
+        }
+        defer { try? FileManager.default.removeItem(at: staging) }
+        try validateContext()
+        var files: [[String: Any]] = []
+        try UIKitFileAccess.shared.captureExportForCLI({ store.handoffProjectExport(url) }, observe: { generated in
+            guard generated == url, generated.lastPathComponent == "Project.scriv", generated.deletingLastPathComponent() == staging else { throw Failure() }
+            files = try packageReceipt(generated)
+        })
+        try validateContext()
+        var remaining = stat()
+        guard lstat(staging.path, &remaining) == -1, errno == ENOENT else { throw Failure() }
+        return ["dispatched": true, "cleanupVerified": true, "files": files]
+    }
+
+    private static func packageReceipt(_ package: URL) throws -> [[String: Any]] {
+        let packageFD = try directory(package)
+        defer { close(packageFD) }
+        var failed = false
+        let keys: [URLResourceKey] = [.isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey]
+        guard let members = FileManager.default.enumerator(at: package, includingPropertiesForKeys: keys,
+                                                           errorHandler: { _, _ in failed = true; return false }) else { throw Failure() }
+        var files: [(path: String, byteCount: Int, sha256: String)] = []
+        var remaining = 16 * 1024 * 1024
+        var count = 0
+        for case let member as URL in members {
+            count += 1
+            let values = try member.resourceValues(forKeys: Set(keys))
+            let prefix = package.path + "/"
+            guard count <= 256, member.path.hasPrefix(prefix), values.isSymbolicLink != true,
+                  member.resolvingSymlinksInPath().path == member.path else { throw Failure() }
+            if values.isDirectory == true { continue }
+            let path = String(member.path.dropFirst(prefix.count))
+            guard values.isRegularFile == true, path.utf8.count <= 512 else { throw Failure() }
+            let fd = open(member.path, O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC)
+            guard fd >= 0 else { throw Failure() }
+            let handle = FileHandle(fileDescriptor: fd, closeOnDealloc: true)
+            defer { try? handle.close() }
+            var info = stat()
+            guard fstat(fd, &info) == 0, (info.st_mode & S_IFMT) == S_IFREG,
+                  info.st_uid == geteuid(), info.st_nlink == 1, info.st_size >= 0, info.st_size <= remaining else { throw Failure() }
+            let bytes = try handle.read(upToCount: Int(info.st_size) + 1) ?? Data()
+            guard bytes.count == info.st_size else { throw Failure() }
+            remaining -= bytes.count
+            files.append((path, bytes.count, ScrivDigest.sha256(bytes)))
+        }
+        guard !failed, directoryMatches(package, descriptor: packageFD),
+              files.contains(where: { $0.path == "project.json" }) else { throw Failure() }
+        return files.sorted { $0.path < $1.path }.map { ["path": $0.path, "byteCount": $0.byteCount, "sha256": $0.sha256] }
     }
 
     private static func perform(workspace: ScrivWorkspaceController) throws -> [String: Any] {

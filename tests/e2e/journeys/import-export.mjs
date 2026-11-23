@@ -3,13 +3,12 @@ import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { fountainSteps } from './support/fountain-steps.mjs';
 import { importCases, metadataSource, forcedSource, invalidFilenames, openingLines } from './support/fountain-cases.mjs';
+import { verifyPackageExport } from './support/package-export-steps.mjs';
 
-// IJ-02, Fountain portion only. One coherent journey, three independently
-// runnable case groups, shared production-boundary steps, and no legacy-script
-// subprocesses. JSON cases remain separate pending their native verification.
-// Native document pickers, physical menu routes and external-file copying are
-// NOT exercised. Installation uses production importScript validation; export
-// uses production exportScript, UTF-8 file capture and its cleanup callback.
+// IJ-02, with independently selectable Fountain and project package cases.
+// Installation uses production importScript validation. Exports use Scriv's
+// normal staging, handoff and cleanup. The platform picker and final destination
+// are outside these semantic routes. JSON validation has its own journey.
 const texts = project => project.entries.map(entry => entry.text);
 const scenes = project => project.scenes.map(scene => scene.title);
 const owned = project => project.entries.map(entry => entry.ownedDurationMs);
@@ -27,7 +26,7 @@ const invalidExports = sample => [
   { path: '/not-an-export-destination' }, { url: 'file:///not-an-export-destination' },
   { name: 'NotAnExport.fountain' }, { text: 'Title: Not input' }, { projectID: sample.id },
 ];
-const groups = ['roundtrip', 'import', 'filename'];
+const groups = ['roundtrip', 'import', 'filename', 'package'];
 const args = process.argv.slice(2);
 let selected = groups;
 if (args.includes('--group')) {
@@ -45,10 +44,11 @@ const manifest = [
   ...invalidFilenames.map((_, index) => ({ group: 'filename', id: `reject-filename-${index + 1}` })),
   { group: 'filename', id: 'metadata-fallback' },
   ...openingLines.map((_, index) => ({ group: 'filename', id: `opening-colon-${index + 1}` })),
+  { group: 'package', id: 'saved-media-and-history' },
 ].filter(test => selected.includes(test.group));
 if (args.includes('--list-cases')) {
   // Authorship inventory only: does not launch the app or claim native passes.
-  console.log(JSON.stringify({ journey: 'IJ-02', nativeVerified: false, cases: manifest }, null, 2));
+  console.log(JSON.stringify({ journey: 'IJ-02', nativeVerified: false, groups, cases: manifest }, null, 2));
 } else {
   assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
   const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
@@ -63,7 +63,8 @@ if (args.includes('--list-cases')) {
   }
   try {
     const capabilities = await session.command('capabilities');
-    for (const command of ['import-fountain', 'persisted-projects', ...(selected.includes('roundtrip') ? ['export-fountain'] : [])]) {
+    for (const command of ['import-fountain', 'persisted-projects', ...(selected.includes('roundtrip') ? ['export-fountain'] : []),
+      ...(selected.includes('package') ? ['export-project'] : [])]) {
       assert.ok(capabilities.commands.includes(command), `Requires compiled ${command} support`);
     }
     const nodes = await session.waitFor(nodes => nodes.some(node => node.identifier === 'workspace-tabs' && node.enabled && node.hittable));
@@ -168,12 +169,16 @@ if (args.includes('--list-cases')) {
         });
       }
     }
+    if (selected.includes('package')) {
+      await run('package', 'saved-media-and-history', () => verifyPackageExport(session, step));
+    }
     currentCase = 'final-preservation';
     assert.deepEqual((await step.saved()).find(project => project.id === sample.id), sample);
     assert.deepEqual(completed, manifest.map(test => `${test.group}/${test.id}`), 'Every declared selected case executed');
     assert.equal((await step.saved()).length, 1 + (selected.includes('roundtrip') ? 7 : 0)
-      + (selected.includes('import') ? 18 : 0) + (selected.includes('filename') ? 5 : 0));
-    console.log('PASS: IJ-02 Fountain semantic boundaries; no picker or external destination coverage');
+      + (selected.includes('import') ? 18 : 0) + (selected.includes('filename') ? 5 : 0)
+      + (selected.includes('package') ? 1 : 0));
+    console.log('PASS: IJ-02 local import and export boundaries');
   } catch (error) {
     console.error(`FAIL: IJ-02/${currentCase}`);
     throw error;

@@ -2003,16 +2003,12 @@ final class WorkspaceStore: ObservableObject {
 #if targetEnvironment(macCatalyst)
         let context = navigationGeneration
         perform {
-            await self.flushPendingSaves()
-            let source = try await self.durableProjectPackage(navigation:context)
-            let directory = FileManager.default.temporaryDirectory.appendingPathComponent("ScrivExport-" + UUID().uuidString,isDirectory:true)
-            try FileManager.default.createDirectory(at:directory,withIntermediateDirectories:true)
-            let url = directory.appendingPathComponent("Project.scriv")
-            do {
-                try await self.repo().copyPackage(from:source,to:url)
-                guard self.navigationGeneration == context else { try? FileManager.default.removeItem(at:directory); return }
-                UIKitFileAccess.shared.export(url:url) { try? FileManager.default.removeItem(at:directory) }
-            } catch { try? FileManager.default.removeItem(at:directory); throw error }
+            let url = try await self.stageProjectExport(navigation: context) {
+                let directory = FileManager.default.temporaryDirectory.appendingPathComponent("ScrivExport-" + UUID().uuidString, isDirectory: true)
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+                return directory
+            }
+            self.handoffProjectExport(url)
         }
 #else
         let panel = NSSavePanel(); panel.nameFieldStringValue = project.title+".scriv"; panel.canCreateDirectories = true
@@ -2026,6 +2022,31 @@ final class WorkspaceStore: ObservableObject {
         }
 #endif
     }
+#if targetEnvironment(macCatalyst)
+    private func stageProjectExport(navigation: Int, createDirectory: () throws -> URL) async throws -> URL {
+        await flushPendingSaves()
+        let source = try await durableProjectPackage(navigation: navigation)
+        let directory = try createDirectory()
+        let url = directory.appendingPathComponent("Project.scriv", isDirectory: true)
+        do {
+            try await repo().copyPackage(from: source, to: url)
+            guard navigationGeneration == navigation else { throw CancellationError() }
+            return url
+        } catch {
+            try? FileManager.default.removeItem(at: directory)
+            throw error
+        }
+    }
+    func handoffProjectExport(_ url: URL) {
+        UIKitFileAccess.shared.export(url: url) { try? FileManager.default.removeItem(at: url.deletingLastPathComponent()) }
+    }
+#if SCRIV_CLI_AUTOMATION
+    func stageProjectExportForCLI(createDirectory: () throws -> URL) async throws -> URL {
+        finishEditing()
+        return try await stageProjectExport(navigation: navigationGeneration, createDirectory: createDirectory)
+    }
+#endif
+#endif
     func undo() {
         finishEditing()
         guard let previous = undoStack.last else { return }

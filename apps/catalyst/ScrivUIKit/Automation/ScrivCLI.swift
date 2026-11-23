@@ -102,6 +102,21 @@ final class ScrivCLI {
                 reply(["id": id, "ok": true, "result": result])
                 return
             }
+            if command == "export-project" {
+                let message = "Synthetic project export is unavailable or invalid"
+                guard Set(request.keys).isSubset(of: ["id", "command"]),
+                      let workspace = window?.rootViewController as? ScrivWorkspaceController else { throw Failure(message) }
+                asynchronousCommandInProgress = true
+                let responseID = id
+                Task { @MainActor in
+                    defer { self.asynchronousCommandInProgress = false }
+                    do {
+                        let result = try await ScrivCLIExport.exportProject(workspace: workspace)
+                        self.reply(["id": responseID, "ok": true, "result": result])
+                    } catch { self.reply(["id": responseID, "ok": false, "error": message]) }
+                }
+                return
+            }
             let result = try execute(command, request)
             reply(["id": id, "ok": true, "result": result])
         } catch { reply(["id": id, "ok": false, "error": error.localizedDescription]) }
@@ -318,7 +333,7 @@ final class ScrivCLI {
             var result: [String: Any] = ["protocol": 1, "driver": "UIKit controls", "completeInterfaceParity": false, "imageEvidenceSchemaVersion": 1,
                     "scriptInteractionCountsSchemaVersion": 1,
                     "cloudIsolation": run.publicStatus,
-                    "semanticApplicationCommands": ["import-local-image", "import-audio", "import-fountain", "export-fountain", "import-json", "acknowledge-json-import-error"],
+                    "semanticApplicationCommands": ["import-local-image", "import-audio", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error"],
                     "jsonImportAcknowledgementScope": "owned-presentations",
                     "syntheticFixtureCommands": ["stage-package-fixture"],
                     "publicDelegateCommands": ["return", "script-insert", "script-delete-selection"],
@@ -328,7 +343,7 @@ final class ScrivCLI {
                     "sessionID": run.sessionID.uuidString.lowercased(),
                     "workspace": workspace,
                     "verificationRoot": run.root.path,
-                    "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "import-json", "acknowledge-json-import-error"]] as [String: Any]
+                    "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error"]] as [String: Any]
             if run.approvedOrigin != nil {
                 result["semanticMenuActionScopes"] = (result["semanticMenuActionScopes"] as? [String] ?? []) + ["team-member-actions"]
                 for key in ["syntheticFixtureCommands", "commands"] {

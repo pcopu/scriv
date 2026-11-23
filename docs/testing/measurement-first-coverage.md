@@ -350,6 +350,15 @@ inspect the same launch manually, run `tracer app -- "$SCRIV_APP" --fresh-startu
 The CLI waits for bootstrap to finish before taking the startup snapshot.
 First launch and `relaunch-recover` cover separate paths through bootstrap.
 
+Use `--scenario journeys/import-export --group package` to exercise project
+package export. The `export-project` command takes no arguments. It runs
+Scriv's normal save, package copy and completion cleanup in the owned
+workspace, then returns file names, byte counts and SHA-256 hashes from the
+staged `Project.scriv`. The journey checks the project, image, audio and
+revision history, refuses a symbolic link and a mismatched saved snapshot,
+then verifies that the unchanged project exports again.
+Interactive export uses the same staging before presenting the system picker.
+
 Read the produced `evidence.json`; `coverage.analysis.root` identifies the
 external source copy containing the imported dataset. Run `measure check` and
 `measure report` on that root. All output stays outside pinned source.
