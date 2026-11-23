@@ -19,6 +19,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     private let searchRow = ScrivUIKitTheme.stack([], axis: .horizontal, spacing: 7)
     private let matchLabel = ScrivUIKitTheme.label("", size: 11, color: ScrivUIKitTheme.secondary, lines: 1)
     private let sceneButton = UIButton(type: .system)
+    private let entryActionsButton = UIButton(type: .system)
     private let heading = ScrivUIKitTheme.label("Script", size: 25, weight: .semibold)
     private var addBarLeading: NSLayoutConstraint?
     private let headingSpacer = UIView()
@@ -58,6 +59,10 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
     private var renderedDetails: [String: DetailsInput] = [:]
     private struct HeaderInput: Equatable { let scenes: [ScriptScene], selectedScene: String, context: Int, peers: [PresencePeer], zoom: Double }
     private var renderedHeader: HeaderInput?
+    private struct EntryActionsInput: Equatable {
+        let id: String, context: Int, canMoveUp: Bool, canMoveDown: Bool, locked: Bool
+    }
+    private var renderedEntryActions: EntryActionsInput?
     private var renderedChrome: ScriptPresentationMetrics?
     override var canBecomeFirstResponder: Bool { true }
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
@@ -174,6 +179,11 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         let icon = UIImageView(image: UIImage(systemName: "doc.text")); icon.tintColor = ScrivUIKitTheme.accent; icon.contentMode = .scaleAspectFit
         icon.widthAnchor.constraint(equalToConstant: 34).isActive = true; icon.heightAnchor.constraint(equalToConstant: 36).isActive = true
         sceneButton.titleLabel?.font = .systemFont(ofSize: 17); sceneButton.contentHorizontalAlignment = .leading; sceneButton.showsMenuAsPrimaryAction = true
+        entryActionsButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        entryActionsButton.accessibilityLabel = "Selected entry actions"
+        entryActionsButton.accessibilityIdentifier = "script-entry-actions"
+        entryActionsButton.showsMenuAsPrimaryAction = true
+        entryActionsButton.isEnabled = false
         let titleLine = ScrivUIKitTheme.stack([heading, presence], axis: .horizontal, spacing: 10); titleLine.alignment = .center
         let titleStack = ScrivUIKitTheme.stack([titleLine, sceneButton], spacing: 3)
         let search = ScrivUIKitTheme.button("", symbol: "magnifyingglass") { [weak self] in self?.toggleSearch() }
@@ -183,7 +193,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         // The alignment spacer gives way before the scene title truncates on narrow windows.
         headingSpacerWidth = headingSpacer.widthAnchor.constraint(equalToConstant: 100); headingSpacerWidth?.priority = .defaultHigh - 10; headingSpacerWidth?.isActive = true
         headingSpacer.setContentHuggingPriority(.required, for: .horizontal)
-        let header = ScrivUIKitTheme.stack([icon, headingSpacer, titleStack, UIView(), search, history], axis: .horizontal, spacing: 12); header.alignment = .center
+        let header = ScrivUIKitTheme.stack([icon, headingSpacer, titleStack, UIView(), entryActionsButton, search, history], axis: .horizontal, spacing: 12); header.alignment = .center
         searchField.placeholder = "Find in script"; searchField.delegate = self; searchField.addTarget(self, action: #selector(searchChanged), for: .editingChanged)
         searchRow.addArrangedSubview(searchField); searchRow.addArrangedSubview(matchLabel)
         // Chevrons only, as in Mac find bars, so the query stays readable on narrow windows.
@@ -297,6 +307,7 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
             scrubbers[entry.id]?.refreshPreview()
             if configureDetails(row, entry: entry, selected: selected, start: start) { needsLayout = true }
         }
+        updateEntryActions(entries)
         let header = HeaderInput(scenes: project.scenes, selectedScene: store.selectedSceneID, context: store.navigationContext, peers: Array(store.peers.prefix(4)), zoom: store.scriptZoom)
         if header != renderedHeader {
             renderedHeader = header; needsLayout = true
@@ -406,8 +417,6 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         func action(_ title: String, _ symbol: String, edit: Bool = false, destructive: Bool = false, enabled: Bool = true, _ body: @escaping () -> Void) -> UIAction {
             UIAction(title: title, image: UIImage(systemName: symbol), attributes: (edit && locked) || !enabled ? [.disabled] : destructive ? [.destructive] : []) { [weak self] _ in guard let self, store.navigationContext == context else { return }; body() }
         }
-        // A line cannot leave its scene: the ends offer no move instead of an error.
-        let sceneIDs = store.project.entries(in: entry.sceneId).map(\.id), position = sceneIDs.firstIndex(of: id) ?? 0
         var actions: [UIMenuElement] = [
             action("Edit text", "pencil", edit: true) { [weak self] in self?.beginEditing(id, caret: self?.rememberedCaret[id] ?? 0) },
             action("Review character links…", "person.crop.rectangle", edit: true) { [weak self] in self?.reviewLinks(id) },
@@ -418,12 +427,39 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
             actions.append(action("Import audio for this dialogue…", "waveform.badge.plus") { [weak self] in self?.store.importAudio(entryId: id) })
             actions.append(action("Review word timing…", "clock", edit: true) { [weak self] in self?.show(.wordTiming(entryID: id, wordIDs: [])) })
         }
-        actions.append(UIMenu(options: .displayInline, children: [
-            action("Move up", "arrow.up", edit: true, enabled: position > 0) { [weak self] in self?.store.moveEntry(id, offset: -1) },
-            action("Move down", "arrow.down", edit: true, enabled: position < sceneIDs.count - 1) { [weak self] in self?.store.moveEntry(id, offset: 1) },
-            action("Delete entry", "trash", edit: true, destructive: true) { [weak self] in self?.confirmDeleteEntry(id) }
-        ]))
+        if let input = entryActionsInput(for: id, in: store.project.entries(in: entry.sceneId)) {
+            actions.append(UIMenu(options: .displayInline, children: structureActions(input)))
+        }
         return UIMenu(children: actions)
+    }
+    private func entryActionsInput(for id: String, in entries: [ScriptEntry]) -> EntryActionsInput? {
+        guard let position = entries.firstIndex(where: { $0.id == id }) else { return nil }
+        return EntryActionsInput(id: id, context: store.navigationContext, canMoveUp: position > 0,
+                                 canMoveDown: position < entries.count - 1, locked: store.lockedByOther(id) != nil)
+    }
+    private func updateEntryActions(_ entries: [ScriptEntry]) {
+        let input = store.selectedEntryID.flatMap { entryActionsInput(for: $0, in: entries) }
+        if input != renderedEntryActions {
+            renderedEntryActions = input
+            entryActionsButton.menu = input.map { UIMenu(children: structureActions($0)) }
+        }
+        let enabled = input != nil && !session.active && boundaryPending == nil
+        if entryActionsButton.isEnabled != enabled { entryActionsButton.isEnabled = enabled }
+    }
+    private func structureActions(_ input: EntryActionsInput) -> [UIAction] {
+        func action(_ title: String, _ symbol: String, _ attributes: UIMenuElement.Attributes,
+                    _ perform: @escaping (ScriptScreenController) -> Void) -> UIAction {
+            UIAction(title: title, image: UIImage(systemName: symbol), attributes: input.locked ? .disabled : attributes) { [weak self] _ in
+                guard let self, boundaryPending == nil, presentedViewController == nil,
+                      entryActionsInput(for: input.id, in: store.sceneEntries) == input else { return }
+                perform(self)
+            }
+        }
+        return [
+            action("Move up", "arrow.up", input.canMoveUp ? [] : .disabled) { $0.store.moveEntry(input.id, offset: -1) },
+            action("Move down", "arrow.down", input.canMoveDown ? [] : .disabled) { $0.store.moveEntry(input.id, offset: 1) },
+            action("Delete entry", "trash", .destructive) { $0.confirmDeleteEntry(input.id) }
+        ]
     }
     private func reviewLinks(_ id: String) {
         guard session.finish(), let entry = store.project.entries.first(where: { $0.id == id }) else { return }
@@ -463,8 +499,13 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         present(alert, animated: true)
     }
     private func confirmDeleteEntry(_ id: String) {
+        guard session.finish(), let entry = store.sceneEntries.first(where: { $0.id == id }) else { return }
         let context = store.navigationContext
-        confirm("Delete this entry?", message: "Its text and timing are removed as a new revision. Existing history remains available.") { [weak self] in guard let self, store.navigationContext == context else { return }; store.deleteEntry(id) }
+        confirm("Delete this entry?", message: "Its text and timing are removed as a new revision. Existing history remains available.") { [weak self] in
+            guard let self, store.navigationContext == context, store.lockedByOther(id) == nil,
+                  store.sceneEntries.first(where: { $0.id == id }) == entry else { return }
+            store.deleteEntry(id)
+        }
     }
     private func renameScene() {
         guard let scene = store.project.scenes.first(where: { $0.id == store.selectedSceneID }) else { return }
@@ -474,12 +515,32 @@ final class ScriptScreenController: ScrivScreenController, UITextFieldDelegate {
         present(alert, animated: true)
     }
     private func deleteScene() {
-        let id = store.selectedSceneID, context = store.navigationContext
-        confirm("Delete this scene?", message: "The scene’s script and image placements are removed. Image assets and character profiles are kept.") { [weak self] in guard let self, store.navigationContext == context else { return }; store.deleteScene(id) }
+        guard session.finish(), let scene = store.project.scenes.first(where: { $0.id == store.selectedSceneID }) else { return }
+        let context = store.navigationContext
+        confirm("Delete this scene?", message: "The scene’s script and image placements are removed. Image assets and character profiles are kept.") { [weak self] in
+            guard let self, store.navigationContext == context, store.selectedSceneID == scene.id,
+                  store.project.scenes.contains(scene) else { return }
+            store.deleteScene(scene.id)
+        }
     }
     private func confirm(_ title: String, message: String, action: @escaping () -> Void) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel)); alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { _ in action() }); present(alert, animated: true)
+        let confirmation = ScrivScreenController(store: store)
+        confirmation.title = title
+        let layout = CharacterTeamSheetLayout(title: title) { [weak confirmation] in confirmation?.dismiss(animated: true) }
+        layout.close.configuration?.title = "Cancel"
+        layout.close.configuration?.image = nil
+        layout.close.accessibilityLabel = "Cancel"
+        layout.close.accessibilityIdentifier = "script-delete-cancel"
+        layout.content.addArrangedSubview(ScrivUIKitTheme.label(message, size: 15, color: ScrivUIKitTheme.secondary))
+        let delete = CharacterTeamUI.button("Delete", primary: true) { [weak confirmation] in
+            guard let confirmation, !confirmation.isBeingDismissed else { return }
+            confirmation.dismiss(animated: true, completion: action)
+        }
+        delete.configuration?.baseBackgroundColor = .systemRed
+        delete.accessibilityIdentifier = "script-delete-confirm"
+        layout.footer.addArrangedSubview(delete)
+        confirmation.view = layout
+        CharacterTeamUI.present(confirmation, from: self)
     }
     private func makeAddBar() -> UIView {
         let bar = ScrivUIKitTheme.stack([ScrivUIKitTheme.button("Dialogue", symbol: "plus") { [weak self] in self?.store.addEntry(kind: .dialogue) }, ScrivUIKitTheme.button("Direction", symbol: "arrow.turn.down.right") { [weak self] in self?.store.addEntry(kind: .direction) }, UIView()], axis: .horizontal, spacing: 12)
@@ -542,6 +603,14 @@ extension ScrivUIKitFeatures {
 
 #if SCRIV_CLI_AUTOMATION
 extension ScriptScreenController {
+    func cliOwnsSceneMenu(_ button: UIButton) -> Bool {
+        button === sceneButton && !session.active && boundaryPending == nil
+    }
+    func cliOwnsEntryMenu(_ button: UIButton, entryID: String) -> Bool {
+        guard button === entryActionsButton, !session.active, boundaryPending == nil,
+              store.selectedEntryID == entryID, let input = renderedEntryActions else { return false }
+        return input == entryActionsInput(for: entryID, in: store.sceneEntries)
+    }
     /// Read-only catalog mutation fence. Never finishes, saves or discards a draft.
     /// boundaryPending tracks work; a completed boundaryTask handle may stay cached.
     func cliAllowsCatalogMutation() -> Bool {

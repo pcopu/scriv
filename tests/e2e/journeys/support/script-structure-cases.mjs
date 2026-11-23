@@ -11,12 +11,23 @@ export const scriptStructureCases = [{
     'new scene identity/order plus unchanged original scene and entry',
     'scene selection preserves packages and exact loaded Date witnesses',
     'Undo/Redo preserves new-scene identity; browser reopen preserves full model'],
+}, {
+  group: 'move-delete', id: 'reorder-and-remove-script-structure',
+  nativeVerified: false, retirementAllowed: false,
+  route: 'import-json → selected entry menu → move down/up → entry Delete/Cancel → scene Delete/Cancel → workspace Undo/Redo',
+  sourceRoutes: [
+    'ScriptScreenController.structureActions → WorkspaceStore.moveEntry/deleteEntry',
+    'ScriptScreenController.sceneMenu → WorkspaceStore.deleteScene',
+  ],
+  oracles: ['visible row order and exact saved and loaded entries, timing and anchored placements',
+    'disabled actions and incorrect targets preserve the complete loaded and persisted projects',
+    'explicit confirmation and cancellation for entry and scene removal',
+    'Undo/Redo restores and replays scene removal; unrelated package stays identical'],
 }];
 export const structureExcluded = [
   'physical menu presentation/dismissal',
-  'Rename/Cancel/Delete UIAlertController execution: no verified permitted alert action route',
-  'Move up/down execution: row context provider does not store its actions on a UIControl',
-  'speaker assignment, deletion, lease/cloud/session paths',
+  'rename-scene alert and physical row context menu interactions',
+  'speaker assignment, lease/cloud/session paths',
   'frozen-method retirement and process relaunch',
 ];
 export const sceneTitle = 'INT. NEW SCENE — DAY';
