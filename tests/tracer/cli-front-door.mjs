@@ -37,7 +37,7 @@ export async function main() {
     assert.match(actions.stdout, /tracer app -- test tooling/);
     assert.equal(run(['app', '--', '--help']).stdout, actions.stdout);
     const help = run(['app', '--', 'test', '--help']).stdout;
-    assert.ok(/No app, no macOS or failed provenance means not-run/.test(help) && /--coverage-build-record/.test(help));
+    assert.ok(/No app, no macOS or failed provenance means not-run/.test(help) && /--coverage-build-record/.test(help) && /--coverage-startup/.test(help));
   });
   await journey('list genuine native entrypoints without launching an app', async () => {
     catalog = JSON.parse(run(['app', '--', 'test', '--list']).stdout);
@@ -177,7 +177,7 @@ export async function main() {
       ['--coverage'], ['--coverage', '--scenario', 'workspace'],
       ['--coverage-build-record', '/tmp/missing-build.json'],
       ['--coverage', '--coverage-max-sessions', '0'], ['--coverage', '--coverage-max-sessions', '65'],
-      ['--llvm-cov', 'relative-tool'], ['--coverage-max-sessions', '1'],
+      ['--llvm-cov', 'relative-tool'], ['--coverage-max-sessions', '1'], ['--coverage-startup'],
     ]) {
       const result = run(['app', '--', 'test', ...args], 2);
       assert.equal(result.stdout, '');
@@ -207,7 +207,7 @@ export async function main() {
     assert.equal(exported.status, 0, exported.stderr);
     const digest = JSON.parse(exported.stdout).manifestSHA256;
     const before = new Set(await readdir(output));
-    const result = run(['app', '--', 'test', '--coverage', '--scenario', 'workspace', '--source-manifest', manifest,
+    const result = run(['app', '--', 'test', '--coverage', '--coverage-startup', '--scenario', 'workspace', '--source-manifest', manifest,
       '--source-manifest-sha256', digest, '--coverage-build-record', join(output, 'AbsentBuildRecord.json'), '--output-dir', output], 2);
     assert.match(result.stdout, /CLI E2E not-run \(subset 1\//);
     const dirs = (await readdir(output)).filter(name => !before.has(name)); assert.equal(dirs.length, 1);

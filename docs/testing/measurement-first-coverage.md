@@ -307,6 +307,19 @@ Document uses one session on apps advertising JSON import error
 acknowledgement across owned presentations. `SCRIV_JSON_VALIDATION_ISOLATION=fresh` retains the 23-session
 control for comparing coverage and timing on the same app.
 
+Add `--coverage-startup` to the pinned command to measure the launch window
+for the same selected scenarios. The instrumented app captures
+a real cumulative profile at Swift entry, before isolation setup and UIKit.
+The runner takes the other snapshot after the validated CLI handshake, then
+runs the same scenario and keeps its result. Both profiles use the existing
+owned, bounded transport. The app consumes the retained entry profile once.
+Startup capture retains the same two raw profiles as ordinary capture.
+
+Use the same signed executable and scenario selectors with and without the
+flag to compare timing and identify newly observed lines. These launches
+use the CLI's isolated workspace and settings. Startup recovery that the
+isolated app skips still needs a compatible launch scenario.
+
 Read the produced `evidence.json`; `coverage.analysis.root` identifies the
 external source copy containing the imported dataset. Run `measure check` and
 `measure report` on that root. All output stays outside pinned source.

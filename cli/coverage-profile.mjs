@@ -5,9 +5,9 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 
 // Bounded transport shared by genuine app-session coverage and the smoke probe.
-export async function captureProfile(command, runID, diagnostic = () => {}, snapshotStage = 'before-snapshot', workspaceID) {
+export async function captureProfile(command, runID, diagnostic = () => {}, snapshotStage = 'before-snapshot', workspaceID, snapshotParameters) {
   diagnostic(snapshotStage, 'coverage-snapshot');
-  const metadata = await command('coverage-snapshot');
+  const metadata = await command('coverage-snapshot', snapshotParameters);
   assert.match(metadata.token, UUID);
   const token = metadata.token;
   let primaryFailure = false;

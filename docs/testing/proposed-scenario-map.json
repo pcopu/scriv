@@ -4666,6 +4666,32 @@
       ]
     },
     {
+      "id": "native-isolated-launch-profile",
+      "title": "Observe isolated native launch and handshake",
+      "featureId": "cli-automation",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/workspace.mjs",
+        "tests/e2e/journeys/cue-draft-recovery.mjs",
+        "tests/e2e/journeys/native-cloud-sign-in.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/App/main.swift",
+        "symbol": "prepareScrivCLIEnvironment"
+      },
+      "actionIds": [
+        "--coverage-startup",
+        "capabilities",
+        "coverage-snapshot"
+      ],
+      "plannedActions": [
+        "Launch the signed isolated app, verify its CLI handshake, and capture the Swift entry and post-handshake counters before running the selected scenario."
+      ],
+      "expectedOutcomes": [
+        "Fresh launch, retained workspace relaunch and owned Cloud fixture launch preserve their existing assertions. Both cumulative profiles belong to the same isolated process."
+      ]
+    },
+    {
       "id": "wave81-3-s119",
       "title": "Launch the Catalyst application normally",
       "featureId": "app-shell",
@@ -10213,7 +10239,8 @@
     {
       "rangeId": "89699c2d70576d89d6f1",
       "scenarioIds": [
-        "wave81-3-s118"
+        "wave81-3-s118",
+        "native-isolated-launch-profile"
       ],
       "rationale": "Prepares isolated CLI environment for automation builds. Proposed scenario exercises this responsibility.",
       "confidence": "medium",
@@ -10994,7 +11021,8 @@
     {
       "rangeId": "305961a0e71b90164d26",
       "scenarioIds": [
-        "audit-v82-305961a0e71b90164d26"
+        "audit-v82-305961a0e71b90164d26",
+        "native-isolated-launch-profile"
       ],
       "rationale": "The selected apps/catalyst/ScrivUIKit/Automation/ScrivCLIRunCapability.swift lines 1-458 implement or configure the specific behavior described by this replacement; the planned public actions or static inspection target that responsibility.",
       "confidence": "low",

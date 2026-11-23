@@ -136,7 +136,7 @@ async function verifyCaptureSources(capture) {
   required(JSON.stringify(comparison) === JSON.stringify(capture.sourceProvenance));
 }
 
-export async function prepareCoverage({ app, output, sourceOptions, buildSourceRoot = root, buildSourceOptions = sourceOptions, buildRecordPath, llvmProfdata, llvmCov, tracer, maximumSessions = 64 }) {
+export async function prepareCoverage({ app, output, sourceOptions, buildSourceRoot = root, buildSourceOptions = sourceOptions, buildRecordPath, llvmProfdata, llvmCov, tracer, maximumSessions = 64, startup = false }) {
   const sourceInputs = { sourceRoot: root, sourceOptions, buildSourceRoot, buildSourceOptions };
   const sourceProvenance = await verifyCoverageSources(sourceInputs);
   const outputRoot = await realpath(output);
@@ -173,11 +173,11 @@ export async function prepareCoverage({ app, output, sourceOptions, buildSourceR
   await write(join(directory, 'tracer-sources.json'), JSON.stringify(tracerCLI.packageIdentity, null, 2) + '\n');
   const capture = { directory, executable, executableSHA256, sourceManifestSHA256: buildSourceOptions.manifestSHA256,
     journeySourceManifestSHA256: sourceOptions.manifestSHA256, sourceInputs, sourceProvenance,
-    buildRecordSHA256: sha(buildBytes), probe, invocationID: randomUUID(), maximumSessions,
+    buildRecordSHA256: sha(buildBytes), probe, invocationID: randomUUID(), maximumSessions, startup,
     profdata, cov, tracerCLI, tools: [profdata, cov, tracerCLI, ...(tracerCLI.node ? [tracerCLI.node] : [])], intervals: [] };
   capture.report = { status: 'ready', invocationID: capture.invocationID, buildRecordSHA256: capture.buildRecordSHA256,
     sourceManifestSHA256: capture.sourceManifestSHA256, journeySourceManifestSHA256: capture.journeySourceManifestSHA256,
-    sourceProvenance, probeSHA256: probe.sha256, maximumSessions,
+    sourceProvenance, probeSHA256: probe.sha256, maximumSessions, ...(startup && { scope: 'startup' }),
     tools: capture.tools.map(tool => tool.identity), intervals: [], imported: 0,
     tracerPackageSHA256: tracerCLI.packageIdentity.sha256,
     limitations: ['Producer-declared build record binds source and signed executable; this is not a cryptographic attestation.',
@@ -196,7 +196,8 @@ export async function coverageContext(capture, scenario, index) {
   const context = JSON.stringify({ version: 1, invocationID: capture.invocationID, scenario,
     executableSHA256: capture.executableSHA256, sourceManifestSHA256: capture.sourceManifestSHA256,
     journeySourceManifestSHA256: capture.journeySourceManifestSHA256, sourceProvenance: capture.sourceProvenance,
-    buildRecordSHA256: capture.buildRecordSHA256, probeSHA256: capture.probe.sha256, maximumSessions: capture.maximumSessions }) + '\n';
+    buildRecordSHA256: capture.buildRecordSHA256, probeSHA256: capture.probe.sha256, maximumSessions: capture.maximumSessions,
+    ...(capture.startup && { startup: true }) }) + '\n';
   required(Buffer.byteLength(context) <= 8 * 1024 * 1024);
   await write(path, context);
   return path;
@@ -224,6 +225,7 @@ export async function exportCoverage(capture, scenarios) {
       && record.journeySourceManifestSHA256 === capture.journeySourceManifestSHA256
       && JSON.stringify(record.sourceProvenance) === JSON.stringify(capture.sourceProvenance)
       && record.buildRecordSHA256 === capture.buildRecordSHA256 && record.probeSHA256 === capture.probe.sha256
+      && record.scope === (capture.startup ? 'startup' : undefined)
       && record.counterMode === 'cumulative' && record.counterReset === false && Number.isSafeInteger(record.slot)
       && record.slot >= 0 && record.slot < capture.maximumSessions);
     required((await input(join(capture.directory, 'slots', String(record.slot)), 128)).toString() === runID);
@@ -235,7 +237,8 @@ export async function exportCoverage(capture, scenarios) {
   for (const scenario of scenarios.filter(item => item.startedAt)) required(records.some(row => row.scenario === scenario));
   const measuredPaths = new Set();
   for (const { directory, record, scenario } of records.sort((a, b) => a.record.slot - b.record.slot)) {
-    const interval = { runID: record.runID, workspaceID: record.workspaceID, scenario: record.scenario, scenarioStatus: scenario.status, status: 'exporting', imported: false };
+    const interval = { runID: record.runID, workspaceID: record.workspaceID, scenario: record.scenario,
+      scenarioStatus: scenario.status, status: 'exporting', imported: false, ...(capture.startup && { scope: 'startup' }) };
     capture.report.intervals.push(interval);
     await saveCoverageStatus(capture);
     const profiles = {};
@@ -266,7 +269,9 @@ export async function exportCoverage(capture, scenarios) {
     const tools = capture.tools.map(tool => tool.identity);
     const snapshot = phase => ({ sha256: profiles[phase].lcovSHA256, runId: record.runID, buildSha256: capture.executableSHA256,
       sourceManifestSha256: capture.sourceManifestSHA256, toolchainSha256: sha(JSON.stringify(tools)) });
-    const manifest = { version: 1, runId: record.runID, actions: record.commands.map(entry => `scriv ${entry.command}`),
+    const actions = capture.startup ? ['launch isolated Scriv through the CLI', 'scriv capabilities']
+      : record.commands.map(entry => `scriv ${entry.command}`);
+    const manifest = { version: 1, runId: record.runID, actions,
       counterMode: 'cumulative', counterReset: false, sourceManifestSha256: capture.sourceManifestSHA256,
       probeSha256: capture.probe.sha256, tools, limitations: [...capture.report.limitations, ...record.limitations,
         `Scenario ${record.scenario} ended ${scenario.status}; this interval records observation, not assertion acceptance.`,

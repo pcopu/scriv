@@ -97,8 +97,10 @@ export class ScrivSession {
     delete env.SCRIV_VERIFICATION_ROOT;
     delete env.SCRIV_VERIFICATION_AUTOPLAY;
     delete env.SCRIV_E2E_COVERAGE_CONTEXT; // Host collector metadata is not an app input.
+    delete env.SCRIV_E2E_COVERAGE_STARTUP;
     for (const key of ['SCRIV_CLI_RESUME', 'SCRIV_CLI_RESUME_FD', 'SCRIV_CLI_WORKSPACE', 'SCRIV_CLI_PERSISTENT']) delete env[key];
     const arguments_ = ['--screenshots', '--scriv-cli', ...(persistent ? [workspace ? '--scriv-cli-resume' : '--scriv-cli-persistent'] : [])];
+    if (process.env.SCRIV_E2E_COVERAGE_CONTEXT && process.env.SCRIV_E2E_COVERAGE_STARTUP === '1') arguments_.push('--scriv-cli-coverage-startup');
     const grant = cloudFixtureOrigin ? await openCloudFixtureGrant(runID, cloudFixtureOrigin) : null;
     if (grant) arguments_.push('--scriv-cli-cloud-fixture');
     const inherited = grant ? [grant.handle.fd, grant.reader.fd] : workspace ? [workspace.handle.fd] : [];

@@ -55,11 +55,13 @@ export async function observeSession(session, executable, capabilities) {
       || !hex(context.journeySourceManifestSHA256) || context.sourceProvenance?.sourceManifestSHA256 !== context.sourceManifestSHA256
       || context.sourceProvenance?.journeySourceManifestSHA256 !== context.journeySourceManifestSHA256
       || context.sourceProvenance?.nativeInputsUnchanged !== true || !Array.isArray(context.sourceProvenance?.differences)
+      || (context.startup !== undefined && context.startup !== true)
       || !hex(context.probeSHA256) || !Number.isSafeInteger(context.maximumSessions) || context.maximumSessions < 1 || context.maximumSessions > 64) fail();
   const sessionID = capabilities.sessionID ?? capabilities.runID;
   if (!uuid(capabilities.runID) || !uuid(sessionID) || capabilities.coverage?.schemaVersion !== 1 || capabilities.coverage.format !== 'llvm-profraw'
       || capabilities.coverage.cumulative !== true || capabilities.coverage.maximumSnapshotBytes !== 16 * 1024 * 1024
       || !['coverage-snapshot', 'coverage-read', 'coverage-release'].every(name => capabilities.commands?.includes(name))) fail();
+  if (Boolean(context.startup) !== (process.env.SCRIV_E2E_COVERAGE_STARTUP === '1')) fail();
   if (await hashFile(executable) !== context.executableSHA256 || (await probeIdentity()).sha256 !== context.probeSHA256) fail();
   await verifyCoverageContextSources(context, directory);
   // Slots are reserved atomically across app sessions/processes. Never recycle
@@ -87,24 +89,33 @@ export async function observeSession(session, executable, capabilities) {
     journeySourceManifestSHA256: context.journeySourceManifestSHA256, sourceProvenance: context.sourceProvenance,
     buildRecordSHA256: context.buildRecordSHA256, probeSHA256: context.probeSHA256, counterMode: 'cumulative', counterReset: false,
     attribution: 'observed-during-session-not-causal', phase: 'before-profile', profiles: {}, commands,
+    ...(context.startup && { scope: 'startup' }),
     limitations: ['One interval per actual app session; sessions are never merged.',
       'runID identifies this process capture; workspaceID may recur across an explicitly owned cold relaunch.',
-      'Initial launch and isolation handshake precede the before snapshot.',
+      context.startup ? 'Startup measures the Swift entry point through the first post-handshake snapshot.'
+        : 'Initial launch and isolation handshake precede the before snapshot.',
       'Capture transport, polling and background work overlap; snapshots are not globally atomic.',
       'Ordered command names and completion states are recorded, not parameters or results; this is not a replay recipe.',
       'Expected command errors may pass scenario assertions; command completion alone does not prove assertions.',
-      'Session close captures before termination; work after that snapshot is outside the interval.'] };
+      context.startup ? 'Both snapshots were taken before scenario commands. The early buffer is transferred second.'
+        : 'Session close captures before termination; work after that snapshot is outside the interval.'] };
   const save = async () => {
     await ensure();
     await writeFile(join(output, 'session.json.tmp'), JSON.stringify(record, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
     await rename(join(output, 'session.json.tmp'), join(output, 'session.json'));
   };
   const diagnostic = stage => { record.phase = stage; };
+  const collect = async (phase, snapshotParameters) => {
+    const sample = await captureProfile(session.command.bind(session), sessionID, diagnostic, `${phase}-profile`, capabilities.runID, snapshotParameters);
+    await write(`${phase}.profraw`, sample.buffer);
+    record.profiles[phase] = { file: `${phase}.profraw`, sha256: sample.sha256, byteCount: sample.byteCount, transferCompletedAt: new Date().toISOString() };
+  };
   await save();
   try {
-    const before = await captureProfile(session.command.bind(session), sessionID, diagnostic, 'before-profile', capabilities.runID);
-    await write('before.profraw', before.buffer);
-    record.profiles.before = { file: 'before.profraw', sha256: before.sha256, byteCount: before.byteCount, transferCompletedAt: new Date().toISOString() };
+    if (context.startup) {
+      await collect('after');
+      await collect('before', { scope: 'startup' });
+    } else await collect('before');
     record.phase = 'scenario'; await save();
   } catch (error) { record.status = 'failed'; record.endedAt = new Date().toISOString(); await save(); throw error; }
   let finishing = null;
@@ -119,9 +130,7 @@ export async function observeSession(session, executable, capabilities) {
         try {
           if (!commands.length || commands.some(command => command.status === 'pending')) throw new Error('coverage-incomplete-command-sequence');
           await verifyCoverageContextSources(context, directory);
-          const after = await captureProfile(session.command.bind(session), sessionID, diagnostic, 'after-profile', capabilities.runID);
-          await write('after.profraw', after.buffer);
-          record.profiles.after = { file: 'after.profraw', sha256: after.sha256, byteCount: after.byteCount, transferCompletedAt: new Date().toISOString() };
+          if (!context.startup) await collect('after');
           if (await hashFile(executable) !== context.executableSHA256 || (await probeIdentity()).sha256 !== context.probeSHA256) fail();
           await verifyCoverageContextSources(context, directory);
           record.executableUnchanged = true; record.status = 'captured'; record.phase = 'complete';

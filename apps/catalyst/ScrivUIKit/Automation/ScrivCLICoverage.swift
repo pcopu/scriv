@@ -14,25 +14,55 @@ enum ScrivCLICoverage {
     private static let maximumChunkBytes = 128 * 1024
     private static let maximumSnapshots = 2
     private static var snapshots: [String: Snapshot] = [:]
+    private static var startupBaseline: Profile?
 
     private struct Failure: LocalizedError {
         var errorDescription: String? { "Isolated coverage observation is unavailable or invalid." }
     }
 
-    /// Own the sole retained raw buffer. Reads never mutate it; release removes
-    /// the object and uses non-elidable memset_s before deallocating its storage.
-    private final class Snapshot {
-        let sessionID: UUID
+    /// The staged launch profile and each returned token own a private buffer.
+    /// There are no profile files or caller-controlled destinations.
+    private final class Profile {
         let bytes: UnsafeMutablePointer<CChar>
         let count: Int
         let sha256: String
-        init(sessionID: UUID, bytes: UnsafeMutablePointer<CChar>, count: Int, sha256: String) {
-            self.sessionID = sessionID; self.bytes = bytes; self.count = count; self.sha256 = sha256
+        init(bytes: UnsafeMutablePointer<CChar>, count: Int) {
+            self.bytes = bytes; self.count = count
+            sha256 = ScrivDigest.sha256(Data(bytesNoCopy: bytes, count: count, deallocator: .none))
         }
         deinit {
             _ = memset_s(bytes, count, 0, count)
             bytes.deallocate()
         }
+    }
+    private struct Snapshot {
+        let sessionID: UUID
+        let profile: Profile
+    }
+
+    // Called at the Swift entry point, before isolation setup or UIKit launch.
+    // Nothing can read this buffer until that process has a validated CLI run.
+    static func prepareStartupBaseline() throws {
+        let arguments = CommandLine.arguments
+        guard arguments.contains("--scriv-cli-coverage-startup") else { return }
+        guard arguments.contains("--scriv-cli"), arguments.contains("--screenshots"),
+              startupBaseline == nil else { throw Failure() }
+        startupBaseline = try capture()
+    }
+
+    private static func capture() throws -> Profile {
+        var size: UInt64 = 0
+        guard scriv_cli_coverage_size(&size) == 0, size > 0, size <= UInt64(maximumBytes) else { throw Failure() }
+        let count = Int(size)
+        let buffer = UnsafeMutablePointer<CChar>.allocate(capacity: count)
+        buffer.initialize(repeating: 0, count: count)
+        var written: UInt64 = 0
+        guard scriv_cli_coverage_copy(buffer, size, &written) == 0, written == size else {
+            _ = memset_s(buffer, count, 0, count)
+            buffer.deallocate()
+            throw Failure()
+        }
+        return Profile(bytes: buffer, count: count)
     }
 
     /// Request is the complete CLI envelope: command, optional id, and only the
@@ -44,37 +74,31 @@ enum ScrivCLICoverage {
             guard request["command"] as? String == command else { throw Failure() }
             switch command {
             case "coverage-snapshot":
-                try keys(request, required: ["command"])
-                guard snapshots.count < maximumSnapshots else { throw Failure() }
-                var size: UInt64 = 0
-                guard scriv_cli_coverage_size(&size) == 0, size > 0,
-                      size <= UInt64(maximumBytes) else { throw Failure() }
-                let count = Int(size)
-                let buffer = UnsafeMutablePointer<CChar>.allocate(capacity: count)
-                buffer.initialize(repeating: 0, count: count)
-                var transferred = false
-                defer {
-                    if !transferred { _ = memset_s(buffer, count, 0, count); buffer.deallocate() }
+                let profile: Profile
+                if request["scope"] != nil {
+                    try keys(request, required: ["command", "scope"])
+                    guard request["scope"] as? String == "startup", let baseline = startupBaseline else { throw Failure() }
+                    try run.validate()
+                    startupBaseline = nil
+                    profile = baseline
+                } else {
+                    try keys(request, required: ["command"])
+                    let retained = snapshots.count + (startupBaseline == nil ? 0 : 1)
+                    guard retained < maximumSnapshots else { throw Failure() }
+                    profile = try capture()
+                    try run.validate()
                 }
-                var written: UInt64 = 0
-                guard scriv_cli_coverage_copy(buffer, size, &written) == 0, written == size else { throw Failure() }
-                try run.validate()
-                // The immutable snapshot remains in caller-owned memory. This
-                // temporary hashing view does not copy the runtime buffer.
-                let data = Data(bytesNoCopy: buffer, count: count, deallocator: .none)
-                let digest = ScrivDigest.sha256(data)
                 var token = UUID().uuidString.lowercased()
                 while snapshots[token] != nil { token = UUID().uuidString.lowercased() }
-                snapshots[token] = Snapshot(sessionID: run.sessionID, bytes: buffer, count: count, sha256: digest)
-                transferred = true
+                snapshots[token] = Snapshot(sessionID: run.sessionID, profile: profile)
                 return ["schemaVersion": 1, "runID": run.sessionID.uuidString.lowercased(),
                         "workspaceID": run.runID.uuidString.lowercased(),
-                        "token": token, "sha256": digest, "byteCount": count,
+                        "token": token, "sha256": profile.sha256, "byteCount": profile.count,
                         "maximumChunkBytes": maximumChunkBytes, "cumulative": true,
                         "format": "llvm-profraw"]
             case "coverage-read":
                 try keys(request, required: ["command", "token", "offset", "length"])
-                let snapshot = try lookup(request, sessionID: run.sessionID)
+                let snapshot = try lookup(request, sessionID: run.sessionID).profile
                 let offset = try integer(request["offset"], minimum: 0, maximum: snapshot.count)
                 let length = try integer(request["length"], minimum: 1, maximum: maximumChunkBytes)
                 guard offset < snapshot.count else { throw Failure() }
