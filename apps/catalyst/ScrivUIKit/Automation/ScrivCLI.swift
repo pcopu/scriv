@@ -321,6 +321,7 @@ final class ScrivCLI {
                     "verificationRoot": run.root.path,
                     "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "import-json", "acknowledge-json-import-error"]] as [String: Any]
             if run.approvedOrigin != nil {
+                result["semanticMenuActionScopes"] = (result["semanticMenuActionScopes"] as? [String] ?? []) + ["team-member-actions"]
                 for key in ["syntheticFixtureCommands", "commands"] {
                     result[key] = (result[key] as? [String] ?? []) + ["receive-fixture-email-code"]
                 }
@@ -649,6 +650,20 @@ final class ScrivCLI {
         switch command {
         case "menu-action":
             let scope = request["scope"] as? String
+            if scope == "team-member-actions" {
+                guard Set(request.keys) == ["id", "command", "target", "scope", "action", "teamID", "memberID"],
+                      let approved = run.approvedOrigin,
+                      let workspace = window.rootViewController as? ScrivWorkspaceController,
+                      workspace.store.account != nil, workspace.store.cloud.baseURL == approved,
+                      let teams = workspace.presentedViewController as? TeamsController,
+                      teams.store === workspace.store, let button = view as? UIButton,
+                      let teamID = request["teamID"] as? String, let memberID = request["memberID"] as? String,
+                      let title = request["action"] as? String,
+                      let action = teams.cliMemberAction(on: button, teamID: teamID, memberID: memberID, title: title)
+                else { throw Failure("Team member action is outside the supported isolated scope") }
+                button.sendAction(action)
+                return ["dispatched": true, "coverage": "semantic-menu-action"]
+            }
             if scope == "workspace-discussion" || scope == "workspace-panels" {
                 let discussion = scope == "workspace-discussion"
                 let unavailable = discussion ? "Workspace discussion action is unavailable" : "Workspace panel action is unavailable"

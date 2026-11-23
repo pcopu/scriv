@@ -66,8 +66,9 @@ final class TeamsController: ScrivScreenController, UIAdaptivePresentationContro
         }
         let oldSelection = selectedTeamID
         if !store.teams.contains(where: { $0.id == selectedTeamID }) { selectedTeamID = store.teams.first?.id ?? ""; details = nil; recentInvitation = nil }
-        if lastTeams != store.teams || accountChanged || lastProjectID != store.project.id || lastCloudProjectID != store.project.cloudProjectId || lastSyncing != store.isSyncing { render() }
-        if accountChanged || oldSelection != selectedTeamID { reload() }
+        let selectionChanged = oldSelection != selectedTeamID
+        if lastTeams != store.teams || accountChanged || selectionChanged || lastProjectID != store.project.id || lastCloudProjectID != store.project.cloudProjectId || lastSyncing != store.isSyncing { render() }
+        if accountChanged || selectionChanged { reload() }
     }
     private func render() {
         lastTeams = store.teams; lastAccount = store.editorAccountContext; lastProjectID = store.project.id; lastCloudProjectID = store.project.cloudProjectId; lastSyncing = store.isSyncing
@@ -162,8 +163,11 @@ final class TeamsController: ScrivScreenController, UIAdaptivePresentationContro
             let roles = team.role == "owner" ? ["admin", "member", "viewer"] : ["member", "viewer"]
             let menu = CharacterTeamUI.menu(role.capitalized, actions: roles.map { target in UIAction(title: "\(target.capitalized) · \(UIKitTeamPolicy.roleDescription(target).lowercased())", state: role == target ? .on : .off) { [weak self] _ in
                 guard target != role else { return }; self?.setRole(target, team: team, userID: id)
-            } }); menu.widthAnchor.constraint(equalToConstant: 150).isActive = true; menu.isEnabled = !working; row.addArrangedSubview(menu)
+            } })
+            menu.accessibilityIdentifier = "team-member-role-" + id
+            menu.widthAnchor.constraint(equalToConstant: 150).isActive = true; menu.isEnabled = !working; row.addArrangedSubview(menu)
             let more = CharacterTeamUI.button("", symbol: "ellipsis") {}; more.accessibilityLabel = "Actions for \(name)"
+            more.accessibilityIdentifier = "team-member-options-" + id
             more.menu = UIMenu(children: [UIAction(title: "Remove member…", attributes: .destructive) { [weak self] _ in self?.confirmRemoval(team: team, userID: id, name: name, isSelf: id == self?.store.account?.id) }]); more.showsMenuAsPrimaryAction = true; more.isEnabled = !working; row.addArrangedSubview(more)
         } else { let roleLabel = ScrivUIKitTheme.label(role.capitalized, size: 14, color: ScrivUIKitTheme.secondary); roleLabel.widthAnchor.constraint(equalToConstant: 188).isActive = true; row.addArrangedSubview(roleLabel) }
         return row
@@ -203,44 +207,103 @@ final class TeamsController: ScrivScreenController, UIAdaptivePresentationContro
     }
     private func nameTeam(renaming team: CloudTeam?) {
         let account = store.editorAccountContext
-        let alert = UIAlertController(title: team == nil ? "Create a team" : "Rename team", message: team == nil ? "Creating a team does not subscribe or charge you. Activate Team separately to enable shared projects and image-file hosting." : nil, preferredStyle: .alert)
-        alert.addTextField { $0.placeholder = "Team name"; $0.text = team?.name; $0.autocapitalizationType = .words }
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: team == nil ? "Create" : "Rename", style: .default) { [weak self, weak alert] _ in
-            guard let self, self.store.editorAccountContext == account else { return }
-            let name = (alert?.textFields?.first?.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !name.isEmpty, name.utf16.count <= 100 else { self.showError("Enter a team name of 1–100 characters."); return }
-            self.run {
+        let field = CharacterTeamUI.field("Team name", value: team?.name ?? "")
+        field.autocapitalizationType = .words
+        presentOperation(team == nil ? "Create a team" : "Rename team",
+                         message: team == nil ? "Creating a team does not subscribe or charge you. Activate Team separately to enable shared projects and image-file hosting." : nil,
+                         field: field, submit: team == nil ? "Create" : "Rename",
+                         validation: { name in
+                             name.isEmpty || name.utf16.count > 100 ? "Enter a team name of 1–100 characters." : nil
+                         }) { [weak self] name in
+            guard let self else { return }
+            if let team {
+                guard let current = self.team, current.id == team.id, UIKitTeamPolicy.canManage(current) else { return }
+            }
+            run {
                 if let team { try await self.store.cloud.renameTeam(teamId: team.id, name: name) }
-                else { let created = try await self.store.cloud.createTeam(name: name); if self.active, self.store.editorAccountContext == account { self.selectedTeamID = created.id } }
+                else {
+                    let created = try await self.store.cloud.createTeam(name: name)
+                    if self.active, self.store.editorAccountContext == account { self.selectedTeamID = created.id }
+                }
                 if self.active, self.store.editorAccountContext == account { self.details = nil; self.reload() }
             }
-        }); present(alert, animated: true)
+        }
     }
     private func joinTeam() {
         let account = store.editorAccountContext
-        let alert = UIAlertController(title: "Join a team", message: "Paste a Scriv invitation for the server selected in Settings.", preferredStyle: .alert)
-        alert.addTextField { $0.placeholder = "Invitation link or token"; $0.autocorrectionType = .no; $0.autocapitalizationType = .none }
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Join", style: .default) { [weak self, weak alert] _ in
-            guard let self, self.store.editorAccountContext == account else { return }
-            let value = alert?.textFields?.first?.text ?? ""
-            self.run { let token = try TeamInvitation.token(from: value, serverURL: self.store.cloud.baseURL); let joined = try await self.store.cloud.joinTeam(token: token)
+        let field = CharacterTeamUI.field("Invitation link or token")
+        field.autocorrectionType = .no
+        field.autocapitalizationType = .none
+        presentOperation("Join a team", message: "Paste a Scriv invitation for the server selected in Settings.",
+                         field: field, submit: "Join") { [weak self] value in
+            guard let self else { return }
+            run {
+                let token = try TeamInvitation.token(from: value, serverURL: self.store.cloud.baseURL)
+                let joined = try await self.store.cloud.joinTeam(token: token)
                 if self.active, self.store.editorAccountContext == account { self.selectedTeamID = joined.id; self.details = nil; self.reload() }
             }
-        }); present(alert, animated: true)
+        }
     }
     private func setRole(_ role: String, team: CloudTeam, userID: String) {
         run { [self] in try await store.cloud.setMemberRole(teamId: team.id, userId: userID, role: role); try await store.cloud.refreshAccount(); reload() }
     }
     private func confirmRemoval(team: CloudTeam, userID: String, name: String, isSelf: Bool) {
+        presentOperation(isSelf ? "Leave this team?" : "Remove \(name)?",
+                         message: "Access to the team's shared projects ends immediately. Prior edits and messages remain in history. Revoke shared invitation links too if the person must not rejoin.",
+                         submit: isSelf ? "Leave team" : "Remove member", destructive: true) { [weak self] _ in
+            guard let self, let current = self.team, current.id == team.id else { return }
+            if isSelf {
+                guard store.account?.id == userID, current.role != "owner" else { return }
+            } else {
+                guard let role = members.first(where: { $0["id"]?.string == userID })?["role"]?.string,
+                      UIKitTeamPolicy.canEditMember(actorRole: current.role, targetRole: role) else { return }
+            }
+            run {
+                try await self.store.cloud.removeMember(teamId: team.id, userId: userID)
+                try await self.store.cloud.refreshAccount()
+                if !isSelf { self.reload() }
+            }
+        }
+    }
+    private func presentOperation(_ title: String, message: String?, field: UITextField? = nil,
+                                  submit: String, destructive: Bool = false,
+                                  validation: @escaping (String) -> String? = { _ in nil },
+                                  perform: @escaping (String) -> Void) {
+        guard active, !working, store.account != nil, presentedViewController == nil else { return }
         let account = store.editorAccountContext
-        let alert = UIAlertController(title: isSelf ? "Leave this team?" : "Remove \(name)?", message: "Access to the team's shared projects ends immediately. Prior edits and messages remain in history. Revoke shared invitation links too if the person must not rejoin.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: isSelf ? "Leave team" : "Remove member", style: .destructive) { [weak self] _ in
-            guard let self, self.store.editorAccountContext == account else { return }
-            self.run { try await self.store.cloud.removeMember(teamId: team.id, userId: userID); try await self.store.cloud.refreshAccount(); if !isSelf { self.reload() } }
-        }); present(alert, animated: true)
+        let sheet = ScrivScreenController(store: store, scopeToProject: false)
+        sheet.title = title
+        let form = CharacterTeamSheetLayout(title: title) { [weak sheet] in sheet?.dismiss(animated: true) }
+        form.close.configuration?.title = "Cancel"
+        form.close.configuration?.image = nil
+        form.close.accessibilityLabel = "Cancel"
+        form.close.accessibilityIdentifier = "team-operation-cancel"
+        if let message { form.content.addArrangedSubview(ScrivUIKitTheme.label(message, size: 15, color: ScrivUIKitTheme.secondary)) }
+        let issue = ScrivUIKitTheme.label("", size: 14, color: .systemRed)
+        if let field {
+            field.accessibilityIdentifier = "team-operation-field"
+            form.content.addArrangedSubview(field)
+            form.content.addArrangedSubview(issue)
+        }
+        issue.isHidden = true
+        let button = CharacterTeamUI.button(submit, primary: true) { [weak self, weak sheet] in
+            guard let self, let sheet, !sheet.isBeingDismissed else { return }
+            let value = (field?.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if let message = validation(value) {
+                issue.text = message
+                issue.isHidden = false
+                return
+            }
+            sheet.dismiss(animated: true) { [weak self] in
+                guard let self, active, !working, store.editorAccountContext == account else { return }
+                perform(value)
+            }
+        }
+        if destructive { button.configuration?.baseBackgroundColor = .systemRed }
+        button.accessibilityIdentifier = "team-operation-submit"
+        form.footer.addArrangedSubview(button)
+        sheet.view = form
+        CharacterTeamUI.present(sheet, from: self, width: 520, height: 300)
     }
     private func openInvitations() {
         guard let team else { return }
@@ -316,3 +379,32 @@ final class TeamsController: ScrivScreenController, UIAdaptivePresentationContro
     private func stop() { active = false; loadID = UUID(); operationID = UUID(); loadTask?.cancel(); operationTask?.cancel(); recentInvitation = nil }
     private func close() { stop(); dismiss(animated: true) }
 }
+
+#if SCRIV_CLI_AUTOMATION
+extension TeamsController {
+    /// Use only the actual member row's stored, visible action.
+    func cliMemberAction(on button: UIButton, teamID: String, memberID: String, title: String) -> UIAction? {
+        guard active, !working, !loading, segments.selectedSegmentIndex == 1,
+              presentedViewController == nil, !isBeingPresented, !isBeingDismissed, transitionCoordinator == nil,
+              let surface = viewIfLoaded, button.isDescendant(of: body), button.isDescendant(of: surface),
+              button.showsMenuAsPrimaryAction, button.isEnabled,
+              let team, team.id == teamID, memberID != store.account?.id,
+              let role = members.first(where: { $0["id"]?.string == memberID })?["role"]?.string,
+              UIKitTeamPolicy.canEditMember(actorRole: team.role, targetRole: role),
+              let menu = button.menu, menu.title.isEmpty, menu.options.isEmpty else { return nil }
+        let choices = menu.children.compactMap { $0 as? UIAction }
+        guard choices.count == menu.children.count else { return nil }
+        if button.accessibilityIdentifier == "team-member-options-" + memberID {
+            guard title == "Remove member…", choices.count == 1,
+                  let action = choices.first, action.title == title, action.attributes == .destructive else { return nil }
+            return action
+        }
+        guard button.accessibilityIdentifier == "team-member-role-" + memberID else { return nil }
+        let roles = team.role == "owner" ? ["admin", "member", "viewer"] : ["member", "viewer"]
+        let titles = roles.map { "\($0.capitalized) · \(UIKitTeamPolicy.roleDescription($0).lowercased())" }
+        guard choices.map(\.title) == titles,
+              zip(choices, roles).allSatisfy({ $0.0.attributes.isEmpty && $0.0.state == ($0.1 == role ? .on : .off) }) else { return nil }
+        return choices.first { $0.title == title && $0.state == .off }
+    }
+}
+#endif

@@ -87,6 +87,9 @@ export async function startNativeCloudFixture() {
       prepareInvitations: () => response('prepare-invitations'),
       interruptInvitationLoad: () => response('interrupt-invitation-load'),
       invitationState: () => response('invitation-state'),
+      prepareTeamManagement: () => response('prepare-team-management'),
+      addTeamManagementMember: teamId => response(['add-team-management-member', teamId]),
+      teamManagementState: () => response('team-management-state'),
       prepareHistoryPages: () => response('prepare-history-pages'),
       changeHistoryPage: mode => response(['change-history-page', mode]),
       historyPageState: () => response('history-page-state'),
@@ -476,6 +479,39 @@ async function startWorker(root) {
         .bind(invitationTeamID).all();
       return { links, members, ...await nativeWorker.invitationRequests() };
     }
+    let managementMember;
+    async function prepareTeamManagement() {
+      assert.equal(managementMember, undefined);
+      const other = randomUUID(), team = randomUUID(), now = Date.now();
+      const invitation = randomBytes(32).toString('base64url');
+      await db.batch([
+        db.prepare('INSERT INTO users(id,github_id,name,created_at) VALUES(?,?,?,?)')
+          .bind(other, 'fixture-' + other, 'Synthetic collaborator', now),
+        db.prepare("INSERT INTO teams(id,name,owner_id,created_at,subscription_status,paid_until) VALUES(?,?,?,?,'active',?)")
+          .bind(team, 'Synthetic guest Team', other, now, now + 300000),
+        db.prepare("INSERT INTO team_members(team_id,user_id,role,joined_at) VALUES(?,?,'owner',?)").bind(team, other, now),
+        db.prepare("INSERT INTO join_links(id,team_id,token_hash,role,created_by,created_at,expires_at) VALUES(?,?,?,'viewer',?,?,?)")
+          .bind(randomUUID(), team, createHash('sha256').update(invitation).digest('hex'), other, now, now + 300000),
+      ]);
+      managementMember = other;
+      return { memberID: other, invitedTeamID: team, invitation };
+    }
+    async function addTeamManagementMember(teamId) {
+      assert.ok(managementMember);
+      const team = await db.prepare('SELECT teams.id FROM teams JOIN users ON users.id=teams.owner_id WHERE teams.id=? AND users.email=?')
+        .bind(teamId, nativeFixtureEmail).first();
+      assert.equal(team?.id, teamId);
+      await db.prepare("INSERT INTO team_members(team_id,user_id,role,joined_at) VALUES(?,?,'member',?)")
+        .bind(teamId, managementMember, Date.now()).run();
+      return true;
+    }
+    async function teamManagementState() {
+      assert.ok(managementMember);
+      const self = await db.prepare('SELECT id FROM users WHERE email=?').bind(nativeFixtureEmail).first();
+      const { results: teams } = await db.prepare('SELECT id,name,subscription_status AS status FROM teams ORDER BY id').all();
+      const { results: members } = await db.prepare('SELECT team_id AS teamID,user_id AS memberID,role FROM team_members ORDER BY team_id,user_id').all();
+      return { selfID: self?.id ?? null, teams, members };
+    }
     return { origin: base.origin, createFreeTeam,
       createPaidTeam: () => withFixtureOwner(async token => ({ id: (await seedPaidTeam(token)).id })),
       status: async () => ({ deliveries: await mailbox.count(), outbound }),
@@ -487,6 +523,7 @@ async function startWorker(root) {
       prepareHostedImage, repairHostedImage, hostedImageResponses: () => nativeWorker.hostedImageResponses(),
       prepareSharedGeneration, sharedGenerationState,
       prepareInvitations, invitationState, interruptInvitationLoad: () => nativeWorker.interruptInvitationLoad(),
+      prepareTeamManagement, addTeamManagementMember, teamManagementState,
       prepareHistoryPages, changeHistoryPage: mode => nativeWorker.changeHistoryPage(mode),
       historyPageState: () => nativeWorker.historyPageState(),
       takeCode: () => mailbox.takeCode(),
@@ -518,6 +555,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'hosted-image-responses': worker.hostedImageResponses, 'prepare-shared-generation': worker.prepareSharedGeneration,
         'shared-generation-state': worker.sharedGenerationState, 'prepare-invitations': worker.prepareInvitations,
         'interrupt-invitation-load': worker.interruptInvitationLoad, 'invitation-state': worker.invitationState,
+        'prepare-team-management': worker.prepareTeamManagement, 'add-team-management-member': worker.addTeamManagementMember,
+        'team-management-state': worker.teamManagementState,
         'prepare-history-pages': worker.prepareHistoryPages, 'change-history-page': worker.changeHistoryPage,
         'history-page-state': worker.historyPageState };
       assert.ok(Object.hasOwn(operations, operation));
