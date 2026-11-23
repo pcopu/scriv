@@ -7019,9 +7019,18 @@
       "id": "audit-v82-32fbe1ffb8db6d975f10",
       "title": "Explicitly retry a pending cloud sync",
       "featureId": "collaboration",
-      "state": "needs-extension",
+      "state": "existing",
       "existingPaths": [
-        "cloud/tests-e2e/collaboration-journey.mjs"
+        "cloud/tests-e2e/collaboration-journey.mjs",
+        "tests/e2e/journeys/native-cloud-project-sync.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivAccountController.swift",
+        "symbol": "storeDidChange"
+      },
+      "actionIds": [
+        "menu-action",
+        "activate"
       ],
       "plannedActions": [
         "Make a local edit in an isolated linked project, arrange a sync failure or disconnection, restore the connection and explicitly invoke retry."

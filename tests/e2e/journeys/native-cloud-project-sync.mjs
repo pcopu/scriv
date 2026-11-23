@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { observePresentedError } from '../support/presented-error.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
-import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
+import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, interruptedCloudEdit, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Requires a verified automation-enabled Catalyst app');
@@ -28,6 +28,27 @@ const click = async (label, settled) => session.command('activate', { target: (a
   node => node.type === 'UIButton' && (node.title === label || node.label === label), settled)).path });
 const workspaceProject = node => node.identifier === 'workspace-project';
 const projectsSearch = node => node.placeholder === 'Find a project';
+async function appendToCloudDialogue(line, addition, armFixture) {
+  const script = scriptAuthoringSteps(session);
+  await script.selectTab('Script');
+  assert.equal(line.kind, 'dialogue');
+  await script.displayed(line.id, line.text, { finished: true });
+  const editKey = (await session.command('keys')).find(command => keyIs(command, '\r', ['command'])
+    && command.action === 'toggleScriptEditingFromKeyboard:');
+  assert.ok(editKey, 'The selected script line exposes its native edit shortcut');
+  await script.key(editKey.input, editKey.modifiers);
+  const editorID = 'script-editor-' + line.id;
+  const nodes = await session.waitFor(nodes => nodesByID(nodes, editorID).some(node => node.firstResponder && node.text === line.text));
+  await script.reveal(nodesByID(nodes, editorID)[0], nodes);
+  await session.command('selection', { target: editorID, start: line.text.length, end: line.text.length });
+  await script.waitEditor(editorID, line.text, line.text.length);
+  const revisedText = line.text + addition;
+  await armFixture();
+  await session.command('type', { target: editorID, text: addition });
+  await script.waitEditor(editorID, revisedText, revisedText.length);
+  await script.finishEditor();
+  return revisedText;
+}
 // Cloud snapshots return items by ID. Each entry's order remains part of the comparison.
 const byID = (a, b) => a.id.localeCompare(b.id);
 const content = ({ revision, modifiedAt, entries, characters, ...rest }) => ({
@@ -190,26 +211,8 @@ try {
   assert.deepEqual(await session.command('presented-alerts'), []);
 
   step = 'edit an already-linked script through the native editor';
-  const script = scriptAuthoringSteps(session);
-  await script.selectTab('Script');
   const line = synced.entries.find(entry => entry.id === 'line-01');
-  assert.equal(line.kind, 'dialogue');
-  await script.displayed(line.id, line.text, { finished: true });
-  const editKey = (await session.command('keys')).find(command => keyIs(command, '\r', ['command'])
-    && command.action === 'toggleScriptEditingFromKeyboard:');
-  assert.ok(editKey, 'The selected script line exposes its native edit shortcut');
-  await script.key(editKey.input, editKey.modifiers);
-  const editorID = 'script-editor-' + line.id;
-  const nodes = await session.waitFor(nodes => nodesByID(nodes, editorID).some(node => node.firstResponder && node.text === line.text));
-  await script.reveal(nodesByID(nodes, editorID)[0], nodes);
-  await session.command('selection', { target: editorID, start: line.text.length, end: line.text.length });
-  await script.waitEditor(editorID, line.text, line.text.length);
-  const addition = ' Ask about the invoice.';
-  const revisedText = line.text + addition;
-  await fixture.loseNextEditReceipt(synced.cloudProjectId);
-  await session.command('type', { target: editorID, text: addition });
-  await script.waitEditor(editorID, revisedText, revisedText.length);
-  await script.finishEditor();
+  const revisedText = await appendToCloudDialogue(line, ' Ask about the invoice.', () => fixture.loseNextEditReceipt(synced.cloudProjectId));
   const edited = await waitForSavedProject(session, candidate => candidate.id === synced.id
     && candidate.entries.some(entry => entry.id === line.id && entry.text === revisedText));
   assert.equal(edited.cloudProjectId, synced.cloudProjectId);
@@ -218,7 +221,7 @@ try {
     assert.equal(edited.entries.find(entry => entry.id === previous.id)?.text, previous.text);
   }
   await verifySavedCloudEditRetry(edited);
-  await script.displayed(line.id, revisedText, { finished: true });
+  await scriptAuthoringSteps(session).displayed(line.id, revisedText, { finished: true });
 
   step = 'open the cloud project after switching to a distinct local project';
   await session.command('key', { input: 'n', modifiers: ['command'] });
@@ -313,7 +316,7 @@ try {
   await verifyDiscussionHistory();
   await verifyFreeTeam();
   await verifyGenerationHistory();
-  await verifyAccountReconnectAndSignOut(downloaded);
+  await verifyAccountReconnectAndSignOut(await verifyInterruptedCloudEditRecovery(downloaded));
   await fixture.assertNoOutbound();
   console.log('PASS: native sync, linked edit, discussions and fresh cloud replica');
 } catch (error) {
@@ -366,6 +369,52 @@ async function verifySavedCloudEditRetry(edited) {
   assert.deepEqual((await session.command('loaded-project')).project, edited);
   assert.deepEqual((await session.command('persisted-projects')).find(project => project.id === edited.id), edited);
   console.log('PASS: native reconnect retries the exact saved edit and receives the original cloud receipt');
+}
+
+async function verifyInterruptedCloudEditRecovery(project) {
+  step = 'save a local cloud edit interrupted before its first commit';
+  const line = project.entries.find(entry => entry.id === 'line-01');
+  const text = await appendToCloudDialogue(line, ' Keep the invoice on file.', () => fixture.interruptNextEdit(project.cloudProjectId));
+  const saved = await waitForSavedProject(session, candidate => candidate.id === project.id
+    && candidate.entries.find(entry => entry.id === line.id)?.text === text);
+  assert.equal(saved.revision, project.revision + 1);
+  assert.deepEqual(saved.entries.filter(entry => entry.id !== line.id), project.entries.filter(entry => entry.id !== line.id));
+  await observePresentedError(session, interruptedCloudEdit);
+  const interrupted = await fixture.interruptedEditState();
+  assert.equal(interrupted.phase, 'interrupted');
+  const outbox = join(session.root, 'Outbox');
+  const [scope, ...others] = await readdir(outbox);
+  assert.match(scope, /^[0-9a-f]{64}$/);
+  assert.deepEqual(others, []);
+  const directory = join(outbox, scope);
+  const pendingName = interrupted.commandID + '.json';
+  assert.deepEqual(await readdir(directory), [pendingName]);
+  const original = await readFile(join(directory, pendingName));
+  assert.deepEqual(await session.command('acknowledge-cloud-save-error', { message: interruptedCloudEdit }), { acknowledged: true });
+  await control(workspaceProject, true);
+  assert.equal((await fixture.interruptedEditState()).leaseReleased, true, 'Closing the editor released the original lease through the Worker');
+
+  step = 'reconcile a rejected saved edit through the same Account retry control';
+  await openWorkspacePanel('Scriv account…');
+  await click('Retry saved cloud commands', true);
+  await control(node => node.title === 'Sync this script', true);
+  await session.command('key', { input: 'Escape', modifiers: [] });
+  await control(workspaceProject, true);
+  const recovered = await fixture.interruptedEditState();
+  assert.equal(recovered.phase, 'reconciled');
+  assert.equal(recovered.commandID, interrupted.commandID);
+  assert.equal(recovered.retryStatus, 423);
+  assert.equal(recovered.retryCode, 'lease_required');
+  assert.ok(recovered.replacementID && recovered.replacementID !== recovered.commandID);
+  assert.ok(Number.isSafeInteger(recovered.sequence) && recovered.sequence > 0);
+  const rejectedName = interrupted.commandID + '.rejected';
+  assert.deepEqual(await readdir(directory), [rejectedName]);
+  assert.ok(original.equals(await readFile(join(directory, rejectedName))), 'The rejected command retains its exact original bytes');
+  assert.deepEqual(await session.command('presented-alerts'), []);
+  assert.deepEqual((await session.command('loaded-project')).project, saved);
+  assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === saved.id), saved);
+  console.log('PASS: native recovery preserves a definitively rejected command and synchronizes the same local edit under a new command');
+  return saved;
 }
 
 async function verifyAccountReconnectAndSignOut(downloaded) {

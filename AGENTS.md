@@ -1,15 +1,18 @@
 # Scriv Agent Guidance
 
-## Current Coverage Workflow, November 13, 2026
+## Current Coverage Workflow, November 22, 2026
 
-The user cleared the exhaustive 100% goal and redirected work toward making
-actual coverage much faster. Automatically connect existing source plans to
-discovered CLI journeys as provisional candidates, deduplicate the journeys,
-run them with instrumentation, and use observed source ranges to choose the
-next gaps. Detailed manual source-to-assertion mapping is not a prerequisite
-for these runs. Preserve assertions and keep planning, manual mappings,
-observed execution and test outcomes separate. Do not count guessed connections
-as observed coverage or resume the former case-by-case mapping grind.
+For the goal of 100% observed coverage across the agreed scopes, start with
+real application behavior and its entry point. Match it to actions discovered
+from the CLI and to an existing scenario when possible. Extend the scenario
+with the missing condition, or add a CLI action that calls the production path.
+Check callers, registrations and supported builds before removing unreachable
+code. Keep blocked behavior visible with its specific reason.
+Deduplicate runnable scenarios, reuse the compatible instrumented build and
+report unique lines added, remaining gaps and elapsed time after each batch.
+Keep provisional matches, manual links, observed execution and passing results
+distinct. Reuse existing assertions and run scenarios without waiting for a
+complete manual source-to-assertion map.
 See `docs/testing/measurement-first-coverage.md` for the verified workflow.
 
 For coverage work, first query the retained evidence with `tracer measure where
@@ -40,8 +43,9 @@ removal is not evidence of behavioral parity. See docs/testing/cli-only-tests.md
 
 ## Coverage Goal, History and Reporting
 
-The prior target was **100% overall Tracer coverage**; the current task is the
-measurement-first workflow above. Do not manufacture links, exclusions,
+The prior target was **100% overall Tracer coverage**. The current target is
+100% observed coverage across the agreed instrumentation scopes using the
+workflow above. Do not manufacture links, exclusions,
 passing results or runtime evidence to reach a percentage. Report each metric with its source checkpoint,
 numerator, denominator and scope. A missing execution measure is unknown, not
 zero. Never replace a completed milestone with a differently scoped low number.

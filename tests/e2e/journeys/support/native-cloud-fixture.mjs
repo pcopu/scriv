@@ -11,6 +11,7 @@ const cloud = fileURLToPath(new URL('../../../../cloud/', import.meta.url));
 export const nativeFixtureEmail = 'synthetic-native@example.invalid';
 export const nativeFixtureTeam = 'Synthetic Story Team';
 export const lostCloudEditReceipt = 'The cloud edit receipt could not be delivered. Try syncing again.';
+export const interruptedCloudEdit = 'The connection was interrupted before saving this cloud edit.';
 
 export async function startNativeCloudFixture() {
   const require = createRequire(join(cloud, 'package.json'));
@@ -72,6 +73,8 @@ export async function startNativeCloudFixture() {
       loseNextEditReceipt: projectId => response(['lose-edit-receipt', projectId]),
       editReceiptState: () => response('edit-receipt-state'),
       matchesPendingEdit: payload => response(['matches-pending-edit', payload]),
+      interruptNextEdit: projectId => response(['interrupt-edit', projectId]),
+      interruptedEditState: () => response('interrupted-edit-state'),
       assertNoOutbound: async () => assert.equal((await response('status')).outbound, 0),
       close,
     };
@@ -105,11 +108,51 @@ async function startWorker(root) {
       let pending;
       let receipt;
       let attempts = 0;
+      let interruption;
+      const withoutLeases = operations => JSON.stringify(operations.map(({ lease, ...item }) => item));
+      async function interruptedCommand(payload, upstream) {
+        const state = interruption;
+        switch (state.phase) {
+        case 'armed': {
+          const item = payload.operations.find(item => item.kind === 'entry' && item.lease);
+          if (!item || payload.label !== 'Edit script') throw new Error('Expected a leased script edit');
+          Object.assign(state, { phase: 'interrupted', draft: payload, item });
+          return Response.json({ error: { code: 'connection_interrupted', message: ${JSON.stringify(interruptedCloudEdit)} } }, { status: 503 });
+        }
+        case 'interrupted': {
+          if (!state.leaseReleased || JSON.stringify(payload) !== JSON.stringify(state.draft)) throw new Error('Expected the original saved command after the app released its lease');
+          const response = await upstream();
+          const code = (await response.clone().json()).error?.code;
+          if (response.status !== 423 || code !== 'lease_required') throw new Error('The Worker did not reject the expired lease');
+          Object.assign(state, { phase: 'rejected', retryStatus: response.status, retryCode: code });
+          return response;
+        }
+        case 'rejected': {
+          if (payload.commandId === state.draft.commandId || payload.label !== 'Sync offline edits'
+              || withoutLeases(payload.operations) !== withoutLeases(state.draft.operations)) throw new Error('Reconciliation changed the saved edit');
+          const response = await upstream();
+          const observed = await response.clone().json();
+          if (!response.ok || observed.commandId !== payload.commandId || !Number.isSafeInteger(observed.seq)) throw new Error('The Worker did not accept the reconciled edit');
+          Object.assign(state, { phase: 'reconciled', replacementID: observed.commandId, sequence: observed.seq });
+          return response;
+        }
+        }
+      }
       export default class extends WorkerEntrypoint {
         async fetch(request) {
           const upstream = () => worker.fetch(request, this.env, this.ctx);
-          if (!target || request.method !== 'POST' || new URL(request.url).pathname !== target) return upstream();
+          const path = new URL(request.url).pathname;
+          if (interruption?.phase === 'interrupted' && request.method === 'DELETE' && path === target.replace(/commands$/, 'leases')) {
+            const released = await request.clone().json();
+            const response = await upstream();
+            const { item, draft } = interruption;
+            if (response.ok && released.itemId === item.id && released.token === item.lease.token
+                && released.fence === item.lease.fence && released.sessionId === draft.sessionId) interruption.leaseReleased = true;
+            return response;
+          }
+          if (!target || request.method !== 'POST' || path !== target) return upstream();
           const payload = await request.clone().json();
+          if (interruption && interruption.phase !== 'reconciled') return interruptedCommand(payload, upstream);
           if (receipt && attempts >= 2 && payload.commandId !== receipt.commandId) return upstream();
           const serialized = JSON.stringify(payload);
           if (pending !== undefined && pending !== serialized) throw new Error('The saved edit changed before its receipt was retried');
@@ -132,6 +175,15 @@ async function startWorker(root) {
         }
         editReceiptState() { return { attempts, commandID: receipt?.commandId ?? null, sequence: receipt?.seq ?? null }; }
         matchesPendingEdit(payload) { return pending !== undefined && pending === JSON.stringify(payload); }
+        interruptEdit(projectId) {
+          if (interruption || attempts !== 2 || target !== '/v1/projects/' + projectId + '/commands') throw new Error('Use the same isolated project after the receipt recovery');
+          interruption = { phase: 'armed', leaseReleased: false };
+          return true;
+        }
+        interruptedEditState() {
+          const { phase, leaseReleased, draft, retryStatus, retryCode, replacementID, sequence } = interruption;
+          return { phase, leaseReleased, commandID: draft?.commandId, retryStatus, retryCode, replacementID, sequence };
+        }
       }`, { mode: 0o600 });
     const denyOutbound = () => { outbound++; throw new Error('Unexpected fixture outbound request'); };
     const common = { unsafeInspectorProxy: false, compatibilityDate: '2026-10-29', modules: true, outboundService: denyOutbound };
@@ -198,6 +250,8 @@ async function startWorker(root) {
       loseEditReceipt: projectId => nativeWorker.loseEditReceipt(projectId),
       editReceiptState: () => nativeWorker.editReceiptState(),
       matchesPendingEdit: payload => nativeWorker.matchesPendingEdit(payload),
+      interruptEdit: projectId => nativeWorker.interruptEdit(projectId),
+      interruptedEditState: () => nativeWorker.interruptedEditState(),
       takeCode: () => mailbox.takeCode(),
       projects: async () => (await db.prepare(
         'SELECT projects.id, projects.title FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.id',
@@ -217,7 +271,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
       const [operation, value] = Array.isArray(message) ? message : [message];
       const operations = { status: worker.status, 'take-code': worker.takeCode, 'create-free-team': worker.createFreeTeam,
         projects: worker.projects, 'session-states': worker.sessionStates, 'lose-edit-receipt': worker.loseEditReceipt,
-        'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit };
+        'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit,
+        'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState };
       assert.ok(Object.hasOwn(operations, operation));
       const result = await operations[operation](value);
       if (process.connected) process.send(result);

@@ -1,5 +1,14 @@
 # Measurement-first coverage
 
+Start at a production entry point and identify the user behavior that reaches
+it. Discover the actual CLI actions and use `tracer app -- test --list` to find
+existing scenarios. Use `tracer proposal bind` with that discovery catalog to
+reuse a scenario, find a missing condition, or identify where the CLI needs a
+production action. Confirm the action reaches the intended control, especially
+for generic commands such as `activate`. Query retained measurements for that
+behavior before changing the scenario, then compare the passing union against
+the same reference scope after each batch.
+
 On November 20, all 12 cloud journeys passed in a fresh capture. The 15-module
 Worker scope observed 1,154 of 1,164 statement anchors, including 11 from real
 module initialization. Passing billing transport, media recovery and natural

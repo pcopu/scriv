@@ -95032,8 +95032,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 183,
-        "end": 190,
+        "start": 204,
+        "end": 211,
         "sha256": "2d581fb645a379a9df1c91d1158e0dbd3901709445c90433d33bc7fe5d5203b0"
       },
       "why": "The local package acquires a cloud project ID, the Worker stores the matching project row, and the signed-in discussion composer appears."
@@ -95053,8 +95053,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 223,
-        "end": 235,
+        "start": 226,
+        "end": 238,
         "sha256": "77dc09069997533e69cd2c32cc86ef6eccc1ebf81b1a70fe367a6aeb55fe411f"
       },
       "why": "Opening the Worker project reuses the original local replica and preserves all script fields and the second local project."
@@ -95073,8 +95073,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 44,
-        "end": 50,
+        "start": 65,
+        "end": 71,
         "sha256": "c2de74e1d6427291d2e107ed8e54f2fe6ffaffca09d0ea25aba7c72e616f6042"
       },
       "why": "The synthetic Worker accepts the exact challenge and the native app dismisses the sign-in prompt. Ordinary text routes remain refused."
@@ -95093,8 +95093,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 263,
-        "end": 278,
+        "start": 266,
+        "end": 281,
         "sha256": "c26e34774395fbffd391ed451198bac0421f5be51fdb0955c945680f5bcb08bf"
       },
       "why": "A second app process with no local replica downloads the entire edited script into a new saved package and verifies its worker project ID."
@@ -95115,7 +95115,7 @@
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
         "start": 204,
         "end": 235,
-        "sha256": "4c45116d78c9f36d340486d6ca90103b9fe0f25430dcfba6002031d90cc65961"
+        "sha256": "e27d2fb8f1a60754d35da6cef805cfbb2f1189306dc355ee1fe838bb501f4c54"
       },
       "why": "The ordinary native edit is committed in the owned Worker. The same pending command receives its original receipt on reconnect. The reopened cloud snapshot contains the complete edited content."
     },
@@ -95133,8 +95133,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 103,
-        "end": 115,
+        "start": 124,
+        "end": 136,
         "sha256": "062f1988b761e0528eba5ed7544407837ec493cf9a0a8ff1d59369efccc6ac99"
       },
       "why": "The Mentions tab shows its empty state and the Conversations tab keeps the saved resolved project thread after a normal refresh."
@@ -95154,8 +95154,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 239,
-        "end": 249,
+        "start": 242,
+        "end": 252,
         "sha256": "e41766c83b14f2fa96c5a60590493f004b0af45eb55dedca52e28d9a352842bc"
       },
       "why": "The native app displays both acknowledged messages, the reply quotes the original, and the conversation offers Reopen conversation after resolving."
@@ -95175,8 +95175,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 123,
-        "end": 134,
+        "start": 144,
+        "end": 155,
         "sha256": "58f86faf9de1f3b94e5ffa5626499e6698e21ec57f4ac1fca035eacaa726cfe5"
       },
       "why": "The real member list enters its no-match state and restores the exact owner from a case-insensitive role search."
@@ -95195,8 +95195,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 251,
-        "end": 259,
+        "start": 254,
+        "end": 262,
         "sha256": "8a1b4c7d695f47b4197245bcee21cc09f885159743d94e2f0a52ae8f79cb6494"
       },
       "why": "The line owns its own note and the original project conversation remains resolved and separate."
@@ -95214,8 +95214,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 135,
-        "end": 146,
+        "start": 156,
+        "end": 167,
         "sha256": "d6963f95fd540d2e683ba13772ea6768d128c7a73bb5de63ef3754e6153c5b17"
       },
       "why": "The journey witnesses both selection branches through the picker count and checks the retained selection in the draft."
@@ -95233,8 +95233,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 95,
-        "end": 101,
+        "start": 116,
+        "end": 122,
         "sha256": "b09fd351161853888568e5f22c24bec76a800c01259dd972289f0e5eb72a4e46"
       },
       "why": "The journey requires the invalid request to fail before activating the same visible row successfully."
@@ -95252,8 +95252,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 135,
-        "end": 146,
+        "start": 156,
+        "end": 167,
         "sha256": "d6963f95fd540d2e683ba13772ea6768d128c7a73bb5de63ef3754e6153c5b17"
       },
       "why": "The count alternates between one and zero after each selection and the composer shows the selected member when the picker closes."
@@ -95271,8 +95271,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 116,
-        "end": 121,
+        "start": 137,
+        "end": 142,
         "sha256": "cb196561db925622def196b33288cdcc11e0c309e79ef0557de0726851acf7cd"
       },
       "why": "The journey sees the line scope and exact line message before switching back to the resolved project discussion."
@@ -95290,8 +95290,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 295,
-        "end": 310,
+        "start": 298,
+        "end": 313,
         "sha256": "42af4238cddb926e20681ce6e22a45957e023cc330d0eff4cfe05da70432521a"
       },
       "why": "After activating the mention row the journey verifies the project scope, exact posted message and mention label."
@@ -95309,8 +95309,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 371,
-        "end": 383,
+        "start": 420,
+        "end": 432,
         "sha256": "dad4a101ba6705826aeadd0d816ce5065452648bd433ca7a44880b3f83034194"
       },
       "why": "The real reconnect uses the freshly downloaded replica and verifies its entire loaded and persisted project after reconnection."
@@ -95328,8 +95328,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 385,
-        "end": 398,
+        "start": 434,
+        "end": 447,
         "sha256": "7d6a87e3ade08eb4a149c3a515c5c011b8bd381d2f2ffe1ecc3b354a1ff47f14"
       },
       "why": "The authorized local Worker independently reports that the newer session was revoked, while the earlier session and the whole local replica remain intact."
@@ -95347,8 +95347,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 371,
-        "end": 383,
+        "start": 420,
+        "end": 432,
         "sha256": "dad4a101ba6705826aeadd0d816ce5065452648bd433ca7a44880b3f83034194"
       },
       "why": "The actual sync control enters and exits its busy state, then the loaded and saved replica and Worker project row remain identical."
@@ -95366,8 +95366,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 411,
-        "end": 421,
+        "start": 460,
+        "end": 470,
         "sha256": "033dc17a4baab545ac8416acba1f1f50e59f7f881d7582cc75f1df3656ead4fd"
       },
       "why": "The signed-out workspace sees each malformed, mismatched or out-of-scope request refused before any presentation."
@@ -95385,8 +95385,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 469,
-        "end": 478,
+        "start": 518,
+        "end": 527,
         "sha256": "1fbc7322aaeab9e4fa0785f3b502660b5f4531c9e3bc50d2a81ae99944489df7"
       },
       "why": "The owner name, role, team title and inactive plan are read from the real mounted sheet after the Worker loads team details."
@@ -95404,8 +95404,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 436,
-        "end": 451,
+        "start": 485,
+        "end": 500,
         "sha256": "38998050687396ac008884b4f15d2dc47790feb78413ee966731820a6a6df60c"
       },
       "why": "The journey reads exact original and edited script text from public read-only snapshots and verifies that the complete loaded model is unchanged."
@@ -95423,8 +95423,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 454,
-        "end": 466,
+        "start": 503,
+        "end": 515,
         "sha256": "968f9b6b086944385e275b6179ea86a1c35aec7e76f390fdd279c2e713826dc9"
       },
       "why": "The real discussion event displays the dedicated message, keeps Restore disabled, and offers no script snapshot."
@@ -95442,8 +95442,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 442,
-        "end": 447,
+        "start": 491,
+        "end": 496,
         "sha256": "27bd18a472446ec6b56a3bbd60b2b48ae158c0148856cf2672a47af25fa32ff8"
       },
       "why": "The two visually resolved rows show different independently known script text, proving that activation selected the intended revision."
@@ -95461,8 +95461,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 482,
-        "end": 485,
+        "start": 531,
+        "end": 534,
         "sha256": "a4146540f26469c2bd74ea2a7647d14d3205bb52a336995c65b2a7edcc79f823"
       },
       "why": "The mounted invitation view shows that the free team requires activation and keeps link creation disabled."
@@ -95581,8 +95581,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 347,
-        "end": 356,
+        "start": 350,
+        "end": 359,
         "sha256": "5995afe4a1b483b01baf7c3d0e3a31eb041d5fc125652b48589525be80bf356a"
       },
       "why": "The isolated cloud edit error is advertised and can be acknowledged once. A wrong message and a stale repeat are refused. The owned attachment goes away and the complete edit remains saved."
@@ -95603,8 +95603,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 347,
-        "end": 356,
+        "start": 350,
+        "end": 359,
         "sha256": "5995afe4a1b483b01baf7c3d0e3a31eb041d5fc125652b48589525be80bf356a"
       },
       "why": "The displayed cloud-save failure belongs to the active linked workspace. Acknowledgement leaves the loaded model and original pending command intact."
@@ -95627,11 +95627,33 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 358,
-        "end": 367,
+        "start": 361,
+        "end": 370,
         "sha256": "d47ad8cfd7afa135e15e1726c9079dd503800a3ea9f50bb715ff3c41124ea41f"
       },
       "why": "The same native workspace reconnects through Account. The real Worker confirms receipt identity and the matching pending record disappears. The complete loaded and saved project remains intact."
+    },
+    {
+      "id": "5032a9f385bf121d",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 573,
+        "end": 577,
+        "sha256": "b8065b466f69ffc64d26b7bddd4ab3f1dec2ab4bcda53babc2e7b61b0ba63f3c"
+      },
+      "actions": [
+        "menu-action workspace-panels Scriv account\u2026",
+        "activate Retry saved cloud commands",
+        "loaded-project",
+        "persisted-projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 397,
+        "end": 417,
+        "sha256": "529e26b9c37c29d4050b061f5400bf2b6ebb601c146f002af1f1685027dcced9"
+      },
+      "why": "The Account retry sends the saved edit unchanged. The isolated Worker rejects its released lease, and the client preserves the rejected command while resubmitting the edit with a fresh receipt. The scenario checks the complete loaded and saved projects."
     }
   ],
   "commentExclusions": [
