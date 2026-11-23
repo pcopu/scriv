@@ -118,6 +118,7 @@ enum ScrivKeyboardTextContext {
 final class ScrivUIKitApplication: UIApplication {
 #if SCRIV_CLI_AUTOMATION
     private(set) var cliMenuKeyCommands: [UIKeyCommand] = []
+    private var cliUpdateCheckMenuCommand: UICommand?
 #endif
     private var pressGate = ScrivKeyboardPressGate()
     private let toggleEditingSelector = NSSelectorFromString("scrivToggleScriptEditing:")
@@ -174,6 +175,7 @@ final class ScrivUIKitApplication: UIApplication {
         let settings = UIKeyCommand(title: "Settings…", action: #selector(showSettings(_:)), input: ",", modifierFlags: .command)
 #if SCRIV_CLI_AUTOMATION
         cliMenuKeyCommands = [settings]
+        cliUpdateCheckMenuCommand = updates
 #endif
         builder.remove(menu: .preferences)
         builder.insertSibling(UIMenu(title: "", identifier: .preferences, options: .displayInline, children: [settings]), afterMenu: .about)
@@ -259,6 +261,16 @@ final class ScrivUIKitApplication: UIApplication {
         (keyboardWindow?.rootViewController as? ScrivWorkspaceController)?.findInScript()
     }
 #if SCRIV_CLI_AUTOMATION
+    func performCLIUpdateCheck(in workspace: ScrivWorkspaceController) -> Bool {
+        // Keep an isolated CLI check on the real signing-blocked path.
+        guard !ScrivUpdateCoordinator.releaseSigningConfigured,
+              let command = cliUpdateCheckMenuCommand,
+              let presenter = UIKitPresentation.presenter,
+              presenter === workspace || (presenter is ScrivUpdateController && workspace.presentedViewController === presenter)
+        else { return false }
+        return sendAction(command.action, to: nil, from: command, for: nil)
+    }
+
     /// A synthetic single stroke, not physical-event delivery. Reuse the same
     /// eligibility policy and repeat fence; never manufacture private UIEvents.
     func performCLIKeyStroke(_ command: UIKeyCommand) -> Bool {

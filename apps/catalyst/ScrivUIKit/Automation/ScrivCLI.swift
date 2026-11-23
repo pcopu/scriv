@@ -386,6 +386,11 @@ final class ScrivCLI {
                     "workspace": workspace,
                     "verificationRoot": run.root.path,
                     "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error", "picture-timing-gesture"]] as [String: Any]
+            if !ScrivUpdateCoordinator.releaseSigningConfigured {
+                for key in ["semanticApplicationCommands", "commands"] {
+                    result[key] = (result[key] as? [String] ?? []) + ["check-for-updates"]
+                }
+            }
             if run.approvedOrigin != nil {
                 result["semanticMenuActionScopes"] = (result["semanticMenuActionScopes"] as? [String] ?? []) + ["team-member-actions"]
                 for key in ["syntheticFixtureCommands", "commands"] {
@@ -403,6 +408,13 @@ final class ScrivCLI {
                 ["coverage-snapshot", "coverage-read", "coverage-release"]
 #endif
             return result
+        }
+        if command == "check-for-updates" {
+            guard Set(request.keys) == ["id", "command"],
+                  let workspace = window.rootViewController as? ScrivWorkspaceController,
+                  let app = UIApplication.shared as? ScrivUIKitApplication,
+                  app.performCLIUpdateCheck(in: workspace) else { throw Failure("The isolated update check is unavailable") }
+            return ["dispatched": true]
         }
         if command == "local-image-evidence" {
             guard Set(request.keys).isSubset(of: ["id", "command"]),
@@ -765,7 +777,7 @@ final class ScrivCLI {
                     let expected = workspace.store.showDiscussion ? "Hide discussion" : "Discussion"
                     guard title == expected || title.hasPrefix(expected + " (") else { throw Failure(unavailable) }
                 } else {
-                    let panels = ["History…", "Teams and sharing…", "Generation history…"]
+                    let panels = ["History…", "Teams and sharing…", "Generation history…", "Codex…"]
                     guard panels.contains(title) || (title == "Scriv account…" && workspace.store.account != nil)
                     else { throw Failure(unavailable) }
                 }

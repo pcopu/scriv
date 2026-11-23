@@ -12,6 +12,11 @@ final class ScrivUpdateCoordinator {
     private weak var presenter: UIViewController?
     private var preparing = false
 
+    static var releaseSigningConfigured: Bool {
+        guard let key = Bundle.main.object(forInfoDictionaryKey: "SUPublicEDKey") as? String else { return false }
+        return Data(base64Encoded: key)?.count == 32
+    }
+
     func register(_ store: WorkspaceStore) { stores.add(store) }
 
     func show(from presenter: UIViewController) {
@@ -26,8 +31,7 @@ final class ScrivUpdateCoordinator {
         check()
     }
     private func check() {
-        guard let key = Bundle.main.object(forInfoDictionaryKey: "SUPublicEDKey") as? String,
-              Data(base64Encoded: key)?.count == 32 else {
+        guard Self.releaseSigningConfigured else {
             sheet?.render(["phase": "blocked", "message": "In-app updates are built in, but release signing is not configured yet. You can keep using Scriv. Nothing will be downloaded or installed."], reply: nil)
             return
         }
