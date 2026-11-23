@@ -18,12 +18,13 @@ const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 // Model the app-server protocol at its socket boundary. No backend, account,
 // tools, credentials, arbitrary file names, or real model are available here.
 export function createCodexFixtureProtocol(root, outcomes) {
-  const generation = join(root, 'Generation');
   const handshake = ['initialize', 'initialized', 'account/read', 'model/list'];
   const expected = [...handshake, ...outcomes.flatMap(outcome => {
     const turn = ['thread/start', 'turn/start'];
     if (outcome === 'cancel') return [...turn, 'turn/interrupt', 'transport-drop', ...handshake, 'model/list', 'thread/read', 'thread/read', 'thread/read'];
     if (outcome === 'recover' || outcome === 'missing-artifact') return [...turn, 'turn/interrupt', 'thread/read'];
+    if (outcome === 'analysis-invalid-thread') return ['thread/start'];
+    if (outcome === 'analysis-tool') return [...turn, 'turn/interrupt'];
     return turn;
   })];
   let position = 0;
@@ -61,10 +62,13 @@ export function createCodexFixtureProtocol(root, outcomes) {
       return [reply({ data: [defaultModel, extraModel], nextCursor: null })];
     }
     case 'thread/start': {
+      const generation = join(typeof root === 'function' ? root() : root, 'Generation');
+      const outcome = outcomes[count++];
+      const analysis = outcome.startsWith('analysis-');
       // Resolve the app-created directory and tie it to this session's owned
       // verification root. A foreign path or symlink cannot receive an image.
       assert.equal(params.approvalPolicy, 'never');
-      assert.equal(params.sandbox, 'workspace-write');
+      assert.equal(params.sandbox, analysis ? 'read-only' : 'workspace-write');
       assert.equal(params.model, model);
       const usualDir = params.cwd;
       assert.ok(typeof usualDir === 'string' && uuid.test(basename(usualDir)), 'Expected a generated job ID');
@@ -75,12 +79,43 @@ export function createCodexFixtureProtocol(root, outcomes) {
       assert.ok(dirname(cwd) === generation && info.isDirectory() && !info.isSymbolicLink() && info.uid === process.getuid()
         && !jobDirectories.has(cwd), 'Expected a fresh app-owned job directory');
       jobDirectories.add(cwd);
-      const outcome = outcomes[count++];
       job = { outcome, cwd, threadId: `fixture-thread-${count}`, turnId: `fixture-turn-${count}`, inspections: 0 };
+      if (analysis) {
+        assert.equal(params.ephemeral, true);
+        assert.ok(params.developerInstructions?.includes('Do not call tools'));
+        return [reply({ thread: { id: job.threadId, ephemeral: true }, model, cwd,
+          sandbox: { type: 'readOnly', networkAccess: outcome === 'analysis-invalid-thread' }, approvalPolicy: 'never' })];
+      }
       return [reply({ thread: { id: job.threadId } })];
     }
     case 'turn/start': {
       assert.equal(params.threadId, job.threadId);
+      if (job.outcome.startsWith('analysis-')) {
+        assert.equal(params.cwd, job.cwd);
+        assert.equal(params.approvalPolicy, 'never');
+        assert.deepEqual(params.sandboxPolicy, { type: 'readOnly', networkAccess: false });
+        assert.deepEqual(params.outputSchema.required, ['detections']);
+        const [prompt, preview, ...extra] = params.input;
+        assert.deepEqual(extra, []);
+        assert.equal(prompt.type, 'text');
+        assert.ok(prompt.text.includes('Green coat') && prompt.text.includes('one two three'));
+        assert.equal(preview.type, 'image');
+        const base64 = /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(preview.url);
+        assert.ok(base64, 'Expected the bounded inline JPEG');
+        assert.deepEqual([...Buffer.from(base64[1], 'base64').subarray(0, 3)], [255, 216, 255]);
+        const accepted = reply({ turn: { id: job.turnId } });
+        if (job.outcome === 'analysis-tool') return [accepted, { method: 'item/started',
+          params: { threadId: job.threadId, turnId: job.turnId, item: { type: 'commandExecution' } } }];
+        assert.equal(job.outcome, 'analysis-success');
+        const detections = [
+          { region: { x: 0.05, y: 0.1, width: 0.4, height: 0.5 }, portraitRegion: { x: 0.1, y: 0.15, width: 0.3, height: 0.3 },
+            kind: 'face', characterID: 'anna', suggestedName: null, confidence: 0.98, reason: 'Green coat', subjectKey: 'anna' },
+          { region: { x: 0.6, y: 0.1, width: 0.3, height: 0.4 }, portraitRegion: null,
+            kind: 'obscured', characterID: null, suggestedName: null, confidence: 0.3, reason: 'Identity obscured', subjectKey: 'unknown' },
+        ];
+        return [accepted, { method: 'turn/completed', params: { threadId: job.threadId,
+          turn: { id: job.turnId, status: 'completed', items: [{ type: 'agentMessage', id: 'analysis-result', text: JSON.stringify({ detections }) }] } } }];
+      }
       assert.ok(params.input.length === 1 && params.input[0].type === 'text'
         && params.input[0].text?.includes(job.outcome === 'recover' ? 'know.' : 'Warm window light. Hold the room.'), 'Expected only the synthetic cue prompt');
       const replies = [reply({ turn: { id: job.turnId } }), { method: 'item/started',
@@ -127,6 +162,7 @@ export function createCodexFixtureProtocol(root, outcomes) {
   }
   return {
     receive,
+    assertNoTurns: () => assert.equal(count, 0, 'Connection alone did not start a turn'),
     dropTransport() {
       assert.equal(expected[position++], 'transport-drop', 'Only the scheduled cancellation can drop the owned socket');
       reconnecting = true;
@@ -172,6 +208,7 @@ export async function startCodexFixture(root, outcomes) {
   return {
     endpoint: `ws://127.0.0.1:${server.address().port}`,
     race: promise => Promise.race([failed, promise]),
+    assertNoTurns: protocol.assertNoTurns,
     async dropAfterCancellation() {
       await pending;
       if (failure) throw failure;
@@ -189,7 +226,7 @@ export async function startCodexFixture(root, outcomes) {
       await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
       await pending;
       if (failure) throw new Error('The local Codex fixture rejected the connection or request sequence', { cause: failure });
-      assert.equal(connections, 2, 'The same app made exactly one original connection and one reconnect');
+      assert.equal(connections, outcomes.includes('cancel') ? 2 : 1, 'Only the scheduled owned connections occurred');
       protocol.assertComplete();
     },
   };

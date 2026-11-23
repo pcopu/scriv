@@ -329,6 +329,15 @@ identity. Analysis copies request independent filesystem clones where supported,
 with an ordinary-copy fallback. Keep the original pinned build source, raw
 profiles, LCOV pairs and imported datasets for replay and comparison.
 
+The `journeys/codex-loopback-character-analysis` selector uses the Characters
+screen's Scan again action. Its fresh isolated workspace opts into one owned
+loopback WebSocket fixture. The fixture confirms a saved character tag and
+review candidate, a sandbox refusal before image upload, and interruption of a
+turn after an unexpected tool notification. The scan compares resolved
+filesystem paths to verify the working directory even when Foundation renders
+the same directory URL with a trailing slash. The fixture supplies its own
+responses, so this journey measures Scriv's handling of those responses.
+
 ## November 13 service checkpoint
 
 All 13 existing service selectors passed in isolated local fixtures. Initially

@@ -22,7 +22,12 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
     private let autoTagToggle = UISwitch()
     private let reviewBanner = CharacterTeamUI.row([],spacing:10)
     private let scanStatus = ScrivUIKitTheme.label("",size:12,color:ScrivUIKitTheme.secondary)
-    private let scanButton = CharacterTeamUI.button("Scan again",size:13) {}
+    private lazy var scanButton = CharacterTeamUI.button("Scan again",size:13) { [weak self] in
+        guard let self else { return }
+        let analysis = self.store.characterAnalysis
+        if analysis.isScanning { analysis.pause() } else { analysis.scanAgain() }
+        self.renderAnalysis()
+    }
 
     init(store: WorkspaceStore) { super.init(store: store, scopeToProject: false) }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(store:)") }
@@ -56,7 +61,6 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
         reviewBanner.backgroundColor = UIColor.systemOrange.withAlphaComponent(0.13); reviewBanner.layer.cornerRadius = 10
         reviewBanner.isLayoutMarginsRelativeArrangement = true; reviewBanner.directionalLayoutMargins = .init(top:9,leading:12,bottom:9,trailing:10)
         let hint = CharacterTeamUI.row([CharacterTeamUI.symbol("info.circle.fill", size: 15), ScrivUIKitTheme.label("New image versions are checked automatically. Your corrections are kept.", size: 12, color: ScrivUIKitTheme.secondary)], spacing: 10)
-        scanButton.addAction(UIAction { [weak self] _ in guard let self else { return }; if self.store.characterAnalysis.isScanning { self.store.characterAnalysis.pause() } else { self.store.characterAnalysis.scanAgain() }; self.renderAnalysis() },for:.touchUpInside)
         let footer = CharacterTeamUI.row([scanStatus,CharacterTeamUI.spacer(),scanButton],spacing:8)
         let body = ScrivUIKitTheme.stack([title, analysisCard, reviewBanner, search, ribbon, scroll, hint, CharacterTeamUI.separator(),footer], spacing: 10)
         // The body fills the panel and the profile scrolls inside it; on short

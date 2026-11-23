@@ -94,13 +94,21 @@ artifacts can consume many GiB. Confirm sufficient disk before running; a low
 cap reduces the bound but can stop a multi-session scenario. Nothing is deleted
 automatically to make room.
 
-Preparation also creates an exact source copy for analysis under this run's
-private evidence directory. Its bound is 10,000 files, 64 MiB per file and
-512 MiB total. It copies only the verified manifest, rejects symlinks and
-existing output, and verifies the original and copy before capture. These are
-separate regular files, never hard links or a symlink back to build source.
+After export, the collector copies the source files named in the LCOV pairs
+into this run's private analysis directory. It verifies each file against the
+full build source manifest. The analysis copy is bounded to 10,000 files,
+64 MiB per file and 512 MiB total. The collector rejects symlinks and existing
+output. It uses independent copy-on-write files where supported and regular
+copies elsewhere.
 Tracer requires a Git root, so the copy has new empty local Git metadata, with
 no copied history, template hooks, remote, staged files or commits.
+
+In a repeat of `json-validation` with 28 sessions, line-only native exports
+reduced LCOV from 251 MB to 11.5 MB and reduced the analysis source copy from
+711 files to 150. The Worker discussions/assets and update journeys reduced
+their combined source copies from 905 MB to 1.1 MB across five intervals, with
+identical observed line ranges. Both collectors keep complete source pins
+and the evidence needed to recheck those observations.
 
 LLVM tools default to `xcrun --find llvm-profdata` and `llvm-cov`. Optional
 `--llvm-profdata /absolute/tool` and `--llvm-cov /absolute/tool` must identify

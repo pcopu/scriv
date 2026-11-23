@@ -36,7 +36,13 @@ final class CharacterAnalysisController {
             : FileManager.default.urls(for:.applicationSupportDirectory,in:.userDomainMask)[0].appendingPathComponent("Scriv",isDirectory:true)
         self.pendingDirectory = pendingDirectory ?? root.appendingPathComponent("CharacterAnalysisPending",isDirectory:true)
     }
-    var availability: String? { allowsAnalysis ? provider.availability : "Image analysis is disabled in verification mode." }
+    private var canAnalyze: Bool {
+        #if SCRIV_CLI_AUTOMATION
+        if !allowsAnalysis, let codex = provider as? CodexController { return codex.hasCharacterAnalysisFixture }
+        #endif
+        return allowsAnalysis
+    }
+    var availability: String? { canAnalyze ? provider.availability : "Image analysis is disabled in verification mode." }
     var autoTagEnabled: Bool {
         get { guard let store else { return false }; return ScrivPreferences.standard.object(forKey:preferenceKey(store.project.id)) as? Bool ?? true }
         set {
@@ -117,7 +123,7 @@ final class CharacterAnalysisController {
         guard status != message else { return }; status = message; store?.objectWillChange.send()
     }
     private func start() {
-        guard allowsAnalysis, let store, availability == nil else { return }
+        guard let store, availability == nil else { return }
         let currentGeneration = generation, navigation = store.navigationContext, expectedProject = store.project.id
         task = Task { [weak self] in
             guard let self else { return }

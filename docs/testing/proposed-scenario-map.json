@@ -9262,6 +9262,33 @@
       ]
     },
     {
+      "id": "native-character-analysis-fixture",
+      "title": "Scan a character image through the owned Codex fixture",
+      "featureId": "character-analysis",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/codex-loopback-character-analysis.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Characters/CharactersController.swift",
+        "symbol": "scanButton"
+      },
+      "actionIds": [
+        "import-json",
+        "import-local-image",
+        "toggle",
+        "key",
+        "text",
+        "activate"
+      ],
+      "plannedActions": [
+        "Import a synthetic project and image, disable automatic tagging, connect the owned local Codex fixture in Settings and select Scan again. Repeat with an unconfirmed sandbox and with an unexpected tool notification."
+      ],
+      "expectedOutcomes": [
+        "The scan saves the recognized character and a review candidate while preserving the image and script. The unconfirmed sandbox receives no image and unexpected tool activity triggers a turn interrupt. Both failures preserve the saved scan."
+      ]
+    },
+    {
       "id": "native-hosted-image-recovery",
       "title": "Fetch a repaired hosted image from the Preview",
       "featureId": "media-sync",
@@ -14066,7 +14093,8 @@
     {
       "rangeId": "1f8daa9d7947896384b6",
       "scenarioIds": [
-        "audit-v82-1f8daa9d7947896384b6"
+        "audit-v82-1f8daa9d7947896384b6",
+        "native-character-analysis-fixture"
       ],
       "rationale": "The selected apps/mac/Sources/ScrivApp/Services/CharacterAnalysisController.swift lines 1-201 implement or configure the specific behavior described by this replacement; the planned public actions or static inspection target that responsibility.",
       "confidence": "low",
@@ -14774,7 +14802,8 @@
     {
       "rangeId": "2b56c814b03a4e00c120",
       "scenarioIds": [
-        "audit-v82-2b56c814b03a4e00c120"
+        "audit-v82-2b56c814b03a4e00c120",
+        "native-character-analysis-fixture"
       ],
       "rationale": "The assigned source handles pause unconfirmed character analysis cancellation; the proposed action targets that responsibility rather than the original broader claim.",
       "confidence": "medium",

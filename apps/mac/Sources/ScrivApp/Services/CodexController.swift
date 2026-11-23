@@ -892,6 +892,20 @@ final class CodexController: ObservableObject {
 /// Read-only/no-subprocess-network is requested and checked; configured external
 /// tools remain the runtime's responsibility. Monitoring is not tool isolation.
 extension CodexController: CharacterImageAnalysisProvider {
+    #if SCRIV_CLI_AUTOMATION
+    var hasCharacterAnalysisFixture: Bool {
+        guard let grant = ProcessInfo.processInfo.environment["SCRIV_CLI_CODEX_ANALYSIS_FIXTURE"],
+              let actual = socket?.originalRequest?.url, let port = actual.port,
+              actual.scheme == "ws" || actual.scheme == "http", actual.host == "127.0.0.1", (1024...65535).contains(port),
+              grant == "ws://127.0.0.1:\(port)", actual.path.isEmpty || actual.path == "/",
+              actual.user == nil, actual.password == nil, actual.query == nil, actual.fragment == nil,
+              isConnected, !ownsTransport, accountChecked, !requiresAccountAuthentication, accountLabel == nil,
+              let run = try? ScrivCLIRunCapability.requirePrepared(), run.approvedOrigin == nil, !run.persistent else { return false }
+        // Foundation represents the WebSocket's upgrade request as HTTP.
+        // The redirect-denying delegate keeps it bound to this origin.
+        return true
+    }
+    #endif
     var providerID: String { "codex-app-server" }
     var availability: String? {
         guard isConnected else { return "Connect an image-capable AI to check characters." }
@@ -906,6 +920,11 @@ extension CodexController: CharacterImageAnalysisProvider {
     }
     func analyze(_ request: CharacterImageAnalysisRequest) async throws -> CharacterImageAnalysisResult {
         try Task.checkCancellation()
+        #if SCRIV_CLI_AUTOMATION
+        if CommandLine.arguments.contains("--scriv-cli"), !hasCharacterAnalysisFixture {
+            throw ScrivError.unavailable("Image analysis is disabled in verification mode.")
+        }
+        #endif
         if let availability { throw ScrivError.unavailable(availability) }
         guard !isAnalyzingCharacters else { throw ScrivError.conflict("A character image is already being checked.") }
         let token = UUID(), generation = connectionGeneration, model = selectedModel

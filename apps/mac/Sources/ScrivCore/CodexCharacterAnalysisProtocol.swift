@@ -63,7 +63,8 @@ public enum CodexCharacterAnalysisProtocol {
         guard response["sandbox"]?["type"] == .string("readOnly"), response["sandbox"]?["networkAccess"] == .bool(false),
               response["approvalPolicy"] == .string("never"), response["model"] == .string(model),
               let path = response["cwd"]?.string, path.hasPrefix("/"),
-              URL(fileURLWithPath: path).resolvingSymlinksInPath().standardizedFileURL == cwd.resolvingSymlinksInPath().standardizedFileURL,
+              URL(fileURLWithPath: path).resolvingSymlinksInPath().standardizedFileURL.path.utf8
+                .elementsEqual(cwd.resolvingSymlinksInPath().standardizedFileURL.path.utf8),
               response["thread"]?["ephemeral"] == .bool(true),
               let id = response["thread"]?["id"]?.string, !id.isEmpty, id.utf8.count <= 256 else {
             throw CharacterAnalysisInterruption(reason: "Codex did not confirm the requested model, read-only working directory and disabled subprocess network. No analysis image was sent; the scan is paused.")

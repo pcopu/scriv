@@ -72,16 +72,21 @@ export class ScrivSession {
   }
   static async launch(app, options = {}) {
     if (!options || typeof options !== 'object' || Array.isArray(options)
-        || Object.keys(options).some(key => key !== 'persistent' && key !== 'cloudFixtureOrigin')
+        || Object.keys(options).some(key => !['persistent', 'cloudFixtureOrigin', 'codexAnalysisFixtureOrigin'].includes(key))
         || options.persistent !== undefined && typeof options.persistent !== 'boolean') throw new Error('Invalid session options');
-    const { cloudFixtureOrigin } = options;
+    const { cloudFixtureOrigin, codexAnalysisFixtureOrigin } = options;
     if (cloudFixtureOrigin !== undefined) {
       const origin = typeof cloudFixtureOrigin === 'string' && /^http:\/\/127\.0\.0\.1:([1-9][0-9]{0,4})$/.exec(cloudFixtureOrigin);
       if (options.persistent || !origin || Number(origin[1]) > 65535 || origin[0] !== cloudFixtureOrigin) throw new Error('Invalid session options');
     }
-    return ScrivSession.#launch(app, options.persistent === true, null, cloudFixtureOrigin);
+    if (codexAnalysisFixtureOrigin !== undefined) {
+      const origin = typeof codexAnalysisFixtureOrigin === 'string' && /^ws:\/\/127\.0\.0\.1:([1-9][0-9]{3,4})$/.exec(codexAnalysisFixtureOrigin);
+      if (options.persistent || cloudFixtureOrigin !== undefined || !origin || Number(origin[1]) < 1024
+          || Number(origin[1]) > 65535 || origin[0] !== codexAnalysisFixtureOrigin) throw new Error('Invalid session options');
+    }
+    return ScrivSession.#launch(app, options.persistent === true, null, cloudFixtureOrigin, codexAnalysisFixtureOrigin);
   }
-  static async #launch(app, persistent, workspace, cloudFixtureOrigin) {
+  static async #launch(app, persistent, workspace, cloudFixtureOrigin, codexAnalysisFixtureOrigin) {
     if (process.platform !== 'darwin') throw new Error('Actual Scriv E2E requires macOS and an automation-enabled Catalyst build. No fallback driver is used.');
     const bundle = await realpath(app);
     if (!bundle.endsWith('.app')) throw new Error('Pass the automation .app bundle');
@@ -98,6 +103,8 @@ export class ScrivSession {
     delete env.SCRIV_VERIFICATION_AUTOPLAY;
     delete env.SCRIV_E2E_COVERAGE_CONTEXT; // Host collector metadata is not an app input.
     delete env.SCRIV_E2E_COVERAGE_STARTUP;
+    delete env.SCRIV_CLI_CODEX_ANALYSIS_FIXTURE;
+    if (codexAnalysisFixtureOrigin) env.SCRIV_CLI_CODEX_ANALYSIS_FIXTURE = codexAnalysisFixtureOrigin;
     for (const key of ['SCRIV_CLI_RESUME', 'SCRIV_CLI_RESUME_FD', 'SCRIV_CLI_WORKSPACE', 'SCRIV_CLI_PERSISTENT']) delete env[key];
     const arguments_ = ['--screenshots', '--scriv-cli', ...(persistent ? [workspace ? '--scriv-cli-resume' : '--scriv-cli-persistent'] : [])];
     if (process.env.SCRIV_E2E_COVERAGE_CONTEXT && process.env.SCRIV_E2E_COVERAGE_STARTUP === '1') arguments_.push('--scriv-cli-coverage-startup');
