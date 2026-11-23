@@ -9343,6 +9343,24 @@
       ]
     },
     {
+      "id": "codex-provider-account-refresh",
+      "title": "Refreshes Codex account status after provider notices",
+      "featureId": "codex-connection",
+      "state": "existing",
+      "existingPaths": ["tests/e2e/journeys/codex-loopback-generation.mjs"],
+      "entryPoint": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "symbol": "receiveMessage"
+      },
+      "actionIds": ["key", "activate", "text", "snapshot", "image-evidence", "persisted-projects"],
+      "plannedActions": [
+        "Connect to the owned provider, receive its warnings and an unrelated login completion, then refresh a synthetic account through valid, invalid, unavailable and recovered provider states."
+      ],
+      "expectedOutcomes": [
+        "Scriv displays the notices and ignores the unrelated login completion. Invalid or unavailable account data disables the account control. A fresh valid response restores the correct account state, and generation works after recovery."
+      ]
+    },
+    {
       "id": "native-team-invitation-revocation",
       "title": "Load and revoke invitations in the Team sheet",
       "featureId": "teams",
@@ -14863,11 +14881,12 @@
       "scenarioIds": [
         "wave81-3-s012",
         "codex-provider-request-refusal",
-        "native-character-analysis-fixture"
+        "native-character-analysis-fixture",
+        "codex-provider-account-refresh"
       ],
       "rationale": "Implements JSON-RPC transport and dispatches account and generation events. Proposed scenario exercises this responsibility.",
       "confidence": "medium",
-      "uncertainty": "The loopback generation and character analysis journeys cover explicit provider refusals and interruption of their active turns. Account events and other transport variants still need independent cases.",
+      "uncertainty": "The loopback journeys cover provider refusals, pauses of their active turns, idle account refresh and warning callbacks. Coalescing overlapping reads, early matching login completion and other transport variants still need cases.",
       "proposedAssertions": [
         "Matching callbacks resolve, relevant account and generation events update state, and unsolicited approval requests are handled safely."
       ],

@@ -95480,8 +95480,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 209,
-        "end": 212,
+        "start": 245,
+        "end": 248,
         "sha256": "14265268c9f3db277c4a24413cc0a013b381ba8cf1a890d8c542c14cb1ba1870"
       },
       "why": "The real panel explains why the same job stays waiting, and the route verifies its identity and unchanged persistent projects."
@@ -95499,8 +95499,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 276,
-        "end": 291,
+        "start": 312,
+        "end": 327,
         "sha256": "c522aa35dfb148dbbb3b526c2a47703dd7c6360053d0e2ea3d9eeebace990dc4"
       },
       "why": "The mounted jobs panel reports the missing local image. The original job has no attachment or artifact and all saved projects remain identical."
@@ -95518,8 +95518,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 213,
-        "end": 221,
+        "start": 249,
+        "end": 257,
         "sha256": "d11334e4559821ae47c839d09e717ff7a7dd0e24d88ab22b0fbd07753127cdfa"
       },
       "why": "The running result keeps the original job waiting. A later inspection observes cancellation of the same turn without creating another job."
@@ -95537,8 +95537,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 190,
-        "end": 199,
+        "start": 226,
+        "end": 235,
         "sha256": "b18b7a0d0db1d073391bc3145f28e3b54d50ca5dda2e6c9edea2f18a5ffe48b6"
       },
       "why": "The visible disconnected state and original waiting job are verified before reconnect, and the saved projects remain identical."
@@ -95556,8 +95556,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 201,
-        "end": 207,
+        "start": 237,
+        "end": 243,
         "sha256": "45a50ec45a290986157429a8e7e119bc4fc238fa9d3db59502f057ddbdac7cb3"
       },
       "why": "The selected first model and second-page model appear exactly once in the real menu."
@@ -96071,8 +96071,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 105,
-        "end": 125,
+        "start": 106,
+        "end": 126,
         "sha256": "8bde83c4f241f4a9e089627b34eaa72f0eb696e9ea860f20025d8f1b29becf5e"
       },
       "why": "The connected loopback provider receives explicit refusals, empty permissions and answers, and a method-not-found response. The settings status, absence of new turns and unchanged saved projects are asserted."
@@ -96111,11 +96111,51 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 293,
-        "end": 307,
+        "start": 329,
+        "end": 343,
         "sha256": "5d4adf7adae71bf09aa0965256e77fff8b6ac5f11cfead9617400a528688c49e"
       },
       "why": "A request for more input on an active image turn sends empty answers and interrupts that exact owned turn. Existing jobs and saved projects are preserved."
+    },
+    {
+      "id": "7dc3bf245d253526",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 749,
+        "end": 755,
+        "sha256": "d1e597ff8848c39c66bc9271bf48391a9fd20734a447d350a456b2bf06c8ff2c"
+      },
+      "actions": [
+        "scriv activate Connect to this address",
+        "scriv snapshot"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 145,
+        "end": 161,
+        "sha256": "4a05e70a1203269fdc0397a378760f26171a035d4e2c1cda33262f0e54c19ed6"
+      },
+      "why": "Each owned account update requests one fresh account read. The Settings controls show the confirmed identity, become disabled on failed reads, and recover to the correct signed-out and ready states. Saved projects and jobs are unchanged."
+    },
+    {
+      "id": "f71f28b74264171b",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 757,
+        "end": 758,
+        "sha256": "9ece9aa0531fb41173e724e430a69e8db8450656444f07adaf0b799789417671"
+      },
+      "actions": [
+        "scriv activate Connect to this address",
+        "scriv snapshot"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 128,
+        "end": 137,
+        "sha256": "a2eec81ece88acc33eb1cc9c96e993ebfd1876c4932da48c4be9b1ff55bdca67"
+      },
+      "why": "The Settings pane displays the provider warning, configuration warning summary and error while the socket remains connected."
     }
   ],
   "commentExclusions": [

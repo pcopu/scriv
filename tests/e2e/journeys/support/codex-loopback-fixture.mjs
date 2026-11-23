@@ -23,9 +23,16 @@ const activeRequests = new Map([
 
 // Model the app-server protocol at its socket boundary. No backend, account,
 // tools, credentials, arbitrary file names, or real model are available here.
-export function createCodexFixtureProtocol(root, outcomes) {
+export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = false } = {}) {
   const handshake = ['initialize', 'initialized', 'account/read', 'model/list'];
-  const expected = [...handshake, ...outcomes.flatMap(outcome => {
+  const accountUpdates = accountRefresh ? [
+    { result: { account: { type: 'chatgpt', email: 'synthetic-account@example.invalid' }, requiresOpenaiAuth: true } },
+    { result: { account: { type: '' }, requiresOpenaiAuth: true } },
+    { error: { code: -32000, message: 'Synthetic account check interrupted' } },
+    { result: { account: null, requiresOpenaiAuth: true } },
+    { result: { account: null, requiresOpenaiAuth: false } },
+  ] : [];
+  const expected = [...handshake, ...accountUpdates.map(() => 'account/read'), ...outcomes.flatMap(outcome => {
     const turn = ['thread/start', 'turn/start'];
     if (outcome === 'cancel') return [...turn, 'turn/interrupt', 'transport-drop', ...handshake, 'model/list', 'thread/read', 'thread/read', 'thread/read'];
     if (outcome === 'recover' || outcome === 'missing-artifact') return [...turn, 'turn/interrupt', 'thread/read'];
@@ -37,6 +44,7 @@ export function createCodexFixtureProtocol(root, outcomes) {
   let reconnecting = false;
   let job;
   let count = 0;
+  let accountUpdateAnnounced = false;
   const requestIDs = new Set();
   const jobDirectories = new Set();
   async function receive({ id, method, params }) {
@@ -54,9 +62,16 @@ export function createCodexFixtureProtocol(root, outcomes) {
     case 'initialize':
       assert.equal(params.clientInfo.name, 'scriv_mac');
       return [reply({ userAgent: 'Scriv local fixture' })];
-    case 'account/read':
+    case 'account/read': {
       assert.equal(params.refreshToken, false);
+      const update = accountUpdates[position - handshake.length - 1];
+      if (update) {
+        assert.equal(accountUpdateAnnounced, true, 'A refresh must follow the owned account update notice');
+        accountUpdateAnnounced = false;
+        return [{ id, ...update }];
+      }
       return [reply({ account: null, requiresOpenaiAuth: false })];
+    }
     case 'model/list': {
       assert.equal(params.includeHidden, false);
       const defaultModel = { id: model, model, isDefault: true, inputModalities: ['text', 'image'] };
@@ -169,6 +184,22 @@ export function createCodexFixtureProtocol(root, outcomes) {
   }
   return {
     receive,
+    notice(variant) {
+      assert.ok(accountRefresh && position >= handshake.length && count === 0, 'Notices are scoped to this idle account fixture');
+      switch (variant) {
+      case 'warning': return { method: 'warning', params: { message: 'Synthetic provider warning' } };
+      case 'config-warning': return { method: 'configWarning', params: { summary: 'Synthetic provider configuration warning' } };
+      case 'error': return { method: 'error', params: { error: { message: 'Synthetic provider error' } } };
+      case 'orphan-login': return { method: 'account/login/completed', params: {
+        loginId: 'synthetic-unrelated-login', success: false, error: 'Synthetic unrelated login failure',
+      } };
+      case 'account-update':
+        assert.ok(accountUpdates[position - handshake.length] && !accountUpdateAnnounced, 'Expected one scheduled account refresh');
+        accountUpdateAnnounced = true;
+        return { method: 'account/updated', params: {} };
+      default: throw new Error('Unknown fixture notice');
+      }
+    },
     requestParams(method, activeTurn) {
       assert.ok(providerMethods.has(method), 'Expected a fixture-owned provider request');
       if (!activeTurn) {
@@ -188,11 +219,11 @@ export function createCodexFixtureProtocol(root, outcomes) {
   };
 }
 
-export async function startCodexFixture(root, outcomes) {
+export async function startCodexFixture(root, outcomes, options) {
   const require = createRequire(new URL('../../../../cloud/package.json', import.meta.url));
   assert.equal(require('ws/package.json').version, '8.21.0', 'Fixture needs the lockfile-pinned cloud dependencies');
   const { WebSocketServer } = require('ws');
-  const protocol = createCodexFixtureProtocol(root, outcomes);
+  const protocol = createCodexFixtureProtocol(root, outcomes, options);
   const server = new WebSocketServer({ host: '127.0.0.1', port: 0, maxPayload: 128 * 1024, perMessageDeflate: false });
   await once(server, 'listening');
   let failure;
@@ -237,6 +268,13 @@ export async function startCodexFixture(root, outcomes) {
     endpoint: `ws://127.0.0.1:${server.address().port}`,
     race: promise => Promise.race([failed, promise]),
     assertNoTurns: protocol.assertNoTurns,
+    async notify(variant) {
+      await pending;
+      if (failure) throw failure;
+      assert.equal(server.clients.size, 1);
+      const [socket] = server.clients;
+      await send(socket, protocol.notice(variant));
+    },
     async request(method, { activeTurn = false } = {}) {
       await pending;
       if (failure) throw failure;

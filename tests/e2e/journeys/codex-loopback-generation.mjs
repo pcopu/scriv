@@ -78,7 +78,8 @@ try {
   const jobs = async () => (await session.command('image-evidence')).jobs;
 
   step = 'connect to the owned loopback fixture in Settings';
-  fixture = await startCodexFixture(session.root, ['success', 'cancel', 'recover', 'missing-artifact', 'input-request', 'failure']);
+  fixture = await startCodexFixture(session.root, ['success', 'cancel', 'recover', 'missing-artifact', 'input-request', 'failure'],
+    { accountRefresh: true });
   await fixture.race((async () => {
     await session.command('key', { input: ',', modifiers: ['command'] });
     // Sidebar cells use the public collection view selection route. The CLI
@@ -120,6 +121,41 @@ try {
     assert.deepEqual(await fixture.request('fixture/unsupported'), {
       error: { code: -32601, message: 'This client does not implement fixture/unsupported.' },
     });
+    fixture.assertNoTurns();
+    assert.deepEqual(await jobs(), []);
+    assert.deepEqual(await session.command('persisted-projects'), unchangedOnConnect);
+
+    step = 'surface provider notices and ignore an unrelated login completion';
+    for (const [variant, message] of [
+      ['warning', 'Synthetic provider warning'],
+      ['config-warning', 'Synthetic provider configuration warning'],
+      ['error', 'Synthetic provider error'],
+    ]) {
+      await fixture.notify(variant);
+      await session.waitFor(nodes => nodes.some(node => node.text === message)
+        && nodes.some(node => node.identifier === 'codex-connection-status' && node.text === 'Connected'));
+    }
+    await fixture.notify('orphan-login');
+    assert.deepEqual(await fixture.request('fixture/unsupported'), {
+      error: { code: -32601, message: 'This client does not implement fixture/unsupported.' },
+    });
+    await session.waitFor(nodes => nodes.some(node => node.text === 'Synthetic provider error')
+      && nodes.every(node => node.text !== 'Synthetic unrelated login failure'));
+
+    step = 'refresh the provider account and recover from unsuccessful reads';
+    for (const [account, connection, enabled, message] of [
+      ['synthetic-account@example.invalid', 'Connected', true],
+      ['Checking existing account…', 'Checking local connection…', false, 'This runtime returned an invalid account identity.'],
+      ['Checking existing account…', 'Checking local connection…', false, 'Synthetic account check interrupted'],
+      ['Not signed in', 'Connected · sign-in needed', true],
+      ['Not required by this provider', 'Connected', true],
+    ]) {
+      await fixture.notify('account-update');
+      await session.waitFor(nodes => nodes.some(node => node.identifier === 'codex-account-status' && node.text === account)
+        && nodes.some(node => node.identifier === 'codex-connection-status' && node.text === connection)
+        && nodes.some(node => node.identifier === 'codex-account' && node.enabled === enabled)
+        && (!message || nodes.some(node => node.text === message)));
+    }
     fixture.assertNoTurns();
     assert.deepEqual(await jobs(), []);
     assert.deepEqual(await session.command('persisted-projects'), unchangedOnConnect);
