@@ -307,6 +307,45 @@ if (process.argv[2] !== '--owned-child') {
         result = await step.action('Read final owner snapshot and isolated R2 object inventory', async () => ({ snapshot: await request(route('snapshot')), objects: (await bucket.list()).objects }));
         await step.expect('observed', () => { assert.equal(result.snapshot.status, 200); assert.equal(result.snapshot.data.headSeq, 7); assert.equal(result.snapshot.data.items.length, 11); assert.deepEqual(result.objects, []); assert.equal(outboundAttempts, 0); assert(sockets.every(s => s.errors === 0)); assert.deepEqual(signals(viewerSocket), []); });
       });
+      await run.step('handle-oversize-transport', async step => {
+        const observedPresence = messages => messages.filter(message => message.type === 'presence');
+        const connected = (presence, id) => presence.peers.some(peer => peer.connectionId === id);
+        const { failing, id } = await step.action('Connect a fresh viewer and observe its presence on the owner socket', async () => {
+          const next = ownerSocket.messages.length;
+          const failing = await openSocket('viewer');
+          const id = failing.messages.find(message => message.type === 'hello').connectionId;
+          assert.ok(id);
+          await waitFor(() => observedPresence(ownerSocket.messages.slice(next)).some(presence => connected(presence, id)));
+          return { failing, id };
+        });
+        await step.action('Cross the local Worker message size limit once', async () => {
+          if (capture) coverageActions.push('WebSocket oversize transport message /v1/projects/:id/socket');
+          // One owned loopback message crosses the transport's 32 MiB boundary.
+          assert.equal(failing.ws.readyState, failing.ws.OPEN);
+          await new Promise((resolve, reject) => {
+            failing.ws.send(Buffer.alloc(32 * 1024 * 1024 + 1), { compress: false }, error => {
+              // The receiver can reject the message before the last write completes.
+              if (error && error.code !== 'EPIPE') reject(new Error('Unexpected local WebSocket send failure'));
+              else resolve();
+            });
+          });
+        });
+        const { presence, reply } = await step.action('Reconnect the viewer and ping the healthy owner socket', async () => {
+          const reopened = await openSocket('viewer');
+          await waitFor(() => observedPresence(reopened.messages).length > 0);
+          const presence = observedPresence(reopened.messages)[0];
+          const next = ownerSocket.messages.length;
+          await sendSocket(ownerSocket, { type: 'ping' });
+          await waitFor(() => ownerSocket.messages.slice(next).some(message => message.type === 'watermark'));
+          return { presence, reply: ownerSocket.messages.slice(next).find(message => message.type === 'watermark') };
+        });
+        await step.expect('observed', () => {
+          assert.equal(connected(presence, id), false);
+          assert.equal(reply.headSeq, 7);
+          assert.equal(ownerSocket.closed, null);
+          assert.equal(outboundAttempts, 0);
+        });
+      });
     } finally {
       const report = run.finish();
       console.log(JSON.stringify({ result: report.status === 'passed' ? 'PASS' : 'FAIL', journey: 'peer-signaling', requests, websocketMessages, outboundAttempts, bundleSha256, nativeScenarios: 0, loginFlowTested: false, runtime: report }));

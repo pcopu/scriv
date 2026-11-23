@@ -97329,6 +97329,27 @@
         "sha256": "6bc89f7924f7a441d28ae6963bd61956e05db5870090276b5f9b537b5a1389e8"
       },
       "why": "The first-launch sample assigns the exact asset to each storyboard placement and portrait, then shows all 19 placements in the actual Storyboard tab."
+    },
+    {
+      "id": "9e0086af1acf64a0",
+      "source": {
+        "path": "cloud/src/project-room.ts",
+        "start": 703,
+        "end": 703,
+        "sha256": "a52f73eea449d4ddffcfeec1937e5f07db952ef83084af42db97f40ac98b10d9"
+      },
+      "actions": [
+        "Connect a fresh viewer and observe its presence on the owner socket",
+        "Cross the local Worker message size limit once",
+        "Reconnect the viewer and ping the healthy owner socket"
+      ],
+      "step": {
+        "path": "cloud/tests-e2e/peer-signaling-journey.mjs",
+        "start": 313,
+        "end": 347,
+        "sha256": "fa7b941ef3e4a25f9a9fdc05be74cac686f4a222f06d91ba964297036c5f1520"
+      },
+      "why": "A local WebSocket transport failure removes the viewer connection from the rejoined room while the healthy owner receives the same project watermark."
     }
   ],
   "commentExclusions": [

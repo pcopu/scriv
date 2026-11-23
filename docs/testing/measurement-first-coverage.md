@@ -33,6 +33,13 @@ Runs exercising clean closure, dropped transport and a TCP reset observed the
 close callback. A separate update Worker run reached **36 / 36** selected anchors
 with four startup hits and all 48 HTTP checks passing.
 
+On November 23, the peer-signaling journey reached the remaining WebSocket
+error callback. One authenticated viewer crosses the Worker transport's
+message limit on the owned loopback connection. The viewer reconnects and
+sees the failed connection gone, while the owner still receives the unchanged
+project watermark. The passing interval brings the 15-module Worker scope to
+**1,164 / 1,164 selected statement anchors** with zero lost observations.
+
 Tracer can now rank gaps across a complete reference scope in one query:
 
 ```bash
