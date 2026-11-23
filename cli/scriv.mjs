@@ -72,9 +72,13 @@ export class ScrivSession {
   }
   static async launch(app, options = {}) {
     if (!options || typeof options !== 'object' || Array.isArray(options)
-        || Object.keys(options).some(key => !['persistent', 'cloudFixtureOrigin', 'codexAnalysisFixtureOrigin'].includes(key))
-        || options.persistent !== undefined && typeof options.persistent !== 'boolean') throw new Error('Invalid session options');
-    const { cloudFixtureOrigin, codexAnalysisFixtureOrigin } = options;
+        || Object.keys(options).some(key => !['persistent', 'freshStartup', 'cloudFixtureOrigin', 'codexAnalysisFixtureOrigin'].includes(key))
+        || options.persistent !== undefined && typeof options.persistent !== 'boolean'
+        || options.freshStartup !== undefined && typeof options.freshStartup !== 'boolean') throw new Error('Invalid session options');
+    const { cloudFixtureOrigin, codexAnalysisFixtureOrigin, freshStartup = false } = options;
+    if (freshStartup && (options.persistent || cloudFixtureOrigin !== undefined || codexAnalysisFixtureOrigin !== undefined)) {
+      throw new Error('Invalid session options');
+    }
     if (cloudFixtureOrigin !== undefined) {
       const origin = typeof cloudFixtureOrigin === 'string' && /^http:\/\/127\.0\.0\.1:([1-9][0-9]{0,4})$/.exec(cloudFixtureOrigin);
       if (options.persistent || !origin || Number(origin[1]) > 65535 || origin[0] !== cloudFixtureOrigin) throw new Error('Invalid session options');
@@ -84,9 +88,9 @@ export class ScrivSession {
       if (options.persistent || cloudFixtureOrigin !== undefined || !origin || Number(origin[1]) < 1024
           || Number(origin[1]) > 65535 || origin[0] !== codexAnalysisFixtureOrigin) throw new Error('Invalid session options');
     }
-    return ScrivSession.#launch(app, options.persistent === true, null, { cloudFixtureOrigin, codexAnalysisFixtureOrigin });
+    return ScrivSession.#launch(app, options.persistent === true, null, { cloudFixtureOrigin, codexAnalysisFixtureOrigin, freshStartup });
   }
-  static async #launch(app, persistent, workspace, { cloudFixtureOrigin, codexAnalysisFixtureOrigin, recoverPending = false } = {}) {
+  static async #launch(app, persistent, workspace, { cloudFixtureOrigin, codexAnalysisFixtureOrigin, recoverPending = false, freshStartup = false } = {}) {
     if (process.platform !== 'darwin') throw new Error('Actual Scriv E2E requires macOS and an automation-enabled Catalyst build. No fallback driver is used.');
     const bundle = await realpath(app);
     if (!bundle.endsWith('.app')) throw new Error('Pass the automation .app bundle');
@@ -108,6 +112,7 @@ export class ScrivSession {
     for (const key of ['SCRIV_CLI_RESUME', 'SCRIV_CLI_RESUME_FD', 'SCRIV_CLI_WORKSPACE', 'SCRIV_CLI_PERSISTENT']) delete env[key];
     const arguments_ = ['--screenshots', '--scriv-cli', ...(persistent ? [workspace ? '--scriv-cli-resume' : '--scriv-cli-persistent'] : [])];
     if (recoverPending) arguments_.push('--scriv-cli-recover-pending');
+    if (freshStartup) arguments_.push('--scriv-cli-fresh-startup');
     if (process.env.SCRIV_E2E_COVERAGE_CONTEXT && process.env.SCRIV_E2E_COVERAGE_STARTUP === '1') arguments_.push('--scriv-cli-coverage-startup');
     const grant = cloudFixtureOrigin ? await openCloudFixtureGrant(runID, cloudFixtureOrigin) : null;
     if (grant) arguments_.push('--scriv-cli-cloud-fixture');
@@ -131,16 +136,18 @@ export class ScrivSession {
           || basename(root) !== `ScrivVerification-CLI-${runID}`) throw new Error('App did not confirm this isolated run');
       if (capabilities.sessionID !== sessionID || capabilities.workspace?.persistent !== persistent
           || capabilities.workspace?.resumed !== Boolean(workspace)) throw new Error('App did not confirm this process and workspace mode');
-      if (recoverPending) {
+      if (recoverPending || freshStartup) {
+        const mode = recoverPending ? 'startupRecovery' : 'freshStartup';
         const deadline = Date.now() + 30000;
-        while (capabilities.workspace?.startupRecovery === true && capabilities.workspace.bootstrapping === true
+        while (capabilities.workspace?.[mode] === true && capabilities.workspace.bootstrapping === true
             && Date.now() < deadline) {
           await new Promise(resolve => setTimeout(resolve, 25));
           capabilities = await session.command('capabilities', {}, Math.max(1, deadline - Date.now()));
         }
-        // Startup snapshots must include completed recovery before any scenario input.
-        if (capabilities.workspace?.startupRecovery !== true || capabilities.workspace.bootstrapping !== false) {
-          throw new Error('App did not confirm completion of owned startup recovery');
+        // Startup snapshots must include the completed launch before any scenario input.
+        if (capabilities.workspace?.[mode] !== true || capabilities.workspace.bootstrapping !== false) {
+          throw new Error(recoverPending ? 'App did not confirm completion of owned startup recovery'
+            : 'App did not confirm completion of isolated first startup');
         }
       }
       if (grant && capabilities.cloudIsolation?.network !== 'loopback-only') throw new Error('App did not confirm isolated Worker access');
@@ -274,12 +281,12 @@ async function main(args = process.argv.slice(2)) {
   }
   const app = args[0];
   if (!app || args.includes('--help')) {
-    console.log('Scriv CLI through Tracer\n  tracer actions\n  tracer app -- test --list\n  tracer app -- test --scenario ID --group NAME --app /path/to/ScrivAutomation.app\n  tracer app -- test [--scenario ID ...] --app /path/to/ScrivAutomation.app\n  tracer app -- test --help\n  tracer app -- test tooling\n  tracer app -- test provenance\n  tracer app -- test compact --archive /absolute/archived-runs [--apply]\n  ' + serviceUsage + '\n  tracer app -- /path/to/ScrivAutomation.app [--persistent-workspace]\n  tracer app -- workspace inspect /absolute/owned/root\n\nPersistent mode permits the host JSON commands {"command":"relaunch"} and {"command":"relaunch-recover"} with no arguments. Recovery checks the retained workspace for pending local saves at startup. Both commands use only this process-owned synthetic workspace. workspace inspect is read-only and never grants resume authority.\n\nThe last form preserves JSON-line control: {"command":"snapshot"} or {"command":"select","target":"workspace-tabs","index":1}. Results are JSON lines.\nCharacter portraits use menu-action with scope/target character-portrait-options, exact action title, characterID and imageID. The supported operation is stored public menu-action dispatch, not a native menu click or alert action.\nNative tests/control require a real automation-enabled Catalyst build on macOS. Tooling journeys check the public CLI, not native app behavior.\nDirect compatibility: node cli/scriv.mjs /path/to/ScrivAutomation.app');
+    console.log('Scriv CLI through Tracer\n  tracer actions\n  tracer app -- test --list\n  tracer app -- test --scenario ID --group NAME --app /path/to/ScrivAutomation.app\n  tracer app -- test [--scenario ID ...] --app /path/to/ScrivAutomation.app\n  tracer app -- test --help\n  tracer app -- test tooling\n  tracer app -- test provenance\n  tracer app -- test compact --archive /absolute/archived-runs [--apply]\n  ' + serviceUsage + '\n  tracer app -- /path/to/ScrivAutomation.app [--persistent-workspace|--fresh-startup]\n  tracer app -- workspace inspect /absolute/owned/root\n\nFresh startup opens an empty isolated workspace through normal local startup. Persistent mode permits the host JSON commands {"command":"relaunch"} and {"command":"relaunch-recover"} with no arguments. Recovery checks the retained workspace for pending local saves at startup. Both commands use only this process-owned synthetic workspace. workspace inspect is read-only and never grants resume authority.\n\nThe last form preserves JSON-line control: {"command":"snapshot"} or {"command":"select","target":"workspace-tabs","index":1}. Results are JSON lines.\nCharacter portraits use menu-action with scope/target character-portrait-options, exact action title, characterID and imageID. The supported operation is stored public menu-action dispatch, not a native menu click or alert action.\nNative tests/control require a real automation-enabled Catalyst build on macOS. Tooling journeys check the public CLI, not native app behavior.\nDirect compatibility: node cli/scriv.mjs /path/to/ScrivAutomation.app');
     return app ? 0 : 2;
   }
-  if (!(args.length === 1 || args.length === 2 && args[1] === '--persistent-workspace')
+  if (!(args.length === 1 || args.length === 2 && ['--persistent-workspace', '--fresh-startup'].includes(args[1]))
       || /[\x00-\x1f\x7f]/.test(app)) throw new Error('Expected an automation app path or test. Use tracer actions.');
-  let session = await ScrivSession.launch(app, { persistent: args[1] === '--persistent-workspace' });
+  let session = await ScrivSession.launch(app, { persistent: args[1] === '--persistent-workspace', freshStartup: args[1] === '--fresh-startup' });
   try {
     await session.command('capabilities');
     for await (const line of createInterface({ input: process.stdin })) {

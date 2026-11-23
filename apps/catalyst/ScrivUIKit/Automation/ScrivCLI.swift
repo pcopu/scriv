@@ -311,6 +311,10 @@ final class ScrivCLI {
                 workspace["startupRecovery"] = true
                 workspace["bootstrapping"] = (window.rootViewController as? ScrivWorkspaceController)?.store.isBootstrapping ?? true
             }
+            if run.freshStartup {
+                workspace["freshStartup"] = true
+                workspace["bootstrapping"] = (window.rootViewController as? ScrivWorkspaceController)?.store.startupBootstrapComplete != true
+            }
             var result: [String: Any] = ["protocol": 1, "driver": "UIKit controls", "completeInterfaceParity": false, "imageEvidenceSchemaVersion": 1,
                     "scriptInteractionCountsSchemaVersion": 1,
                     "cloudIsolation": run.publicStatus,

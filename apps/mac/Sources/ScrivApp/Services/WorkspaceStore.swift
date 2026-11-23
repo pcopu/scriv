@@ -562,6 +562,11 @@ final class WorkspaceStore: ObservableObject {
         return .process
     }
 #if targetEnvironment(macCatalyst)
+#if SCRIV_CLI_AUTOMATION
+    // The edit gate opens before sample media is installed. A startup capture
+    // must wait for that work even after the workspace becomes interactive.
+    private(set) var startupBootstrapComplete = false
+#endif
     private var skipStartupRecovery: Bool {
         return verificationMode
     }
@@ -709,14 +714,21 @@ final class WorkspaceStore: ObservableObject {
     private func bootstrap() async {
 #if targetEnvironment(macCatalyst)
         startupTrace.record(.bootstrapBegin)
-        defer { isBootstrapping = false; startupTrace.record(.bootstrapEnd) }
+        defer {
+            isBootstrapping = false; startupTrace.record(.bootstrapEnd)
+#if SCRIV_CLI_AUTOMATION
+            startupBootstrapComplete = true
+#endif
+        }
 #if SCRIV_CLI_AUTOMATION
         let recoveryRun = try? ScrivCLIRunCapability.requirePrepared()
         let recoverOwnedPending = recoveryRun?.startupRecovery == true
+        let runLocalStartup = recoveryRun?.freshStartup == true
 #else
         let recoverOwnedPending = false
+        let runLocalStartup = false
 #endif
-        if skipStartupRecovery && !recoverOwnedPending {
+        if skipStartupRecovery && !recoverOwnedPending && !runLocalStartup {
             startupTrace.record(.verificationBootstrapSkipped)
             // Isolated verification only: start playback on launch so the running
             // app's playback cost can be measured without synthetic input events.
@@ -743,8 +755,9 @@ final class WorkspaceStore: ObservableObject {
             startupTrace.record(.pendingInventoryEnd)
 #if SCRIV_CLI_AUTOMATION
             if let recoveryRun, recoverOwnedPending { try recoveryRun.validateStartupRecoveryPackages(pending) }
+            if runLocalStartup && !pending.isEmpty { throw ScrivCLIRunCapability.Failure() }
 #endif
-            let lastOpenedPath = recoverOwnedPending ? nil : startupDefaults.string(forKey:"lastProjectURL")
+            let lastOpenedPath = recoverOwnedPending || runLocalStartup ? nil : startupDefaults.string(forKey:"lastProjectURL")
             if let path = lastOpenedPath,
                FileManager.default.fileExists(atPath:path) || pending.contains(where: { $0.path == path }) {
                 try await open(URL(fileURLWithPath:path))

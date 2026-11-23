@@ -335,6 +335,14 @@ flag to compare timing and identify newly observed lines. These launches
 use the CLI's isolated workspace and settings. Startup recovery that the
 isolated app skips still needs a compatible launch scenario.
 
+Use `--scenario journeys/native-first-launch --coverage-startup` to measure
+the normal first launch in a fresh offline workspace. The journey verifies
+that startup saves the built-in sample project, installs the exact bundled
+images, and assigns them to the storyboard and character portraits. To
+inspect the same launch manually, run `tracer app -- "$SCRIV_APP" --fresh-startup`.
+The CLI waits for bootstrap to finish before taking the startup snapshot.
+First launch and `relaunch-recover` cover separate paths through bootstrap.
+
 Read the produced `evidence.json`; `coverage.analysis.root` identifies the
 external source copy containing the imported dataset. Run `measure check` and
 `measure report` on that root. All output stays outside pinned source.

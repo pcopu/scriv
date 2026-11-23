@@ -17,11 +17,13 @@ final class ScrivCLIRunCapability {
     private static let sessionLock = ".scriv-cli-session.lock"
     private static let cloudFixtureFlag = "--scriv-cli-cloud-fixture"
     private static let startupRecoveryFlag = "--scriv-cli-recover-pending"
+    private static let freshStartupFlag = "--scriv-cli-fresh-startup"
     let runID: UUID
     let sessionID: UUID
     let persistent: Bool
     let resumed: Bool
     let startupRecovery: Bool
+    let freshStartup: Bool
     let root: URL
     let approvedOrigin: URL?
     private let namedRoot: URL
@@ -32,12 +34,13 @@ final class ScrivCLIRunCapability {
     private var fixtureMailboxFD: Int32
     private var scopes: [String: Int32] = [:]
 
-    private init(runID: UUID, sessionID: UUID, persistent: Bool, resumed: Bool, startupRecovery: Bool,
+    private init(runID: UUID, sessionID: UUID, persistent: Bool, resumed: Bool, startupRecovery: Bool, freshStartup: Bool,
                  root: URL, namedRoot: URL, rootFD: Int32, outboxFD: Int32,
                  lockFD: Int32, markerFD: Int32, approvedOrigin: URL?, fixtureMailboxFD: Int32) throws {
         if let approvedOrigin { try Self.validateLoopbackOrigin(approvedOrigin) }
         self.runID = runID; self.sessionID = sessionID
         self.persistent = persistent; self.resumed = resumed; self.startupRecovery = startupRecovery
+        self.freshStartup = freshStartup
         self.root = root; self.namedRoot = namedRoot
         self.rootFD = rootFD; self.outboxFD = outboxFD
         self.lockFD = lockFD; self.markerFD = markerFD; self.approvedOrigin = approvedOrigin
@@ -55,8 +58,9 @@ final class ScrivCLIRunCapability {
         let resumed = arguments.contains("--scriv-cli-resume")
         let cloudFixture = arguments.contains(cloudFixtureFlag)
         let startupRecovery = arguments.contains(startupRecoveryFlag)
+        let freshStartup = arguments.contains(freshStartupFlag)
         guard arguments.contains("--scriv-cli") else {
-            guard !freshPersistent, !resumed, !cloudFixture, !startupRecovery else { throw Failure() }
+            guard !freshPersistent, !resumed, !cloudFixture, !startupRecovery, !freshStartup else { throw Failure() }
             return
         }
         guard prepared == nil, arguments.contains("--screenshots"),
@@ -72,6 +76,9 @@ final class ScrivCLIRunCapability {
         guard !resumed || sessionID != runID else { throw Failure() }
         let persistent = freshPersistent || resumed
         guard !cloudFixture || (!persistent && sessionID == runID), !startupRecovery || resumed else { throw Failure() }
+        // Normal first launch is only safe in a new offline CLI workspace.
+        guard !freshStartup || (!persistent && !cloudFixture && sessionID == runID
+                                && getenv("SCRIV_CLI_CODEX_ANALYSIS_FIXTURE") == nil) else { throw Failure() }
         let approvedOrigin = cloudFixture ? try readCloudFixtureOrigin(3, runID: runID) : nil
 
         // Duplicate FD3 before any open can occupy that descriptor. Never lock
@@ -142,7 +149,7 @@ final class ScrivCLIRunCapability {
             try validateMarker(markerFD, parent: rootFD, runID: runID)
         }
         let run = try ScrivCLIRunCapability(runID: runID, sessionID: sessionID, persistent: persistent, resumed: resumed,
-                                           startupRecovery: startupRecovery,
+                                           startupRecovery: startupRecovery, freshStartup: freshStartup,
                                            root: root, namedRoot: namedRoot, rootFD: rootFD, outboxFD: outboxFD,
                                            lockFD: lockFD, markerFD: markerFD, approvedOrigin: approvedOrigin,
                                            fixtureMailboxFD: fixtureMailboxFD)
@@ -284,6 +291,7 @@ final class ScrivCLIRunCapability {
               CommandLine.arguments.contains("--scriv-cli-persistent") == (persistent && !resumed),
               CommandLine.arguments.contains(Self.cloudFixtureFlag) == (approvedOrigin != nil),
               CommandLine.arguments.contains(Self.startupRecoveryFlag) == startupRecovery,
+              CommandLine.arguments.contains(Self.freshStartupFlag) == freshStartup,
               let path = getenv("SCRIV_VERIFICATION_ROOT"), String(cString: path) == root.path,
               namedRoot.resolvingSymlinksInPath() == namedRoot,
               root.resolvingSymlinksInPath() == namedRoot else { throw Failure() }
