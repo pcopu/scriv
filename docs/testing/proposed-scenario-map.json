@@ -9289,6 +9289,34 @@
       ]
     },
     {
+      "id": "native-shared-generation",
+      "title": "Complete and recover an image job in a Team project",
+      "featureId": "generation-recovery",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/native-shared-generation.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "symbol": "generateImage"
+      },
+      "actionIds": [
+        "activate",
+        "select",
+        "text",
+        "key",
+        "end-editing",
+        "image-evidence",
+        "persisted-projects"
+      ],
+      "plannedActions": [
+        "Open a synthetic Team project, connect the owned image runtime and generate through the selected cue. Open Shared project history. Interrupt a second turn, inspect it and select Use in original project. Generate once more with a controlled runtime refusal."
+      ],
+      "expectedOutcomes": [
+        "The Worker records owner-scoped claim and renewal receipts, marks jobs complete with the saved cue image and stores identical bytes. Recovery claims the waiting job, keeps its original ID and attaches its image once. The refused turn records its own failed job while preserving both accepted images and the script."
+      ]
+    },
+    {
       "id": "native-hosted-image-recovery",
       "title": "Fetch a repaired hosted image from the Preview",
       "featureId": "media-sync",
@@ -9647,7 +9675,8 @@
     {
       "rangeId": "bdcadb2177fb6cf5f48c",
       "scenarioIds": [
-        "wave81-3-s046"
+        "wave81-3-s046",
+        "native-shared-generation"
       ],
       "rationale": "Presents local and shared generation jobs, recovery actions, validated thumbnails and retry. Proposed scenario exercises this responsibility.",
       "confidence": "medium",
@@ -14140,7 +14169,8 @@
     {
       "rangeId": "f918d0471d9032b0da46",
       "scenarioIds": [
-        "audit-v82-f918d0471d9032b0da46"
+        "audit-v82-f918d0471d9032b0da46",
+        "native-shared-generation"
       ],
       "rationale": "The selected apps/mac/Sources/ScrivApp/Services/CloudClient+Generation.swift lines 1-66 implement or configure the specific behavior described by this replacement; the planned public actions or static inspection target that responsibility.",
       "confidence": "low",
@@ -16321,7 +16351,8 @@
     {
       "rangeId": "001cb4e7ceab40c3c307",
       "scenarioIds": [
-        "audit-v82-001cb4e7ceab40c3c307"
+        "audit-v82-001cb4e7ceab40c3c307",
+        "native-shared-generation"
       ],
       "rationale": "The proposed exercise targets claims, recovers, retries and mirrors durable generation jobs. The replacement specifies the triggering fixture and observable result.",
       "confidence": "medium",

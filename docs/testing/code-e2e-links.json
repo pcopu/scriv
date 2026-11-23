@@ -95814,6 +95814,66 @@
         "sha256": "b38e3de6a84cac82103c27f5d2e6e89372ba252279c3c13656623391655afa03"
       },
       "why": "The fixture reports that subprocess networking is enabled. Scriv verifies the policy and pauses before the fixture receives image bytes."
+    },
+    {
+      "id": "4ab7d55bb8295bd0",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivGenerationJobsController.swift",
+        "start": 25,
+        "end": 26,
+        "sha256": "4a8b9bec12ae56a216d0be099227ce643f389db5aa7b5a8c9f7937d296dd9da5"
+      },
+      "actions": [
+        "activate Generation jobs",
+        "select Shared project"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-shared-generation.mjs",
+        "start": 130,
+        "end": 134,
+        "sha256": "c6f975581152944a8e22f719c72828cda7d33624b0c485d0a550fbfa26dc113d"
+      },
+      "why": "The Shared project selection displays the completed Team job in the native history sheet."
+    },
+    {
+      "id": "a32794d5af0e8477",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1605,
+        "end": 1608,
+        "sha256": "2ac0f323c81259f3b5e4d5e7c789b00addb5a1f6f058ef22cbca05f6cbeabe43"
+      },
+      "actions": [
+        "activate Cancel the current image generation",
+        "activate Inspect existing turn",
+        "activate Use in original project"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-shared-generation.mjs",
+        "start": 136,
+        "end": 179,
+        "sha256": "4509622764b239940881d5dfced3bee25f819b81c9c6be4413a73821160a4f39"
+      },
+      "why": "The waiting job receives a new accepted claim and keeps the same identity through lease renewal, attachment and shared completion."
+    },
+    {
+      "id": "acb411aa5bc9ba6d",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1659,
+        "end": 1673,
+        "sha256": "0ee552f0a9900a5608d614347bd5a8b3eb0a43f4654ed8898649787c129da2f3"
+      },
+      "actions": [
+        "activate Generate image for 01A"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-shared-generation.mjs",
+        "start": 105,
+        "end": 128,
+        "sha256": "353ae2cc2c76fbdb6da4c15ea5a7bc51c35def7381f1d13c34b060862cf9302d"
+      },
+      "why": "The existing command reaches the native shared job workflow. The fixture verifies its completion references the saved cue and the matching hosted bytes."
     }
   ],
   "commentExclusions": [

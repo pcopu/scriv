@@ -338,6 +338,13 @@ filesystem paths to verify the working directory even when Foundation renders
 the same directory URL with a trailing slash. The fixture supplies its own
 responses, so this journey measures Scriv's handling of those responses.
 
+The `journeys/native-shared-generation` selector pairs the image runtime
+fixture with an isolated Scriv Worker. It exercises Generate image, the Shared
+project history, and recovery of an interrupted turn through Inspect existing
+turn and Use in original project. The Worker receipts verify the claim and
+lease renewal for the same job. The journey checks that the saved cue and
+hosted bytes agree, then verifies that a refused turn preserves the two images.
+
 ## November 13 service checkpoint
 
 All 13 existing service selectors passed in isolated local fixtures. Initially

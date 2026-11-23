@@ -78,6 +78,8 @@ export async function startNativeCloudFixture() {
       prepareHostedImage: input => response(['prepare-hosted-image', input]),
       repairHostedImage: () => response('repair-hosted-image'),
       hostedImageResponses: () => response('hosted-image-responses'),
+      prepareSharedGeneration: project => response(['prepare-shared-generation', project]),
+      sharedGenerationState: () => response('shared-generation-state'),
       assertNoOutbound: async () => assert.equal((await response('status')).outbound, 0),
       close,
     };
@@ -262,6 +264,53 @@ async function startWorker(root) {
         return { name: team.name, role: team.role, plan: team.plan, billingCustomer: team.billingCustomer };
       });
     }
+    async function seedPaidTeamProject(project, token) {
+      const { team } = await post('/v1/teams', 201, { name: nativeFixtureTeam }, token);
+      await db.prepare("UPDATE teams SET subscription_status='active', paid_until=? WHERE id=?")
+        .bind(Date.now() + 5 * 60_000, team.id).run();
+      const { project: remote } = await post('/v1/projects', 201, { title: project.title, teamId: team.id }, token);
+      const path = '/v1/projects/' + remote.id;
+      const headers = { Authorization: `Bearer ${token}` };
+      const me = await fixture.dispatchFetch(new URL('/v1/me', base), { headers, redirect: 'error' });
+      assert.equal(me.status, 200);
+      const { sessionId } = await me.json();
+      const groups = { scene: project.scenes, entry: project.entries, character: project.characters, image: project.images, cue: project.cues };
+      const items = Object.entries(groups).flatMap(([kind, values]) => values.map(data => ({ id: data.id, kind, data })));
+      const imported = await post(path + '/import', 200,
+        { commandId: randomUUID(), sessionId, epoch: 1, expectedTimingVersion: 0, items }, token);
+      assert.equal(imported.snapshotRequired, true);
+      return { id: remote.id, path, teamId: team.id, headers };
+    }
+    let sharedProjectID;
+    async function prepareSharedGeneration(project) {
+      assert.equal(sharedProjectID, undefined);
+      assert.deepEqual(project.images, []);
+      const seeded = await withFixtureOwner(token => seedPaidTeamProject(project, token));
+      sharedProjectID = seeded.id;
+      return { projectID: sharedProjectID };
+    }
+    async function sharedGenerationState() {
+      assert.ok(sharedProjectID);
+      const { results: jobs } = await db.prepare(`SELECT id, target_item_id AS cueID, source_revision AS sourceRevision,
+        status, progress_text AS progress, version, lease_expires_at AS leaseExpiresAt,
+        output_image_id AS imageID, error_code AS errorCode FROM generation_jobs WHERE project_id=? ORDER BY created_at,id`)
+        .bind(sharedProjectID).all();
+      const { results: operations } = await db.prepare(`SELECT o.job_id AS jobID, o.resulting_version AS version,
+        o.actor_session_id=j.owner_device_id AS owner FROM generation_job_operations o JOIN generation_jobs j
+        ON o.project_id=j.project_id AND o.job_id=j.id WHERE o.project_id=? ORDER BY o.job_id,o.resulting_version`)
+        .bind(sharedProjectID).all();
+      const { results: assets } = await db.prepare("SELECT asset_id, sha256, object_key FROM assets WHERE project_id=? AND state='ready' ORDER BY sha256")
+        .bind(sharedProjectID).all();
+      const bucket = await fixture.getR2Bucket('MEDIA', 'scriv');
+      const hosted = await Promise.all(assets.map(async asset => {
+        const object = await bucket.get(asset.object_key);
+        assert.ok(object, 'The ready asset has actual hosted bytes');
+        const data = Buffer.from(await object.arrayBuffer());
+        assert.equal(createHash('sha256').update(data).digest('hex'), asset.sha256);
+        return { id: asset.asset_id, sha256: asset.sha256, bytes: data.length };
+      }));
+      return { jobs, operations, hosted };
+    }
     let hostedImage;
     async function prepareHostedImage({ project, png }) {
       assert.equal(hostedImage, undefined);
@@ -272,29 +321,14 @@ async function startWorker(root) {
       assert.equal(image.byteCount, bytes.length);
       assert.equal(image.sha256, createHash('sha256').update(bytes).digest('hex'));
       return withFixtureOwner(async token => {
-        const { team } = await post('/v1/teams', 201, { name: nativeFixtureTeam }, token);
-        // Seed the private synthetic subscription fixture so the real upload
-        // route can create the asset before the native reader signs in.
-        await db.prepare("UPDATE teams SET subscription_status='active', paid_until=? WHERE id=?")
-          .bind(Date.now() + 60_000, team.id).run();
-        const { project: remote } = await post('/v1/projects', 201, { title: project.title, teamId: team.id }, token);
-        const projectPath = '/v1/projects/' + remote.id;
-        const headers = { Authorization: `Bearer ${token}` };
-        const me = await fixture.dispatchFetch(new URL('/v1/me', base), { headers, redirect: 'error' });
-        assert.equal(me.status, 200);
-        const { sessionId } = await me.json();
-        const groups = { scene: project.scenes, entry: project.entries, image: project.images, cue: project.cues };
-        const items = Object.entries(groups).flatMap(([kind, values]) => values.map(data => ({ id: data.id, kind, data })));
-        const imported = await post(projectPath + '/import', 200,
-          { commandId: randomUUID(), sessionId, epoch: 1, expectedTimingVersion: 0, items }, token);
-        assert.equal(imported.snapshotRequired, true);
+        const { id, path: projectPath, teamId, headers } = await seedPaidTeamProject(project, token);
         const assetPath = projectPath + '/assets/' + image.sha256;
         const uploaded = await fixture.dispatchFetch(new URL(assetPath, base), { method: 'PUT', body: bytes, redirect: 'error',
           headers: { ...headers, 'Content-Type': image.mimeType, 'X-Scriv-Asset-Id': image.id } });
         assert.equal(uploaded.status, 201);
         assert.deepEqual(await uploaded.json(), { sha256: image.sha256, bytes: bytes.length, hosted: true });
         const { object_key: key } = await db.prepare("SELECT object_key FROM assets WHERE project_id=? AND sha256=? AND state='ready'")
-          .bind(remote.id, image.sha256).first();
+          .bind(id, image.sha256).first();
         const bucket = await fixture.getR2Bucket('MEDIA', 'scriv');
         hostedImage = { bucket, key, bytes };
         const corrupt = Buffer.from(bytes);
@@ -302,9 +336,9 @@ async function startWorker(root) {
         await bucket.put(key, corrupt);
         // The owner can still read the hosted copy after the test team lapses.
         await db.prepare("UPDATE teams SET subscription_status='canceled', paid_until=? WHERE id=?")
-          .bind(Date.now() - 1000, team.id).run();
+          .bind(Date.now() - 1000, teamId).run();
         await nativeWorker.watchHostedImage(assetPath);
-        return { projectID: remote.id };
+        return { projectID: id };
       });
     }
     async function repairHostedImage() {
@@ -320,6 +354,7 @@ async function startWorker(root) {
       interruptEdit: projectId => nativeWorker.interruptEdit(projectId),
       interruptedEditState: () => nativeWorker.interruptedEditState(),
       prepareHostedImage, repairHostedImage, hostedImageResponses: () => nativeWorker.hostedImageResponses(),
+      prepareSharedGeneration, sharedGenerationState,
       takeCode: () => mailbox.takeCode(),
       projects: async () => (await db.prepare(
         'SELECT projects.id, projects.title FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.id',
@@ -342,7 +377,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit,
         'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState,
         'prepare-hosted-image': worker.prepareHostedImage, 'repair-hosted-image': worker.repairHostedImage,
-        'hosted-image-responses': worker.hostedImageResponses };
+        'hosted-image-responses': worker.hostedImageResponses, 'prepare-shared-generation': worker.prepareSharedGeneration,
+        'shared-generation-state': worker.sharedGenerationState };
       assert.ok(Object.hasOwn(operations, operation));
       const result = await operations[operation](value);
       if (process.connected) process.send(result);
