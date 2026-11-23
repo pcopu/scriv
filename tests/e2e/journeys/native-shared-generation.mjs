@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { audioLibrarySteps } from './support/audio-library-steps.mjs';
+import { stableContent } from './support/audio-library-fixtures.mjs';
 import { fixtureImageHash, recoveredImageHash, startCodexFixture } from './support/codex-loopback-fixture.mjs';
 import { generationContextInput } from './support/generation-context-cases.mjs';
 import { nativeFixtureEmail, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
@@ -180,6 +183,7 @@ try {
     await closeJobs();
 
     step = 'record a refused turn without changing the completed job or the cue';
+    const beforeRefusal = await savedPackage();
     await generateForCue();
     const alerts = await until(() => session.command('presented-alerts'), items => items.length > 0);
     assert.equal(alerts.length, 1);
@@ -188,7 +192,18 @@ try {
     assert.equal(refused.jobs.length, 3);
     const refusal = refused.jobs.find(row => row.status === 'failed');
     assert.equal(refusal.cueID, 'cue');
-    assert.equal(refusal.sourceRevision, recoveredPackage.revision);
+    // Live reconciliation can advance the package revision after recovery.
+    // The app-owned journal records the exact revision captured for this turn.
+    const refusedLocal = (await localJobs()).find(record => record.jobID === refusal.id);
+    assert.ok(refusedLocal?.hasThreadID && refusedLocal.hasTurnID && !refusedLocal.attachmentVerified);
+    assert.match(refusedLocal.jobID, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    const journal = JSON.parse(await readFile(join(session.root, 'Generation', 'Journal', refusedLocal.jobID + '.json'), 'utf8'));
+    assert.equal(journal.id, refusal.id);
+    assert.equal(journal.status, 'failed');
+    assert.equal(journal.context.projectID, before.id);
+    assert.equal(journal.context.cloudProjectID, projectID);
+    assert.equal(journal.context.targetCue.id, 'cue');
+    assert.equal(refusal.sourceRevision, journal.context.sourceRevision);
     assert.equal(refusal.errorCode, 'local_generation_failed');
     assert.equal(refusal.progress, 'Generation failed on the owning Mac');
     assert.equal(refusal.imageID, null);
@@ -196,7 +211,9 @@ try {
     assert.deepEqual(refused.jobs.find(row => row.id === job.id), job);
     assert.deepEqual(refused.jobs.find(row => row.id === id), recoveredJob);
     assert.deepEqual(refused.hosted, recovered.hosted);
-    assert.deepEqual(await savedPackage(), recoveredPackage);
+    const afterRefusal = await savedPackage();
+    assert.ok(refusal.sourceRevision >= beforeRefusal.revision && refusal.sourceRevision <= afterRefusal.revision);
+    assert.deepEqual(stableContent(afterRefusal), stableContent(beforeRefusal));
     await fixture.assertNoOutbound();
   })());
   await codex.close();
