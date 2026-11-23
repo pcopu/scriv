@@ -95894,6 +95894,47 @@
         "sha256": "26f6873b1d218c1f7b2306d516417d7fb9b47fc9a5e7791e8e7ab6e3e5e250b7"
       },
       "why": "The package scenario uses the actual inspector menu owner and confirms the semantic action changes its disclosure while preserving the saved project."
+    },
+    {
+      "id": "6a95d9f860e977e8",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Teams/TeamInvitationController.swift",
+        "start": 99,
+        "end": 107,
+        "sha256": "2ec1b44c75cec3a3765ef5bc39508d86749d2f1b21db59cf7efffff7734cf06a"
+      },
+      "actions": [
+        "activate Revoke",
+        "activate Revoke"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-invitations.mjs",
+        "start": 85,
+        "end": 96,
+        "sha256": "cd739f12f04ed0718ba96dff13c3ebfbc8e570827883b674473dd42352cbb2d7"
+      },
+      "why": "The first revocation leaves the owned Worker records intact. The retry revokes the active link and refreshes the same sheet without changing the existing membership."
+    },
+    {
+      "id": "72bb652cab89c265",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Teams/TeamInvitationController.swift",
+        "start": 66,
+        "end": 82,
+        "sha256": "69ca0ad74df8578ee183e694acd38bf8640271e0b24520db1b53d504c922d88a"
+      },
+      "actions": [
+        "activate Invite people",
+        "activate Done",
+        "activate Invite people"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-invitations.mjs",
+        "start": 60,
+        "end": 83,
+        "sha256": "aca350411fde9b2c6f4be5a662cd4afc94594f727e617c2c8bf111296804f9bc"
+      },
+      "why": "The real invitation sheet reports a temporary list failure and displays both seeded invitation states after reopening."
     }
   ],
   "commentExclusions": [

@@ -9289,6 +9289,24 @@
       ]
     },
     {
+      "id": "native-team-invitation-revocation",
+      "title": "Load and revoke invitations in the Team sheet",
+      "featureId": "teams",
+      "state": "existing",
+      "existingPaths": ["tests/e2e/journeys/native-team-invitations.mjs"],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
+        "symbol": "openInvitations"
+      },
+      "actionIds": ["menu-action", "activate", "text", "key", "loaded-project", "persisted-projects"],
+      "plannedActions": [
+        "Open the isolated paid Team's invitation sheet. Reopen after a failed list request. Revoke the active synthetic invitation, see its first failure and retry the same action. Reopen the sheet to verify the saved state."
+      ],
+      "expectedOutcomes": [
+        "The native sheet distinguishes active and expired links and reports temporary errors. Only the retried revocation changes the active link. The expired link, existing membership and saved and loaded project stay intact."
+      ]
+    },
+    {
       "id": "native-image-inspector-prompt-disclosure",
       "title": "Show and hide stored image prompts",
       "featureId": "cli-automation",
@@ -13632,7 +13650,8 @@
     {
       "rangeId": "b437bcb4aa3afd4e2b93",
       "scenarioIds": [
-        "audit-v82-b437bcb4aa3afd4e2b93"
+        "audit-v82-b437bcb4aa3afd4e2b93",
+        "native-team-invitation-revocation"
       ],
       "rationale": "Separate manager mutations, informational nonmanager UI and actual operation errors. Public journey and explicitly static checks are separated; source assertions are limited to the assigned responsibility.",
       "confidence": "medium",

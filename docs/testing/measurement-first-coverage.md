@@ -345,6 +345,12 @@ turn and Use in original project. The Worker receipts verify the claim and
 lease renewal for the same job. The journey checks that the saved cue and
 hosted bytes agree, then verifies that a refused turn preserves the two images.
 
+The `journeys/native-team-invitations` selector opens the invitation sheet of a
+synthetic paid Team. It verifies recovery from a failed list request, the
+display of active and expired links, and a refused revocation followed by a
+successful retry. It checks the Worker records, reopens the native sheet and
+confirms that the existing membership and local project stay intact.
+
 ## November 13 service checkpoint
 
 All 13 existing service selectors passed in isolated local fixtures. Initially

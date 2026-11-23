@@ -12,6 +12,8 @@ export const nativeFixtureEmail = 'synthetic-native@example.invalid';
 export const nativeFixtureTeam = 'Synthetic Story Team';
 export const lostCloudEditReceipt = 'The cloud edit receipt could not be delivered. Try syncing again.';
 export const interruptedCloudEdit = 'The connection was interrupted before saving this cloud edit.';
+export const invitationLoadFailure = 'Invitation details were temporarily unavailable.';
+export const invitationRevokeFailure = 'The invitation could not be revoked. Try again.';
 
 export async function startNativeCloudFixture() {
   const require = createRequire(join(cloud, 'package.json'));
@@ -80,6 +82,9 @@ export async function startNativeCloudFixture() {
       hostedImageResponses: () => response('hosted-image-responses'),
       prepareSharedGeneration: project => response(['prepare-shared-generation', project]),
       sharedGenerationState: () => response('shared-generation-state'),
+      prepareInvitations: () => response('prepare-invitations'),
+      interruptInvitationLoad: () => response('interrupt-invitation-load'),
+      invitationState: () => response('invitation-state'),
       assertNoOutbound: async () => assert.equal((await response('status')).outbound, 0),
       close,
     };
@@ -116,6 +121,7 @@ async function startWorker(root) {
       let interruption;
       let hostedImagePath;
       const hostedImageResponses = [];
+      let invitations;
       const withoutLeases = operations => JSON.stringify(operations.map(({ lease, ...item }) => item));
       async function interruptedCommand(payload, upstream) {
         const state = interruption;
@@ -149,6 +155,20 @@ async function startWorker(root) {
         async fetch(request) {
           const upstream = () => worker.fetch(request, this.env, this.ctx);
           const path = new URL(request.url).pathname;
+          if (invitations && request.method === 'GET' && path === invitations.teamPath && invitations.interruptLoad) {
+            invitations.interruptLoad = false;
+            invitations.interruptedLoads++;
+            return Response.json({ error: { code: 'fixture_unavailable', message: ${JSON.stringify(invitationLoadFailure)} } }, { status: 503 });
+          }
+          if (invitations && request.method === 'DELETE' && path === invitations.revokePath) {
+            if (!invitations.revocations.length) {
+              invitations.revocations.push(503);
+              return Response.json({ error: { code: 'fixture_unavailable', message: ${JSON.stringify(invitationRevokeFailure)} } }, { status: 503 });
+            }
+            const response = await upstream();
+            invitations.revocations.push(response.status);
+            return response;
+          }
           if (request.method === 'GET' && path === hostedImagePath) {
             const response = await upstream();
             hostedImageResponses.push(response.status);
@@ -201,6 +221,16 @@ async function startWorker(root) {
           hostedImagePath = path;
         }
         hostedImageResponses() { return [...hostedImageResponses]; }
+        watchInvitations(teamPath, revokePath) {
+          if (invitations) throw new Error('A single owned invitation test is supported');
+          invitations = { teamPath, revokePath, interruptLoad: false, interruptedLoads: 0, revocations: [] };
+        }
+        interruptInvitationLoad() {
+          if (!invitations || invitations.interruptLoad || invitations.interruptedLoads) throw new Error('Use the one owned invitation load interruption');
+          invitations.interruptLoad = true;
+          return true;
+        }
+        invitationRequests() { return { interruptedLoads: invitations.interruptedLoads, revocations: [...invitations.revocations] }; }
       }`, { mode: 0o600 });
     const denyOutbound = () => { outbound++; throw new Error('Unexpected fixture outbound request'); };
     const common = { unsafeInspectorProxy: false, compatibilityDate: '2026-10-29', modules: true, outboundService: denyOutbound };
@@ -264,10 +294,14 @@ async function startWorker(root) {
         return { name: team.name, role: team.role, plan: team.plan, billingCustomer: team.billingCustomer };
       });
     }
-    async function seedPaidTeamProject(project, token) {
+    async function seedPaidTeam(token) {
       const { team } = await post('/v1/teams', 201, { name: nativeFixtureTeam }, token);
       await db.prepare("UPDATE teams SET subscription_status='active', paid_until=? WHERE id=?")
         .bind(Date.now() + 5 * 60_000, team.id).run();
+      return team;
+    }
+    async function seedPaidTeamProject(project, token) {
+      const team = await seedPaidTeam(token);
       const { project: remote } = await post('/v1/projects', 201, { title: project.title, teamId: team.id }, token);
       const path = '/v1/projects/' + remote.id;
       const headers = { Authorization: `Bearer ${token}` };
@@ -347,6 +381,31 @@ async function startWorker(root) {
       await bucket.put(key, bytes);
       return true;
     }
+    let invitationTeamID;
+    async function prepareInvitations() {
+      assert.equal(invitationTeamID, undefined);
+      return withFixtureOwner(async token => {
+        const team = await seedPaidTeam(token);
+        invitationTeamID = team.id;
+        const teamPath = '/v1/teams/' + team.id;
+        const linksPath = teamPath + '/join-links';
+        const { link: member } = await post(linksPath, 201, { role: 'member', expiresInDays: 7 }, token);
+        const { link: viewer } = await post(linksPath, 201, { role: 'viewer', expiresInDays: 1 }, token);
+        // The older link is an expired fixture. Neither secret leaves this Worker process.
+        await db.prepare('UPDATE join_links SET expires_at=? WHERE team_id=? AND id=?')
+          .bind(Date.now() - 1000, team.id, viewer.id).run();
+        await nativeWorker.watchInvitations(teamPath, linksPath + '/' + member.id);
+        return { memberID: member.id, viewerID: viewer.id };
+      });
+    }
+    async function invitationState() {
+      assert.ok(invitationTeamID);
+      const { results: links } = await db.prepare('SELECT id,role,expires_at AS expiresAt,revoked_at AS revokedAt FROM join_links WHERE team_id=? ORDER BY role')
+        .bind(invitationTeamID).all();
+      const { results: members } = await db.prepare('SELECT role FROM team_members WHERE team_id=? ORDER BY role')
+        .bind(invitationTeamID).all();
+      return { links, members, ...await nativeWorker.invitationRequests() };
+    }
     return { origin: base.origin, createFreeTeam, status: async () => ({ deliveries: await mailbox.count(), outbound }),
       loseEditReceipt: projectId => nativeWorker.loseEditReceipt(projectId),
       editReceiptState: () => nativeWorker.editReceiptState(),
@@ -355,6 +414,7 @@ async function startWorker(root) {
       interruptedEditState: () => nativeWorker.interruptedEditState(),
       prepareHostedImage, repairHostedImage, hostedImageResponses: () => nativeWorker.hostedImageResponses(),
       prepareSharedGeneration, sharedGenerationState,
+      prepareInvitations, invitationState, interruptInvitationLoad: () => nativeWorker.interruptInvitationLoad(),
       takeCode: () => mailbox.takeCode(),
       projects: async () => (await db.prepare(
         'SELECT projects.id, projects.title FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.id',
@@ -378,7 +438,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState,
         'prepare-hosted-image': worker.prepareHostedImage, 'repair-hosted-image': worker.repairHostedImage,
         'hosted-image-responses': worker.hostedImageResponses, 'prepare-shared-generation': worker.prepareSharedGeneration,
-        'shared-generation-state': worker.sharedGenerationState };
+        'shared-generation-state': worker.sharedGenerationState, 'prepare-invitations': worker.prepareInvitations,
+        'interrupt-invitation-load': worker.interruptInvitationLoad, 'invitation-state': worker.invitationState };
       assert.ok(Object.hasOwn(operations, operation));
       const result = await operations[operation](value);
       if (process.connected) process.send(result);

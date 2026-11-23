@@ -1,0 +1,115 @@
+import assert from 'node:assert/strict';
+import { ScrivSession } from '../../../cli/scriv.mjs';
+import { waitForSavedProject } from '../support/saved-projects.mjs';
+import { audioLibrarySteps } from './support/audio-library-steps.mjs';
+import { invitationLoadFailure, invitationRevokeFailure, nativeFixtureEmail, nativeFixtureTeam, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
+
+assert.ok(process.env.SCRIV_E2E_APP, 'Requires a signed Catalyst automation build');
+const fixture = await startNativeCloudFixture();
+const button = (title, windowPath) => node => node.type === 'UIButton'
+  && (node.title === title || node.label === title) && (!windowPath || node.windowPath === windowPath);
+const hasText = (text, windowPath) => nodes => nodes.some(node => node.text === text && (!windowPath || node.windowPath === windowPath));
+let session;
+let step = 'sign in to the isolated Team fixture';
+
+try {
+  const { memberID, viewerID } = await fixture.prepareInvitations();
+  const before = await fixture.invitationState();
+  assert.deepEqual(before.links.map(({ id, role, revokedAt }) => ({ id, role, revokedAt })),
+    [{ id: memberID, role: 'member', revokedAt: null }, { id: viewerID, role: 'viewer', revokedAt: null }]);
+  assert.ok(before.links[0].expiresAt > Date.now() && before.links[1].expiresAt < Date.now());
+  assert.deepEqual(before.members, [{ role: 'owner' }]);
+  session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
+  const capabilities = await session.command('capabilities');
+  assert.equal(capabilities.cloudIsolation.network, 'loopback-only');
+  assert.equal(capabilities.cloudIsolation.peerTransport, 'disabled');
+  assert.ok(capabilities.semanticMenuActionScopes.includes('workspace-panels'));
+  const ui = audioLibrarySteps(session);
+  async function clickPresented(title, windowPath) {
+    const matches = nodes => nodes.filter(node => node.enabled && node.hittable && button(title, windowPath)(node));
+    let prior, stableSince;
+    const nodes = await session.waitFor(nodes => {
+      const [target, second] = matches(nodes);
+      const key = target && !second ? JSON.stringify([target.path, target.frame]) : null;
+      if (!key || key !== prior) { prior = key; stableSince = Date.now(); return false; }
+      return Date.now() - stableSince >= 1000;
+    });
+    await session.command('activate', { target: matches(nodes)[0].path });
+  }
+  await ui.tab('Script');
+  await session.command('key', { input: 's', modifiers: ['command'] });
+  const saved = await waitForSavedProject(session, project => project.title === 'YAM MAN');
+  const model = await session.command('loaded-project');
+  await ui.activate(node => node.identifier === 'workspace-project');
+  await clickPresented('Sign in to Scriv…');
+  const email = await ui.reveal(node => node.type === 'UITextField' && node.label === 'Email address');
+  await session.command('text', { target: email.path, text: nativeFixtureEmail });
+  await clickPresented('Continue with email');
+  await session.waitFor(hasText('Check your email'));
+  assert.deepEqual(await session.deliverFixtureEmailCode(await fixture.takeCode()), { delivered: true });
+  await clickPresented('Sign in with code');
+  await clickPresented('Close Projects');
+
+  step = 'open the paid Team invitation sheet';
+  const menu = node => node.label === 'Workspace actions' && node.hittable && node.enabled;
+  const workspaceNodes = await session.waitFor(nodes => nodes.filter(menu).length === 1);
+  const menuOwner = workspaceNodes.find(menu);
+  assert.deepEqual(await session.command('menu-action', { target: menuOwner.path, scope: 'workspace-panels', action: 'Teams and sharing…' }),
+    { dispatched: true, coverage: 'semantic-menu-action' });
+  await session.waitFor(nodes => hasText('Members (1)')(nodes) && hasText('● Active')(nodes));
+  const heading = 'Invite to ' + nativeFixtureTeam;
+  const open = async () => {
+    await clickPresented('Invite people');
+    const nodes = await session.waitFor(hasText(heading));
+    return nodes.find(node => node.text === heading).windowPath;
+  };
+  const close = async windowPath => {
+    await clickPresented('Done', windowPath);
+    await session.waitFor(nodes => !hasText(heading)(nodes) && nodes.some(node => button('Invite people')(node) && node.hittable));
+  };
+
+  step = 'show a temporary list failure and reopen the invitation sheet';
+  assert.equal(await fixture.interruptInvitationLoad(), true);
+  const failedSheet = await open();
+  await session.waitFor(hasText(invitationLoadFailure, failedSheet));
+  assert.deepEqual(await fixture.invitationState(), { ...before, interruptedLoads: 1 });
+  await close(failedSheet);
+
+  const sheet = await open();
+  const list = await session.waitFor(nodes => ['Member invitation', 'Viewer invitation', 'Expired'].every(text => hasText(text, sheet)(nodes))
+    && nodes.filter(button('Revoke', sheet)).length === 1);
+  assert.ok(list.some(node => node.windowPath === sheet && node.text?.startsWith('Expires ')));
+  assert.ok(list.some(node => button('Create & copy link', sheet)(node) && node.enabled));
+  assert.ok(!list.some(button('Copy', sheet)));
+
+  step = 'retry a failed revocation and confirm only the active link changes';
+  await ui.activate(node => button('Revoke', sheet)(node) && node.enabled);
+  await session.waitFor(hasText(invitationRevokeFailure, sheet));
+  assert.deepEqual(await fixture.invitationState(), { ...before, interruptedLoads: 1, revocations: [503] });
+  await ui.activate(node => button('Revoke', sheet)(node) && node.enabled);
+  await session.waitFor(nodes => hasText('Revoked', sheet)(nodes) && hasText('Expired', sheet)(nodes)
+    && !nodes.some(button('Revoke', sheet)));
+  const after = await fixture.invitationState();
+  assert.deepEqual(after.revocations, [503, 200]);
+  assert.ok(after.links[0].revokedAt > 0);
+  assert.deepEqual(after.links, [{ ...before.links[0], revokedAt: after.links[0].revokedAt }, before.links[1]]);
+  assert.deepEqual(after.members, before.members);
+
+  step = 'reopen the saved invitation list and verify the project is intact';
+  await close(sheet);
+  const reopened = await open();
+  await session.waitFor(nodes => hasText('Revoked', reopened)(nodes) && hasText('Expired', reopened)(nodes)
+    && !nodes.some(button('Revoke', reopened)));
+  assert.deepEqual(await fixture.invitationState(), after);
+  await close(reopened);
+  await clickPresented('Done');
+  await session.waitFor(nodes => nodes.some(node => node.identifier === 'workspace-project' && node.enabled && node.hittable));
+  assert.deepEqual(await session.command('loaded-project'), model);
+  assert.deepEqual(await session.command('persisted-projects'), [saved]);
+  assert.deepEqual(await session.command('presented-alerts'), []);
+  await fixture.assertNoOutbound();
+} catch (error) { throw new Error(`Native Team invitations failed during ${step}`, { cause: error }); }
+finally {
+  try { await session?.close(); }
+  finally { await fixture.close(); }
+}
