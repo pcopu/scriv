@@ -69,7 +69,9 @@ ledger, sites, raw snapshots, exact LCOV bytes, source/probe/tool hashes, import
 receipt and the official measurement report/check. The exported source manifest
 is bound explicitly to the Worker and probe bytes used by the capture. Source
 identity remains strict before and after import. A verified external source copy
-holds the Tracer dataset, never the pinned original source checkout.
+holds the Tracer dataset. The analysis and reversed-endpoint control each copy
+only the measured Worker file, while the full manifest verifies the original
+capture inputs.
 
 A separate fresh validation copy must reject the actual captured endpoints in
 reverse order as negative deltas. That deliberately invalid control is not a

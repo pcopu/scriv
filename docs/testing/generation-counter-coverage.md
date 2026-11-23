@@ -86,7 +86,9 @@ captures to claim overall coverage.
 After successful owned cleanup, the collector verifies source/tools/build inputs,
 requires genuine Tracer to reject the real endpoints reversed, and imports the
 real pair into a separate verified analysis copy. The original source remains
-unchanged before and after import. Use `measure report` and `measure check` on
+unchanged before and after import. The analysis and reversed-endpoint control
+each copy only the measured source files. The full manifest still verifies the
+original capture inputs. Use `measure report` and `measure check` on
 that external analysis root. Keep raw profiles, datasets and local paths out of
 Git. Report the exact source checkpoint, observed and instrumented anchor counts,
 stale/invalid status and these limits alongside the result.

@@ -218,9 +218,10 @@ async function finishUpdateCapture(capture, interrupted = () => false, directory
   for (const [name, expected] of [['instrumented.mjs', capture.moduleSHA256], ['entry.mjs', capture.wrapperSHA256], ['sites.json', capture.siteManifestSHA256]])
     assert.equal(await hashFile(join(capture.directory, name)), expected);
   const interval = JSON.parse(await readFile(join(directory, 'interval.json')));
+  const measuredPaths = new Set([sourcePath]);
   // Real endpoints reversed, not fabricated counts. A fresh validation root must
   // reject negative deltas and remain without a measurement dataset.
-  const validation = await prepareAnalysisRoot(repository, manifest, capture.sourceManifestSHA256, join(directory, 'negative-control'));
+  const validation = await prepareAnalysisRoot(repository, manifest, capture.sourceManifestSHA256, join(directory, 'negative-control'), measuredPaths);
   const reversed = { ...interval, before: interval.after, after: interval.before,
     limitations: [...interval.limitations, 'INVALID CONTROL: real captured endpoints reversed; never a measured result.'] };
   await write(join(directory, 'invalid-reversed.json'), json(reversed));
@@ -230,7 +231,7 @@ async function finishUpdateCapture(capture, interrupted = () => false, directory
   catch (error) { assert.equal(error.status, 1); assert.match(String(error.stderr), /Negative delta or counter reset/); rejected = true;
     await write(join(directory, 'negative-control-result.txt'), String(error.stderr)); }
   assert(rejected); await assert.rejects(lstat(validation.dataset), error => error.code === 'ENOENT');
-  const analysis = await prepareAnalysisRoot(repository, manifest, capture.sourceManifestSHA256, join(directory, 'analysis'));
+  const analysis = await prepareAnalysisRoot(repository, manifest, capture.sourceManifestSHA256, join(directory, 'analysis'), measuredPaths);
   await write(join(directory, 'import-attempt.json'), json({ status: 'attempting-once', root: analysis.root }));
   // Never retry an uncertain import automatically. Keep this marker and all raw
   // snapshots if the process times out or fails; inspect measure report first.
