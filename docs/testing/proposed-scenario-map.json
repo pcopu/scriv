@@ -6241,13 +6241,21 @@
       "id": "wave81-5-4f806217c6ee",
       "title": "Preview and commit a picture split \u2014 ImageSplitPreviewController",
       "featureId": "storyboard",
-      "state": "needs-extension",
+      "state": "existing",
       "existingPaths": [
+        "tests/e2e/journeys/picture-split-preview.mjs"
+      ],
+      "candidateStartingPoints": [
         "tests/e2e/journeys/picture-coverage.mjs"
       ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Images/ImageSplitPreviewController.swift",
+        "symbol": "present"
+      },
+      "actionIds": ["stage-package-fixture", "activate", "slider", "key", "loaded-project", "persisted-projects", "local-image-evidence"],
       "plannedActions": [
-        "Select a synthetic picture cue and preview an interior time split",
-        "Confirm the split, inspect both placements and undo/reopen"
+        "Open the foreground cut from the active Script row. Reject an endpoint, move the preview slider and cancel. Reopen, move the cut and commit.",
+        "Return focus to the workspace through Projects. Undo, redo and reopen the package with the same two image versions."
       ],
       "expectedOutcomes": [
         "Both placements preserve image and source anchoring while partitioning the intended interval",

@@ -351,6 +351,12 @@ display of active and expired links, and a refused revocation followed by a
 successful retry. It checks the Worker records, reopens the native sheet and
 confirms that the existing membership and local project stay intact.
 
+The `journeys/picture-split-preview` selector uses the Script row's Preview
+picture split button on the existing image package. It verifies that the cut
+preview leaves playback and persisted state intact, then commits the cut and
+checks both anchored intervals against the original image version. It restores
+keyboard focus through Projects and checks Undo, Redo and package reopen.
+
 ## November 13 service checkpoint
 
 All 13 existing service selectors passed in isolated local fixtures. Initially

@@ -95935,6 +95935,48 @@
         "sha256": "aca350411fde9b2c6f4be5a662cd4afc94594f727e617c2c8bf111296804f9bc"
       },
       "why": "The real invitation sheet reports a temporary list failure and displays both seeded invitation states after reopening."
+    },
+    {
+      "id": "74122cf48cd36097",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Images/ImageSplitPreviewController.swift",
+        "start": 52,
+        "end": 61,
+        "sha256": "5403dee9e64fdf440265d3f0a7b2780ed5a5cc25a40aeeacd634b2841cf3c7e2"
+      },
+      "actions": [
+        "activate Preview picture split",
+        "slider change Preview picture cut time",
+        "activate Cancel"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/picture-split-preview.mjs",
+        "start": 41,
+        "end": 67,
+        "sha256": "1f72d78e92cdb9794ab3432acd721630eea94862435a550cea5436fdc8236cef"
+      },
+      "why": "The real cut view changes its before and after preview. Cancelling preserves the original playback position and exact saved and loaded models."
+    },
+    {
+      "id": "e54d0d2f479cba40",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 232,
+        "end": 244,
+        "sha256": "8919fd072c08f1a16e6b96daa110949e4e1c28945d0b7d3ef7ad067c04b6fb0c"
+      },
+      "actions": [
+        "activate Preview picture split",
+        "slider change Preview picture cut time",
+        "activate Split picture"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/picture-split-preview.mjs",
+        "start": 69,
+        "end": 85,
+        "sha256": "341c92294a48505e552d82d636ad7ba02ebf5b527b7ffc8f6edef14a580f739e"
+      },
+      "why": "The production split creates exactly two anchored placements for the same image and leaves all other model content and image bytes intact."
     }
   ],
   "commentExclusions": [
