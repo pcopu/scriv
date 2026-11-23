@@ -1,6 +1,6 @@
 # Finite package image invariants
 
-Status: source implementation only; native compilation and execution pending.
+The native CLI scenario includes semantic prompt disclosure by default.
 
 AUT-J08's package-image-invariants entrypoint stages one checked-in synthetic
 package and opens it using the actual Projects browser. Staging is fixture
@@ -29,8 +29,12 @@ historical version, with full saved and loaded content comparisons. Candidate
 ::0003 starts from restored fixture content, changes the background's image,
 then seeks 500, 1500 and 2500 ms through the real transport slider and observes
 the actual preview cue label. Normal accepted-action revision/modifiedAt changes
-are checked separately. Gallery ordering and stored prompt metadata partially
-cover ::0002; exact prompt rendering remains uncovered.
+are checked separately. The `journeys/package-image-invariants` selector also
+renders the stored manual and captured prompts on the two image versions in
+::0002. It checks semantic Show and Hide actions, explicit missing-prompt text,
+and rejection of clipboard and sharing requests. The exploratory UIKit
+accessibility route remains available with `--with-prompts` when running the
+journey directly.
 
 These are candidate mappings, not acceptance. Native nil-link preservation,
 control reachability, compilation and all full-model assertions must pass before

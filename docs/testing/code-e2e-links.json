@@ -27,8 +27,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 151,
-        "end": 165,
+        "start": 150,
+        "end": 164,
         "sha256": "f3701b599cc1d487c435f02563bc1d9537b8e041cca4557cc0f2cf4e915bb87a"
       },
       "why": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Semantic group: literal envelope and schema. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution."
@@ -285,8 +285,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -3542,8 +3542,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -4832,8 +4832,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -10280,8 +10280,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Successful workspace preview traversal and active-surface count support the bounded must-be-visible oracle. Excludes hidden/clipped rejection branches and unasserted emitted frame/window metadata; no pixel screenshot or occlusion guarantee. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -15408,8 +15408,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -17397,8 +17397,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 151,
-        "end": 165,
+        "start": 150,
+        "end": 164,
         "sha256": "f3701b599cc1d487c435f02563bc1d9537b8e041cca4557cc0f2cf4e915bb87a"
       },
       "why": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). This branch is fixture==token only; alternate branch separately covered by seeded contract. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution."
@@ -17725,8 +17725,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 151,
-        "end": 159,
+        "start": 150,
+        "end": 158,
         "sha256": "8f01a7b93cfa308401b53771d6b336fc2a4595135a052cb63a796a6574dfc3ce"
       },
       "why": "AUT-J08: fresh automation process and saved startup sample. Finite package stage returns exact keys/token/title and UUID; loaded model unchanged, exact additional fixture package, repeated stage rejected with no extra package. Synthetic staging infrastructure, not production picker/open or failure-durability proof. Reviewed static association only, not native execution or measured coverage. The source was deliberately rereviewed after adding a second finite seed token and capability-root validation. This witness covers only image-inspector-invariants-v1, its unchanged literal JSON, original title/result and repeated-stage rejection; it gives no seeded-character-review, descriptor-race, new portrait loader or new-token branch credit. The source hash changed intentionally; the test witness hash is preserved. Current native execution of the revised helper is recorded separately."
@@ -23770,8 +23770,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 50,
-        "end": 54,
+        "start": 49,
+        "end": 53,
         "sha256": "708990dd5ae85899c601cb5a6dcede5f931fd059398959c11044390d08f99e01"
       },
       "why": "Successful command dispatch/reply and saved JSON return support the exact independent model oracle. Error paths, serialization failure and isolation gates are excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -24544,8 +24544,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 151,
-        "end": 165,
+        "start": 150,
+        "end": 164,
         "sha256": "f3701b599cc1d487c435f02563bc1d9537b8e041cca4557cc0f2cf4e915bb87a"
       },
       "why": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Semantic group: anchored overlapping cues and empty audio collections. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution."
@@ -25357,8 +25357,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -26431,8 +26431,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 50,
-        "end": 54,
+        "start": 49,
+        "end": 53,
         "sha256": "708990dd5ae85899c601cb5a6dcede5f931fd059398959c11044390d08f99e01"
       },
       "why": "Successful command dispatch/reply and saved JSON return support the exact independent model oracle. Error paths, serialization failure and isolation gates are excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -29240,8 +29240,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 151,
-        "end": 159,
+        "start": 150,
+        "end": 158,
         "sha256": "8f01a7b93cfa308401b53771d6b336fc2a4595135a052cb63a796a6574dfc3ce"
       },
       "why": "AUT-J08: fresh automation process and saved startup sample. Finite package stage returns exact keys/token/title and UUID; loaded model unchanged, exact additional fixture package, repeated stage rejected with no extra package. Synthetic staging infrastructure, not production picker/open or failure-durability proof. Reviewed static association only, not native execution or measured coverage. The source was deliberately rereviewed after adding a second finite seed token and capability-root validation. This witness covers only image-inspector-invariants-v1, its unchanged literal JSON, original title/result and repeated-stage rejection; it gives no seeded-character-review, descriptor-race, new portrait loader or new-token branch credit. The source hash changed intentionally; the test witness hash is preserved. Current native execution of the revised helper is recorded separately."
@@ -29291,8 +29291,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Successful workspace preview traversal and active-surface count support the bounded must-be-visible oracle. Excludes hidden/clipped rejection branches and unasserted emitted frame/window metadata; no pixel screenshot or occlusion guarantee. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -30862,8 +30862,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 50,
-        "end": 54,
+        "start": 49,
+        "end": 53,
         "sha256": "708990dd5ae85899c601cb5a6dcede5f931fd059398959c11044390d08f99e01"
       },
       "why": "Read the real store model, encode using production ScrivJSON and return its observation. Date fields are contextual existing output, not a new exact Date-bit oracle; all security and modal gates excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -31509,8 +31509,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 50,
-        "end": 54,
+        "start": 49,
+        "end": 53,
         "sha256": "708990dd5ae85899c601cb5a6dcede5f931fd059398959c11044390d08f99e01"
       },
       "why": "Read the real store model, encode using production ScrivJSON and return its observation. Date fields are contextual existing output, not a new exact Date-bit oracle; all security and modal gates excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -32344,8 +32344,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 50,
-        "end": 54,
+        "start": 49,
+        "end": 53,
         "sha256": "708990dd5ae85899c601cb5a6dcede5f931fd059398959c11044390d08f99e01"
       },
       "why": "Successful command dispatch/reply and saved JSON return support the exact independent model oracle. Error paths, serialization failure and isolation gates are excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -33663,8 +33663,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 50,
-        "end": 54,
+        "start": 49,
+        "end": 53,
         "sha256": "708990dd5ae85899c601cb5a6dcede5f931fd059398959c11044390d08f99e01"
       },
       "why": "Read the real store model, encode using production ScrivJSON and return its observation. Date fields are contextual existing output, not a new exact Date-bit oracle; all security and modal gates excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -36127,8 +36127,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 50,
-        "end": 54,
+        "start": 49,
+        "end": 53,
         "sha256": "708990dd5ae85899c601cb5a6dcede5f931fd059398959c11044390d08f99e01"
       },
       "why": "Read the real store model, encode using production ScrivJSON and return its observation. Date fields are contextual existing output, not a new exact Date-bit oracle; all security and modal gates excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -38979,8 +38979,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 151,
-        "end": 165,
+        "start": 150,
+        "end": 164,
         "sha256": "f3701b599cc1d487c435f02563bc1d9537b8e041cca4557cc0f2cf4e915bb87a"
       },
       "why": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Semantic group: entries, exact word timings, absent links and empty characters. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution."
@@ -39590,8 +39590,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 142,
-        "end": 148,
+        "start": 141,
+        "end": 147,
         "sha256": "65ded3cbaeb07c2e586ee34a7228aae6e89ea80d06dbcaac5b645efa3ae6711b"
       },
       "why": "Fixed error description observed for six explicitly enumerated invalid request shapes; no filesystem or gate-failure distinction claimed. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution."
@@ -41320,8 +41320,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 50,
-        "end": 54,
+        "start": 49,
+        "end": 53,
         "sha256": "708990dd5ae85899c601cb5a6dcede5f931fd059398959c11044390d08f99e01"
       },
       "why": "Read the real store model, encode using production ScrivJSON and return its observation. Date fields are contextual existing output, not a new exact Date-bit oracle; all security and modal gates excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -42977,8 +42977,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 168,
-        "end": 170,
+        "start": 167,
+        "end": 169,
         "sha256": "273c71c080e8474c7bc395ff5f0b8323b870a6a8d10a483040fb9b89e109d757"
       },
       "why": "AUT-J08: gallery already open after seek1500 Foreground2, without selection change. Cancel dismisses gallery and invariant() compares complete saved/loaded model with nil links retained, no alerts. Prior seek is a precondition, not asserted by this witness. Reviewed static association only, not native execution or measured coverage."
@@ -43942,8 +43942,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -44807,8 +44807,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 80,
-        "end": 87,
+        "start": 79,
+        "end": 86,
         "sha256": "50361bfec8376a1e11dffa67e8f39ad8d040d61645a13759cb5d8eaec737ef1c"
       },
       "why": "AUT-J08: exact staged package opened via browser, cue has v1/v2 lineage and empty search. Two hittable locally available cells must appear latest-first [2,1]. No unrelated lineage, cycle, missing-ID, tie-break or query matching proof. Reviewed static association only, not native execution or measured coverage."
@@ -47802,8 +47802,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 50,
-        "end": 54,
+        "start": 49,
+        "end": 53,
         "sha256": "708990dd5ae85899c601cb5a6dcede5f931fd059398959c11044390d08f99e01"
       },
       "why": "Successful command dispatch/reply and saved JSON return support the exact independent model oracle. Error paths, serialization failure and isolation gates are excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -48358,8 +48358,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -48390,8 +48390,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 151,
-        "end": 165,
+        "start": 150,
+        "end": 164,
         "sha256": "f3701b599cc1d487c435f02563bc1d9537b8e041cca4557cc0f2cf4e915bb87a"
       },
       "why": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Semantic group: two versioned image records, exact prompts and absent successor generationPrompt. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution."
@@ -51201,8 +51201,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Successful workspace preview traversal and active-surface count support the bounded must-be-visible oracle. Excludes hidden/clipped rejection branches and unasserted emitted frame/window metadata; no pixel screenshot or occlusion guarantee. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -51524,8 +51524,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 142,
-        "end": 148,
+        "start": 141,
+        "end": 147,
         "sha256": "65ded3cbaeb07c2e586ee34a7228aae6e89ea80d06dbcaac5b645efa3ae6711b"
       },
       "why": "Stage catch translates those request-validation failures only; not evidence that internal filesystem failures were induced. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution."
@@ -51992,8 +51992,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 151,
-        "end": 165,
+        "start": 150,
+        "end": 164,
         "sha256": "f3701b599cc1d487c435f02563bc1d9537b8e041cca4557cc0f2cf4e915bb87a"
       },
       "why": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Semantic group: title, fixed dates/revision and scene. Static witness association only; not measured coverage, exhaustive branch proof or observed native execution."
@@ -54736,8 +54736,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 91,
-        "end": 95,
+        "start": 90,
+        "end": 94,
         "sha256": "7ba7eb9c8e5f682ae3056cb5843d359add3e6e9e8fbc1b8c555eb9d2aebdcdda"
       },
       "why": "For the existing staged two-image package, loaded-project returns per-image Date witness records in model image order. The direct baseline assertions require matching image IDs/order and decimal-string createdAt values. This is output-shape/identity evidence only: neither the numeric IEEE reference-time bit conversion nor precision-changing mutation detection is independently calibrated. The surrounding selectVersion helper later compares the whole image witness array after a real gallery selection (107\u2013112), but that later mutation sequence is context outside this narrow baseline link. Setup stages the finite allowlisted image-inspector-invariants-v1 package, opens it through the real browser, and reaches selectVersion via choose-foreground-history; no external package picker or security-boundary behavior is credited. Reviewed static association only, pinned to frozen v64. No native execution, measured coverage, current source-to-build attestation or legacy retirement is added. Action descriptions are actual ordered semantic CLI calls, not a wire transcript; waitFor/saved observation polling may repeat and reveal may conditionally scroll. Unasserted fields and failure/security branches are excluded."
@@ -55042,8 +55042,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 151,
-        "end": 165,
+        "start": 150,
+        "end": 164,
         "sha256": "f3701b599cc1d487c435f02563bc1d9537b8e041cca4557cc0f2cf4e915bb87a"
       },
       "why": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Static witness association only; not measured coverage, exhaustive branch proof or observed native execution."
@@ -55834,8 +55834,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 50,
-        "end": 54,
+        "start": 49,
+        "end": 53,
         "sha256": "708990dd5ae85899c601cb5a6dcede5f931fd059398959c11044390d08f99e01"
       },
       "why": "Successful command dispatch/reply and saved JSON return support the exact independent model oracle. Error paths, serialization failure and isolation gates are excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -57250,8 +57250,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 80,
-        "end": 87,
+        "start": 79,
+        "end": 86,
         "sha256": "50361bfec8376a1e11dffa67e8f39ad8d040d61645a13759cb5d8eaec737ef1c"
       },
       "why": "AUT-J08: exact staged package opened via browser, cue has v1/v2 lineage and empty search. Two hittable locally available cells must appear latest-first [2,1]. No unrelated lineage, cycle, missing-ID, tie-break or query matching proof. Reviewed static association only, not native execution or measured coverage."
@@ -58623,8 +58623,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 50,
-        "end": 54,
+        "start": 49,
+        "end": 53,
         "sha256": "708990dd5ae85899c601cb5a6dcede5f931fd059398959c11044390d08f99e01"
       },
       "why": "Successful command dispatch/reply and saved JSON return support the exact independent model oracle. Error paths, serialization failure and isolation gates are excluded. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -60679,8 +60679,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -60739,8 +60739,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 151,
-        "end": 165,
+        "start": 150,
+        "end": 164,
         "sha256": "f3701b599cc1d487c435f02563bc1d9537b8e041cca4557cc0f2cf4e915bb87a"
       },
       "why": "Independent JavaScript packageImageFixture supplies the entire expected model, not a parsed implementation value. The staged persisted JSON and production-browser loaded project must both equal that expected object (only returned random id substituted). Static witness association only; not measured coverage, exhaustive branch proof or observed native execution."
@@ -61748,8 +61748,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Successful workspace preview traversal and active-surface count support the bounded must-be-visible oracle. Excludes hidden/clipped rejection branches and unasserted emitted frame/window metadata; no pixel screenshot or occlusion guarantee. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -63153,8 +63153,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Route read-only local-image-evidence to the real native observer after unchanged request/workspace checks. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -65357,8 +65357,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Collect actual package bytes and decoded visible-preview counts for the two independently fixed fixture assets on the workspace surface. No ownership, symlink, alias rejection, race, inspector or frame-coordinate claim. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -68061,8 +68061,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Successful workspace preview traversal and active-surface count support the bounded must-be-visible oracle. Excludes hidden/clipped rejection branches and unasserted emitted frame/window metadata; no pixel screenshot or occlusion guarantee. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -70329,8 +70329,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 116,
-        "end": 128,
+        "start": 115,
+        "end": 127,
         "sha256": "a6f8310e97d2cec14631b9b59cded140ff37668f015386e6e4d4ad1389ccabd9"
       },
       "why": "Successful workspace preview traversal and active-surface count support the bounded must-be-visible oracle. Excludes hidden/clipped rejection branches and unasserted emitted frame/window metadata; no pixel screenshot or occlusion guarantee. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
@@ -95874,6 +95874,26 @@
         "sha256": "353ae2cc2c76fbdb6da4c15ea5a7bc51c35def7381f1d13c34b060862cf9302d"
       },
       "why": "The existing command reaches the native shared job workflow. The fixture verifies its completion references the saved cue and the matching hosted bytes."
+    },
+    {
+      "id": "d6b995aa132f5855",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIInspectorPromptMenu.swift",
+        "start": 78,
+        "end": 90,
+        "sha256": "3e343c7c4acc2063dbb44a7105e5140e5ee09187fab34abac0bf5e5c34ffdfeb"
+      },
+      "actions": [
+        "activate the image inspector",
+        "menu-action Show captured generation prompt"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/package-image-prompts.mjs",
+        "start": 62,
+        "end": 81,
+        "sha256": "26f6873b1d218c1f7b2306d516417d7fb9b47fc9a5e7791e8e7ab6e3e5e250b7"
+      },
+      "why": "The package scenario uses the actual inspector menu owner and confirms the semantic action changes its disclosure while preserving the saved project."
     }
   ],
   "commentExclusions": [
@@ -106491,11 +106511,11 @@
       "id": "e15c35bc01add34c",
       "source": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 113,
-        "end": 115,
+        "start": 112,
+        "end": 114,
         "sha256": "d69518a00131be0fbb3c84bb9bbfa219bb4fcedd976ae92fba790319143072b6"
       },
-      "fileSha256": "a1c066eebfac7cba0a37394ec6ec160fc94f2bb6aa8b374183306d3d52ab5503"
+      "fileSha256": "f988f0bce89dbc8fd6c9429dcd3a64cce4414d2c79572f6490142a91efc9df26"
     },
     {
       "id": "e15cda08a12f451c",
@@ -106811,11 +106831,11 @@
       "id": "e6836b3c4a7d4c8e",
       "source": {
         "path": "tests/e2e/journeys/package-image-invariants.mjs",
-        "start": 64,
-        "end": 66,
+        "start": 63,
+        "end": 65,
         "sha256": "e3426203af4d10ead42fca609fb223333e5ece0184c5f85c077c433885654d32"
       },
-      "fileSha256": "a1c066eebfac7cba0a37394ec6ec160fc94f2bb6aa8b374183306d3d52ab5503"
+      "fileSha256": "f988f0bce89dbc8fd6c9429dcd3a64cce4414d2c79572f6490142a91efc9df26"
     },
     {
       "id": "e6d4c945b0ea3326",

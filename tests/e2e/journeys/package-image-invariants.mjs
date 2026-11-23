@@ -9,15 +9,14 @@ import { discloseInspectorPrompts, inspectorPrompts } from './support/package-im
 
 validatePackageImageFixture();
 const withPrompts = process.argv.includes('--with-prompts');
-const withSemanticPrompts = process.argv.includes('--with-semantic-prompts');
-assert.ok(!(withPrompts && withSemanticPrompts), 'Prompt disclosure modes are mutually exclusive');
-const inspectPromptCases = withPrompts || withSemanticPrompts;
+assert.ok(!(withPrompts && process.argv.includes('--with-semantic-prompts')), 'Prompt disclosure modes are mutually exclusive');
+const withSemanticPrompts = !withPrompts;
 const cases = ['reject-inputs', 'stage-without-opening', 'open-exact-package', 'gallery-cancel',
   'choose-foreground-history', 'restore-foreground', 'choose-background-successor', 'overlap-seek', 'browser-reopen'];
 assert.ok(process.argv.slice(2).every(arg => ['--list-cases', '--with-prompts', '--with-semantic-prompts'].includes(arg)));
 const promptCases = ['inspect-historical-prompts', 'inspect-restored-prompts'];
-const selectedCases = inspectPromptCases ? cases.flatMap(name => [name,
-  ...(name === 'choose-foreground-history' ? [promptCases[0]] : name === 'restore-foreground' ? [promptCases[1]] : [])]) : cases;
+const selectedCases = cases.flatMap(name => [name,
+  ...(name === 'choose-foreground-history' ? [promptCases[0]] : name === 'restore-foreground' ? [promptCases[1]] : [])]);
 if (process.argv.includes('--list-cases')) {
   console.log(JSON.stringify({ journey: 'AUT-J08', portion: 'literal-package-image-invariants', nativeVerified: false,
     cases: selectedCases, ...(withPrompts ? { promptDisclosure: {
@@ -27,14 +26,14 @@ if (process.argv.includes('--list-cases')) {
       coverageIfReachable: 'Separate exact manual and captured-or-explicit-missing text, native Show/Hide disclosure, Done, saved-state equality throughout and full loaded-state/date-bit equality after dismissal.',
       excludes: ['decoded inspector image', 'physical input', 'acceptance or retirement credit'],
     } } : withSemanticPrompts ? { promptDisclosure: {
-      status: 'source-only-explicit-semantic-disclosure', nativeVerified: false,
+      status: 'semantic-disclosure', nativeVerified: false,
       baselineID: `${inspectorBaseline}::0002`,
       scope: 'image-inspector-prompt-disclosure',
       coverageIfVerified: 'Exact separate manual/captured-or-explicit-missing text, semantic Show/Hide/Show, rejected clipboard/share/wrong requests, Done, complete persisted equality and full loaded/date-bit equality after dismissal.',
       excludes: ['native menu presentation', 'physical input', 'acceptance or retirement credit'],
     } } : {}), candidateBaselineIDs: [`${inspectorBaseline}::0001`, `${inspectorBaseline}::0003`],
     partialBaselineIDs: [`${inspectorBaseline}::0002`],
-    excluded: ['exact captured/manual prompt rendering', 'physical input', 'external package picker',
+    excluded: ['physical input', 'external package picker',
       'restart/crash recovery', 'legacy retirement'],
   }, null, 2));
 } else {
@@ -170,9 +169,9 @@ async function run() {
       await invariant();
     });
     await check('choose-foreground-history', () => selectVersion('foreground', 1));
-    if (inspectPromptCases) await check(promptCases[0], () => inspectPrompts(1));
+    await check(promptCases[0], () => inspectPrompts(1));
     await check('restore-foreground', () => selectVersion('foreground', 2));
-    if (inspectPromptCases) await check(promptCases[1], () => inspectPrompts(2));
+    await check(promptCases[1], () => inspectPrompts(2));
     await check('choose-background-successor', async () => { await seek(500, 'Background', 1); await selectVersion('background', 2); });
     await check('overlap-seek', async () => {
       for (const [ms, label] of [[500, 'Background'], [1500, 'Foreground'], [2500, 'Background']]) {

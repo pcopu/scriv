@@ -9289,6 +9289,26 @@
       ]
     },
     {
+      "id": "native-image-inspector-prompt-disclosure",
+      "title": "Show and hide stored image prompts",
+      "featureId": "cli-automation",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/package-image-invariants.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIInspectorPromptMenu.swift",
+        "symbol": "dispatch"
+      },
+      "actionIds": ["stage-package-fixture", "activate", "menu", "menu-action", "local-image-evidence"],
+      "plannedActions": [
+        "Open the owned image package and select the historical and restored versions. Show and hide the captured prompt, and try requests from the wrong control and requests to copy or share."
+      ],
+      "expectedOutcomes": [
+        "The version shows its exact manual direction and captured text or explicit absence. Non-disclosure requests are refused. The saved and loaded project, revisions and date bits remain intact."
+      ]
+    },
+    {
       "id": "native-shared-generation",
       "title": "Complete and recover an image job in a Team project",
       "featureId": "generation-recovery",
@@ -10898,7 +10918,8 @@
     {
       "rangeId": "99975d4c4b423e2d694d",
       "scenarioIds": [
-        "audit-v82-99975d4c4b423e2d694d"
+        "audit-v82-99975d4c4b423e2d694d",
+        "native-image-inspector-prompt-disclosure"
       ],
       "rationale": "The proposed exercise targets constrained CLI action validates the current image-inspector prompt disclosure menu before dispatch. The replacement specifies the triggering fixture and observable result.",
       "confidence": "medium",
