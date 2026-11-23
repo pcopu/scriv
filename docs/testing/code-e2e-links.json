@@ -95480,8 +95480,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 245,
-        "end": 248,
+        "start": 317,
+        "end": 320,
         "sha256": "14265268c9f3db277c4a24413cc0a013b381ba8cf1a890d8c542c14cb1ba1870"
       },
       "why": "The real panel explains why the same job stays waiting, and the route verifies its identity and unchanged persistent projects."
@@ -95499,8 +95499,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 312,
-        "end": 327,
+        "start": 441,
+        "end": 456,
         "sha256": "c522aa35dfb148dbbb3b526c2a47703dd7c6360053d0e2ea3d9eeebace990dc4"
       },
       "why": "The mounted jobs panel reports the missing local image. The original job has no attachment or artifact and all saved projects remain identical."
@@ -95518,8 +95518,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 249,
-        "end": 257,
+        "start": 321,
+        "end": 329,
         "sha256": "d11334e4559821ae47c839d09e717ff7a7dd0e24d88ab22b0fbd07753127cdfa"
       },
       "why": "The running result keeps the original job waiting. A later inspection observes cancellation of the same turn without creating another job."
@@ -95537,8 +95537,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 226,
-        "end": 235,
+        "start": 298,
+        "end": 307,
         "sha256": "b18b7a0d0db1d073391bc3145f28e3b54d50ca5dda2e6c9edea2f18a5ffe48b6"
       },
       "why": "The visible disconnected state and original waiting job are verified before reconnect, and the saved projects remain identical."
@@ -95556,8 +95556,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 237,
-        "end": 243,
+        "start": 309,
+        "end": 315,
         "sha256": "45a50ec45a290986157429a8e7e119bc4fc238fa9d3db59502f057ddbdac7cb3"
       },
       "why": "The selected first model and second-page model appear exactly once in the real menu."
@@ -96071,8 +96071,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 106,
-        "end": 126,
+        "start": 126,
+        "end": 146,
         "sha256": "8bde83c4f241f4a9e089627b34eaa72f0eb696e9ea860f20025d8f1b29becf5e"
       },
       "why": "The connected loopback provider receives explicit refusals, empty permissions and answers, and a method-not-found response. The settings status, absence of new turns and unchanged saved projects are asserted."
@@ -96111,8 +96111,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 329,
-        "end": 343,
+        "start": 458,
+        "end": 472,
         "sha256": "5d4adf7adae71bf09aa0965256e77fff8b6ac5f11cfead9617400a528688c49e"
       },
       "why": "A request for more input on an active image turn sends empty answers and interrupts that exact owned turn. Existing jobs and saved projects are preserved."
@@ -96131,8 +96131,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 145,
-        "end": 161,
+        "start": 165,
+        "end": 181,
         "sha256": "4a05e70a1203269fdc0397a378760f26171a035d4e2c1cda33262f0e54c19ed6"
       },
       "why": "Each owned account update requests one fresh account read. The Settings controls show the confirmed identity, become disabled on failed reads, and recover to the correct signed-out and ready states. Saved projects and jobs are unchanged."
@@ -96151,8 +96151,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 128,
-        "end": 137,
+        "start": 148,
+        "end": 157,
         "sha256": "a2eec81ece88acc33eb1cc9c96e993ebfd1876c4932da48c4be9b1ff55bdca67"
       },
       "why": "The Settings pane displays the provider warning, configuration warning summary and error while the socket remains connected."
@@ -97871,6 +97871,151 @@
         "sha256": "b5e7602529fb7c84da8c17bf3d1c1109eab24944ec097bb8e4f01e0bdd321f51"
       },
       "why": "The real signing guard shows the blocked notice and repeating the check keeps one sheet."
+    },
+    {
+      "id": "67169a1c7910b911",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1636,
+        "end": 1639,
+        "sha256": "3169b03f6cd029951feab020f6d1ef4d56f2e9150ba3594ef4b7bbc394c7a934"
+      },
+      "actions": [
+        "scriv activate Retry generation",
+        "scriv persisted-projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 354,
+        "end": 384,
+        "sha256": "0bde83871cf42855ad912ac265b0862a677d073f056c12cb1d6c300d5fa97a6d"
+      },
+      "why": "The retry is bound to the original cue, writes the validated new image, and preserves the other saved cues and their assets."
+    },
+    {
+      "id": "6cc893e1c6f07063",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivGenerationJobsController.swift",
+        "start": 121,
+        "end": 130,
+        "sha256": "95ea0b21ac0a1c9ea9de517a7abdc0003cc6bd8f8233df7cc168b0a77c1a3fb9"
+      },
+      "actions": [
+        "scriv activate Open image",
+        "scriv snapshot",
+        "scriv activate Open image"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 229,
+        "end": 259,
+        "sha256": "17974c79d5e18c324f3d8a0f2e6ac3c10b8da064ffb7db1797e0f54d069c8b3c"
+      },
+      "why": "Changing only the owned job image produces the saved-image notice. Restoring exact bytes opens the preview."
+    },
+    {
+      "id": "6ea7d6d9e6aececa",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivGenerationJobsController.swift",
+        "start": 157,
+        "end": 162,
+        "sha256": "48e15cc6abf12cada7795d608300b0dbb2d699db95cbd82a2d587329d36e5bc7"
+      },
+      "actions": [
+        "scriv activate View details",
+        "scriv activate View exact submitted prompt",
+        "scriv snapshot",
+        "scriv text"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 212,
+        "end": 225,
+        "sha256": "3bd248234b0ca1c49d1d70a38eda9c24b8d709345a08699eb36323dd5b6883ef"
+      },
+      "why": "The displayed prompt matches the local fixture request for the selected job, refuses editing, and preserves its project."
+    },
+    {
+      "id": "76870efcfd9e1f1b",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Shared/UIKitFileAccess.swift",
+        "start": 147,
+        "end": 150,
+        "sha256": "f7dc71e0fa362858113a1d433c26d23e0316870bbbb3129938b67a02ff70e852"
+      },
+      "actions": [
+        "scriv activate Open image",
+        "scriv snapshot"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 251,
+        "end": 259,
+        "sha256": "71aa64b787a5d3dc05f016b2aed4163524d1b57633da574336baeea1153340d6"
+      },
+      "why": "The validated restored artifact presents the native preview, which covers the previous history control."
+    },
+    {
+      "id": "d087e12234e30cbd",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivGenerationJobsController.swift",
+        "start": 131,
+        "end": 141,
+        "sha256": "6ca36743fafe6a28a3cac438da5839248f06517dee5577c7e01118bc8eda5544"
+      },
+      "actions": [
+        "scriv activate Retry\u2026",
+        "scriv activate Cancel",
+        "scriv image-evidence"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 341,
+        "end": 352,
+        "sha256": "abc56c2a8db6d3b04cc6cce0ff3d82a1c0c0eb724044eda45e6c5ee9b41a6ca7"
+      },
+      "why": "Cancel dismisses the real confirmation and preserves both original jobs without sending a new request."
+    },
+    {
+      "id": "dd6eb627e607abd9",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 827,
+        "end": 831,
+        "sha256": "1da5e79f04f0f3ec8f81fc75377b6bbb6bc24a77622aec3edbe1d6efe1cc3a47"
+      },
+      "actions": [
+        "scriv activate Retry generation",
+        "scriv persisted-projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 354,
+        "end": 367,
+        "sha256": "2e1bab281d3b48cd9ec3de1ead22b1bfa199dcfe28cfdd083789f2a836b61000"
+      },
+      "why": "An original job without references successfully retries through the owned job-directory validation."
+    },
+    {
+      "id": "ecf9a824d99617a8",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivGenerationJobsController.swift",
+        "start": 142,
+        "end": 155,
+        "sha256": "d82ff66ad0d3e98e73d2b158f1028c76cff34e448eea18ffd03da8cb3811dd9b"
+      },
+      "actions": [
+        "scriv activate Retry\u2026",
+        "scriv activate Retry generation",
+        "scriv persisted-projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 354,
+        "end": 370,
+        "sha256": "abc6f8dd786b3b8d17f5eda36c5080cb5dbbe89f06b4b343e60bc555c07550f5"
+      },
+      "why": "The confirmed retry uses the original prompt once, traces the original job via the new journal, and preserves both previous journals."
     }
   ],
   "commentExclusions": [
@@ -98388,11 +98533,11 @@
       "id": "0cc75447f51a9bd1",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Account/ScrivGenerationJobsController.swift",
-        "start": 153,
-        "end": 154,
+        "start": 170,
+        "end": 171,
         "sha256": "dcc35ba74aacf9483054ee27f1d3d87e10896d738f93621ed84cf5964bfcb6dd"
       },
-      "fileSha256": "074fec3debb6779dc14c778be101335177b8d2dd840ef7f9325233654fbfeb94"
+      "fileSha256": "4a693851747c1022f47c19675f61402d5f98318da182a99c600a135e1d9039e7"
     },
     {
       "id": "0cce375d3b8a3170",
@@ -98528,11 +98673,11 @@
       "id": "1215fbaa201f46c2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Account/ScrivGenerationJobsController.swift",
-        "start": 201,
-        "end": 202,
+        "start": 218,
+        "end": 219,
         "sha256": "ee91a235092f66b7fcc5682609c5abba37a1dc9a16e3a06422662aa524dd1522"
       },
-      "fileSha256": "074fec3debb6779dc14c778be101335177b8d2dd840ef7f9325233654fbfeb94"
+      "fileSha256": "4a693851747c1022f47c19675f61402d5f98318da182a99c600a135e1d9039e7"
     },
     {
       "id": "129d773b2c01ec01",
@@ -101862,7 +102007,7 @@
         "end": 120,
         "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
       },
-      "fileSha256": "e4009666fd4a1775e868473ca4249c3b46c7b9c1260f2e1bd862c80d95ddc58a"
+      "fileSha256": "1ba8ad1dae463e135bb7c5b614fde76f55c03f59a7eee0f4a786a5ffe8621a5b"
     },
     {
       "id": "58267d3510d79430",
@@ -101942,7 +102087,7 @@
         "end": 227,
         "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
       },
-      "fileSha256": "e4009666fd4a1775e868473ca4249c3b46c7b9c1260f2e1bd862c80d95ddc58a"
+      "fileSha256": "1ba8ad1dae463e135bb7c5b614fde76f55c03f59a7eee0f4a786a5ffe8621a5b"
     },
     {
       "id": "59c64d2ace520826",
@@ -103592,7 +103737,7 @@
         "end": 78,
         "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
       },
-      "fileSha256": "e4009666fd4a1775e868473ca4249c3b46c7b9c1260f2e1bd862c80d95ddc58a"
+      "fileSha256": "1ba8ad1dae463e135bb7c5b614fde76f55c03f59a7eee0f4a786a5ffe8621a5b"
     },
     {
       "id": "7e4a8f19915d9b4e",
@@ -104382,7 +104527,7 @@
         "end": 2,
         "sha256": "4ead8511821dcd95c2efee74b114bac02b04cb9252a4405b4149f9930c721b52"
       },
-      "fileSha256": "e4009666fd4a1775e868473ca4249c3b46c7b9c1260f2e1bd862c80d95ddc58a"
+      "fileSha256": "1ba8ad1dae463e135bb7c5b614fde76f55c03f59a7eee0f4a786a5ffe8621a5b"
     },
     {
       "id": "8e40d7512c7266e1",
@@ -107072,7 +107217,7 @@
         "end": 35,
         "sha256": "da22a6a09e9a6d7bbf1e35ecdac04e969fad1ac1a051025596a84831ff070202"
       },
-      "fileSha256": "e4009666fd4a1775e868473ca4249c3b46c7b9c1260f2e1bd862c80d95ddc58a"
+      "fileSha256": "1ba8ad1dae463e135bb7c5b614fde76f55c03f59a7eee0f4a786a5ffe8621a5b"
     },
     {
       "id": "c3fa07d2ab6ca6a5",

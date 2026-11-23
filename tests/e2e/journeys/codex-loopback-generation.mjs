@@ -1,9 +1,23 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { readFile, realpath, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { generationContextInput } from './support/generation-context-cases.mjs';
 import { fixtureImageHash, recoveredImageHash, startCodexFixture } from './support/codex-loopback-fixture.mjs';
+
+const groups = ['history-prompt', 'history-retry', 'history-artifact'];
+const args = process.argv.slice(2);
+if (args.length === 1 && args[0] === '--list-cases') {
+  console.log(JSON.stringify({ groups }));
+  process.exit(0);
+}
+assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]), 'Choose a supported local Codex group');
+const historyPrompt = args[1] === 'history-prompt';
+const historyRetry = args[1] === 'history-retry';
+const historyArtifact = args[1] === 'history-artifact';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
 const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
@@ -78,8 +92,14 @@ try {
   const jobs = async () => (await session.command('image-evidence')).jobs;
 
   step = 'connect to the owned loopback fixture in Settings';
-  fixture = await startCodexFixture(session.root, ['success', 'cancel', 'recover', 'missing-artifact', 'input-request', 'failure'],
-    { accountRefresh: true });
+  const submittedRequests = [];
+  const outcomes = ['success'];
+  if (historyRetry) outcomes.push('cancel', 'retry-success');
+  else if (!historyPrompt && !historyArtifact) outcomes.push('cancel', 'recover', 'missing-artifact', 'input-request', 'failure');
+  fixture = await startCodexFixture(session.root, outcomes, {
+    accountRefresh: true,
+    ...((historyPrompt || historyRetry) && { onSubmittedPrompt: request => submittedRequests.push(request) }),
+  });
   await fixture.race((async () => {
     await session.command('key', { input: ',', modifiers: ['command'] });
     // Sidebar cells use the public collection view selection route. The CLI
@@ -183,6 +203,63 @@ try {
       .sort((a, b) => a.id.localeCompare(b.id)), savedProjects, 'Only the completed fixture job may change saved projects');
     await unchanged();
 
+    const jobsSource = node => node.type === 'UISegmentedControl' && node.segments?.join('|') === 'This Mac|Shared project';
+    const openJobs = async () => {
+      await activate(await reveal(byID('codex-jobs')));
+      return (await waitForControl(jobsSource)).windowPath;
+    };
+    if (historyPrompt) {
+      step = 'read the completed job’s exact submitted prompt';
+      const historyWindow = await openJobs();
+      await activate(await reveal(node => node.windowPath === historyWindow && node.title === 'View details'));
+      await activate(await reveal(node => node.windowPath === historyWindow && node.title === 'View exact submitted prompt'));
+      const promptText = node => node.windowPath === historyWindow && node.type === 'UITextView' && node.hittable;
+      const promptNodes = await session.waitFor(nodes => nodes.filter(promptText).length === 1);
+      const promptView = promptNodes.find(promptText);
+      assert.equal(submittedRequests.length, 1);
+      assert.equal(submittedRequests[0].jobID, complete.jobID);
+      assert.equal(promptView.text, submittedRequests[0].prompt);
+      assert.equal(promptView.editable, false);
+      await assert.rejects(session.command('text', { target: promptView.path, text: 'Synthetic replacement' }), /Editor cannot be edited/);
+      assert.deepEqual(await jobs(), [complete]);
+      await unchanged();
+      return;
+    }
+    if (historyArtifact) {
+      step = 'refuse a changed job image while keeping the saved project';
+      const historyWindow = await openJobs();
+      const openImage = node => node.windowPath === historyWindow && node.title === 'Open image';
+      const artifactError = node => node.windowPath === historyWindow
+        && node.text === 'The saved generation image is missing or has changed.';
+      assert.match(complete.jobID, /^[0-9a-f-]{36}$/);
+      const file = join(session.root, 'Generation', complete.jobID, 'storyboard.png');
+      assert.equal(await realpath(file), file);
+      const original = await readFile(file);
+      const altered = Buffer.from(original);
+      altered[0] ^= 0xff;
+      try {
+        await writeFile(file, altered);
+        await activate(await reveal(openImage));
+        await session.waitFor(nodes => nodes.some(artifactError));
+        await waitForControl(openImage);
+        assert.deepEqual(await readFile(file), altered);
+        await unchanged();
+      } finally {
+        await writeFile(file, original);
+      }
+
+      step = 'open the restored original from Generation history';
+      const visiblePaths = new Set((await session.command('snapshot')).filter(node => node.windowPath === historyWindow && node.hittable).map(node => node.path));
+      await activate(await waitForControl(openImage));
+      await session.waitFor(nodes => !nodes.some(artifactError)
+        && nodes.some(node => openImage(node) && !node.hittable)
+        && nodes.some(node => node.windowPath === historyWindow && node.hittable && !visiblePaths.has(node.path)));
+      assert.deepEqual(await session.command('presented-alerts'), []);
+      assert.deepEqual(await jobs(), [complete]);
+      await unchanged();
+      return;
+    }
+
     step = 'interrupt the running turn with the visible Cancel button';
     await activate(await reveal(generate));
     // An early progress notification can race the turn/start reply. Use the
@@ -197,11 +274,6 @@ try {
     await activate(await reveal(cancelButton));
     await poll(jobs, records => records.find(job => job.jobID === cancelledID)?.status === 'waiting');
 
-    const jobsSource = node => node.type === 'UISegmentedControl' && node.segments?.join('|') === 'This Mac|Shared project';
-    const openJobs = async () => {
-      await activate(await reveal(byID('codex-jobs')));
-      return (await waitForControl(jobsSource)).windowPath;
-    };
     const inspectOriginal = async windowPath => activate(await reveal(node =>
       node.title === 'Inspect existing turn' && node.windowPath === windowPath));
     const verifyWaiting = async (windowPath, progress) => {
@@ -256,6 +328,63 @@ try {
     assert.equal(cancelled.outputImageID, undefined);
     assert.equal(inspected.length, 2, 'Inspection did not create a new job');
     await unchanged();
+
+    if (historyRetry) {
+      const retryButton = node => node.windowPath === reconnectedJobs && node.title === 'Retry…';
+      const readJournal = async id => {
+        assert.match(id, /^[0-9a-f-]{36}$/);
+        const file = join(session.root, 'Generation', 'Journal', `${id}.json`);
+        assert.equal(await realpath(file), file);
+        return JSON.parse(await readFile(file, 'utf8'));
+      };
+      const originalJournals = await Promise.all(inspected.map(job => readJournal(job.jobID)));
+      const confirmation = async () => {
+        await activate(await reveal(retryButton));
+        await waitForControl(byID('generation-retry-cancel'));
+        await waitForControl(byID('generation-retry-confirm'));
+      };
+      step = 'cancel the retry confirmation without starting a request';
+      await confirmation();
+      await activate(await waitForControl(byID('generation-retry-cancel')));
+      await waitForControl(retryButton);
+      assert.equal(submittedRequests.length, 2);
+      assert.deepEqual(await jobs(), inspected);
+      await unchanged();
+
+      step = 'confirm one new request with the cancelled job’s original prompt';
+      await confirmation();
+      await activate(await waitForControl(byID('generation-retry-confirm')));
+      await poll(() => submittedRequests, requests => requests.length === 3);
+      const [first, original, retry] = submittedRequests;
+      assert.equal(first.jobID, complete.jobID);
+      assert.equal(original.jobID, cancelledID);
+      assert.ok(!inspected.some(job => job.jobID === retry.jobID));
+      assert.equal(retry.prompt, original.prompt);
+      const journal = await poll(() => readJournal(retry.jobID), record => record.status === 'completed' && record.outputImageID);
+      assert.equal(journal.id, retry.jobID);
+      assert.equal(journal.retryOf, cancelledID);
+      assert.equal(journal.submittedPrompt, original.prompt);
+      assert.equal(journal.context.projectID, cancelled.projectID);
+      assert.equal(journal.context.targetCue.id, cancelled.cueID);
+      assert.equal(journal.artifactSha256, recoveredImageHash);
+      assert.deepEqual(await Promise.all(inspected.map(job => readJournal(job.jobID))), originalJournals);
+      const updated = await waitForSavedProject(session, project => project.id === saved.id
+        && project.cues.find(cue => cue.id === cancelled.cueID)?.imageId === journal.outputImageID);
+      const retake = updated.images.find(image => image.id === journal.outputImageID);
+      assert.equal(retake?.sha256, recoveredImageHash);
+      assert.equal(retake.fileName, `${recoveredImageHash}.png`);
+      const output = join(session.root, 'Projects', `${updated.id}.scriv`, 'assets', retake.fileName);
+      assert.equal(await realpath(output), output);
+      assert.equal(createHash('sha256').update(await readFile(output)).digest('hex'), recoveredImageHash);
+      assert.deepEqual(updated.images.filter(image => image.id !== journal.outputImageID), saved.images);
+      assert.deepEqual(updated.entries, saved.entries);
+      assert.deepEqual(updated.characters, saved.characters);
+      assert.deepEqual(updated.cues.filter(cue => cue.id !== cancelled.cueID), saved.cues.filter(cue => cue.id !== cancelled.cueID));
+      savedProjects = [sample, updated].sort((a, b) => a.id.localeCompare(b.id));
+      await unchanged();
+      return;
+    }
+
     await closeJobs();
 
     step = 'recover the finished original turn without resubmitting';
@@ -367,7 +496,10 @@ try {
   })());
   await fixture.close();
   fixture = undefined;
-  console.log('PASS: native Codex loopback fixture generation, cancellation, reconnect, recovery inspection and refusal');
+  if (historyPrompt) console.log('PASS: Generation history displays the exact recorded request as read-only text without changing jobs or projects');
+  else if (historyRetry) console.log('PASS: Cancel preserves the job and confirmed Retry submits its recorded request once');
+  else if (historyArtifact) console.log('PASS: Generation history rejects modified artifact bytes and opens the restored original');
+  else console.log('PASS: native Codex loopback fixture generation, cancellation, reconnect, recovery inspection and refusal');
 } catch (error) {
   failed = true;
   throw new Error(`Codex loopback generation failed while trying to ${step}`, { cause: error });

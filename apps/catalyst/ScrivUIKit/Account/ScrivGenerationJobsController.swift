@@ -129,13 +129,30 @@ final class ScrivGenerationJobsController: ScrivScreenController {
         }
     }
     private func confirmRetry(_ id: String) {
-        guard let job = store.codex.jobs.first(where: { $0.id == id }), job.canRetry, !working else { return }
-        let alert = UIAlertController(title: "Start a new image request?", message: "The original turn may still exist. Inspect it first. Retrying uses the captured prompt and references and may consume additional usage; it does not resume the old turn.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Retry generation", style: .default) { [weak self] _ in
-            guard let self, !self.working, !self.store.codex.isGenerating, self.store.codex.isConnected, self.store.codex.inspectingJobID == nil, let current = self.store.codex.jobs.first(where: { $0.id == id }), current.canRetry else { return }
-            self.store.codex.onRetryJob?(current)
-        }); present(alert, animated: true)
+        guard presentedViewController == nil, let job = store.codex.jobs.first(where: { $0.id == id }), job.canRetry, !working else { return }
+        let title = "Start a new image request?"
+        let confirmation = ScrivScreenController(store: store)
+        confirmation.title = title
+        let layout = CharacterTeamSheetLayout(title: title) { [weak confirmation] in confirmation?.dismiss(animated: true) }
+        layout.close.configuration?.title = "Cancel"
+        layout.close.configuration?.image = nil
+        layout.close.accessibilityLabel = "Cancel"
+        layout.close.accessibilityIdentifier = "generation-retry-cancel"
+        layout.content.addArrangedSubview(ScrivUIKitTheme.label("The original turn may still exist. Inspect it first. Retrying uses the captured prompt and references and may consume additional usage; it does not resume the old turn.", size: 15, color: ScrivUIKitTheme.secondary))
+        let retry = CharacterTeamUI.button("Retry generation", primary: true) { [weak self, weak confirmation] in
+            guard let confirmation, confirmation.viewIfLoaded?.window != nil, !confirmation.isBeingDismissed else { return }
+            let navigation = confirmation.initialNavigationContext
+            confirmation.dismiss(animated: true) { [weak self] in
+                guard let self, store.navigationContext == navigation, !working, !store.codex.isGenerating,
+                      store.codex.isConnected, store.codex.inspectingJobID == nil,
+                      let current = store.codex.jobs.first(where: { $0.id == id }), current.canRetry else { return }
+                store.codex.onRetryJob?(current)
+            }
+        }
+        retry.accessibilityIdentifier = "generation-retry-confirm"
+        layout.footer.addArrangedSubview(retry)
+        confirmation.view = layout
+        CharacterTeamUI.present(confirmation, from: self, width: 520, height: 300)
     }
     private func showPrompt(_ prompt: String) {
         let controller = UIViewController(); controller.title = "Exact submitted prompt"; controller.view.backgroundColor = AccountUI.panel

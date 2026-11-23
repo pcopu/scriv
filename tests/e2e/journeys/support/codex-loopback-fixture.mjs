@@ -23,7 +23,7 @@ const activeRequests = new Map([
 
 // Model the app-server protocol at its socket boundary. No backend, account,
 // tools, credentials, arbitrary file names, or real model are available here.
-export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = false, manualAccountCheck = false, ownedPort } = {}) {
+export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = false, manualAccountCheck = false, ownedPort, onSubmittedPrompt } = {}) {
   const handshake = ['initialize', 'initialized', 'account/read', 'model/list'];
   const anonymous = { account: null, requiresOpenaiAuth: true };
   const updated = { method: 'account/updated', params: {} };
@@ -180,13 +180,14 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
       }
       assert.ok(params.input.length === 1 && params.input[0].type === 'text'
         && params.input[0].text?.includes(job.outcome === 'recover' ? 'know.' : 'Warm window light. Hold the room.'), 'Expected only the synthetic cue prompt');
+      onSubmittedPrompt?.({ prompt: params.input[0].text, jobID: basename(job.cwd) });
       const replies = [reply({ turn: { id: job.turnId } }), { method: 'item/started',
         params: { threadId: job.threadId, item: { type: 'imageGeneration' } } }];
       if (['cancel', 'recover', 'missing-artifact', 'input-request'].includes(job.outcome)) return replies;
       const turn = { id: job.turnId, items: [] };
-      if (job.outcome === 'success') {
+      if (job.outcome === 'success' || job.outcome === 'retry-success') {
         const savedPath = join(job.cwd, 'storyboard.png');
-        await writeFile(savedPath, png, { flag: 'wx', mode: 0o600 });
+        await writeFile(savedPath, job.outcome === 'retry-success' ? recoveredPng : png, { flag: 'wx', mode: 0o600 });
         turn.status = 'completed';
         turn.items.push({ type: 'imageGeneration', savedPath });
       } else {
