@@ -95480,8 +95480,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 187,
-        "end": 190,
+        "start": 209,
+        "end": 212,
         "sha256": "14265268c9f3db277c4a24413cc0a013b381ba8cf1a890d8c542c14cb1ba1870"
       },
       "why": "The real panel explains why the same job stays waiting, and the route verifies its identity and unchanged persistent projects."
@@ -95499,8 +95499,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 254,
-        "end": 269,
+        "start": 276,
+        "end": 291,
         "sha256": "c522aa35dfb148dbbb3b526c2a47703dd7c6360053d0e2ea3d9eeebace990dc4"
       },
       "why": "The mounted jobs panel reports the missing local image. The original job has no attachment or artifact and all saved projects remain identical."
@@ -95518,8 +95518,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 191,
-        "end": 199,
+        "start": 213,
+        "end": 221,
         "sha256": "d11334e4559821ae47c839d09e717ff7a7dd0e24d88ab22b0fbd07753127cdfa"
       },
       "why": "The running result keeps the original job waiting. A later inspection observes cancellation of the same turn without creating another job."
@@ -95537,8 +95537,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 168,
-        "end": 177,
+        "start": 190,
+        "end": 199,
         "sha256": "b18b7a0d0db1d073391bc3145f28e3b54d50ca5dda2e6c9edea2f18a5ffe48b6"
       },
       "why": "The visible disconnected state and original waiting job are verified before reconnect, and the saved projects remain identical."
@@ -95556,8 +95556,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 179,
-        "end": 185,
+        "start": 201,
+        "end": 207,
         "sha256": "45a50ec45a290986157429a8e7e119bc4fc238fa9d3db59502f057ddbdac7cb3"
       },
       "why": "The selected first model and second-page model appear exactly once in the real menu."
@@ -95790,8 +95790,8 @@
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
         "start": 93,
-        "end": 105,
-        "sha256": "639e94e7e657f69c2f7dc6e235bb7d852a14ed039ed1a7ba3ffabd17ce5910a3"
+        "end": 98,
+        "sha256": "2efd65fd7f26311d50728029944d3017df0ff3e847f26885807b298428b7f30a"
       },
       "why": "The synthetic tool notification interrupts its actual thread and turn. The fixture verifies the request and the saved project stays intact."
     },
@@ -96056,6 +96056,66 @@
         "sha256": "74e66bb2a78774d7a53ddd495547daa67c91812e7ac5f7662b251fd28987093a"
       },
       "why": "Saving the new source and offset makes one revision, moves only the intended picture, preserves both image assets and persists through the project browser."
+    },
+    {
+      "id": "a6a6b0e8ca5c8ebd",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 693,
+        "end": 710,
+        "sha256": "fb464170d7db996de984898f7abf1f39bdc794c40020fea6c3a48d543f762b1c"
+      },
+      "actions": [
+        "scriv activate Connect to this address",
+        "scriv snapshot"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 105,
+        "end": 125,
+        "sha256": "8bde83c4f241f4a9e089627b34eaa72f0eb696e9ea860f20025d8f1b29becf5e"
+      },
+      "why": "The connected loopback provider receives explicit refusals, empty permissions and answers, and a method-not-found response. The settings status, absence of new turns and unchanged saved projects are asserted."
+    },
+    {
+      "id": "b18943b86b82e48f",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 711,
+        "end": 711,
+        "sha256": "69c0768f87b037e68ea613b834f1f5957beaabdfbb37986c7a6a621da8a76480"
+      },
+      "actions": [
+        "scriv activate Scan again",
+        "scriv persisted-projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
+        "start": 100,
+        "end": 108,
+        "sha256": "1a87f3855319ac66574473126d33719280076ccd3ba5ea94a1c51c44c55d6634"
+      },
+      "why": "An additional-access request on the active analysis receives empty permissions and interrupts that exact owned turn. The interface reports the stopped scan and the saved result is preserved."
+    },
+    {
+      "id": "f78aebaaa87dd62e",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 712,
+        "end": 713,
+        "sha256": "412b84aa4947c1d784699f9be2a78e1cebefc51a8b5befbb03c7d524b6133c15"
+      },
+      "actions": [
+        "scriv activate Generate image for 01A",
+        "scriv image-evidence"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 293,
+        "end": 307,
+        "sha256": "5d4adf7adae71bf09aa0965256e77fff8b6ac5f11cfead9617400a528688c49e"
+      },
+      "why": "A request for more input on an active image turn sends empty answers and interrupts that exact owned turn. Existing jobs and saved projects are preserved."
     }
   ],
   "commentExclusions": [

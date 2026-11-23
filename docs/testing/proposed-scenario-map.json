@@ -9318,10 +9318,28 @@
         "activate"
       ],
       "plannedActions": [
-        "Import a synthetic project and image, disable automatic tagging, connect the owned local Codex fixture in Settings and select Scan again. Repeat with an unconfirmed sandbox and with an unexpected tool notification."
+        "Import a synthetic project and image, disable automatic tagging, connect the owned local Codex fixture in Settings and select Scan again. Repeat with an unconfirmed sandbox, an unexpected tool notification and a request for additional access."
       ],
       "expectedOutcomes": [
-        "The scan saves the recognized character and a review candidate while preserving the image and script. The unconfirmed sandbox receives no image and unexpected tool activity triggers a turn interrupt. Both failures preserve the saved scan."
+        "The scan saves the recognized character and a review candidate while preserving the image and script. The unconfirmed sandbox receives no image. A tool notification or request for additional access stops the corresponding scan. Scriv grants no extra access, and all interrupted scans preserve the saved result."
+      ]
+    },
+    {
+      "id": "codex-provider-request-refusal",
+      "title": "Declines unsolicited requests from a connected Codex provider",
+      "featureId": "codex-connection",
+      "state": "existing",
+      "existingPaths": ["tests/e2e/journeys/codex-loopback-generation.mjs"],
+      "entryPoint": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "symbol": "receiveMessage"
+      },
+      "actionIds": ["key", "activate", "text", "snapshot", "image-evidence", "persisted-projects"],
+      "plannedActions": [
+        "Connect to the owned loopback provider in Settings. Receive its unsolicited approval and input requests, then start an image turn and receive a request for more input on that turn."
+      ],
+      "expectedOutcomes": [
+        "Scriv sends the explicit refusal or empty response and shows the corresponding status. An unknown request returns a method-not-found error. An input request for the active turn interrupts precisely that turn and preserves existing jobs and projects."
       ]
     },
     {
@@ -14843,11 +14861,13 @@
     {
       "rangeId": "fdac10aebfec6444883d",
       "scenarioIds": [
-        "wave81-3-s012"
+        "wave81-3-s012",
+        "codex-provider-request-refusal",
+        "native-character-analysis-fixture"
       ],
       "rationale": "Implements JSON-RPC transport and dispatches account and generation events. Proposed scenario exercises this responsibility.",
       "confidence": "medium",
-      "uncertainty": "Existing IJ-05 files are a plausible starting point; precise witness support and edge cases need audit.",
+      "uncertainty": "The loopback generation and character analysis journeys cover explicit provider refusals and interruption of their active turns. Account events and other transport variants still need independent cases.",
       "proposedAssertions": [
         "Matching callbacks resolve, relevant account and generation events update state, and unsolicited approval requests are handled safely."
       ],
@@ -14857,9 +14877,9 @@
         "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
         "start": 652,
         "end": 762,
-        "fileSha256": "c41a1b151a3a23c08c207e130eb752ad89b2123d2ac24ae68ff633b2d58cbd97",
-        "spanSha256": "1ce81f8a6bf2e628d1528a3d29401f042d49855dbe3e96a867cc0b9b27ba7bf7",
-        "sha256": "cd7105597ca1e630ea742d5c079c06dddf294cfd5cef3ee4840f5d1769050689"
+        "fileSha256": "5f1d0a1c57b4f31fa307bf2d80b1cbbfe05b84b786364179ee7a0aeae3304516",
+        "spanSha256": "cd7105597ca1e630ea742d5c079c06dddf294cfd5cef3ee4840f5d1769050689",
+        "sha256": "5f1d0a1c57b4f31fa307bf2d80b1cbbfe05b84b786364179ee7a0aeae3304516"
       }
     },
     {

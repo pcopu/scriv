@@ -13,7 +13,7 @@ input.characters.push({ id: 'anna', name: 'Anna', aliases: [], biography: '', ap
 let session;
 let failed = false;
 let step = 'launch with the owned analysis fixture';
-const fixture = await startCodexFixture(() => session.root, ['analysis-success', 'analysis-invalid-thread', 'analysis-tool']);
+const fixture = await startCodexFixture(() => session.root, ['analysis-success', 'analysis-invalid-thread', 'analysis-tool', 'analysis-approval']);
 try {
   for (const codexAnalysisFixtureOrigin of ['ws://localhost:4500', 'ws://127.0.0.1:4500/foreign', 'wss://127.0.0.1:4500']) {
     await assert.rejects(ScrivSession.launch(app, { codexAnalysisFixtureOrigin }), /Invalid session options/);
@@ -92,7 +92,17 @@ try {
 
     step = 'stop unexpected tool activity and preserve the saved scan';
     await ui.activate(scan);
-    await scanFinished('Codex attempted commandExecution during character analysis.', refusal);
+    const toolActivity = await scanFinished('Codex attempted commandExecution during character analysis.', refusal);
+    assert.deepEqual((await session.command('loaded-project')).project, checked);
+    assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === checked.id), checked);
+    assert.deepEqual(await session.command('presented-alerts'), []);
+
+    step = 'decline additional access and interrupt only the active scan';
+    await ui.activate(scan);
+    assert.deepEqual(await fixture.request('item/permissions/requestApproval', { activeTurn: true }), {
+      result: { permissions: {}, scope: 'turn' },
+    });
+    await scanFinished('Codex requested a tool or additional access during character analysis.', toolActivity);
     assert.deepEqual((await session.command('loaded-project')).project, checked);
     assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === checked.id), checked);
     assert.deepEqual(await session.command('presented-alerts'), []);

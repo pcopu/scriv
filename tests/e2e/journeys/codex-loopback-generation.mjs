@@ -78,7 +78,7 @@ try {
   const jobs = async () => (await session.command('image-evidence')).jobs;
 
   step = 'connect to the owned loopback fixture in Settings';
-  fixture = await startCodexFixture(session.root, ['success', 'cancel', 'recover', 'missing-artifact', 'failure']);
+  fixture = await startCodexFixture(session.root, ['success', 'cancel', 'recover', 'missing-artifact', 'input-request', 'failure']);
   await fixture.race((async () => {
     await session.command('key', { input: ',', modifiers: ['command'] });
     // Sidebar cells use the public collection view selection route. The CLI
@@ -101,6 +101,28 @@ try {
     await session.waitFor(nodes => nodes.some(node => node.identifier === 'codex-connection-status' && node.text === 'Connected')
       && nodes.some(node => node.identifier === 'codex-account-status' && node.text === 'Not required by this provider')
       && nodes.some(node => node.identifier === 'codex-model' && node.label === 'Model: scriv-fixture'));
+
+    step = 'decline unsolicited provider approval and input requests';
+    const unchangedOnConnect = await session.command('persisted-projects');
+    const extraPermissions = 'Codex requested additional permissions. Review this generation in Codex before retrying.';
+    const needsInput = 'Codex needs additional input. Add the details to the image direction and retry.';
+    for (const [method, result, message] of [
+      ['item/commandExecution/requestApproval', { decision: 'decline' }, extraPermissions],
+      ['item/fileChange/requestApproval', { decision: 'decline' }, extraPermissions],
+      ['item/permissions/requestApproval', { permissions: {}, scope: 'turn' }, 'Codex requested additional permissions. No extra access was granted.'],
+      ['mcpServer/elicitation/request', { action: 'decline', content: null }, 'A connected Codex tool requested additional input. Review it in Codex before retrying.'],
+      ['item/tool/requestUserInput', { answers: {} }, needsInput],
+    ]) {
+      assert.deepEqual(await fixture.request(method), { result });
+      await session.waitFor(nodes => nodes.some(node => node.text === message)
+        && nodes.some(node => node.identifier === 'codex-connection-status' && node.text === 'Connected'));
+    }
+    assert.deepEqual(await fixture.request('fixture/unsupported'), {
+      error: { code: -32601, message: 'This client does not implement fixture/unsupported.' },
+    });
+    fixture.assertNoTurns();
+    assert.deepEqual(await jobs(), []);
+    assert.deepEqual(await session.command('persisted-projects'), unchangedOnConnect);
 
     step = 'generate and attach the fixture image';
     await activate(await reveal(generate));
@@ -268,6 +290,22 @@ try {
     await unchanged();
     await closeJobs();
 
+    step = 'interrupt only the active generation when the provider asks for more input';
+    await activate(await reveal(generate));
+    const knownIDs = missing.map(job => job.jobID);
+    const needsDetails = records => records.find(job => !knownIDs.includes(job.jobID));
+    const withActiveTurn = await poll(jobs, records => records.length === 5 && needsDetails(records)?.hasTurnID
+      && needsDetails(records)?.status === 'running');
+    const inputJobID = needsDetails(withActiveTurn).jobID;
+    assert.deepEqual(await fixture.request('item/tool/requestUserInput', { activeTurn: true }), { result: { answers: {} } });
+    const stopped = await poll(jobs, records => records.find(job => job.jobID === inputJobID)?.status === 'waiting');
+    const inputJob = stopped.find(job => job.jobID === inputJobID);
+    assert.equal(inputJob.attachmentVerified, false);
+    assert.equal(inputJob.artifact, undefined);
+    assert.deepEqual(stopped.filter(job => job.jobID !== inputJobID), missing);
+    await session.waitFor(nodes => nodes.some(node => node.text === needsInput));
+    await unchanged();
+
     step = 'verify a refused turn changes neither the cue nor prior jobs';
     await selectTab('Storyboard');
     await activate(await reveal(byID('storyboard-word-w2')));
@@ -278,14 +316,15 @@ try {
     assert.equal(alerts[0].title, 'Scriv');
     assert.equal(alerts[0].message, 'Synthetic image turn refused');
     const finished = await jobs();
-    assert.equal(finished.length, 5);
-    const refused = finished.find(job => ![cancelledID, complete.jobID, recoveryID, missingID].includes(job.jobID));
+    assert.equal(finished.length, 6);
+    const refused = finished.find(job => ![...knownIDs, inputJobID].includes(job.jobID));
     assert.equal(refused.status, 'failed');
     assert.equal(refused.attachmentVerified, false);
     assert.equal(refused.outputImageID, undefined);
     assert.equal(refused.hasThreadID && refused.hasTurnID, true);
     assert.equal(finished.find(job => job.jobID === cancelledID).status, 'cancelled');
     assert.deepEqual(finished.find(job => job.jobID === missingID), originalMissing);
+    assert.deepEqual(finished.find(job => job.jobID === inputJobID), inputJob);
     assert.equal(finished.find(job => job.jobID === recoveryID).assetID, recoveredAsset.id);
     assert.equal(finished.find(job => job.jobID === complete.jobID).assetID, imageID);
     await unchanged();

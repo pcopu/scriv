@@ -14,6 +14,12 @@ const recoveredPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAA
 export const fixtureImageHash = createHash('sha256').update(png).digest('hex');
 export const recoveredImageHash = createHash('sha256').update(recoveredPng).digest('hex');
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+const providerMethods = new Set(['item/commandExecution/requestApproval', 'item/fileChange/requestApproval',
+  'item/permissions/requestApproval', 'mcpServer/elicitation/request', 'item/tool/requestUserInput', 'fixture/unsupported']);
+const activeRequests = new Map([
+  ['input-request', 'item/tool/requestUserInput'],
+  ['analysis-approval', 'item/permissions/requestApproval'],
+]);
 
 // Model the app-server protocol at its socket boundary. No backend, account,
 // tools, credentials, arbitrary file names, or real model are available here.
@@ -24,7 +30,7 @@ export function createCodexFixtureProtocol(root, outcomes) {
     if (outcome === 'cancel') return [...turn, 'turn/interrupt', 'transport-drop', ...handshake, 'model/list', 'thread/read', 'thread/read', 'thread/read'];
     if (outcome === 'recover' || outcome === 'missing-artifact') return [...turn, 'turn/interrupt', 'thread/read'];
     if (outcome === 'analysis-invalid-thread') return ['thread/start'];
-    if (outcome === 'analysis-tool') return [...turn, 'turn/interrupt'];
+    if (outcome === 'analysis-tool' || activeRequests.has(outcome)) return [...turn, 'turn/interrupt'];
     return turn;
   })];
   let position = 0;
@@ -106,6 +112,7 @@ export function createCodexFixtureProtocol(root, outcomes) {
         const accepted = reply({ turn: { id: job.turnId } });
         if (job.outcome === 'analysis-tool') return [accepted, { method: 'item/started',
           params: { threadId: job.threadId, turnId: job.turnId, item: { type: 'commandExecution' } } }];
+        if (job.outcome === 'analysis-approval') return [accepted];
         assert.equal(job.outcome, 'analysis-success');
         const detections = [
           { region: { x: 0.05, y: 0.1, width: 0.4, height: 0.5 }, portraitRegion: { x: 0.1, y: 0.15, width: 0.3, height: 0.3 },
@@ -120,7 +127,7 @@ export function createCodexFixtureProtocol(root, outcomes) {
         && params.input[0].text?.includes(job.outcome === 'recover' ? 'know.' : 'Warm window light. Hold the room.'), 'Expected only the synthetic cue prompt');
       const replies = [reply({ turn: { id: job.turnId } }), { method: 'item/started',
         params: { threadId: job.threadId, item: { type: 'imageGeneration' } } }];
-      if (['cancel', 'recover', 'missing-artifact'].includes(job.outcome)) return replies;
+      if (['cancel', 'recover', 'missing-artifact', 'input-request'].includes(job.outcome)) return replies;
       const turn = { id: job.turnId, items: [] };
       if (job.outcome === 'success') {
         const savedPath = join(job.cwd, 'storyboard.png');
@@ -162,6 +169,16 @@ export function createCodexFixtureProtocol(root, outcomes) {
   }
   return {
     receive,
+    requestParams(method, activeTurn) {
+      assert.ok(providerMethods.has(method), 'Expected a fixture-owned provider request');
+      if (!activeTurn) {
+        assert.ok(position === handshake.length && count === 0, 'Idle requests follow the completed handshake');
+        return {};
+      }
+      if (activeRequests.get(job?.outcome) === method && expected[position] === 'turn/interrupt') {
+        return { threadId: job.threadId, turnId: job.turnId };
+      }
+    },
     assertNoTurns: () => assert.equal(count, 0, 'Connection alone did not start a turn'),
     dropTransport() {
       assert.equal(expected[position++], 'transport-drop', 'Only the scheduled cancellation can drop the owned socket');
@@ -182,11 +199,16 @@ export async function startCodexFixture(root, outcomes) {
   let connections = 0;
   let reconnectAllowed = false;
   let pending = Promise.resolve();
+  let requestedID;
+  let requestNumber = 0;
   const failed = new Promise((_, reject) => { server.once('error', reject); });
   // Retain failures for race()/close() without an unhandled rejection if no
   // app command is currently awaiting a socket message.
   failed.catch(error => { failure ??= error; });
   function fail(error) { failure ??= error; server.emit('error', failure); }
+  const send = (socket, message) => new Promise((resolve, reject) => {
+    socket.send(JSON.stringify(message), error => error ? reject(error) : resolve());
+  });
   server.on('error', error => { failure ??= error; });
   server.on('connection', socket => {
     socket.on('error', fail);
@@ -199,9 +221,15 @@ export async function startCodexFixture(root, outcomes) {
       pending = pending.then(async () => {
         if (failure) return;
         assert.equal(binary, false, 'Expected UTF-8 RPC');
-        for (const reply of await protocol.receive(JSON.parse(data.toString('utf8')))) {
-          await new Promise((resolve, reject) => socket.send(JSON.stringify(reply), error => error ? reject(error) : resolve()));
+        const message = JSON.parse(data.toString('utf8'));
+        if (requestedID && message.id === requestedID && message.method === undefined) {
+          const { id, ...response } = message;
+          requestedID = undefined;
+          socket.emit('fixture-response', response);
+          return;
         }
+        for (const reply of await protocol.receive(message)) await send(socket, reply);
+        if (message.method === 'turn/start') socket.emit('fixture-turn-started');
       }).catch(error => { fail(error); socket.terminate(); });
     });
   });
@@ -209,6 +237,30 @@ export async function startCodexFixture(root, outcomes) {
     endpoint: `ws://127.0.0.1:${server.address().port}`,
     race: promise => Promise.race([failed, promise]),
     assertNoTurns: protocol.assertNoTurns,
+    async request(method, { activeTurn = false } = {}) {
+      await pending;
+      if (failure) throw failure;
+      assert.equal(server.clients.size, 1);
+      const [socket] = server.clients;
+      const signal = AbortSignal.timeout(5000);
+      let params = protocol.requestParams(method, activeTurn);
+      if (!params) {
+        await Promise.race([failed, once(socket, 'fixture-turn-started', { signal })]);
+        params = protocol.requestParams(method, activeTurn);
+      }
+      assert.ok(params, 'The provider request belongs to the scheduled active turn');
+      assert.equal(requestedID, undefined, 'Only one fixture request can be outstanding');
+      const id = `fixture-provider-${++requestNumber}`;
+      requestedID = id;
+      try {
+        const [result] = await Promise.race([failed, Promise.all([
+          once(socket, 'fixture-response', { signal }), send(socket, { id, method, params }),
+        ])]);
+        return result[0];
+      } finally {
+        if (requestedID === id) requestedID = undefined;
+      }
+    },
     async dropAfterCancellation() {
       await pending;
       if (failure) throw failure;
