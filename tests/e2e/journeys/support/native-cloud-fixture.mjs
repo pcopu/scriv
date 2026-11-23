@@ -81,6 +81,8 @@ export async function startNativeCloudFixture() {
       interruptedEditState: () => response('interrupted-edit-state'),
       watchEditingLease: (projectId, itemId) => response(['watch-editing-lease', { projectId, itemId }]),
       editingLeaseState: () => response('editing-lease-state'),
+      watchStagedEdit: (projectId, dropReceipt) => response(['watch-staged-edit', { projectId, dropReceipt }]),
+      stagedEditState: () => response('staged-edit-state'),
       prepareHostedImage: input => response(['prepare-hosted-image', input]),
       repairHostedImage: () => response('repair-hosted-image'),
       hostedImageResponses: () => response('hosted-image-responses'),
@@ -134,6 +136,7 @@ async function startWorker(root) {
       let invitations;
       let history;
       let editingLease;
+      let stagedEdit;
       const withoutLeases = operations => JSON.stringify(operations.map(({ lease, ...item }) => item));
       const sameLease = (left, right) => left.token === right.token && left.fence === right.fence;
       async function interruptedCommand(payload, upstream) {
@@ -168,6 +171,28 @@ async function startWorker(root) {
         async fetch(request) {
           const upstream = () => worker.fetch(request, this.env, this.ctx);
           const { pathname: path, searchParams } = new URL(request.url);
+          if (stagedEdit && (path === stagedEdit.path || path.startsWith(stagedEdit.path + '/'))) {
+            const route = path.slice(stagedEdit.path.length);
+            const payload = await request.clone().json();
+            const response = await upstream();
+            const reply = await response.clone().json();
+            const entry = { route, method: request.method, status: response.status };
+            if (request.method === 'PUT') {
+              const bytes = new TextEncoder().encode(payload.content);
+              const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
+              entry.part = { bytes: bytes.byteLength, hash: Array.from(digest, n => n.toString(16).padStart(2, '0')).join(''),
+                operations: JSON.parse(payload.content) };
+            } else {
+              entry.manifest = { commandID: payload.commandId, label: payload.label, count: payload.operationCount, parts: payload.parts };
+              entry.reply = { commandID: reply.commandId, staged: reply.staged, sequence: reply.seq };
+            }
+            stagedEdit.requests.push(entry);
+            if (stagedEdit.dropReceipt && route.endsWith('/commit') && response.ok) {
+              stagedEdit.dropReceipt = false;
+              return Response.json({ error: { code: 'receipt_unavailable', message: ${JSON.stringify(lostCloudEditReceipt)} } }, { status: 503 });
+            }
+            return response;
+          }
           if (history && request.method === 'GET' && path === history.path + '/history') {
             const response = await upstream();
             if (response.ok) {
@@ -296,6 +321,14 @@ async function startWorker(root) {
           if (!editingLease) throw new Error('No editing lease is being observed');
           return { initialExpiresAt: editingLease.initial?.expiresAt ?? null, renewals: [...editingLease.renewals], acceptedEdits: editingLease.acceptedEdits };
         }
+        watchStagedEdit({ projectId, dropReceipt }) {
+          if (stagedEdit || typeof dropReceipt !== 'boolean' || typeof projectId !== 'string'
+              || !/^[a-zA-Z0-9_-]{1,64}$/.test(projectId))
+            throw new Error('A single owned staged edit is required');
+          stagedEdit = { path: '/v1/projects/' + projectId + '/batches', requests: [], dropReceipt };
+          return true;
+        }
+        stagedEditState() { return stagedEdit.requests; }
         watchHostedImage(path) {
           if (hostedImagePath) throw new Error('A hosted image is already being observed');
           hostedImagePath = path;
@@ -566,6 +599,7 @@ async function startWorker(root) {
       interruptEdit: projectId => nativeWorker.interruptEdit(projectId),
       interruptedEditState: () => nativeWorker.interruptedEditState(),
       watchEditingLease: scope => nativeWorker.watchEditingLease(scope), editingLeaseState: () => nativeWorker.editingLeaseState(),
+      watchStagedEdit: id => nativeWorker.watchStagedEdit(id), stagedEditState: () => nativeWorker.stagedEditState(),
       prepareHostedImage, repairHostedImage, hostedImageResponses: () => nativeWorker.hostedImageResponses(),
       prepareSharedGeneration, sharedGenerationState,
       prepareInvitations, invitationState, interruptInvitationLoad: () => nativeWorker.interruptInvitationLoad(),
@@ -599,6 +633,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState,
         'watch-editing-lease': worker.watchEditingLease, 'editing-lease-state': worker.editingLeaseState,
         'prepare-hosted-image': worker.prepareHostedImage, 'repair-hosted-image': worker.repairHostedImage,
+        'watch-staged-edit': worker.watchStagedEdit, 'staged-edit-state': worker.stagedEditState,
         'hosted-image-responses': worker.hostedImageResponses, 'prepare-shared-generation': worker.prepareSharedGeneration,
         'shared-generation-state': worker.sharedGenerationState, 'prepare-invitations': worker.prepareInvitations,
         'interrupt-invitation-load': worker.interruptInvitationLoad, 'invitation-state': worker.invitationState,

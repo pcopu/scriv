@@ -1,13 +1,15 @@
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
+import { setTimeout as delay } from 'node:timers/promises';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { observePresentedError } from '../support/presented-error.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, interruptedCloudEdit, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
+import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
 
-const groups = ['sync', 'lease-renewal'];
+const groups = ['sync', 'lease-renewal', 'staged-edit', 'staged-receipt-retry'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
   console.log(JSON.stringify({ groups }));
@@ -75,6 +77,9 @@ async function signIn(deliveries) {
   await session.waitFor(nodes => nodes.some(node => node.text === 'Check your email'));
   assert.equal(await fixture.deliveries(), deliveries);
   const codeField = await control(node => node.type === 'UITextField' && node.sensitive && node.text === '<redacted>', true);
+  if (stagedGroup) {
+    await assert.rejects(session.command('accessibility-snapshot'), /Accessibility observation is unavailable while sensitive input is present/);
+  }
   await assert.rejects(session.command('text', { target: codeField.path, text: 'blocked input' }), /Sensitive input is unavailable/);
   assert.equal((await session.command('snapshot')).find(node => node.title === 'Sign in with code')?.enabled, false);
   assert.deepEqual(await session.deliverFixtureEmailCode(await fixture.takeCode()), { delivered: true });
@@ -90,6 +95,122 @@ async function openCloudFromProjects(title) {
   await control(node => workspaceProject(node) && node.title === title, true);
 }
 const newReplicaContent = ({ id, createdAt, ...project }) => content(project);
+const stagedGroup = args[1] === 'staged-edit' || args[1] === 'staged-receipt-retry';
+
+async function importDenseScene() {
+  const project = audioProjectFixture();
+  project.title = 'Synthetic dense scene order';
+  const [first, second] = project.entries;
+  first.order = 1;
+  second.order = 1 + Number.EPSILON;
+  for (let index = 0; index < 102; index++) {
+    project.entries.push({ ...second, id: `tail-${index}`, order: 100 + index, text: 'Pause.',
+      kind: 'direction', words: [], ownedDurationMs: 0, coverageDurationMs: 0 });
+  }
+  project.cues = [{ ...project.cues[0], startAnchor: { entryId: first.id, offsetMs: 0 }, authoredDurationMs: 3000 }];
+  assert.deepEqual(await session.command('import-json', { text: JSON.stringify(project) }),
+    { dispatched: true, projectChanged: true });
+  const saved = await waitForSavedProject(session, item => item.title === project.title);
+  assert.deepEqual(saved.entries, project.entries);
+  assert.deepEqual(saved.cues, project.cues);
+  return saved;
+}
+
+async function verifyStagedEdit(original) {
+  const dropReceipt = args[1] === 'staged-receipt-retry';
+  step = 'insert one dialogue where there is no distinct order between its neighbors';
+  const script = scriptAuthoringSteps(session);
+  await script.selectTab('Script');
+  await script.displayed('line1', 'one two three', { finished: true });
+  assert.equal(await fixture.watchStagedEdit(original.cloudProjectId, dropReceipt), true);
+  const isAdd = nodes => nodes.filter(node => node.title === 'Dialogue' && node.enabled);
+  const controls = await session.waitFor(nodes => isAdd(nodes).length === 1);
+  await script.reveal(isAdd(controls)[0], controls, true);
+  await script.activate('Dialogue');
+  const added = await waitForSavedProject(session, project => project.id === original.id
+    && project.entries.length === original.entries.length + 1);
+  const existing = [...original.entries].sort((a, b) => a.order - b.order);
+  const line = added.entries.find(entry => !existing.some(previous => previous.id === entry.id));
+  assert.equal(line.text, 'New line');
+  assert.equal(line.ownedDurationMs, 3000);
+  const expected = { ...original, entries: [existing[0], line, ...existing.slice(1)]
+    .map((entry, order) => ({ ...entry, order })) };
+  assert.deepEqual(content(added), content(expected));
+
+  step = 'verify both upload parts and the single accepted edit at the Worker';
+  const deadline = Date.now() + 15_000;
+  let requests = await fixture.stagedEditState();
+  while (requests.length < 4 && Date.now() < deadline) {
+    await delay(50);
+    requests = await fixture.stagedEditState();
+  }
+  assert.equal(requests.length, 4, 'The online edit has uploaded and committed once');
+  const [prepare, first, second, commit] = requests;
+  const { manifest } = prepare;
+  assert.match(manifest.commandID, /^[a-f0-9-]{36}$/i);
+  assert.deepEqual([prepare, first, second, commit].map(({ method, route, status }) => [method, route, status]), [
+    ['POST', '', 200], ['PUT', `/${manifest.commandID}/parts/0`, 200],
+    ['PUT', `/${manifest.commandID}/parts/1`, 200], ['POST', `/${manifest.commandID}/commit`, 200],
+  ]);
+  assert.deepEqual(prepare.reply, { commandID: manifest.commandID, staged: true });
+  assert.deepEqual(commit.manifest, manifest);
+  assert.equal(commit.reply.commandID, manifest.commandID);
+  assert.ok(Number.isSafeInteger(commit.reply.sequence) && commit.reply.sequence > 0);
+  const parts = [first.part, second.part];
+  assert.equal(manifest.label, 'Add dialogue');
+  assert.equal(manifest.count, expected.entries.length);
+  assert.deepEqual(manifest.parts, parts.map(({ bytes, hash, operations }) => ({ bytes, hash, count: operations.length })));
+  assert.deepEqual(parts.map(({ operations }) => operations.length), [100, 5]);
+  const operations = parts.flatMap(part => part.operations);
+  assert.ok(operations.every(operation => operation.op === 'put' && operation.kind === 'entry'));
+  assert.deepEqual(operations.map(operation => operation.id).sort(), expected.entries.map(entry => entry.id).sort());
+  assert.deepEqual(operations.map(operation => operation.data).sort(byID), [...expected.entries].sort(byID));
+
+  if (dropReceipt) {
+    step = 'recover the staged receipt without uploading another part';
+    await observePresentedError(session, lostCloudEditReceipt);
+    const outbox = join(session.root, 'Outbox');
+    const scopes = await readdir(outbox);
+    assert.equal(scopes.length, 1);
+    assert.match(scopes[0], /^[0-9a-f]{64}$/);
+    const directory = join(outbox, scopes[0]);
+    const pendingName = manifest.commandID + '.json';
+    assert.deepEqual(await readdir(directory), [pendingName]);
+    const pending = JSON.parse(await readFile(join(directory, pendingName), 'utf8'));
+    assert.equal(pending.endpoint, 'batches');
+    assert.equal(pending.projectId, original.cloudProjectId);
+    assert.equal(pending.payload.manifest.commandId, manifest.commandID);
+    assert.deepEqual(pending.payload.manifest.parts, manifest.parts);
+    assert.deepEqual(pending.payload.parts.map(part => JSON.parse(part)), parts.map(part => part.operations));
+    assert.deepEqual(await session.command('acknowledge-cloud-save-error', { message: lostCloudEditReceipt }), { acknowledged: true });
+    await control(workspaceProject, true);
+    assert.deepEqual(await readdir(directory), [pendingName]);
+    await openWorkspacePanel('Scriv account…');
+    await click('Retry saved cloud commands', true);
+    await control(node => node.title === 'Sync this script', true);
+    await session.command('key', { input: 'Escape', modifiers: [] });
+    await control(workspaceProject, true);
+    const afterRetry = await fixture.stagedEditState();
+    assert.deepEqual(afterRetry, [...requests, { ...commit, route: '' }], 'The preparation lookup returns the original receipt');
+    assert.deepEqual(await readdir(directory), []);
+    requests = afterRetry;
+  }
+
+  step = 'reopen the complete staged edit in a fresh native workspace';
+  const firstRoot = session.root;
+  await session.close();
+  session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
+  assert.notEqual(session.root, firstRoot);
+  await control(workspaceProject);
+  await signIn(3);
+  await openCloudFromProjects(original.title);
+  const downloaded = await waitForSavedProject(session, candidate => candidate.cloudProjectId === original.cloudProjectId);
+  assert.notEqual(downloaded.id, original.id);
+  assert.deepEqual(newReplicaContent(downloaded), newReplicaContent(expected));
+  assert.deepEqual((await session.command('loaded-project')).project, downloaded);
+  assert.deepEqual(await fixture.stagedEditState(), requests, 'Reopening sends no duplicate upload');
+  assert.deepEqual(await session.command('presented-alerts'), []);
+}
 
 const openingComment = 'Does the revised question work better in this scene?';
 const replyComment = 'Yes, it makes the invoice discussion clearer.';
@@ -204,7 +325,8 @@ async function runProjectJourney() {
   await assert.rejects(session.command('receive-fixture-email-code'), /synthetic sign-in mailbox is unavailable/);
   await control(workspaceProject);
   await session.command('key', { input: 's', modifiers: ['command'] });
-  const original = await waitForSavedProject(session, candidate => candidate.title === 'YAM MAN');
+  const sample = await waitForSavedProject(session, candidate => candidate.title === 'YAM MAN');
+  const original = stagedGroup ? await importDenseScene() : sample;
   assert.equal(original.cloudProjectId ?? null, null);
   assert.deepEqual(await fixture.projects(), []);
 
@@ -224,6 +346,11 @@ async function runProjectJourney() {
 
   if (args[1] === 'lease-renewal') {
     await verifyEditingLeaseRenewal(synced);
+    await fixture.assertNoOutbound();
+    return;
+  }
+  if (stagedGroup) {
+    await verifyStagedEdit(synced);
     await fixture.assertNoOutbound();
     return;
   }

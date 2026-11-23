@@ -31,5 +31,19 @@ try {
     await key('Escape');
     await session.waitFor(nodes => !nodes.some(node => node.identifier.startsWith('script-editor-') && node.firstResponder));
   }
+  async function assertPlaybackLabel(label) {
+    const snapshot = await session.waitFor(nodes => control(nodes, label).length === 1);
+    const [button] = control(snapshot, label);
+    const items = await session.command('accessibility-snapshot');
+    assert.ok(items.length > 0 && items.length <= 1024);
+    assert.equal(new Set(items.map(item => item.path)).size, items.length);
+    const descriptions = items.filter(item => item.path === button.path);
+    assert.deepEqual(descriptions.map(({ type, label }) => ({ type, label })), [{ type: button.type, label }]);
+  }
+  await assertPlaybackLabel('Play scene');
+  await key(' ');
+  await assertPlaybackLabel('Pause scene');
+  await key(' ');
+  await session.waitFor(nodes => control(nodes, 'Play scene').length === 1);
   console.log('PASS: global synthetic strokes use native policy/gate, open Find unfocused, respect text focus, and repeatedly play/pause');
 } finally { await session.close(); }

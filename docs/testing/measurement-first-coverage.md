@@ -10,8 +10,7 @@ behavior before changing the scenario, then compare the passing union against
 the same reference scope after each batch.
 
 For a focused native capture, list the scenario and select one of its
-advertised groups. The scenario command runs every group when no group is
-selected.
+advertised groups. Use the explicit group to select a focused fixture variant.
 
 ```sh
 tracer app -- test --list --scenario journeys/script-authoring-source
@@ -23,6 +22,15 @@ Add the normal pinned coverage options to measure a group. The run receipt,
 session receipts, and capture intervals carry the selected group. Use the
 group name when labeling its evidence so a passing focused run identifies the
 conditions that ran.
+
+The `journeys/native-cloud-project-sync` groups `staged-edit` and
+`staged-receipt-retry` use the Script tab's Dialogue button to insert between
+adjacent scene order values. Their isolated Worker verifies that one dialogue
+insertion sends all 105 changes in two hash-verified parts and commits them
+once. The retry variant drops the response after commit, checks the saved
+outbox parts, and uses the Account sheet to recover the same receipt with no
+additional part uploads. Each variant opens a fresh workspace and compares
+the full downloaded project with the expected edit.
 
 On November 20, all 12 cloud journeys passed in a fresh capture. The 15-module
 Worker scope observed 1,154 of 1,164 statement anchors, including 11 from real
