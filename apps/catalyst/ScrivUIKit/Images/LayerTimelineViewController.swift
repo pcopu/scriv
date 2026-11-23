@@ -118,7 +118,7 @@ import ScrivCore
             let next = store.sceneCues[index + 1]
             guard TimingEngine.canMoveBoundary(store.project, leftCueId: cue.id, rightCueId: next.id), store.lockedByOther(cue.id) == nil, store.lockedByOther(next.id) == nil else { continue }
             let lane = imageRows.first { $0.cue.id == cue.id }?.lane ?? 0
-            addDragHandle(frame: CGRect(x: 65 + CGFloat(cue.endMs) * scale, y: 29 + CGFloat(lane) * 60, width: 12, height: 20), label: "Move cut after " + cue.label) { [weak self] delta, context in
+            addDragHandle(frame: CGRect(x: 65 + CGFloat(cue.endMs) * scale, y: 29 + CGFloat(lane) * 60, width: 12, height: 20), label: "Move cut after " + cue.label, pictureCut: true) { [weak self] delta, context in
                 guard let self, self.store.navigationContext == context, self.store.project.cues.first(where: { $0.id == cue.id }) == cue, self.store.project.cues.first(where: { $0.id == next.id }) == next else { return }
                 self.store.moveBoundary(leftId: cue.id, rightId: next.id, toMs: self.snapped(cue.endMs + Int(delta / self.scale)))
             }
@@ -204,11 +204,11 @@ import ScrivCore
         if text.contains(where: { $0.isWhitespace }) { block.titleLabel?.numberOfLines = 3 } else { block.titleLabel?.numberOfLines = 1; block.titleLabel?.lineBreakMode = .byClipping }
         block.addAction(ImageUI.guardedAction(text, store: store, context: store.navigationContext, handler: action), for: .touchUpInside); block.accessibilityLabel = text; canvas.addSubview(block); return block
     }
-    private func addDragHandle(frame: CGRect, label: String, action: @escaping (CGFloat, Int) -> Void) {
-        let handle = UIView(frame: frame); handle.backgroundColor = ImageUI.accent.withAlphaComponent(0.6); handle.layer.cornerRadius = 3; handle.accessibilityLabel = label; canvas.addSubview(handle); addPan(to: handle, action: action)
+    private func addDragHandle(frame: CGRect, label: String, pictureCut: Bool = false, action: @escaping (CGFloat, Int) -> Void) {
+        let handle = UIView(frame: frame); handle.backgroundColor = ImageUI.accent.withAlphaComponent(0.6); handle.layer.cornerRadius = 3; handle.accessibilityLabel = label; canvas.addSubview(handle); addPan(to: handle, pictureCut: pictureCut, action: action)
     }
-    private func addPan(to view: UIView, action: @escaping (CGFloat, Int) -> Void) {
-        let driver = ImageTimelineDragDriver(view: view, begin: { [weak self] in guard let self else { return 0 }; self.dragInProgress = true; if self.store.isPlaying { self.store.togglePlayback() }; return self.store.navigationContext }, finish: { [weak self] delta, context, committed in
+    private func addPan(to view: UIView, pictureCut: Bool = false, action: @escaping (CGFloat, Int) -> Void) {
+        let driver = ImageTimelineDragDriver(view: view, pictureCut: pictureCut, begin: { [weak self] in guard let self else { return 0 }; self.dragInProgress = true; if self.store.isPlaying { self.store.togglePlayback() }; return self.store.navigationContext }, finish: { [weak self] delta, context, committed in
             guard let self else { return }; self.dragInProgress = false; if committed { action(delta, context) }; self.signature = []; self.storeDidChange()
         })
         dragDrivers.append(driver)
@@ -223,26 +223,59 @@ import ScrivCore
     }
 }
 
-@MainActor private final class ImageTimelineDragDriver: NSObject {
+@MainActor final class ImageTimelineDragDriver: NSObject, UIGestureRecognizerDelegate {
     private weak var view: UIView?
     private let begin: () -> Int
     private let finish: (CGFloat, Int, Bool) -> Void
-    private var context = 0
+    private var context: Int?
     private var recognizer: UIPanGestureRecognizer!
-    init(view: UIView, begin: @escaping () -> Int, finish: @escaping (CGFloat, Int, Bool) -> Void) {
-        self.view = view; self.begin = begin; self.finish = finish; super.init(); recognizer = UIPanGestureRecognizer(target: self, action: #selector(pan(_:))); view.addGestureRecognizer(recognizer)
+    init(view: UIView, pictureCut: Bool, begin: @escaping () -> Int, finish: @escaping (CGFloat, Int, Bool) -> Void) {
+        self.view = view; self.begin = begin; self.finish = finish; super.init()
+        recognizer = UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))
+#if SCRIV_CLI_AUTOMATION
+        if pictureCut { recognizer.delegate = self }
+#endif
+        view.addGestureRecognizer(recognizer)
     }
-    func cancel() { if recognizer.state == .began || recognizer.state == .changed { recognizer.isEnabled = false; recognizer.isEnabled = true } }
     @objc private func pan(_ sender: UIPanGestureRecognizer) {
-        let delta = sender.translation(in: view?.superview).x
         switch sender.state {
-        case .began: context = begin()
-        case .changed: view?.transform = CGAffineTransform(translationX: delta, y: 0)
-        case .ended, .cancelled, .failed: view?.transform = .identity; finish(delta, context, sender.state == .ended)
+        case .began: beginDrag()
+        case .changed, .ended: sampleDrag(sender.translation(in: view?.superview).x, releasing: sender.state == .ended)
+        case .cancelled, .failed: endDrag(0, committed: false)
         default: break
         }
     }
+    private func beginDrag() {
+        guard context == nil else { return }
+        context = begin()
+    }
+    private func sampleDrag(_ delta: CGFloat, releasing: Bool) {
+        guard context != nil else { return }
+        if releasing { endDrag(delta, committed: true) }
+        else { view?.transform = CGAffineTransform(translationX: delta, y: 0) }
+    }
+    private func endDrag(_ delta: CGFloat, committed: Bool) {
+        guard let context else { return }
+        self.context = nil
+        view?.transform = .identity
+        finish(delta, context, committed)
+    }
+    func cancel() {
+        if recognizer.state == .began || recognizer.state == .changed {
+            recognizer.isEnabled = false; recognizer.isEnabled = true
+        }
+        endDrag(0, committed: false)
+    }
 }
+
+#if SCRIV_CLI_AUTOMATION
+extension ImageTimelineDragDriver: ScrivCLIPictureTimingDriver {
+    var cliGestureInFlight: Bool { context != nil }
+    var cliAcceptsSample: Bool { cliGestureInFlight }
+    func cliBeginGesture() { beginDrag() }
+    func cliSampleGesture(_ translation: Double, shift _: Bool, releasing: Bool) { sampleDrag(CGFloat(translation), releasing: releasing) }
+}
+#endif
 
 @MainActor final class ImageTimelineWaveform: UIView {
     private let peaks: [Float], color: UIColor

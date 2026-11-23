@@ -370,6 +370,13 @@ sequence enters the same preview, lease and commit logic UIKit calls after
 gesture recognition. Use `snapshot` to read the preview and
 `persisted-projects` to verify the saved result.
 
+Use `--scenario journeys/picture-coverage --group shared-cuts` for the
+`Move cut after …` handle in Storyboard or Layers. Both accept horizontal
+samples through `picture-timing-gesture`. Layers follows its Snap to words
+switch. The journey verifies that preview and cancellation leave saves
+untouched and that release updates the two adjacent pictures together. It
+also checks the app's error when release would empty either picture.
+
 Use `--scenario journeys/native-cloud-project-sync --group lease-renewal` to
 exercise the linked script editor. Keep the editor open through its scheduled
 renewal and verify the Worker accepts autosave under that lease. The owned

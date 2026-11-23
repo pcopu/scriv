@@ -2487,8 +2487,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 114,
-        "end": 126,
+        "start": 117,
+        "end": 129,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: after importing the anchored parent/child fixture and correcting the same invalid-input sheet, real duration texts 0.001, 86400, 1.2345, 10 and 0.5 save child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. Each edit has complete expected saved-model equality and one revision; each is followed by real reopen/Cancel/Undo/Redo. Parent, script, audio and scene runtime remain unchanged. The source IDs are fixed by fixture, not arbitrary injected model mutations. setCueDuration changes only the chosen authored extent before resolving and validating. Missing-cue and invalid-core-bound rejections are not tested here. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -9818,8 +9818,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 114,
-        "end": 126,
+        "start": 117,
+        "end": 129,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: after importing the anchored parent/child fixture and correcting the same invalid-input sheet, real duration texts 0.001, 86400, 1.2345, 10 and 0.5 save child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. Each edit has complete expected saved-model equality and one revision; each is followed by real reopen/Cancel/Undo/Redo. Parent, script, audio and scene runtime remain unchanged. The source IDs are fixed by fixture, not arbitrary injected model mutations. Authored end beyond the scene is clipped to 4000 while authored duration remains 86400000/10000 for reopening. It does not prove later scene-growth restoration. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -11052,8 +11052,8 @@
       "id": "25b334ecc49e9554",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 504,
-        "end": 506,
+        "start": 498,
+        "end": 500,
         "sha256": "d6d505b3268b5f587a4dd2afe93bb0afc16f0fc05417496d07404eaede0f1493"
       },
       "actions": [
@@ -20171,8 +20171,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 104,
-        "end": 111,
+        "start": 107,
+        "end": 114,
         "sha256": "19a2c939dfe920ea34febf8929adab245c01b6bd024af6111b8c94c5cf8ade29"
       },
       "why": "AUT-J09: each actual invalidSeconds fixture retains inline numeric error and unchanged packages. No rejection branch for changed navigation or unavailable lease is inferred. Reviewed static association only; this Linux audit did not run the native test."
@@ -20605,8 +20605,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 129,
-        "end": 142,
+        "start": 132,
+        "end": 145,
         "sha256": "1d7d68f8dfb3df7904f652475b3fee79510e9aa3efbb36c0dca98670afc7fc9c"
       },
       "why": "AUT-J09/numeric foreground boundaries: after final child coverage 1000\u20131500 is saved, real seeks 999,1000,1500 require Preview subtitles Parent,Child,Parent, respectively. The enclosing parent survives while latest-starting child wins only inside its half-open interval; scene slider maximum stays 4000. No ties at equal start times or no-active-cue path is tested. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -45964,8 +45964,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 114,
-        "end": 126,
+        "start": 117,
+        "end": 129,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: after importing the anchored parent/child fixture and correcting the same invalid-input sheet, real duration texts 0.001, 86400, 1.2345, 10 and 0.5 save child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. Each edit has complete expected saved-model equality and one revision; each is followed by real reopen/Cancel/Undo/Redo. Parent, script, audio and scene runtime remain unchanged. The source IDs are fixed by fixture, not arbitrary injected model mutations. In particular, 1.2345 is rounded to 1235 milliseconds and reopened as 1.235. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -49107,8 +49107,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 129,
-        "end": 142,
+        "start": 132,
+        "end": 145,
         "sha256": "1d7d68f8dfb3df7904f652475b3fee79510e9aa3efbb36c0dca98670afc7fc9c"
       },
       "why": "AUT-J09/numeric foreground boundaries: after final child coverage 1000\u20131500 is saved, real seeks 999,1000,1500 require Preview subtitles Parent,Child,Parent, respectively. The enclosing parent survives while latest-starting child wins only inside its half-open interval; scene slider maximum stays 4000. No ties at equal start times or no-active-cue path is tested. Scene cue ordering feeds currentCue.last so latest-starting active cue wins. Equal-start ID ordering remains a gap. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -53168,8 +53168,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 117,
-        "end": 119,
+        "start": 120,
+        "end": 122,
         "sha256": "cb7b9fe69501d8c14244f642c1288c5a564116453ff00f79af4d22275c8b83a8"
       },
       "why": "AUT-J09: precondition is the imported parent/child fixture and the already-open current coverage sheet, after invalid input or explicit reopen. Set the selected valid case text, Apply, and observe the saved result. savedAfter (85-93) asserts one revision and every expected project field. Reopen, Cancel, history and stale-source branches are outside this link. Reviewed static association only; this Linux audit did not run the native test."
@@ -55658,8 +55658,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 114,
-        "end": 126,
+        "start": 117,
+        "end": 129,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: existing real duration inputs 0.001,86400,1.2345,10,0.5 with reopen/Cancel/Undo/Redo require exact child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. All parent/source/audio data remains exact. The source-start table accumulates owned source duration and resolves the child at b + 0 = 1000 within a 4000 ms scene. These are valid fixture inputs; missing/invalid anchors, duplicate entry IDs and symlink/media behavior are not covered. Static reviewed source/action/assertion association only. No native execution, measured coverage, physical-input parity, all-branch coverage or legacy retirement is claimed. Optional reveal/scroll and polling reads remain governed by the original helpers, not a recorded wire transcript."
@@ -58385,8 +58385,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 117,
-        "end": 119,
+        "start": 120,
+        "end": 122,
         "sha256": "cb7b9fe69501d8c14244f642c1288c5a564116453ff00f79af4d22275c8b83a8"
       },
       "why": "AUT-J09: precondition is the imported parent/child fixture and the already-open current coverage sheet, after invalid input or explicit reopen. Set the selected valid case text, Apply, and observe the saved result. savedAfter (85-93) asserts one revision and every expected project field. Reopen, Cancel, history and stale-source branches are outside this link. Reviewed static association only; this Linux audit did not run the native test."
@@ -62813,8 +62813,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 129,
-        "end": 142,
+        "start": 132,
+        "end": 145,
         "sha256": "1d7d68f8dfb3df7904f652475b3fee79510e9aa3efbb36c0dca98670afc7fc9c"
       },
       "why": "AUT-J09/numeric foreground boundaries: after final child coverage 1000\u20131500 is saved, real seeks 999,1000,1500 require Preview subtitles Parent,Child,Parent, respectively. The enclosing parent survives while latest-starting child wins only inside its half-open interval; scene slider maximum stays 4000. No ties at equal start times or no-active-cue path is tested. Seek updates inspected cue from the current clock cue so paused Preview reflects each boundary. The scene-end fallback on the same line is not exercised. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -71945,8 +71945,8 @@
       "id": "f8cf55b58462b1b2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 368,
-        "end": 368,
+        "start": 369,
+        "end": 369,
         "sha256": "fbeefaf738df13981d734486d683da7fc415db6981949369cf76ff5de5a4aefb"
       },
       "actions": [
@@ -82073,8 +82073,8 @@
       "id": "5e0721442ce0c264",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 416,
-        "end": 416,
+        "start": 417,
+        "end": 417,
         "sha256": "264c9e2b7cfd57ad2b8f13dee1d98be2489014a8a3046f3f7c77dce8d61c6e37"
       },
       "actions": [
@@ -82617,8 +82617,8 @@
       "id": "aaa35d2dfedb41b9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 410,
-        "end": 412,
+        "start": 411,
+        "end": 413,
         "sha256": "314bef74cd5856b59b313b101b67d7917ef758ccfa61ad3409e914e77bd8609c"
       },
       "actions": [
@@ -95982,8 +95982,8 @@
       "id": "7e76b7c24b11447c",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 359,
-        "end": 359,
+        "start": 360,
+        "end": 360,
         "sha256": "60248080203e9a42f14af19609f1a0b909d91c4b5d9e007a20777384d33f9a78"
       },
       "actions": [
@@ -96976,8 +96976,8 @@
       "id": "bfce82bfe392fdce",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 370,
-        "end": 381,
+        "start": 371,
+        "end": 382,
         "sha256": "da5eecf782aeeffe82ab3b17150e25ef5c46c51042fa83a08acbb796a8f12da2"
       },
       "actions": [
@@ -97553,6 +97553,82 @@
         "sha256": "50b63905a59236717ee1e2a371647baaac425acac4a0c65df752924dacbcabb5"
       },
       "why": "Literal native previews and the whole saved project verify snapping, source boundaries, Shift override and the authored tail."
+    },
+    {
+      "id": "1d69082f00f0ebe1",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+        "start": 339,
+        "end": 344,
+        "sha256": "e078ed43cd48948e2460dfca9b1f3b29e5a2cfea5205a1cef0ff5f9f81db708e"
+      },
+      "actions": [
+        "Preview or release the Storyboard shared cut"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/picture-shared-cut.mjs",
+        "start": 59,
+        "end": 73,
+        "sha256": "40979335a325527ee2abb27b096b6d17e56b8de8def4c6ba932458ef23a535d3"
+      },
+      "why": "The native handle previews motion without saving, restores after cancellation, and applies one saved revision to both adjacent picture edges on release."
+    },
+    {
+      "id": "3e1a9d31e466fecf",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Images/LayerTimelineViewController.swift",
+        "start": 248,
+        "end": 264,
+        "sha256": "161d7ab7ec448db5a30ab0d8be16d73d843d584516a9fa56693322c5a3014617"
+      },
+      "actions": [
+        "Preview, cancel, and release the real shared-cut handles"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/picture-shared-cut.mjs",
+        "start": 59,
+        "end": 90,
+        "sha256": "0827ae51ae1adee704e82ebf73c6dd42cea4a8d57ba08be972100121bd20ba50"
+      },
+      "why": "Real Storyboard and Layers handles move during preview, restore their starting geometry on cancellation, and save both neighbors together only on release."
+    },
+    {
+      "id": "d2470f094489111b",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Images/LayerTimelineViewController.swift",
+        "start": 119,
+        "end": 124,
+        "sha256": "a57a96b1165faebd136d73a3e7ec3f67b24413bdb048dce6e7c478a277e835d4"
+      },
+      "actions": [
+        "Release the expanded Layers shared cut with snapping on and off"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/picture-shared-cut.mjs",
+        "start": 75,
+        "end": 102,
+        "sha256": "bc79237616af66907f8b8cbb49d5b512c1f6613ad5326bd22e4f5485baa453b8"
+      },
+      "why": "The same Layers handle saves a cut at the neighboring word edge with snapping on, then saves the exact pointer-derived cut when the switch is off."
+    },
+    {
+      "id": "d92a7520850fcaaa",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 183,
+        "end": 191,
+        "sha256": "641fb32be82fa42834e10a07bad4c9d19b8f0802eb5afce5c8207a95377a714c"
+      },
+      "actions": [
+        "Move the adjoining image cut, undo and redo, then try to empty one picture"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/picture-shared-cut.mjs",
+        "start": 92,
+        "end": 115,
+        "sha256": "b92e185c0dd4c678754abe4fee8566470e0a101994c0ee44149bf3451c28436b"
+      },
+      "why": "The saved clips share their new edge and retain the source anchor. An invalid release presents the production alert and preserves the prior saved revision."
     }
   ],
   "commentExclusions": [
@@ -98254,7 +98330,7 @@
         "end": 203,
         "sha256": "9946391786a5279e424dff4a83269fc416610d20605be6c0926912e015204e45"
       },
-      "fileSha256": "6c112d37797cc8cd361547e1a2c04042cedcf66dffe4cc542595eb90a5ac1386"
+      "fileSha256": "1476ef53b90a753d55051701574023df45016964d05161c4cfff26aabd577375"
     },
     {
       "id": "12f96d3bd20cc0a9",
@@ -99314,7 +99390,7 @@
         "end": 181,
         "sha256": "76b186c0f75376342ae04e658c4cc8dba40fec2877eb354f77acbf13dc229bdc"
       },
-      "fileSha256": "acbec256a5f5ba39675f1396cc5f302bb4a5c61a8a979b44bfad3c0109741155"
+      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
     },
     {
       "id": "2a33f61b4064ffde",
@@ -99554,7 +99630,7 @@
         "end": 59,
         "sha256": "f531e93839cc8646698af235e4c9fd193232f0e85fec47d668073df5e6e7b8c8"
       },
-      "fileSha256": "6c112d37797cc8cd361547e1a2c04042cedcf66dffe4cc542595eb90a5ac1386"
+      "fileSha256": "1476ef53b90a753d55051701574023df45016964d05161c4cfff26aabd577375"
     },
     {
       "id": "2e9c4d7d889ee9d1",
@@ -100190,11 +100266,11 @@
       "id": "3c371da3f1b35fe7",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 76,
-        "end": 76,
+        "start": 79,
+        "end": 79,
         "sha256": "af9e0f42fdda7bd4fd4c2b38b80e3822126ac844a2caf189060b324ebb60ce58"
       },
-      "fileSha256": "953b9bb8098add4112f9056e984b188bd2e61424be9d2346310940daba1f3c89"
+      "fileSha256": "085cb8121db170d1bbd73988cdfbfd1688651f7ecd1077950349bd9515397316"
     },
     {
       "id": "3c78dc9bfef370e8",
@@ -100294,7 +100370,7 @@
         "end": 184,
         "sha256": "69ac7718ddeab94246a6b86354b0355d73e77dd63e6f371b23bd622cdef2519b"
       },
-      "fileSha256": "acbec256a5f5ba39675f1396cc5f302bb4a5c61a8a979b44bfad3c0109741155"
+      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
     },
     {
       "id": "3eef96111c1521c6",
@@ -101560,11 +101636,11 @@
       "id": "58319f29415d5b7c",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 98,
-        "end": 98,
+        "start": 101,
+        "end": 101,
         "sha256": "1b17bda0191087556148337bec47d95c875c68b9896b536e113de140e69c67f4"
       },
-      "fileSha256": "953b9bb8098add4112f9056e984b188bd2e61424be9d2346310940daba1f3c89"
+      "fileSha256": "085cb8121db170d1bbd73988cdfbfd1688651f7ecd1077950349bd9515397316"
     },
     {
       "id": "586b4673e9247bc7",
@@ -103104,7 +103180,7 @@
         "end": 35,
         "sha256": "02ac59384015897f58ecdb11d3428b62e415e58134bc02907557bf54af2d5f86"
       },
-      "fileSha256": "6c112d37797cc8cd361547e1a2c04042cedcf66dffe4cc542595eb90a5ac1386"
+      "fileSha256": "1476ef53b90a753d55051701574023df45016964d05161c4cfff26aabd577375"
     },
     {
       "id": "791b08de9e706a71",
@@ -103740,11 +103816,11 @@
       "id": "87ae86b0053d5bb5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 467,
-        "end": 468,
+        "start": 461,
+        "end": 462,
         "sha256": "045a6d19c815629097cdfa761a82347d16090c89883a35fb696e9193229fe8f2"
       },
-      "fileSha256": "acbec256a5f5ba39675f1396cc5f302bb4a5c61a8a979b44bfad3c0109741155"
+      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
     },
     {
       "id": "87c8645a132861df",
@@ -104560,11 +104636,11 @@
       "id": "97ac15b68b777d54",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 129,
-        "end": 130,
+        "start": 132,
+        "end": 133,
         "sha256": "74acdf8669f2162367b5bc4d998a32bc6e617b8053053a10c27e9999305adca0"
       },
-      "fileSha256": "953b9bb8098add4112f9056e984b188bd2e61424be9d2346310940daba1f3c89"
+      "fileSha256": "085cb8121db170d1bbd73988cdfbfd1688651f7ecd1077950349bd9515397316"
     },
     {
       "id": "97c3992f51e328e7",
@@ -105180,21 +105256,21 @@
       "id": "a360be545eec64b6",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 112,
-        "end": 112,
+        "start": 115,
+        "end": 115,
         "sha256": "5dc43e82a592a27b0758f2c98ef1fb8c8ee94cb84018a70dfccc877580e179f4"
       },
-      "fileSha256": "953b9bb8098add4112f9056e984b188bd2e61424be9d2346310940daba1f3c89"
+      "fileSha256": "085cb8121db170d1bbd73988cdfbfd1688651f7ecd1077950349bd9515397316"
     },
     {
       "id": "a37b41cd0be2820d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 502,
-        "end": 503,
+        "start": 496,
+        "end": 497,
         "sha256": "15efac8a20d335bd4b556a09856c5741e0a8c7ed66ae478b7b72742747028238"
       },
-      "fileSha256": "acbec256a5f5ba39675f1396cc5f302bb4a5c61a8a979b44bfad3c0109741155"
+      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
     },
     {
       "id": "a392694cb1b0b440",
@@ -105564,7 +105640,7 @@
         "end": 207,
         "sha256": "195080ff9ab07975f65ec43b82f6dab2e2733c38284628a5ea6677b09c9afc00"
       },
-      "fileSha256": "acbec256a5f5ba39675f1396cc5f302bb4a5c61a8a979b44bfad3c0109741155"
+      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
     },
     {
       "id": "ac3547ac9c74b008",
@@ -106194,7 +106270,7 @@
         "end": 106,
         "sha256": "cbaa27a9e46fbae956d151df669b4925cd0b6ed00fa38f052734c4d9a07eb65d"
       },
-      "fileSha256": "6c112d37797cc8cd361547e1a2c04042cedcf66dffe4cc542595eb90a5ac1386"
+      "fileSha256": "1476ef53b90a753d55051701574023df45016964d05161c4cfff26aabd577375"
     },
     {
       "id": "b89a7e09f61c0b53",
@@ -106254,7 +106330,7 @@
         "end": 15,
         "sha256": "b19e1325081a1e28f7b794e8613d398a26026ffe56dd2f3f19412bcec05d3de3"
       },
-      "fileSha256": "acbec256a5f5ba39675f1396cc5f302bb4a5c61a8a979b44bfad3c0109741155"
+      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
     },
     {
       "id": "b9a09feb38387cbb",
@@ -106990,11 +107066,11 @@
       "id": "c8ed6c77ecfaaa3d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 482,
-        "end": 483,
+        "start": 476,
+        "end": 477,
         "sha256": "2627a07bd0800f8591a67a6ec3652124f3b8eacddabebd4a0de4ebe28539cf06"
       },
-      "fileSha256": "acbec256a5f5ba39675f1396cc5f302bb4a5c61a8a979b44bfad3c0109741155"
+      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
     },
     {
       "id": "c9371302abc328e5",
@@ -107430,11 +107506,11 @@
       "id": "d0dee9046abab7c6",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 146,
-        "end": 146,
+        "start": 149,
+        "end": 149,
         "sha256": "7dfeff6eb9ba44d6d88519271cd5f7b7c6a91b7091826c371b52c2734a1a726c"
       },
-      "fileSha256": "953b9bb8098add4112f9056e984b188bd2e61424be9d2346310940daba1f3c89"
+      "fileSha256": "085cb8121db170d1bbd73988cdfbfd1688651f7ecd1077950349bd9515397316"
     },
     {
       "id": "d13306861e6c6cec",
@@ -107884,7 +107960,7 @@
         "end": 163,
         "sha256": "06c89a731397bf068c9b05b910462b3156875d1b7592a407142ec79935c816f4"
       },
-      "fileSha256": "acbec256a5f5ba39675f1396cc5f302bb4a5c61a8a979b44bfad3c0109741155"
+      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
     },
     {
       "id": "dc02563994337c3c",
@@ -108274,7 +108350,7 @@
         "end": 49,
         "sha256": "42d4c6751f7f7385307f67c96122d5f0411035e0e50dba6f4c2c61337819a191"
       },
-      "fileSha256": "acbec256a5f5ba39675f1396cc5f302bb4a5c61a8a979b44bfad3c0109741155"
+      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
     },
     {
       "id": "e2b12499c62395ef",
@@ -108334,7 +108410,7 @@
         "end": 173,
         "sha256": "a1411add687c3cf0b6f0bb8be65d4e5633e112c08fbcf26006519b9de7111fc9"
       },
-      "fileSha256": "6c112d37797cc8cd361547e1a2c04042cedcf66dffe4cc542595eb90a5ac1386"
+      "fileSha256": "1476ef53b90a753d55051701574023df45016964d05161c4cfff26aabd577375"
     },
     {
       "id": "e4d1fd47ffa9bce6",
@@ -109150,11 +109226,11 @@
       "id": "f3e3d2bfde9c4ab4",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 13,
-        "end": 14,
+        "start": 14,
+        "end": 15,
         "sha256": "690226a1b0853d3a163445a5632c8d87581c29b124aa6358cea1f042a88a7f1e"
       },
-      "fileSha256": "953b9bb8098add4112f9056e984b188bd2e61424be9d2346310940daba1f3c89"
+      "fileSha256": "085cb8121db170d1bbd73988cdfbfd1688651f7ecd1077950349bd9515397316"
     },
     {
       "id": "f40038939032b029",

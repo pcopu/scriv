@@ -304,7 +304,7 @@ fileprivate struct StoryboardWordReference { let word: TimedWord; let entryID: S
     let navigation: Int
     private var words: [StoryboardWordReference] = []
     private let picture = UIKitAssetImageView()
-    private var boundaryDriver: StoryboardCutDragDriver?
+    private var boundaryDriver: ImageTimelineDragDriver?
     private var durationDriver: ImageDurationScrubDriver?
     init(store: WorkspaceStore, cue: ImageCue, owner: StoryboardViewController) {
         self.store = store; self.cue = cue; self.owner = owner; navigation = store.navigationContext; super.init(frame: .zero)
@@ -337,8 +337,9 @@ fileprivate struct StoryboardWordReference { let word: TimedWord; let entryID: S
                 let handle = UIView(); handle.translatesAutoresizingMaskIntoConstraints = false; handle.backgroundColor = .white; handle.layer.cornerRadius = 3; wrapper.addSubview(handle)
                 NSLayoutConstraint.activate([handle.widthAnchor.constraint(equalToConstant: 10), handle.heightAnchor.constraint(equalToConstant: 50), handle.trailingAnchor.constraint(equalTo: wrapper.trailingAnchor, constant: -3), handle.centerYAnchor.constraint(equalTo: wrapper.centerYAnchor)])
                 handle.accessibilityLabel = "Move cut after " + cue.label
-                boundaryDriver = StoryboardCutDragDriver(view: handle) { [weak self] delta in
-                    guard let self, self.navigation == self.store.navigationContext, self.store.project.cues.first(where: { $0.id == cue.id }) == cue, self.store.project.cues.first(where: { $0.id == next.id }) == next else { return }
+                let navigation = self.navigation
+                boundaryDriver = ImageTimelineDragDriver(view: handle, pictureCut: true, begin: { navigation }) { [weak self] delta, context, committed in
+                    guard committed, let self, self.store.navigationContext == context, self.store.project.cues.first(where: { $0.id == cue.id }) == cue, self.store.project.cues.first(where: { $0.id == next.id }) == next else { return }
                     self.store.moveBoundary(leftId: cue.id, rightId: next.id, toMs: cue.endMs + Int(delta * 20))
                 }
             }
@@ -439,13 +440,6 @@ fileprivate struct StoryboardWordReference { let word: TimedWord; let entryID: S
         }
         return y + rowHeight
     }
-}
-
-@MainActor private final class StoryboardCutDragDriver: NSObject {
-    private weak var view: UIView?
-    private let action: (CGFloat) -> Void
-    init(view: UIView, action: @escaping (CGFloat) -> Void) { self.view = view; self.action = action; super.init(); view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))) }
-    @objc private func pan(_ sender: UIPanGestureRecognizer) { let delta = sender.translation(in: view?.superview).x; if sender.state == .changed { view?.transform = CGAffineTransform(translationX: delta, y: 0) }; if sender.state == .ended || sender.state == .cancelled { view?.transform = .identity; if sender.state == .ended { action(delta) } } }
 }
 
 @MainActor private final class UIKitStoryboardDirectionBand: UIView {
