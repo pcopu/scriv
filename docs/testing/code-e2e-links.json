@@ -96693,8 +96693,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 51,
-        "end": 56,
+        "start": 66,
+        "end": 71,
         "sha256": "8b9099778714dd8b575d1d071eb7758426d05a9e40f6b59b1bb4296a85d7c5e6"
       },
       "why": "A later account read fails. The native Settings pane shows the provider failure and exposes the retry control after the connection is cleared."
@@ -96738,8 +96738,8 @@
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
         "start": 43,
-        "end": 56,
-        "sha256": "e883b298d5ea389c90f58f4c4ef30ca292a709088dea653d8b1bf6e6ca5d7af2"
+        "end": 71,
+        "sha256": "06d164a442ef5c7f7c51b6d678b2eb411e12b27e9f62d79eefdfffc60c94520a"
       },
       "why": "The journey invokes the native sign-in and refresh controls and observes each resulting account status."
     },
@@ -96780,8 +96780,8 @@
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
         "start": 47,
-        "end": 56,
-        "sha256": "2be9e98ea4abaae9daa4ddca87beaaf9990e4db2ddd9ca3ffd96b8a01debf9b9"
+        "end": 71,
+        "sha256": "7573d3260f5990cfe6abff187d6f893802b5964b574d906ba04ade687c91d77d"
       },
       "why": "Two consecutive real checks complete with different visible readiness states after the provider replies."
     },
@@ -97167,6 +97167,86 @@
         "sha256": "a1e2736a992ac460ebe1d5a58a5a4905b7a9bc74b53c0836742e97d335bd88e1"
       },
       "why": "Startup discovers the real pending save and opens the owned original package, records exactly one revision, and acknowledges the record."
+    },
+    {
+      "id": "21477c590a3f6fff",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 744,
+        "end": 746,
+        "sha256": "b13fbc558feea905c9d7ddf8a9be43d90b179ce61eb75ffd745571d90cdfaa2c"
+      },
+      "actions": [
+        "scriv activate Sign in with ChatGPT",
+        "scriv snapshot the early provider completion"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 51,
+        "end": 60,
+        "sha256": "875db7ff0043933cf14abbd0d38ece9a3c990a62cec063f807b0e22262c08d1d"
+      },
+      "why": "The direct loopback provider emits early completion for the same login identifier and the final account status reflects that outcome."
+    },
+    {
+      "id": "5b4a5f8c2558c1c1",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 447,
+        "end": 461,
+        "sha256": "39328622d2a9d496ff72b7ca96ef51219b1c3cf674b41b18a68b2f55cdea8d24"
+      },
+      "actions": [
+        "scriv activate Sign in with ChatGPT",
+        "scriv snapshot the early provider completion"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 51,
+        "end": 60,
+        "sha256": "875db7ff0043933cf14abbd0d38ece9a3c990a62cec063f807b0e22262c08d1d"
+      },
+      "why": "The first provider decline becomes visible, then a successful completion refreshes the fixture identity and distinct model catalog."
+    },
+    {
+      "id": "8424b342994631b0",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 408,
+        "end": 409,
+        "sha256": "16cf3d8656b54d874d7a03300aa732bf2cbf2eda34ec2fd446e392102745483d"
+      },
+      "actions": [
+        "scriv activate Sign in with ChatGPT",
+        "scriv snapshot the early provider completion"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 51,
+        "end": 60,
+        "sha256": "875db7ff0043933cf14abbd0d38ece9a3c990a62cec063f807b0e22262c08d1d"
+      },
+      "why": "The owned provider emits completion before its login-start reply. Its matching early success and decline are both resolved in Settings."
+    },
+    {
+      "id": "e4c0958b13b5d134",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 473,
+        "end": 488,
+        "sha256": "cbd0443b96e274c7cb93a9ea72c91a291979ed1a0aa6548a4dd30cc76ec47c93"
+      },
+      "actions": [
+        "receive account updated notices on the owned connection",
+        "scriv snapshot the settled account state"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 62,
+        "end": 64,
+        "sha256": "e5c94761e83eff000fefe4a4821d61b325e590d7ade680455497c8765cee6296"
+      },
+      "why": "Overlapping provider update messages precede an old account result and a superseded error. The final UI shows the newest signed-out state and no stale error."
     }
   ],
   "commentExclusions": [

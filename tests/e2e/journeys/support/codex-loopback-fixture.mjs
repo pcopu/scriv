@@ -23,10 +23,34 @@ const activeRequests = new Map([
 
 // Model the app-server protocol at its socket boundary. No backend, account,
 // tools, credentials, arbitrary file names, or real model are available here.
-export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = false, manualAccountCheck = false } = {}) {
+export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = false, manualAccountCheck = false, ownedPort } = {}) {
   const handshake = ['initialize', 'initialized', 'account/read', 'model/list'];
-  const manualAccountMethods = manualAccountCheck ? ['account/login/start', 'account/read', 'model/list', 'account/read'] : [];
-  if (manualAccountCheck) assert.ok(!accountRefresh && outcomes.length === 0, 'Manual account checks own the entire fixture');
+  const anonymous = { account: null, requiresOpenaiAuth: true };
+  const updated = { method: 'account/updated', params: {} };
+  function finishLogin(loginId, success) {
+    const params = { loginId, success };
+    if (!success) params.error = 'Synthetic sign-in was declined';
+    return { method: 'account/login/start', notice: { method: 'account/login/completed', params },
+      reply: { result: { loginId, authUrl: `https://127.0.0.1:${ownedPort}/fixture-login` } } };
+  }
+  if (manualAccountCheck) {
+    assert.ok(!accountRefresh && outcomes.length === 0, 'Manual account checks own the entire fixture');
+    assert.ok(Number.isInteger(ownedPort) && ownedPort > 0 && ownedPort <= 65535, 'The sign-in fixture uses its own loopback port');
+  }
+  const manualAccountSteps = manualAccountCheck ? [
+    { method: 'account/login/start', reply: { result: { loginId: 'synthetic-rejected-login', authUrl: 'http://127.0.0.1/fixture-login' } } },
+    { method: 'account/read', reply: { result: anonymous } },
+    { method: 'model/list' },
+    finishLogin('synthetic-early-decline', false),
+    finishLogin('synthetic-early-success', true),
+    { method: 'account/read', reply: { result: { account: { type: 'chatgpt', email: 'signed-in-fixture@example.invalid' }, requiresOpenaiAuth: true } } },
+    { method: 'model/list', reply: { result: { data: [{ model: 'scriv-fixture-after-login', isDefault: true }], nextCursor: null } } },
+    { method: 'account/read', announce: true, notice: updated,
+      reply: { result: { account: { type: 'chatgpt', email: 'stale-fixture@example.invalid' }, requiresOpenaiAuth: true } } },
+    { method: 'account/read', notice: updated, reply: { error: { code: -32000, message: 'Superseded synthetic account error' } } },
+    { method: 'account/read', reply: { result: anonymous } },
+    { method: 'account/read', reply: { error: { code: -32000, message: 'Synthetic account refresh failed' } } },
+  ] : [];
   const accountUpdates = accountRefresh ? [
     { result: { account: { type: 'chatgpt', email: 'synthetic-account@example.invalid' }, requiresOpenaiAuth: true } },
     { result: { account: { type: '' }, requiresOpenaiAuth: true } },
@@ -34,7 +58,7 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
     { result: { account: null, requiresOpenaiAuth: true } },
     { result: { account: null, requiresOpenaiAuth: false } },
   ] : [];
-  const expected = [...handshake, ...manualAccountMethods, ...accountUpdates.map(() => 'account/read'), ...outcomes.flatMap(outcome => {
+  const expected = [...handshake, ...manualAccountSteps.map(step => step.method), ...accountUpdates.map(() => 'account/read'), ...outcomes.flatMap(outcome => {
     const turn = ['thread/start', 'turn/start'];
     if (outcome === 'cancel') return [...turn, 'turn/interrupt', 'transport-drop', ...handshake, 'model/list', 'thread/read', 'thread/read', 'thread/read'];
     if (outcome === 'recover' || outcome === 'missing-artifact') return [...turn, 'turn/interrupt', 'thread/read'];
@@ -60,6 +84,8 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
     assert.ok(Number.isSafeInteger(id) && id > 0 && !requestIDs.has(id), 'Fixture requires a distinct numeric request ID');
     requestIDs.add(id);
     const reply = result => ({ id, result });
+    const accountStep = manualAccountSteps[position - handshake.length - 1];
+    const accountReplies = () => [...(accountStep.notice ? [accountStep.notice] : []), { id, ...accountStep.reply }];
     switch (method) {
     case 'initialize':
       assert.equal(params.clientInfo.name, 'scriv_mac');
@@ -67,8 +93,12 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
     case 'account/read': {
       assert.equal(params.refreshToken, false);
       if (manualAccountCheck) {
-        if (position === expected.length) return [{ id, error: { code: -32000, message: 'Synthetic account refresh failed' } }];
-        return [reply({ account: null, requiresOpenaiAuth: true })];
+        if (!accountStep) return [reply(anonymous)];
+        if (accountStep.announce) {
+          assert.equal(accountUpdateAnnounced, true, 'The burst begins with a scheduled provider notice');
+          accountUpdateAnnounced = false;
+        }
+        return accountReplies();
       }
       const update = accountUpdates[position - handshake.length - 1];
       if (update) {
@@ -80,9 +110,10 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
     }
     case 'account/login/start':
       assert.deepEqual(params, { type: 'chatgpt' });
-      return [reply({ loginId: 'synthetic-rejected-login', authUrl: 'http://127.0.0.1/fixture-login' })];
+      return accountReplies();
     case 'model/list': {
       assert.equal(params.includeHidden, false);
+      if (accountStep?.reply) return accountReplies();
       const defaultModel = { id: model, model, isDefault: true, inputModalities: ['text', 'image'] };
       if (params.cursor === undefined) {
         return [reply({ data: [defaultModel], nextCursor: reconnecting ? catalogCursor : null })];
@@ -194,7 +225,8 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
   return {
     receive,
     notice(variant) {
-      assert.ok(accountRefresh && position >= handshake.length && count === 0, 'Notices are scoped to this idle account fixture');
+      assert.ok((accountRefresh || manualAccountCheck && variant === 'account-update')
+        && position >= handshake.length && count === 0, 'Notices are scoped to this idle account fixture');
       switch (variant) {
       case 'warning': return { method: 'warning', params: { message: 'Synthetic provider warning' } };
       case 'config-warning': return { method: 'configWarning', params: { summary: 'Synthetic provider configuration warning' } };
@@ -203,9 +235,10 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
         loginId: 'synthetic-unrelated-login', success: false, error: 'Synthetic unrelated login failure',
       } };
       case 'account-update':
-        assert.ok(accountUpdates[position - handshake.length] && !accountUpdateAnnounced, 'Expected one scheduled account refresh');
+        assert.ok((accountUpdates[position - handshake.length] || manualAccountSteps[position - handshake.length]?.announce)
+          && !accountUpdateAnnounced, 'Expected one scheduled account refresh');
         accountUpdateAnnounced = true;
-        return { method: 'account/updated', params: {} };
+        return updated;
       default: throw new Error('Unknown fixture notice');
       }
     },
@@ -232,9 +265,12 @@ export async function startCodexFixture(root, outcomes, options) {
   const require = createRequire(new URL('../../../../cloud/package.json', import.meta.url));
   assert.equal(require('ws/package.json').version, '8.21.0', 'Fixture needs the lockfile-pinned cloud dependencies');
   const { WebSocketServer } = require('ws');
-  const protocol = createCodexFixtureProtocol(root, outcomes, options);
   const server = new WebSocketServer({ host: '127.0.0.1', port: 0, maxPayload: 128 * 1024, perMessageDeflate: false });
   await once(server, 'listening');
+  const ownedPort = server.address().port;
+  let protocol;
+  try { protocol = createCodexFixtureProtocol(root, outcomes, { ...options, ownedPort }); }
+  catch (error) { server.close(); throw error; }
   let failure;
   let connections = 0;
   let reconnectAllowed = false;
@@ -274,7 +310,7 @@ export async function startCodexFixture(root, outcomes, options) {
     });
   });
   return {
-    endpoint: `ws://127.0.0.1:${server.address().port}`,
+    endpoint: `ws://127.0.0.1:${ownedPort}`,
     race: promise => Promise.race([failed, promise]),
     assertNoTurns: protocol.assertNoTurns,
     async notify(variant) {

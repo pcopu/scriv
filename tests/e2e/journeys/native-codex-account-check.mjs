@@ -48,6 +48,21 @@ try {
     await ui.activate(refresh);
     await session.waitFor(nodes => needsSignIn(nodes) && !error(nodes));
 
+    step = 'show a declined sign-in that completed before the reply';
+    await ui.activate(signIn);
+    await session.waitFor(nodes => needsSignIn(nodes) && error(nodes) === 'Synthetic sign-in was declined');
+
+    step = 'refresh the signed-in account and its models after early completion';
+    await ui.activate(signIn);
+    await session.waitFor(nodes => connection(nodes) === 'Connected'
+      && statusText(nodes, 'codex-account-status') === 'signed-in-fixture@example.invalid'
+      && nodes.some(node => node.identifier === 'codex-model' && node.label === 'Model: scriv-fixture-after-login')
+      && !error(nodes));
+
+    step = 'coalesce overlapping provider notices and discard a superseded read error';
+    await fixture.notify('account-update');
+    await session.waitFor(nodes => needsSignIn(nodes) && !error(nodes));
+
     step = 'disconnect when the next explicit refresh fails';
     await ui.activate(refresh);
     await session.waitFor(nodes => connection(nodes) === 'Codex needs attention'
@@ -61,7 +76,7 @@ try {
 
   await fixture.close();
   fixture = undefined;
-  console.log('PASS: native Codex sign-in response validation and explicit account refresh');
+  console.log('PASS: native Codex early sign-in outcomes and coalesced account refresh');
 } catch (cause) {
   throw new Error(`Codex account check failed while trying to ${step}`, { cause });
 } finally {
