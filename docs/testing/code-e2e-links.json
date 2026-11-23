@@ -95654,6 +95654,68 @@
         "sha256": "529e26b9c37c29d4050b061f5400bf2b6ebb601c146f002af1f1685027dcced9"
       },
       "why": "The Account retry sends the saved edit unchanged. The isolated Worker rejects its released lease, and the client preserves the rejected command while resubmitting the edit with a fresh receipt. The scenario checks the complete loaded and saved projects."
+    },
+    {
+      "id": "61579dd0e30eecd5",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1717,
+        "end": 1720,
+        "sha256": "a6ca736a90db0c62f97050b6ea749bde200f0fc6990e69dd15b16d888b44a9d3"
+      },
+      "actions": [
+        "activate Open project",
+        "menu-action workspace-panels Scriv account\u2026",
+        "loaded-project"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-image-recovery.mjs",
+        "start": 58,
+        "end": 81,
+        "sha256": "85c134023e0ae1c238f31de3e2d3e909dc8180164639237fee04ea0acf3d065b"
+      },
+      "why": "Opening a cloud project starts the download. Invalid bytes produce the native no-replica status, leave the file missing, and preserve the loaded project."
+    },
+    {
+      "id": "652529ac33e11635",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1708,
+        "end": 1714,
+        "sha256": "c71dafc59f5db49482fd8b21133863bb62ce447aa36f16a67b29b41e9eef2eaa"
+      },
+      "actions": [
+        "activate Fetch image",
+        "loaded-project",
+        "persisted-projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-image-recovery.mjs",
+        "start": 83,
+        "end": 94,
+        "sha256": "acc86e1525ff257d9999b4a0bb2e488736199a40899b28c519f3016de0bd2abb"
+      },
+      "why": "Preview fetches the repaired image through the Worker, checks exact persisted PNG bytes, and preserves the loaded and saved project."
+    },
+    {
+      "id": "8c691b9b9acf1e8e",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+        "start": 56,
+        "end": 56,
+        "sha256": "068a522941bc1157ee090fcc041c2b38303e6777193c102c0046192dc91536be"
+      },
+      "actions": [
+        "activate Fetch image",
+        "snapshot"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-image-recovery.mjs",
+        "start": 83,
+        "end": 90,
+        "sha256": "2a3ce89ec6f77e0e92dae246e97ebc3406d9d08141732e2e3f4315632c08044a"
+      },
+      "why": "The accessible Preview control retrieves the repaired image and the picture replaces the missing-image message."
     }
   ],
   "commentExclusions": [

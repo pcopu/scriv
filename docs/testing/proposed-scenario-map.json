@@ -9224,6 +9224,7 @@
       "title": "Fall back from hosted image fetch to peer",
       "featureId": "media-sync",
       "state": "needs-extension",
+      "restriction": "The isolated native CLI reports peer transport disabled. Receiving bytes from an eligible second Mac requires a supported peer route.",
       "existingPaths": [
         "cloud/tests-e2e/discussions-assets-journey.mjs"
       ],
@@ -9232,6 +9233,30 @@
       ],
       "expectedOutcomes": [
         "The valid known replica can be verified and installed; no eligible peer or invalid bytes leaves the asset unavailable and surfaces a recoverable failure or status."
+      ]
+    },
+    {
+      "id": "native-hosted-image-recovery",
+      "title": "Fetch a repaired hosted image from the Preview",
+      "featureId": "media-sync",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/native-cloud-image-recovery.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+        "symbol": "storeDidChange"
+      },
+      "actionIds": [
+        "activate",
+        "menu-action",
+        "key"
+      ],
+      "plannedActions": [
+        "Open the Team project with invalid hosted bytes, inspect the unavailable status in Scriv account, then fetch the repaired image through Preview."
+      ],
+      "expectedOutcomes": [
+        "The initial attempt creates no local image and leaves the script intact. Fetch verifies and saves the original bytes and shows the picture with the same script and timing."
       ]
     },
     {
@@ -16261,7 +16286,8 @@
     {
       "rangeId": "fb88900520e803ca4acb",
       "scenarioIds": [
-        "audit-v82-fb88900520e803ca4acb"
+        "audit-v82-fb88900520e803ca4acb",
+        "native-hosted-image-recovery"
       ],
       "rationale": "The proposed exercise targets downloads missing assets and discovers peer replicas. The replacement specifies the triggering fixture and observable result.",
       "confidence": "medium",
