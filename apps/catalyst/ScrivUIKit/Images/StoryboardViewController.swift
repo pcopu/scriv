@@ -85,9 +85,13 @@ enum StoryboardSharedScriptLayout {
         countLabel.text = ScrivFormat.count(store.sceneCues.count, "image") + " · \(ScrivFormat.duration(store.sceneDurationMs))"
         selectionLabel.text = StoryboardSelectionPresentation.summary(wordCount: store.selectedWordIDs.count)
         deselectButton.isEnabled = !store.selectedWordIDs.isEmpty
-        let next: [AnyHashable] = [store.navigationContext, store.selectedSceneID, store.project.revision, store.sceneCues, store.sceneEntries, store.project.images, columns, store.peerTransferStatus]
+        let next = currentSignature
         if signature != next, marqueeOrigin == nil { signature = next; rebuild() }
         cards.values.forEach { $0.updateSelection() }; if bandFontSize != store.scriptFontSize * 1.35 { bandFontSize = store.scriptFontSize * 1.35; directionBands.forEach { $0.updateFont(store.scriptFontSize * 1.35) } }; updateSharedScript()
+    }
+    private var currentSignature: [AnyHashable] {
+        [store.navigationContext, store.selectedSceneID, store.project.revision,
+         store.sceneCues, store.sceneEntries, store.project.images, columns, store.peerTransferStatus]
     }
     private func rebuild() {
         ImageUI.clear(rows); cards.removeAll(); directionBands.removeAll(); sharedWordButtons.removeAll(); sharedDragDelegates.removeAll(); coverageRails.removeAll(); playbackLabels.removeAll(); sharedMenuCueID = nil; renderedSharedScript = nil; bandFontSize = nil
@@ -338,7 +342,7 @@ fileprivate struct StoryboardWordReference { let word: TimedWord; let entryID: S
                 NSLayoutConstraint.activate([handle.widthAnchor.constraint(equalToConstant: 10), handle.heightAnchor.constraint(equalToConstant: 50), handle.trailingAnchor.constraint(equalTo: wrapper.trailingAnchor, constant: -3), handle.centerYAnchor.constraint(equalTo: wrapper.centerYAnchor)])
                 handle.accessibilityLabel = "Move cut after " + cue.label
                 let navigation = self.navigation
-                boundaryDriver = ImageTimelineDragDriver(view: handle, pictureCut: true, begin: { navigation }) { [weak self] delta, context, committed in
+                boundaryDriver = ImageTimelineDragDriver(view: handle, allowTimingSamples: true, begin: { navigation }) { [weak self] delta, context, committed in
                     guard committed, let self, self.store.navigationContext == context, self.store.project.cues.first(where: { $0.id == cue.id }) == cue, self.store.project.cues.first(where: { $0.id == next.id }) == next else { return }
                     self.store.moveBoundary(leftId: cue.id, rightId: next.id, toMs: cue.endMs + Int(delta * 20))
                 }
@@ -473,12 +477,22 @@ fileprivate struct StoryboardWordReference { let word: TimedWord; let entryID: S
 
 #if SCRIV_CLI_AUTOMATION
 extension StoryboardViewController {
+    func cliWordMoveAction(for button: UIButton, wordID: String, title: String) -> UIAction? {
+        guard title == "Move to previous image" || title == "Move to next image",
+              contextIsCurrent, marqueeOrigin == nil, signature == currentSignature,
+              viewIfLoaded?.window === button.window, sharedWordButtons[wordID] === button,
+              button.accessibilityIdentifier == "storyboard-word-" + wordID,
+              sharedMenuCueID == store.selectedCueID,
+              let menu = ScrivSecondaryMenu.menu(of: button), menu.title.isEmpty, menu.options.isEmpty else { return nil }
+        let actions = menu.children.compactMap { $0 as? UIAction }.filter {
+            $0.title == title && $0.attributes.isEmpty && $0.state == .off
+        }
+        return actions.count == 1 ? actions.first : nil
+    }
+
     /// Read-only witness for the mounted card's captured production menu context.
     /// Never constructs actions or calls a menu handler/model operation.
     func cliValidatedPictureCue(for button: UIButton) -> (cue: ImageCue, canMerge: Bool)? {
-        let currentSignature: [AnyHashable] = [store.navigationContext, store.selectedSceneID,
-            store.project.revision, store.sceneCues, store.sceneEntries, store.project.images,
-            columns, store.peerTransferStatus]
         guard contextIsCurrent, !scopeToProject, marqueeOrigin == nil,
               signature == currentSignature,
               let content = viewIfLoaded, button.isDescendant(of: content) else { return nil }

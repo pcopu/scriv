@@ -1193,8 +1193,8 @@
       "id": "029b8cf81aafaffe",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 133,
-        "end": 133,
+        "start": 137,
+        "end": 137,
         "sha256": "92be186988173cc60bc35fa7f73978d9ae4e7c06a190d7d52feba2b8549619de"
       },
       "actions": [
@@ -1354,8 +1354,8 @@
       "id": "0323721a1af7ee30",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 94,
-        "end": 96,
+        "start": 98,
+        "end": 100,
         "sha256": "0323c8ff6689313ff51595d5263a0c96ced026a95b38d785de0d64a64f09eab6"
       },
       "actions": [
@@ -2487,8 +2487,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 117,
-        "end": 129,
+        "start": 122,
+        "end": 134,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: after importing the anchored parent/child fixture and correcting the same invalid-input sheet, real duration texts 0.001, 86400, 1.2345, 10 and 0.5 save child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. Each edit has complete expected saved-model equality and one revision; each is followed by real reopen/Cancel/Undo/Redo. Parent, script, audio and scene runtime remain unchanged. The source IDs are fixed by fixture, not arbitrary injected model mutations. setCueDuration changes only the chosen authored extent before resolving and validating. Missing-cue and invalid-core-bound rejections are not tested here. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -6101,8 +6101,8 @@
       "id": "14f95c222faa23fd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 315,
-        "end": 315,
+        "start": 319,
+        "end": 319,
         "sha256": "1648057b0fbe4cfdf2eacf2d9ff896e3c5f1f333fab776cfdb1c8cd17818f1e3"
       },
       "actions": [
@@ -9818,8 +9818,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 117,
-        "end": 129,
+        "start": 122,
+        "end": 134,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: after importing the anchored parent/child fixture and correcting the same invalid-input sheet, real duration texts 0.001, 86400, 1.2345, 10 and 0.5 save child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. Each edit has complete expected saved-model equality and one revision; each is followed by real reopen/Cancel/Undo/Redo. Parent, script, audio and scene runtime remain unchanged. The source IDs are fixed by fixture, not arbitrary injected model mutations. Authored end beyond the scene is clipped to 4000 while authored duration remains 86400000/10000 for reopening. It does not prove later scene-growth restoration. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -10567,8 +10567,8 @@
       "id": "24bd05e88bf8a7b4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 199,
-        "end": 199,
+        "start": 203,
+        "end": 203,
         "sha256": "001c0dda8d0c3c48e19a1aa6c0c957357d5dacfc43427c619d5cfc0fe49d5835"
       },
       "actions": [
@@ -11052,8 +11052,8 @@
       "id": "25b334ecc49e9554",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 498,
-        "end": 500,
+        "start": 512,
+        "end": 514,
         "sha256": "d6d505b3268b5f587a4dd2afe93bb0afc16f0fc05417496d07404eaede0f1493"
       },
       "actions": [
@@ -11921,8 +11921,8 @@
       "id": "28b13202c5aba8f6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 169,
-        "end": 172,
+        "start": 173,
+        "end": 176,
         "sha256": "63a4668a0736fc40257adda193159e504147c27ff6011c0aee47486b7c3d6ebd"
       },
       "actions": [
@@ -20171,8 +20171,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 107,
-        "end": 114,
+        "start": 112,
+        "end": 119,
         "sha256": "19a2c939dfe920ea34febf8929adab245c01b6bd024af6111b8c94c5cf8ade29"
       },
       "why": "AUT-J09: each actual invalidSeconds fixture retains inline numeric error and unchanged packages. No rejection branch for changed navigation or unavailable lease is inferred. Reviewed static association only; this Linux audit did not run the native test."
@@ -20605,8 +20605,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 132,
-        "end": 145,
+        "start": 137,
+        "end": 150,
         "sha256": "1d7d68f8dfb3df7904f652475b3fee79510e9aa3efbb36c0dca98670afc7fc9c"
       },
       "why": "AUT-J09/numeric foreground boundaries: after final child coverage 1000\u20131500 is saved, real seeks 999,1000,1500 require Preview subtitles Parent,Child,Parent, respectively. The enclosing parent survives while latest-starting child wins only inside its half-open interval; scene slider maximum stays 4000. No ties at equal start times or no-active-cue path is tested. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -22086,8 +22086,8 @@
       "id": "4da9b567ea7175bf",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIStoryboardMerge.swift",
-        "start": 19,
-        "end": 20,
+        "start": 23,
+        "end": 24,
         "sha256": "990b9bed563645bf130f8ed26afe0e02de7365fefd4e328350f7a845fa4ad5b6"
       },
       "actions": [
@@ -23916,8 +23916,8 @@
       "id": "54fcccfd94510fee",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIStoryboardMerge.swift",
-        "start": 126,
-        "end": 127,
+        "start": 155,
+        "end": 156,
         "sha256": "fe090960b83b8fc74438835d56e2e92aeb529c5b2b4ddc1d47a78ace05e18aa8"
       },
       "actions": [
@@ -24948,8 +24948,8 @@
       "id": "5854c8b761f836bc",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 137,
-        "end": 137,
+        "start": 141,
+        "end": 141,
         "sha256": "48e8977ea8931e7f0beae1fa6fea14d66dc9fe897284868d0884251017e02fe2"
       },
       "actions": [
@@ -33920,8 +33920,8 @@
       "id": "7762f2dec43a3e57",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 128,
-        "end": 130,
+        "start": 132,
+        "end": 134,
         "sha256": "43f6634b26978c489a699fabe3ad0bbf77659f504b6c3ba069cf6ee92a634a3c"
       },
       "actions": [
@@ -34599,8 +34599,8 @@
       "id": "79554c8e0bc8a929",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 209,
-        "end": 209,
+        "start": 213,
+        "end": 213,
         "sha256": "269cad38e72bdc360d3fffeb83e6534edc4069aa30573fa109de5d20d72f37ed"
       },
       "actions": [
@@ -36859,8 +36859,8 @@
       "id": "80ca30d6f44adccc",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 130,
-        "end": 130,
+        "start": 134,
+        "end": 134,
         "sha256": "60687be332057f0ef8f962cf3caa4fcc017d8b940aa241d29a5906c69e0bd133"
       },
       "actions": [
@@ -45964,8 +45964,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 117,
-        "end": 129,
+        "start": 122,
+        "end": 134,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: after importing the anchored parent/child fixture and correcting the same invalid-input sheet, real duration texts 0.001, 86400, 1.2345, 10 and 0.5 save child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. Each edit has complete expected saved-model equality and one revision; each is followed by real reopen/Cancel/Undo/Redo. Parent, script, audio and scene runtime remain unchanged. The source IDs are fixed by fixture, not arbitrary injected model mutations. In particular, 1.2345 is rounded to 1235 milliseconds and reopened as 1.235. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -49107,8 +49107,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 132,
-        "end": 145,
+        "start": 137,
+        "end": 150,
         "sha256": "1d7d68f8dfb3df7904f652475b3fee79510e9aa3efbb36c0dca98670afc7fc9c"
       },
       "why": "AUT-J09/numeric foreground boundaries: after final child coverage 1000\u20131500 is saved, real seeks 999,1000,1500 require Preview subtitles Parent,Child,Parent, respectively. The enclosing parent survives while latest-starting child wins only inside its half-open interval; scene slider maximum stays 4000. No ties at equal start times or no-active-cue path is tested. Scene cue ordering feeds currentCue.last so latest-starting active cue wins. Equal-start ID ordering remains a gap. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -53168,8 +53168,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 120,
-        "end": 122,
+        "start": 125,
+        "end": 127,
         "sha256": "cb7b9fe69501d8c14244f642c1288c5a564116453ff00f79af4d22275c8b83a8"
       },
       "why": "AUT-J09: precondition is the imported parent/child fixture and the already-open current coverage sheet, after invalid input or explicit reopen. Set the selected valid case text, Apply, and observe the saved result. savedAfter (85-93) asserts one revision and every expected project field. Reopen, Cancel, history and stale-source branches are outside this link. Reviewed static association only; this Linux audit did not run the native test."
@@ -55658,8 +55658,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 117,
-        "end": 129,
+        "start": 122,
+        "end": 134,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: existing real duration inputs 0.001,86400,1.2345,10,0.5 with reopen/Cancel/Undo/Redo require exact child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. All parent/source/audio data remains exact. The source-start table accumulates owned source duration and resolves the child at b + 0 = 1000 within a 4000 ms scene. These are valid fixture inputs; missing/invalid anchors, duplicate entry IDs and symlink/media behavior are not covered. Static reviewed source/action/assertion association only. No native execution, measured coverage, physical-input parity, all-branch coverage or legacy retirement is claimed. Optional reveal/scroll and polling reads remain governed by the original helpers, not a recorded wire transcript."
@@ -58385,8 +58385,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 120,
-        "end": 122,
+        "start": 125,
+        "end": 127,
         "sha256": "cb7b9fe69501d8c14244f642c1288c5a564116453ff00f79af4d22275c8b83a8"
       },
       "why": "AUT-J09: precondition is the imported parent/child fixture and the already-open current coverage sheet, after invalid input or explicit reopen. Set the selected valid case text, Apply, and observe the saved result. savedAfter (85-93) asserts one revision and every expected project field. Reopen, Cancel, history and stale-source branches are outside this link. Reviewed static association only; this Linux audit did not run the native test."
@@ -60940,8 +60940,8 @@
       "id": "d324d7f0987175df",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 152,
-        "end": 152,
+        "start": 156,
+        "end": 156,
         "sha256": "3485296673c5532d28aed88217df4d9d1849f4cf5bd66f6c0ff60fa20954e777"
       },
       "actions": [
@@ -62658,8 +62658,8 @@
       "id": "dafc96db32f7c861",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 177,
-        "end": 177,
+        "start": 181,
+        "end": 181,
         "sha256": "68020dc147eec5284945175759eb1f854f0e7e5eac000f46c13b4a97ad049c51"
       },
       "actions": [
@@ -62813,8 +62813,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 132,
-        "end": 145,
+        "start": 137,
+        "end": 150,
         "sha256": "1d7d68f8dfb3df7904f652475b3fee79510e9aa3efbb36c0dca98670afc7fc9c"
       },
       "why": "AUT-J09/numeric foreground boundaries: after final child coverage 1000\u20131500 is saved, real seeks 999,1000,1500 require Preview subtitles Parent,Child,Parent, respectively. The enclosing parent survives while latest-starting child wins only inside its half-open interval; scene slider maximum stays 4000. No ties at equal start times or no-active-cue path is tested. Seek updates inspected cue from the current clock cue so paused Preview reflects each boundary. The scene-end fallback on the same line is not exercised. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -66985,8 +66985,8 @@
       "id": "e7a5f623fb70e303",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 209,
-        "end": 209,
+        "start": 213,
+        "end": 213,
         "sha256": "269cad38e72bdc360d3fffeb83e6534edc4069aa30573fa109de5d20d72f37ed"
       },
       "actions": [
@@ -67153,8 +67153,8 @@
       "id": "e81658ab538fb75d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 200,
-        "end": 200,
+        "start": 204,
+        "end": 204,
         "sha256": "a561434c2d80aa1ec41e15ae512a6be6c13a33f823ed986fc7655aeadf9ec211"
       },
       "actions": [
@@ -69646,8 +69646,8 @@
       "id": "ef4ccaeed00dd171",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIStoryboardMerge.swift",
-        "start": 30,
-        "end": 32,
+        "start": 34,
+        "end": 36,
         "sha256": "def9f4c4f1f415157a473f58fd1f33bc2f7f65fcb3e061196a2d5128b6e1d114"
       },
       "actions": [
@@ -71945,8 +71945,8 @@
       "id": "f8cf55b58462b1b2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 369,
-        "end": 369,
+        "start": 373,
+        "end": 373,
         "sha256": "fbeefaf738df13981d734486d683da7fc415db6981949369cf76ff5de5a4aefb"
       },
       "actions": [
@@ -79141,7 +79141,7 @@
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
         "start": 383,
         "end": 384,
-        "sha256": "f83077a64eda08359f0f1f32680a7b161b0fab2fefc05ba5f7b76300f9ebd165"
+        "sha256": "bbde6baaababe973b4a77bf7ef2bea332c249782850217c8817f8c8366ca7254"
       },
       "actions": [
         "launch matching automation app --scriv-cli with the FILM-J01 persistent isolated run",
@@ -81900,8 +81900,8 @@
       "id": "41669cf2077c9b57",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 137,
-        "end": 138,
+        "start": 141,
+        "end": 142,
         "sha256": "9b49e2d222d83b4d352d07d0d6ae0e7d1ef9da755113a3395da62426d7f15421"
       },
       "actions": [
@@ -81940,8 +81940,8 @@
       "id": "4dd426366b536403",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 113,
-        "end": 114,
+        "start": 117,
+        "end": 118,
         "sha256": "777a8ed25b50f283cf10929ffd94b6d0ccf048f74b472ec22a2b8131b7db9e23"
       },
       "actions": [
@@ -82009,8 +82009,8 @@
       "id": "562a3b88c7c5b8b4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 158,
-        "end": 158,
+        "start": 162,
+        "end": 162,
         "sha256": "34a3049272701d253bedb9a8d9e42f4a129c5c882323ffe64a4007302e60f301"
       },
       "actions": [
@@ -82052,8 +82052,8 @@
       "id": "5679fc2c4f5be7c7",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 122,
-        "end": 126,
+        "start": 126,
+        "end": 130,
         "sha256": "abf0a73b77f3ea1ce5055a3a5bb47d262738bab450cd40b8d42284a8f35e594a"
       },
       "actions": [
@@ -82073,8 +82073,8 @@
       "id": "5e0721442ce0c264",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 417,
-        "end": 417,
+        "start": 421,
+        "end": 421,
         "sha256": "264c9e2b7cfd57ad2b8f13dee1d98be2489014a8a3046f3f7c77dce8d61c6e37"
       },
       "actions": [
@@ -82574,8 +82574,8 @@
       "id": "aa01cfdd07f84701",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 192,
-        "end": 193,
+        "start": 196,
+        "end": 197,
         "sha256": "f206e17d648acc4999177e39b33de026827b714d662b159dfd92f9abb0c394ee"
       },
       "actions": [
@@ -82617,8 +82617,8 @@
       "id": "aaa35d2dfedb41b9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 411,
-        "end": 413,
+        "start": 415,
+        "end": 417,
         "sha256": "314bef74cd5856b59b313b101b67d7917ef758ccfa61ad3409e914e77bd8609c"
       },
       "actions": [
@@ -82830,8 +82830,8 @@
       "id": "bab356208917c2d0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 148,
-        "end": 149,
+        "start": 152,
+        "end": 153,
         "sha256": "13e1bd24214542a6bc0f9e9b9d2a47ca493c94dcbb1d370fde849da255ff4c44"
       },
       "actions": [
@@ -82851,8 +82851,8 @@
       "id": "bbb1bd0f237635c4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 240,
-        "end": 240,
+        "start": 244,
+        "end": 244,
         "sha256": "5d237709e6e3095844c77a0338af5ce57d4379592b532a7a3c43fc2b50d6b877"
       },
       "actions": [
@@ -82872,8 +82872,8 @@
       "id": "be475e6cf42947ba",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 131,
-        "end": 134,
+        "start": 135,
+        "end": 138,
         "sha256": "2ff0fa96dee76a6ae0cd5dd1d61cf24a48bd6bdc1e72ac87602971b0dab99760"
       },
       "actions": [
@@ -83053,8 +83053,8 @@
       "id": "c3ddcd49035a6530",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 177,
-        "end": 177,
+        "start": 181,
+        "end": 181,
         "sha256": "68020dc147eec5284945175759eb1f854f0e7e5eac000f46c13b4a97ad049c51"
       },
       "actions": [
@@ -83096,8 +83096,8 @@
       "id": "ccad42d79e2771ec",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 150,
-        "end": 153,
+        "start": 154,
+        "end": 157,
         "sha256": "71f0af272560a97f796dd8c02da9eb1072cedc58d14acdf192206c2fcb179716"
       },
       "actions": [
@@ -83139,8 +83139,8 @@
       "id": "cfe882db5620125d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 169,
-        "end": 172,
+        "start": 173,
+        "end": 176,
         "sha256": "63a4668a0736fc40257adda193159e504147c27ff6011c0aee47486b7c3d6ebd"
       },
       "actions": [
@@ -83203,8 +83203,8 @@
       "id": "d4a80164122504aa",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 194,
-        "end": 195,
+        "start": 198,
+        "end": 199,
         "sha256": "5e279bf8cc11ef20b9ac7d9674f7f8eb5d069615bb06bb0567303c14a907a5fc"
       },
       "actions": [
@@ -83273,8 +83273,8 @@
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
         "start": 88,
-        "end": 96,
-        "sha256": "f1b1be715d9c8f97e239ff780afbe271c4fb39b10c1c75d5ef31b62fab985dc7"
+        "end": 100,
+        "sha256": "6fd0547449858a0dfb45c16320eb696250759c2351f5ad1eb98dbc838374801c"
       },
       "actions": [
         "import-json {text: JSON.stringify(followFixture())}",
@@ -83293,8 +83293,8 @@
       "id": "dd9b1fa2a0f1fde8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 199,
-        "end": 201,
+        "start": 203,
+        "end": 205,
         "sha256": "be9a6dfecfce5b4e62aebdec0175529d6e276c6e72b433086558c33bf7566888"
       },
       "actions": [
@@ -83338,8 +83338,8 @@
       "id": "e2e3263b3173dc29",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 97,
-        "end": 97,
+        "start": 101,
+        "end": 101,
         "sha256": "b0ec14dc0b7d0343e07791564285107642234d40da075958880ba19a47d912cd"
       },
       "actions": [
@@ -83378,8 +83378,8 @@
       "id": "e58a60b265321cd5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 164,
-        "end": 167,
+        "start": 168,
+        "end": 171,
         "sha256": "77921eb1abcb9dd2e290f39de5c568c6175e9ebbf59bfef4e26c257c6b1f80fe"
       },
       "actions": [
@@ -83469,8 +83469,8 @@
       "id": "f63c3bf30d7f4e1d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 102,
-        "end": 110,
+        "start": 106,
+        "end": 114,
         "sha256": "8df619bf6df629d650cf098d5ba1ef9fb9466540f2148e392d6d1535e36b6198"
       },
       "actions": [
@@ -95982,8 +95982,8 @@
       "id": "7e76b7c24b11447c",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 360,
-        "end": 360,
+        "start": 364,
+        "end": 364,
         "sha256": "60248080203e9a42f14af19609f1a0b909d91c4b5d9e007a20777384d33f9a78"
       },
       "actions": [
@@ -96912,8 +96912,8 @@
       "id": "48cfc18ff29500f3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIStoryboardMerge.swift",
-        "start": 73,
-        "end": 75,
+        "start": 77,
+        "end": 79,
         "sha256": "fdc7b7b1d37f67cc49088aa8c8b79d3b69d7bc10507be7653aa57c868ca6f071"
       },
       "actions": [
@@ -96976,8 +96976,8 @@
       "id": "bfce82bfe392fdce",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 371,
-        "end": 382,
+        "start": 375,
+        "end": 386,
         "sha256": "da5eecf782aeeffe82ab3b17150e25ef5c46c51042fa83a08acbb796a8f12da2"
       },
       "actions": [
@@ -97558,9 +97558,9 @@
       "id": "1d69082f00f0ebe1",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 339,
-        "end": 344,
-        "sha256": "e078ed43cd48948e2460dfca9b1f3b29e5a2cfea5205a1cef0ff5f9f81db708e"
+        "start": 343,
+        "end": 348,
+        "sha256": "62f0e1d1565d1abae72551139712707c6a902abd54df8b6807987c200930e9d8"
       },
       "actions": [
         "Preview or release the Storyboard shared cut"
@@ -97598,7 +97598,7 @@
         "path": "apps/catalyst/ScrivUIKit/Images/LayerTimelineViewController.swift",
         "start": 119,
         "end": 124,
-        "sha256": "a57a96b1165faebd136d73a3e7ec3f67b24413bdb048dce6e7c478a277e835d4"
+        "sha256": "a92dc9d0508a5a4f28ab4a99413990296ecaa80b7714f9279e519f77958fcad9"
       },
       "actions": [
         "Release the expanded Layers shared cut with snapping on and off"
@@ -97629,6 +97629,83 @@
         "sha256": "b92e185c0dd4c678754abe4fee8566470e0a101994c0ee44149bf3451c28436b"
       },
       "why": "The saved clips share their new edge and retain the source anchor. An invalid release presents the production alert and preserves the prior saved revision."
+    },
+    {
+      "id": "6e8b62c5f437b09a",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIStoryboardMerge.swift",
+        "start": 112,
+        "end": 135,
+        "sha256": "35ea21d48c75261101ecdcd60b5ffe9f49d049abe73c1ddfabec4106f45af80a"
+      },
+      "actions": [
+        "Invoke the original Storyboard word menu for either neighboring picture"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
+        "start": 54,
+        "end": 73,
+        "sha256": "6cd3d8b9313aac2ef46935a7ff69201fa60951790f0c06e1d1fc08f7e5502b0b"
+      },
+      "why": "The loaded synthetic workspace and mounted word button must agree. A wrong word identity is refused and the exact original actions produce the actual adjacent saves or the boundary-word error."
+    },
+    {
+      "id": "82306561b581ba2f",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Images/LayerTimelineViewController.swift",
+        "start": 139,
+        "end": 147,
+        "sha256": "71f97bae875f50d20a1a0e213bb59913295b5b63e078e3f07c1670532db5cf8e"
+      },
+      "actions": [
+        "Drag a Layers word block and both original timing handles"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
+        "start": 113,
+        "end": 139,
+        "sha256": "9fadd8232d70c38b0467b24538352319e9910bfb8eb7453029f9a2c02975040e"
+      },
+      "why": "The mounted word block and its start and end handles share the production drag lifecycle and apply the expected real saved authored changes."
+    },
+    {
+      "id": "94ee6a8899d3344f",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/WordTimingEditing.swift",
+        "start": 76,
+        "end": 89,
+        "sha256": "74f8b779a6e6c3165866eb18e27a061c591e112caa0266f6cc1619ace7b6c5c9"
+      },
+      "actions": [
+        "Shift the word through silence, then try to cross its neighbor"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
+        "start": 122,
+        "end": 139,
+        "sha256": "765de7127a45a71932501267993c728c377418d2a0597ce0329cadac03f15bf7"
+      },
+      "why": "The native block drag keeps the cuts and other words intact. The overlap guard refuses the later drag and leaves the prior saved package unchanged."
+    },
+    {
+      "id": "b32c998ebdaaeb17",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 193,
+        "end": 209,
+        "sha256": "5f647288909fda7da66d9eb2939c7c6239186373317d4eb06b8611cf7473213d"
+      },
+      "actions": [
+        "Move the boundary word to the previous picture and back",
+        "Try to transfer a word away from the cut"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
+        "start": 54,
+        "end": 73,
+        "sha256": "6cd3d8b9313aac2ef46935a7ff69201fa60951790f0c06e1d1fc08f7e5502b0b"
+      },
+      "why": "Each accepted menu action moves the shared cut while preserving source wording, word identity and timing. The non-boundary action presents the app error and preserves the saved project."
     }
   ],
   "commentExclusions": [
@@ -98330,7 +98407,7 @@
         "end": 203,
         "sha256": "9946391786a5279e424dff4a83269fc416610d20605be6c0926912e015204e45"
       },
-      "fileSha256": "1476ef53b90a753d55051701574023df45016964d05161c4cfff26aabd577375"
+      "fileSha256": "9ce7b50b3131bf6521df14ac05a74f030868609cb91e5a06b99a0cc4f61af82c"
     },
     {
       "id": "12f96d3bd20cc0a9",
@@ -98400,7 +98477,7 @@
         "end": 567,
         "sha256": "afc35e63d44cb2dc588f844311477dacc5219d24d4e86beefeab50bb55082db8"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "158d6d2aa96d0767",
@@ -98480,7 +98557,7 @@
         "end": 975,
         "sha256": "7758267ff9cf5280f9d398a2fc4dadfd667db0bb1ac6ea64fef858b2a996b5c8"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "16c1900c3ddd220c",
@@ -98500,7 +98577,7 @@
         "end": 429,
         "sha256": "2f4e890fd72601ad06471f2bab2c9ee3be008f93c42c1af3f4fad1964ecedb70"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "1779986c0d221573",
@@ -98930,7 +99007,7 @@
         "end": 919,
         "sha256": "1cfc9c2c2a831d6f1d26ff49879391d7fd7aa8473bb25ef0282c9c7fd83932ff"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "1f96bbb7c85097a3",
@@ -99280,7 +99357,7 @@
         "end": 705,
         "sha256": "26129c1a3ce0ab6f5a0b1dd0d75239e4ee6eb607861bde3c399f7e1d08f0c5a3"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "289f01119a4fa1a6",
@@ -99386,11 +99463,11 @@
       "id": "2a2303e39670908a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 180,
-        "end": 181,
+        "start": 184,
+        "end": 185,
         "sha256": "76b186c0f75376342ae04e658c4cc8dba40fec2877eb354f77acbf13dc229bdc"
       },
-      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
+      "fileSha256": "01b89b15a19b59c63abef074ce4cb8e2d471a0f5c6cc8112b46398df893a708e"
     },
     {
       "id": "2a33f61b4064ffde",
@@ -99630,7 +99707,7 @@
         "end": 59,
         "sha256": "f531e93839cc8646698af235e4c9fd193232f0e85fec47d668073df5e6e7b8c8"
       },
-      "fileSha256": "1476ef53b90a753d55051701574023df45016964d05161c4cfff26aabd577375"
+      "fileSha256": "9ce7b50b3131bf6521df14ac05a74f030868609cb91e5a06b99a0cc4f61af82c"
     },
     {
       "id": "2e9c4d7d889ee9d1",
@@ -99650,7 +99727,7 @@
         "end": 903,
         "sha256": "c23495ef2adcd5831a87ae9a41234c620e3b9d5c52610f24a080a1cc9a1ff436"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "2ecad3e3070cf878",
@@ -99960,7 +100037,7 @@
         "end": 803,
         "sha256": "4f5ce61cdddcf4dc00f140e1dd614b4782c64010a2d7c17311055e6fde69bbe7"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "358f7a06cdc04bce",
@@ -100266,11 +100343,11 @@
       "id": "3c371da3f1b35fe7",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 79,
-        "end": 79,
+        "start": 84,
+        "end": 84,
         "sha256": "af9e0f42fdda7bd4fd4c2b38b80e3822126ac844a2caf189060b324ebb60ce58"
       },
-      "fileSha256": "085cb8121db170d1bbd73988cdfbfd1688651f7ecd1077950349bd9515397316"
+      "fileSha256": "8e560745ccd53a5aa05076fbac06760229bac1e42cfeeb2157627a03e5fa2e2d"
     },
     {
       "id": "3c78dc9bfef370e8",
@@ -100366,11 +100443,11 @@
       "id": "3ecba8f3e74e4600",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 184,
-        "end": 184,
+        "start": 188,
+        "end": 188,
         "sha256": "69ac7718ddeab94246a6b86354b0355d73e77dd63e6f371b23bd622cdef2519b"
       },
-      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
+      "fileSha256": "01b89b15a19b59c63abef074ce4cb8e2d471a0f5c6cc8112b46398df893a708e"
     },
     {
       "id": "3eef96111c1521c6",
@@ -100440,7 +100517,7 @@
         "end": 820,
         "sha256": "b814cae82e2b8bc0390b61861b562f788e819908e94c8894f0b6319c82e5f311"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "3fa3e1b193ffd69f",
@@ -101260,7 +101337,7 @@
         "end": 161,
         "sha256": "2ee57046ab48f4ca97bf710f031839feb29b2385a3ae0de63d0111b24a2a19ed"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "4fb22610ae030c7c",
@@ -101520,7 +101597,7 @@
         "end": 648,
         "sha256": "2d97e0600d661fa33ef65a5b0e7d45d4de32817b62fb62ff62426b3d9b0b1928"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "55c2b44496cddc70",
@@ -101636,11 +101713,11 @@
       "id": "58319f29415d5b7c",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 101,
-        "end": 101,
+        "start": 106,
+        "end": 106,
         "sha256": "1b17bda0191087556148337bec47d95c875c68b9896b536e113de140e69c67f4"
       },
-      "fileSha256": "085cb8121db170d1bbd73988cdfbfd1688651f7ecd1077950349bd9515397316"
+      "fileSha256": "8e560745ccd53a5aa05076fbac06760229bac1e42cfeeb2157627a03e5fa2e2d"
     },
     {
       "id": "586b4673e9247bc7",
@@ -101780,7 +101857,7 @@
         "end": 607,
         "sha256": "071b412f011c05e1fce2a04a8a1b52b5925a1df4097f4e15f57901ceb72b5215"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "5be418cbdf468540",
@@ -101940,7 +102017,7 @@
         "end": 1020,
         "sha256": "ff75034235e1e3e18922b39d9b97c26d14f65855a6ce88c76ef09c07d11f760f"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "5ecd7291d67d9961",
@@ -102850,7 +102927,7 @@
         "end": 829,
         "sha256": "ed5b29f575f4d028c141c01056a23e43a50909a5be6a046aa8f8c710056d1bf2"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "727fe525cbd185c1",
@@ -102900,7 +102977,7 @@
         "end": 970,
         "sha256": "1a449d417630c53324c266ae7130315bd44156f83a57819d60c5708ba85878d9"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "73616b5c2e02f15c",
@@ -103180,7 +103257,7 @@
         "end": 35,
         "sha256": "02ac59384015897f58ecdb11d3428b62e415e58134bc02907557bf54af2d5f86"
       },
-      "fileSha256": "1476ef53b90a753d55051701574023df45016964d05161c4cfff26aabd577375"
+      "fileSha256": "9ce7b50b3131bf6521df14ac05a74f030868609cb91e5a06b99a0cc4f61af82c"
     },
     {
       "id": "791b08de9e706a71",
@@ -103260,7 +103337,7 @@
         "end": 210,
         "sha256": "a6a4e089542e9d6d34c6af6ba2fbd1f2b7aad6bac1f7059fc270a9d64cd3258a"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "7a94ef812f57042f",
@@ -103816,11 +103893,11 @@
       "id": "87ae86b0053d5bb5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 461,
-        "end": 462,
+        "start": 465,
+        "end": 466,
         "sha256": "045a6d19c815629097cdfa761a82347d16090c89883a35fb696e9193229fe8f2"
       },
-      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
+      "fileSha256": "01b89b15a19b59c63abef074ce4cb8e2d471a0f5c6cc8112b46398df893a708e"
     },
     {
       "id": "87c8645a132861df",
@@ -104070,7 +104147,7 @@
         "end": 963,
         "sha256": "8d2e38632f205e5bf65857774dbb5a73cfa747510b7cdf602a6c76618cec774f"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "8c9a8208e6d2c704",
@@ -104090,7 +104167,7 @@
         "end": 317,
         "sha256": "32975f8107002dab8002e2c2ab137eeca8e4d631a5edf4aac54b0c9c01e1e6fd"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "8cb5dfa4701b88d4",
@@ -104500,7 +104577,7 @@
         "end": 839,
         "sha256": "028cd17cf4ba402da9f2ffe58cf6dc92566208cb94e8909022c583569090c5f7"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "95e745cb9bef76dc",
@@ -104636,11 +104713,11 @@
       "id": "97ac15b68b777d54",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 132,
-        "end": 133,
+        "start": 137,
+        "end": 138,
         "sha256": "74acdf8669f2162367b5bc4d998a32bc6e617b8053053a10c27e9999305adca0"
       },
-      "fileSha256": "085cb8121db170d1bbd73988cdfbfd1688651f7ecd1077950349bd9515397316"
+      "fileSha256": "8e560745ccd53a5aa05076fbac06760229bac1e42cfeeb2157627a03e5fa2e2d"
     },
     {
       "id": "97c3992f51e328e7",
@@ -105256,21 +105333,21 @@
       "id": "a360be545eec64b6",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 115,
-        "end": 115,
+        "start": 120,
+        "end": 120,
         "sha256": "5dc43e82a592a27b0758f2c98ef1fb8c8ee94cb84018a70dfccc877580e179f4"
       },
-      "fileSha256": "085cb8121db170d1bbd73988cdfbfd1688651f7ecd1077950349bd9515397316"
+      "fileSha256": "8e560745ccd53a5aa05076fbac06760229bac1e42cfeeb2157627a03e5fa2e2d"
     },
     {
       "id": "a37b41cd0be2820d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 496,
-        "end": 497,
+        "start": 510,
+        "end": 511,
         "sha256": "15efac8a20d335bd4b556a09856c5741e0a8c7ed66ae478b7b72742747028238"
       },
-      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
+      "fileSha256": "01b89b15a19b59c63abef074ce4cb8e2d471a0f5c6cc8112b46398df893a708e"
     },
     {
       "id": "a392694cb1b0b440",
@@ -105636,11 +105713,11 @@
       "id": "ac18d6f27d74c846",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 205,
-        "end": 207,
+        "start": 209,
+        "end": 211,
         "sha256": "195080ff9ab07975f65ec43b82f6dab2e2733c38284628a5ea6677b09c9afc00"
       },
-      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
+      "fileSha256": "01b89b15a19b59c63abef074ce4cb8e2d471a0f5c6cc8112b46398df893a708e"
     },
     {
       "id": "ac3547ac9c74b008",
@@ -106270,7 +106347,7 @@
         "end": 106,
         "sha256": "cbaa27a9e46fbae956d151df669b4925cd0b6ed00fa38f052734c4d9a07eb65d"
       },
-      "fileSha256": "1476ef53b90a753d55051701574023df45016964d05161c4cfff26aabd577375"
+      "fileSha256": "9ce7b50b3131bf6521df14ac05a74f030868609cb91e5a06b99a0cc4f61af82c"
     },
     {
       "id": "b89a7e09f61c0b53",
@@ -106330,7 +106407,7 @@
         "end": 15,
         "sha256": "b19e1325081a1e28f7b794e8613d398a26026ffe56dd2f3f19412bcec05d3de3"
       },
-      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
+      "fileSha256": "01b89b15a19b59c63abef074ce4cb8e2d471a0f5c6cc8112b46398df893a708e"
     },
     {
       "id": "b9a09feb38387cbb",
@@ -106378,9 +106455,9 @@
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIStoryboardMerge.swift",
         "start": 5,
         "end": 6,
-        "sha256": "c73c18f52c6e62d9167138a18f4b03565dd4ffa9699c8d56be591fec8d061b59"
+        "sha256": "f5dce31d0688ca490aca31b31632be5d325bb85f396b6aee521c58ea22640409"
       },
-      "fileSha256": "63f00c72121d3c296645872998250325fd8d50e21a22950cca7034b674dd1566"
+      "fileSha256": "9b22b4c23be67d9c52cfe68516ee825931f87c3031c692436505a09146621c85"
     },
     {
       "id": "bad9f10f05956b18",
@@ -106740,7 +106817,7 @@
         "end": 15,
         "sha256": "417fcef5dee8a5cc03ba818f8b1bd0e4db81a6c254332e61f7922a758d170c46"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "c29991583727685a",
@@ -107066,11 +107143,11 @@
       "id": "c8ed6c77ecfaaa3d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 476,
-        "end": 477,
+        "start": 493,
+        "end": 494,
         "sha256": "2627a07bd0800f8591a67a6ec3652124f3b8eacddabebd4a0de4ebe28539cf06"
       },
-      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
+      "fileSha256": "01b89b15a19b59c63abef074ce4cb8e2d471a0f5c6cc8112b46398df893a708e"
     },
     {
       "id": "c9371302abc328e5",
@@ -107370,7 +107447,7 @@
         "end": 339,
         "sha256": "b77a0fd5a8dfa70a7e09ac8df62c344c59d36e0c4dc7855b3a8e579e0cfac9db"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "cecaa4383928653a",
@@ -107506,11 +107583,11 @@
       "id": "d0dee9046abab7c6",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 149,
-        "end": 149,
+        "start": 154,
+        "end": 154,
         "sha256": "7dfeff6eb9ba44d6d88519271cd5f7b7c6a91b7091826c371b52c2734a1a726c"
       },
-      "fileSha256": "085cb8121db170d1bbd73988cdfbfd1688651f7ecd1077950349bd9515397316"
+      "fileSha256": "8e560745ccd53a5aa05076fbac06760229bac1e42cfeeb2157627a03e5fa2e2d"
     },
     {
       "id": "d13306861e6c6cec",
@@ -107940,7 +108017,7 @@
         "end": 923,
         "sha256": "3c43143d5111f17c593007d5180295f0b4de92b6732140156f45ad133f09e135"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "dbb136af6da7e865",
@@ -107956,11 +108033,11 @@
       "id": "dbd2c186c11f546b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
-        "start": 163,
-        "end": 163,
+        "start": 167,
+        "end": 167,
         "sha256": "06c89a731397bf068c9b05b910462b3156875d1b7592a407142ec79935c816f4"
       },
-      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
+      "fileSha256": "01b89b15a19b59c63abef074ce4cb8e2d471a0f5c6cc8112b46398df893a708e"
     },
     {
       "id": "dc02563994337c3c",
@@ -108030,7 +108107,7 @@
         "end": 19,
         "sha256": "43d592d63ec1f2c8e108ad1dc5685c0de81d5b8693ed50f933c5b39b3fe9952b"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "dcdb34327d09bd7e",
@@ -108340,7 +108417,7 @@
         "end": 697,
         "sha256": "83ebf925cf6288c9bc988e4db735e508efeac4da9cbc8232fc1597567d079149"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "e2a124d0e7504dc7",
@@ -108350,7 +108427,7 @@
         "end": 49,
         "sha256": "42d4c6751f7f7385307f67c96122d5f0411035e0e50dba6f4c2c61337819a191"
       },
-      "fileSha256": "22bb6739d9977d2c83ff772965fe218ce096955f6fa11f4865ed10a75d08514d"
+      "fileSha256": "01b89b15a19b59c63abef074ce4cb8e2d471a0f5c6cc8112b46398df893a708e"
     },
     {
       "id": "e2b12499c62395ef",
@@ -108370,7 +108447,7 @@
         "end": 622,
         "sha256": "6dc62486f9385265a3aec6a50f8071a9c526238a3138cadf270059b9707faba0"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "e396823008cfe916",
@@ -108410,7 +108487,7 @@
         "end": 173,
         "sha256": "a1411add687c3cf0b6f0bb8be65d4e5633e112c08fbcf26006519b9de7111fc9"
       },
-      "fileSha256": "1476ef53b90a753d55051701574023df45016964d05161c4cfff26aabd577375"
+      "fileSha256": "9ce7b50b3131bf6521df14ac05a74f030868609cb91e5a06b99a0cc4f61af82c"
     },
     {
       "id": "e4d1fd47ffa9bce6",
@@ -108740,7 +108817,7 @@
         "end": 1013,
         "sha256": "8d2e38632f205e5bf65857774dbb5a73cfa747510b7cdf602a6c76618cec774f"
       },
-      "fileSha256": "333684bc3182ae25d90a15010ba2b87ac7a4291844ac7b65a928140a9ac380d2"
+      "fileSha256": "87a84beffd442e7fe8b2804d677595e8234aa9acbd6cda755bbd519f84c0a7e2"
     },
     {
       "id": "eb6babcde670379e",
@@ -109226,11 +109303,11 @@
       "id": "f3e3d2bfde9c4ab4",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 14,
-        "end": 15,
+        "start": 15,
+        "end": 16,
         "sha256": "690226a1b0853d3a163445a5632c8d87581c29b124aa6358cea1f042a88a7f1e"
       },
-      "fileSha256": "085cb8121db170d1bbd73988cdfbfd1688651f7ecd1077950349bd9515397316"
+      "fileSha256": "8e560745ccd53a5aa05076fbac06760229bac1e42cfeeb2157627a03e5fa2e2d"
     },
     {
       "id": "f40038939032b029",

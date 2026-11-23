@@ -118,7 +118,7 @@ import ScrivCore
             let next = store.sceneCues[index + 1]
             guard TimingEngine.canMoveBoundary(store.project, leftCueId: cue.id, rightCueId: next.id), store.lockedByOther(cue.id) == nil, store.lockedByOther(next.id) == nil else { continue }
             let lane = imageRows.first { $0.cue.id == cue.id }?.lane ?? 0
-            addDragHandle(frame: CGRect(x: 65 + CGFloat(cue.endMs) * scale, y: 29 + CGFloat(lane) * 60, width: 12, height: 20), label: "Move cut after " + cue.label, pictureCut: true) { [weak self] delta, context in
+            addDragHandle(frame: CGRect(x: 65 + CGFloat(cue.endMs) * scale, y: 29 + CGFloat(lane) * 60, width: 12, height: 20), label: "Move cut after " + cue.label, allowTimingSamples: true) { [weak self] delta, context in
                 guard let self, self.store.navigationContext == context, self.store.project.cues.first(where: { $0.id == cue.id }) == cue, self.store.project.cues.first(where: { $0.id == next.id }) == next else { return }
                 self.store.moveBoundary(leftId: cue.id, rightId: next.id, toMs: self.snapped(cue.endMs + Int(delta / self.scale)))
             }
@@ -136,12 +136,12 @@ import ScrivCore
                 let wordFrame = CGRect(x: 70 + CGFloat(start + word.startMs) * scale, y: wordY, width: max(4, CGFloat(word.endMs - word.startMs) * scale - 1), height: wordHeight)
                 let wordBlock = textBlock(word.text, color: color, frame: wordFrame, script: true) { [weak self] in guard let self else { return }; self.store.selectedWordIDs = [word.id]; self.store.seek(toMs: Double(start + word.startMs)) }
                 ScrivSecondaryMenu.set(UIMenu(children: [ImageUI.guardedAction("Edit word timing…", store: store, context: navigation) { [weak self] in self?.show(.wordTiming(entryID: entry.id, wordIDs: [word.id])) }]), on: wordBlock)
-                addPan(to: wordBlock) { [weak self] delta, context in
+                addPan(to: wordBlock, allowTimingSamples: true) { [weak self] delta, context in
                     guard let self, self.store.navigationContext == context, self.store.project.entries.first(where: { $0.id == entry.id })?.words == entry.words else { return }
                     _ = self.store.shiftWords(wordIds: [word.id], byMs: Int(delta / self.scale))
                 }
                 for end in [false, true] {
-                    addDragHandle(frame: CGRect(x: (end ? wordFrame.maxX : wordFrame.minX) - 4, y: wordY + 3, width: 8, height: wordHeight - 6), label: "Retime \(word.text) \(end ? "end" : "start")") { [weak self] delta, context in
+                    addDragHandle(frame: CGRect(x: (end ? wordFrame.maxX : wordFrame.minX) - 4, y: wordY + 3, width: 8, height: wordHeight - 6), label: "Retime \(word.text) \(end ? "end" : "start")", allowTimingSamples: true) { [weak self] delta, context in
                         guard let self, self.store.navigationContext == context, self.store.project.entries.first(where: { $0.id == entry.id })?.words == entry.words else { return }
                         let offset = Int(delta / self.scale); _ = self.store.setWordTiming(wordId: word.id, startMs: word.startMs + (end ? 0 : offset), endMs: word.endMs + (end ? offset : 0))
                     }
@@ -204,11 +204,11 @@ import ScrivCore
         if text.contains(where: { $0.isWhitespace }) { block.titleLabel?.numberOfLines = 3 } else { block.titleLabel?.numberOfLines = 1; block.titleLabel?.lineBreakMode = .byClipping }
         block.addAction(ImageUI.guardedAction(text, store: store, context: store.navigationContext, handler: action), for: .touchUpInside); block.accessibilityLabel = text; canvas.addSubview(block); return block
     }
-    private func addDragHandle(frame: CGRect, label: String, pictureCut: Bool = false, action: @escaping (CGFloat, Int) -> Void) {
-        let handle = UIView(frame: frame); handle.backgroundColor = ImageUI.accent.withAlphaComponent(0.6); handle.layer.cornerRadius = 3; handle.accessibilityLabel = label; canvas.addSubview(handle); addPan(to: handle, pictureCut: pictureCut, action: action)
+    private func addDragHandle(frame: CGRect, label: String, allowTimingSamples: Bool, action: @escaping (CGFloat, Int) -> Void) {
+        let handle = UIView(frame: frame); handle.backgroundColor = ImageUI.accent.withAlphaComponent(0.6); handle.layer.cornerRadius = 3; handle.accessibilityLabel = label; canvas.addSubview(handle); addPan(to: handle, allowTimingSamples: allowTimingSamples, action: action)
     }
-    private func addPan(to view: UIView, pictureCut: Bool = false, action: @escaping (CGFloat, Int) -> Void) {
-        let driver = ImageTimelineDragDriver(view: view, pictureCut: pictureCut, begin: { [weak self] in guard let self else { return 0 }; self.dragInProgress = true; if self.store.isPlaying { self.store.togglePlayback() }; return self.store.navigationContext }, finish: { [weak self] delta, context, committed in
+    private func addPan(to view: UIView, allowTimingSamples: Bool = false, action: @escaping (CGFloat, Int) -> Void) {
+        let driver = ImageTimelineDragDriver(view: view, allowTimingSamples: allowTimingSamples, begin: { [weak self] in guard let self else { return 0 }; self.dragInProgress = true; if self.store.isPlaying { self.store.togglePlayback() }; return self.store.navigationContext }, finish: { [weak self] delta, context, committed in
             guard let self else { return }; self.dragInProgress = false; if committed { action(delta, context) }; self.signature = []; self.storeDidChange()
         })
         dragDrivers.append(driver)
@@ -229,11 +229,11 @@ import ScrivCore
     private let finish: (CGFloat, Int, Bool) -> Void
     private var context: Int?
     private var recognizer: UIPanGestureRecognizer!
-    init(view: UIView, pictureCut: Bool, begin: @escaping () -> Int, finish: @escaping (CGFloat, Int, Bool) -> Void) {
+    init(view: UIView, allowTimingSamples: Bool, begin: @escaping () -> Int, finish: @escaping (CGFloat, Int, Bool) -> Void) {
         self.view = view; self.begin = begin; self.finish = finish; super.init()
         recognizer = UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))
 #if SCRIV_CLI_AUTOMATION
-        if pictureCut { recognizer.delegate = self }
+        if allowTimingSamples { recognizer.delegate = self }
 #endif
         view.addGestureRecognizer(recognizer)
     }

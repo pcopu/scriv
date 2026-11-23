@@ -380,7 +380,7 @@ final class ScrivCLI {
                     "syntheticFixtureCommands": ["stage-package-fixture"],
                     "publicDelegateCommands": ["return", "script-insert", "script-delete-selection"],
                     "publicTextInputCommands": ["delete-backward"],
-                    "semanticMenuActionScopes": ["script-zoom", "layers-direction-duration", "audio-anchor", "layers-word-timing", "image-inspector-prompt-disclosure", "script-scenes", "script-entries", "storyboard-merge", "storyboard-picture-source", "picture-source-entry", "storyboard-remove-placement", "character-portrait-options", "character-delete", "workspace-discussion", "workspace-panels"],
+                    "semanticMenuActionScopes": ["script-zoom", "layers-direction-duration", "audio-anchor", "layers-word-timing", "image-inspector-prompt-disclosure", "script-scenes", "script-entries"] + ScrivCLIStoryboardMerge.scopes + ["character-portrait-options", "character-delete", "workspace-discussion", "workspace-panels"],
                     "runID": run.runID.uuidString.lowercased(),
                     "sessionID": run.sessionID.uuidString.lowercased(),
                     "workspace": workspace,

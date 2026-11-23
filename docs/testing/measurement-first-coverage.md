@@ -377,6 +377,18 @@ switch. The journey verifies that preview and cancellation leave saves
 untouched and that release updates the two adjacent pictures together. It
 also checks the app's error when release would empty either picture.
 
+Use `--scenario journeys/picture-coverage --group storyboard-word-moves` for
+Storyboard's word menu. On the visible word, send `menu-action` with scope
+`storyboard-word-move`, the word's ID as `wordID`, and its enabled `Move to
+previous image` or `Move to next image` action. The journey checks both
+directions and the validation error for a word away from the cut.
+
+Use `--scenario journeys/picture-coverage --group layers-word-drags` for
+the Layers word block and its start and end handles. Send horizontal samples
+through `picture-timing-gesture`. The journey checks that cancellation leaves
+the save untouched, releases preserve the word ID and author the new timing,
+and an overlapping move shows the existing validation error.
+
 Use `--scenario journeys/native-cloud-project-sync --group lease-renewal` to
 exercise the linked script editor. Keep the editor open through its scheduled
 renewal and verify the Worker accepts autosave under that lease. The owned

@@ -5,6 +5,7 @@ import { followListing, runFollowJourney } from './support/picture-follow-steps.
 import { placementCases, runPlacementJourney } from './support/picture-placement-steps.mjs';
 import { timingGestureListing, runPictureTimingGestureJourney } from './support/picture-timing-gestures.mjs';
 import { sharedCutListing, runSharedCutJourney } from './support/picture-shared-cut.mjs';
+import { wordMoveListing, wordDragListing, runStoryboardWordMoves, runLayersWordDrags } from './support/picture-word-actions.mjs';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { fixture, content, expectedContent, validCases, invalidSeconds, foregroundCases,
@@ -14,7 +15,7 @@ import { coverageSteps, ready, sorted } from './support/picture-coverage-steps.m
 // AUT-J09 runs numeric coverage, placement, follow, merge and timing gestures.
 // Each portion uses a fresh isolated UIKit session.
 const args = process.argv.slice(2);
-const groups = ['numeric', 'placements', 'follow', 'merge', 'merge-refusals', 'timing-gestures', 'shared-cuts'];
+const groups = ['numeric', 'placements', 'follow', 'merge', 'merge-refusals', 'timing-gestures', 'shared-cuts', 'storyboard-word-moves', 'layers-word-drags'];
 assert.ok(args.every((arg, index) => arg === '--list-cases' || arg === '--group'
   || args[index - 1] === '--group' && groups.includes(arg)), 'Unknown argument');
 assert.ok(args.filter(arg => arg === '--group').length <= 1, 'Choose one group');
@@ -38,7 +39,7 @@ const numericListing = { journey: 'AUT-J09', portion: 'numeric-picture-coverage'
     excluded: ['drag/scrub', 'physical input', 'picker', 'scene-growth restoration', 'pixels', 'restart recovery'],
   };
 if (args.includes('--list-cases')) {
-  const portions = [numericListing, placementListing, followListing, mergeListing, mergeRefusalListing, timingGestureListing, sharedCutListing];
+  const portions = [numericListing, placementListing, followListing, mergeListing, mergeRefusalListing, timingGestureListing, sharedCutListing, wordMoveListing, wordDragListing];
   const listing = args.includes('--group') ? portions[groups.indexOf(group)]
     : { journey: 'AUT-J09', groups, freshSessionPerGroup: true, nativeCompositionVerified: false,
       defaultGroups: groups, portions };
@@ -47,6 +48,10 @@ if (args.includes('--list-cases')) {
   await runPictureTimingGestureJourney();
 } else if (group === 'shared-cuts') {
   await runSharedCutJourney();
+} else if (group === 'storyboard-word-moves') {
+  await runStoryboardWordMoves();
+} else if (group === 'layers-word-drags') {
+  await runLayersWordDrags();
 } else if (group === 'merge-refusals') {
   await runMergeRefusalJourney();
 } else if (group === 'merge') {
@@ -154,5 +159,7 @@ if (args.includes('--list-cases')) {
     await runMergeRefusalJourney();
     await runPictureTimingGestureJourney();
     await runSharedCutJourney();
+    await runStoryboardWordMoves();
+    await runLayersWordDrags();
   }
 }

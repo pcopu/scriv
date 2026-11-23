@@ -2,19 +2,23 @@
 import UIKit
 import ScrivCore
 
-/// Narrow semantic dispatch of the original mounted ellipsis menu UIAction.
+/// Narrow semantic dispatch of the original mounted Storyboard UIActions.
 /// No menu rebuilding, provider evaluation, handler relay or model operation.
 @MainActor
 enum ScrivCLIStoryboardMerge {
+    private static let wordMoveScope = "storyboard-word-move"
+    static let scopes = ["storyboard-merge", "storyboard-picture-source", "picture-source-entry", "storyboard-remove-placement", wordMoveScope]
+
     private struct Failure: LocalizedError {
         var errorDescription: String? { "Storyboard merge is outside the supported isolated scope" }
     }
     static func canHandle(_ request: [String: Any]) -> Bool {
         guard let scope = request["scope"] as? String else { return false }
-        return ["storyboard-merge", "storyboard-picture-source", "picture-source-entry", "storyboard-remove-placement"].contains(scope)
+        return scopes.contains(scope)
     }
     static func dispatch(view: UIView, window: UIWindow, request: [String: Any]) throws -> [String: Any] {
         guard let scope = request["scope"] as? String else { throw Failure() }
+        if scope == wordMoveScope { return try dispatchWordMove(view: view, window: window, request: request) }
         let removing = scope == "storyboard-remove-placement"
         let keys: Set<String> = ["id", "command", "target", "action", "scope"]
         guard Set(request.keys) == (removing ? keys.union(["cueID"]) : keys),
@@ -101,6 +105,31 @@ enum ScrivCLIStoryboardMerge {
               zip(originalActions, currentActions).allSatisfy({ $0 === $1 }),
               let action = originalActions.first(where: { $0.title == title })
         else { throw Failure() }
+        button.sendAction(action)
+        return ["dispatched": true, "coverage": "semantic-menu-action"]
+    }
+
+    private static func dispatchWordMove(view: UIView, window: UIWindow, request: [String: Any]) throws -> [String: Any] {
+        let run = try ScrivCLIRunCapability.requirePrepared()
+        guard Set(request.keys) == ["id", "command", "target", "action", "scope", "wordID"],
+              request["command"] as? String == "menu-action", request["target"] is String,
+              let title = request["action"] as? String, let wordID = request["wordID"] as? String,
+              run.approvedOrigin == nil, let workspace = window.rootViewController as? ScrivWorkspaceController,
+              workspace.presentedViewController == nil, workspace.transitionCoordinator == nil,
+              !workspace.isBeingPresented, !workspace.isBeingDismissed,
+              let button = view as? UIButton, button.window === window, button.isEnabled,
+              button.menu == nil, !button.showsMenuAsPrimaryAction,
+              let storyboard = workspace.children.compactMap({ $0 as? StoryboardViewController }).first,
+              storyboard.parent === workspace, storyboard.store === workspace.store else { throw Failure() }
+        let store = workspace.store
+        guard store.tab == .storyboard, !store.showDiscussion,
+              store.account == nil, store.cloud.account == nil,
+              store.project.cloudProjectId == nil, store.cloud.projectId == nil,
+              store.errorMessage == nil, !store.isPlaying, !store.isBootstrapping, !store.isSyncing, !store.hasConflicts,
+              let action = storyboard.cliWordMoveAction(for: button, wordID: wordID, title: title) else { throw Failure() }
+        _ = try ScrivCLILoadedProject.observe(workspace: workspace)
+        try run.validate()
+        guard storyboard.cliWordMoveAction(for: button, wordID: wordID, title: title) === action else { throw Failure() }
         button.sendAction(action)
         return ["dispatched": true, "coverage": "semantic-menu-action"]
     }
