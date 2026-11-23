@@ -119,6 +119,7 @@ final class ScrivUIKitApplication: UIApplication {
 #if SCRIV_CLI_AUTOMATION
     private(set) var cliMenuKeyCommands: [UIKeyCommand] = []
     private var cliUpdateCheckMenuCommand: UICommand?
+    private weak var cliUpdatePresenter: UIViewController?
 #endif
     private var pressGate = ScrivKeyboardPressGate()
     private let toggleEditingSelector = NSSelectorFromString("scrivToggleScriptEditing:")
@@ -181,7 +182,7 @@ final class ScrivUIKitApplication: UIApplication {
         builder.insertSibling(UIMenu(title: "", identifier: .preferences, options: .displayInline, children: [settings]), afterMenu: .about)
     }
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(checkForUpdates(_:)) { return UIKitPresentation.presenter != nil }
+        if action == #selector(checkForUpdates(_:)) { return updatePresenter != nil }
         if action == #selector(showSettings(_:)) { return ScrivSettingsWindowCoordinator.shared.canShow }
         if action == #selector(findScriptFromKeyboard(_:)) {
             let context = ScrivKeyboardTextContext.state(for: keyboardResponder)
@@ -209,8 +210,14 @@ final class ScrivUIKitApplication: UIApplication {
         }
         return super.sendAction(action, to: target, from: sender, for: event)
     }
+    private var updatePresenter: UIViewController? {
+#if SCRIV_CLI_AUTOMATION
+        if let cliUpdatePresenter { return cliUpdatePresenter }
+#endif
+        return UIKitPresentation.presenter
+    }
     @objc private func checkForUpdates(_ command: UICommand) {
-        guard let presenter = UIKitPresentation.presenter else { return }
+        guard let presenter = updatePresenter else { return }
         ScrivUpdateCoordinator.shared.show(from: presenter)
     }
     @objc private func showSettings(_ command: UICommand) {
@@ -262,12 +269,16 @@ final class ScrivUIKitApplication: UIApplication {
     }
 #if SCRIV_CLI_AUTOMATION
     func performCLIUpdateCheck(in workspace: ScrivWorkspaceController) -> Bool {
-        // Keep an isolated CLI check on the real signing-blocked path.
+        // The owned scene can be visible before Catalyst gives it key status.
+        let presenter = workspace.presentedViewController ?? workspace
         guard !ScrivUpdateCoordinator.releaseSigningConfigured,
-              let command = cliUpdateCheckMenuCommand,
-              let presenter = UIKitPresentation.presenter,
-              presenter === workspace || (presenter is ScrivUpdateController && workspace.presentedViewController === presenter)
+              cliUpdatePresenter == nil, let command = cliUpdateCheckMenuCommand,
+              workspace.viewIfLoaded?.window != nil, presenter.viewIfLoaded?.window != nil,
+              presenter === workspace || presenter is ScrivUpdateController,
+              presenter.presentedViewController == nil, !presenter.isBeingDismissed
         else { return false }
+        cliUpdatePresenter = presenter
+        defer { cliUpdatePresenter = nil }
         return sendAction(command.action, to: nil, from: command, for: nil)
     }
 
