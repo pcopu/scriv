@@ -23,8 +23,10 @@ const activeRequests = new Map([
 
 // Model the app-server protocol at its socket boundary. No backend, account,
 // tools, credentials, arbitrary file names, or real model are available here.
-export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = false } = {}) {
+export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = false, manualAccountCheck = false } = {}) {
   const handshake = ['initialize', 'initialized', 'account/read', 'model/list'];
+  const manualAccountMethods = manualAccountCheck ? ['account/login/start', 'account/read', 'model/list', 'account/read'] : [];
+  if (manualAccountCheck) assert.ok(!accountRefresh && outcomes.length === 0, 'Manual account checks own the entire fixture');
   const accountUpdates = accountRefresh ? [
     { result: { account: { type: 'chatgpt', email: 'synthetic-account@example.invalid' }, requiresOpenaiAuth: true } },
     { result: { account: { type: '' }, requiresOpenaiAuth: true } },
@@ -32,7 +34,7 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
     { result: { account: null, requiresOpenaiAuth: true } },
     { result: { account: null, requiresOpenaiAuth: false } },
   ] : [];
-  const expected = [...handshake, ...accountUpdates.map(() => 'account/read'), ...outcomes.flatMap(outcome => {
+  const expected = [...handshake, ...manualAccountMethods, ...accountUpdates.map(() => 'account/read'), ...outcomes.flatMap(outcome => {
     const turn = ['thread/start', 'turn/start'];
     if (outcome === 'cancel') return [...turn, 'turn/interrupt', 'transport-drop', ...handshake, 'model/list', 'thread/read', 'thread/read', 'thread/read'];
     if (outcome === 'recover' || outcome === 'missing-artifact') return [...turn, 'turn/interrupt', 'thread/read'];
@@ -64,6 +66,10 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
       return [reply({ userAgent: 'Scriv local fixture' })];
     case 'account/read': {
       assert.equal(params.refreshToken, false);
+      if (manualAccountCheck) {
+        if (position === expected.length) return [{ id, error: { code: -32000, message: 'Synthetic account refresh failed' } }];
+        return [reply({ account: null, requiresOpenaiAuth: true })];
+      }
       const update = accountUpdates[position - handshake.length - 1];
       if (update) {
         assert.equal(accountUpdateAnnounced, true, 'A refresh must follow the owned account update notice');
@@ -72,6 +78,9 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
       }
       return [reply({ account: null, requiresOpenaiAuth: false })];
     }
+    case 'account/login/start':
+      assert.deepEqual(params, { type: 'chatgpt' });
+      return [reply({ loginId: 'synthetic-rejected-login', authUrl: 'http://127.0.0.1/fixture-login' })];
     case 'model/list': {
       assert.equal(params.includeHidden, false);
       const defaultModel = { id: model, model, isDefault: true, inputModalities: ['text', 'image'] };

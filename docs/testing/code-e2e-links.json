@@ -96678,6 +96678,152 @@
         "sha256": "3e1b69a0a11d2bf0ae695c173ff0087800e3beac3a75afa03aefc453a5be95a0"
       },
       "why": "The real app rejects wrong Team and member identities, preserves Worker state, and invokes the stored role action on the correct visible owner."
+    },
+    {
+      "id": "01c42cb972d6d2cd",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 283,
+        "end": 285,
+        "sha256": "0cda7f0826dd9e22f2aa06133e56f206ad1f0c2c2ed00695bd97e3f36179bcc7"
+      },
+      "actions": [
+        "scriv activate Refresh account after one successful refresh",
+        "scriv snapshot the disconnected retry state"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 51,
+        "end": 56,
+        "sha256": "8b9099778714dd8b575d1d071eb7758426d05a9e40f6b59b1bb4296a85d7c5e6"
+      },
+      "why": "A later account read fails. The native Settings pane shows the provider failure and exposes the retry control after the connection is cleared."
+    },
+    {
+      "id": "311c015f7fb68455",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 422,
+        "end": 424,
+        "sha256": "c2d4c83dad54e137eaa0766be9d6873886293b400728783e378d8367ca18d97d"
+      },
+      "actions": [
+        "scriv activate Sign in with ChatGPT",
+        "scriv snapshot the provider error and sign-in controls"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 43,
+        "end": 45,
+        "sha256": "8b4cfe2cbb660be24ff92d99c22bd718f281cf9b2c6719fff02a71a28afa1ec9"
+      },
+      "why": "The owned provider returns a login identifier and a non-HTTPS URL. The native Settings pane shows the rejection and allows a new sign-in attempt."
+    },
+    {
+      "id": "9bb721c8a1db342e",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivCodexSetupView.swift",
+        "start": 160,
+        "end": 165,
+        "sha256": "38302cfba0fe646d8861cda3ed8b234aab250af3f35b8e68f9050e50c4783b8f"
+      },
+      "actions": [
+        "scriv activate Sign in with ChatGPT",
+        "scriv snapshot the provider error and sign-in controls",
+        "scriv activate Refresh account",
+        "scriv snapshot the connected account-required state",
+        "scriv activate Refresh account after one successful refresh",
+        "scriv snapshot the disconnected retry state"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 43,
+        "end": 56,
+        "sha256": "e883b298d5ea389c90f58f4c4ef30ca292a709088dea653d8b1bf6e6ca5d7af2"
+      },
+      "why": "The journey invokes the native sign-in and refresh controls and observes each resulting account status."
+    },
+    {
+      "id": "a539e7c8c4850727",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 404,
+        "end": 407,
+        "sha256": "b2fbc715e256df69192df1f83eb20121c5a14ca6aae97ec4e009f248767165f7"
+      },
+      "actions": [
+        "scriv activate Sign in with ChatGPT",
+        "scriv snapshot the provider error and sign-in controls"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 43,
+        "end": 45,
+        "sha256": "8b4cfe2cbb660be24ff92d99c22bd718f281cf9b2c6719fff02a71a28afa1ec9"
+      },
+      "why": "The owned provider returns a login identifier and a non-HTTPS URL. The native Settings pane shows the rejection and allows a new sign-in attempt."
+    },
+    {
+      "id": "a84add59fa03e897",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/CodexConnectionCheck.swift",
+        "start": 10,
+        "end": 18,
+        "sha256": "1a2946bf1e3c4ededefebd64a6f7d7658bc6e301b9a456f362a31ca68340e5fe"
+      },
+      "actions": [
+        "scriv activate Refresh account",
+        "scriv snapshot the connected account-required state",
+        "scriv activate Refresh account after one successful refresh",
+        "scriv snapshot the disconnected retry state"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 47,
+        "end": 56,
+        "sha256": "2be9e98ea4abaae9daa4ddca87beaaf9990e4db2ddd9ca3ffd96b8a01debf9b9"
+      },
+      "why": "Two consecutive real checks complete with different visible readiness states after the provider replies."
+    },
+    {
+      "id": "c0559e04b81106e5",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 275,
+        "end": 277,
+        "sha256": "9f865c262d4910c5b1736095d4d92e109f36288f7e85de485b9e83f544a50733"
+      },
+      "actions": [
+        "scriv activate Refresh account",
+        "scriv snapshot the connected account-required state"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 47,
+        "end": 49,
+        "sha256": "4d012dcc3eef15941f5e1415f44451a1ba6d9aefde38896235871876969e9287"
+      },
+      "why": "The explicit refresh sends one account read and a model list request and settles in the connected sign-in-required state."
+    },
+    {
+      "id": "f251e9495a0aed85",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 247,
+        "end": 248,
+        "sha256": "6d917310d131b83d8df3e82317734a7048000b81a790e2e5543e526e098b2123"
+      },
+      "actions": [
+        "scriv activate Refresh account",
+        "scriv snapshot the connected account-required state"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 47,
+        "end": 49,
+        "sha256": "4d012dcc3eef15941f5e1415f44451a1ba6d9aefde38896235871876969e9287"
+      },
+      "why": "The explicit refresh sends one account read and a model list request and settles in the connected sign-in-required state."
     }
   ],
   "commentExclusions": [
