@@ -51,6 +51,8 @@ export async function observeSession(session, executable, capabilities) {
   const owner = await privateDirectory(directory);
   if (directory === root || directory.startsWith(root + '/') || context.version !== 1 || !uuid(context.invocationID)
       || !/^tests\/e2e\/(?:journeys\/)?[A-Za-z0-9_-]+\.mjs$/.test(context.scenario)
+      || (context.group !== undefined && (typeof context.group !== 'string' || !/^[a-z0-9][a-z0-9-]{0,79}$/.test(context.group)
+        || process.argv.length !== 4 || process.argv[2] !== '--group' || process.argv[3] !== context.group))
       || !hex(context.executableSHA256) || !hex(context.sourceManifestSHA256) || !hex(context.buildRecordSHA256)
       || !hex(context.journeySourceManifestSHA256) || context.sourceProvenance?.sourceManifestSHA256 !== context.sourceManifestSHA256
       || context.sourceProvenance?.journeySourceManifestSHA256 !== context.journeySourceManifestSHA256
@@ -85,6 +87,7 @@ export async function observeSession(session, executable, capabilities) {
   const commands = [];
   const record = { version: 1, kind: 'scriv-session-coverage', status: 'capturing', invocationID: context.invocationID,
     scenario: context.scenario, runID: sessionID, workspaceID: capabilities.runID, slot, startedAt: new Date().toISOString(), endedAt: null,
+    ...(context.group && { group: context.group }),
     executableSHA256: context.executableSHA256, executableUnchanged: false, sourceManifestSHA256: context.sourceManifestSHA256,
     journeySourceManifestSHA256: context.journeySourceManifestSHA256, sourceProvenance: context.sourceProvenance,
     buildRecordSHA256: context.buildRecordSHA256, probeSHA256: context.probeSHA256, counterMode: 'cumulative', counterReset: false,

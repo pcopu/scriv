@@ -107,6 +107,29 @@ export async function main() {
     assert.equal(selected.selection.selectedScenarioCount, 2);
     assert.equal(selected.selection.availableScenarioCount, catalog.scenarios.length);
   });
+  await journey('discover and select one supported native journey group', async () => {
+    const prefix = ['app', '--', 'test'];
+    const scenario = 'journeys/script-authoring-source', group = 'retime-edited-words';
+    const selected = JSON.parse(run([...prefix, '--list', '--scenario', scenario]).stdout);
+    assert.deepEqual(selected.scenarios[0].groups, ['write-exact-source', 'return-boundary',
+      'whitespace-word-preservation', 'exact-split', group]);
+    for (const args of [
+      ['--group', group], ['--scenario', scenario, '--group', 'unknown'],
+      ['--scenario', scenario, '--group', '../outside'],
+      ['--scenario', 'workspace', '--group', group],
+      ['--scenario', scenario, '--scenario', 'workspace', '--group', group],
+      ['--list', '--scenario', scenario, '--group', group],
+    ]) assert.equal(run([...prefix, ...args], 2).stdout, '');
+    const groupOutput = await realpath(await mkdtemp(join(tmpdir(), 'scriv-tracer-group-')));
+    const notRun = run([...prefix, '--scenario', scenario, '--group', group, '--output-dir', groupOutput], 2);
+    const path = notRun.stdout.match(/; evidence: (.+)\n$/)?.[1];
+    assert.ok(path);
+    const receipt = JSON.parse(await readFile(path, 'utf8'));
+    assert.equal(receipt.selection.group, group);
+    assert.equal(receipt.scenarios[0].group, group);
+    assert.equal(receipt.status, 'not-run');
+    assert.equal(receipt.fullSuitePassed, false);
+  });
   await journey('reject unsafe, unknown and ambiguous arguments before evidence creation', async () => {
     const id = catalog.scenarios[0].id;
     const traversal = run(['app', '--', 'test', '--scenario', '../outside'], 2);

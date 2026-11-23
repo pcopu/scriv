@@ -72,8 +72,8 @@ function signalGroup(pid, signal) {
   return true;
 }
 const delay = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
-export async function runScenario(script, { app, timeoutMs, cwd = repo, coverageContext, startupCoverage }) {
-  const result = { scenario: relative(repo, script), status: 'failed', startedAt: now(), endedAt: null, exitCode: null, signal: null, reason: null, cleanup: 'not-started' };
+export async function runScenario(script, { app, timeoutMs, cwd = repo, coverageContext, startupCoverage, group }) {
+  const result = { scenario: relative(repo, script), ...(group && { group }), status: 'failed', startedAt: now(), endedAt: null, exitCode: null, signal: null, reason: null, cleanup: 'not-started' };
   // A dedicated group contains the Node scenario and its directly spawned Scriv app.
   // Never kill by executable name or bundle ID, which could target the user's app.
   const env = { ...process.env, SCRIV_E2E_APP: app };
@@ -81,7 +81,8 @@ export async function runScenario(script, { app, timeoutMs, cwd = repo, coverage
   delete env.SCRIV_E2E_COVERAGE_STARTUP;
   if (coverageContext) env.SCRIV_E2E_COVERAGE_CONTEXT = coverageContext;
   if (coverageContext && startupCoverage) env.SCRIV_E2E_COVERAGE_STARTUP = '1';
-  const child = spawn(process.execPath, [script], { cwd, detached: true, env, stdio: 'ignore' });
+  const scriptArgs = group ? [script, '--group', group] : [script];
+  const child = spawn(process.execPath, scriptArgs, { cwd, detached: true, env, stdio: 'ignore' });
   let timer;
   let interrupted = null;
   const abort = signal => { interrupted = signal; if (child.pid) signalGroup(child.pid, 'SIGTERM'); };
@@ -123,12 +124,30 @@ async function discoverScenarios() {
   return [...await entrypoints(''), ...await entrypoints('journeys')].sort();
 }
 
+// These entrypoints implement the shared, launch-free Script group catalog.
+const groupedScenarios = new Set([
+  'journeys/script-authoring-source.mjs', 'journeys/script-authoring-boundaries.mjs',
+  'journeys/script-authoring-search.mjs', 'journeys/script-structure.mjs', 'journeys/text-identity-review.mjs',
+]);
+const validGroup = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(value);
+function discoverGroups(name) {
+  const env = { ...process.env };
+  delete env.SCRIV_E2E_APP;
+  delete env.SCRIV_E2E_COVERAGE_CONTEXT;
+  const output = execFileSync(process.execPath, [join(repo, 'tests/e2e', name), '--list-cases'],
+    { cwd: repo, env, encoding: 'utf8', timeout: 5000, maxBuffer: 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
+  const { groups } = JSON.parse(output);
+  if (!Array.isArray(groups) || !groups.length || !groups.every(validGroup)
+      || new Set(groups).size !== groups.length) throw new Error('invalid-scenario-group-catalog');
+  return groups;
+}
+
 export async function main(args = process.argv.slice(2)) {
   const sourceOptions = {}; const requested = []; const seen = new Set();
   const coverageOptions = {};
   let outputParent = tmpdir(); let timeoutMs = 120000; let app = process.env.SCRIV_E2E_APP;
-  let list = false; let help = false; let coverage = false;
-  const valued = new Set(['--app', '--source-manifest', '--source-manifest-sha256', '--output-dir', '--timeout-ms', '--scenario', '--coverage-build-record', '--coverage-build-source-root', '--coverage-build-source-manifest', '--coverage-build-source-manifest-sha256', '--llvm-profdata', '--llvm-cov', '--tracer', '--coverage-max-sessions']);
+  let list = false; let help = false; let coverage = false; let group;
+  const valued = new Set(['--app', '--source-manifest', '--source-manifest-sha256', '--output-dir', '--timeout-ms', '--scenario', '--group', '--coverage-build-record', '--coverage-build-source-root', '--coverage-build-source-manifest', '--coverage-build-source-manifest-sha256', '--llvm-profdata', '--llvm-cov', '--tracer', '--coverage-max-sessions']);
   for (let i = 0; i < args.length; i++) {
     const flag = args[i];
     if (seen.has(flag) && flag !== '--scenario') throw new Error('duplicate-option');
@@ -162,6 +181,10 @@ export async function main(args = process.argv.slice(2)) {
       if (requested.includes(value)) throw new Error('duplicate-scenario');
       requested.push(value);
     }
+    else if (flag === '--group') {
+      if (!validGroup(value)) throw new Error('invalid-scenario-group');
+      group = value;
+    }
     else if (flag === '--list') list = true;
     else if (flag === '--help') help = true;
     else throw new Error('invalid-arguments');
@@ -177,16 +200,26 @@ export async function main(args = process.argv.slice(2)) {
   if (coverage && (!sourceOptions.manifest || !coverageOptions.buildRecordPath || !requested.length)) throw new Error('coverage-requires-pinned-build-source-and-scenarios');
   if (help) {
     if (args.length !== 1) throw new Error('help-must-be-used-alone');
-    console.log('Run through Tracer: tracer app -- test [OPTIONS]\n  --list                         Discover native scenario IDs and known restrictions as JSON; no app is launched.\n  --scenario ID                  Select an exact listed ID; repeat for a subset.\n  --app /path/ScrivAutomation.app Override SCRIV_E2E_APP. Requires macOS.\n  --output-dir /existing/path     Evidence parent outside the source tree (default: OS temp).\n  --timeout-ms 120000             Per-scenario limit, 100 through 3600000.\n  --source-manifest /external/source.json --source-manifest-sha256 SHA256\n                                 Pin exported source bytes; both options are required.\n  --coverage                     Capture each real session, export separate LCOV pairs, import through Tracer.\n                                 Requires explicit --scenario, pinned source and --coverage-build-record.\n  --coverage-startup             Measure entry through the real CLI handshake. Requires --coverage.\n                                 Run the selected scenarios normally and keep their outcomes.\n  --coverage-build-record /external/build.json  Record produced by the coverage builder.\n  --coverage-build-source-root /immutable/source --coverage-build-source-manifest /external/build-source.json\n  --coverage-build-source-manifest-sha256 SHA256\n                                 Optional original build tree; all three required. Only host test/docs/probe changes are allowed.\n  --coverage-max-sessions 64      Maximum total capture attempts, 1 through 64.\n  --llvm-profdata /absolute/tool --llvm-cov /absolute/tool\n                                 Optional compatible LLVM tools; defaults to xcrun discovery.\n  --tracer /absolute/tracer       Optional Tracer 0.1.2+ entrypoint; defaults to SCRIV_TRACER_CLI or PATH.\n  --help                         Show this help.\n\nNo selection runs all native scenarios in sorted order; subsets are labeled in evidence.\nNo app, no macOS or failed provenance means not-run, never a simulated pass.\nKnown blocked scenarios are not launched and cannot count as passing; no bypass option exists.\nExit: 0 selected scenarios passed; 1 failed; 2 not-run or invalid input.\nTooling only: tracer app -- test tooling\nDirect compatibility: node scripts/run-cli-e2e.mjs [OPTIONS]');
+    console.log('Run through Tracer: tracer app -- test [OPTIONS]\n  --list                         Discover native scenario IDs and known restrictions as JSON; no app is launched.\n  --scenario ID                  Select an exact listed ID; repeat for a subset.\n  --group NAME                  Run one listed group of one explicit scenario.\n  --app /path/ScrivAutomation.app Override SCRIV_E2E_APP. Requires macOS.\n  --output-dir /existing/path     Evidence parent outside the source tree (default: OS temp).\n  --timeout-ms 120000             Per-scenario limit, 100 through 3600000.\n  --source-manifest /external/source.json --source-manifest-sha256 SHA256\n                                 Pin exported source bytes; both options are required.\n  --coverage                     Capture each real session, export separate LCOV pairs, import through Tracer.\n                                 Requires explicit --scenario, pinned source and --coverage-build-record.\n  --coverage-startup             Measure entry through the real CLI handshake. Requires --coverage.\n                                 Run the selected scenarios normally and keep their outcomes.\n  --coverage-build-record /external/build.json  Record produced by the coverage builder.\n  --coverage-build-source-root /immutable/source --coverage-build-source-manifest /external/build-source.json\n  --coverage-build-source-manifest-sha256 SHA256\n                                 Optional original build tree; all three required. Only host test/docs/probe changes are allowed.\n  --coverage-max-sessions 64      Maximum total capture attempts, 1 through 64.\n  --llvm-profdata /absolute/tool --llvm-cov /absolute/tool\n                                 Optional compatible LLVM tools; defaults to xcrun discovery.\n  --tracer /absolute/tracer       Optional Tracer 0.1.2+ entrypoint; defaults to SCRIV_TRACER_CLI or PATH.\n  --help                         Show this help.\n\nNo selection runs all native scenarios in sorted order; subsets are labeled in evidence.\nNo app, no macOS or failed provenance means not-run, never a simulated pass.\nKnown blocked scenarios are not launched and cannot count as passing; no bypass option exists.\nExit: 0 selected scenarios passed; 1 failed; 2 not-run or invalid input.\nTooling only: tracer app -- test tooling\nDirect compatibility: node scripts/run-cli-e2e.mjs [OPTIONS]');
     return 0;
   }
   const available = await discoverScenarios();
   if (requested.some(id => !available.includes(`${id}.mjs`))) throw new Error('unknown-scenario');
   const names = requested.length ? available.filter(name => requested.includes(name.slice(0, -4))) : available;
-  const selection = { mode: requested.length ? 'subset' : 'all', availableScenarioCount: available.length, selectedScenarioCount: names.length };
+  if (group) {
+    if (list || requested.length !== 1 || !groupedScenarios.has(names[0])) throw new Error('group-requires-one-supported-scenario');
+    if (!discoverGroups(names[0]).includes(group)) throw new Error('unknown-scenario-group');
+  }
+  const selection = { mode: requested.length ? 'subset' : 'all', availableScenarioCount: available.length, selectedScenarioCount: names.length, ...(group && { group }) };
   if (list) {
     if ([...seen].some(flag => !['--list', '--scenario'].includes(flag))) throw new Error('list-does-not-accept-execution-options');
-    console.log(JSON.stringify({ schemaVersion: 1, kind: 'native-cli-scenario-catalog', selection, scenarios: names.map(name => ({ id: name.slice(0, -4), path: `tests/e2e/${name}`, ...(scenarioRestrictions[name.slice(0, -4)] ? { restriction: scenarioRestrictions[name.slice(0, -4)] } : {}) })) }, null, 2));
+    const scenarios = names.map(name => {
+      const id = name.slice(0, -4);
+      const restriction = scenarioRestrictions[id];
+      return { id, path: `tests/e2e/${name}`, ...(restriction && { restriction }),
+        ...(groupedScenarios.has(name) && !restriction && { groups: discoverGroups(name) }) };
+    });
+    console.log(JSON.stringify({ schemaVersion: 1, kind: 'native-cli-scenario-catalog', selection, scenarios }, null, 2));
     return 0;
   }
   // Keep generated evidence out of the fingerprinted source tree.
@@ -201,7 +234,7 @@ export async function main(args = process.argv.slice(2)) {
   await mkdir(outputReal, { recursive: true });
   const output = await mkdtemp(join(outputReal, 'scriv-cli-e2e-'));
   const path = join(output, 'evidence.json');
-  const report = { schemaVersion: 1, kind: 'actual-app-cli-scenarios', selection, fullSuitePassed: false, launcherMode: 'direct-spawn-inherited-process-group', cleanupScope: 'Only the runner-owned process group is verified; detached or LaunchServices-launched descendants are unsupported.', baselineMigrated: false, startedAt: now(), endedAt: null, status: 'not-run', platform: process.platform, nodeVersion: process.version, buildAttestation: null, sourceToAppMatch: 'not-established', source: null, app: null, blocker: null, scenarios: names.map(name => ({ scenario: `tests/e2e/${name}`, status: 'not-run', reason: scenarioRestrictions[name.slice(0, -4)]?.reason ?? 'not-started' })) };
+  const report = { schemaVersion: 1, kind: 'actual-app-cli-scenarios', selection, fullSuitePassed: false, launcherMode: 'direct-spawn-inherited-process-group', cleanupScope: 'Only the runner-owned process group is verified; detached or LaunchServices-launched descendants are unsupported.', baselineMigrated: false, startedAt: now(), endedAt: null, status: 'not-run', platform: process.platform, nodeVersion: process.version, buildAttestation: null, sourceToAppMatch: 'not-established', source: null, app: null, blocker: null, scenarios: names.map(name => ({ scenario: `tests/e2e/${name}`, ...(group && { group }), status: 'not-run', reason: scenarioRestrictions[name.slice(0, -4)]?.reason ?? 'not-started' })) };
   if (coverage) report.coverage = { status: 'not-run', imported: 0, intervals: [] };
   let capture; let collector;
   async function save() { await writeFile(path + '.tmp', JSON.stringify(report, null, 2) + '\n', { mode: 0o600 }); await rename(path + '.tmp', path); }
@@ -231,9 +264,9 @@ export async function main(args = process.argv.slice(2)) {
     await save();
     for (let i = 0; i < names.length; i++) {
       if (scenarioRestrictions[names[i].slice(0, -4)]) continue; // Never spawn or allocate capture for a denied route.
-      const context = capture ? await collector.coverageContext(capture, `tests/e2e/${names[i]}`, i) : undefined;
+      const context = capture ? await collector.coverageContext(capture, `tests/e2e/${names[i]}`, i, group) : undefined;
       report.scenarios[i] = await runScenario(join(repo, 'tests/e2e', names[i]),
-        { app, timeoutMs, coverageContext: context, startupCoverage: capture?.startup });
+        { app, timeoutMs, coverageContext: context, startupCoverage: capture?.startup, group });
       await save();
       if (report.scenarios[i].status !== 'passed') {
         for (const remaining of report.scenarios.slice(i + 1)) if (remaining.reason === 'not-started') remaining.reason = 'stopped-after-failure';

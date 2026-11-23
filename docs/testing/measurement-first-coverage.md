@@ -9,6 +9,21 @@ for generic commands such as `activate`. Query retained measurements for that
 behavior before changing the scenario, then compare the passing union against
 the same reference scope after each batch.
 
+For a focused native capture, list the scenario and select one of its
+advertised groups. The scenario command runs every group when no group is
+selected.
+
+```sh
+tracer app -- test --list --scenario journeys/script-authoring-source
+tracer app -- test --scenario journeys/script-authoring-source --group retime-edited-words \
+  --app /absolute/path/to/ScrivAutomation.app
+```
+
+Add the normal pinned coverage options to measure a group. The run receipt,
+session receipts, and capture intervals carry the selected group. Use the
+group name when labeling its evidence so a passing focused run identifies the
+conditions that ran.
+
 On November 20, all 12 cloud journeys passed in a fresh capture. The 15-module
 Worker scope observed 1,154 of 1,164 statement anchors, including 11 from real
 module initialization. Passing billing transport, media recovery and natural

@@ -142,7 +142,7 @@ export async function runScriptJourney({ journey, workflows, cases, companions =
     selected = [group];
   }
   if (list) {
-    console.log(JSON.stringify({ journey, nativeVerified: false, companions,
+    console.log(JSON.stringify({ journey, nativeVerified: false, companions, groups: selected,
       cases: cases.filter(test => selected.includes(test.group)), excluded }, null, 2));
     return;
   }

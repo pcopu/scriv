@@ -171,10 +171,10 @@ export async function prepareCoverage({ app, output, sourceOptions, buildSourceR
   return capture;
 }
 
-export async function coverageContext(capture, scenario, index) {
+export async function coverageContext(capture, scenario, index, group) {
   await verifyCaptureSources(capture);
   const path = join(capture.directory, `context-${index}.json`);
-  const context = JSON.stringify({ version: 1, invocationID: capture.invocationID, scenario,
+  const context = JSON.stringify({ version: 1, invocationID: capture.invocationID, scenario, ...(group && { group }),
     executableSHA256: capture.executableSHA256, sourceManifestSHA256: capture.sourceManifestSHA256,
     journeySourceManifestSHA256: capture.journeySourceManifestSHA256, sourceProvenance: capture.sourceProvenance,
     buildRecordSHA256: capture.buildRecordSHA256, probeSHA256: capture.probe.sha256, maximumSessions: capture.maximumSessions,
@@ -198,7 +198,7 @@ export async function exportCoverage(capture, scenarios) {
   for (const runID of names) {
     const directory = join(capture.directory, 'sessions', runID);
     const record = JSON.parse(await input(join(directory, 'session.json')));
-    const scenario = scenarios.find(item => item.scenario === record.scenario && item.startedAt);
+    const scenario = scenarios.find(item => item.scenario === record.scenario && item.group === record.group && item.startedAt);
     required(record.version === 1 && record.kind === 'scriv-session-coverage' && record.status === 'captured' && record.runID === runID
       && uuid(record.workspaceID)
       && record.invocationID === capture.invocationID && scenario && record.executableSHA256 === capture.executableSHA256
@@ -220,7 +220,8 @@ export async function exportCoverage(capture, scenarios) {
   capture.report.allocatedBytesSaved = 0;
   for (const { directory, record, scenario } of records.sort((a, b) => a.record.slot - b.record.slot)) {
     const interval = { runID: record.runID, workspaceID: record.workspaceID, scenario: record.scenario,
-      scenarioStatus: scenario.status, status: 'exporting', imported: false, ...(capture.startup && { scope: 'startup' }) };
+      scenarioStatus: scenario.status, status: 'exporting', imported: false, ...(record.group && { group: record.group }),
+      ...(capture.startup && { scope: 'startup' }) };
     capture.report.intervals.push(interval);
     await saveCoverageStatus(capture);
     const profiles = {};
@@ -259,6 +260,7 @@ export async function exportCoverage(capture, scenarios) {
       counterMode: 'cumulative', counterReset: false, sourceManifestSha256: capture.sourceManifestSHA256,
       probeSha256: capture.probe.sha256, tools, limitations: [...capture.report.limitations, ...record.limitations,
         `Scenario ${record.scenario} ended ${scenario.status}; this interval records observation, not assertion acceptance.`,
+        ...(record.group ? [`Only the named journey group ${record.group} was selected.`] : []),
         `Journey source manifest SHA-256 ${capture.journeySourceManifestSHA256}; original build source SHA-256 ${capture.sourceManifestSHA256}; full source comparison is recorded separately in source-comparison.json.`],
       before: snapshot('before'), after: snapshot('after') };
     await write(join(directory, 'interval.json'), JSON.stringify(manifest, null, 2) + '\n');
