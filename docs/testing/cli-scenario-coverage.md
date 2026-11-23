@@ -165,18 +165,23 @@ tracer --root EXTERNAL_ANALYSIS_ROOT measure report --json
 tracer --root EXTERNAL_ANALYSIS_ROOT measure check --json
 ```
 
-For existing archived Scriv snapshots on macOS, preview the large duplicated
-coverage maps that can be compressed, then apply to the same archive while no
-process is writing it:
+For existing archived Scriv snapshots on macOS, preview large coverage maps
+and native profiles or exports from finished imports, then apply to the same
+archive while no process is writing it:
 
 ```sh
 tracer app -- test compact --archive /absolute/archived-runs
 tracer app -- test compact --archive /absolute/archived-runs --apply
 ```
 
-This preserves paths, bytes and permissions. The result reports how many files
-were compacted and the reduction in allocated blocks. Check filesystem free
-space separately because archived snapshots can already share blocks.
+The archive scan checks native files against their recorded export digests and
+preserves paths, bytes and permissions. The result reports how many files were
+compacted and the reduction in allocated blocks. Check filesystem free space
+separately because archived snapshots can already share blocks. If testing
+needs another exact copy of a verified source snapshot on the same APFS volume,
+clone the snapshot into a new path with `cp -cRp` and verify the same manifest.
+Keep one shared source pin across compatible runs and make a fresh pin when
+source bytes change.
 
 Each invocation has its own create-only analysis root and dataset. Multiple
 sessions within that invocation import separate intervals into that dataset.

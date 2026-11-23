@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { assertServiceDiscovery } from './service-discovery.mjs';
 import { spawnSync } from 'node:child_process';
 import { mkdtemp, realpath, readFile, readdir, mkdir, writeFile, symlink, link, chmod, lstat, rm } from 'node:fs/promises';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -353,6 +353,42 @@ export async function main() {
     assert.equal(await readFile(executable, 'utf8'), sentinel);
     assert.deepEqual(await readdir(join(output, dirs[0])), ['evidence.json']);
     assert.equal(result.stdout.includes(sentinel.trim()), false);
+  });
+  await journey('compact only finished native profiles with exact export digests', async () => {
+    const archive = join(output, 'profile-archive');
+    const bytes = Buffer.from('retained raw counters\n'.repeat(12000));
+    const runID = '3aadae12-851a-4981-838e-8cef5f319f93';
+    const capture = join(archive, 'scriv-cli-e2e-sample', 'coverage');
+    const session = join(capture, 'sessions', runID);
+    const rawProfile = join(session, 'before.profraw');
+    const staleProfile = join(session, 'after.profraw');
+    const profileHash = createHash('sha256').update(bytes).digest('hex');
+    await mkdir(session, { recursive: true });
+    await writeFile(join(capture, 'capture.json'), JSON.stringify({
+      status: 'imported', intervals: [{ runID, imported: true, status: 'imported' }],
+    }));
+    await writeFile(join(session, 'import.json'), JSON.stringify({ id: 'a'.repeat(64) }));
+    await writeFile(join(session, 'exports.json'), JSON.stringify({
+      before: { rawSHA256: profileHash }, after: { rawSHA256: 'b'.repeat(64) },
+    }));
+    await writeFile(rawProfile, bytes);
+    await writeFile(staleProfile, bytes);
+    const rawBefore = await lstat(rawProfile);
+    const staleBefore = await lstat(staleProfile);
+    const rawCandidate = 'scriv-cli-e2e-sample/coverage/sessions/' + runID + '/before.profraw';
+    const args = ['app', '--', 'test', 'compact', '--archive', archive];
+    const preview = JSON.parse(run(args).stdout);
+    assert.deepEqual(preview.candidates, [rawCandidate]);
+    assert.equal((await lstat(rawProfile)).ino, rawBefore.ino);
+    if (process.platform === 'darwin') {
+      const applied = JSON.parse(run([...args, '--apply']).stdout);
+      const after = await lstat(rawProfile);
+      assert.equal(applied.allocatedBytesSaved, (rawBefore.blocks - after.blocks) * 512);
+      assert.equal(after.mode, rawBefore.mode);
+      assert.deepEqual(await readFile(rawProfile), bytes);
+      assert.equal((await lstat(staleProfile)).ino, staleBefore.ino);
+    }
+    await rm(archive, { recursive: true });
   });
   console.log(`PASS ${passed}/${passed} public Tracer CLI journeys. Native scenarios executed: 0; tooling artifacts: ${output}`);
   return 0;
