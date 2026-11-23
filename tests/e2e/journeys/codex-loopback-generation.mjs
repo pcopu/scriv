@@ -1,14 +1,15 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFile, realpath, writeFile } from 'node:fs/promises';
+import { readFile, readdir, realpath, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
+import { reviewSteps } from './support/generation-review-steps.mjs';
 import { generationContextInput } from './support/generation-context-cases.mjs';
 import { fixtureImageHash, recoveredImageHash, startCodexFixture } from './support/codex-loopback-fixture.mjs';
 
-const groups = ['history-prompt', 'history-retry', 'history-artifact'];
+const groups = ['history-prompt', 'history-retry', 'history-artifact', 'history-retry-portrait'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
   console.log(JSON.stringify({ groups }));
@@ -16,7 +17,9 @@ if (args.length === 1 && args[0] === '--list-cases') {
 }
 assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]), 'Choose a supported local Codex group');
 const historyPrompt = args[1] === 'history-prompt';
-const historyRetry = args[1] === 'history-retry';
+const retryPortrait = args[1] === 'history-retry-portrait';
+const portraitSHA256 = '3fba282698b3df63c76fb40e529943fb6da6d28bafa6ff9e3a75c0c4a0cbb784';
+const historyRetry = args[1] === 'history-retry' || retryPortrait;
 const historyArtifact = args[1] === 'history-artifact';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
@@ -82,7 +85,7 @@ try {
   const sample = await waitForSavedProject(session, project => project.title === 'YAM MAN');
   assert.deepEqual(await session.command('import-json', { text: JSON.stringify(fixtureSource) }),
     { dispatched: true, projectChanged: true });
-  const before = await waitForSavedProject(session, project => project.title === fixtureSource.title);
+  let before = await waitForSavedProject(session, project => project.title === fixtureSource.title);
   assert.deepEqual(before.images, []);
   assert.deepEqual(before.cues, fixtureSource.cues);
   await selectTab('Storyboard');
@@ -90,6 +93,50 @@ try {
   await selectTab('Script');
   const generate = node => node.identifier === 'generation-generate-image' && node.label === 'Generate image for 01A';
   const jobs = async () => (await session.command('image-evidence')).jobs;
+
+  if (retryPortrait) {
+    step = 'import and tag a local picture before choosing it as Anna’s portrait';
+    assert.deepEqual(await session.command('import-local-image', { fixture: 'blue' }, 30000),
+      { dispatched: true, imported: true, cleanupVerified: true });
+    const imported = await waitForSavedProject(session, project => project.id === before.id && project.images.length === 1);
+    const [asset] = imported.images;
+    assert.equal(asset.sha256, portraitSHA256);
+    assert.equal(imported.cues.find(cue => cue.id === 'cue').imageId, asset.id);
+    await activate(await reveal(node => node.label === 'Edit pictured character tags' && node.enabled !== undefined));
+    await activate(await reveal(node => node.label === 'Anna' && node.enabled !== undefined));
+    await session.waitFor(nodes => nodes.some(node => node.label === 'Anna' && node.value === 'Pictured in this image'));
+    await activate(await waitForControl(node => node.title === 'Done'));
+    await selectTab('Characters');
+    await activate(await reveal(byID('character-ribbon-a')));
+    await session.command('end-editing');
+    const target = 'character-portrait-options';
+    await reveal(byID(target));
+    const menu = await session.command('menu', { target });
+    const choices = menu.primary.flatMap(section => section.children).flatMap(section => section.children);
+    assert.deepEqual(choices.map(choice => choice.title), ['Use 01A · v1']);
+    assert.deepEqual(await session.command('menu-action', { target, scope: target, action: choices[0].title,
+      characterID: 'a', imageID: asset.id }), { dispatched: true, coverage: 'semantic-menu-action' });
+    before = await waitForSavedProject(session, project => project.id === imported.id
+      && project.characters.find(person => person.id === 'a').portraitImageId === asset.id);
+    assert.deepEqual(before.characters, imported.characters.map(person => person.id === 'a'
+      ? { ...person, portraitImageId: asset.id } : person));
+    assert.deepEqual(before.images, [{ ...asset, characterIds: ['a'] }]);
+    assert.deepEqual(before.cues, imported.cues);
+    assert.deepEqual(before.entries, imported.entries);
+    await selectTab('Script');
+    step = 'review the exact reference portrait before submitting';
+    const review = reviewSteps(session);
+    await review.open();
+    const people = await review.section(1);
+    assert.ok(people.some(node => node.text === 'Portrait inputs · 1 attached · up to 5'));
+    const exact = await review.section(2);
+    assert.match(exact.find(byID('generation-exact-request')).text, /^Reference 1 \(reference-0\): "Anna" \["a"\]$/m);
+    await review.activate('generation-review-done');
+    await review.closed();
+    assert.deepEqual(await jobs(), []);
+    assert.deepEqual((await session.command('persisted-projects')).sort((a, b) => a.id.localeCompare(b.id)),
+      [sample, before].sort((a, b) => a.id.localeCompare(b.id)));
+  }
 
   step = 'connect to the owned loopback fixture in Settings';
   const submittedRequests = [];
@@ -99,6 +146,7 @@ try {
   fixture = await startCodexFixture(session.root, outcomes, {
     accountRefresh: true,
     ...((historyPrompt || historyRetry) && { onSubmittedPrompt: request => submittedRequests.push(request) }),
+    ...(retryPortrait && { referenceSHA256: portraitSHA256 }),
   });
   await fixture.race((async () => {
     await session.command('key', { input: ',', modifiers: ['command'] });
@@ -182,7 +230,11 @@ try {
 
     step = 'generate and attach the fixture image';
     await activate(await reveal(generate));
-    const saved = await waitForSavedProject(session, project => project.id === before.id && !!project.cues.find(cue => cue.id === 'cue')?.imageId);
+    const previousImageID = before.cues.find(cue => cue.id === 'cue')?.imageId;
+    const saved = await waitForSavedProject(session, project => {
+      const imageID = project.cues.find(cue => cue.id === 'cue')?.imageId;
+      return project.id === before.id && imageID && imageID !== previousImageID;
+    });
     const imageID = saved.cues.find(cue => cue.id === 'cue').imageId;
     const [complete] = await poll(jobs, records => records.length === 1 && records[0].attachmentVerified);
     assert.equal(complete.status, 'completed');
@@ -197,7 +249,8 @@ try {
     assert.deepEqual(saved.entries, before.entries);
     assert.deepEqual(saved.characters, before.characters);
     assert.deepEqual(saved.cues.filter(cue => cue.id !== 'cue'), before.cues.filter(cue => cue.id !== 'cue'));
-    assert.equal(saved.images.length, 1);
+    assert.deepEqual(saved.images.filter(image => image.id !== imageID), before.images);
+    assert.equal(saved.images.length, before.images.length + 1);
     let savedProjects = [sample, saved].sort((a, b) => a.id.localeCompare(b.id));
     const unchanged = async () => assert.deepEqual((await session.command('persisted-projects'))
       .sort((a, b) => a.id.localeCompare(b.id)), savedProjects, 'Only the completed fixture job may change saved projects');
@@ -382,6 +435,38 @@ try {
       assert.deepEqual(updated.cues.filter(cue => cue.id !== cancelled.cueID), saved.cues.filter(cue => cue.id !== cancelled.cueID));
       savedProjects = [sample, updated].sort((a, b) => a.id.localeCompare(b.id));
       await unchanged();
+      if (retryPortrait) {
+        const references = [{ fileName: 'reference-0.png', sha256: portraitSHA256 }];
+        const originalJournal = originalJournals.find(record => record.id === cancelledID);
+        assert.deepEqual(originalJournal.references, references);
+        assert.deepEqual(journal.references, references);
+        step = 'refuse a modified saved portrait without creating another request';
+        const path = join(session.root, 'Generation', cancelledID, references[0].fileName);
+        assert.equal(await realpath(path), path);
+        const bytes = await readFile(path);
+        assert.equal(createHash('sha256').update(bytes).digest('hex'), portraitSHA256);
+        const altered = await readFile(output);
+        assert.equal(createHash('sha256').update(altered).digest('hex'), recoveredImageHash);
+        try {
+          await writeFile(path, altered);
+          await confirmation();
+          await activate(await waitForControl(byID('generation-retry-confirm')));
+          const alerts = await poll(() => session.command('presented-alerts'), records => records.length > 0);
+          assert.deepEqual(alerts.map(({ title, message }) => ({ title, message })), [{
+            title: 'Scriv', message: 'An original reference image is missing or changed. Choose new references instead.',
+          }]);
+          assert.equal(submittedRequests.length, 3);
+          const journalDirectory = join(session.root, 'Generation', 'Journal');
+          assert.deepEqual((await readdir(journalDirectory)).filter(name => name.endsWith('.json')).sort(),
+            [first.jobID, cancelledID, retry.jobID].map(id => `${id}.json`).sort());
+          assert.deepEqual(await Promise.all(inspected.map(job => readJournal(job.jobID))), originalJournals);
+          assert.deepEqual(await readJournal(retry.jobID), journal);
+          await unchanged();
+        } finally {
+          await writeFile(path, bytes);
+        }
+        assert.deepEqual(await readFile(path), bytes);
+      }
       return;
     }
 
@@ -497,6 +582,7 @@ try {
   await fixture.close();
   fixture = undefined;
   if (historyPrompt) console.log('PASS: Generation history displays the exact recorded request as read-only text without changing jobs or projects');
+  else if (retryPortrait) console.log('PASS: Retry sends the captured portrait bytes once and rejects a modified copy');
   else if (historyRetry) console.log('PASS: Cancel preserves the job and confirmed Retry submits its recorded request once');
   else if (historyArtifact) console.log('PASS: Generation history rejects modified artifact bytes and opens the restored original');
   else console.log('PASS: native Codex loopback fixture generation, cancellation, reconnect, recovery inspection and refusal');

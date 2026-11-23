@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { once } from 'node:events';
-import { lstat, realpath, writeFile } from 'node:fs/promises';
+import { lstat, readFile, realpath, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { basename, dirname, join } from 'node:path';
 
@@ -23,7 +23,7 @@ const activeRequests = new Map([
 
 // Model the app-server protocol at its socket boundary. No backend, account,
 // tools, credentials, arbitrary file names, or real model are available here.
-export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = false, manualAccountCheck = false, ownedPort, onSubmittedPrompt } = {}) {
+export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = false, manualAccountCheck = false, ownedPort, onSubmittedPrompt, referenceSHA256 } = {}) {
   const handshake = ['initialize', 'initialized', 'account/read', 'model/list'];
   const anonymous = { account: null, requiresOpenaiAuth: true };
   const updated = { method: 'account/updated', params: {} };
@@ -178,9 +178,16 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
         return [accepted, { method: 'turn/completed', params: { threadId: job.threadId,
           turn: { id: job.turnId, status: 'completed', items: [{ type: 'agentMessage', id: 'analysis-result', text: JSON.stringify({ detections }) }] } } }];
       }
-      assert.ok(params.input.length === 1 && params.input[0].type === 'text'
-        && params.input[0].text?.includes(job.outcome === 'recover' ? 'know.' : 'Warm window light. Hold the room.'), 'Expected only the synthetic cue prompt');
-      onSubmittedPrompt?.({ prompt: params.input[0].text, jobID: basename(job.cwd) });
+      const [prompt, ...references] = params.input;
+      assert.ok(prompt.type === 'text' && prompt.text?.includes(job.outcome === 'recover'
+        ? 'know.' : 'Warm window light. Hold the room.'), 'Expected the synthetic cue prompt');
+      if (referenceSHA256) {
+        const path = join(job.cwd, 'reference-0.png');
+        assert.deepEqual(references, [{ type: 'localImage', path }]);
+        assert.equal(await realpath(path), path);
+        assert.equal(createHash('sha256').update(await readFile(path)).digest('hex'), referenceSHA256);
+      } else assert.deepEqual(references, [], 'This turn passes only the synthetic cue prompt');
+      onSubmittedPrompt?.({ prompt: prompt.text, jobID: basename(job.cwd) });
       const replies = [reply({ turn: { id: job.turnId } }), { method: 'item/started',
         params: { threadId: job.threadId, item: { type: 'imageGeneration' } } }];
       if (['cancel', 'recover', 'missing-artifact', 'input-request'].includes(job.outcome)) return replies;
