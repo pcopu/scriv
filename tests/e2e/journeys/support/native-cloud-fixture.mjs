@@ -79,6 +79,8 @@ export async function startNativeCloudFixture() {
       matchesPendingEdit: payload => response(['matches-pending-edit', payload]),
       interruptNextEdit: projectId => response(['interrupt-edit', projectId]),
       interruptedEditState: () => response('interrupted-edit-state'),
+      watchEditingLease: (projectId, itemId) => response(['watch-editing-lease', { projectId, itemId }]),
+      editingLeaseState: () => response('editing-lease-state'),
       prepareHostedImage: input => response(['prepare-hosted-image', input]),
       repairHostedImage: () => response('repair-hosted-image'),
       hostedImageResponses: () => response('hosted-image-responses'),
@@ -131,7 +133,9 @@ async function startWorker(root) {
       const hostedImageResponses = [];
       let invitations;
       let history;
+      let editingLease;
       const withoutLeases = operations => JSON.stringify(operations.map(({ lease, ...item }) => item));
+      const sameLease = (left, right) => left.token === right.token && left.fence === right.fence;
       async function interruptedCommand(payload, upstream) {
         const state = interruption;
         switch (state.phase) {
@@ -209,6 +213,37 @@ async function startWorker(root) {
             hostedImageResponses.push(response.status);
             return response;
           }
+          if (editingLease && path === editingLease.path + '/leases' && ['POST', 'PUT'].includes(request.method)) {
+            const proof = await request.clone().json();
+            if (proof.itemId === editingLease.itemId) {
+              if (request.method === 'POST') {
+                const response = await upstream();
+                if (response.ok && !editingLease.initial) editingLease.initial = await response.clone().json();
+                return response;
+              }
+              const { initial, renewals } = editingLease;
+              if (!initial || !sameLease(proof, initial) || proof.sessionId !== initial.sessionId || proof.epoch !== initial.epoch)
+                throw new Error('Expected renewal of the watched editing lease');
+              if (renewals.length === 1) {
+                // Release the exact lease through the real authenticated Worker
+                // API before forwarding the second renewal. No manufactured reply.
+                const released = await worker.fetch(new Request(request.clone(), { method: 'DELETE' }), this.env, this.ctx);
+                if (!released.ok) throw new Error('The local Worker did not release the watched lease');
+              }
+              const response = await upstream();
+              const result = await response.clone().json();
+              if (response.ok && !sameLease(result, initial)) throw new Error('Renewal changed lease proof');
+              renewals.push({ status: response.status, expiresAt: response.ok ? result.expiresAt : null });
+              return response;
+            }
+          }
+          if (editingLease?.initial && request.method === 'POST' && path === editingLease.path + '/commands') {
+            const payload = await request.clone().json();
+            const response = await upstream();
+            if (response.ok && payload.operations.some(item => item.id === editingLease.itemId
+                && item.lease && sameLease(item.lease, editingLease.initial))) editingLease.acceptedEdits++;
+            return response;
+          }
           if (interruption?.phase === 'interrupted' && request.method === 'DELETE' && path === target.replace(/commands$/, 'leases')) {
             const released = await request.clone().json();
             const response = await upstream();
@@ -250,6 +285,16 @@ async function startWorker(root) {
         interruptedEditState() {
           const { phase, leaseReleased, draft, retryStatus, retryCode, replacementID, sequence } = interruption;
           return { phase, leaseReleased, commandID: draft?.commandId, retryStatus, retryCode, replacementID, sequence };
+        }
+        watchEditingLease({ projectId, itemId }) {
+          if (editingLease || ![projectId, itemId].every(id => typeof id === 'string' && /^[a-zA-Z0-9_-]{1,64}$/.test(id)))
+            throw new Error('A single owned editing lease is required');
+          editingLease = { path: '/v1/projects/' + projectId, itemId, renewals: [], acceptedEdits: 0 };
+          return true;
+        }
+        editingLeaseState() {
+          if (!editingLease) throw new Error('No editing lease is being observed');
+          return { initialExpiresAt: editingLease.initial?.expiresAt ?? null, renewals: [...editingLease.renewals], acceptedEdits: editingLease.acceptedEdits };
         }
         watchHostedImage(path) {
           if (hostedImagePath) throw new Error('A hosted image is already being observed');
@@ -520,6 +565,7 @@ async function startWorker(root) {
       matchesPendingEdit: payload => nativeWorker.matchesPendingEdit(payload),
       interruptEdit: projectId => nativeWorker.interruptEdit(projectId),
       interruptedEditState: () => nativeWorker.interruptedEditState(),
+      watchEditingLease: scope => nativeWorker.watchEditingLease(scope), editingLeaseState: () => nativeWorker.editingLeaseState(),
       prepareHostedImage, repairHostedImage, hostedImageResponses: () => nativeWorker.hostedImageResponses(),
       prepareSharedGeneration, sharedGenerationState,
       prepareInvitations, invitationState, interruptInvitationLoad: () => nativeWorker.interruptInvitationLoad(),
@@ -551,6 +597,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'session-states': worker.sessionStates, 'lose-edit-receipt': worker.loseEditReceipt,
         'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit,
         'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState,
+        'watch-editing-lease': worker.watchEditingLease, 'editing-lease-state': worker.editingLeaseState,
         'prepare-hosted-image': worker.prepareHostedImage, 'repair-hosted-image': worker.repairHostedImage,
         'hosted-image-responses': worker.hostedImageResponses, 'prepare-shared-generation': worker.prepareSharedGeneration,
         'shared-generation-state': worker.sharedGenerationState, 'prepare-invitations': worker.prepareInvitations,

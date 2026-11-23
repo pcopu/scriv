@@ -7,6 +7,14 @@ import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, interruptedCloudEdit, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 
+const groups = ['sync', 'lease-renewal'];
+const args = process.argv.slice(2);
+if (args.length === 1 && args[0] === '--list-cases') {
+  console.log(JSON.stringify({ groups }));
+  process.exit(0);
+}
+assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]), 'Choose a supported cloud project group');
+
 assert.ok(process.env.SCRIV_E2E_APP, 'Requires a verified automation-enabled Catalyst app');
 const fixture = await startNativeCloudFixture();
 let session;
@@ -28,7 +36,7 @@ const click = async (label, settled) => session.command('activate', { target: (a
   node => node.type === 'UIButton' && (node.title === label || node.label === label), settled)).path });
 const workspaceProject = node => node.identifier === 'workspace-project';
 const projectsSearch = node => node.placeholder === 'Find a project';
-async function appendToCloudDialogue(line, addition, armFixture) {
+async function openCloudDialogue(line) {
   const script = scriptAuthoringSteps(session);
   await script.selectTab('Script');
   assert.equal(line.kind, 'dialogue');
@@ -42,6 +50,10 @@ async function appendToCloudDialogue(line, addition, armFixture) {
   await script.reveal(nodesByID(nodes, editorID)[0], nodes);
   await session.command('selection', { target: editorID, start: line.text.length, end: line.text.length });
   await script.waitEditor(editorID, line.text, line.text.length);
+  return { script, editorID };
+}
+async function appendToCloudDialogue(line, addition, armFixture) {
+  const { script, editorID } = await openCloudDialogue(line);
   const revisedText = line.text + addition;
   await armFixture();
   await session.command('type', { target: editorID, text: addition });
@@ -180,7 +192,7 @@ const lineOnly = (nodes, body) => {
   return messages.length === 1 && messages[0].text === body;
 };
 
-try {
+async function runProjectJourney() {
   step = 'set up the original free team through the owned Worker';
   assert.deepEqual(await fixture.createFreeTeam(), { name: nativeFixtureTeam, role: 'owner', plan: 'free', billingCustomer: false });
   session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
@@ -209,6 +221,12 @@ try {
   await session.waitFor(nodes => nodes.some(node => node.type === 'DiscussionComposerTextView' && node.editable && node.hittable));
   await click('Close discussion');
   assert.deepEqual(await session.command('presented-alerts'), []);
+
+  if (args[1] === 'lease-renewal') {
+    await verifyEditingLeaseRenewal(synced);
+    await fixture.assertNoOutbound();
+    return;
+  }
 
   step = 'edit an already-linked script through the native editor';
   const line = synced.entries.find(entry => entry.id === 'line-01');
@@ -319,11 +337,54 @@ try {
   await verifyAccountReconnectAndSignOut(await verifyInterruptedCloudEditRecovery(downloaded));
   await fixture.assertNoOutbound();
   console.log('PASS: native sync, linked edit, discussions and fresh cloud replica');
+}
+
+try {
+  await runProjectJourney();
 } catch (error) {
   throw new Error('Native cloud project journey failed during ' + step, { cause: error });
 } finally {
   try { await session?.close(); }
   finally { await fixture.close(); }
+}
+
+async function verifyEditingLeaseRenewal(project) {
+  step = 'hold the native editor open through the first genuine lease renewal';
+  const line = project.entries.find(entry => entry.id === 'line-01');
+  assert.equal(await fixture.watchEditingLease(project.cloudProjectId, line.id), true);
+  const { script, editorID } = await openCloudDialogue(line);
+  async function waitForLease(predicate) {
+    const deadline = Date.now() + 15000;
+    do {
+      const lease = await fixture.editingLeaseState();
+      if (predicate(lease)) return lease;
+      await new Promise(resolve => setTimeout(resolve, 75));
+    } while (Date.now() < deadline);
+    throw new Error('Expected the real Worker editing lease state');
+  }
+  let lease = await waitForLease(lease => lease.renewals.length > 0);
+  assert.equal(lease.renewals.length, 1);
+  assert.equal(lease.renewals[0].status, 200);
+  assert.ok(lease.renewals[0].expiresAt > lease.initialExpiresAt, 'The real Worker extended this editing lease');
+
+  step = 'let autosave accept an edit with the renewed lease';
+  const beforeEdit = await waitForSavedProject(session, candidate => candidate.id === project.id);
+  const addition = ' Keep the accepted revision.';
+  const text = line.text + addition;
+  await session.command('type', { target: editorID, text: addition });
+  await script.waitEditor(editorID, text, text.length);
+  assert.equal((await waitForLease(lease => lease.acceptedEdits > 0)).acceptedEdits, 1, 'The Worker accepted the edit under the same renewed lease');
+  const saved = await waitForSavedProject(session, candidate => candidate.id === project.id && candidate.revision > beforeEdit.revision
+    && candidate.entries.some(entry => entry.id === line.id && entry.text === text));
+
+  step = 'show the rejected renewal and preserve the accepted edit';
+  await observePresentedError(session, 'Editing lease expired. Your local draft is kept; reacquire the line before saving.');
+  lease = await fixture.editingLeaseState();
+  assert.deepEqual(lease.renewals.map(renewal => renewal.status), [200, 423]);
+  assert.equal(lease.acceptedEdits, 1);
+  assert.deepEqual((await session.command('loaded-project')).project, saved);
+  assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === saved.id), saved);
+  console.log('PASS: native editor renews its lease, saves under it and preserves the edit after renewal fails');
 }
 
 async function verifySavedCloudEditRetry(edited) {

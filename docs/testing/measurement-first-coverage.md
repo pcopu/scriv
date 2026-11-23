@@ -359,6 +359,13 @@ revision history, refuses a symbolic link and a mismatched saved snapshot,
 then verifies that the unchanged project exports again.
 Interactive export uses the same staging before presenting the system picker.
 
+Use `--scenario journeys/native-cloud-project-sync --group lease-renewal` to
+exercise the linked script editor. Keep the editor open through its scheduled
+renewal and verify the Worker accepts autosave under that lease. The owned
+fixture releases the lease before the next renewal. Verify the app presents
+the expiry alert and preserves the accepted edit in both the model and the
+saved package.
+
 Read the produced `evidence.json`; `coverage.analysis.root` identifies the
 external source copy containing the imported dataset. Run `measure check` and
 `measure report` on that root. All output stays outside pinned source.
