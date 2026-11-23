@@ -367,7 +367,18 @@ fileprivate struct StoryboardWordReference { let word: TimedWord; let entryID: S
             let next = store.sceneCues[index + 1]
             if TimingEngine.canMoveBoundary(store.project, leftCueId: cue.id, rightCueId: next.id) { result.append(UIAction(title: "Merge with next placement") { [weak self] _ in guard let self, self.navigation == self.store.navigationContext else { return }; self.store.mergeCue(self.cue.id, with: next.id) }) }
         }
-        result.append(UIAction(title: "Remove placement…", attributes: .destructive) { [weak self] _ in guard let self, self.navigation == self.store.navigationContext, let owner = self.owner else { return }; ImageUI.confirm("Remove this image placement?", message: "The image asset, script, words and their timing are preserved.", destructiveTitle: "Remove placement", from: owner) { [weak self] in guard let self, self.navigation == self.store.navigationContext else { return }; self.store.deleteCue(self.cue.id) } }); return result
+        result.append(UIAction(title: "Remove placement…", attributes: .destructive) { [weak self] _ in self?.confirmRemoval() })
+        return result
+    }
+    private func confirmRemoval() {
+        guard navigation == store.navigationContext, let owner else { return }
+        CharacterTeamUI.confirmRemoval("Remove this image placement?",
+            message: "The image asset, script, words and their timing are preserved.",
+            buttonTitle: "Remove placement", identifier: "picture-removal", from: owner) { [weak self] in
+            guard let self, navigation == store.navigationContext,
+                  store.sceneCues.contains(cue) else { return }
+            store.deleteCue(cue.id)
+        }
     }
     fileprivate func wordActions(_ item: StoryboardWordReference) -> [UIMenuElement] {
         var result: [UIMenuElement] = [UIAction(title: "Play word") { [weak self] _ in guard let self, self.navigation == self.store.navigationContext else { return }; self.store.seek(toMs: Double(item.absoluteStart)) }, UIAction(title: "Edit word timing…") { [weak self] _ in guard let self, self.navigation == self.store.navigationContext else { return }; self.owner?.show(.wordTiming(entryID: item.entryID, wordIDs: [item.word.id])) }]

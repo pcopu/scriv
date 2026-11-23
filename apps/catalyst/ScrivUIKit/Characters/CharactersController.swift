@@ -315,14 +315,35 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
     }
     private func confirmDelete(_ character: ScriptCharacter) {
         let context = store.navigationContext
-        let alert = UIAlertController(title: "Delete \(character.name)?", message: "Script wording and images are preserved. Speaker links, inline links and character tags are removed; old words will not link to a reused name.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Delete character", style: .destructive) { [weak self] _ in
-            guard let self, self.store.navigationContext == context else { return }
+        CharacterTeamUI.confirmRemoval("Delete \(character.name)?",
+            message: "Script wording and images are preserved. Speaker links, inline links and character tags are removed; old words will not link to a reused name.",
+            buttonTitle: "Delete character", identifier: "character-delete", from: self) { [weak self] in
+            guard let self, self.store.navigationContext == context,
+                  self.store.project.character(character.id) == character,
+                  self.store.lockedByOther(character.id) == nil else { return }
             self.store.deleteCharacter(character.id)
-        }); present(alert, animated: true)
+        }
     }
 }
+
+#if SCRIV_CLI_AUTOMATION
+extension CharactersController {
+    func cliDeletionAction(on button: UIButton, characterID: String) -> UIAction? {
+        guard contextIsCurrent, presentedViewController == nil,
+              renderedProject == store.project, renderedSelection == characterID,
+              store.selectedCharacterID == characterID, store.project.character(characterID) != nil,
+              store.lockedByOther(characterID) == nil,
+              button.window === viewIfLoaded?.window, button.isDescendant(of: profile),
+              button.accessibilityLabel == "Character actions", button.showsMenuAsPrimaryAction,
+              let menu = button.menu, menu.title.isEmpty, menu.options.isEmpty,
+              menu.children.count == 2,
+              let discuss = menu.children[0] as? UIAction, discuss.title == "Discuss character", discuss.attributes.isEmpty,
+              let remove = menu.children[1] as? UIAction, remove.title == "Delete character…", remove.attributes == .destructive
+        else { return nil }
+        return remove
+    }
+}
+#endif
 
 extension ScrivUIKitFeatures {
     static func registerCharactersAndTeams(in router: ScrivUIKitRouter) {

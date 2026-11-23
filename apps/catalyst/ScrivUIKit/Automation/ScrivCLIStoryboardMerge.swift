@@ -11,13 +11,16 @@ enum ScrivCLIStoryboardMerge {
     }
     static func canHandle(_ request: [String: Any]) -> Bool {
         guard let scope = request["scope"] as? String else { return false }
-        return ["storyboard-merge", "storyboard-picture-source", "picture-source-entry"].contains(scope)
+        return ["storyboard-merge", "storyboard-picture-source", "picture-source-entry", "storyboard-remove-placement"].contains(scope)
     }
     static func dispatch(view: UIView, window: UIWindow, request: [String: Any]) throws -> [String: Any] {
-        guard Set(request.keys) == Set(["id", "command", "target", "action", "scope"]),
+        guard let scope = request["scope"] as? String else { throw Failure() }
+        let removing = scope == "storyboard-remove-placement"
+        let keys: Set<String> = ["id", "command", "target", "action", "scope"]
+        guard Set(request.keys) == (removing ? keys.union(["cueID"]) : keys),
               request["command"] as? String == "menu-action", canHandle(request),
               request["target"] is String,
-              let scope = request["scope"] as? String, let title = request["action"] as? String,
+              let title = request["action"] as? String,
               let button = view as? UIButton,
               let workspace = window.rootViewController as? ScrivWorkspaceController,
               let originalMenu = button.menu else { throw Failure() }
@@ -25,7 +28,8 @@ enum ScrivCLIStoryboardMerge {
             return try dispatchSourceEntry(button: button, workspace: workspace, title: title)
         }
         let merge = scope == "storyboard-merge"
-        guard title == (merge ? "Merge with next placement" : "Picture source…") else { throw Failure() }
+        let expectedTitle = removing ? "Remove placement…" : merge ? "Merge with next placement" : "Picture source…"
+        guard title == expectedTitle else { throw Failure() }
         var responder: UIResponder? = button
         var storyboard: StoryboardViewController?
         for _ in 0..<64 {
@@ -68,6 +72,7 @@ enum ScrivCLIStoryboardMerge {
                   originalMenu.options.isEmpty,
                   let card = storyboard.cliValidatedPictureCue(for: button), !merge || card.canMerge else { throw Failure() }
             let cue = card.cue
+            if removing, request["cueID"] as? String != cue.id { throw Failure() }
             var expected: [String] = []
             if cue.imageId != nil { expected.append("Inspect image…") }
             expected += ["Picture source…", "Choose existing image…"]

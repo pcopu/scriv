@@ -314,7 +314,7 @@ final class ScrivCLI {
                     "syntheticFixtureCommands": ["stage-package-fixture"],
                     "publicDelegateCommands": ["return", "script-insert", "script-delete-selection"],
                     "publicTextInputCommands": ["delete-backward"],
-                    "semanticMenuActionScopes": ["script-zoom", "layers-direction-duration", "audio-anchor", "layers-word-timing", "image-inspector-prompt-disclosure", "script-scenes", "script-entries", "storyboard-merge", "storyboard-picture-source", "picture-source-entry", "character-portrait-options", "workspace-discussion", "workspace-panels"],
+                    "semanticMenuActionScopes": ["script-zoom", "layers-direction-duration", "audio-anchor", "layers-word-timing", "image-inspector-prompt-disclosure", "script-scenes", "script-entries", "storyboard-merge", "storyboard-picture-source", "picture-source-entry", "storyboard-remove-placement", "character-portrait-options", "character-delete", "workspace-discussion", "workspace-panels"],
                     "runID": run.runID.uuidString.lowercased(),
                     "sessionID": run.sessionID.uuidString.lowercased(),
                     "workspace": ["persistent": run.persistent, "resumed": run.resumed],
@@ -650,6 +650,26 @@ final class ScrivCLI {
         switch command {
         case "menu-action":
             let scope = request["scope"] as? String
+            if scope == "character-delete" {
+                let unavailable = Failure("Character deletion is outside the supported isolated scope")
+                guard Set(request.keys) == ["id", "command", "target", "scope", "action", "characterID"],
+                      request["action"] as? String == "Delete character…",
+                      let characterID = request["characterID"] as? String,
+                      run.approvedOrigin == nil, let button = view as? UIButton,
+                      let workspace = window.rootViewController as? ScrivWorkspaceController,
+                      workspace.presentedViewController == nil, workspace.transitionCoordinator == nil,
+                      let characters = workspace.children.first(where: { $0 is CharactersController }) as? CharactersController,
+                      characters.store === workspace.store, workspace.store.tab == .characters,
+                      workspace.store.account == nil, workspace.store.cloud.account == nil,
+                      workspace.store.project.cloudProjectId == nil, workspace.store.cloud.projectId == nil,
+                      !workspace.store.isPlaying, !workspace.store.isBootstrapping,
+                      let action = characters.cliDeletionAction(on: button, characterID: characterID)
+                else { throw unavailable }
+                _ = try ScrivCLILoadedProject.observe(workspace: workspace)
+                try run.validate()
+                button.sendAction(action)
+                return ["dispatched": true, "coverage": "semantic-menu-action"]
+            }
             if scope == "team-member-actions" {
                 guard Set(request.keys) == ["id", "command", "target", "scope", "action", "teamID", "memberID"],
                       let approved = run.approvedOrigin,

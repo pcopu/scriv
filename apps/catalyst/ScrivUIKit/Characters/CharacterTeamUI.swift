@@ -71,6 +71,27 @@ enum CharacterTeamUI {
         child.preferredContentSize = CGSize(width: width, height: height); child.modalPresentationStyle = .formSheet
         ScrivSheetFitting.fit(child, presentedFrom: controller); controller.present(child, animated: true)
     }
+    static func confirmRemoval(_ title: String, message: String, buttonTitle: String, identifier: String,
+                               from controller: ScrivScreenController, action: @escaping () -> Void) {
+        guard controller.presentedViewController == nil else { return }
+        let sheet = ScrivScreenController(store: controller.store)
+        sheet.title = title
+        let layout = CharacterTeamSheetLayout(title: title) { [weak sheet] in sheet?.dismiss(animated: true) }
+        layout.close.configuration?.title = "Cancel"
+        layout.close.configuration?.image = nil
+        layout.close.accessibilityLabel = "Cancel"
+        layout.close.accessibilityIdentifier = identifier + "-cancel"
+        layout.content.addArrangedSubview(ScrivUIKitTheme.label(message, size: 15, color: ScrivUIKitTheme.secondary))
+        let confirm = button(buttonTitle, primary: true) { [weak sheet] in
+            guard let sheet, !sheet.isBeingDismissed, sheet.contextIsCurrent else { return }
+            sheet.dismiss(animated: true, completion: action)
+        }
+        confirm.configuration?.baseBackgroundColor = .systemRed
+        confirm.accessibilityIdentifier = identifier + "-confirm"
+        layout.footer.addArrangedSubview(confirm)
+        sheet.view = layout
+        present(sheet, from: controller, width: 520, height: 300)
+    }
     /// A sentence cannot fit in the 56×58 review avatar. Keep the complete
     /// missing state available without squeezing it into the portrait pixels.
     static func compactMissingPortrait() -> UIView {
