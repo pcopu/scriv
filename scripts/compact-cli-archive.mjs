@@ -8,6 +8,8 @@ const execute = promisify(execFile);
 const maximum = 64 * 1024 * 1024;
 const largeMaps = ['assertion-journey-map-native.json', 'assertion-journey-map-services.json',
   'cli-migration-inventory.json', 'code-e2e-links.json', 'proposed-scenario-map.json'];
+const measuredReportKinds = new Set(['lcov-intervals', 'lcov-reference-source-gaps',
+  'lcov-reference-gap-series']);
 const sameFile = (first, second) => first.dev === second.dev && first.ino === second.ino
   && first.ctimeMs === second.ctimeMs && first.size === second.size;
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -97,9 +99,18 @@ async function findArtifacts(directory, candidates) {
     }
   }
   for (const entry of entries) {
+    const path = join(directory, entry.name);
     if (entry.isDirectory() && !entry.name.startsWith('.') && !entry.name.endsWith('.app')
         && !['docs', 'design', 'node_modules'].includes(entry.name)) {
-      await findArtifacts(join(directory, entry.name), candidates);
+      await findArtifacts(path, candidates);
+    }
+    if (entry.isFile() && entry.name.includes('report') && entry.name.endsWith('.json')
+        && worthCompressing(await ownedFile(path))) {
+      const bytes = await readFile(path);
+      let report;
+      try { report = JSON.parse(bytes); }
+      catch { continue; }
+      if (measuredReportKinds.has(report?.kind)) candidates.set(path, sha256(bytes));
     }
   }
 }
