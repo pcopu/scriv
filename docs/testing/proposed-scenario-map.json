@@ -5268,10 +5268,23 @@
         "tests/e2e/journeys/project-history.mjs"
       ],
       "plannedActions": [
+        "Change a direction's owned duration through the Layers editor and inspect the Current revision comparison.",
         "Inspect history for edits to source, pictures and project metadata, including revision details."
       ],
       "expectedOutcomes": [
+        "A timing-only change displays exact old and new durations and coverage while preserving the original read-only text.",
         "Each change is presented with readable fields and the appropriate revision context rather than raw unrelated values."
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "symbol": "changeCard"
+      },
+      "actionIds": [
+        "layers-direction-duration",
+        "activate",
+        "snapshot",
+        "loaded-project",
+        "persisted-projects"
       ]
     },
     {
@@ -8338,17 +8351,18 @@
       "id": "audit-v82-a79e730569524773c69e",
       "title": "Restore a chosen cloud revision and replay",
       "featureId": "collaboration",
-      "state": "needs-extension",
+      "state": "existing",
       "existingPaths": [
-        "tests/e2e/journeys/native-cloud-history-restore.mjs"
+        "tests/e2e/journeys/native-cloud-history-restore.mjs",
+        "tests/e2e/journeys/native-cloud-history-pages.mjs"
       ],
       "plannedActions": [
         "Preview and restore the import revision through native Cloud History while an owned Worker serves the real project. Observe its new restore event and refreshed script.",
-        "Separately return a snapshot page whose headSeq differs from the requested revision."
+        "Read a two-page event history and a two-page historical snapshot through native History. Return a wrong revision, changed epoch and repeated cursor in separate attempts, then retry."
       ],
       "expectedOutcomes": [
         "Restore creates a new cloud history event and restores the script while preserving existing discussion.",
-        "A mismatched snapshot head is rejected and the preview cannot be restored."
+        "The complete valid script appears in its saved order. Each invalid response disables restore and leaves the project unchanged. A valid retry renders the complete script again."
       ],
       "candidateStartingPoints": [
         "cloud/tests-e2e/collaboration-journey.mjs"

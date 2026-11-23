@@ -87,6 +87,9 @@ export async function startNativeCloudFixture() {
       prepareInvitations: () => response('prepare-invitations'),
       interruptInvitationLoad: () => response('interrupt-invitation-load'),
       invitationState: () => response('invitation-state'),
+      prepareHistoryPages: () => response('prepare-history-pages'),
+      changeHistoryPage: mode => response(['change-history-page', mode]),
+      historyPageState: () => response('history-page-state'),
       assertNoOutbound: async () => assert.equal((await response('status')).outbound, 0),
       close,
     };
@@ -124,6 +127,7 @@ async function startWorker(root) {
       let hostedImagePath;
       const hostedImageResponses = [];
       let invitations;
+      let history;
       const withoutLeases = operations => JSON.stringify(operations.map(({ lease, ...item }) => item));
       async function interruptedCommand(payload, upstream) {
         const state = interruption;
@@ -156,7 +160,33 @@ async function startWorker(root) {
       export default class extends WorkerEntrypoint {
         async fetch(request) {
           const upstream = () => worker.fetch(request, this.env, this.ctx);
-          const path = new URL(request.url).pathname;
+          const { pathname: path, searchParams } = new URL(request.url);
+          if (history && request.method === 'GET' && path === history.path + '/history') {
+            const response = await upstream();
+            if (response.ok) {
+              const page = await response.clone().json();
+              const after = Number(searchParams.get('after'));
+              const record = { after, count: page.events.length, hasMore: page.hasMore };
+              if (!history.events.some(item => item.after === after)) history.events.push(record);
+            }
+            return response;
+          }
+          if (history && request.method === 'GET' && path === history.path + '/snapshot'
+              && searchParams.get('seq') === String(history.seq)) {
+            const response = await upstream();
+            if (!response.ok) return response;
+            const page = await response.clone().json(), after = searchParams.get('after') ?? '';
+            const mode = history.mode;
+            history.snapshots.push({ after, next: page.nextCursor, count: page.items.length });
+            if (mode === 'wrong-revision' && !after) page.headSeq++;
+            else if (mode === 'different-epoch' && after) page.epoch++;
+            else if (mode === 'repeated-cursor' && after) {
+              page.hasMore = true;
+              page.nextCursor = after;
+            } else return response;
+            history.mode = null;
+            return Response.json(page);
+          }
           if (invitations && request.method === 'GET' && path === invitations.teamPath && invitations.interruptLoad) {
             invitations.interruptLoad = false;
             invitations.interruptedLoads++;
@@ -233,6 +263,20 @@ async function startWorker(root) {
           return true;
         }
         invitationRequests() { return { interruptedLoads: invitations.interruptedLoads, revocations: [...invitations.revocations] }; }
+        watchHistory(path, seq) {
+          if (history || !Number.isSafeInteger(seq)) throw new Error('Use one owned project import revision');
+          history = { path, seq, events: [], snapshots: [], mode: null };
+        }
+        changeHistoryPage(mode) {
+          if (!history || history.mode || ![null, 'wrong-revision', 'different-epoch', 'repeated-cursor'].includes(mode))
+            throw new Error('Use one owned historical response fault at a time');
+          history.snapshots = [];
+          history.mode = mode;
+          return true;
+        }
+        historyPageState() {
+          return { events: history.events, snapshots: history.snapshots, pending: history.mode };
+        }
       }`, { mode: 0o600 });
     const denyOutbound = () => { outbound++; throw new Error('Unexpected fixture outbound request'); };
     const common = { unsafeInspectorProxy: false, compatibilityDate: '2026-10-29', modules: true, outboundService: denyOutbound };
@@ -302,9 +346,8 @@ async function startWorker(root) {
         .bind(Date.now() + 5 * 60_000, team.id).run();
       return team;
     }
-    async function seedPaidTeamProject(project, token) {
-      const team = await seedPaidTeam(token);
-      const { project: remote } = await post('/v1/projects', 201, { title: project.title, teamId: team.id }, token);
+    async function seedProject(project, token, teamId) {
+      const { project: remote } = await post('/v1/projects', 201, { title: project.title, teamId }, token);
       const path = '/v1/projects/' + remote.id;
       const headers = { Authorization: `Bearer ${token}` };
       const me = await fixture.dispatchFetch(new URL('/v1/me', base), { headers, redirect: 'error' });
@@ -315,7 +358,32 @@ async function startWorker(root) {
       const imported = await post(path + '/import', 200,
         { commandId: randomUUID(), sessionId, epoch: 1, expectedTimingVersion: 0, items }, token);
       assert.equal(imported.snapshotRequired, true);
-      return { id: remote.id, path, teamId: team.id, headers };
+      return { id: remote.id, path, teamId, headers, importSeq: imported.seq };
+    }
+    async function seedPaidTeamProject(project, token) {
+      const team = await seedPaidTeam(token);
+      return seedProject(project, token, team.id);
+    }
+    function prepareHistoryPages() {
+      return withFixtureOwner(async token => {
+        const title = 'Synthetic paged history';
+        const scene = { id: 'history-scene', title: 'Paged script', order: 0 };
+        const entries = Array.from({ length: 205 }, (_, order) => ({
+          id: 'history-line-' + String(order).padStart(3, '0'), sceneId: scene.id, order, kind: 'direction',
+          text: 'Historical direction ' + (order + 1), ownedDurationMs: 100, coverageDurationMs: 100,
+          color: 'purple', words: [], characterLinks: [],
+        }));
+        const project = { title, scenes: [scene], entries, characters: [], images: [], cues: [] };
+        const saved = await seedProject(project, token);
+        const threads = saved.path + '/threads';
+        const { thread } = await post(threads, 201, { itemId: null }, token);
+        for (let index = 0; index < 100; index++) {
+          await post(threads + '/' + thread.id + '/messages', 201,
+            { id: randomUUID(), body: 'Synthetic history activity ' + (index + 1) }, token);
+        }
+        await nativeWorker.watchHistory(saved.path, saved.importSeq);
+        return { id: saved.id, title, entries, importSeq: saved.importSeq };
+      });
     }
     let sharedProjectID;
     async function prepareSharedGeneration(project) {
@@ -419,6 +487,8 @@ async function startWorker(root) {
       prepareHostedImage, repairHostedImage, hostedImageResponses: () => nativeWorker.hostedImageResponses(),
       prepareSharedGeneration, sharedGenerationState,
       prepareInvitations, invitationState, interruptInvitationLoad: () => nativeWorker.interruptInvitationLoad(),
+      prepareHistoryPages, changeHistoryPage: mode => nativeWorker.changeHistoryPage(mode),
+      historyPageState: () => nativeWorker.historyPageState(),
       takeCode: () => mailbox.takeCode(),
       projects: async () => (await db.prepare(
         'SELECT projects.id, projects.title FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.id',
@@ -447,7 +517,9 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'prepare-hosted-image': worker.prepareHostedImage, 'repair-hosted-image': worker.repairHostedImage,
         'hosted-image-responses': worker.hostedImageResponses, 'prepare-shared-generation': worker.prepareSharedGeneration,
         'shared-generation-state': worker.sharedGenerationState, 'prepare-invitations': worker.prepareInvitations,
-        'interrupt-invitation-load': worker.interruptInvitationLoad, 'invitation-state': worker.invitationState };
+        'interrupt-invitation-load': worker.interruptInvitationLoad, 'invitation-state': worker.invitationState,
+        'prepare-history-pages': worker.prepareHistoryPages, 'change-history-page': worker.changeHistoryPage,
+        'history-page-state': worker.historyPageState };
       assert.ok(Object.hasOwn(operations, operation));
       const result = await operations[operation](value);
       if (process.connected) process.send(result);

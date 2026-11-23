@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { scriptAuthoringSteps, focusedEditors } from './script-authoring-steps.mjs';
+import { lineDurationSteps } from './line-duration-steps.mjs';
 
 export const historyReviewManifest = {
   journey: 'IJ-03', portion: 'local-history-review-and-restore', nativeVerified: false,
@@ -25,6 +26,11 @@ export const historyReviewManifest = {
       'undo and redo restore their respective contents', 'reopen preserves the result and unrelated packages'],
     sources: ['apps/catalyst/ScrivUIKit/Projects/HistoryController.swift::confirmRestore',
       'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift::restoreHistory/restoreContent'],
+  }, { key: 'timing-only-change',
+    sequence: ['Edit direction owned duration', 'Script history', 'Current revision', 'Close'],
+    assertions: ['read-only comparison shows old and new time and coverage, and original script text',
+      'review leaves the loaded model and saved packages unchanged'],
+    sources: ['apps/catalyst/ScrivUIKit/Projects/HistoryController.swift::changeCard'],
   }],
   excluded: ['Explicit revision selection is exercised in the native cloud project journey.',
     'Cloud history, account/provider access, journal corruption/recovery, process restart and crash durability.'],
@@ -212,6 +218,38 @@ export async function runHistoryReview(session) {
   await open(redone);
   assert.deepEqual(sorted(await session.command('persisted-projects')), sorted([other, redone]));
   console.log('PASS: native local history restore creates a new revision, supports undo and redo, and survives reopen');
+
+  const duration = lineDurationSteps(session);
+  await duration.open(redone, 'history-line', '0.000');
+  await duration.input('1.250');
+  await duration.button('Apply');
+  await duration.closed();
+  const timed = await step.saved(project => project.id === redone.id && project.revision > redone.revision);
+  assert.equal(timed.revision, redone.revision + 1);
+  assert.deepEqual(timed.entries, [{ ...redone.entries[0], ownedDurationMs: 1250, coverageDurationMs: 1250 }]);
+  const timedModel = await session.command('loaded-project');
+  assert.deepEqual(timedModel.project, timed);
+  await duration.collapseLayers();
+  await step.activate('Script history');
+  const currentRow = nodes => nodes.find(node => node.type === 'HistoryEventCell' && node.hittable
+    && nodes.some(child => child.path.startsWith(node.path + '.') && child.text === 'Current revision'));
+  const history = await session.waitFor(nodes => !!currentRow(nodes));
+  assert.deepEqual(await session.command('activate', { target: currentRow(history).path }), { dispatched: true });
+  const changes = await session.waitFor(nodes => nodes.some(node => node.text === 'Owned time')
+    && nodes.some(node => node.text === 'Script · unchanged'));
+  const label = changes.find(node => node.text === 'Script · unchanged');
+  const labels = changes.filter(node => node.windowPath === label.windowPath);
+  for (const value of ['0.0 s', '1.250 s', 'Coverage', '0.0–0.0 s', '0.0–1.250 s']) {
+    assert.ok(labels.some(node => node.text === value), 'History shows ' + value);
+  }
+  const parent = label.path.slice(0, label.path.lastIndexOf('.'));
+  assert.ok(labels.some(node => node.path.startsWith(parent + '.') && node.type === 'ScriptTextView'
+    && node.text === originalText && node.editable === false));
+  await step.activate('Close');
+  await waitForWorkspace();
+  assert.deepEqual(await session.command('loaded-project'), timedModel);
+  assert.deepEqual(sorted(await session.command('persisted-projects')), sorted([other, timed]));
+  console.log('PASS: native timing-only history preserves the script and shows both exact duration and coverage changes');
 }
 
 export async function activateHistoryRestore(session, decision) {
