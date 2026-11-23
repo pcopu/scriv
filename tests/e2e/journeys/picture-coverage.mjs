@@ -3,23 +3,22 @@ import { mergeRefusalListing, runMergeRefusalJourney } from './support/picture-m
 import { mergeListing, runMergeJourney } from './support/picture-merge-steps.mjs';
 import { followListing, runFollowJourney } from './support/picture-follow-steps.mjs';
 import { placementCases, runPlacementJourney } from './support/picture-placement-steps.mjs';
+import { timingGestureListing, runPictureTimingGestureJourney } from './support/picture-timing-gestures.mjs';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { fixture, content, expectedContent, validCases, invalidSeconds, foregroundCases,
   foregroundID, clippedID } from './support/picture-coverage-cases.mjs';
 import { coverageSteps, ready, sorted } from './support/picture-coverage-steps.mjs';
 
-// AUT-J09 runs numeric coverage, Add placement, cue follow, then original-menu merge.
-// Each portion launches a fresh isolated session.
-// Semantic UIKit activation/input/seek and production document import are not
-// physical pointer, drag, or picker proof.
+// AUT-J09 runs numeric coverage, placement, follow, merge and timing gestures.
+// Each portion uses a fresh isolated UIKit session.
 const args = process.argv.slice(2);
-const groups = ['numeric', 'placements', 'follow', 'merge', 'merge-refusals'];
+const groups = ['numeric', 'placements', 'follow', 'merge', 'merge-refusals', 'timing-gestures'];
 assert.ok(args.every((arg, index) => arg === '--list-cases' || arg === '--group'
   || args[index - 1] === '--group' && groups.includes(arg)), 'Unknown argument');
 assert.ok(args.filter(arg => arg === '--group').length <= 1, 'Choose one group');
 const group = args.includes('--group') ? args[args.indexOf('--group') + 1] : 'numeric';
-assert.ok(groups.includes(group), 'Choose --group numeric, placements, follow, merge or merge-refusals');
+assert.ok(groups.includes(group), `Choose --group ${groups.join(', ')}`);
 assert.equal(new Set(invalidSeconds).size, invalidSeconds.length);
 assert.deepEqual(fixture().cues.map(cue => cue.id), ['parent', 'child']);
 assert.equal(fixture().entries.reduce((sum, entry) => sum + entry.ownedDurationMs, 0), 4000);
@@ -38,10 +37,13 @@ const numericListing = { journey: 'AUT-J09', portion: 'numeric-picture-coverage'
     excluded: ['drag/scrub', 'physical input', 'picker', 'scene-growth restoration', 'pixels', 'restart recovery'],
   };
 if (args.includes('--list-cases')) {
-  const listing = args.includes('--group') ? (group === 'placements' ? placementListing : group === 'follow' ? followListing : group === 'merge' ? mergeListing : group === 'merge-refusals' ? mergeRefusalListing : numericListing)
+  const portions = [numericListing, placementListing, followListing, mergeListing, mergeRefusalListing, timingGestureListing];
+  const listing = args.includes('--group') ? portions[groups.indexOf(group)]
     : { journey: 'AUT-J09', groups, freshSessionPerGroup: true, nativeCompositionVerified: false,
-      defaultGroups: ['numeric', 'placements', 'follow', 'merge', 'merge-refusals'], portions: [numericListing, placementListing, followListing, mergeListing, mergeRefusalListing] };
+      defaultGroups: groups, portions };
   console.log(JSON.stringify(listing, null, 2));
+} else if (group === 'timing-gestures') {
+  await runPictureTimingGestureJourney();
 } else if (group === 'merge-refusals') {
   await runMergeRefusalJourney();
 } else if (group === 'merge') {
@@ -147,5 +149,6 @@ if (args.includes('--list-cases')) {
     await runFollowJourney();
     await runMergeJourney();
     await runMergeRefusalJourney();
+    await runPictureTimingGestureJourney();
   }
 }

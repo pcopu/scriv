@@ -1,6 +1,15 @@
 #if SCRIV_CLI_AUTOMATION
 import UIKit
 import Darwin
+import CoreFoundation
+
+@MainActor protocol ScrivCLIPictureTimingDriver: AnyObject {
+    var cliGestureInFlight: Bool { get }
+    var cliAcceptsSample: Bool { get }
+    func cliBeginGesture()
+    func cliSampleGesture(_ translation: Double, shift: Bool, releasing: Bool)
+    func cancel()
+}
 
 
 /// Must run before UIApplicationMain and WorkspaceStore's stored CloudClient.
@@ -12,6 +21,7 @@ func prepareScrivCLIEnvironment() throws { try ScrivCLIRunCapability.prepare() }
 final class ScrivCLI {
     static let shared = ScrivCLI()
     private weak var window: UIWindow?
+    private weak var pictureTimingGesture: (any ScrivCLIPictureTimingDriver)?
     private var started = false
     private var asynchronousCommandInProgress = false
     private var nativeAccessibility: ScrivCLIAccessibility?
@@ -251,6 +261,37 @@ final class ScrivCLI {
               let hit = window.hitTest(CGPoint(x: rect.midX, y: rect.midY), with: nil) else { return false }
         return hit === view || hit.isDescendant(of: view)
     }
+    private func pictureTimingSample(_ request: [String: Any], at view: UIView) throws -> [String: Bool] {
+        let keys = Set(request.keys)
+        let required: Set<String> = ["id", "command", "target", "phase"]
+        guard let phase = request["phase"] as? String, !isSensitiveSubtree(view) else { throw Failure("Invalid picture timing sample") }
+        let drivers = (view.gestureRecognizers ?? []).compactMap { recognizer in
+            recognizer.isEnabled ? recognizer.delegate as? ScrivCLIPictureTimingDriver : nil
+        }
+        guard drivers.count == 1, let driver = drivers.first else { throw Failure("Target has no picture timing gesture") }
+        switch phase {
+        case "begin":
+            guard keys == required else { throw Failure("Invalid picture timing sample") }
+            guard pictureTimingGesture?.cliGestureInFlight != true, !driver.cliGestureInFlight else { throw Failure("An active picture timing gesture already owns input") }
+            guard isHittable(view), (view as? UIControl)?.isEnabled != false else { throw Failure("Picture timing control is unavailable") }
+            driver.cliBeginGesture()
+            guard driver.cliGestureInFlight else { throw Failure("Picture timing control is unavailable") }
+            pictureTimingGesture = driver
+        case "change", "end":
+            guard keys == required.union(["translation", "shift"]),
+                  let displacement = request["translation"] as? NSNumber, CFGetTypeID(displacement) != CFBooleanGetTypeID(),
+                  let shift = request["shift"] as? NSNumber, CFGetTypeID(shift) == CFBooleanGetTypeID(),
+                  abs(displacement.doubleValue) <= 32_768 else { throw Failure("Invalid picture timing sample") }
+            guard pictureTimingGesture === driver, driver.cliAcceptsSample else { throw Failure("Target has no active picture timing gesture") }
+            driver.cliSampleGesture(displacement.doubleValue, shift: shift.boolValue, releasing: phase == "end")
+        case "cancel":
+            guard keys == required else { throw Failure("Invalid picture timing sample") }
+            guard pictureTimingGesture === driver, driver.cliAcceptsSample else { throw Failure("Target has no active picture timing gesture") }
+            driver.cancel()
+        default: throw Failure("Invalid picture timing sample")
+        }
+        return ["dispatched": true]
+    }
     private func keyCommands() -> [(UIResponder, UIKeyCommand)] {
         guard let window else { return [] }
         var top = (ownedWindows().first(where: { $0.isKeyWindow }) ?? window).rootViewController
@@ -334,6 +375,7 @@ final class ScrivCLI {
                     "scriptInteractionCountsSchemaVersion": 1,
                     "cloudIsolation": run.publicStatus,
                     "semanticApplicationCommands": ["import-local-image", "import-audio", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error"],
+                    "semanticGestureCommands": ["picture-timing-gesture"],
                     "jsonImportAcknowledgementScope": "owned-presentations",
                     "syntheticFixtureCommands": ["stage-package-fixture"],
                     "publicDelegateCommands": ["return", "script-insert", "script-delete-selection"],
@@ -343,7 +385,7 @@ final class ScrivCLI {
                     "sessionID": run.sessionID.uuidString.lowercased(),
                     "workspace": workspace,
                     "verificationRoot": run.root.path,
-                    "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error"]] as [String: Any]
+                    "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error", "picture-timing-gesture"]] as [String: Any]
             if run.approvedOrigin != nil {
                 result["semanticMenuActionScopes"] = (result["semanticMenuActionScopes"] as? [String] ?? []) + ["team-member-actions"]
                 for key in ["syntheticFixtureCommands", "commands"] {
@@ -635,6 +677,7 @@ final class ScrivCLI {
         let matches = views().filter { $0.0 == selector || $0.1.accessibilityIdentifier == selector }
         guard matches.count == 1, let view = matches.first?.1 else { throw Failure("Target must match exactly one visible view") }
         guard isInActivePresentation(view) else { throw Failure("Target is behind the active presentation") }
+        if command == "picture-timing-gesture" { return try pictureTimingSample(request, at: view) }
         if command == "menu" {
             var count = 0
             func describe(_ element: UIMenuElement, depth: Int) throws -> [String: Any] {

@@ -359,6 +359,17 @@ revision history, refuses a symbolic link and a mismatched saved snapshot,
 then verifies that the unchanged project exports again.
 Interactive export uses the same staging before presenting the system picker.
 
+Use `--scenario journeys/picture-coverage --group timing-gestures` for the
+Layers picture tile, its coverage edge and the Storyboard duration button.
+`capabilities.semanticGestureCommands` lists `picture-timing-gesture`.
+Send the control's current snapshot path as `target` and a `phase` of `begin`,
+`change`, `end` or `cancel`. For `change` and `end`, send the cumulative
+`translation` in points and Boolean `shift`. Layers uses horizontal points
+and honors Shift to bypass snapping. Storyboard uses vertical points. The
+sequence enters the same preview, lease and commit logic UIKit calls after
+gesture recognition. Use `snapshot` to read the preview and
+`persisted-projects` to verify the saved result.
+
 Use `--scenario journeys/native-cloud-project-sync --group lease-renewal` to
 exercise the linked script editor. Keep the editor open through its scheduled
 renewal and verify the Worker accepts autosave under that lease. The owned

@@ -34,38 +34,48 @@ import ScrivCore
         surface.accessibilityHint = mode == .offset ? "Drag horizontally to adjust offset within this source. Change source is an explicit menu action. Hold Shift to bypass snapping." : "Drag this lower right grip to change authored forward coverage. Hold Shift to bypass snapping."
     }
     deinit { leaseTask?.cancel() }
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool { let velocity = recognizer.velocity(in: surface); return !isActive && abs(velocity.x) > abs(velocity.y) && store.lockedByOther(cueID) == nil }
+    private var canBegin: Bool { !isActive && store.lockedByOther(cueID) == nil }
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        let velocity = recognizer.velocity(in: surface)
+        return canBegin && abs(velocity.x) > abs(velocity.y)
+    }
     @objc private func pan(_ sender: UIPanGestureRecognizer) {
         switch sender.state {
-        case .began:
-            do {
-                draft = try ImageTimelineDragDraft(project: store.project, cueID: cueID, mode: mode, navigation: store.navigationContext)
-                originalFrame = tile?.frame ?? .zero; originalSurfaceFrame = surface?.frame ?? .zero; originalGripFrame = coverageGrip?.frame ?? .zero; released = false; ready = false; let current = UUID(); token = current
-                if store.isPlaying { store.togglePlayback() }; onBegin()
-                if let canvas, let draft {
-                    ghost.frame = originalFrame; canvas.insertSubview(ghost, at: 0)
-                    let geometry = draft.geometry(pointsPerMillisecond: Double(scale))
-                    ownerSlot.frame = CGRect(x: CGFloat(geometry.ownerStartX), y: originalFrame.minY - 2, width: CGFloat(geometry.ownerWidth), height: originalFrame.height + 4); canvas.insertSubview(ownerSlot, at: 0); canvas.addSubview(badge)
-                }
-                preview()
-                leaseTask = Task { [weak self] in
-                    guard let self else { return }; let context = self.draft?.navigation ?? self.store.navigationContext
-                    let allowed = await self.store.beginEdit(self.cueID)
-                    guard !Task.isCancelled, self.token == current else { if allowed { self.store.endEdit(self.cueID, context: context) }; return }
-                    guard self.sourceIsCurrent else { if allowed { self.store.endEdit(self.cueID, context: context) }; self.cancel(); return }
-                    self.ready = allowed
-                    if !allowed { self.store.errorMessage = "This picture’s editing lease is unavailable. Its timing was not changed."; self.cancel() }
-                    else if self.released { self.commit() }
-                }
-            } catch { store.errorMessage = error.localizedDescription; cancel() }
-        case .changed: update(sender)
-        case .ended: update(sender); released = true; if ready { commit() }
+        case .began: beginDrag()
+        case .changed, .ended:
+            sampleDrag(Double(sender.translation(in: canvas).x), shift: recognizer.modifiers.contains(.shift), releasing: sender.state == .ended)
         case .cancelled, .failed: cancel()
         default: break
         }
     }
-    private func update(_ sender: UIPanGestureRecognizer) {
-        draft?.update(translationX: Double(sender.translation(in: canvas).x), pointsPerMillisecond: Double(scale), snapping: snapping() && !recognizer.modifiers.contains(.shift)); preview()
+    private func beginDrag() {
+        guard canBegin else { return }
+        do {
+            draft = try ImageTimelineDragDraft(project: store.project, cueID: cueID, mode: mode, navigation: store.navigationContext)
+            originalFrame = tile?.frame ?? .zero; originalSurfaceFrame = surface?.frame ?? .zero; originalGripFrame = coverageGrip?.frame ?? .zero; released = false; ready = false; let current = UUID(); token = current
+            if store.isPlaying { store.togglePlayback() }; onBegin()
+            if let canvas, let draft {
+                ghost.frame = originalFrame; canvas.insertSubview(ghost, at: 0)
+                let geometry = draft.geometry(pointsPerMillisecond: Double(scale))
+                ownerSlot.frame = CGRect(x: CGFloat(geometry.ownerStartX), y: originalFrame.minY - 2, width: CGFloat(geometry.ownerWidth), height: originalFrame.height + 4); canvas.insertSubview(ownerSlot, at: 0); canvas.addSubview(badge)
+            }
+            preview()
+            leaseTask = Task { [weak self] in
+                guard let self else { return }; let context = self.draft?.navigation ?? self.store.navigationContext
+                let allowed = await self.store.beginEdit(self.cueID)
+                guard !Task.isCancelled, self.token == current else { if allowed { self.store.endEdit(self.cueID, context: context) }; return }
+                guard self.sourceIsCurrent else { if allowed { self.store.endEdit(self.cueID, context: context) }; self.cancel(); return }
+                self.ready = allowed
+                if !allowed { self.store.errorMessage = "This picture’s editing lease is unavailable. Its timing was not changed."; self.cancel() }
+                else if self.released { self.commit() }
+            }
+        } catch { store.errorMessage = error.localizedDescription; cancel() }
+    }
+    private func sampleDrag(_ translation: Double, shift: Bool, releasing: Bool) {
+        guard isActive, !released else { return }
+        draft?.update(translationX: translation, pointsPerMillisecond: Double(scale), snapping: snapping() && !shift)
+        preview()
+        if releasing { released = true; if ready { commit() } }
     }
     private func preview() {
         guard let draft, let canvas else { return }
@@ -106,6 +116,15 @@ import ScrivCore
         tile?.frame = originalFrame; coverageGrip?.frame = originalGripFrame; if surface !== tile { surface?.frame = originalSurfaceFrame }; ghost.removeFromSuperview(); ownerSlot.removeFromSuperview(); badge.removeFromSuperview(); surface?.accessibilityValue = nil; onFinish()
     }
 }
+
+#if SCRIV_CLI_AUTOMATION
+extension ImageTimelineManipulationDriver: ScrivCLIPictureTimingDriver {
+    var cliGestureInFlight: Bool { isActive }
+    var cliAcceptsSample: Bool { isActive && !released }
+    func cliBeginGesture() { beginDrag() }
+    func cliSampleGesture(_ translation: Double, shift: Bool, releasing: Bool) { sampleDrag(translation, shift: shift, releasing: releasing) }
+}
+#endif
 
 @MainActor final class ImageTimingPanRecognizer: UIPanGestureRecognizer {
     private(set) var modifiers: UIKeyModifierFlags = []

@@ -26,33 +26,40 @@ import ScrivCore
         button.accessibilityHint = "Click for a precise duration. Hold and drag up to add time or down to remove time; release to apply."
     }
     deinit { leaseTask?.cancel() }
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool { draft == nil && store.lockedByOther(cueID) == nil }
+    private var canBegin: Bool { draft == nil && store.lockedByOther(cueID) == nil }
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool { canBegin }
     @objc private func scrub(_ gesture: UILongPressGestureRecognizer) {
         switch gesture.state {
-        case .began:
-            guard let cue = store.project.cues.first(where: { $0.id == cueID }), store.lockedByOther(cueID) == nil else { return }
-            if store.isPlaying { store.togglePlayback() }
-            draft = ImageDurationScrubDraft(cue: cue, navigationContext: store.navigationContext, projectRevision: store.project.revision); origin = gesture.location(in: button?.window)
-            originalConfiguration = button?.configuration
-            originalTitle = button?.configuration?.title ?? ScrivFormat.duration(cue.authoredDurationMs ?? cue.durationMs)
-            released = false; leaseReady = false; let current = UUID(); token = current
-            feedback.lockIn(); preview()
-            leaseTask = Task { [weak self] in
-                guard let self else { return }; let context = self.draft?.navigationContext ?? self.store.navigationContext
-                let allowed = await self.store.beginEdit(self.cueID)
-                guard !Task.isCancelled, self.token == current, self.draft?.navigationContext == self.store.navigationContext else { if allowed { self.store.endEdit(self.cueID, context: context) }; return }
-                self.leaseReady = allowed
-                if !allowed { self.store.errorMessage = "This picture’s editing lease is unavailable. Its duration was not changed."; self.cancel(); return }
-                if self.released { self.commit() }
-            }
-        case .changed:
-            guard draft != nil else { return }; draft?.update(translationY: Double(gesture.location(in: button?.window).y - origin.y)); preview()
-        case .ended:
-            guard draft != nil else { return }; draft?.update(translationY: Double(gesture.location(in: button?.window).y - origin.y)); released = true
-            if leaseReady { commit() } else { DurationHoldFeedback.tick(button, title: ScrivFormat.duration(draft!.proposedDurationMs) + "…") }
+        case .began: beginScrub(at: gesture.location(in: button?.window))
+        case .changed, .ended:
+            sampleScrub(Double(gesture.location(in: button?.window).y - origin.y), releasing: gesture.state == .ended)
         case .cancelled, .failed: cancel()
         default: break
         }
+    }
+    private func beginScrub(at point: CGPoint) {
+        guard canBegin, let cue = store.project.cues.first(where: { $0.id == cueID }) else { return }
+        if store.isPlaying { store.togglePlayback() }
+        draft = ImageDurationScrubDraft(cue: cue, navigationContext: store.navigationContext, projectRevision: store.project.revision); origin = point
+        originalConfiguration = button?.configuration
+        originalTitle = button?.configuration?.title ?? ScrivFormat.duration(cue.authoredDurationMs ?? cue.durationMs)
+        released = false; leaseReady = false; let current = UUID(); token = current
+        feedback.lockIn(); preview()
+        leaseTask = Task { [weak self] in
+            guard let self else { return }; let context = self.draft?.navigationContext ?? self.store.navigationContext
+            let allowed = await self.store.beginEdit(self.cueID)
+            guard !Task.isCancelled, self.token == current, self.draft?.navigationContext == self.store.navigationContext else { if allowed { self.store.endEdit(self.cueID, context: context) }; return }
+            self.leaseReady = allowed
+            if !allowed { self.store.errorMessage = "This picture’s editing lease is unavailable. Its duration was not changed."; self.cancel(); return }
+            if self.released { self.commit() }
+        }
+    }
+    private func sampleScrub(_ translation: Double, releasing: Bool) {
+        guard !released, var next = draft else { return }
+        next.update(translationY: translation); draft = next
+        guard releasing else { preview(); return }
+        released = true
+        if leaseReady { commit() } else { DurationHoldFeedback.tick(button, title: ScrivFormat.duration(next.proposedDurationMs) + "…") }
     }
     private func preview() {
         guard let draft else { return }
@@ -88,6 +95,15 @@ import ScrivCore
         UIView.performWithoutAnimation { button?.configuration = configuration; button?.layoutIfNeeded(); button?.titleLabel?.layer.removeAllAnimations() }; button?.accessibilityValue = nil
     }
 }
+
+#if SCRIV_CLI_AUTOMATION
+extension ImageDurationScrubDriver: ScrivCLIPictureTimingDriver {
+    var cliGestureInFlight: Bool { draft != nil }
+    var cliAcceptsSample: Bool { draft != nil && !released }
+    func cliBeginGesture() { beginScrub(at: .zero) }
+    func cliSampleGesture(_ translation: Double, shift _: Bool, releasing: Bool) { sampleScrub(translation, releasing: releasing) }
+}
+#endif
 
 @MainActor enum StoryboardBackgroundSelectionPolicy {
     static func isBlankTouch(_ view: UIView?, within boundary: UIView) -> Bool {

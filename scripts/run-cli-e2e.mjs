@@ -129,6 +129,7 @@ const groupedScenarios = new Set([
   'journeys/script-authoring-source.mjs', 'journeys/script-authoring-boundaries.mjs',
   'journeys/script-authoring-search.mjs', 'journeys/script-structure.mjs', 'journeys/text-identity-review.mjs',
   'journeys/import-export.mjs', 'journeys/native-cloud-project-sync.mjs',
+  'journeys/picture-coverage.mjs',
 ]);
 const validGroup = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(value);
 function discoverGroups(name) {
