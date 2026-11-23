@@ -22,7 +22,8 @@ export const scriptStructureCases = [{
   oracles: ['visible row order and exact saved and loaded entries, timing and anchored placements',
     'disabled actions and incorrect targets preserve the complete loaded and persisted projects',
     'explicit confirmation and cancellation for entry and scene removal',
-    'Undo/Redo restores and replays scene removal; unrelated package stays identical'],
+    'Undo/Redo restores and replays scene removal; unrelated package stays identical',
+    'moving between consecutive representable orders renumbers only the affected scene'],
 }];
 export const structureExcluded = [
   'physical menu presentation/dismissal',

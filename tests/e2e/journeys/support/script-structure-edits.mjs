@@ -128,4 +128,25 @@ export async function moveAndDeleteStructure(session) {
   await step.workspaceHistory(true);
   await savedEdit(deleted);
   assert.deepEqual(await session.command('presented-alerts'), []);
+
+  // One representable step between the surviving neighbors leaves no order
+  // value for the moved entry. Only that scene should be renumbered.
+  const crowded = { ...fixture, id: 'script-crowded-input', title: 'Script crowded ordering fixture',
+    entries: [first, { ...second, order: 1 }, { ...third, order: 1 + Number.EPSILON }, survivor] };
+  assert.deepEqual(await session.command('import-json', { text: JSON.stringify(crowded) }),
+    { dispatched: true, projectChanged: true });
+  await step.selectTab('Script');
+  const beforeCrowdedMove = await step.saved(project => project.title === crowded.title);
+  assert.deepEqual(beforeCrowdedMove, { ...crowded, id: beforeCrowdedMove.id,
+    createdAt: beforeCrowdedMove.createdAt, modifiedAt: beforeCrowdedMove.modifiedAt });
+  await verifyVisibleOrder([first.id, second.id, third.id]);
+  assert.deepEqual(await entryAction('Move down'), dispatched);
+  await step.workspaceCommand('s');
+  const normalized = await step.saved(project => project.id === beforeCrowdedMove.id && project.revision > 0);
+  assert.equal(normalized.revision, 1);
+  assert.deepEqual(content(normalized), { ...content(beforeCrowdedMove),
+    entries: [{ ...first, order: 1 }, { ...second, order: 0 }, { ...third, order: 2 }, survivor], cues: moved.cues });
+  await verifyVisibleOrder([second.id, first.id, third.id]);
+  assert.deepEqual((await session.command('loaded-project')).project, normalized);
+  assert.deepEqual(sortedProjects(await session.command('persisted-projects')), sortedProjects([startup, current, normalized]));
 }

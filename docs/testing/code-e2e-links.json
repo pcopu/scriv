@@ -1802,8 +1802,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 91,
-        "end": 99,
+        "start": 92,
+        "end": 100,
         "sha256": "58e386105f35052942465f3979f8cbc7abc125688e34a260341230bf179ccff5"
       },
       "why": "AUT-J02: exact editor text and nonempty UTF16 selection established before zoom. Refresh must retain same single editor/focus/text/both endpoints; unchanged-text gate skips resetting editor attributedText and selection. Does not prove IME, changed-text replacement or pixel size. Reviewed static association only, not native execution or measured coverage."
@@ -1959,8 +1959,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "AUT-J02 write-exact-source first authored line, with a saved nonempty Script project from openScript(). addDialogue uses the actual Dialogue button, resolves exactly one new editor/entry, and the witness checks production New line placeholder selected at0..8. The first type replaces it, second appends, Escape ends focus, display equals Hello there. caf\u00e9 \ud83c\udfac Again., and saved project has exactly one added dialogue. reveal() may scroll an offscreen control. Generic type calls UITextView.insertText and does not establish shouldChange/onTextEdit invocation; only visible/native text-change and persistence outcomes are linked. No IME, failed journal, lease denial or error-path claim. Reviewed static source/action/assertion association only. No native run, source-to-binary attestation, measured execution or legacy retirement is claimed. Dynamic targets are the exact runtime selector expressions from the witness/helpers; snapshot marks polling observations without claiming a native poll count."
@@ -2516,8 +2516,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "AUT-J02 write-exact-source first authored line, with a saved nonempty Script project from openScript(). addDialogue uses the actual Dialogue button, resolves exactly one new editor/entry, and the witness checks production New line placeholder selected at0..8. The first type replaces it, second appends, Escape ends focus, display equals Hello there. caf\u00e9 \ud83c\udfac Again., and saved project has exactly one added dialogue. reveal() may scroll an offscreen control. Generic type calls UITextView.insertText and does not establish shouldChange/onTextEdit invocation; only visible/native text-change and persistence outcomes are linked. No IME, failed journal, lease denial or error-path claim. Reviewed static source/action/assertion association only. No native run, source-to-binary attestation, measured execution or legacy retirement is claimed. Dynamic targets are the exact runtime selector expressions from the witness/helpers; snapshot marks polling observations without claiming a native poll count."
@@ -3038,8 +3038,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 103,
-        "end": 112,
+        "start": 104,
+        "end": 113,
         "sha256": "d56093aaba27330f51151816f7e068ad3401774f0247f924cc883881f59ec850"
       },
       "why": "AUT-J02: Unicode editing fixture, decomposed cafe\u0301 substring remains selected across actual zoom refresh without reselection. Insert precomposed caf\u00e9; exact UTF16 changes but word IDs/endpoints/ownership metadata remain equal. Dynamic editor identifier and selected range established83-101. A second meaningful normalization-only trace beside whitespace preservation. Reviewed static association only, not native execution or measured coverage."
@@ -10145,8 +10145,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "AUT-J02 write-exact-source first authored line, with a saved nonempty Script project from openScript(). addDialogue uses the actual Dialogue button, resolves exactly one new editor/entry, and the witness checks production New line placeholder selected at0..8. The first type replaces it, second appends, Escape ends focus, display equals Hello there. caf\u00e9 \ud83c\udfac Again., and saved project has exactly one added dialogue. reveal() may scroll an offscreen control. Generic type calls UITextView.insertText and does not establish shouldChange/onTextEdit invocation; only visible/native text-change and persistence outcomes are linked. No IME, failed journal, lease denial or error-path claim. Only the successful edit/apply/finish path is associated; journal durability, autosave delay and internal scheduling counts are not independently asserted. Reviewed static source/action/assertion association only. No native run, source-to-binary attestation, measured execution or legacy retirement is claimed. Dynamic targets are the exact runtime selector expressions from the witness/helpers; snapshot marks polling observations without claiming a native poll count."
@@ -20992,8 +20992,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "AUT-J02 write-exact-source first authored line, with a saved nonempty Script project from openScript(). addDialogue uses the actual Dialogue button, resolves exactly one new editor/entry, and the witness checks production New line placeholder selected at0..8. The first type replaces it, second appends, Escape ends focus, display equals Hello there. caf\u00e9 \ud83c\udfac Again., and saved project has exactly one added dialogue. reveal() may scroll an offscreen control. Generic type calls UITextView.insertText and does not establish shouldChange/onTextEdit invocation; only visible/native text-change and persistence outcomes are linked. No IME, failed journal, lease denial or error-path claim. Reviewed static source/action/assertion association only. No native run, source-to-binary attestation, measured execution or legacy retirement is claimed. Dynamic targets are the exact runtime selector expressions from the witness/helpers; snapshot marks polling observations without claiming a native poll count."
@@ -28168,8 +28168,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "AUT-J02 write-exact-source first authored line, with a saved nonempty Script project from openScript(). addDialogue uses the actual Dialogue button, resolves exactly one new editor/entry, and the witness checks production New line placeholder selected at0..8. The first type replaces it, second appends, Escape ends focus, display equals Hello there. caf\u00e9 \ud83c\udfac Again., and saved project has exactly one added dialogue. reveal() may scroll an offscreen control. Generic type calls UITextView.insertText and does not establish shouldChange/onTextEdit invocation; only visible/native text-change and persistence outcomes are linked. No IME, failed journal, lease denial or error-path claim. Only the successful edit/apply/finish path is associated; journal durability, autosave delay and internal scheduling counts are not independently asserted. Reviewed static source/action/assertion association only. No native run, source-to-binary attestation, measured execution or legacy retirement is claimed. Dynamic targets are the exact runtime selector expressions from the witness/helpers; snapshot marks polling observations without claiming a native poll count."
@@ -33187,8 +33187,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "AUT-J02 write-exact-source first authored line, with a saved nonempty Script project from openScript(). addDialogue uses the actual Dialogue button, resolves exactly one new editor/entry, and the witness checks production New line placeholder selected at0..8. The first type replaces it, second appends, Escape ends focus, display equals Hello there. caf\u00e9 \ud83c\udfac Again., and saved project has exactly one added dialogue. reveal() may scroll an offscreen control. Generic type calls UITextView.insertText and does not establish shouldChange/onTextEdit invocation; only visible/native text-change and persistence outcomes are linked. No IME, failed journal, lease denial or error-path claim. Only the successful edit/apply/finish path is associated; journal durability, autosave delay and internal scheduling counts are not independently asserted. Reviewed static source/action/assertion association only. No native run, source-to-binary attestation, measured execution or legacy retirement is claimed. Dynamic targets are the exact runtime selector expressions from the witness/helpers; snapshot marks polling observations without claiming a native poll count."
@@ -34178,8 +34178,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "AUT-J02 write-exact-source first authored line, with a saved nonempty Script project from openScript(). addDialogue uses the actual Dialogue button, resolves exactly one new editor/entry, and the witness checks production New line placeholder selected at0..8. The first type replaces it, second appends, Escape ends focus, display equals Hello there. caf\u00e9 \ud83c\udfac Again., and saved project has exactly one added dialogue. reveal() may scroll an offscreen control. Generic type calls UITextView.insertText and does not establish shouldChange/onTextEdit invocation; only visible/native text-change and persistence outcomes are linked. No IME, failed journal, lease denial or error-path claim. Reviewed static source/action/assertion association only. No native run, source-to-binary attestation, measured execution or legacy retirement is claimed. Dynamic targets are the exact runtime selector expressions from the witness/helpers; snapshot marks polling observations without claiming a native poll count."
@@ -37892,8 +37892,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "AUT-J02 write-exact-source first authored line, with a saved nonempty Script project from openScript(). addDialogue uses the actual Dialogue button, resolves exactly one new editor/entry, and the witness checks production New line placeholder selected at0..8. The first type replaces it, second appends, Escape ends focus, display equals Hello there. caf\u00e9 \ud83c\udfac Again., and saved project has exactly one added dialogue. reveal() may scroll an offscreen control. Generic type calls UITextView.insertText and does not establish shouldChange/onTextEdit invocation; only visible/native text-change and persistence outcomes are linked. No IME, failed journal, lease denial or error-path claim. Reviewed static source/action/assertion association only. No native run, source-to-binary attestation, measured execution or legacy retirement is claimed. Dynamic targets are the exact runtime selector expressions from the witness/helpers; snapshot marks polling observations without claiming a native poll count."
@@ -40304,8 +40304,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "AUT-J02 write-exact-source first authored line, with a saved nonempty Script project from openScript(). addDialogue uses the actual Dialogue button, resolves exactly one new editor/entry, and the witness checks production New line placeholder selected at0..8. The first type replaces it, second appends, Escape ends focus, display equals Hello there. caf\u00e9 \ud83c\udfac Again., and saved project has exactly one added dialogue. reveal() may scroll an offscreen control. Generic type calls UITextView.insertText and does not establish shouldChange/onTextEdit invocation; only visible/native text-change and persistence outcomes are linked. No IME, failed journal, lease denial or error-path claim. Only the successful edit/apply/finish path is associated; journal durability, autosave delay and internal scheduling counts are not independently asserted. Reviewed static source/action/assertion association only. No native run, source-to-binary attestation, measured execution or legacy retirement is claimed. Dynamic targets are the exact runtime selector expressions from the witness/helpers; snapshot marks polling observations without claiming a native poll count."
@@ -53147,8 +53147,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "AUT-J02 write-exact-source first authored line, with a saved nonempty Script project from openScript(). addDialogue uses the actual Dialogue button, resolves exactly one new editor/entry, and the witness checks production New line placeholder selected at0..8. The first type replaces it, second appends, Escape ends focus, display equals Hello there. caf\u00e9 \ud83c\udfac Again., and saved project has exactly one added dialogue. reveal() may scroll an offscreen control. Generic type calls UITextView.insertText and does not establish shouldChange/onTextEdit invocation; only visible/native text-change and persistence outcomes are linked. No IME, failed journal, lease denial or error-path claim. Only the successful edit/apply/finish path is associated; journal durability, autosave delay and internal scheduling counts are not independently asserted. Reviewed static source/action/assertion association only. No native run, source-to-binary attestation, measured execution or legacy retirement is claimed. Dynamic targets are the exact runtime selector expressions from the witness/helpers; snapshot marks polling observations without claiming a native poll count."
@@ -63780,8 +63780,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 103,
-        "end": 115,
+        "start": 104,
+        "end": 116,
         "sha256": "5d8f82894790e93a96a4bf34650e8beb3298db159600ade3ce8683780d0bb37c"
       },
       "why": "Replace decomposed text with composed text using the preserved UTF-16 selection. Assert exact saved and displayed text and unchanged word IDs, endpoints and timing ownership. Changed script draft application only; stale/recovery/error/no-op branches and complete unrelated-project equality are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
@@ -66849,8 +66849,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "AUT-J02 write-exact-source first authored line, with a saved nonempty Script project from openScript(). addDialogue uses the actual Dialogue button, resolves exactly one new editor/entry, and the witness checks production New line placeholder selected at0..8. The first type replaces it, second appends, Escape ends focus, display equals Hello there. caf\u00e9 \ud83c\udfac Again., and saved project has exactly one added dialogue. reveal() may scroll an offscreen control. Generic type calls UITextView.insertText and does not establish shouldChange/onTextEdit invocation; only visible/native text-change and persistence outcomes are linked. No IME, failed journal, lease denial or error-path claim. Reviewed static source/action/assertion association only. No native run, source-to-binary attestation, measured execution or legacy retirement is claimed. Dynamic targets are the exact runtime selector expressions from the witness/helpers; snapshot marks polling observations without claiming a native poll count."
@@ -72620,8 +72620,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "AUT-J02 write-exact-source first authored line, with a saved nonempty Script project from openScript(). addDialogue uses the actual Dialogue button, resolves exactly one new editor/entry, and the witness checks production New line placeholder selected at0..8. The first type replaces it, second appends, Escape ends focus, display equals Hello there. caf\u00e9 \ud83c\udfac Again., and saved project has exactly one added dialogue. reveal() may scroll an offscreen control. Generic type calls UITextView.insertText and does not establish shouldChange/onTextEdit invocation; only visible/native text-change and persistence outcomes are linked. No IME, failed journal, lease denial or error-path claim. Reviewed static source/action/assertion association only. No native run, source-to-binary attestation, measured execution or legacy retirement is claimed. Dynamic targets are the exact runtime selector expressions from the witness/helpers; snapshot marks polling observations without claiming a native poll count."
@@ -72787,8 +72787,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 103,
-        "end": 115,
+        "start": 104,
+        "end": 116,
         "sha256": "5d8f82894790e93a96a4bf34650e8beb3298db159600ade3ce8683780d0bb37c"
       },
       "why": "Replace decomposed text with composed text using the preserved UTF-16 selection. Assert exact saved and displayed text and unchanged word IDs, endpoints and timing ownership. Changed script draft application only; stale/recovery/error/no-op branches and complete unrelated-project equality are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
@@ -79951,8 +79951,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "Escape successfully finishes and detaches the current valid ordinary draft, removes editor focus and leaves exact saved/displayed text. The association covers normal guard checks and cleanup, not inactive/recovery refusal, invalid context or asynchronous release races."
@@ -80057,8 +80057,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "The fresh unblocked entry acquires an ordinary edit session and loads its local draft. The focused native editor and exact selected placeholder witness successful acquisition/loading; no active-session switch, cancellation, failed lease or recovered-draft path is claimed."
@@ -80283,8 +80283,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "The mounted editor accepts delegate processing only for its own editor outside programmatic text assignment. The type route and exact text/caret observations witness the allowed ordinary input path; other text views and settingText rejection are untested."
@@ -80441,8 +80441,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "The fresh unblocked entry acquires an ordinary edit session and loads its local draft. The focused native editor and exact selected placeholder witness successful acquisition/loading; no active-session switch, cancellation, failed lease or recovered-draft path is claimed."
@@ -80572,8 +80572,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "Native input reaches the valid-context/valid-range draft acceptance and change guards. Exact resulting editor and persisted strings witness this successful input route; rejected ranges, journal errors and unmatched IME fallback are outside scope."
@@ -80667,8 +80667,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 91,
-        "end": 99,
+        "start": 92,
+        "end": 100,
         "sha256": "58e386105f35052942465f3979f8cbc7abc125688e34a260341230bf179ccff5"
       },
       "why": "The header refresh key includes the changed shared zoom and commits the refreshed header inputs. The journey observes the changed zoom label alongside preserved editor state; scene and presence variants are not asserted."
@@ -80774,8 +80774,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "The fresh unblocked entry acquires an ordinary edit session and loads its local draft. The focused native editor and exact selected placeholder witness successful acquisition/loading; no active-session switch, cancellation, failed lease or recovered-draft path is claimed."
@@ -80950,8 +80950,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "The screen creates the entry row and coalesces session-driven refreshes while the same entry is edited and finished. The journey sees one focused editor, then its exact display text; it does not measure refresh counts or timing."
@@ -80979,8 +80979,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "The screen creates the entry row and coalesces session-driven refreshes while the same entry is edited and finished. The journey sees one focused editor, then its exact display text; it does not measure refresh counts or timing."
@@ -81026,8 +81026,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 91,
-        "end": 99,
+        "start": 92,
+        "end": 100,
         "sha256": "58e386105f35052942465f3979f8cbc7abc125688e34a260341230bf179ccff5"
       },
       "why": "The row builds and records its render inputs, including font size, before updating content. The zoom-driven refresh keeps the same logical editor and exact source/selection. This does not prove the cache hit rate, native object identity, playback highlighting or peer rendering."
@@ -81055,8 +81055,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "The screen creates the entry row and coalesces session-driven refreshes while the same entry is edited and finished. The journey sees one focused editor, then its exact display text; it does not measure refresh counts or timing."
@@ -81144,8 +81144,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "Native input reaches the valid-context/valid-range draft acceptance and change guards. Exact resulting editor and persisted strings witness this successful input route; rejected ranges, journal errors and unmatched IME fallback are outside scope."
@@ -81317,8 +81317,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 22,
-        "end": 39,
+        "start": 23,
+        "end": 40,
         "sha256": "d3e2e0365a2c35b2d411fe7ce6962b66da7f2eb5327cb335ea438b45295a57e9"
       },
       "why": "Escape successfully finishes and detaches the current valid ordinary draft, removes editor focus and leaves exact saved/displayed text. The association covers normal guard checks and cleanup, not inactive/recovery refusal, invalid context or asynchronous release races."
@@ -81362,8 +81362,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 103,
-        "end": 112,
+        "start": 104,
+        "end": 113,
         "sha256": "d56093aaba27330f51151816f7e068ad3401774f0247f924cc883881f59ec850"
       },
       "why": "The canonical-only type operation is observed in the saved package while the editor remains focused, before Escape/Finish. The native change schedules the normal deferred flush and applies the valid current draft. Exact saved text and preserved word timing metadata witness autosave here; no exact 200 ms schedule, flush count, recovery or journal-error outcome is asserted."
@@ -81410,8 +81410,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 103,
-        "end": 112,
+        "start": 104,
+        "end": 113,
         "sha256": "d56093aaba27330f51151816f7e068ad3401774f0247f924cc883881f59ec850"
       },
       "why": "The canonical-only type operation is observed in the saved package while the editor remains focused, before Escape/Finish. The native change schedules the normal deferred flush and applies the valid current draft. Exact saved text and preserved word timing metadata witness autosave here; no exact 200 ms schedule, flush count, recovery or journal-error outcome is asserted."
@@ -86479,8 +86479,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 103,
-        "end": 112,
+        "start": 104,
+        "end": 113,
         "sha256": "d56093aaba27330f51151816f7e068ad3401774f0247f924cc883881f59ec850"
       },
       "why": "The accepted draft application checks the same navigation/lifecycle, current local lease and current saved draft revision before producing the exact canonical replacement. The exact saved result witnesses the allowed path; expired leases, replaced drafts, stale contexts, journal failures and recovery-clear ordering remain unverified."
@@ -86574,8 +86574,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 103,
-        "end": 112,
+        "start": 104,
+        "end": 113,
         "sha256": "d56093aaba27330f51151816f7e068ad3401774f0247f924cc883881f59ec850"
       },
       "why": "The accepted draft application checks the same navigation/lifecycle, current local lease and current saved draft revision before producing the exact canonical replacement. The exact saved result witnesses the allowed path; expired leases, replaced drafts, stale contexts, journal failures and recovery-clear ordering remain unverified."
@@ -86910,8 +86910,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 103,
-        "end": 112,
+        "start": 104,
+        "end": 113,
         "sha256": "d56093aaba27330f51151816f7e068ad3401774f0247f924cc883881f59ec850"
       },
       "why": "The accepted draft application checks the same navigation/lifecycle, current local lease and current saved draft revision before producing the exact canonical replacement. The exact saved result witnesses the allowed path; expired leases, replaced drafts, stale contexts, journal failures and recovery-clear ordering remain unverified."
@@ -96499,6 +96499,67 @@
         "sha256": "545b9b67781dc18567b04d72b6ad3b22efc75258f563eab76e3dac5401b0b842"
       },
       "why": "Maps the real Script menu moves to the complete saved and loaded project assertions. Anchored placements follow their entries and visible rows follow the saved order."
+    },
+    {
+      "id": "ca5933dafb5f6296",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/WordTimingEditing.swift",
+        "start": 105,
+        "end": 122,
+        "sha256": "f3c7bdd38f74c7d669ab6667ea9f1818d080d3c96bf0be1c3d0ea772e90e9938"
+      },
+      "actions": [
+        "Insert too many words before an authored timing pin",
+        "Verify the rejected draft leaves the project unchanged",
+        "Correct the draft and save the re-estimated gaps around the pin"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/script-retimed-words.mjs",
+        "start": 63,
+        "end": 71,
+        "sha256": "5cbd84dd00577b099f9ff7411b0c8491b1a9c8fc736825805c82fb0f9ab9bef4"
+      },
+      "why": "Real Script editing exercises the rejection and fit cases around a fixed authored range. The fixture and complete saved oracle preserve the pin and word identities and assert exact estimated endpoints."
+    },
+    {
+      "id": "cc5e590cc1193f70",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/ProjectEditing.swift",
+        "start": 165,
+        "end": 167,
+        "sha256": "69d1a5941a880215df0745bd3f7aba0ec8062eadd993b112cc42eaa280523530"
+      },
+      "actions": [
+        "Move the selected entry between consecutive representable script positions",
+        "Save and check the exact normalized scene order and anchored placements"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/script-structure-edits.mjs",
+        "start": 142,
+        "end": 151,
+        "sha256": "75749024db4181707f9769eb241cc42c01853553c80589e1ec0c02c85872bd7e"
+      },
+      "why": "The stored Script menu runs a real move in a scene with no representable midpoint. The assertions check each entry order, visible rows, anchors, the other scene and both older packages."
+    },
+    {
+      "id": "e819a0494f2f9fec",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TimingEngine.swift",
+        "start": 20,
+        "end": 24,
+        "sha256": "dfc511825b27d6c8ddac87ac55bb3709e9e3c8c37fdbb77fba1e1629a09ef891"
+      },
+      "actions": [
+        "Append a word to a 501-word dialogue in the Script editor",
+        "Save and verify every word identity and endpoint"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/script-retimed-words.mjs",
+        "start": 78,
+        "end": 86,
+        "sha256": "ffa6528c631126c1bef69099c01f21167abbc618f5224ec40c9c748e6b79d982"
+      },
+      "why": "A real longer-scene edit exercises the large-input matching pass; the exact partition oracle asserts all original word IDs, timing endpoints and one new word."
     }
   ],
   "commentExclusions": [
@@ -100216,11 +100277,11 @@
       "id": "51d30d45826a0842",
       "source": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 124,
-        "end": 124,
+        "start": 125,
+        "end": 125,
         "sha256": "a6372f61555722746d30189d838252bbdaa3c80f1293a490d40559bbd1834840"
       },
-      "fileSha256": "8816dca0860d8dc8778e1053f4a3e6d359748da9640601efaec59e43e9c70180"
+      "fileSha256": "2896fb6da5c07f238829ed88e16921677f29472a713c17568fdac255df19a885"
     },
     {
       "id": "527a95590c13f0aa",
@@ -101306,11 +101367,11 @@
       "id": "692d86b1964d06f6",
       "source": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 11,
-        "end": 14,
+        "start": 12,
+        "end": 15,
         "sha256": "c4c7d37d6bc0cb2754bbe254049b8ffcd10980ac19201a417e44dcaeea5b4881"
       },
-      "fileSha256": "8816dca0860d8dc8778e1053f4a3e6d359748da9640601efaec59e43e9c70180"
+      "fileSha256": "2896fb6da5c07f238829ed88e16921677f29472a713c17568fdac255df19a885"
     },
     {
       "id": "693ac610ee08cce3",
@@ -101866,11 +101927,11 @@
       "id": "75780a95de1c0de9",
       "source": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 179,
-        "end": 180,
+        "start": 180,
+        "end": 181,
         "sha256": "1c82f032a9f06800b4003be3867adb019f56ea4bc2612e7a3f057c0092e2f2cf"
       },
-      "fileSha256": "8816dca0860d8dc8778e1053f4a3e6d359748da9640601efaec59e43e9c70180"
+      "fileSha256": "2896fb6da5c07f238829ed88e16921677f29472a713c17568fdac255df19a885"
     },
     {
       "id": "75b2b7c0bf830ac6",
@@ -103326,11 +103387,11 @@
       "id": "95688a8177bf4861",
       "source": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 20,
-        "end": 21,
+        "start": 21,
+        "end": 22,
         "sha256": "6d1821ce75703f57a0ffe52c4c1311c63c6eb6108db729f354fe99b616b9b7fe"
       },
-      "fileSha256": "8816dca0860d8dc8778e1053f4a3e6d359748da9640601efaec59e43e9c70180"
+      "fileSha256": "2896fb6da5c07f238829ed88e16921677f29472a713c17568fdac255df19a885"
     },
     {
       "id": "956ea4ad7d02fe1b",
@@ -105166,11 +105227,11 @@
       "id": "b91d9aadc0cf21be",
       "source": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 244,
-        "end": 244,
+        "start": 245,
+        "end": 245,
         "sha256": "ce5206a0bfe5750ba357a659f0679a189de54622d03214ec9d1932fc66260c02"
       },
-      "fileSha256": "8816dca0860d8dc8778e1053f4a3e6d359748da9640601efaec59e43e9c70180"
+      "fileSha256": "2896fb6da5c07f238829ed88e16921677f29472a713c17568fdac255df19a885"
     },
     {
       "id": "b93ac203151806bd",
@@ -105386,11 +105447,11 @@
       "id": "be519d7d99ee1c57",
       "source": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 42,
-        "end": 43,
+        "start": 43,
+        "end": 44,
         "sha256": "17d24be6a2877b2e25d161d8153087b1dd796d7961444e4490d71da23384f805"
       },
-      "fileSha256": "8816dca0860d8dc8778e1053f4a3e6d359748da9640601efaec59e43e9c70180"
+      "fileSha256": "2896fb6da5c07f238829ed88e16921677f29472a713c17568fdac255df19a885"
     },
     {
       "id": "be8c82a13114d8b9",
@@ -105736,11 +105797,11 @@
       "id": "c50b09fe9abff540",
       "source": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 103,
-        "end": 103,
+        "start": 104,
+        "end": 104,
         "sha256": "921271a3f15d5dafee55623576c8b24e6b1170781fb3d31461a09ef92863b203"
       },
-      "fileSha256": "8816dca0860d8dc8778e1053f4a3e6d359748da9640601efaec59e43e9c70180"
+      "fileSha256": "2896fb6da5c07f238829ed88e16921677f29472a713c17568fdac255df19a885"
     },
     {
       "id": "c525cebe583d70c8",
@@ -108546,11 +108607,11 @@
       "id": "ffee217810c7429d",
       "source": {
         "path": "tests/e2e/journeys/script-authoring-source.mjs",
-        "start": 139,
-        "end": 140,
+        "start": 140,
+        "end": 141,
         "sha256": "a2f581c98941a9ea8e67c1ab8577f197b4a1e129cbe308c294117932e5b05916"
       },
-      "fileSha256": "8816dca0860d8dc8778e1053f4a3e6d359748da9640601efaec59e43e9c70180"
+      "fileSha256": "2896fb6da5c07f238829ed88e16921677f29472a713c17568fdac255df19a885"
     },
     {
       "id": "fffdef2c5633e626",

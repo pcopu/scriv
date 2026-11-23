@@ -7,6 +7,7 @@ import { exactSplitCases } from './support/script-exact-split-cases.mjs';
 import { exactSplit } from './support/script-exact-split-steps.mjs';
 
 import { whitespaceWordCase, preserveWhitespaceWords } from './support/script-whitespace-word-case.mjs';
+import { retimedWordsCase, retimeEditedWords } from './support/script-retimed-words.mjs';
 
 // AUT-J02 partial: add → edit/select → refresh → finish → workspace history.
 // Return is a distinct public-delegate route, never a type('\n') substitute.
@@ -267,7 +268,8 @@ async function returnBoundary(session) {
 
 await runScriptJourney({ journey: 'AUT-J02', companions: ['AUT-J05: editing.mjs character-create/palette tail'],
   workflows: { 'write-exact-source': writeExactSource, 'return-boundary': returnBoundary,
-    'whitespace-word-preservation': preserveWhitespaceWords, 'exact-split': exactSplit },
-  cases: [...sourceCases, whitespaceWordCase, ...exactSplitCases],
+    'whitespace-word-preservation': preserveWhitespaceWords, 'exact-split': exactSplit,
+    'retime-edited-words': retimeEditedWords },
+  cases: [...sourceCases, whitespaceWordCase, ...exactSplitCases, retimedWordsCase],
   excluded: ['physical keyboard/IME or tap selection', 'Backspace/merge/native text undo', 'journal rejection/recovery/leases',
     'character-link editing beyond the exact-split confirmed partition fixture', 'font size/native object identity', 'process relaunch (browser reopen covered by whitespace-word-preservation and exact-split)', 'uncovered frozen UIKit assertions'] });
