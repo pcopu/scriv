@@ -96824,6 +96824,67 @@
         "sha256": "4d012dcc3eef15941f5e1415f44451a1ba6d9aefde38896235871876969e9287"
       },
       "why": "The explicit refresh sends one account read and a model list request and settles in the connected sign-in-required state."
+    },
+    {
+      "id": "44151b852ca783e6",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+        "start": 128,
+        "end": 135,
+        "sha256": "b9906cd8d7f6bb4f3cacfc69c8f326c69bfcb9f4356f6ad88afea02c1d940dc3"
+      },
+      "actions": [
+        "scriv activate the repaired clip in Audio Library",
+        "scriv activate Pause scene playback",
+        "scriv snapshot the paused scene position"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-audio-playback.mjs",
+        "start": 62,
+        "end": 71,
+        "sha256": "3ae1d1b11f552c5cebacf6654d701bf1500b959ccff46296aed1d3db7824abbc"
+      },
+      "why": "The clip button seeks from the earlier position to the saved placement and toggles the active scene between playing and paused."
+    },
+    {
+      "id": "94d300b6d0ad401b",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/LocalAudioEngine.swift",
+        "start": 163,
+        "end": 167,
+        "sha256": "f3e8f17f2cd86963017a7e7fc7f37117c2ef91fa258b280ada979e47bb9d334b"
+      },
+      "actions": [
+        "scriv activate the damaged local clip in Audio Library",
+        "scriv snapshot the recording integrity error"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-audio-playback.mjs",
+        "start": 49,
+        "end": 54,
+        "sha256": "8fb73fa03a0ecaec54fea9de013b060364733ef8c20affb26ca44bda77e67464"
+      },
+      "why": "The failed asynchronous load publishes the recording integrity error to the visible Audio Library."
+    },
+    {
+      "id": "a1a7b5d41e65e0b6",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/AudioFileStore.swift",
+        "start": 36,
+        "end": 37,
+        "sha256": "df510eec52471bbcab4eb07e42cf2a82749cdfe3e84597e59a69e0461e38330d"
+      },
+      "actions": [
+        "scriv activate the damaged local clip in Audio Library",
+        "scriv snapshot the recording integrity error"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-audio-playback.mjs",
+        "start": 39,
+        "end": 54,
+        "sha256": "6afc9ea41584658fc156d51981607b688112766026b538725903e20d788bda08"
+      },
+      "why": "The same-length change to the owned synthetic recording makes the real audio read fail its digest check."
     }
   ],
   "commentExclusions": [
