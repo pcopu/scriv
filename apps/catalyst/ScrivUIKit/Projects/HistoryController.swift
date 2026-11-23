@@ -264,13 +264,32 @@ final class HistoryController: ScrivScreenController, UITableViewDataSource, UIT
     private func toggleTechnical(_ id: String) { if technicalExpanded.contains(id) { technicalExpanded.remove(id) } else { technicalExpanded.insert(id) }; renderDetail() }
     private func confirmRestore() {
         guard canRestore, let captured = selection else { return }
-        let alert = UIAlertController(title: "Restore the previewed revision?", message: "Your current state stays in history. Restoring creates a new revision. A cloud restore ends editing leases; local audio is not part of cloud history.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Restore as a new revision", style: .default) { [weak self] _ in
-            guard let self, requireCurrentContext(), canRestore, selection?.id == captured.id else { return }
-            switch captured { case .working: return; case .local(let event): store.restoreHistory(event); case .cloud(let event): store.restoreCloudHistory(event) }
-            dismiss(animated: true)
-        }); present(alert, animated: true)
+        let title = "Restore the previewed revision?"
+        let confirmation = ScrivScreenController(store: store)
+        confirmation.title = title
+        let layout = CharacterTeamSheetLayout(title: title) { [weak confirmation] in confirmation?.dismiss(animated: true) }
+        layout.close.configuration?.title = "Cancel"
+        layout.close.configuration?.image = nil
+        layout.close.accessibilityLabel = "Cancel"
+        layout.close.accessibilityIdentifier = "history-restore-cancel"
+        layout.content.addArrangedSubview(ScrivUIKitTheme.label("Your current state stays in history. Restoring creates a new revision. A cloud restore ends editing leases; local audio is not part of cloud history.", size: 15, color: ScrivUIKitTheme.secondary))
+        let restore = CharacterTeamUI.button("Restore as a new revision", primary: true) { [weak self, weak confirmation] in
+            guard let confirmation, !confirmation.isBeingDismissed else { return }
+            confirmation.dismiss(animated: true) { [weak self] in
+                guard let self, requireCurrentContext(), canRestore, selection?.id == captured.id else { return }
+                switch captured {
+                case .working: return
+                case .local(let event): store.restoreHistory(event)
+                case .cloud(let event): store.restoreCloudHistory(event)
+                }
+                dismiss(animated: true)
+            }
+        }
+        restore.accessibilityIdentifier = "history-restore-confirm"
+        layout.footer.addArrangedSubview(restore)
+        confirmation.view.addSubview(layout)
+        layout.scrivPinEdges(to: confirmation.view)
+        CharacterTeamUI.present(confirmation, from: self, width: 520, height: 260)
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { events.count }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

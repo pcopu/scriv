@@ -1183,8 +1183,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 85,
-        "end": 90,
+        "start": 90,
+        "end": 95,
         "sha256": "3b08864554b0721682e5115825235c1ccc334fa82ede7033b68cacb13f0bb8d2"
       },
       "why": "The history detail selector contains Changes and Revision preview in that order. The existing tab helper resolves that exact two-segment control, selects by index and requires the corresponding selected index. Content changes are separately asserted later, not inferred from this selector alone. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -1523,8 +1523,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 166,
-        "end": 178,
+        "start": 171,
+        "end": 183,
         "sha256": "50ff5cc67915c8cda703d08148fe0246db2f8616cba13877b93d97bb3db9b44d"
       },
       "why": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
@@ -2756,8 +2756,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 137,
-        "end": 150,
+        "start": 142,
+        "end": 155,
         "sha256": "36e81d15c6c32c56af086e1c9051e867e878936e762367f912567d0e9447c50e"
       },
       "why": "The snapshot summary formats the exact counts 1 scene, 1 entry, 0 characters, 0 image cues and 0 local audio clips through ScrivFormat.count. The test requires that complete literal summary once. Larger counts and other explicit plural strings are not asserted. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -4154,8 +4154,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 134,
-        "end": 154,
+        "start": 139,
+        "end": 159,
         "sha256": "cc70dddfba3ec10a626db44aa085707df9f89947de898140fb2775a87db82421"
       },
       "why": "IJ-03: synthetic saved one-edit local history. Initial Changes lacks the exact snapshot summary; selecting detail tab1 shows exactly one summary and project title, scene title and original noneditable text in its parent detail subtree, with no current working text inside that subtree. Returning to Changes removes the summary. The source is reviewed against the strengthened test; its native result is recorded separately, not inferred from segment index alone. No physical input, arbitrary history row, Restore, cloud or crash/restart claim. The one synthetic scene title is asserted under the summary detail parent. Duration, typography and arbitrary multi-scene ordering are not separately asserted. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -4800,8 +4800,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 121,
-        "end": 133,
+        "start": 126,
+        "end": 138,
         "sha256": "565c0b036d6a78e07190656a80385581a9378ae9cbd06745c9ce040fe072cc92"
       },
       "why": "IJ-03: The contains/remove/insert toggle updates one entry disclosure and rerenders the card. Both expansion and collapse are asserted by exact payload count; other technical keys and arbitrary concurrent state are unclaimed. Fixture/setup41\u201369 imports one direction, edits its text once and saves; the default prior import has original History baseline lantern. rather than working History edited compass. entryCard95\u2013107 binds heading, Added tag, read-only original text and the one disclosure to the same card subtree. assertTechnical109\u2013119 checks exact Item identity, Before Not present and parsed After JSON equal to every saved prior-entry field. toggleTechnical121\u2013128 activates the actual button, observes payload presence/absence and checks all persisted packages plus no alerts. Loaded-project is deliberately not called while History is presented; complete loaded Date equality is checked after Close at159\u2013161. reviewAndClose runs twice and after in-process project reopen. Described commands are not a wire transcript; reveal may scroll and waitFor may poll. Only this local added direction entry is claimed: no cloud request, arbitrary revision selection, same-controller choose/reset branch, deleted/updated item, every field formatter, truncation/error branch, physical input, Restore or crash recovery."
@@ -8689,8 +8689,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "Opening normal persisted history resolves the history directory and enters its present-directory branch. Absent-directory behavior is not asserted. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -9360,8 +9360,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "History creates the content stack whose subtree the existing entryCard witness binds to the Direction text heading, Added tag and original read-only text. Stack spacing is not asserted. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -10470,8 +10470,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 134,
-        "end": 154,
+        "start": 139,
+        "end": 159,
         "sha256": "cc70dddfba3ec10a626db44aa085707df9f89947de898140fb2775a87db82421"
       },
       "why": "IJ-03: synthetic saved one-edit local history. Initial Changes lacks the exact snapshot summary; selecting detail tab1 shows exactly one summary and project title, scene title and original noneditable text in its parent detail subtree, with no current working text inside that subtree. Returning to Changes removes the summary. The source is reviewed against the strengthened test; its native result is recorded separately, not inferred from segment index alone. No physical input, arbitrary history row, Restore, cloud or crash/restart claim. Only the available-snapshot branch for selected tab1 is linked; missing-snapshot/loading fallbacks are not. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -12210,8 +12210,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "The constructed Before/After columns are attached to the same comparison/content subtree searched by entryCard for original read-only text. Width, spacing and arrow appearance are not independently asserted. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -12230,8 +12230,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 84,
+        "end": 89,
         "sha256": "8b04cf3e95080b896a10d332a6329259416346fb6a371e96b34d4e541590cef3"
       },
       "why": "IJ-03: Actual Script history UIButton callback presents the history surface, where the prior revision and default This Mac selector are observed. Does not activate an arbitrary table row or Restore. Reviewed static association for authored local history review; no native pass is inferred. Setup41-69 imports a synthetic local project and saves one distinct text revision. Callers163-164 and176-180 repeat review and switch away/reopen without restarting the process. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -12725,8 +12725,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 106,
+        "start": 100,
+        "end": 111,
         "sha256": "a0bf24320f77853d56663470ab8ca9e867c48a29a7f210bda32d457be75093dc"
       },
       "why": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN."
@@ -13761,8 +13761,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 137,
-        "end": 154,
+        "start": 142,
+        "end": 159,
         "sha256": "ffa4a660ab80353310420da1533ef764323c08fb164008c0f4ae04e06c34d4d5"
       },
       "why": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded. Static reviewed candidate only; native execution remains NOT RUN."
@@ -14027,8 +14027,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "Each persisted history candidate is read and decoded into its HistoryEntry before the reopened preview is constructed. No malformed or oversized history input is introduced. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -14235,8 +14235,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 109,
-        "end": 133,
+        "start": 114,
+        "end": 138,
         "sha256": "34fce88dc92625fea2185eac6d97b426f24f15e65636b49bbab731d70f262404"
       },
       "why": "IJ-03: The generic Encodable-to-JSONValue roundtrip is associated only with this concrete saved direction entry, through CloudCodec.items and local history. The final technical payload roundtrips to exactly the entry object; other generic types, failed encoding/decoding and alternate JSON value cases are not individually established. Fixture/setup41\u201369 imports one direction, edits its text once and saves; the default prior import has original History baseline lantern. rather than working History edited compass. entryCard95\u2013107 binds heading, Added tag, read-only original text and the one disclosure to the same card subtree. assertTechnical109\u2013119 checks exact Item identity, Before Not present and parsed After JSON equal to every saved prior-entry field. toggleTechnical121\u2013128 activates the actual button, observes payload presence/absence and checks all persisted packages plus no alerts. Loaded-project is deliberately not called while History is presented; complete loaded Date equality is checked after Close at159\u2013161. reviewAndClose runs twice and after in-process project reopen. Described commands are not a wire transcript; reveal may scroll and waitFor may poll. Only this local added direction entry is claimed: no cloud request, arbitrary revision selection, same-controller choose/reset branch, deleted/updated item, every field formatter, truncation/error branch, physical input, Restore or crash recovery."
@@ -14843,8 +14843,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 106,
+        "start": 100,
+        "end": 111,
         "sha256": "a0bf24320f77853d56663470ab8ca9e867c48a29a7f210bda32d457be75093dc"
       },
       "why": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN."
@@ -15653,8 +15653,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 84,
+        "end": 89,
         "sha256": "8b04cf3e95080b896a10d332a6329259416346fb6a371e96b34d4e541590cef3"
       },
       "why": "The actual history source selector contains This Mac and Cloud in that order. The witness requires one exact This Mac|Cloud control with index zero; Cloud switching is not claimed. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -16595,8 +16595,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "The saved history snapshot uses its revision-derived path. The browser reopen then reconstructs the prior revision from disk; filename padding itself is not asserted. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -16664,8 +16664,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 134,
-        "end": 154,
+        "start": 139,
+        "end": 159,
         "sha256": "cc70dddfba3ec10a626db44aa085707df9f89947de898140fb2775a87db82421"
       },
       "why": "IJ-03: synthetic saved one-edit local history. Initial Changes lacks the exact snapshot summary; selecting detail tab1 shows exactly one summary and project title, scene title and original noneditable text in its parent detail subtree, with no current working text inside that subtree. Returning to Changes removes the summary. The source is reviewed against the strengthened test; its native result is recorded separately, not inferred from segment index alone. No physical input, arbitrary history row, Restore, cloud or crash/restart claim. Exact project title and five-part count summary are asserted in the snapshot detail subtree, not guessed from the header. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -17885,8 +17885,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 137,
-        "end": 154,
+        "start": 142,
+        "end": 159,
         "sha256": "ffa4a660ab80353310420da1533ef764323c08fb164008c0f4ae04e06c34d4d5"
       },
       "why": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded. Static reviewed candidate only; native execution remains NOT RUN."
@@ -18058,8 +18058,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 111,
-        "end": 128,
+        "start": 116,
+        "end": 133,
         "sha256": "76a2fc40e37a45ab84a6b7d7f7dc74cd607681360caf77657a167f9ea2ebf40a"
       },
       "why": "Technical details UIAction toggles the selected entry card JSON while readable columns expose the prior original value. Witness parses exact saved entry fields, checks noneditable payload and its removal on collapse. Fonts, colors and layout geometry are excluded. Static reviewed candidate only; native execution remains NOT RUN."
@@ -18821,8 +18821,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 84,
+        "end": 89,
         "sha256": "8b04cf3e95080b896a10d332a6329259416346fb6a371e96b34d4e541590cef3"
       },
       "why": "IJ-03: The single This Mac|Cloud segmented control is observed selected at0. Only default local selection is asserted; sourceChanged callback and Cloud execution are not. Reviewed static association for authored local history review; no native pass is inferred. Setup41-69 imports a synthetic local project and saves one distinct text revision. Callers163-164 and176-180 repeat review and switch away/reopen without restarting the process. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -19180,8 +19180,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 109,
-        "end": 133,
+        "start": 114,
+        "end": 138,
         "sha256": "34fce88dc92625fea2185eac6d97b426f24f15e65636b49bbab731d70f262404"
       },
       "why": "IJ-03: Conditional technical content appears only while expanded, with exact entry Item identity, nil-before Not present and full prior-entry After JSON. The payload is noneditable. The nonnil-before and absent-after payload branches are not claimed. Fixture/setup41\u201369 imports one direction, edits its text once and saves; the default prior import has original History baseline lantern. rather than working History edited compass. entryCard95\u2013107 binds heading, Added tag, read-only original text and the one disclosure to the same card subtree. assertTechnical109\u2013119 checks exact Item identity, Before Not present and parsed After JSON equal to every saved prior-entry field. toggleTechnical121\u2013128 activates the actual button, observes payload presence/absence and checks all persisted packages plus no alerts. Loaded-project is deliberately not called while History is presented; complete loaded Date equality is checked after Close at159\u2013161. reviewAndClose runs twice and after in-process project reopen. Described commands are not a wire transcript; reveal may scroll and waitFor may poll. Only this local added direction entry is claimed: no cloud request, arbitrary revision selection, same-controller choose/reset branch, deleted/updated item, every field formatter, truncation/error branch, physical input, Restore or crash recovery."
@@ -20181,8 +20181,8 @@
       "id": "45b1631f37b105fd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
-        "start": 314,
-        "end": 314,
+        "start": 333,
+        "end": 333,
         "sha256": "f2661a9ec3f48cf9616058ae9bad1b3beb5add94f8bf8ad8c1741f6236d1642e"
       },
       "actions": [
@@ -20191,8 +20191,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 84,
+        "end": 89,
         "sha256": "8b04cf3e95080b896a10d332a6329259416346fb6a371e96b34d4e541590cef3"
       },
       "why": "HistoryEventCell publishes the supplied local revision detail to its displayed label, which the witness resolves as Revision before.revision. Heading/subtitle content and selection-dot color on the same line are not separately asserted. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -20556,8 +20556,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "IJ-03: The rendered readable-field column contains exact originalText in a noneditable text view inside the identified prior-entry card. Only this added-entry text value is associated; other field values, Before/After headings, font sizing, colors and column geometry are not asserted. This helper is called by initial assertTechnical at130 and by every toggle. Fixture/setup41\u201369 imports one direction, edits its text once and saves; the default prior import has original History baseline lantern. rather than working History edited compass. entryCard95\u2013107 binds heading, Added tag, read-only original text and the one disclosure to the same card subtree. assertTechnical109\u2013119 checks exact Item identity, Before Not present and parsed After JSON equal to every saved prior-entry field. toggleTechnical121\u2013128 activates the actual button, observes payload presence/absence and checks all persisted packages plus no alerts. Loaded-project is deliberately not called while History is presented; complete loaded Date equality is checked after Close at159\u2013161. reviewAndClose runs twice and after in-process project reopen. Described commands are not a wire transcript; reveal may scroll and waitFor may poll. Only this local added direction entry is claimed: no cloud request, arbitrary revision selection, same-controller choose/reset branch, deleted/updated item, every field formatter, truncation/error branch, physical input, Restore or crash recovery."
@@ -21181,8 +21181,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "IJ-03: The same prior-entry card contains the literal Added operation label, distinguishing the imported entry from the current working edit. Other operation labels and layout priorities are unclaimed. This helper is called by initial assertTechnical at130 and by every toggle. Fixture/setup41\u201369 imports one direction, edits its text once and saves; the default prior import has original History baseline lantern. rather than working History edited compass. entryCard95\u2013107 binds heading, Added tag, read-only original text and the one disclosure to the same card subtree. assertTechnical109\u2013119 checks exact Item identity, Before Not present and parsed After JSON equal to every saved prior-entry field. toggleTechnical121\u2013128 activates the actual button, observes payload presence/absence and checks all persisted packages plus no alerts. Loaded-project is deliberately not called while History is presented; complete loaded Date equality is checked after Close at159\u2013161. reviewAndClose runs twice and after in-process project reopen. Described commands are not a wire transcript; reveal may scroll and waitFor may poll. Only this local added direction entry is claimed: no cloud request, arbitrary revision selection, same-controller choose/reset branch, deleted/updated item, every field formatter, truncation/error branch, physical input, Restore or crash recovery."
@@ -21680,8 +21680,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "The result lock, per-source result slots and concurrent decode iteration support loading saved history after actual browser reopen. The repeated review asserts the prior revision payload exactly and original read-only preview. This associates successful history decode setup only, not scheduling, parallelism correctness, corruption or failure handling. Reviewed static native-journey association; not-run on current native app; not measured coverage."
@@ -21888,8 +21888,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 84,
+        "end": 89,
         "sha256": "8b04cf3e95080b896a10d332a6329259416346fb6a371e96b34d4e541590cef3"
       },
       "why": "The default This Mac segment defines the local-history branch; the test explicitly checks exactly one source control with selected index zero. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -21949,8 +21949,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "The newly read savedHistory replaces the active history on project opening. The final history review sees the original saved prior entry; undo/redo reset, playback state and playhead reset share this line but are not independently asserted. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -22586,8 +22586,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 119,
+        "start": 84,
+        "end": 124,
         "sha256": "bfb34dbb62b19332c072474abb2c04745e64a1314ccfa99f226a9ebcac38e7f7"
       },
       "why": "Opening History chooses the default prior local revision after reloadEvents. choose reads event.snapshot asynchronously and installs preview only for current selection/context. Prior entry card asserts original added text and exact technical JSON; repeated new sheets start collapsed; this does not isolate choose clearing an already expanded disclosure. No nil selection, cloud fetch, task cancellation or stale response rejection claim. Static reviewed candidate only; native execution remains NOT RUN."
@@ -25162,8 +25162,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 166,
-        "end": 178,
+        "start": 171,
+        "end": 183,
         "sha256": "50ff5cc67915c8cda703d08148fe0246db2f8616cba13877b93d97bb3db9b44d"
       },
       "why": "Normal local summary load reads current package summaries and reloads footer metadata; exact project title/scene-count footer precedes real Open project and full loaded-model comparison. No cancellation, stale-generation rejection, metadata failure or thumbnail behavior claim. Static reviewed candidate only; native execution remains NOT RUN."
@@ -26198,8 +26198,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 140,
-        "end": 149,
+        "start": 145,
+        "end": 154,
         "sha256": "caf0f265c42feec58e24faf69131eb4f76e27c6a35bcc531ca4a43701c1c166a"
       },
       "why": "The constructed scene body is attached to the snapshot detail hierarchy. The witness explicitly searches inside the summary detail subtree for the scene and original read-only entry; padding/card appearance is not asserted. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -26526,8 +26526,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 109,
-        "end": 133,
+        "start": 114,
+        "end": 138,
         "sha256": "34fce88dc92625fea2185eac6d97b426f24f15e65636b49bbab731d70f262404"
       },
       "why": "IJ-03: The local history serializer encodes the saved direction entry as an entry-kind CloudItem. Exact technical After JSON equals every field of the saved entry. Despite the type name, this is local serialization for History, not network sync, server persistence or cloud acceptance. Other item kinds are not covered. Fixture/setup41\u201369 imports one direction, edits its text once and saves; the default prior import has original History baseline lantern. rather than working History edited compass. entryCard95\u2013107 binds heading, Added tag, read-only original text and the one disclosure to the same card subtree. assertTechnical109\u2013119 checks exact Item identity, Before Not present and parsed After JSON equal to every saved prior-entry field. toggleTechnical121\u2013128 activates the actual button, observes payload presence/absence and checks all persisted packages plus no alerts. Loaded-project is deliberately not called while History is presented; complete loaded Date equality is checked after Close at159\u2013161. reviewAndClose runs twice and after in-process project reopen. Described commands are not a wire transcript; reveal may scroll and waitFor may poll. Only this local added direction entry is claimed: no cloud request, arbitrary revision selection, same-controller choose/reset branch, deleted/updated item, every field formatter, truncation/error branch, physical input, Restore or crash recovery."
@@ -26563,8 +26563,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 150,
+        "start": 84,
+        "end": 155,
         "sha256": "522ee715c7d4889ba13ebbd99b39b299a41d44a30c260280fe9e08c0124e2b58"
       },
       "why": "IJ-03: The successful local snapshot is assigned to preview and its prior text appears inside the summary-identified snapshot detail subtree. This fixture has no cancellation/context-switch race, error branch or cloud request, so those cases are not inferred. Reviewed static association for authored local history review; no native pass is inferred. Setup41-69 imports a synthetic local project and saves one distinct text revision. Callers163-164 and176-180 repeat review and switch away/reopen without restarting the process. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -27825,8 +27825,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "The prior added direction constructs Before/After readable columns, with original text in the card and no edited working text. Standalone arrow creation and styling are excluded; every column field is not asserted. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -28139,8 +28139,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 121,
-        "end": 133,
+        "start": 126,
+        "end": 138,
         "sha256": "565c0b036d6a78e07190656a80385581a9378ae9cbd06745c9ce040fe072cc92"
       },
       "why": "IJ-03: The actual per-entry Technical details UIButton calls toggleTechnical with that change identity. Three activations produce expanded, collapsed and expanded payload states, not merely an enabled button or changed icon. Fixture/setup41\u201369 imports one direction, edits its text once and saves; the default prior import has original History baseline lantern. rather than working History edited compass. entryCard95\u2013107 binds heading, Added tag, read-only original text and the one disclosure to the same card subtree. assertTechnical109\u2013119 checks exact Item identity, Before Not present and parsed After JSON equal to every saved prior-entry field. toggleTechnical121\u2013128 activates the actual button, observes payload presence/absence and checks all persisted packages plus no alerts. Loaded-project is deliberately not called while History is presented; complete loaded Date equality is checked after Close at159\u2013161. reviewAndClose runs twice and after in-process project reopen. Described commands are not a wire transcript; reveal may scroll and waitFor may poll. Only this local added direction entry is claimed: no cloud request, arbitrary revision selection, same-controller choose/reset branch, deleted/updated item, every field formatter, truncation/error branch, physical input, Restore or crash recovery."
@@ -28229,8 +28229,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "The final review after switch-away/reopen calls reviewAndClose, whose initial assertTechnical(false) checks absence of the prior entry payload before toggling it. This selection initialization resets technicalExpanded; only that reset and local selection initialization are associated, not cancellation, character disclosure or paging behavior. Reviewed static native-journey association; not-run on current native app; not measured coverage."
@@ -30434,8 +30434,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "Local readable fields are formed from the change before/after data; absent prior values format as Not present. The linked witness observes the original After text in the correct read-only card, not every generated field. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -30967,8 +30967,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 56,
-        "end": 70,
+        "start": 61,
+        "end": 75,
         "sha256": "990759ad81fdee96dd8a7f8457518a54fc66bede3a62323ed2d4da905d3aad73"
       },
       "why": "The accepted real text edit installs the new project, records its history entry and queues persistence. The witness requires exact edited text, one revision increment, matching loaded/saved model and preservation of the other saved package. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -33109,8 +33109,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 140,
-        "end": 149,
+        "start": 145,
+        "end": 154,
         "sha256": "caf0f265c42feec58e24faf69131eb4f76e27c6a35bcc531ca4a43701c1c166a"
       },
       "why": "Snapshot rendering iterates the stored scene collection; the actual Synthetic room scene and original entry must occur inside the summary detail subtree. Only the single-scene fixture is asserted, not general multi-scene order. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -33158,8 +33158,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "Nonempty stored original text is returned for the readable field. The empty-string display fallback is not tested. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -33394,8 +33394,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 150,
+        "start": 84,
+        "end": 155,
         "sha256": "522ee715c7d4889ba13ebbd99b39b299a41d44a30c260280fe9e08c0124e2b58"
       },
       "why": "IJ-03: Default previous-event selection yields the pre-edit text, not current working text, with an enabled Restore control and matching prior-revision label. No arbitrary row selection, empty-history fallback or Restore execution is asserted. Reviewed static association for authored local history review; no native pass is inferred. Setup41-69 imports a synthetic local project and saves one distinct text revision. Callers163-164 and176-180 repeat review and switch away/reopen without restarting the process. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -33712,8 +33712,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 119,
+        "start": 100,
+        "end": 124,
         "sha256": "ebc601af2c323afb0a9b5f89eb85aaf6b949c78c7d1c313190575f96c12c9f1c"
       },
       "why": "The selected local preview creates readable/technical changes through HistoryPresentation.localChanges. The exact original direction card and prior-entry JSON are required; cloud branches are excluded. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -34127,8 +34127,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "Decoded history is returned in descending revision order, allowing the existing default prior-revision review. Only the fixture prior/current pair is checked; duplicate rejection and ordering larger sets are not certified. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -34947,8 +34947,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 166,
-        "end": 178,
+        "start": 171,
+        "end": 183,
         "sha256": "50ff5cc67915c8cda703d08148fe0246db2f8616cba13877b93d97bb3db9b44d"
       },
       "why": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
@@ -35728,8 +35728,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "HistoryEntry construction retains the supplied snapshot and snapshot.revision. Unlike the prior v63 rejected proposal with review-only actions, this record reuses the existing full IJ-03 import/edit/save/review/browser-reopen action sequence from the repository history-publication link. The final reviewAndClose call resolves the prior local revision (79\u201384), compares the disclosed original entry to every saved prior-entry field (109\u2013119), and requires its original text, scene and project title in the snapshot subtree (137\u2013150). This supports only snapshot binding and revision association for the one local added direction. Generated history UUID, timestamp and label, arbitrary revision selection, Restore execution, cloud history and recovery are not asserted. The source call sites include ProjectRepository.saveLocked87\u201388 and WorkspaceStore.change864\u2013866; reopened history is read through ProjectRepository.history134\u2013166. Reviewed static association only, pinned to frozen v64. No native execution, measured coverage, current source-to-build attestation or legacy retirement is added. Action descriptions are actual ordered semantic CLI calls, not a wire transcript; waitFor/saved observation polling may repeat and reveal may conditionally scroll. Unasserted fields and failure/security branches are excluded."
@@ -35786,8 +35786,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 139,
-        "end": 161,
+        "start": 144,
+        "end": 166,
         "sha256": "431411d08d56367e1504551470dac1d668e5b3165637a9d72d2ee97754c8c24b"
       },
       "why": "IJ-03: Actual Close control dismisses after selecting Revision preview and then Changes. The workspace title returns; unchanged()72-77 checks exact complete loaded model/date bits after dismissal and saved packages/alerts throughout. No claim of transient loaded-state invariance while the modal is open. Reviewed static association for authored local history review; no native pass is inferred. Setup41-69 imports a synthetic local project and saves one distinct text revision. Callers163-164 and176-180 repeat review and switch away/reopen without restarting the process. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -37650,8 +37650,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "The selected entry card is returned with its content stack, which entryCard locates structurally before asserting Added, original text and unique Technical details. Only construction of that asserted card is associated; padding and visual styling are unmeasured. Reviewed static native-journey association; not-run on current native app; not measured coverage."
@@ -37772,8 +37772,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "IJ-03: The card heading is exactly Direction text and is unique in this bounded prior revision. The heading binds the later disclosure lookup to this entry card; compression resistance, typography and other item titles are not asserted. This helper is called by initial assertTechnical at130 and by every toggle. Fixture/setup41\u201369 imports one direction, edits its text once and saves; the default prior import has original History baseline lantern. rather than working History edited compass. entryCard95\u2013107 binds heading, Added tag, read-only original text and the one disclosure to the same card subtree. assertTechnical109\u2013119 checks exact Item identity, Before Not present and parsed After JSON equal to every saved prior-entry field. toggleTechnical121\u2013128 activates the actual button, observes payload presence/absence and checks all persisted packages plus no alerts. Loaded-project is deliberately not called while History is presented; complete loaded Date equality is checked after Close at159\u2013161. reviewAndClose runs twice and after in-process project reopen. Described commands are not a wire transcript; reveal may scroll and waitFor may poll. Only this local added direction entry is claimed: no cloud request, arbitrary revision selection, same-controller choose/reset branch, deleted/updated item, every field formatter, truncation/error branch, physical input, Restore or crash recovery."
@@ -38396,8 +38396,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 137,
-        "end": 150,
+        "start": 142,
+        "end": 155,
         "sha256": "36e81d15c6c32c56af086e1c9051e867e878936e762367f912567d0e9447c50e"
       },
       "why": "Revision preview constructs summary, scene and entry text from the selected prior snapshot. Witness scopes title/scene/original read-only text to summary subtree and excludes working text. Time labels, layout and multi-scene ordering are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
@@ -39056,8 +39056,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 166,
-        "end": 178,
+        "start": 171,
+        "end": 183,
         "sha256": "50ff5cc67915c8cda703d08148fe0246db2f8616cba13877b93d97bb3db9b44d"
       },
       "why": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
@@ -39207,8 +39207,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "The successfully decoded history snapshot is validated and collected. Only successful valid local snapshots are witnessed; validation rejection, synchronization races and thread safety are not independently proven. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -42049,8 +42049,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 56,
-        "end": 70,
+        "start": 61,
+        "end": 75,
         "sha256": "990759ad81fdee96dd8a7f8457518a54fc66bede3a62323ed2d4da905d3aad73"
       },
       "why": "A real replacement of the focused script text advances exactly one revision, checked at line 65; loaded output equals the saved edited project. ModifiedAt wall-clock correctness is not independently checked. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -42068,8 +42068,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 106,
+        "start": 100,
+        "end": 111,
         "sha256": "a0bf24320f77853d56663470ab8ca9e867c48a29a7f210bda32d457be75093dc"
       },
       "why": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN."
@@ -42666,8 +42666,8 @@
       "id": "94909181f88324b5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
-        "start": 287,
-        "end": 290,
+        "start": 306,
+        "end": 309,
         "sha256": "4c69317f31988b33557a730fab60e077f542bb2a58e36a850c402f72099b34bc"
       },
       "actions": [
@@ -42675,8 +42675,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 111,
-        "end": 119,
+        "start": 116,
+        "end": 124,
         "sha256": "9b6154c0015a45c2442baf132ffcee3850546dc811a9016a5110d536493c99c1"
       },
       "why": "Technical JSON is produced with the project encoder and parsed back against the complete saved original entry. Only successful bounded small payload encoding is witnessed; encoding-failure and 40k truncation branches are excluded. Static reviewed candidate only; native execution remains NOT RUN."
@@ -43120,8 +43120,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 137,
-        "end": 154,
+        "start": 142,
+        "end": 159,
         "sha256": "ffa4a660ab80353310420da1533ef764323c08fb164008c0f4ae04e06c34d4d5"
       },
       "why": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded. Static reviewed candidate only; native execution remains NOT RUN."
@@ -44522,8 +44522,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 137,
-        "end": 154,
+        "start": 142,
+        "end": 159,
         "sha256": "ffa4a660ab80353310420da1533ef764323c08fb164008c0f4ae04e06c34d4d5"
       },
       "why": "Rerendering removes previous detail children. The witness requires exactly one snapshot summary when entering Revision preview, no such summary after returning to Changes, and the retained entry technical payload on the rebuilt Changes view. This directly checks content replacement, not layout. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -45617,8 +45617,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 84,
+        "end": 89,
         "sha256": "8b04cf3e95080b896a10d332a6329259416346fb6a371e96b34d4e541590cef3"
       },
       "why": "Rendering the loaded prior local selection refreshes Restore eligibility, and the real button must become enabled/hittable. This is eligibility observation, not confirmation or restore behavior. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -46259,8 +46259,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 150,
+        "start": 84,
+        "end": 155,
         "sha256": "522ee715c7d4889ba13ebbd99b39b299a41d44a30c260280fe9e08c0124e2b58"
       },
       "why": "IJ-03: Only the local(event) snapshot branch is associated: the selected prior event exposes original text and excludes edited text from the snapshot detail subtree. Working-copy and cloud fetch branches on this shared physical line remain unclaimed. Reviewed static association for authored local history review; no native pass is inferred. Setup41-69 imports a synthetic local project and saves one distinct text revision. Callers163-164 and176-180 repeat review and switch away/reopen without restarting the process. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -47645,8 +47645,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "The ordinary successful save publishes history before current project state. After switch-away/reopen, the prior snapshot is still reviewable with its original fields. Interruption ordering and atomicity are not tested. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -48292,8 +48292,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "Catalyst opening requests the chosen package history through the loaded revision. The prior preview after switching away and reopening is the persistence oracle. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -48609,8 +48609,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "History creates the selected entry readable fields used for the original text in its Direction text card. This excludes the wordTiming-only filtering line and does not certify all field types. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -49454,8 +49454,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 109,
-        "end": 119,
+        "start": 114,
+        "end": 124,
         "sha256": "a742320c173090fdd0a2affe27c8af7cae92158b5fda82619ba59965b2968e92"
       },
       "why": "For the original imported revision, before resolves to no earlier snapshot. Technical Before must be Not present and its After JSON must equal the original saved entry. Other selected revisions are not tested. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -49961,8 +49961,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 166,
-        "end": 178,
+        "start": 171,
+        "end": 183,
         "sha256": "50ff5cc67915c8cda703d08148fe0246db2f8616cba13877b93d97bb3db9b44d"
       },
       "why": "Default Recent source combines local rows with no remote account data, filters by exact unique imported UUID title and defaults selection to the matching first result. Browser footer title and scene count are observed, then Open project produces exact independent loaded model. Cloud/team filtering, tie ordering and case-insensitive/whitespace variants are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
@@ -50788,8 +50788,8 @@
       "id": "ad85483d70103c0a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
-        "start": 289,
-        "end": 290,
+        "start": 308,
+        "end": 309,
         "sha256": "ecd8ee05097dab9c46bc5c880711b8ea31a3936a859a936cb2edc518ccb40f8e"
       },
       "actions": [
@@ -50813,8 +50813,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 109,
-        "end": 133,
+        "start": 114,
+        "end": 138,
         "sha256": "34fce88dc92625fea2185eac6d97b426f24f15e65636b49bbab731d70f262404"
       },
       "why": "IJ-03: Successful JSON encoding/UTF-8 conversion returns a complete short entry payload that JSON.parse compares field-for-field. This witnesses only the untruncated successful result; parsed equality does not prove pretty-print whitespace or key ordering, and neither error fallback nor the 40000-character truncation branch is tested. Fixture/setup41\u201369 imports one direction, edits its text once and saves; the default prior import has original History baseline lantern. rather than working History edited compass. entryCard95\u2013107 binds heading, Added tag, read-only original text and the one disclosure to the same card subtree. assertTechnical109\u2013119 checks exact Item identity, Before Not present and parsed After JSON equal to every saved prior-entry field. toggleTechnical121\u2013128 activates the actual button, observes payload presence/absence and checks all persisted packages plus no alerts. Loaded-project is deliberately not called while History is presented; complete loaded Date equality is checked after Close at159\u2013161. reviewAndClose runs twice and after in-process project reopen. Described commands are not a wire transcript; reveal may scroll and waitFor may poll. Only this local added direction entry is claimed: no cloud request, arbitrary revision selection, same-controller choose/reset branch, deleted/updated item, every field formatter, truncation/error branch, physical input, Restore or crash recovery."
@@ -51492,8 +51492,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "Collected decoded history entries are returned to the local project-opening route, whose prior-entry content is required after browser reopen. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -51802,8 +51802,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 134,
-        "end": 154,
+        "start": 139,
+        "end": 159,
         "sha256": "cc70dddfba3ec10a626db44aa085707df9f89947de898140fb2775a87db82421"
       },
       "why": "IJ-03: synthetic saved one-edit local history. Initial Changes lacks the exact snapshot summary; selecting detail tab1 shows exactly one summary and project title, scene title and original noneditable text in its parent detail subtree, with no current working text inside that subtree. Returning to Changes removes the summary. The source is reviewed against the strengthened test; its native result is recorded separately, not inferred from segment index alone. No physical input, arbitrary history row, Restore, cloud or crash/restart claim. The detail segmented control installs the valueChanged callback used by the tested select route. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -51871,8 +51871,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 109,
-        "end": 119,
+        "start": 114,
+        "end": 124,
         "sha256": "a742320c173090fdd0a2affe27c8af7cae92158b5fda82619ba59965b2968e92"
       },
       "why": "Local history serializes the snapshot items through CloudCodec.items before constructing change cards. The real prior-entry technical JSON must equal every saved original entry field. The empty fallback after serialization failure and all other item types are not tested; no cloud request occurs. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -52512,8 +52512,8 @@
       "id": "b33ebb79867b927a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
-        "start": 279,
-        "end": 280,
+        "start": 298,
+        "end": 299,
         "sha256": "08821709fe548317124799eb4cb591834005ea93ac01a38c5e81b964739446cf"
       },
       "actions": [
@@ -52522,8 +52522,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 84,
+        "end": 89,
         "sha256": "8b04cf3e95080b896a10d332a6329259416346fb6a371e96b34d4e541590cef3"
       },
       "why": "The local HistoryEvent row formats its actual stored revision as Revision N and passes that detail to its cell. The witness requires Revision before.revision in the opened sheet. Working-copy/cloud text, author/date labels, ordering and row selection are not certified. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -52777,8 +52777,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "IJ-03: For this added direction entry, the title helper chooses Direction and the changed-from-missing text suffix, yielding exactly Direction text. Dialogue, unchanged text and other item-kind branches remain unclaimed. Fixture/setup41\u201369 imports one direction, edits its text once and saves; the default prior import has original History baseline lantern. rather than working History edited compass. entryCard95\u2013107 binds heading, Added tag, read-only original text and the one disclosure to the same card subtree. assertTechnical109\u2013119 checks exact Item identity, Before Not present and parsed After JSON equal to every saved prior-entry field. toggleTechnical121\u2013128 activates the actual button, observes payload presence/absence and checks all persisted packages plus no alerts. Loaded-project is deliberately not called while History is presented; complete loaded Date equality is checked after Close at159\u2013161. reviewAndClose runs twice and after in-process project reopen. Described commands are not a wire transcript; reveal may scroll and waitFor may poll. Only this local added direction entry is claimed: no cloud request, arbitrary revision selection, same-controller choose/reset branch, deleted/updated item, every field formatter, truncation/error branch, physical input, Restore or crash recovery."
@@ -55959,8 +55959,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 137,
-        "end": 150,
+        "start": 142,
+        "end": 155,
         "sha256": "36e81d15c6c32c56af086e1c9051e867e878936e762367f912567d0e9447c50e"
       },
       "why": "Revision preview constructs summary, scene and entry text from the selected prior snapshot. Witness scopes title/scene/original read-only text to summary subtree and excludes working text. Time labels, layout and multi-scene ordering are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
@@ -56856,8 +56856,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 150,
+        "start": 84,
+        "end": 155,
         "sha256": "522ee715c7d4889ba13ebbd99b39b299a41d44a30c260280fe9e08c0124e2b58"
       },
       "why": "IJ-03: Local event construction excludes the working revision before default previous selection. The bounded one-edit fixture observes the prior revision and text; it does not prove arbitrary many-event sorting or any cloud branch. Reviewed static association for authored local history review; no native pass is inferred. Setup41-69 imports a synthetic local project and saves one distinct text revision. Callers163-164 and176-180 repeat review and switch away/reopen without restarting the process. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -57231,8 +57231,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 134,
-        "end": 154,
+        "start": 139,
+        "end": 159,
         "sha256": "cc70dddfba3ec10a626db44aa085707df9f89947de898140fb2775a87db82421"
       },
       "why": "IJ-03: synthetic saved one-edit local history. Initial Changes lacks the exact snapshot summary; selecting detail tab1 shows exactly one summary and project title, scene title and original noneditable text in its parent detail subtree, with no current working text inside that subtree. Returning to Changes removes the summary. The source is reviewed against the strengthened test; its native result is recorded separately, not inferred from segment index alone. No physical input, arbitrary history row, Restore, cloud or crash/restart claim. The one direction entry exact original text appears noneditable in the snapshot subtree. Character lookup, timing labels and other entry kinds remain unclaimed. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -57753,8 +57753,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "The small local change set is rendered as actual change cards. The witness resolves the original direction card within its subtree. Pagination and Show more behavior are not exercised. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -58147,8 +58147,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "Entry text is added as a readable field and must contain the original prior text. The speaker formatter shares this line but is not separately exercised by this direction fixture. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -58216,8 +58216,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 137,
-        "end": 154,
+        "start": 142,
+        "end": 159,
         "sha256": "ffa4a660ab80353310420da1533ef764323c08fb164008c0f4ae04e06c34d4d5"
       },
       "why": "Actual detail segment valueChanged rebuilds detail: Changes shows prior entry card; Revision preview shows its unique counts summary, title, scene and old text in the detail subtree. Switching back removes summary and preserves expanded technical payload. Loading/error/nil/cloud arms remain excluded. Static reviewed candidate only; native execution remains NOT RUN."
@@ -58566,8 +58566,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "entryCard resolves the Direction text heading parent and its shared content stack, then asserts Added and the original noneditable After text in that exact subtree. This row attachment creates that asserted relationship; compression and visual spacing are not asserted. Reviewed static native-journey association; not-run on current native app; not measured coverage."
@@ -59435,8 +59435,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 106,
+        "start": 100,
+        "end": 111,
         "sha256": "a0bf24320f77853d56663470ab8ca9e867c48a29a7f210bda32d457be75093dc"
       },
       "why": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN."
@@ -59601,8 +59601,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "Persisted history publication encodes a HistoryEntry containing the saved snapshot; the final reopened history review verifies the original prior entry, not only the current model. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -60043,8 +60043,8 @@
       "id": "ce7546edbef85109",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
-        "start": 284,
-        "end": 284,
+        "start": 303,
+        "end": 303,
         "sha256": "2645668aee8673f10d04c776547b25a5d75b053cbfd2da4e0744a20d68c4bf0e"
       },
       "actions": [
@@ -60070,8 +60070,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 134,
-        "end": 150,
+        "start": 139,
+        "end": 155,
         "sha256": "337efb08f21d120b0bc358941919760c76ce24e27f25b85515b2ffe60e34d959"
       },
       "why": "IJ-03: The shared ScriptTextView reports exact prior text and editable=false inside the revision snapshot detail subtree, now distinguished from Changes by summary absence/presence. Selectability, colors, font, physical text selection and arbitrary preview fields are not asserted. Reviewed static association for authored local history review; no native pass is inferred. Setup41-69 imports a synthetic local project and saves one distinct text revision. Callers163-164 and176-180 repeat review and switch away/reopen without restarting the process. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -60437,8 +60437,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 84,
+        "end": 89,
         "sha256": "8b04cf3e95080b896a10d332a6329259416346fb6a371e96b34d4e541590cef3"
       },
       "why": "The computed canRestore state is applied to the actual Restore button. The linked assertion requires the valid prior-local case enabled; disabled and concurrent-context cases are not asserted. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -60900,8 +60900,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 109,
-        "end": 133,
+        "start": 114,
+        "end": 138,
         "sha256": "34fce88dc92625fea2185eac6d97b426f24f15e65636b49bbab731d70f262404"
       },
       "why": "IJ-03: The local delta contains an added entry with absent Before data and the complete encoded prior entry as After data. Only that nil-before/new-entry path is established; multi-item ordering, equal-item suppression, removals and the current working edit delta are not asserted by this witness. Fixture/setup41\u201369 imports one direction, edits its text once and saves; the default prior import has original History baseline lantern. rather than working History edited compass. entryCard95\u2013107 binds heading, Added tag, read-only original text and the one disclosure to the same card subtree. assertTechnical109\u2013119 checks exact Item identity, Before Not present and parsed After JSON equal to every saved prior-entry field. toggleTechnical121\u2013128 activates the actual button, observes payload presence/absence and checks all persisted packages plus no alerts. Loaded-project is deliberately not called while History is presented; complete loaded Date equality is checked after Close at159\u2013161. reviewAndClose runs twice and after in-process project reopen. Described commands are not a wire transcript; reveal may scroll and waitFor may poll. Only this local added direction entry is claimed: no cloud request, arbitrary revision selection, same-controller choose/reset branch, deleted/updated item, every field formatter, truncation/error branch, physical input, Restore or crash recovery."
@@ -61044,8 +61044,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 84,
+        "end": 89,
         "sha256": "8b04cf3e95080b896a10d332a6329259416346fb6a371e96b34d4e541590cef3"
       },
       "why": "The valid, fully loaded default prior local revision is eligible for Restore and the real button is observed enabled. Only the local event with a revision different from current is linked; working-copy false eligibility, cloud decisions, stale context and failed preview states are not tested. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -62047,8 +62047,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 139,
-        "end": 150,
+        "start": 144,
+        "end": 155,
         "sha256": "89479a8064b0c2dd6ce047ed9df999a27841f9871d9eb4b78f5167c1f5c0130c"
       },
       "why": "IJ-03: The literal Read-only preview label is observed. This link covers only that permanently placed label; separate links use the new summary-transition assertions for the detail-tab callback. Reviewed static association for authored local history review; no native pass is inferred. Setup41-69 imports a synthetic local project and saves one distinct text revision. Callers163-164 and176-180 repeat review and switch away/reopen without restarting the process. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -62855,8 +62855,8 @@
       "id": "db9fe0984bfc612f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
-        "start": 288,
-        "end": 288,
+        "start": 307,
+        "end": 307,
         "sha256": "c7d62abf533b571f26161e05d3b6957ba17bebaace474466d6819c341f65277a"
       },
       "actions": [
@@ -62880,8 +62880,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 109,
-        "end": 133,
+        "start": 114,
+        "end": 138,
         "sha256": "34fce88dc92625fea2185eac6d97b426f24f15e65636b49bbab731d70f262404"
       },
       "why": "The technical disclosure serializes the selected prior entry with ScrivJSON.encoder; the witness parses its After text and compares every field with the saved entry. Pretty printing and key ordering are implementation context, not independently asserted formatting guarantees. Reviewed static native-journey association; not-run on current native app; not measured coverage."
@@ -62989,8 +62989,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "The readable field loop supplies the Before/After column containing the original read-only entry text asserted within the prior entry card. Only the fixture direction text field is witnessed; other field kinds are not inferred. Reviewed static native-journey association; not-run on current native app; not measured coverage."
@@ -64105,8 +64105,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 121,
-        "end": 133,
+        "start": 126,
+        "end": 138,
         "sha256": "565c0b036d6a78e07190656a80385581a9378ae9cbd06745c9ce040fe072cc92"
       },
       "why": "The entry disclosure reads the stored expanded key for successive expand, collapse and expand actions. The existing helper asserts exact payload presence/absence and package preservation. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -64437,8 +64437,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 176,
-        "end": 180,
+        "start": 181,
+        "end": 185,
         "sha256": "d886b6b538eb4e7efc3b7a8d504bec96952978b64bbf280a49557151e67d715c"
       },
       "why": "History collection reads the saved current revision and enumerates candidate JSON revisions through that ceiling. The valid original revision is observed after reopen; orphan-future, negative, malformed or non-JSON exclusion is not tested. IJ-03 setup imports the local single-direction fixture, saves it, edits its text once and saves the next revision. The full existing workflow reviews twice, switches away through the real browser, reopens the edited package and reviews again. Final caller 176\u2013180 invokes reviewAndClose79\u2013162: entryCard95\u2013107 requires the old original text (never working edited text); assertTechnical109\u2013119 compares every saved prior-entry field and Before Not present; preview139\u2013150 checks old read-only content; unchanged72\u201377/159\u2013161 checks complete loaded/date response, all saved packages and no alerts. No arbitrary revision selection, Restore invocation, process restart or damaged history is exercised. Static reviewed association only. This v60 review executes no native scenarios, adds no measured coverage and grants no legacy retirement. The actions are actual semantic CLI commands in source order, not a wire transcript; waitFor snapshots/polling may repeat and reveal may conditionally scroll. No physical input, provider/account operation, filesystem race, failure injection, crash recovery or all-branch correctness is implied."
@@ -66939,8 +66939,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 84,
+        "start": 84,
+        "end": 89,
         "sha256": "8b04cf3e95080b896a10d332a6329259416346fb6a371e96b34d4e541590cef3"
       },
       "why": "The history sheet constructs the Restore revision\u2026 button, observed as enabled and hittable for the prior local revision. The confirmRestore callback on the same line is never invoked by this witness and receives no Restore-execution claim. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -67702,8 +67702,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 107,
+        "start": 100,
+        "end": 112,
         "sha256": "d20b6c8f077f4022cd6dc24edd9dc829e0666a7a6befc2169938805f4009cc90"
       },
       "why": "IJ-03: The Added branch is observed specifically because this local prior import has no Before item. The alternative deleted-before disjunct and Removed/Updated branches are not credited. Fixture/setup41\u201369 imports one direction, edits its text once and saves; the default prior import has original History baseline lantern. rather than working History edited compass. entryCard95\u2013107 binds heading, Added tag, read-only original text and the one disclosure to the same card subtree. assertTechnical109\u2013119 checks exact Item identity, Before Not present and parsed After JSON equal to every saved prior-entry field. toggleTechnical121\u2013128 activates the actual button, observes payload presence/absence and checks all persisted packages plus no alerts. Loaded-project is deliberately not called while History is presented; complete loaded Date equality is checked after Close at159\u2013161. reviewAndClose runs twice and after in-process project reopen. Described commands are not a wire transcript; reveal may scroll and waitFor may poll. Only this local added direction entry is claimed: no cloud request, arbitrary revision selection, same-controller choose/reset branch, deleted/updated item, every field formatter, truncation/error branch, physical input, Restore or crash recovery."
@@ -69809,8 +69809,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 134,
-        "end": 154,
+        "start": 139,
+        "end": 159,
         "sha256": "cc70dddfba3ec10a626db44aa085707df9f89947de898140fb2775a87db82421"
       },
       "why": "IJ-03: synthetic saved one-edit local history. Initial Changes lacks the exact snapshot summary; selecting detail tab1 shows exactly one summary and project title, scene title and original noneditable text in its parent detail subtree, with no current working text inside that subtree. Returning to Changes removes the summary. The source is reviewed against the strengthened test; its native result is recorded separately, not inferred from segment index alone. No physical input, arbitrary history row, Restore, cloud or crash/restart claim. The callback rebuilds detail, observable in summary absence\u2192presence\u2192absence rather than selected-index mutation alone. The v50 witness was deliberately reread after the Technical details extension. The opening, prior snapshot summary/detail subtree, and Close invariance oracles are retained. Expanded/collapsed/expanded disclosure precedes Preview; after returning Changes the disclosed payload persists, then is collapsed and expanded before Close. These intervening actions are described only when inside this declared route; this association does not itself credit new disclosure source. ui.reveal may scroll and waitFor may poll, so the sequence is not a wire transcript. Native acceptance of this test overlay is separately recorded."
@@ -70737,8 +70737,8 @@
       "id": "f321e563d0620aaa",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
-        "start": 283,
-        "end": 286,
+        "start": 302,
+        "end": 305,
         "sha256": "dbbd65dc6834b8a30a2a8adcaec6db5b958e157133f4e7e5536ef1ab8c713cf5"
       },
       "actions": [
@@ -70746,8 +70746,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 111,
-        "end": 119,
+        "start": 116,
+        "end": 124,
         "sha256": "9b6154c0015a45c2442baf132ffcee3850546dc811a9016a5110d536493c99c1"
       },
       "why": "History payload uses ScriptTextView configured noneditable/selectable with exact text. Witness explicitly checks read-only technical JSON and complete field equality; font/monospace/color are not asserted. Static reviewed candidate only; native execution remains NOT RUN."
@@ -71402,8 +71402,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 95,
-        "end": 106,
+        "start": 100,
+        "end": 111,
         "sha256": "a0bf24320f77853d56663470ab8ca9e867c48a29a7f210bda32d457be75093dc"
       },
       "why": "Local prior import is converted into readable fields and Added Direction text card before/after columns. Assertions scope original noneditable text and absence of edited text to that card. Word timing, timing-only and unchanged-text branches are not claimed. Static reviewed candidate only; native execution remains NOT RUN."
@@ -72686,8 +72686,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 140,
-        "end": 149,
+        "start": 145,
+        "end": 154,
         "sha256": "caf0f265c42feec58e24faf69131eb4f76e27c6a35bcc531ca4a43701c1c166a"
       },
       "why": "The selected prior scene entry is rendered from the saved snapshot rather than the working model. The exact original read-only entry must be inside the summary detail subtree and the edited working text must be absent. Only one fixture entry is claimed. The existing IJ-03 journey imports one local direction, edits/saves it and examines the default prior import. Helper entryCard95\u2013107 binds original read-only text to its exact card; assertTechnical109\u2013119 requires Before Not present and every original saved-entry field in After JSON; preview139\u2013154 requires the summary and original text in the rebuilt detail subtree, then removes the summary when returning to Changes. Review occurs twice and after in-process browser reopen. Shared setup/helpers and exact ordered action arrays are retained once in the compact review packet. Static association only: no native run, measured execution or source-to-build attestation is added. Guard-failure/security boundaries, process restart/crash recovery, physical input and all-branch correctness are not inferred. Each rationale names only the fields/transitions actually asserted; other code on a mixed line is uncredited."
@@ -75914,8 +75914,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 180,
+        "start": 84,
+        "end": 185,
         "sha256": "f1a23de48641b74b457de12690cfb9f94c63a1d636cadd9234b15e58f9227697"
       },
       "why": "Successful history decoding returns its completed nonnil entries for the real prior-revision UI. This is the no-failure path only; thrown decode failures are excluded."
@@ -77312,8 +77312,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 180,
+        "start": 84,
+        "end": 185,
         "sha256": "f1a23de48641b74b457de12690cfb9f94c63a1d636cadd9234b15e58f9227697"
       },
       "why": "Each saved historical candidate is read, decoded, validated and placed in the result array before the displayed prior snapshot is selected. Exact old-entry payload and prior snapshot content are asserted; malformed-history failures and concurrency scheduling are unclaimed."
@@ -77610,8 +77610,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 79,
-        "end": 180,
+        "start": 84,
+        "end": 185,
         "sha256": "f1a23de48641b74b457de12690cfb9f94c63a1d636cadd9234b15e58f9227697"
       },
       "why": "Normal local history enumerates accepted revision files, bounds them to the current saved revision and returns reverse revision order used by the observed prior preview. No future orphan, malformed filename or duplicate-revision fixture is claimed."
@@ -95433,8 +95433,8 @@
       "id": "acdc0afd0c09e1b8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
-        "start": 282,
-        "end": 282,
+        "start": 301,
+        "end": 301,
         "sha256": "04387fddcea4967836834f9b3e3086d8d39d49acb2c79adb38e79d66af56b4a2"
       },
       "actions": [
@@ -96233,6 +96233,128 @@
         "sha256": "762977fe1f1711f605ba9ff781c92e425992e67e148f726625a8822886675800"
       },
       "why": "The personal cloud project produces an independently persisted Team copy with its own linked identities and the same document contents."
+    },
+    {
+      "id": "6b357634da94d34d",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 270,
+        "end": 274,
+        "sha256": "8fcd5539b85be7e7f8b53d3682f44a191699c970dde92060f1dd6070a737d7ba"
+      },
+      "actions": [
+        "activate Restore revision\u2026",
+        "activate history-restore-cancel"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+        "start": 190,
+        "end": 196,
+        "sha256": "7767a354ad6f0d32cfcb016ea59a704af07755687ed036869b2fafdfd146f93c"
+      },
+      "why": "Cancel through the normal History sheet controls and verify the complete saved and loaded project is unchanged."
+    },
+    {
+      "id": "7bd2a1c7b35346b2",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 2016,
+        "end": 2028,
+        "sha256": "64c37ae7fb6019fd7d85daef9961532b5d3c9f5515e09d8b1a2c4eb724ee61d5"
+      },
+      "actions": [
+        "activate history-restore-confirm",
+        "key Command+Z",
+        "key Command+Shift+Z"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+        "start": 198,
+        "end": 213,
+        "sha256": "afe11e4028af23040b10d56502d36a71487b793f0656014c5ec30d9f055bb028"
+      },
+      "why": "Restore the previewed document as a new revision, compare complete undo and redo contents, and reopen the exact saved result."
+    },
+    {
+      "id": "c2250ff97c591503",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 282,
+        "end": 282,
+        "sha256": "a88338f5083fc0883c91fd6cbcd7166e4edb04526a964c0123213d5575153a4c"
+      },
+      "actions": [
+        "activate history-restore-confirm",
+        "loaded-project"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/project-history-steps.mjs",
+        "start": 197,
+        "end": 203,
+        "sha256": "aabcb18d6fe831ac07b6ec72ee5fd28d612a421c89a33995c11437ef1fe31614"
+      },
+      "why": "Confirm the selected local snapshot through its normal control and assert exact restored model and a new saved revision."
+    },
+    {
+      "id": "4e6fa07c6056b1c0",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 2036,
+        "end": 2049,
+        "sha256": "3f26554a8169e86b7f2720bea754a14c79b80007bd4a2d35edc2980cecf7e0ab"
+      },
+      "actions": [
+        "activate history-restore-confirm",
+        "persisted-projects",
+        "loaded-project"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-history-restore.mjs",
+        "start": 119,
+        "end": 135,
+        "sha256": "8abcdd3ab3f8e81dae1e7f7f599e5d58ff129b5c2db5eda8d9383c439019e942"
+      },
+      "why": "Verify successful cloud restore and replay replace script content in the same persisted project, and existing discussion remains visible."
+    },
+    {
+      "id": "4f956c92d545c3b6",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "start": 283,
+        "end": 283,
+        "sha256": "262307f80875bb77ef954f0d5ad939a73af95a63dae45eeeccca2c16ce3315bc"
+      },
+      "actions": [
+        "select Cloud History",
+        "activate history-restore-confirm"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-history-restore.mjs",
+        "start": 117,
+        "end": 127,
+        "sha256": "4c7b87a6c048624800aa0fdf2ae380e0ac231009152bd3347f1134e14dfbdce0"
+      },
+      "why": "Confirm the selected older Cloud snapshot through its native button and verify the restored package and a new visible server history event."
+    },
+    {
+      "id": "8fec656215d69967",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 975,
+        "end": 978,
+        "sha256": "6a1d7b9037b466cc89bd517b7a76e704d551b3d229bc4b40b6adb7164f8e24a1"
+      },
+      "actions": [
+        "activate history-restore-confirm",
+        "select Cloud History"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-history-restore.mjs",
+        "start": 119,
+        "end": 127,
+        "sha256": "0c73ebcdfeebc33da7d6369467db2b8db26c76b2a050746ee9b2cce11c8e3d82"
+      },
+      "why": "Exercise restore through the real Worker and observe the matching restored revision and new Cloud history event."
     }
   ],
   "commentExclusions": [
@@ -96510,11 +96632,11 @@
       "id": "06968d3457fefc9d",
       "source": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 134,
-        "end": 136,
+        "start": 139,
+        "end": 141,
         "sha256": "2e9f8030b27d9cd7ea63224a0fe042f6f36bf239fd293a2cc4e07f8b89065a38"
       },
-      "fileSha256": "4257254ac639d71186fc4672ad52d4a41973eee212f224cd6811eeccda972e40"
+      "fileSha256": "5a6a7a2437d1300a8a5e8cafed1132c61831055f39efc5b00122f296d7d09892"
     },
     {
       "id": "06a7555c40f5994a",
@@ -97560,11 +97682,11 @@
       "id": "205f326616d52132",
       "source": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 73,
-        "end": 74,
+        "start": 78,
+        "end": 79,
         "sha256": "ef1a020f4ab55971e50ec6a21c25e7ed3094f1af011a0a11a74c425296d91149"
       },
-      "fileSha256": "4257254ac639d71186fc4672ad52d4a41973eee212f224cd6811eeccda972e40"
+      "fileSha256": "5a6a7a2437d1300a8a5e8cafed1132c61831055f39efc5b00122f296d7d09892"
     },
     {
       "id": "206bebd78d57edab",
@@ -98834,7 +98956,7 @@
         "end": 31,
         "sha256": "afec2680c65b7fe142bbab3e0939194ae655c30ed37f446b85892693e802292a"
       },
-      "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2"
+      "fileSha256": "fb207b728e110fcd4856e999c00c69d8e1cb85a80b249bda70fd3ca99ff2c91e"
     },
     {
       "id": "3bed70cb850f0c45",
@@ -101164,7 +101286,7 @@
         "end": 189,
         "sha256": "0fa81680606cb5b1fe0d40131983bad0f8ebe34cfe625b064c92d8f305730053"
       },
-      "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2"
+      "fileSha256": "fb207b728e110fcd4856e999c00c69d8e1cb85a80b249bda70fd3ca99ff2c91e"
     },
     {
       "id": "6b1cfd320969a866",
@@ -102870,11 +102992,11 @@
       "id": "9044e62dc7150f4b",
       "source": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 92,
-        "end": 94,
+        "start": 97,
+        "end": 99,
         "sha256": "72596e53fafbc73dbb9bff61f7cd223061580c6b4550188a4537fb66b43c3b23"
       },
-      "fileSha256": "4257254ac639d71186fc4672ad52d4a41973eee212f224cd6811eeccda972e40"
+      "fileSha256": "5a6a7a2437d1300a8a5e8cafed1132c61831055f39efc5b00122f296d7d09892"
     },
     {
       "id": "90ac1c07908c5ed4",
@@ -104104,7 +104226,7 @@
         "end": 73,
         "sha256": "c4eebe2f22eace95445cec84ac64b80b22077ae74e5e1140dc8c7a6cdb870679"
       },
-      "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2"
+      "fileSha256": "fb207b728e110fcd4856e999c00c69d8e1cb85a80b249bda70fd3ca99ff2c91e"
     },
     {
       "id": "a87ae2af3c71d763",
@@ -104330,11 +104452,11 @@
       "id": "ad153d1f32f99be9",
       "source": {
         "path": "tests/e2e/journeys/support/project-history-steps.mjs",
-        "start": 156,
-        "end": 156,
+        "start": 161,
+        "end": 161,
         "sha256": "6b55cb46120a6bb02d354ab45a3d7a161f731a58eaa202ac35c9edbb99ead3d0"
       },
-      "fileSha256": "4257254ac639d71186fc4672ad52d4a41973eee212f224cd6811eeccda972e40"
+      "fileSha256": "5a6a7a2437d1300a8a5e8cafed1132c61831055f39efc5b00122f296d7d09892"
     },
     {
       "id": "ad32a73008df90cb",
@@ -106484,7 +106606,7 @@
         "end": 66,
         "sha256": "48b3c533ce83e9912926d04a18532147a84068e45348b11866460c9af5fefbf4"
       },
-      "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2"
+      "fileSha256": "fb207b728e110fcd4856e999c00c69d8e1cb85a80b249bda70fd3ca99ff2c91e"
     },
     {
       "id": "da2e355eb43703d9",

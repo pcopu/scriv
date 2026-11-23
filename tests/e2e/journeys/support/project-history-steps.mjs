@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { scriptAuthoringSteps, focusedEditors } from './script-authoring-steps.mjs';
 
 export const historyReviewManifest = {
-  journey: 'IJ-03', portion: 'local-history-read-only-review', nativeVerified: false,
+  journey: 'IJ-03', portion: 'local-history-review-and-restore', nativeVerified: false,
   cases: [{ key: 'edit-save-review-close-reopen',
     sequence: ['import synthetic local project', 'edit through focused UITextView', 'Command-S',
       'Script history', 'inspect default prior revision', 'expand/collapse entry Technical details',
@@ -19,9 +19,14 @@ export const historyReviewManifest = {
       'apps/mac/Sources/ScrivApp/Views/ProjectHistoryPresentation.swift::localChanges',
       'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift::change/queueSave',
       'apps/mac/Sources/ScrivCore/ProjectRepository.swift::save'],
+  }, { key: 'cancel-restore-undo-redo-reopen',
+    sequence: ['Cancel restore', 'Restore as a new revision', 'Undo', 'Redo', 'browser reopen'],
+    assertions: ['cancel preserves exact loaded and persisted state', 'restore creates a new revision with the previewed content',
+      'undo and redo restore their respective contents', 'reopen preserves the result and unrelated packages'],
+    sources: ['apps/catalyst/ScrivUIKit/Projects/HistoryController.swift::confirmRestore',
+      'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift::restoreHistory/restoreContent'],
   }],
   excluded: ['Explicit revision selection is exercised in the native cloud project journey.',
-    'Restore confirmation Cancel/Restore execution and restore undo/redo: UIAlertAction public accessibility activation is not native-verified; no private handler dispatch.',
     'Cloud history, account/provider access, journal corruption/recovery, process restart and crash durability.'],
 };
 const originalText = 'History baseline lantern.';
@@ -179,4 +184,47 @@ export async function runHistoryReview(session) {
   await step.selectTab('Script');
   await reviewAndClose();
   console.log('PASS: IJ-03 local-history-read-only-review: edit/save, exact prior Technical details and disclosure toggles, prior preview, repeated Close, exact model/package preservation and persisted-history reopen');
+
+  const waitForWorkspace = () => session.waitFor(nodes => header(nodes, title)
+    && !nodes.some(node => node.title === 'Restore revision…' || node.identifier === 'history-restore-confirm'));
+  await step.activate('Script history');
+  await activateHistoryRestore(session, 'cancel');
+  await session.waitFor(nodes => nodes.some(node => node.title === 'Restore revision…' && node.enabled && node.hittable));
+  await unchanged({ modal: true });
+  await step.activate('Close');
+  await waitForWorkspace();
+  await unchanged();
+  await step.activate('Script history');
+  await activateHistoryRestore(session, 'confirm');
+  await waitForWorkspace();
+  const restored = await step.saved(project => project.id === edited.id && project.revision > edited.revision);
+  assert.deepEqual({ ...restored, modifiedAt: before.modifiedAt, revision: before.revision }, before);
+  assert.equal(restored.revision, edited.revision + 1);
+  assert.deepEqual((await session.command('loaded-project')).project, restored);
+
+  await step.workspaceHistory();
+  const undone = await step.saved(project => project.id === edited.id && project.revision > restored.revision);
+  assert.deepEqual({ ...undone, modifiedAt: edited.modifiedAt, revision: edited.revision }, edited);
+  await step.workspaceHistory(true);
+  const redone = await step.saved(project => project.id === edited.id && project.revision > undone.revision);
+  assert.deepEqual({ ...redone, modifiedAt: restored.modifiedAt, revision: restored.revision }, restored);
+  await open(other);
+  await open(redone);
+  assert.deepEqual(sorted(await session.command('persisted-projects')), sorted([other, redone]));
+  console.log('PASS: native local history restore creates a new revision, supports undo and redo, and survives reopen');
+}
+
+export async function activateHistoryRestore(session, decision) {
+  await scriptAuthoringSteps(session).activate('Restore revision…');
+  const ready = (node, action) => node.identifier === 'history-restore-' + action && node.enabled && node.hittable;
+  const nodes = await session.waitFor(nodes => nodes.some(node => ready(node, 'cancel'))
+    && nodes.some(node => ready(node, 'confirm')), 5000).catch(async error => {
+    const alert = (await session.command('presented-alerts')).find(item => item.title === 'Restore the previewed revision?');
+    if (alert) throw new Error('History shows the native alert with no CLI Restore confirmation control', { cause: error });
+    throw error;
+  });
+  assert.ok(nodes.some(node => node.text === 'Restore the previewed revision?'));
+  const target = nodes.find(node => ready(node, decision));
+  assert.equal(target.title, decision === 'cancel' ? 'Cancel' : 'Restore as a new revision');
+  assert.deepEqual(await session.command('activate', { target: target.path }), { dispatched: true });
 }

@@ -483,8 +483,8 @@
     },
     {
       "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
-      "includedLines": 304,
-      "proposedAssociatedIncludedLines": 304
+      "includedLines": 323,
+      "proposedAssociatedIncludedLines": 323
     },
     {
       "path": "apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift",
@@ -2526,15 +2526,27 @@
       "id": "wave81-2-s018",
       "title": "Displays local and cloud revision history, compares snapshots, and restores a selected revision as new work",
       "featureId": "project-persistence",
-      "state": "needs-extension",
+      "state": "existing",
       "existingPaths": [
-        "tests/e2e/journeys/project-history.mjs"
+        "tests/e2e/journeys/project-history.mjs",
+        "tests/e2e/journeys/native-cloud-history-restore.mjs"
       ],
       "plannedActions": [
         "Create local and cloud history entries; compare a past snapshot and confirm or cancel restore"
       ],
       "expectedOutcomes": [
         "Details correspond to the selected revision; cancel leaves working state unchanged and confirmation creates restored work"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "symbol": "confirmRestore"
+      },
+      "actionIds": [
+        "activate",
+        "select",
+        "snapshot",
+        "loaded-project",
+        "persisted-projects"
       ]
     },
     {
@@ -8326,16 +8338,31 @@
       "id": "audit-v82-a79e730569524773c69e",
       "title": "Restore a chosen cloud revision and replay",
       "featureId": "collaboration",
-      "state": "unwritten",
-      "existingPaths": [],
+      "state": "needs-extension",
+      "existingPaths": [
+        "tests/e2e/journeys/native-cloud-history-restore.mjs"
+      ],
       "plannedActions": [
-        "With a future approved local client fixture, page project P history and snapshot at seq 7, then restore 7 and observe replay. Separately return a snapshot page whose headSeq differs from 7."
+        "Preview and restore the import revision through native Cloud History while an owned Worker serves the real project. Observe its new restore event and refreshed script.",
+        "Separately return a snapshot page whose headSeq differs from the requested revision."
       ],
       "expectedOutcomes": [
-        "Restore POST contains seq 7, commandId, sessionId, current epoch and expectedTimingVersion; its JSON result is discarded and replay refreshes state. A mismatched snapshot head is rejected; no restored value is returned."
+        "Restore creates a new cloud history event and restores the script while preserving existing discussion.",
+        "A mismatched snapshot head is rejected and the preview cannot be restored."
       ],
       "candidateStartingPoints": [
         "cloud/tests-e2e/collaboration-journey.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
+        "symbol": "confirmRestore"
+      },
+      "actionIds": [
+        "activate",
+        "select",
+        "snapshot",
+        "loaded-project",
+        "persisted-projects"
       ]
     },
     {
@@ -12290,10 +12317,10 @@
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Projects/HistoryController.swift",
         "start": 1,
-        "end": 316,
-        "fileSha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2",
-        "spanSha256": "a36b01d6cf4598f27fbaadfa6e36bcfbb70a54975d74cf086aed32f0bc883e28",
-        "sha256": "bfceb7dc9c4ed5670cfe96234d8e4b4c9e2f00e68e58585e7c17fc0f774b06b2"
+        "end": 335,
+        "fileSha256": "fb207b728e110fcd4856e999c00c69d8e1cb85a80b249bda70fd3ca99ff2c91e",
+        "spanSha256": "99d60373f0bdda46b300a82cd6e902486db30941432186d0fb7c4708636917e0",
+        "sha256": "fb207b728e110fcd4856e999c00c69d8e1cb85a80b249bda70fd3ca99ff2c91e"
       }
     },
     {
