@@ -70,7 +70,9 @@ export async function startNativeCloudFixture() {
       deliveries: async () => (await response('status')).deliveries,
       takeCode: () => response('take-code'),
       createFreeTeam: () => response('create-free-team'),
+      createPaidTeam: () => response('create-paid-team'),
       projects: () => response('projects'),
+      projectTeams: () => response('project-teams'),
       sessionStates: () => response('session-states'),
       loseNextEditReceipt: projectId => response(['lose-edit-receipt', projectId]),
       editReceiptState: () => response('edit-receipt-state'),
@@ -406,7 +408,9 @@ async function startWorker(root) {
         .bind(invitationTeamID).all();
       return { links, members, ...await nativeWorker.invitationRequests() };
     }
-    return { origin: base.origin, createFreeTeam, status: async () => ({ deliveries: await mailbox.count(), outbound }),
+    return { origin: base.origin, createFreeTeam,
+      createPaidTeam: () => withFixtureOwner(async token => ({ id: (await seedPaidTeam(token)).id })),
+      status: async () => ({ deliveries: await mailbox.count(), outbound }),
       loseEditReceipt: projectId => nativeWorker.loseEditReceipt(projectId),
       editReceiptState: () => nativeWorker.editReceiptState(),
       matchesPendingEdit: payload => nativeWorker.matchesPendingEdit(payload),
@@ -418,6 +422,9 @@ async function startWorker(root) {
       takeCode: () => mailbox.takeCode(),
       projects: async () => (await db.prepare(
         'SELECT projects.id, projects.title FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.id',
+      ).bind(nativeFixtureEmail).all()).results,
+      projectTeams: async () => (await db.prepare(
+        'SELECT projects.id, projects.title, projects.team_id AS teamId FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.title, projects.id',
       ).bind(nativeFixtureEmail).all()).results,
       sessionStates: async () => (await db.prepare(
         'SELECT revoked_at IS NOT NULL AS revoked FROM sessions JOIN users ON sessions.user_id = users.id WHERE users.email = ? ORDER BY sessions.created_at, sessions.id',
@@ -433,7 +440,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
     process.on('message', async message => {
       const [operation, value] = Array.isArray(message) ? message : [message];
       const operations = { status: worker.status, 'take-code': worker.takeCode, 'create-free-team': worker.createFreeTeam,
-        projects: worker.projects, 'session-states': worker.sessionStates, 'lose-edit-receipt': worker.loseEditReceipt,
+        'create-paid-team': worker.createPaidTeam, projects: worker.projects, 'project-teams': worker.projectTeams,
+        'session-states': worker.sessionStates, 'lose-edit-receipt': worker.loseEditReceipt,
         'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit,
         'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState,
         'prepare-hosted-image': worker.prepareHostedImage, 'repair-hosted-image': worker.repairHostedImage,

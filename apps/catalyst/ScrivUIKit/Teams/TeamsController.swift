@@ -263,12 +263,33 @@ final class TeamsController: ScrivScreenController, UIAdaptivePresentationContro
     }
     private func confirmShare(_ team: CloudTeam) {
         let projectID = store.project.id, context = store.navigationContext, account = store.editorAccountContext
-        let alert = UIAlertController(title: "Share with \(team.name)?", message: store.project.cloudProjectId == nil ? "Share the current project with this team. Local files remain on this device." : "Create a separate team copy. The original project and its history remain unchanged.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Share", style: .default) { [weak self] _ in
-            guard let self, self.store.project.id == projectID, self.store.navigationContext == context, self.store.editorAccountContext == account else { return }
-            self.store.shareProjectWithTeam(team.id)
-        }); present(alert, animated: true)
+        let title = "Share with \(team.name)?"
+        let message = store.project.cloudProjectId == nil
+            ? "Share the current project with this team. Local files remain on this device."
+            : "Create a separate team copy. The original project and its history remain unchanged."
+        let confirmation = ScrivScreenController(store: store)
+        confirmation.title = title
+        let layout = CharacterTeamSheetLayout(title: title) { [weak confirmation] in confirmation?.dismiss(animated: true) }
+        layout.close.configuration?.title = "Cancel"
+        layout.close.configuration?.image = nil
+        layout.close.accessibilityLabel = "Cancel"
+        layout.close.accessibilityIdentifier = "team-share-cancel"
+        layout.content.addArrangedSubview(ScrivUIKitTheme.label(message, size: 15, color: ScrivUIKitTheme.secondary))
+        let share = CharacterTeamUI.button("Share", primary: true) { [weak self, weak confirmation] in
+            guard let confirmation, !confirmation.isBeingDismissed else { return }
+            confirmation.dismiss(animated: true) { [weak self] in
+                guard let self, self.active, self.store.project.id == projectID,
+                      self.store.navigationContext == context, self.store.editorAccountContext == account,
+                      self.selectedTeamID == team.id, let current = self.team, current.isPaid,
+                      current.role != "viewer", !self.store.isSyncing else { return }
+                self.store.shareProjectWithTeam(team.id)
+            }
+        }
+        share.accessibilityIdentifier = "team-share-confirm"
+        layout.footer.addArrangedSubview(share)
+        confirmation.view.addSubview(layout)
+        layout.scrivPinEdges(to: confirmation.view)
+        CharacterTeamUI.present(confirmation, from: self, width: 520, height: 260)
     }
     private func confirmCheckout(_ team: CloudTeam) {
         guard UIKitTeamPolicy.canStartCheckout(team) else { return }

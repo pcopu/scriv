@@ -506,9 +506,7 @@ final class WorkspaceStore: ObservableObject {
         }
     }
     @Published var projectURL: URL? { didSet { synchronizeAudio(); invalidatePromptPresentationContextIfNeeded() } }
-    @Published var lastJoinLink: String?
     @Published var hasConflicts = false
-    @Published var teamDetails: JSONValue?
     @Published var localProjects: [URL] = []
     @Published var discussionReplyToID: String?
     @Published var discussionAttachments: [JSONValue] = []
@@ -2065,28 +2063,9 @@ final class WorkspaceStore: ObservableObject {
         if account != nil { showAccountSignIn = false }
     }
     func signOut() { perform { try await self.cloud.signOut(); self.readCloudState() } }
-    func createTeam(name: String) { perform { _ = try await self.cloud.createTeam(name:name); self.readCloudState() } }
     func joinTeam(token: String) {
         do { let clean = try TeamInvitation.token(from:token,serverURL:cloud.baseURL); perform { try await self.cloud.joinTeam(token:clean); self.readCloudState() } }
         catch { errorMessage = error.localizedDescription }
-    }
-    func createJoinLink(teamId: String) { perform {
-        let url = try await self.cloud.joinLink(teamId:teamId); self.lastJoinLink = url.absoluteString
-#if targetEnvironment(macCatalyst)
-        UIPasteboard.general.string = url.absoluteString
-#else
-        NSPasteboard.general.clearContents(); NSPasteboard.general.setString(url.absoluteString,forType:.string)
-#endif
-        self.statusMessage = "Team invitation copied"
-    } }
-    func checkout(teamId: String) { perform { self.openExternalURL(try await self.cloud.billing(teamId:teamId,portal:false)) } }
-    func billingPortal(teamId: String) { perform { self.openExternalURL(try await self.cloud.billing(teamId:teamId,portal:true)) } }
-    private func openExternalURL(_ url: URL) {
-#if targetEnvironment(macCatalyst)
-        UIKitPresentation.open(url)
-#else
-        NSWorkspace.shared.open(url)
-#endif
     }
     func syncProject(teamId: String? = nil) {
         finishEditing()
@@ -2478,10 +2457,6 @@ final class WorkspaceStore: ObservableObject {
         self.localProjects = Array(Set(packages)).sorted { $0.lastPathComponent < $1.lastPathComponent }
     } }
     func openLocalProject(_ url: URL) { perform { try await self.open(url) } }
-    func loadTeamDetails(teamId: String) { perform { self.teamDetails = try await self.cloud.teamDetails(teamId) } }
-    func revokeJoinLink(teamId: String, linkId: String) { perform { try await self.cloud.revokeJoinLink(teamId:teamId,linkId:linkId); self.teamDetails = try await self.cloud.teamDetails(teamId) } }
-    func setMemberRole(teamId: String, userId: String, role: String) { perform { try await self.cloud.setMemberRole(teamId:teamId,userId:userId,role:role); self.teamDetails = try await self.cloud.teamDetails(teamId) } }
-    func removeMember(teamId: String, userId: String) { perform { try await self.cloud.removeMember(teamId:teamId,userId:userId); self.teamDetails = try await self.cloud.teamDetails(teamId) } }
     func addDiscussionAttachment(itemId: String, imageVersionId: String? = nil) {
         var value: [String:JSONValue] = ["itemId":.string(itemId)]
         if let imageVersionId { value["imageVersionId"] = .string(imageVersionId) }

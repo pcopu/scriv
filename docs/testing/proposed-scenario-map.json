@@ -3534,15 +3534,26 @@
       "id": "wave81-3-s024",
       "title": "Open a team sharing card for a project and select share",
       "featureId": "collaboration",
-      "state": "needs-extension",
+      "state": "existing",
       "existingPaths": [
-        "cloud/tests-e2e/collaboration-journey.mjs"
+        "tests/e2e/journeys/native-team-sharing.mjs"
       ],
       "plannedActions": [
         "Open a team sharing card for a project and select share."
       ],
       "expectedOutcomes": [
         "The current project is named and the team-copy action is available in the appropriate state."
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
+        "symbol": "sharingCard"
+      },
+      "actionIds": [
+        "workspace-panels",
+        "activate",
+        "snapshot",
+        "persisted-projects",
+        "loaded-project"
       ]
     },
     {
@@ -3562,15 +3573,26 @@
       "id": "wave81-3-s026",
       "title": "Start project sharing and cancel, then confirm for the selected team",
       "featureId": "collaboration",
-      "state": "needs-extension",
+      "state": "existing",
       "existingPaths": [
-        "cloud/tests-e2e/collaboration-journey.mjs"
+        "tests/e2e/journeys/native-team-sharing.mjs"
       ],
       "plannedActions": [
         "Start project sharing and cancel, then confirm for the selected team."
       ],
       "expectedOutcomes": [
         "Cancellation leaves the project unshared; confirmation initiates a copy to the chosen team."
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
+        "symbol": "confirmShare"
+      },
+      "actionIds": [
+        "workspace-panels",
+        "activate",
+        "snapshot",
+        "persisted-projects",
+        "loaded-project"
       ]
     },
     {
@@ -6511,13 +6533,26 @@
       "id": "audit-v82-096f14be8e768c52fec9",
       "title": "Share linked and local-only projects",
       "featureId": "teams",
-      "state": "unwritten",
-      "existingPaths": [],
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/native-team-sharing.mjs"
+      ],
       "plannedActions": [
         "In an isolated account share an already cloud-linked package with an identified team; separately share a local-only project. Compare IDs and original package data."
       ],
       "expectedOutcomes": [
         "The linked project creates and durably saves a new team copy before sync while retaining the original. The local-only project follows direct team sync rather than a mandatory copy."
+      ],
+      "entryPoint": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "symbol": "shareProjectWithTeam"
+      },
+      "actionIds": [
+        "workspace-panels",
+        "activate",
+        "snapshot",
+        "persisted-projects",
+        "loaded-project"
       ]
     },
     {
@@ -9185,16 +9220,23 @@
     },
     {
       "id": "audit-v82-f122a259ee2e98547fe6",
-      "title": "Observe team details completed out of order",
+      "title": "Ignore stale Team details after selection changes",
       "featureId": "teams",
-      "state": "unwritten",
-      "existingPaths": [],
+      "state": "needs-extension",
+      "existingPaths": [
+        "tests/e2e/journeys/native-team-invitations.mjs"
+      ],
       "plannedActions": [
-        "Request details for team A, then B; complete B first and release A later. Inspect the shared details value after each completion."
+        "Request details for team A, switch to team B, then deliver the older Team A response after Team B is visible."
       ],
       "expectedOutcomes": [
-        "The shared value may reflect the latest completed response, including late A; the current code does not establish selected-team fencing. Any desired stale-response rejection is a separate unresolved regression."
-      ]
+        "Only the response for the current Team, load and account appears."
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
+        "symbol": "reload"
+      },
+      "actionIds": []
     },
     {
       "id": "audit-v82-f464ba1b0cddd9ef0788",
@@ -13879,7 +13921,8 @@
     {
       "rangeId": "9d01140f532a8fd67e0c",
       "scenarioIds": [
-        "wave81-3-s025"
+        "wave81-3-s025",
+        "audit-v82-f122a259ee2e98547fe6"
       ],
       "rationale": "Displays members and handles team, role and invitation operations. Proposed scenario exercises this responsibility.",
       "confidence": "medium",
@@ -15318,28 +15361,6 @@
         "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
         "spanSha256": "ca656786343ff010207a36df78fd3991a6e73137c5bdcf4beb8ca712a0c9149d",
         "sha256": "5593aec5f6365c530ef5bc57c55e81882934affa9fcf8dc8bf187143e02cb92f"
-      }
-    },
-    {
-      "rangeId": "f122a259ee2e98547fe6",
-      "scenarioIds": [
-        "audit-v82-f122a259ee2e98547fe6"
-      ],
-      "rationale": "The proposed exercise targets team detail state. The replacement specifies the triggering fixture and observable result.",
-      "confidence": "medium",
-      "uncertainty": "Implementation, required public CLI fixture and control routes, execution, and unplanned variants remain unverified.",
-      "proposedAssertions": [
-        "The shared value may reflect the latest completed response, including late A; the current code does not establish selected-team fencing. Any desired stale-response rejection is a separate unresolved regression."
-      ],
-      "featureId": "teams",
-      "status": "model-proposed-unreviewed",
-      "source": {
-        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 506,
-        "end": 506,
-        "fileSha256": "adeb482de964f231f79fd004582dee80448b7c3b3f04d3d110680a925e024356",
-        "spanSha256": "23ef50afc92502ab339c3e5779f4e71592b605e36fc600bf5f4c9c243b6b8248",
-        "sha256": "c54ac4947936b38ee185c2a17a4cb4be0e2fec3faab00c856ebbda5ab90998cd"
       }
     },
     {
