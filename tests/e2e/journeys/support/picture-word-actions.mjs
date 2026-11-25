@@ -10,7 +10,8 @@ export const wordMoveListing = { journey: 'AUT-J09', portion: 'storyboard-word-m
 export const wordDragListing = { journey: 'AUT-J09', portion: 'layers-word-drags',
   cases: ['preview and cancel a word move', 'save a shifted word and drag both edges', 'refuse overlap'] };
 export const storyboardDropListing = { journey: 'AUT-J09', portion: 'storyboard-word-drop',
-  cases: ['cancel a local word drag', 'drop a boundary word on the neighboring picture', 'refuse a drag captured before Undo'] };
+  cases: ['keep the first local word drag active when a second begin is refused, then cancel it',
+    'drop a boundary word on the neighboring picture', 'refuse a drag captured before Undo'] };
 
 async function importFixture(session, ui, input) {
   await ui.tab('Script');
@@ -134,6 +135,7 @@ export async function runStoryboardWordDrop() {
     step = 'cancel without moving the saved cut';
     await dispatch('begin', word);
     await session.waitFor(nodes => nodes.some(node => node.text === '1 word selected'));
+    await assert.rejects(sample('begin', word), /active gesture already owns input/i);
     await assertUnchanged(session, before);
     await dispatch('cancel', word);
     await assert.rejects(sample('end', parent), /no active Storyboard word drag/i);

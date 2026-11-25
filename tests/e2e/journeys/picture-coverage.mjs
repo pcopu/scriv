@@ -68,6 +68,13 @@ if (args.includes('--list-cases')) {
           }, branch: {
             path: 'apps/catalyst/ScrivUIKit/Images/StoryboardInteractionState.swift', start: 42, end: 47,
             sha256: 'f38f47a370622fdc81cb2ad810795c2f912256a78fff568023af8cb56f7e811c',
+          } }, { id: 'begin-storyboard-word-drag', command: 'storyboard-word-drag', trigger: 'storyboard-word',
+          condition: 'second-begin-while-the-first-drag-owns-input', entryPoint: {
+            path: 'apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift', start: 343, end: 350,
+            sha256: 'abbf1985398933851b4093b874dfce922030659a72b4086708bc2a4c3986b8d2',
+          }, branch: {
+            path: 'apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift', start: 351, end: 355,
+            sha256: '521fc1e6f8d71503dd0efdb70da7045838043b34f622e70f26604bd25ff4ec28',
           } }],
       } };
   console.log(JSON.stringify(listing, null, 2));

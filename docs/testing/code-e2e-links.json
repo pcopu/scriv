@@ -2487,8 +2487,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 154,
-        "end": 166,
+        "start": 161,
+        "end": 173,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: after importing the anchored parent/child fixture and correcting the same invalid-input sheet, real duration texts 0.001, 86400, 1.2345, 10 and 0.5 save child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. Each edit has complete expected saved-model equality and one revision; each is followed by real reopen/Cancel/Undo/Redo. Parent, script, audio and scene runtime remain unchanged. The source IDs are fixed by fixture, not arbitrary injected model mutations. setCueDuration changes only the chosen authored extent before resolving and validating. Missing-cue and invalid-core-bound rejections are not tested here. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -2911,6 +2911,27 @@
       "why": "The generated version renders as a single actionable attachment and opens the empty image thread without changing the saved project or image bytes"
     },
     {
+      "id": "3ea07a0fbe316092",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 351,
+        "end": 355,
+        "sha256": "521fc1e6f8d71503dd0efdb70da7045838043b34f622e70f26604bd25ff4ec28"
+      },
+      "actions": [
+        "Begin the drag from the mounted Storyboard word and wait for its selection",
+        "Request a second begin and require the active gesture refusal",
+        "Cancel the first drag and verify that the saved cut is unchanged"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
+        "start": 135,
+        "end": 142,
+        "sha256": "0796d4e22659d572671ff2b784315221d04e292529d8069478cb1e2022038a2f"
+      },
+      "why": "The second begin leaves the original gesture available for cancellation and preserves the entire saved model"
+    },
+    {
       "id": "48f09ccfd8177d6f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
@@ -3047,8 +3068,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
-        "start": 56,
-        "end": 81,
+        "start": 57,
+        "end": 82,
         "sha256": "7e9697d0bbd98a9448c0da960225c0d92983fc56d567928e489be09b91e464f2"
       },
       "why": "The existing Storyboard word controls perform range selection and toggling from the explicit CLI modifiers."
@@ -10291,8 +10312,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 154,
-        "end": 166,
+        "start": 161,
+        "end": 173,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: after importing the anchored parent/child fixture and correcting the same invalid-input sheet, real duration texts 0.001, 86400, 1.2345, 10 and 0.5 save child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. Each edit has complete expected saved-model equality and one revision; each is followed by real reopen/Cancel/Undo/Redo. Parent, script, audio and scene runtime remain unchanged. The source IDs are fixed by fixture, not arbitrary injected model mutations. Authored end beyond the scene is clipped to 4000 while authored duration remains 86400000/10000 for reopening. It does not prove later scene-growth restoration. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -20664,8 +20685,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 144,
-        "end": 151,
+        "start": 151,
+        "end": 158,
         "sha256": "19a2c939dfe920ea34febf8929adab245c01b6bd024af6111b8c94c5cf8ade29"
       },
       "why": "AUT-J09: each actual invalidSeconds fixture retains inline numeric error and unchanged packages. No rejection branch for changed navigation or unavailable lease is inferred. Reviewed static association only; this Linux audit did not run the native test."
@@ -21098,8 +21119,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 169,
-        "end": 182,
+        "start": 176,
+        "end": 189,
         "sha256": "1d7d68f8dfb3df7904f652475b3fee79510e9aa3efbb36c0dca98670afc7fc9c"
       },
       "why": "AUT-J09/numeric foreground boundaries: after final child coverage 1000\u20131500 is saved, real seeks 999,1000,1500 require Preview subtitles Parent,Child,Parent, respectively. The enclosing parent survives while latest-starting child wins only inside its half-open interval; scene slider maximum stays 4000. No ties at equal start times or no-active-cue path is tested. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -46498,8 +46519,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 154,
-        "end": 166,
+        "start": 161,
+        "end": 173,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: after importing the anchored parent/child fixture and correcting the same invalid-input sheet, real duration texts 0.001, 86400, 1.2345, 10 and 0.5 save child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. Each edit has complete expected saved-model equality and one revision; each is followed by real reopen/Cancel/Undo/Redo. Parent, script, audio and scene runtime remain unchanged. The source IDs are fixed by fixture, not arbitrary injected model mutations. In particular, 1.2345 is rounded to 1235 milliseconds and reopened as 1.235. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -49641,8 +49662,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 169,
-        "end": 182,
+        "start": 176,
+        "end": 189,
         "sha256": "1d7d68f8dfb3df7904f652475b3fee79510e9aa3efbb36c0dca98670afc7fc9c"
       },
       "why": "AUT-J09/numeric foreground boundaries: after final child coverage 1000\u20131500 is saved, real seeks 999,1000,1500 require Preview subtitles Parent,Child,Parent, respectively. The enclosing parent survives while latest-starting child wins only inside its half-open interval; scene slider maximum stays 4000. No ties at equal start times or no-active-cue path is tested. Scene cue ordering feeds currentCue.last so latest-starting active cue wins. Equal-start ID ordering remains a gap. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -53702,8 +53723,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 157,
-        "end": 159,
+        "start": 164,
+        "end": 166,
         "sha256": "cb7b9fe69501d8c14244f642c1288c5a564116453ff00f79af4d22275c8b83a8"
       },
       "why": "AUT-J09: precondition is the imported parent/child fixture and the already-open current coverage sheet, after invalid input or explicit reopen. Set the selected valid case text, Apply, and observe the saved result. savedAfter (85-93) asserts one revision and every expected project field. Reopen, Cancel, history and stale-source branches are outside this link. Reviewed static association only; this Linux audit did not run the native test."
@@ -56192,8 +56213,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 154,
-        "end": 166,
+        "start": 161,
+        "end": 173,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: existing real duration inputs 0.001,86400,1.2345,10,0.5 with reopen/Cancel/Undo/Redo require exact child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. All parent/source/audio data remains exact. The source-start table accumulates owned source duration and resolves the child at b + 0 = 1000 within a 4000 ms scene. These are valid fixture inputs; missing/invalid anchors, duplicate entry IDs and symlink/media behavior are not covered. Static reviewed source/action/assertion association only. No native execution, measured coverage, physical-input parity, all-branch coverage or legacy retirement is claimed. Optional reveal/scroll and polling reads remain governed by the original helpers, not a recorded wire transcript."
@@ -58939,8 +58960,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 157,
-        "end": 159,
+        "start": 164,
+        "end": 166,
         "sha256": "cb7b9fe69501d8c14244f642c1288c5a564116453ff00f79af4d22275c8b83a8"
       },
       "why": "AUT-J09: precondition is the imported parent/child fixture and the already-open current coverage sheet, after invalid input or explicit reopen. Set the selected valid case text, Apply, and observe the saved result. savedAfter (85-93) asserts one revision and every expected project field. Reopen, Cancel, history and stale-source branches are outside this link. Reviewed static association only; this Linux audit did not run the native test."
@@ -63387,8 +63408,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 169,
-        "end": 182,
+        "start": 176,
+        "end": 189,
         "sha256": "1d7d68f8dfb3df7904f652475b3fee79510e9aa3efbb36c0dca98670afc7fc9c"
       },
       "why": "AUT-J09/numeric foreground boundaries: after final child coverage 1000\u20131500 is saved, real seeks 999,1000,1500 require Preview subtitles Parent,Child,Parent, respectively. The enclosing parent survives while latest-starting child wins only inside its half-open interval; scene slider maximum stays 4000. No ties at equal start times or no-active-cue path is tested. Seek updates inspected cue from the current clock cue so paused Preview reflects each boundary. The scene-end fallback on the same line is not exercised. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -98279,8 +98300,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
-        "start": 83,
-        "end": 102,
+        "start": 84,
+        "end": 103,
         "sha256": "6cd3d8b9313aac2ef46935a7ff69201fa60951790f0c06e1d1fc08f7e5502b0b"
       },
       "why": "The loaded synthetic workspace and mounted word button must agree. A wrong word identity is refused and the exact original actions produce the actual adjacent saves or the boundary-word error."
@@ -98298,8 +98319,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
-        "start": 204,
-        "end": 230,
+        "start": 206,
+        "end": 232,
         "sha256": "9fadd8232d70c38b0467b24538352319e9910bfb8eb7453029f9a2c02975040e"
       },
       "why": "The mounted word block and its start and end handles share the production drag lifecycle and apply the expected real saved authored changes."
@@ -98317,8 +98338,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
-        "start": 213,
-        "end": 230,
+        "start": 215,
+        "end": 232,
         "sha256": "765de7127a45a71932501267993c728c377418d2a0597ce0329cadac03f15bf7"
       },
       "why": "The native block drag keeps the cuts and other words intact. The overlap guard refuses the later drag and leaves the prior saved package unchanged."
@@ -98337,8 +98358,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
-        "start": 83,
-        "end": 102,
+        "start": 84,
+        "end": 103,
         "sha256": "6cd3d8b9313aac2ef46935a7ff69201fa60951790f0c06e1d1fc08f7e5502b0b"
       },
       "why": "Each accepted menu action moves the shared cut while preserving source wording, word identity and timing. The non-boundary action presents the app error and preserves the saved project."
@@ -100020,9 +100041,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
-        "start": 134,
-        "end": 160,
-        "sha256": "6b488f20f2565a8a1aa411eb21279944854c8609b1bbce19089b87e599cc8ef7"
+        "start": 135,
+        "end": 162,
+        "sha256": "a8746ee9b0843acfda1625393d5b81af0fd50488aa4ad6c33fb326b7baea60f5"
       },
       "why": "The same mounted UIKit delegates capture and apply the local word transfer. The CLI verifies the native refusal when Undo changes the project revision."
     },
@@ -100041,9 +100062,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
-        "start": 134,
-        "end": 160,
-        "sha256": "6b488f20f2565a8a1aa411eb21279944854c8609b1bbce19089b87e599cc8ef7"
+        "start": 135,
+        "end": 162,
+        "sha256": "a8746ee9b0843acfda1625393d5b81af0fd50488aa4ad6c33fb326b7baea60f5"
       },
       "why": "The same mounted UIKit delegates capture and apply the local word transfer. The CLI verifies the native refusal when Undo changes the project revision."
     },
@@ -100062,9 +100083,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
-        "start": 134,
-        "end": 160,
-        "sha256": "6b488f20f2565a8a1aa411eb21279944854c8609b1bbce19089b87e599cc8ef7"
+        "start": 135,
+        "end": 162,
+        "sha256": "a8746ee9b0843acfda1625393d5b81af0fd50488aa4ad6c33fb326b7baea60f5"
       },
       "why": "The same mounted UIKit delegates capture and apply the local word transfer. The CLI verifies the native refusal when Undo changes the project revision."
     },
@@ -100083,9 +100104,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
-        "start": 134,
-        "end": 160,
-        "sha256": "6b488f20f2565a8a1aa411eb21279944854c8609b1bbce19089b87e599cc8ef7"
+        "start": 135,
+        "end": 162,
+        "sha256": "a8746ee9b0843acfda1625393d5b81af0fd50488aa4ad6c33fb326b7baea60f5"
       },
       "why": "The same mounted UIKit delegates capture and apply the local word transfer. The CLI verifies the native refusal when Undo changes the project revision."
     },
@@ -100104,9 +100125,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
-        "start": 134,
-        "end": 160,
-        "sha256": "6b488f20f2565a8a1aa411eb21279944854c8609b1bbce19089b87e599cc8ef7"
+        "start": 135,
+        "end": 162,
+        "sha256": "a8746ee9b0843acfda1625393d5b81af0fd50488aa4ad6c33fb326b7baea60f5"
       },
       "why": "The same mounted UIKit delegates capture and apply the local word transfer. The CLI verifies the native refusal when Undo changes the project revision."
     },
@@ -102808,11 +102829,11 @@
       "id": "3c371da3f1b35fe7",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 116,
-        "end": 116,
+        "start": 123,
+        "end": 123,
         "sha256": "af9e0f42fdda7bd4fd4c2b38b80e3822126ac844a2caf189060b324ebb60ce58"
       },
-      "fileSha256": "4de64d6328b9fe2384e2d8ad8ddf98218cc795e4554379e1289427f22b8abafc"
+      "fileSha256": "5c3dbf32dcfcabe1505d41e376e3516631b71febd774aa8f91562bebed5e21e9"
     },
     {
       "id": "3c78dc9bfef370e8",
@@ -104178,11 +104199,11 @@
       "id": "58319f29415d5b7c",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 138,
-        "end": 138,
+        "start": 145,
+        "end": 145,
         "sha256": "1b17bda0191087556148337bec47d95c875c68b9896b536e113de140e69c67f4"
       },
-      "fileSha256": "4de64d6328b9fe2384e2d8ad8ddf98218cc795e4554379e1289427f22b8abafc"
+      "fileSha256": "5c3dbf32dcfcabe1505d41e376e3516631b71febd774aa8f91562bebed5e21e9"
     },
     {
       "id": "586b4673e9247bc7",
@@ -107178,11 +107199,11 @@
       "id": "97ac15b68b777d54",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 169,
-        "end": 170,
+        "start": 176,
+        "end": 177,
         "sha256": "74acdf8669f2162367b5bc4d998a32bc6e617b8053053a10c27e9999305adca0"
       },
-      "fileSha256": "4de64d6328b9fe2384e2d8ad8ddf98218cc795e4554379e1289427f22b8abafc"
+      "fileSha256": "5c3dbf32dcfcabe1505d41e376e3516631b71febd774aa8f91562bebed5e21e9"
     },
     {
       "id": "97c3992f51e328e7",
@@ -107798,11 +107819,11 @@
       "id": "a360be545eec64b6",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 152,
-        "end": 152,
+        "start": 159,
+        "end": 159,
         "sha256": "5dc43e82a592a27b0758f2c98ef1fb8c8ee94cb84018a70dfccc877580e179f4"
       },
-      "fileSha256": "4de64d6328b9fe2384e2d8ad8ddf98218cc795e4554379e1289427f22b8abafc"
+      "fileSha256": "5c3dbf32dcfcabe1505d41e376e3516631b71febd774aa8f91562bebed5e21e9"
     },
     {
       "id": "a37b41cd0be2820d",
@@ -110048,11 +110069,11 @@
       "id": "d0dee9046abab7c6",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 186,
-        "end": 186,
+        "start": 193,
+        "end": 193,
         "sha256": "7dfeff6eb9ba44d6d88519271cd5f7b7c6a91b7091826c371b52c2734a1a726c"
       },
-      "fileSha256": "4de64d6328b9fe2384e2d8ad8ddf98218cc795e4554379e1289427f22b8abafc"
+      "fileSha256": "5c3dbf32dcfcabe1505d41e376e3516631b71febd774aa8f91562bebed5e21e9"
     },
     {
       "id": "d13306861e6c6cec",
@@ -111772,7 +111793,7 @@
         "end": 17,
         "sha256": "690226a1b0853d3a163445a5632c8d87581c29b124aa6358cea1f042a88a7f1e"
       },
-      "fileSha256": "4de64d6328b9fe2384e2d8ad8ddf98218cc795e4554379e1289427f22b8abafc"
+      "fileSha256": "5c3dbf32dcfcabe1505d41e376e3516631b71febd774aa8f91562bebed5e21e9"
     },
     {
       "id": "f40038939032b029",
