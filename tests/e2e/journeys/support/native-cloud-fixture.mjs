@@ -106,6 +106,8 @@ export async function startNativeCloudFixture() {
       prepareHistoryPages: () => response('prepare-history-pages'),
       changeHistoryPage: mode => response(['change-history-page', mode]),
       historyPageState: () => response('history-page-state'),
+      prepareDiscussionPages: () => response('prepare-discussion-pages'),
+      discussionPageRequests: () => response('discussion-page-requests'),
       assertNoOutbound: async () => assert.equal((await response('status')).outbound, 0),
       close,
     };
@@ -154,6 +156,7 @@ async function startWorker(root) {
       const hostedImageResponses = [];
       let invitations;
       let history;
+      let discussionPages;
       let editingLease;
       let stagedEdit;
       let generationCreate;
@@ -191,6 +194,15 @@ async function startWorker(root) {
         async fetch(request) {
           const upstream = () => worker.fetch(request, this.env, this.ctx);
           const { pathname: path, searchParams } = new URL(request.url);
+          if (discussionPages && path === discussionPages.path && request.method === 'GET' && searchParams.get('scope') === 'all') {
+            const response = await upstream();
+            if (response.ok) {
+              const { threads, hasMore, nextCursor } = await response.clone().json();
+              discussionPages.requests.push({ after: searchParams.get('after'), count: threads.length, hasMore, nextCursor });
+              if (discussionPages.requests.length > 16) throw new Error('The discussion page request limit was exceeded');
+            }
+            return response;
+          }
           if (logoutRefusal === 'armed' && path === '/auth/logout' && request.method === 'POST') {
             if (!request.headers.has('authorization')) throw new Error('Expected the owned logout request');
             logoutRefusal = 'consumed';
@@ -401,6 +413,11 @@ async function startWorker(root) {
           return true;
         }
         invitationRequests() { return { interruptedLoads: invitations.interruptedLoads, revocations: [...invitations.revocations] }; }
+        watchDiscussionPages(path) {
+          if (discussionPages) throw new Error('Use a single owned discussion directory');
+          discussionPages = { path, requests: [] };
+        }
+        discussionPageRequests() { return discussionPages.requests; }
         watchHistory(path, seq) {
           if (history || !Number.isSafeInteger(seq)) throw new Error('Use one owned project import revision');
           history = { path, seq, events: [], snapshots: [], mode: null };
@@ -562,6 +579,23 @@ async function startWorker(root) {
         }
         await nativeWorker.watchHistory(saved.path, saved.importSeq);
         return { id: saved.id, title, entries, importSeq: saved.importSeq };
+      });
+    }
+    function prepareDiscussionPages() {
+      return withFixtureOwner(async token => {
+        const title = 'Synthetic paged discussions';
+        const scene = { id: 'discussion-scene', title: 'Paged conversations', order: 0 };
+        const entries = Array.from({ length: 101 }, (_, order) => ({
+          id: 'discussion-line-' + (order + 1), sceneId: scene.id, order, kind: 'direction',
+          text: 'Discussion direction ' + (order + 1), ownedDurationMs: 100, coverageDurationMs: 100,
+          color: 'purple', words: [], characterLinks: [],
+        }));
+        const saved = await seedProject({ title, scenes: [scene], entries, characters: [], images: [], cues: [] }, token);
+        const path = saved.path + '/threads';
+        await post(path, 201, { itemId: null }, token);
+        for (const entry of entries) await post(path, 201, { itemId: entry.id }, token);
+        await nativeWorker.watchDiscussionPages(path);
+        return { id: saved.id, title };
       });
     }
     let sharedProjectID;
@@ -740,6 +774,7 @@ async function startWorker(root) {
       prepareTeamManagement, addTeamManagementMember, teamManagementState,
       prepareHistoryPages, changeHistoryPage: mode => nativeWorker.changeHistoryPage(mode),
       historyPageState: () => nativeWorker.historyPageState(),
+      prepareDiscussionPages, discussionPageRequests: () => nativeWorker.discussionPageRequests(),
       takeCode: () => mailbox.takeCode(),
       projects: async () => (await db.prepare(
         'SELECT projects.id, projects.title FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.id',
@@ -780,7 +815,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'prepare-team-management': worker.prepareTeamManagement, 'add-team-management-member': worker.addTeamManagementMember,
         'team-management-state': worker.teamManagementState,
         'prepare-history-pages': worker.prepareHistoryPages, 'change-history-page': worker.changeHistoryPage,
-        'history-page-state': worker.historyPageState };
+        'history-page-state': worker.historyPageState,
+        'prepare-discussion-pages': worker.prepareDiscussionPages, 'discussion-page-requests': worker.discussionPageRequests };
       assert.ok(Object.hasOwn(operations, operation));
       const result = await operations[operation](value);
       if (process.connected) process.send(result);

@@ -64,7 +64,7 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
   const expected = [...handshake, ...(holdAccountRefresh ? ['account/read'] : []), ...manualAccountSteps.map(step => step.method), ...accountUpdates.map(() => 'account/read'), ...outcomes.flatMap(outcome => {
     const turn = ['thread/start', 'turn/start'];
     if (outcome === 'cancel') return [...turn, 'turn/interrupt', 'transport-drop', ...handshake, 'model/list', 'thread/read', 'thread/read', 'thread/read'];
-    if (outcome === 'recover' || outcome === 'missing-artifact') return [...turn, 'turn/interrupt', 'thread/read'];
+    if (['recover', 'missing-artifact', 'cancel-unconfirmed'].includes(outcome)) return [...turn, 'turn/interrupt', 'thread/read'];
     if (outcome === 'analysis-invalid-thread') return ['thread/start'];
     if (outcome === 'analysis-tool' || outcome === 'analysis-invalid-result' || activeRequests.has(outcome)) return [...turn, 'turn/interrupt'];
     return turn;
@@ -198,7 +198,7 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
       onSubmittedPrompt?.({ prompt: prompt.text, jobID: basename(job.cwd) });
       const replies = [reply({ turn: { id: job.turnId } }), { method: 'item/started',
         params: { threadId: job.threadId, item: { type: 'imageGeneration' } } }];
-      if (['cancel', 'recover', 'missing-artifact', 'input-request'].includes(job.outcome)) return replies;
+      if (['cancel', 'recover', 'missing-artifact', 'input-request', 'cancel-unconfirmed'].includes(job.outcome)) return replies;
       const turn = { id: job.turnId, items: [] };
       if (job.outcome === 'success' || job.outcome === 'retry-success') {
         const savedPath = join(job.cwd, 'storyboard.png');
@@ -213,6 +213,9 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
     }
     case 'turn/interrupt':
       assert.deepEqual(params, { threadId: job.threadId, turnId: job.turnId });
+      if (job.outcome === 'cancel-unconfirmed') {
+        return [{ id, error: { code: -32000, message: 'Synthetic runtime refused the interruption' } }];
+      }
       if (job.outcome === 'recover') {
         // The original turn finished at the interruption boundary. Its bytes
         // are durable, and its terminal response is only known on inspection.
@@ -230,6 +233,9 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
       if (job.outcome === 'missing-artifact') {
         const turn = { id: job.turnId, status: 'completed', items: [] };
         return [reply({ thread: { id: job.threadId, turns: [turn] } })];
+      }
+      if (job.outcome === 'cancel-unconfirmed') {
+        return [reply({ thread: { id: job.threadId, turns: [{ id: job.turnId, status: 'inProgress' }] } })];
       }
       const inspection = job.inspections++;
       const turns = inspection === 0 ? [] : [{ id: job.turnId, status: inspection === 1 ? 'inProgress' : 'interrupted' }];

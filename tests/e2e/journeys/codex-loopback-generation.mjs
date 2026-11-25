@@ -9,7 +9,7 @@ import { reviewSteps } from './support/generation-review-steps.mjs';
 import { generationContextInput } from './support/generation-context-cases.mjs';
 import { fixtureImageHash, recoveredImageHash, startCodexFixture } from './support/codex-loopback-fixture.mjs';
 
-const groups = ['history-prompt', 'history-retry', 'history-artifact', 'history-retry-portrait'];
+const groups = ['history-prompt', 'history-retry', 'history-artifact', 'history-retry-portrait', 'cancel-unconfirmed'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
   console.log(JSON.stringify({ groups }));
@@ -21,6 +21,7 @@ const retryPortrait = args[1] === 'history-retry-portrait';
 const portraitSHA256 = '3fba282698b3df63c76fb40e529943fb6da6d28bafa6ff9e3a75c0c4a0cbb784';
 const historyRetry = args[1] === 'history-retry' || retryPortrait;
 const historyArtifact = args[1] === 'history-artifact';
+const cancelUnconfirmed = args[1] === 'cancel-unconfirmed';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
 const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
@@ -141,7 +142,8 @@ try {
   step = 'connect to the owned loopback fixture in Settings';
   const submittedRequests = [];
   const outcomes = ['success'];
-  if (historyRetry) outcomes.push('cancel', 'retry-success');
+  if (cancelUnconfirmed) outcomes.push('cancel-unconfirmed');
+  else if (historyRetry) outcomes.push('cancel', 'retry-success');
   else if (!historyPrompt && !historyArtifact) outcomes.push('cancel', 'recover', 'missing-artifact', 'input-request', 'failure');
   fixture = await startCodexFixture(session.root, outcomes, {
     accountRefresh: true,
@@ -347,6 +349,21 @@ try {
       assert.deepEqual(await session.command('key', { input: 'Escape', modifiers: [] }), { dispatched: true });
       await session.waitFor(nodes => !nodes.some(jobsSource));
     };
+
+    if (cancelUnconfirmed) {
+      step = 'inspect the original turn after the runtime refuses cancellation';
+      await session.waitFor(nodes => nodes.some(node => node.identifier === 'codex-setup-error'
+        && node.text === 'Codex cancellation could not be confirmed. The turn may still be running in the local runtime. Synthetic runtime refused the interruption'));
+      const historyWindow = await openJobs();
+      await inspectOriginal(historyWindow);
+      await verifyWaiting(historyWindow, 'Original turn is still in progress. Inspect again later; do not submit a duplicate.');
+      const previous = (await jobs()).find(job => job.jobID === complete.jobID);
+      assert.equal(previous.attachmentVerified, true);
+      assert.equal(previous.assetID, imageID);
+      assert.equal(previous.storedArtifactSHA256, fixtureImageHash);
+      assert.deepEqual(await session.command('presented-alerts'), []);
+      return;
+    }
 
     step = 'inspect the saved turn while the owned runtime connection is lost';
     await waitForControl(generate);
@@ -584,6 +601,7 @@ try {
   if (historyPrompt) console.log('PASS: Generation history displays the exact recorded request as read-only text without changing jobs or projects');
   else if (retryPortrait) console.log('PASS: Retry sends the captured portrait bytes once and rejects a modified copy');
   else if (historyRetry) console.log('PASS: Cancel preserves the job and confirmed Retry submits its recorded request once');
+  else if (cancelUnconfirmed) console.log('PASS: refused interruption retains the original turn for inspection without a duplicate');
   else if (historyArtifact) console.log('PASS: Generation history rejects modified artifact bytes and opens the restored original');
   else console.log('PASS: native Codex loopback fixture generation, cancellation, reconnect, recovery inspection and refusal');
 } catch (error) {

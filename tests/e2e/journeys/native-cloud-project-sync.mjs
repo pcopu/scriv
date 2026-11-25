@@ -9,7 +9,7 @@ import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, interrupte
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
 
-const groups = ['sync', 'lease-renewal', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure'];
+const groups = ['sync', 'lease-renewal', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'discussion-pages'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
   console.log(JSON.stringify({ groups }));
@@ -495,8 +495,46 @@ async function verifyFailedLogout() {
   console.log('PASS: native sign-out retains the local script when server revocation fails');
 }
 
+async function browsePagedDiscussionDirectory() {
+  step = 'seed owned discussions and open their cloud script';
+  const project = await fixture.prepareDiscussionPages();
+  session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
+  assert.equal((await session.command('capabilities')).cloudIsolation.network, 'loopback-only');
+  await signIn(2);
+  await openCloudFromProjects(project.title);
+  const loaded = (await session.command('loaded-project')).project;
+  assert.equal(loaded.cloudProjectId, project.id);
+  assert.equal(loaded.entries.length, 101);
+  await openDiscussion();
+
+  step = 'load both directory pages through Project activity';
+  const offset = (await fixture.discussionPageRequests()).length;
+  await click('Project activity, 0 unread mentions', true);
+  const activity = await control(node => node.type === 'UISegmentedControl' && node.segments?.join(',') === 'Mentions,Conversations', true);
+  await session.command('select', { target: activity.path, index: 1 });
+  await session.waitFor(nodes => nodes.some(node => node.text === 'Direction 101 · Discussion direction 101 · Open')
+    && !nodes.some(node => node.text === 'Loading activity…' || node.text === 'Couldn’t load activity'));
+  const pages = (await fixture.discussionPageRequests()).slice(offset);
+  assert.equal(pages.length, 2);
+  assert.equal(pages[0].after, '');
+  assert.equal(pages[0].count, 100);
+  assert.equal(pages[0].hasMore, true);
+  assert.match(pages[0].nextCursor, /^[a-f0-9-]{36}$/);
+  assert.equal(pages[1].after, pages[0].nextCursor);
+  assert.equal(pages[1].count, 2);
+  assert.equal(pages[1].hasMore, false);
+  assert.equal(pages[1].nextCursor, null);
+  await click('Done', true);
+  await click('Close discussion', true);
+  await control(workspaceProject, true);
+  assert.deepEqual((await session.command('loaded-project')).project, loaded);
+  await fixture.assertNoOutbound();
+  console.log('PASS: Project activity follows the directory cursor and preserves the active script');
+}
+
 try {
-  if (args[1] === 'logout-revocation-failure') await verifyFailedLogout();
+  if (args[1] === 'discussion-pages') await browsePagedDiscussionDirectory();
+  else if (args[1] === 'logout-revocation-failure') await verifyFailedLogout();
   else await runProjectJourney();
 } catch (error) {
   throw new Error('Native cloud project journey failed during ' + step, { cause: error });

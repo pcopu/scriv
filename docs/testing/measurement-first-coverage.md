@@ -50,6 +50,11 @@ tracer worklist --routes /external/discovery.json --capture-set /external/captur
   --reference-root /external/reference/source --function-map /external/functions.json
 ```
 
+Use `functionReview.edgeCandidates` to find gaps at the start or end of a
+function with one passing neighboring counter inside that compiler range.
+Follow the reported scenario selector and confirm the action and missing
+condition. For an explicit action selection, use
+`actionReview.functionEdgeCandidates`. Startup has a separate shortlist.
 Use `functionReview.entryPoints` to trace wholly unobserved functions to
 their production caller. For example, Join Team’s deep-link entry point is
 the scene URL handler. A cloud sign-out or sync scenario reaching nearby
