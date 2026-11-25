@@ -2787,6 +2787,29 @@
       "why": "AUT-J12: verified fixture import and cue selection drive production selectedImageGenerationContext construction and then actual review shows exact passages. Cache-hit/invalidation assertions are not claimed, nor imageGenerationContext(cueID:) generation-start route. Reviewed static association only, not native execution or measured coverage."
     },
     {
+      "id": "26aed7484ea958fa",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+        "start": 210,
+        "end": 216,
+        "sha256": "241954bf3584795df446a6ce869b029a0a91449071ec272c21256a602a0bd688"
+      },
+      "actions": [
+        "activate generation-generate-image for 01A",
+        "activate generation-review-brief while the accepted claim reply is held",
+        "select generation-review-tabs index 2",
+        "release the owned claim reply and observe normal shared image attachment",
+        "snapshot the same brief and activate generation-review-done"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-shared-generation.mjs",
+        "start": 243,
+        "end": 271,
+        "sha256": "bbf22a1f7496303a4f405f9507b4d6c6a65bf04e164c871020b1c52a768c1de1"
+      },
+      "why": "A genuine shared attachment changes the selected cue while its original brief remains mounted. The native snapshot checks both unavailable messages, disabled tabs and absent stale controls. Done closes the same brief."
+    },
+    {
       "id": "2e31bd4750d60b2d",
       "source": {
         "path": "scripts/compact-cli-archive.mjs",
@@ -95889,8 +95912,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-shared-generation.mjs",
-        "start": 250,
-        "end": 254,
+        "start": 302,
+        "end": 306,
         "sha256": "c6f975581152944a8e22f719c72828cda7d33624b0c485d0a550fbfa26dc113d"
       },
       "why": "The Shared project selection displays the completed Team job in the native history sheet."
@@ -95910,8 +95933,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-shared-generation.mjs",
-        "start": 256,
-        "end": 296,
+        "start": 308,
+        "end": 348,
         "sha256": "25c6c2b38738574a82013d5c0f27361654803269769c3ca3036938bc3aa281fc"
       },
       "why": "The waiting job receives a new accepted claim and keeps the same identity through lease renewal, attachment and shared completion."
@@ -95929,9 +95952,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-shared-generation.mjs",
-        "start": 225,
-        "end": 248,
-        "sha256": "353ae2cc2c76fbdb6da4c15ea5a7bc51c35def7381f1d13c34b060862cf9302d"
+        "start": 232,
+        "end": 295,
+        "sha256": "a3894f0b5b0c1743521dff5c6266c93b9bd840c92c848270345a7021dd7669a7"
       },
       "why": "The existing command reaches the native shared job workflow. The fixture verifies its completion references the saved cue and the matching hosted bytes."
     },
@@ -98506,8 +98529,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-shared-generation.mjs",
-        "start": 194,
-        "end": 221,
+        "start": 201,
+        "end": 228,
         "sha256": "0013b85c93dbfbf32214d1c03c3a644edf582b13f6353c86f43487e8ad947bfa"
       },
       "why": "Explicit recovery creates the same previously absent shared job, hosts its original bytes once and updates only its original cue."
@@ -98525,8 +98548,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-shared-generation.mjs",
-        "start": 182,
-        "end": 192,
+        "start": 189,
+        "end": 199,
         "sha256": "0d947c15bf41c4980095a71b8a249ed32404f61d58c3de740eac57f73fc95946"
       },
       "why": "A refused shared job creation leaves the original job running locally and the isolated Worker has no job or hosted artifact."
@@ -98860,8 +98883,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-shared-generation.mjs",
-        "start": 126,
-        "end": 148,
+        "start": 133,
+        "end": 155,
         "sha256": "6ddb6c8b8cf79abd045629a71659e5c88174001608dbda111123a50333f151b5"
       },
       "why": "Changing projects during an accepted claim cancels the stale local generation path before the provider starts. The selected project, original package and Worker assets are checked."
@@ -98879,8 +98902,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-shared-generation.mjs",
-        "start": 152,
-        "end": 161,
+        "start": 159,
+        "end": 168,
         "sha256": "9cd66ae06d68ae1eb09e4dc35244d96e9cf5ccdf5e9a95c75a016d38470d37c2"
       },
       "why": "A refused ownership renewal keeps the generated artifact on the device and leaves both the cue and hosted assets unchanged until explicit recovery."

@@ -8,12 +8,19 @@ import { audioLibrarySteps } from './support/audio-library-steps.mjs';
 import { stableContent } from './support/audio-library-fixtures.mjs';
 import { fixtureImageHash, recoveredImageHash, startCodexFixture } from './support/codex-loopback-fixture.mjs';
 import { generationContextInput } from './support/generation-context-cases.mjs';
+import { nodeWithID, reviewSteps } from './support/generation-review-steps.mjs';
 import { nativeFixtureEmail, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
 
 const groups = ['shared', 'recover-local-only', 'leave-before-claim', 'renewal-refused'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
-  console.log(JSON.stringify({ groups }));
+  console.log(JSON.stringify({ groups, groupActions: {
+    shared: [{ id: 'review-image-brief', command: 'activate', trigger: 'generation-review-brief',
+      condition: 'image-attaches-while-review-is-open', entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift', start: 183, end: 192,
+        sha256: '831387241b9737b85130529c824ae83b8e74d83a89200090692e185eeeaa83d5',
+      } }],
+  } }));
   process.exit(0);
 }
 assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]), 'Choose a shared generation group');
@@ -222,11 +229,48 @@ try {
       return;
     }
 
-    step = 'complete a shared job only after the generated image is saved and hosted';
+    step = 'open the current image brief while the accepted generation claim is held';
+    const review = reviewSteps(session);
+    const reviewNodes = (nodes, root) => nodes.filter(node => node.windowPath === root.windowPath
+      && (node.path === root.path || node.path.startsWith(root.path + '.')));
+    const assertExactRequest = nodes => {
+      assert.equal(nodeWithID(nodes, 'generation-review-tabs')?.enabled, true);
+      const request = nodeWithID(nodes, 'generation-exact-request');
+      assert.equal(request?.editable, false);
+      assert.ok(request.text?.trim(), 'Current review displays the exact request');
+      assert.equal(nodeWithID(nodes, 'generation-copy-full-request')?.enabled, true);
+    };
+    assert.equal(await fixture.armGenerationClaim('hold'), true);
     await generateForCue();
+    const { jobID } = await until(fixture.generationClaimState, state => state.phase === 'held');
+    let openReview;
+    try {
+      openReview = nodeWithID(await review.open(), 'generation-brief-review');
+      assert.ok(openReview, 'The review is mounted before image attachment');
+      assertExactRequest(reviewNodes(await review.section(2), openReview));
+    } finally {
+      if ((await fixture.generationClaimState()).phase === 'held') assert.equal(await fixture.releaseGenerationClaim(), true);
+    }
+
+    step = 'complete the shared job and invalidate its open image brief';
     const completed = await until(fixture.sharedGenerationState, state => state.jobs.length === 1
       && state.jobs[0].status === 'completed' && state.hosted.length === 1);
     const [job] = completed.jobs;
+    assert.equal(job.id, jobID, 'The same accepted claim attaches the image');
+    const invalidated = await session.waitFor(nodes => reviewNodes(nodes, openReview)
+      .some(node => node.text === 'Review unavailable'));
+    const staleReview = reviewNodes(invalidated, openReview);
+    assert.ok(nodeWithID(staleReview, 'generation-brief-review'), 'The original review remains mounted');
+    assert.ok(staleReview.some(node => node.text
+      === 'The source or project changed while this review was open. Close it and choose Review brief again.'));
+    assert.equal(nodeWithID(staleReview, 'generation-review-tabs')?.enabled, false);
+    for (const id of ['generation-exact-request', 'generation-copy-full-request', 'generation-review-scroll']) {
+      assert.equal(nodeWithID(staleReview, id), undefined, `The invalidated review hides ${id}`);
+    }
+    await review.activate('generation-review-done');
+    await review.closed();
+
+    step = 'verify the saved shared image and reopen a current brief';
     const saved = await waitForSavedProject(session, candidate => candidate.id === before.id
       && candidate.cues.find(cue => cue.id === 'cue')?.imageId === job.imageID);
     const [image, ...extraImages] = saved.images;
@@ -243,9 +287,17 @@ try {
     assert.deepEqual(saved.entries, before.entries);
     assert.deepEqual(saved.characters, before.characters);
     assert.deepEqual(saved.cues, before.cues.map(cue => cue.id === 'cue' ? { ...cue, imageId: image.id } : cue));
+    const loaded = (await session.command('loaded-project')).project;
+    assert.equal(loaded.id, saved.id);
+    assert.equal(loaded.cues.find(cue => cue.id === 'cue')?.imageId, image.id);
     const local = (await localJobs()).find(record => record.jobID === job.id);
     assert.ok(local?.attachmentVerified && local.journalVerified);
     assert.equal(local.storedArtifactSHA256, fixtureImageHash);
+    const currentReview = nodeWithID(await review.open(), 'generation-brief-review');
+    assert.ok(currentReview, 'A fresh review is mounted for the attached image');
+    assertExactRequest(reviewNodes(await review.section(2), currentReview));
+    await review.activate('generation-review-done');
+    await review.closed();
 
     step = 'review the completed job in Shared project history';
     const tabs = await openJobs();

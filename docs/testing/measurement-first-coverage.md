@@ -247,6 +247,11 @@ the claim and before the app receives it. The new project stays selected,
 no local image turn starts, and the accepted lease remains for expiry.
 The `renewal-refused` group preserves the generated image locally after a
 refused renewal. Use in original project attaches the same image once.
+The `shared` group opens Exact request while the owned fixture holds an
+accepted claim reply. Releasing the reply lets the app attach the generated
+image. The open brief shows its unavailable message, disables its tabs and
+hides the stale request. Done dismisses it, and reopening the brief restores
+the request for the saved cue. Use full-session capture for this delayed event.
 
 The `peer-discovery` group of `journeys/native-cloud-image-recovery` drives
 Preview's Fetch image control. A second isolated session for the same

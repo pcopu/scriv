@@ -215,20 +215,30 @@
       "id": "generation-review-invalidation",
       "title": "Invalidate an open generation brief when its source changes",
       "featureId": "generation-review-invalidation",
-      "state": "unwritten",
-      "existingPaths": [],
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/native-shared-generation.mjs"
+      ],
       "entryPoint": {
         "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
         "symbol": "invalidate()"
       },
-      "actionIds": [],
+      "actionIds": [
+        "activate",
+        "select",
+        "snapshot"
+      ],
+      "routeIds": [
+        "journeys/native-shared-generation/group/shared"
+      ],
       "plannedActions": [
-        "Apply a project change through an owned production sync route while the generation brief stays open."
+        "Start shared generation, hold the accepted claim reply while opening Review brief and Exact request, then release it so the real attachment changes the cue.",
+        "Dismiss the invalidated brief through Done and reopen it on the saved cue. The import route rejects a presented controller and is unnecessary for this case."
       ],
       "expectedOutcomes": [
-        "The stale request is cleared, its tabs are disabled, and the brief can still be closed."
-      ],
-      "restriction": "The verified CLI import route rejects an already presented controller. This condition needs an owned sync fixture that changes the source while the review remains mounted."
+        "The original brief stays visible with its unavailable message. Its tabs are disabled, the request and source controls disappear, and Done dismisses the brief.",
+        "The cue retains the saved image and a newly opened brief displays a usable exact request."
+      ]
     },
     {
       "id": "native-export-refusal",
@@ -904,9 +914,9 @@
       "scenarioIds": [
         "generation-review-invalidation"
       ],
-      "rationale": "Apply a project change through an owned production sync route while the generation brief stays open.",
+      "rationale": "A normal shared generation attachment changes the selected cue while its original brief remains open.",
       "confidence": "high",
-      "uncertainty": "The verified CLI import route rejects an already presented controller. This condition needs an owned sync fixture that changes the source while the review remains mounted.",
+      "uncertainty": "This case covers invalidation after image attachment. Other causes of stale review state need their own evidence.",
       "proposedAssertions": [
         "The stale request is cleared, its tabs are disabled, and the brief can still be closed."
       ]
