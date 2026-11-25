@@ -93,6 +93,8 @@ export async function startNativeCloudFixture() {
       releaseCompetingEditingLease: () => response('release-competing-editing-lease'),
       watchStagedEdit: (projectId, dropReceipt) => response(['watch-staged-edit', { projectId, dropReceipt }]),
       stagedEditState: () => response('staged-edit-state'),
+      armReplayPage: (projectId, mode) => response(['arm-replay-page', { projectId, mode }]),
+      replayPageRequests: () => response('replay-page-requests'),
       prepareHostedImage: input => response(['prepare-hosted-image', input]),
       repairHostedImage: () => response('repair-hosted-image'),
       hostedImageResponses: () => response('hosted-image-responses'),
@@ -166,6 +168,7 @@ async function startWorker(root) {
       const hostedImageResponses = [];
       let invitations;
       let history;
+      let replayPage;
       let discussionPages;
       let editingLease;
       let stagedEdit;
@@ -284,6 +287,27 @@ async function startWorker(root) {
               return Response.json({ error: { code: 'receipt_unavailable', message: ${JSON.stringify(lostCloudEditReceipt)} } }, { status: 503 });
             }
             return response;
+          }
+          if (replayPage?.awaitingSnapshot && request.method === 'GET' && path === replayPage.path + '/snapshot' && !searchParams.size) {
+            const response = await upstream();
+            if (response.ok) replayPage.awaitingSnapshot = false;
+            return response;
+          }
+          if (replayPage && !replayPage.awaitingSnapshot && replayPage.requests.length < 2
+              && request.method === 'GET' && path === replayPage.path + '/events') {
+            const response = await upstream();
+            if (!response.ok) return response;
+            const page = await response.clone().json();
+            const after = Number(searchParams.get('after'));
+            if (!request.headers.has('authorization') || !Number.isSafeInteger(after)
+                || page.hasMore || page.events.length !== 0 || page.headSeq !== after)
+              throw new Error('Expected the owned final replay page at the active cursor');
+            const changed = replayPage.requests.length === 0;
+            replayPage.requests.push({ after, changed });
+            if (!changed) return response;
+            if (replayPage.mode === 'ahead-of-cursor') page.headSeq++;
+            else page.hasMore = true;
+            return Response.json(page);
           }
           if (history && request.method === 'GET' && path === history.path + '/history') {
             const response = await upstream();
@@ -474,6 +498,13 @@ async function startWorker(root) {
           discussionPages = { path, requests: [] };
         }
         discussionPageRequests() { return discussionPages.requests; }
+        armReplayPage({ projectId, mode }) {
+          if (!/^[a-f0-9-]{36}$/i.test(projectId) || !['ahead-of-cursor', 'empty-with-more'].includes(mode)
+              || replayPage?.requests.length === 0) throw new Error('Choose one owned replay-page condition');
+          replayPage = { path: '/v1/projects/' + projectId, mode, awaitingSnapshot: mode === 'ahead-of-cursor', requests: [] };
+          return true;
+        }
+        replayPageRequests() { return replayPage.requests; }
         watchHistory(path, seq) {
           if (history || !Number.isSafeInteger(seq)) throw new Error('Use one owned project import revision');
           history = { path, seq, events: [], snapshots: [], mode: null };
@@ -911,6 +942,7 @@ async function startWorker(root) {
       watchEditingLease: scope => nativeWorker.watchEditingLease(scope), editingLeaseState: () => nativeWorker.editingLeaseState(),
       holdCompetingEditingLease, releaseCompetingEditingLease,
       watchStagedEdit: id => nativeWorker.watchStagedEdit(id), stagedEditState: () => nativeWorker.stagedEditState(),
+      armReplayPage: scope => nativeWorker.armReplayPage(scope), replayPageRequests: () => nativeWorker.replayPageRequests(),
       prepareHostedImage, repairHostedImage, hostedImageResponses: () => nativeWorker.hostedImageResponses(),
       openHostedPeer, hostedPeerInbox, sendHostedPeerSignal,
       prepareSharedGeneration, sharedGenerationState, removeSharedHostedReplica,
@@ -965,6 +997,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'prepare-hosted-image': worker.prepareHostedImage, 'repair-hosted-image': worker.repairHostedImage,
         'open-hosted-peer': worker.openHostedPeer, 'hosted-peer-inbox': worker.hostedPeerInbox, 'send-hosted-peer-signal': worker.sendHostedPeerSignal,
         'watch-staged-edit': worker.watchStagedEdit, 'staged-edit-state': worker.stagedEditState,
+        'arm-replay-page': worker.armReplayPage, 'replay-page-requests': worker.replayPageRequests,
         'hosted-image-responses': worker.hostedImageResponses, 'prepare-shared-generation': worker.prepareSharedGeneration,
         'shared-generation-state': worker.sharedGenerationState, 'remove-shared-hosted-replica': worker.removeSharedHostedReplica,
         'prepare-invitations': worker.prepareInvitations,

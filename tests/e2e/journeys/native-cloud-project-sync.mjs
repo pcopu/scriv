@@ -9,7 +9,7 @@ import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, interrupte
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
 
-const groups = ['sync', 'lease-renewal', 'lease-contention', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'sign-in-recovery', 'sign-in-rate-limit', 'discussion-pages', 'legacy-local-copy', 'reconnect-empty-cloud'];
+const groups = ['sync', 'lease-renewal', 'lease-contention', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'sign-in-recovery', 'sign-in-rate-limit', 'discussion-pages', 'legacy-local-copy', 'reconnect-empty-cloud', 'replay-page-guards'];
 const editLine = { id: 'edit-line', command: 'key', trigger: 'Command-Return', entryPoint: {
   path: 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift', start: 1069, end: 1088,
   sha256: 'f25e5f1bb2ff90cab94f0d8e5fc3de3acbd518d08e2ece840e9dd7f1475f8b1c',
@@ -29,6 +29,12 @@ if (args.length === 1 && args[0] === '--list-cases') {
         path: 'apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift', start: 173, end: 177,
         sha256: 'c3d46efc0f3cde003b14837376b94c0860d878ebafa83942e18d9116cca38a05',
       } }],
+    'replay-page-guards': ['final-replay-page-ahead-of-cursor', 'background-replay-receives-empty-page-with-more-events'].map(condition => ({
+      id: 'sync-project', command: 'activate', trigger: 'Sync this script', condition, entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/Account/ScrivAccountController.swift', start: 24, end: 24,
+        sha256: 'bee03afe2f72622f86f7b668862ab44bd148f4245d0b6aa94db53d1c3fda3718',
+      },
+    })),
   } }));
   process.exit(0);
 }
@@ -383,6 +389,11 @@ async function runProjectJourney() {
   await click('Close discussion');
   assert.deepEqual(await session.command('presented-alerts'), []);
 
+  if (args[1] === 'replay-page-guards') {
+    await verifyReplayPageGuards(synced);
+    await fixture.assertNoOutbound();
+    return;
+  }
   if (args[1] === 'legacy-local-copy') {
     await verifyLegacyLocalCopy(synced);
     await fixture.assertNoOutbound();
@@ -539,6 +550,40 @@ async function runProjectJourney() {
   await verifyAccountReconnectAndSignOut(await verifyInterruptedCloudEditRecovery(downloaded));
   await fixture.assertNoOutbound();
   console.log('PASS: native sync, linked edit, discussions and fresh cloud replica');
+}
+
+async function verifyReplayPageGuards(linked) {
+  const accountStatus = status => nodes => nodes.some(node => node.type === 'UILabel' && node.text === status);
+  step = 'retry the same cursor when a final replay page reports a newer head';
+  await openWorkspacePanel('Scriv account…');
+  assert.equal(await fixture.armReplayPage(linked.cloudProjectId, 'ahead-of-cursor'), true);
+  await click('Sync this script', true);
+  await control(node => node.title === 'Sync this script', true);
+  const retried = await fixture.replayPageRequests();
+  assert.equal(retried.length, 2, 'The next request retrieves the normal page');
+  assert.deepEqual(retried.map(request => request.changed), [true, false]);
+  assert.equal(retried[0].after, retried[1].after, 'The retry preserves the original cursor');
+  await session.command('key', { input: 'Escape', modifiers: [] });
+  await control(workspaceProject, true);
+  assert.deepEqual(await session.command('presented-alerts'), []);
+  const unchanged = (await session.command('loaded-project')).project;
+  assert.deepEqual(content(unchanged), content(linked));
+  assert.deepEqual((await session.command('persisted-projects')).find(project => project.id === linked.id), unchanged);
+
+  step = 'go offline on an empty background replay page and reconnect on the next valid page';
+  await openWorkspacePanel('Scriv account…');
+  await session.waitFor(accountStatus('Cloud sync'));
+  assert.equal(await fixture.armReplayPage(linked.cloudProjectId, 'empty-with-more'), true);
+  await session.waitFor(accountStatus('Offline — local work is saved'));
+  const rejected = await fixture.replayPageRequests();
+  assert.deepEqual(rejected, [{ after: retried[1].after, changed: true }]);
+  assert.deepEqual((await session.command('persisted-projects')).find(project => project.id === linked.id), unchanged);
+  await session.waitFor(accountStatus('Cloud sync'));
+  assert.deepEqual(await fixture.replayPageRequests(), [...rejected, { after: retried[1].after, changed: false }]);
+  assert.deepEqual((await session.command('persisted-projects')).find(project => project.id === linked.id), unchanged);
+  assert.deepEqual(await session.command('presented-alerts'), []);
+  assert.deepEqual(await fixture.projects(), [{ id: linked.cloudProjectId, title: linked.title }]);
+  console.log('PASS: cloud replay retries a stale cursor and refuses an empty page with more events');
 }
 
 async function verifyLegacyLocalCopy(linked) {
