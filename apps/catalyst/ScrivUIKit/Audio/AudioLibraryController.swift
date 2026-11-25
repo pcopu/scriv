@@ -16,6 +16,10 @@ final class AudioLibraryController: ScrivScreenController, UIDocumentPickerDeleg
     private var importEntryID: String?
     private var isImporting = false
     private var importTask: Task<Void, Never>?
+    #if SCRIV_CLI_AUTOMATION
+    private weak var cliRemovalAlert: UIAlertController?
+    private var cliRemovalClipID: String?
+    #endif
 
     override init(store: WorkspaceStore, scopeToProject: Bool = true) {
         sceneID = store.selectedSceneID; super.init(store: store, scopeToProject: scopeToProject)
@@ -138,10 +142,17 @@ final class AudioLibraryController: ScrivScreenController, UIDocumentPickerDeleg
         let alert = UIAlertController(title: "Remove this audio clip?", message: "This removes the placement, not the original recording or script text.", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         alert.addAction(UIAlertAction(title: "Remove clip", style: .destructive) { [weak self] _ in
-            guard let self, self.requireCurrentContext(), self.sceneID == self.store.selectedSceneID else { return }
-            self.store.deleteAudioClip(id)
+            self?.removeClip(id: id)
         })
+        #if SCRIV_CLI_AUTOMATION
+        cliRemovalAlert = alert
+        cliRemovalClipID = id
+        #endif
         present(alert, animated: true)
+    }
+    private func removeClip(id: String) {
+        guard requireCurrentContext(), sceneID == store.selectedSceneID else { return }
+        store.deleteAudioClip(id)
     }
     private func chooseAudio(entryID: String?) {
         guard requireCurrentContext(), sceneID == store.selectedSceneID, !isImporting else { return }
@@ -167,6 +178,41 @@ final class AudioLibraryController: ScrivScreenController, UIDocumentPickerDeleg
     }
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) { importEntryID = nil }
     #if SCRIV_CLI_AUTOMATION
+    private var cliHasCurrentMenuContext: Bool {
+        scopeToProject && initialNavigationContext == store.navigationContext &&
+            sceneID == store.selectedSceneID && !isImporting && importTask == nil
+    }
+
+    func cliMenuAction(on button: UIButton, title: String) -> UIAction? {
+        guard cliHasCurrentMenuContext, presentedViewController == nil, importEntryID == nil,
+              button.showsMenuAsPrimaryAction, let menu = button.menu,
+              menu.title.isEmpty, menu.options.isEmpty else { return nil }
+        let attributes: UIMenuElement.Attributes
+        if button === importButton {
+            guard title == "Import scene audio…" || title == "Import audio for selected dialogue…" else { return nil }
+            attributes = []
+        } else {
+            guard title == "Remove clip…", cardViews.contains(where: { _, card in card.more === button }) else { return nil }
+            attributes = .destructive
+        }
+        let matches = menu.children.compactMap { $0 as? UIAction }.filter { $0.title == title && $0.attributes == attributes }
+        return matches.count == 1 ? matches[0] : nil
+    }
+
+    func cliResolveRemoval(confirmed: Bool) -> Bool {
+        guard cliHasCurrentMenuContext, importEntryID == nil,
+              let alert = cliRemovalAlert, presentedViewController === alert,
+              alert.presentingViewController === self, alert.presentedViewController == nil,
+              alert.preferredStyle == .alert, alert.viewIfLoaded?.window != nil,
+              !alert.isBeingPresented, !alert.isBeingDismissed,
+              let id = cliRemovalClipID, cardViews[id] != nil else { return false }
+        cliRemovalAlert = nil
+        cliRemovalClipID = nil
+        if confirmed { removeClip(id: id) }
+        alert.dismiss(animated: true)
+        return true
+    }
+
     /// Only this library's captured scene and selected clip may identify its
     /// actual presented editor. No command supplies either identity.
     func cliOwnsTrimEditor(_ editor: AudioClipEditorController, requiresUnchangedClip: Bool) -> Bool {
@@ -194,7 +240,8 @@ private final class AudioClipCardView: UIView {
     private let waveform = MeasuredAudioWaveformView()
     private let timeLabel = ScrivUIKitTheme.label("", size: 13, lines: 1)
     private let warning = ScrivUIKitTheme.label("", size: 11, color: .systemOrange)
-    private let play = UIButton(type: .system), mute = UIButton(type: .system), more = UIButton(type: .system)
+    private let play = UIButton(type: .system), mute = UIButton(type: .system)
+    let more = UIButton(type: .system)
     private let volume = UISlider()
     private var trimButton: UIButton!
     private var isSelectedCard = false
@@ -277,6 +324,7 @@ private final class AudioClipCardView: UIView {
         if placement == nil { issues.append("This placement is outside the scene’s current duration. Adjust timing to hear it.") }
         warning.text = issues.joined(separator: "\n"); warning.isHidden = issues.isEmpty
         more.accessibilityLabel = "Audio options for " + asset.originalName
+        more.accessibilityIdentifier = "audio-clip-options-" + clip.id
         more.menu = UIMenu(children: [
             UIAction(title: "Trim & timing…") { [weak self] _ in self?.onTrim?() },
             UIAction(title: clip.isMuted ? "Unmute clip" : "Mute clip") { [weak self] _ in self?.onMute?() },

@@ -295,8 +295,8 @@
       "id": "004a3c426f56cab6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 252,
-        "end": 252,
+        "start": 299,
+        "end": 299,
         "sha256": "3f124e0076d0b14b94e0c68262995bba537ee2ad724b0b9dcef9bfd2bbaa922d"
       },
       "actions": [
@@ -929,8 +929,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 81,
-        "end": 99,
+        "start": 100,
+        "end": 118,
         "sha256": "d897fed3ec755ec7e19708b6a935ed9fd231ab0a622cf990c21c42d786f2ee54"
       },
       "why": "AUT-J13: importClip callers specify selected-dialogue or scene; production decoder/store completion and owned source cleanup are asserted before saved asset, clip placement and full loaded model comparison. This semantic post-picker boundary does not prove picker or microphone permission routes. Reviewed static association only; this Linux audit did not run the native test."
@@ -1589,8 +1589,8 @@
       "id": "03a2c96c809607c3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 119,
-        "end": 120,
+        "start": 123,
+        "end": 124,
         "sha256": "a6134a70224fa7c5ded1cafe5b4893106f556bae3c40eb7f7a0a90945140aff1"
       },
       "actions": [
@@ -2629,8 +2629,8 @@
       "id": "075f8247f7989103",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1143,
-        "end": 1149,
+        "start": 1132,
+        "end": 1138,
         "sha256": "70edbf61ca4e624c0995831a11aa20cc3f54d75846ece0c208fed31e96f0dfc1"
       },
       "actions": [
@@ -2807,6 +2807,26 @@
       "why": "AUT-J12: verified fixture import and cue selection drive production selectedImageGenerationContext construction and then actual review shows exact passages. Cache-hit/invalidation assertions are not claimed, nor imageGenerationContext(cueID:) generation-start route. Reviewed static association only, not native execution or measured coverage."
     },
     {
+      "id": "0c9ef136b9782419",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+        "start": 157,
+        "end": 163,
+        "sha256": "ec169c8cb5f5b42ffcbfea86c00b54c949b25b21660dbdd328ffd7b8ee1dd174"
+      },
+      "actions": [
+        "menu-action {scope:\"audio-library-actions\",target:\"audio-import-menu\",action:\"Import scene audio…\"}",
+        "persisted-projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/audio-library.mjs",
+        "start": 318,
+        "end": 327,
+        "sha256": "8d7c15fb97cc3f1f0fa7167ca00bb4058d264125e58e6564cc0afef21645fa26"
+      },
+      "why": "The stored scene import menu action presents its native document chooser. The journey checks the presented controller and verifies that saved projects stay unchanged before any selection."
+    },
+    {
       "id": "26aed7484ea958fa",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
@@ -2870,6 +2890,26 @@
       "why": "The normal reconnect fills an already-linked but empty cloud project using the original local script."
     },
     {
+      "id": "48f09ccfd8177d6f",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+        "start": 202,
+        "end": 213,
+        "sha256": "f3aaecec57a1cb3c166c98ecda0faad4146bb101d60ceb2d2039bea708286828"
+      },
+      "actions": [
+        "resolve-audio-removal {decision:\"cancel\"}",
+        "persisted-projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/audio-library.mjs",
+        "start": 294,
+        "end": 305,
+        "sha256": "2cb4830b53fd68b50262b517e004a812bae1412dea0ba457c1c17ad04badcbcb"
+      },
+      "why": "Cancelling the owned confirmation keeps the mounted placement, all persisted project fields and the recording bytes."
+    },
+    {
       "id": "61b4443dd8dc9aaf",
       "source": {
         "path": "scripts/compact-cli-archive.mjs",
@@ -2911,6 +2951,27 @@
       "why": "The public archive command preserves indexes when a raw capture fails its digest or retained source fails Tracer measurement integrity."
     },
     {
+      "id": "70491fdb790ebd32",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+        "start": 153,
+        "end": 156,
+        "sha256": "69aef083d67d4b61b7e839a13ebdb271bf8f51b81597e69f02a9cbbb38db1550"
+      },
+      "actions": [
+        "resolve-audio-removal {decision:\"remove\"}",
+        "persisted-projects",
+        "loaded-project"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/audio-library.mjs",
+        "start": 306,
+        "end": 317,
+        "sha256": "cd2947b6fbd2e98b3f83c49d7ced2f27ce211b72ad520807b13ca5230e1ab292"
+      },
+      "why": "The owned confirmation invokes the same removal method as the UIKit alert. It saves one revision with only the clip placement removed and preserves the original recording bytes."
+    },
+    {
       "id": "70c64b17dba8ecaa",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
@@ -2936,8 +2997,8 @@
       "id": "7b54f8635b595ac8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 857,
-        "end": 871,
+        "start": 866,
+        "end": 880,
         "sha256": "118197b72f6b0fefae1fdd01efa8d2378446962152e1c4463740bedf9a9a9cbb"
       },
       "actions": [
@@ -2976,6 +3037,26 @@
       "why": "The paid Team sync action restores the missing hosted image using the original saved bytes."
     },
     {
+      "id": "848e0e5b1e3c13d8",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+        "start": 140,
+        "end": 152,
+        "sha256": "b0255680f9e3ad6e317b6766f2f7d19441cfdfa2238c6d2bde642919fda95e36"
+      },
+      "actions": [
+        "menu-action {scope:\"audio-library-actions\",target:mounted clip options,action:\"Remove clip…\"}",
+        "presented-alerts"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/audio-library.mjs",
+        "start": 279,
+        "end": 289,
+        "sha256": "c56b417bae5f7baef976c60ced37d3a70c7ef0834d539e6c6c53450a93fb4bec"
+      },
+      "why": "The installed destructive menu action presents the actual Audio Library confirmation. The journey checks the exact warning and enabled cancel and destructive choices."
+    },
+    {
       "id": "869c2bbe8bb46648",
       "source": {
         "path": "apps/mac/Sources/ScrivCore/AudioFileStore.swift",
@@ -2988,8 +3069,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 159,
-        "end": 186,
+        "start": 182,
+        "end": 209,
         "sha256": "05184fe7fae1595ca06b1fd26872fa6502a14b1f85a94b1bcd78df31ddebe6d7"
       },
       "why": "The normal importer refuses the destination outside the project and removes its staged input. The case verifies the existing package, its audio directory and the external synthetic sentinel bytes are preserved."
@@ -3030,8 +3111,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 317,
-        "end": 317,
+        "start": 418,
+        "end": 418,
         "sha256": "5b1f85521bc1b8141b2859e4bae3a3436ef9efd8a8badc26d3915918d2cf7207"
       },
       "why": "Production audio storage refusal becomes a stable attached Scriv alert with the real error message."
@@ -3727,8 +3808,8 @@
       "id": "0b5618fdeb2e0be4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 520,
-        "end": 520,
+        "start": 529,
+        "end": 529,
         "sha256": "42c475b9792fc983b1cc1b2156a5eda23f7c136eafa61bf98a274774b9f0b2d7"
       },
       "actions": [
@@ -3824,8 +3905,8 @@
       "id": "0c2104c99bb9dca8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 84,
-        "end": 88,
+        "start": 88,
+        "end": 92,
         "sha256": "47c6a0389dea9407802fd37d005b0ead8a2cd22ed37079109343b97bc0909726"
       },
       "actions": [
@@ -3839,8 +3920,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 146,
-        "end": 156,
+        "start": 169,
+        "end": 179,
         "sha256": "2009d7426fe3f1839a0b986a9fd0c06f0836d6caa043e9e6a4d6a051cda2e71d"
       },
       "why": "AUT-J13/import library-preserves-two-clips: after selected-dialogue import and scene-silence import at playhead 3500 in the 5000 ms scene, opening Local audio observes both clip-specific trim controls, local-only copy, Scene track/Follows dialogue badges and exactly one enabled play control for each clip. No play button is activated. The full saved state remains unchanged after closing. Only successful two-card construction/display is associated; missing-file, missing-placement, character-name and direction-badge branches are excluded. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -4951,8 +5032,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 243,
-        "end": 248,
+        "start": 344,
+        "end": 349,
         "sha256": "6151903da68bd8040f9d14fd868e8ae4c5bff53508497d7bdcfe03cfc36a4536"
       },
       "why": "AUT-J14: real applyDraft dispatches updateAudioClip; full expected save is checked by mutation(). Missing-clip rejection is not exercised. Reviewed static association only; this Linux audit did not run the native test."
@@ -7688,8 +7769,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 146,
-        "end": 156,
+        "start": 169,
+        "end": 179,
         "sha256": "2009d7426fe3f1839a0b986a9fd0c06f0836d6caa043e9e6a4d6a051cda2e71d"
       },
       "why": "AUT-J13/import library-preserves-two-clips: selected-dialogue and scene-silence imports create two real local clip records before opening the library from Script Layers. openLibrary observes local-audio-sheet and enabled Close local audio, then the workflow checks both clip identities, badges, enabled play controls and local-only text. Closing preserves every saved field. The actual Layers Audio UIButton calls show(.audio), leading to the mounted library and its two imported clip cards. ImageUI.compact on the same line is not a geometry witness. Static source/action/assertion association only. No new native execution, measured coverage, physical input parity, every conditional branch or legacy retirement is claimed. Existing reveal/scroll/poll helpers govern conditional observation; actions are meaningful ordered descriptions, not a captured wire transcript."
@@ -8159,8 +8240,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 283,
-        "end": 290,
+        "start": 384,
+        "end": 391,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing invalid drafts: each literal invalid source/duration/offset variant uses actual text fields and Apply, retains its exact raw strings, shows audio-timing-validation with the unchanged-draft explanation, and preserves every saved model field. The catch path presents the inline notice while retaining the sheet and draft. Presence/text are asserted, not content geometry, sheet fitting or the specific invalid-range message. Static reviewed source/action/assertion association only. No native execution, measured coverage, physical-input parity, all-branch coverage or legacy retirement is claimed. Optional reveal/scroll and polling reads remain governed by the original helpers, not a recorded wire transcript."
@@ -8235,8 +8316,8 @@
       "id": "1d2d4503426bace5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 48,
-        "end": 48,
+        "start": 52,
+        "end": 52,
         "sha256": "d94ebfab112c131397b7176d6df2b0ccbe440237c2aece4171bf278303fd6c72"
       },
       "actions": [
@@ -8250,8 +8331,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 146,
-        "end": 156,
+        "start": 169,
+        "end": 179,
         "sha256": "2009d7426fe3f1839a0b986a9fd0c06f0836d6caa043e9e6a4d6a051cda2e71d"
       },
       "why": "AUT-J13/import library-preserves-two-clips: after selected-dialogue import and scene-silence import at playhead 3500 in the 5000 ms scene, opening Local audio observes both clip-specific trim controls, local-only copy, Scene track/Follows dialogue badges and exactly one enabled play control for each clip. No play button is activated. The full saved state remains unchanged after closing. Only successful two-card construction/display is associated; missing-file, missing-placement, character-name and direction-badge branches are excluded. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -8811,8 +8892,8 @@
       "id": "1f3c1986980c7338",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 232,
-        "end": 232,
+        "start": 279,
+        "end": 279,
         "sha256": "b697cbeb4268adf60c399f9d2cc3a16c87d41dabef1c5ce5ac3663ae3a25db4e"
       },
       "actions": [
@@ -8826,8 +8907,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 206,
+        "start": 220,
+        "end": 229,
         "sha256": "2303c356b86c3f1382188070f5de16bd4aacd717d3ffe2658ac9a0cc00a24a91"
       },
       "why": "AUT-J13/mix: a real imported scene clip is shown in the library. Actual volume slider changes to 0.375, then the actual mute and unmute buttons each commit only their intended clip field, with exactly one saved revision per change. The mix sequence leaves all other saved content and the startup project unchanged. UI audio output and stale context rejection are not observed. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -10638,8 +10719,8 @@
       "id": "246327578024a243",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 532,
-        "end": 533,
+        "start": 541,
+        "end": 542,
         "sha256": "390308ff98727586d6b0a3bb0587bfeeaa57fba2528d0817f1c3df41538bcc61"
       },
       "actions": [
@@ -10993,8 +11074,8 @@
       "id": "25469c65b965a27e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 124,
-        "end": 127,
+        "start": 128,
+        "end": 131,
         "sha256": "7dda31a1c43a9bc7f4ebbaf806a4006a77645cd017ef79e564683c5c3709e46a"
       },
       "actions": [
@@ -11006,8 +11087,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 206,
+        "start": 220,
+        "end": 229,
         "sha256": "2303c356b86c3f1382188070f5de16bd4aacd717d3ffe2658ac9a0cc00a24a91"
       },
       "why": "AUT-J13: actual clip volume and mute/unmute callbacks commit through store.updateAudioClip. Test asserts only intended clip fields change; no stale context/deleted-clip branch proof. Reviewed static association only; this Linux audit did not run the native test."
@@ -11642,8 +11723,8 @@
       "id": "26c31f43a3589cda",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 270,
-        "end": 271,
+        "start": 317,
+        "end": 318,
         "sha256": "43e40e84a3af4f720bf86fd5b7dfe39788d5dcf5bd71673f646c5470aa33d4d1"
       },
       "actions": [
@@ -11660,8 +11741,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 208,
-        "end": 213,
+        "start": 231,
+        "end": 236,
         "sha256": "a15f31cca9f919b3954d0fd251f3bd9973c361de548606bbcbaa6da1c5037395"
       },
       "why": "AUT-J13/mix reopen-library: after volume 0.375 and mute then unmute, reopening the library exposes slider value exactly 0.375 and a ready Mute button. This associates persisted numeric value and current accessible labels, not icon appearance, percentage value or isTracking=true behavior. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -12681,8 +12762,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 215,
-        "end": 218,
+        "start": 238,
+        "end": 241,
         "sha256": "cc0d594a3f36b3a7047f7148d32ffa886e0225242e10dfa4d8efba2a6297e2b0"
       },
       "why": "AUT-J13/mix: Local audio volume accessible slider dispatches the real volumeChanged target and produces saved audioVolume 0.25, with all unrelated content preserved. No out-of-range clamp branch or physical slider movement is claimed. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -13616,8 +13697,8 @@
       "id": "2c7674f3905b9fe3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 740,
-        "end": 741,
+        "start": 749,
+        "end": 750,
         "sha256": "87fb4fb7b226586f934ca41449da35e916035a5fc898f5924f7efed8f1260084"
       },
       "actions": [
@@ -13779,8 +13860,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 243,
-        "end": 248,
+        "start": 344,
+        "end": 349,
         "sha256": "6151903da68bd8040f9d14fd868e8ae4c5bff53508497d7bdcfe03cfc36a4536"
       },
       "why": "AUT-J14/timing baseline-trim: a semantic-imported 4000 ms dialogue clip is opened through its actual Trim & timing button. Source 0.500, duration 2.500 and offset 0.250 save exactly sourceStartMs 500, durationMs 2500 and startMs 250. mutation() at audio-library.mjs:60-67 requires one revision and complete intended-content equality; no missing/stale clip or validation rejection branch is claimed. These are numeric field and Apply callbacks, not waveform drag. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -14796,8 +14877,8 @@
       "id": "31f79426db7cd75a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 602,
-        "end": 604,
+        "start": 611,
+        "end": 613,
         "sha256": "c324179813f2dec8eabeaad7a3d24683533bfd617fcd1eadbbec16ccc586f24b"
       },
       "actions": [
@@ -15428,8 +15509,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 283,
-        "end": 290,
+        "start": 384,
+        "end": 391,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. The exact persistent-draft notice copy is asserted. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -15913,8 +15994,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 215,
-        "end": 224,
+        "start": 238,
+        "end": 247,
         "sha256": "3078b4444705087656fe3965b6e579723f011140d89821527486c6defabe111a"
       },
       "why": "AUT-J13/mix: a real synthetic recording is already imported as a scene clip. The actual footer volume slider changes to 0.25, then actual Mute and Unmute controls save 0 and restore 0.25, with exactly one revision and complete intended-content equality for each action. Presence of an imported clip determines the positive hasAudio input used to enable the two controls. The actual reveal helper requires each activated/changed control to be enabled and hittable. Empty-project disabling and audible output are unclaimed. Static source/action/assertion association only. No new native execution, measured coverage, physical input parity, every conditional branch or legacy retirement is claimed. Existing reveal/scroll/poll helpers govern conditional observation; actions are meaningful ordered descriptions, not a captured wire transcript."
@@ -16027,8 +16108,8 @@
       "id": "361c5c737cdd97f7",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 523,
-        "end": 526,
+        "start": 532,
+        "end": 535,
         "sha256": "be53340637c0733a61c336310c1452479c5ef1b02038be1f08dacd3fcf7c1325"
       },
       "actions": [
@@ -16248,8 +16329,8 @@
       "id": "3677c65b067285f3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 253,
-        "end": 254,
+        "start": 300,
+        "end": 301,
         "sha256": "f5a78dc5ddbfb2e5f4006bbf807f75e5c73938f344dc526e1d318d058f373bd6"
       },
       "actions": [
@@ -16263,8 +16344,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 146,
-        "end": 156,
+        "start": 169,
+        "end": 179,
         "sha256": "2009d7426fe3f1839a0b986a9fd0c06f0836d6caa043e9e6a4d6a051cda2e71d"
       },
       "why": "AUT-J13/import library-preserves-two-clips: after selected-dialogue import and scene-silence import at playhead 3500 in the 5000 ms scene, opening Local audio observes both clip-specific trim controls, local-only copy, Scene track/Follows dialogue badges and exactly one enabled play control for each clip. No play button is activated. The full saved state remains unchanged after closing. Only successful two-card construction/display is associated; missing-file, missing-placement, character-name and direction-badge branches are excluded. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -17111,8 +17192,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 243,
-        "end": 248,
+        "start": 344,
+        "end": 349,
         "sha256": "6151903da68bd8040f9d14fd868e8ae4c5bff53508497d7bdcfe03cfc36a4536"
       },
       "why": "AUT-J14/timing baseline-trim: a semantic-imported 4000 ms dialogue clip is opened through its actual Trim & timing button. Source 0.500, duration 2.500 and offset 0.250 save exactly sourceStartMs 500, durationMs 2500 and startMs 250. mutation() at audio-library.mjs:60-67 requires one revision and complete intended-content equality; no missing/stale clip or validation rejection branch is claimed. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -18221,8 +18302,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 243,
-        "end": 248,
+        "start": 344,
+        "end": 349,
         "sha256": "6151903da68bd8040f9d14fd868e8ae4c5bff53508497d7bdcfe03cfc36a4536"
       },
       "why": "AUT-J14/baseline-trim: opening the current imported clip calls openTrim with expected 0.000/4.000/0.000 and requires all three original field strings before any edits. Then valid text/Apply commits the complete exact saved model. Only initial field population is linked; waveform drawing is not. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -19870,8 +19951,8 @@
       "id": "43c1321950b21083",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1043,
-        "end": 1045,
+        "start": 1032,
+        "end": 1034,
         "sha256": "1832dfa33320b4f95bab71ed05bc3a46952600a61a5309c015c0cb1aac09908d"
       },
       "actions": [
@@ -20537,8 +20618,8 @@
       "id": "45d43a163bf3061a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 113,
-        "end": 117,
+        "start": 117,
+        "end": 121,
         "sha256": "fd8f1dad5c6bae13c9bfb0c2adf288a220a03238e2c95c3793c7222a1db7084a"
       },
       "actions": [
@@ -21746,8 +21827,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 243,
-        "end": 248,
+        "start": 344,
+        "end": 349,
         "sha256": "6151903da68bd8040f9d14fd868e8ae4c5bff53508497d7bdcfe03cfc36a4536"
       },
       "why": "AUT-J14/timing baseline-trim: an imported 4000 ms dialogue recording opens with exact 0.000/4.000/0.000 fields. Actual text commands 0.500/2.500/0.250 and Apply save only sourceStartMs 500, durationMs 2500, startMs 250 plus one normal revision. openTrim explicitly waits for the mounted audio-trim-editor identity before reading or changing its fields. The inherited viewDidLoad behavior is not broadly claimed. Static reviewed source/action/assertion association only. No native execution, measured coverage, physical-input parity, all-branch coverage or legacy retirement is claimed. Optional reveal/scroll and polling reads remain governed by the original helpers, not a recorded wire transcript."
@@ -22271,8 +22352,8 @@
       "id": "4d121c8c0cbf56bb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 254,
-        "end": 254,
+        "start": 301,
+        "end": 301,
         "sha256": "49b607ec1e02db93036d577f92c1f33a7e828371503d0401a3fcdb8c509bbb2c"
       },
       "actions": [
@@ -23521,8 +23602,8 @@
       "id": "5211d001407c7455",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1194,
-        "end": 1194,
+        "start": 1183,
+        "end": 1183,
         "sha256": "df4993a2dcd9414ca54bdbd35a37dc670f2ee5363b7c978a0f8effe92f47fa3e"
       },
       "actions": [
@@ -25373,8 +25454,8 @@
       "id": "58c99a3c2c4e6c33",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 26,
-        "end": 26,
+        "start": 30,
+        "end": 30,
         "sha256": "346244ede61b7677c543b2eb1c0b2125faa2f97d2e592d8cf4be2980299a6139"
       },
       "actions": [
@@ -25388,8 +25469,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 146,
-        "end": 156,
+        "start": 169,
+        "end": 179,
         "sha256": "2009d7426fe3f1839a0b986a9fd0c06f0836d6caa043e9e6a4d6a051cda2e71d"
       },
       "why": "AUT-J13/import library-preserves-two-clips: selected-dialogue and scene-silence imports create two real local clip records before opening the library from Script Layers. openLibrary observes local-audio-sheet and enabled Close local audio, then the workflow checks both clip identities, badges, enabled play controls and local-only text. Closing preserves every saved field. The mounted production library exposes local-audio-sheet, which openLibrary explicitly waits for and closeLibrary requires to disappear. Inherited view loading is not broadly credited. Static source/action/assertion association only. No new native execution, measured coverage, physical input parity, every conditional branch or legacy retirement is claimed. Existing reveal/scroll/poll helpers govern conditional observation; actions are meaningful ordered descriptions, not a captured wire transcript."
@@ -25518,8 +25599,8 @@
       "id": "5975ebf27fa24190",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 516,
-        "end": 519,
+        "start": 525,
+        "end": 528,
         "sha256": "fd1208ec29481b3c0d6e820b8d3f96b24a68d9c97b1cce3368de8ecc24087688"
       },
       "actions": [
@@ -26721,8 +26802,8 @@
       "id": "5df3242e94b1184f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 520,
-        "end": 520,
+        "start": 529,
+        "end": 529,
         "sha256": "42c475b9792fc983b1cc1b2156a5eda23f7c136eafa61bf98a274774b9f0b2d7"
       },
       "actions": [
@@ -27097,8 +27178,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 283,
-        "end": 290,
+        "start": 384,
+        "end": 391,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -28304,8 +28385,8 @@
       "id": "6322edf8e4782c20",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 932,
-        "end": 932,
+        "start": 921,
+        "end": 921,
         "sha256": "117edc4441ea32d381a04f092c98a7d78b8f6368c4b4bff6ec26e4599d7db9b6"
       },
       "actions": [
@@ -28922,8 +29003,8 @@
       "id": "655bf5071a5998fd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 509,
-        "end": 512,
+        "start": 518,
+        "end": 521,
         "sha256": "75f35ed14262dd5313e36336b0b41fc4397a8fc9d4003e1c34450e150fad0d60"
       },
       "actions": [
@@ -29331,8 +29412,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 81,
-        "end": 99,
+        "start": 100,
+        "end": 118,
         "sha256": "d897fed3ec755ec7e19708b6a935ed9fd231ab0a622cf990c21c42d786f2ee54"
       },
       "why": "ScrivCLIAudioImport validates an owned synthetic WAV and awaits importAudio. Default import group invokes selected-dialogue then scene-silence import after playhead 3500. verifyImportedAsset checks measured asset and bytes; expectedClip checks placement and clipping to available scene time; mutation checks complete project preservation and one revision. Passing preconditions and stable navigation only. Invalid front-door payloads never witness WorkspaceStore guard failures; picker, security-scope grant, decoder failure and navigation races excluded."
@@ -30822,8 +30903,8 @@
       "id": "6c2178019aff4cc9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 287,
-        "end": 287,
+        "start": 335,
+        "end": 335,
         "sha256": "a4aea52be9c1d54e5f07cb7e5d15b65b3442171f714bc4339192c2118be74316"
       },
       "actions": [
@@ -30837,8 +30918,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 206,
+        "start": 220,
+        "end": 229,
         "sha256": "2303c356b86c3f1382188070f5de16bd4aacd717d3ffe2658ac9a0cc00a24a91"
       },
       "why": "AUT-J13/mix: a real imported scene clip is shown in the library. Actual volume slider changes to 0.375, then the actual mute and unmute buttons each commit only their intended clip field, with exactly one saved revision per change. The mix sequence leaves all other saved content and the startup project unchanged. UI audio output and stale context rejection are not observed. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -31282,8 +31363,8 @@
       "id": "6d49a3d75a66a538",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 270,
-        "end": 272,
+        "start": 317,
+        "end": 319,
         "sha256": "9066f41a69654947a308240132d2b84ed61411046331ca30a53f01d4416c395f"
       },
       "actions": [
@@ -31948,8 +32029,8 @@
       "id": "6f0a51def3c92169",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 516,
-        "end": 518,
+        "start": 525,
+        "end": 527,
         "sha256": "cf4e8e1bce56a0b0fe308df4ff78b381d8cdbe1f2c74752423ed32f49a0dcfc1"
       },
       "actions": [
@@ -33264,8 +33345,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 283,
-        "end": 290,
+        "start": 384,
+        "end": 391,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -34318,10 +34399,10 @@
     {
       "id": "778df645dc921268",
       "source": {
-        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 913,
-        "end": 915,
-        "sha256": "bbfb7483c89e30c09f8be7ad92447e6b9d1d6f2dae773379043375c1afac3fe1"
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIMenuActions.swift",
+        "start": 18,
+        "end": 20,
+        "sha256": "057ad169b05b603450fe3eb53ba5730812799eb009097691e85e28a6b01b9269"
       },
       "actions": [
         "menu {target: snapshot unique selected-scene button.path}",
@@ -36663,8 +36744,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 86,
-        "end": 99,
+        "start": 105,
+        "end": 118,
         "sha256": "4a8eb5e2c083944974a05360deae70faa0b842a4b2f3fa5cbd0666e2f96714e1"
       },
       "why": "AUT-J13/import scene-silence-import caller at 131-134 seeks 3500 in the literal 5000 ms scene and imports four seconds of synthetic silence. importClip independently expects a scene clip with no entryId, startMs 3500, sourceStartMs 0, durationMs 1500, volume 1 and isMuted false, plus exactly one saved revision and the full expected project. This is valid import placement/clamping, not scene-shortening races or failure guards. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -37192,8 +37273,8 @@
       "id": "80a5e71cda021282",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 119,
-        "end": 119,
+        "start": 123,
+        "end": 123,
         "sha256": "4ea3aa2434d9efebfef9a6b1b19c6491e573a7c7444692007c7cefc254f5db20"
       },
       "actions": [
@@ -37202,8 +37283,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 200,
+        "start": 220,
+        "end": 223,
         "sha256": "70bcf65bbef04c17c5748752add5b9063936c669b850912ad73f68952e9aeb9c"
       },
       "why": "AUT-J13: mix group has one genuinely imported synthetic WAV in the actual library. Exact saved volume is 0.375 and mutation() checks one revision plus full project invariants; no playback is dispatched. Reviewed static association only; this Linux audit did not run the native test."
@@ -38255,8 +38336,8 @@
       "id": "83f512cd665f025b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 609,
-        "end": 613,
+        "start": 618,
+        "end": 622,
         "sha256": "dab34e6acf94ea0f79a2f627ec216ce5e93c722ede15ba9a4db387898c5b1e99"
       },
       "actions": [
@@ -38425,8 +38506,8 @@
       "id": "84c4e9c15886436a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 226,
-        "end": 226,
+        "start": 273,
+        "end": 273,
         "sha256": "80b4e714b944caf1490ff87ef98c6b477f556f6b935b80ea288bbe349c85655c"
       },
       "actions": [
@@ -38440,8 +38521,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 206,
+        "start": 220,
+        "end": 229,
         "sha256": "2303c356b86c3f1382188070f5de16bd4aacd717d3ffe2658ac9a0cc00a24a91"
       },
       "why": "AUT-J13/mix: a real imported scene clip is shown in the library. Actual volume slider changes to 0.375, then the actual mute and unmute buttons each commit only their intended clip field, with exactly one saved revision per change. The mix sequence leaves all other saved content and the startup project unchanged. UI audio output and stale context rejection are not observed. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -39681,8 +39762,8 @@
       "id": "887d10b0bd9d1cf0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 234,
-        "end": 234,
+        "start": 281,
+        "end": 281,
         "sha256": "f4c33691334c2d32672bb63a0e9f1d65d3c0fa2cd0235e1870186c94b1cda8a4"
       },
       "actions": [
@@ -39810,8 +39891,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 283,
-        "end": 290,
+        "start": 384,
+        "end": 391,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -40234,8 +40315,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 243,
-        "end": 248,
+        "start": 344,
+        "end": 349,
         "sha256": "6151903da68bd8040f9d14fd868e8ae4c5bff53508497d7bdcfe03cfc36a4536"
       },
       "why": "AUT-J14/timing baseline-trim: a semantic-imported 4000 ms dialogue clip is opened through its actual Trim & timing button. Source 0.500, duration 2.500 and offset 0.250 save exactly sourceStartMs 500, durationMs 2500 and startMs 250. mutation() at audio-library.mjs:60-67 requires one revision and complete intended-content equality; no missing/stale clip or validation rejection branch is claimed. These are numeric field and Apply callbacks, not waveform drag. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -40356,8 +40437,8 @@
       "id": "8a0c5c83770c8e04",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 758,
-        "end": 760,
+        "start": 767,
+        "end": 769,
         "sha256": "e75ceef78142ba6150091ee1d701fe508c3750adc77fd0a8515a2abab938d0a1"
       },
       "actions": [
@@ -40686,8 +40767,8 @@
       "id": "8c67421f6bb99b66",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 124,
-        "end": 126,
+        "start": 128,
+        "end": 130,
         "sha256": "9e97660cef1013b42c8398cb740f82e22b78302fb11d203944c2558b281c2cde"
       },
       "actions": [
@@ -40714,8 +40795,8 @@
       "id": "8c7caa0a1e794d86",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 42,
-        "end": 42,
+        "start": 46,
+        "end": 46,
         "sha256": "502b84ddf056748e7b10c6227c8ab9f7855ef009b008125603d74cb98811724e"
       },
       "actions": [
@@ -40812,10 +40893,10 @@
     {
       "id": "8cabb5a825354921",
       "source": {
-        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 921,
-        "end": 922,
-        "sha256": "1cffeee9176ea8b313df1e5be327c0e9baf50c45d829101186009b257fc8e37f"
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIMenuActions.swift",
+        "start": 26,
+        "end": 27,
+        "sha256": "5ca2574d9bffa7efa4df79904037a85428e41665a42b952d9b1abe0880f54cf2"
       },
       "actions": [
         "{\"command\":\"snapshot\"}",
@@ -41577,8 +41658,8 @@
       "id": "8fb4c08064f57176",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1103,
-        "end": 1111,
+        "start": 1092,
+        "end": 1100,
         "sha256": "5a5f6c02a36999a9e71b9abd7481a87a0f3c1caa96b70ff0d63035f548b90ade"
       },
       "actions": [
@@ -43431,8 +43512,8 @@
       "id": "96523476b3f88a7e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 777,
-        "end": 779,
+        "start": 786,
+        "end": 788,
         "sha256": "42012bb069693254b4836adeccce4487cac4e7915e8af932cba052184d7d1e3e"
       },
       "actions": [
@@ -43576,8 +43657,8 @@
       "id": "974614a8dee94c74",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 258,
-        "end": 258,
+        "start": 305,
+        "end": 305,
         "sha256": "66aae5c48c4625c6171835cc2ecaf4e8c8d7f7da69cbc8ef309b6448ea38bbef"
       },
       "actions": [
@@ -43591,8 +43672,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 146,
-        "end": 156,
+        "start": 169,
+        "end": 179,
         "sha256": "2009d7426fe3f1839a0b986a9fd0c06f0836d6caa043e9e6a4d6a051cda2e71d"
       },
       "why": "AUT-J13/import library-preserves-two-clips: after selected-dialogue import and scene-silence import at playhead 3500 in the 5000 ms scene, opening Local audio observes both clip-specific trim controls, local-only copy, Scene track/Follows dialogue badges and exactly one enabled play control for each clip. No play button is activated. The full saved state remains unchanged after closing. Only successful two-card construction/display is associated; missing-file, missing-placement, character-name and direction-badge branches are excluded. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -43826,8 +43907,8 @@
       "id": "9859dc8ba1e03ff3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 780,
-        "end": 780,
+        "start": 789,
+        "end": 789,
         "sha256": "a2523414c7ecf310d709bcca45c6c26e446ef386e2e77a7301308e8d6f451af4"
       },
       "actions": [
@@ -43975,7 +44056,7 @@
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 48,
         "end": 74,
-        "sha256": "101ebf3ae76fb48bd6c169c791812a40d5f6035d47fd96a95ef7a7c997488094"
+        "sha256": "34649b28a373f1266e527324f1ffe1a577008c282f8913f4e86b03e69cff8230"
       },
       "why": "Discover regular native entrypoint files in the transitional and journey directories, excluding support and opt-in live-account routes."
     },
@@ -43999,8 +44080,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 243,
-        "end": 248,
+        "start": 344,
+        "end": 349,
         "sha256": "6151903da68bd8040f9d14fd868e8ae4c5bff53508497d7bdcfe03cfc36a4536"
       },
       "why": "AUT-J14/timing baseline-trim: an imported 4000 ms dialogue recording opens with exact 0.000/4.000/0.000 fields. Actual text commands 0.500/2.500/0.250 and Apply save only sourceStartMs 500, durationMs 2500, startMs 250 plus one normal revision. The three supplied field identifiers are the actual targets required by openTrim/fields and numeric entry. The accessibility label construction shares this line but is not independently asserted by this witness. Static reviewed source/action/assertion association only. No native execution, measured coverage, physical-input parity, all-branch coverage or legacy retirement is claimed. Optional reveal/scroll and polling reads remain governed by the original helpers, not a recorded wire transcript."
@@ -44946,8 +45027,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 215,
-        "end": 224,
+        "start": 238,
+        "end": 247,
         "sha256": "3078b4444705087656fe3965b6e579723f011140d89821527486c6defabe111a"
       },
       "why": "AUT-J13/mix: the test must locate and activate Mute local audio followed by Unmute local audio; each action commits the expected volume (0 then 0.25). Current label updates are linked; speaker icon drawing is not. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -46994,8 +47075,8 @@
       "id": "a13489ce55eafe6d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 617,
-        "end": 617,
+        "start": 626,
+        "end": 626,
         "sha256": "cc0f92a36210d7cf478a1dcd404ed40f0f1956d12202059503ac6325c63a2748"
       },
       "actions": [
@@ -47743,8 +47824,8 @@
       "id": "a27cc246e1bb047b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 618,
-        "end": 621,
+        "start": 627,
+        "end": 630,
         "sha256": "ef50a51588e0c27a2f347b6fb60c111410762ad3440ffc360b3df572d5700c1a"
       },
       "actions": [
@@ -48340,10 +48421,10 @@
     {
       "id": "a416a0a7bbca6d14",
       "source": {
-        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 924,
-        "end": 926,
-        "sha256": "274f522ebdbfcfc6f473837b2562e4f89860f01e3b2baed7f66c5ef9165449ff"
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIMenuActions.swift",
+        "start": 29,
+        "end": 31,
+        "sha256": "5f184e1bc32c15942c8501e5454e84ddc11b56e75a651c8c8e9335c08db71c41"
       },
       "actions": [
         "menu {target: snapshot unique hittable Layers word button \"two\".path}",
@@ -49104,8 +49185,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 283,
-        "end": 290,
+        "start": 384,
+        "end": 391,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -49246,8 +49327,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 86,
-        "end": 99,
+        "start": 105,
+        "end": 118,
         "sha256": "4a8eb5e2c083944974a05360deae70faa0b842a4b2f3fa5cbd0666e2f96714e1"
       },
       "why": "AUT-J13/import scene-silence-import caller at 131-134 requires the exact saved AudioClip identity/default fields: generated UUID, scene ID, no entryId, startMs 3500, sourceStartMs 0, durationMs 1500, volume 1, isMuted false. Comparison is to a literal expected clip, not initializer-derived expected output. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -49499,8 +49580,8 @@
       "id": "a8a1859718227433",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 777,
-        "end": 780,
+        "start": 786,
+        "end": 789,
         "sha256": "285adb34294fce81bd951e5c421d767c26d847995706f339b90f0f7ef725b36f"
       },
       "actions": [
@@ -50109,8 +50190,8 @@
       "id": "a9f98b00df683075",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 649,
-        "end": 651,
+        "start": 658,
+        "end": 660,
         "sha256": "44fba8739d19abaed6d791deacb803d0666266dee6e7cc9a0b5a2723dee9d210"
       },
       "actions": [
@@ -50718,8 +50799,8 @@
       "id": "abbdc61ac1a1c484",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 745,
-        "end": 747,
+        "start": 754,
+        "end": 756,
         "sha256": "3af8be92706536575f44396134000a11adf737fae87c99c2427a9d8e13b0afd0"
       },
       "actions": [
@@ -51413,8 +51494,8 @@
       "id": "aeecb90088d14973",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 120,
-        "end": 120,
+        "start": 124,
+        "end": 124,
         "sha256": "9f9fc0a6f793c2d0277fff7ad7448fff36644a5dc380e4da1056921bb899f687"
       },
       "actions": [
@@ -51428,8 +51509,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 206,
+        "start": 220,
+        "end": 229,
         "sha256": "2303c356b86c3f1382188070f5de16bd4aacd717d3ffe2658ac9a0cc00a24a91"
       },
       "why": "AUT-J13/mix: a real imported scene clip is shown in the library. Actual volume slider changes to 0.375, then the actual mute and unmute buttons each commit only their intended clip field, with exactly one saved revision per change. The mix sequence leaves all other saved content and the startup project unchanged. UI audio output and stale context rejection are not observed. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -51886,10 +51967,10 @@
     {
       "id": "b03c02a87d317b16",
       "source": {
-        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 907,
-        "end": 908,
-        "sha256": "c26287c65561809d81e16d701452b4d3760b03e68df1ff790fc1aa675106a5d4"
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIMenuActions.swift",
+        "start": 12,
+        "end": 13,
+        "sha256": "b4afe62ee9f3e0ef343903a32ec93e08aaf4a4195fb63ece5910d5413c37cd9b"
       },
       "actions": [
         "{\"command\":\"loaded-project\"}",
@@ -52608,8 +52689,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 146,
-        "end": 156,
+        "start": 169,
+        "end": 179,
         "sha256": "2009d7426fe3f1839a0b986a9fd0c06f0836d6caa043e9e6a4d6a051cda2e71d"
       },
       "why": "AUT-J13/import library-preserves-two-clips: selected-dialogue and scene-silence imports create two real local clip records before opening the library from Script Layers. openLibrary observes local-audio-sheet and enabled Close local audio, then the workflow checks both clip identities, badges, enabled play controls and local-only text. Closing preserves every saved field. The registered audio route constructs the production AudioLibraryController observed by openLibrary, rather than a synthetic test controller. Invalid/unregistered routes and library picker or playback actions are not exercised. Static source/action/assertion association only. No new native execution, measured coverage, physical input parity, every conditional branch or legacy retirement is claimed. Existing reveal/scroll/poll helpers govern conditional observation; actions are meaningful ordered descriptions, not a captured wire transcript."
@@ -52706,8 +52787,8 @@
       "id": "b2fef9ed10833ad5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1063,
-        "end": 1068,
+        "start": 1052,
+        "end": 1057,
         "sha256": "dcfd6ac882e2fd986bd8ef27349510e52e7d98f883712f96d83b78faed397254"
       },
       "actions": [
@@ -53174,8 +53255,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 215,
-        "end": 224,
+        "start": 238,
+        "end": 247,
         "sha256": "3078b4444705087656fe3965b6e579723f011140d89821527486c6defabe111a"
       },
       "why": "AUT-J13/mix: real master volume is first set to 0.25, then mute stores 0 and unmute restores 0.25 with one revision and exact full-model equality after each change. This is model-level mixing control, not audible output. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -53200,8 +53281,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 243,
-        "end": 248,
+        "start": 344,
+        "end": 349,
         "sha256": "6151903da68bd8040f9d14fd868e8ae4c5bff53508497d7bdcfe03cfc36a4536"
       },
       "why": "AUT-J14/timing baseline-trim: a semantic-imported 4000 ms dialogue clip is opened through its actual Trim & timing button. Source 0.500, duration 2.500 and offset 0.250 save exactly sourceStartMs 500, durationMs 2500 and startMs 250. mutation() at audio-library.mjs:60-67 requires one revision and complete intended-content equality; no missing/stale clip or validation rejection branch is claimed. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -53668,8 +53749,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 283,
-        "end": 290,
+        "start": 384,
+        "end": 391,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. The caught draft validation error remains in the presented editor. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -53803,8 +53884,8 @@
       "id": "b5c88e5d69c3c253",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 527,
-        "end": 527,
+        "start": 536,
+        "end": 536,
         "sha256": "425f9df57aef918b436ffdf46d77f4c629327209ce3534077644944761f9e46b"
       },
       "actions": [
@@ -54781,8 +54862,8 @@
       "id": "b9335911984aff2d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 606,
-        "end": 606,
+        "start": 615,
+        "end": 615,
         "sha256": "abc81019fd1ad08baf3b4edb48386acd2a5061c46b5c1887ce86b33a68339cbe"
       },
       "actions": [
@@ -55905,8 +55986,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 81,
-        "end": 99,
+        "start": 100,
+        "end": 118,
         "sha256": "d897fed3ec755ec7e19708b6a935ed9fd231ab0a622cf990c21c42d786f2ee54"
       },
       "why": "ScrivCLIAudioImport validates an owned synthetic WAV and awaits importAudio. Default import group invokes selected-dialogue then scene-silence import after playhead 3500. verifyImportedAsset checks measured asset and bytes; expectedClip checks placement and clipping to available scene time; mutation checks complete project preservation and one revision. Passing preconditions and stable navigation only. Invalid front-door payloads never witness WorkspaceStore guard failures; picker, security-scope grant, decoder failure and navigation races excluded."
@@ -56302,8 +56383,8 @@
       "id": "be57ab300ea7debd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1182,
-        "end": 1185,
+        "start": 1171,
+        "end": 1174,
         "sha256": "26beb85a13d16de248d0f1e982bec88ba5075e79d6cf6af4235ef6535513e543"
       },
       "actions": [
@@ -57248,8 +57329,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 215,
-        "end": 226,
+        "start": 238,
+        "end": 249,
         "sha256": "21856bc50b75847fdc35eeddc4ae97097ccca804aaeddb7361fb744dd5b7b332"
       },
       "why": "Actual volume slider callback invokes setAudioVolume(0.25); mute/unmute controls invoke toggleAudioMute. Explicit saved full-model oracles require 0.25, then 0, then restored 0.25. This is finite in-range remembered-volume behavior; NaN, clamp extremes, missing remembered volume and cross-project volume scope isolation are not asserted."
@@ -57645,7 +57726,7 @@
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 48,
         "end": 74,
-        "sha256": "101ebf3ae76fb48bd6c169c791812a40d5f6035d47fd96a95ef7a7c997488094"
+        "sha256": "34649b28a373f1266e527324f1ffe1a577008c282f8913f4e86b03e69cff8230"
       },
       "why": "The Tracer test front door delegates catalog discovery to the existing native runner; catalog and direct compatibility outputs match, with no app launched."
     },
@@ -58994,8 +59075,8 @@
       "id": "c971ccb333361360",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 617,
-        "end": 617,
+        "start": 626,
+        "end": 626,
         "sha256": "cc0f92a36210d7cf478a1dcd404ed40f0f1956d12202059503ac6325c63a2748"
       },
       "actions": [
@@ -60473,8 +60554,8 @@
       "id": "cea1df3a51937b9c",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 261,
-        "end": 262,
+        "start": 308,
+        "end": 309,
         "sha256": "4d4cc2a2bb145729ef2786f7108bcfc7230e83ca4a823740df1b76f1e1b363c1"
       },
       "actions": [
@@ -60488,8 +60569,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 146,
-        "end": 156,
+        "start": 169,
+        "end": 179,
         "sha256": "2009d7426fe3f1839a0b986a9fd0c06f0836d6caa043e9e6a4d6a051cda2e71d"
       },
       "why": "AUT-J13/import library-preserves-two-clips: after selected-dialogue import and scene-silence import at playhead 3500 in the 5000 ms scene, opening Local audio observes both clip-specific trim controls, local-only copy, Scene track/Follows dialogue badges and exactly one enabled play control for each clip. No play button is activated. The full saved state remains unchanged after closing. Only successful two-card construction/display is associated; missing-file, missing-placement, character-name and direction-badge branches are excluded. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -61142,8 +61223,8 @@
       "id": "d2025b83a61d59dd",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1181,
-        "end": 1184,
+        "start": 1170,
+        "end": 1173,
         "sha256": "6ccdd6df77ace49b02338e035534ba74df09e5c4910fb1989ac197764d5da3a6"
       },
       "actions": [
@@ -61399,8 +61480,8 @@
       "id": "d336aa003fd9912a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 274,
-        "end": 274,
+        "start": 321,
+        "end": 321,
         "sha256": "0d9b5947f8936595bd9c4b65dbed2ccc355b0342482acb589fce5b2b9bdbeb2a"
       },
       "actions": [
@@ -61417,8 +61498,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 208,
-        "end": 213,
+        "start": 231,
+        "end": 236,
         "sha256": "a15f31cca9f919b3954d0fd251f3bd9973c361de548606bbcbaa6da1c5037395"
       },
       "why": "AUT-J13/mix reopen-library: after actual mute then unmute, close and reopen retain the unmuted Mute Synthetic.wav accessibility label; ui.reveal requires this exact enabled control. Icon appearance and percentage copy are not asserted. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -61469,8 +61550,8 @@
       "id": "d3bc3b06359020d1",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 615,
-        "end": 615,
+        "start": 624,
+        "end": 624,
         "sha256": "6cb3e081cf00cebc2d6bea390d1d2df1ed786518df0252b0770acc72919044ab"
       },
       "actions": [
@@ -62975,8 +63056,8 @@
       "id": "da70d7ffff562871",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1178,
-        "end": 1181,
+        "start": 1167,
+        "end": 1170,
         "sha256": "9b0fe68c953cf1ee96a5fc24f650595124c613b3cb2f11f58db77a9bc57c52cb"
       },
       "actions": [
@@ -63524,8 +63605,8 @@
       "id": "dc795d7a0700029a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 513,
-        "end": 513,
+        "start": 522,
+        "end": 522,
         "sha256": "662541f5fd2f4f8a1c01d7814d5b3245d9d1169c9bd1fcf34e8ee04fe6804605"
       },
       "actions": [
@@ -64437,8 +64518,8 @@
       "id": "df0cb3dd47468479",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1153,
-        "end": 1156,
+        "start": 1142,
+        "end": 1145,
         "sha256": "a6fd533bb2976ec5b7b66dcb502653131dc1c2339a1068af0a37056588ae0032"
       },
       "actions": [
@@ -65151,8 +65232,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 243,
-        "end": 248,
+        "start": 344,
+        "end": 349,
         "sha256": "6151903da68bd8040f9d14fd868e8ae4c5bff53508497d7bdcfe03cfc36a4536"
       },
       "why": "AUT-J14/timing baseline-trim: a semantic-imported 4000 ms dialogue clip is opened through its actual Trim & timing button. Source 0.500, duration 2.500 and offset 0.250 save exactly sourceStartMs 500, durationMs 2500 and startMs 250. mutation() at audio-library.mjs:60-67 requires one revision and complete intended-content equality; no missing/stale clip or validation rejection branch is claimed. Real text dispatch emits editingChanged into the current numeric draft. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -65992,8 +66073,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 215,
-        "end": 224,
+        "start": 238,
+        "end": 247,
         "sha256": "3078b4444705087656fe3965b6e579723f011140d89821527486c6defabe111a"
       },
       "why": "AUT-J13: master volume changes to .25, mute to zero and unmute restores .25; complete saved project and revision assertions run after each action. Nonfinite, clamp overflow, other project scope and audible output are not tested here. Reviewed static association only; this Linux audit did not run the native test."
@@ -67513,8 +67594,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 243,
-        "end": 248,
+        "start": 344,
+        "end": 349,
         "sha256": "6151903da68bd8040f9d14fd868e8ae4c5bff53508497d7bdcfe03cfc36a4536"
       },
       "why": "AUT-J14/timing baseline-trim: a semantic-imported 4000 ms dialogue clip is opened through its actual Trim & timing button. Source 0.500, duration 2.500 and offset 0.250 save exactly sourceStartMs 500, durationMs 2500 and startMs 250. mutation() at audio-library.mjs:60-67 requires one revision and complete intended-content equality; no missing/stale clip or validation rejection branch is claimed. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -67606,8 +67687,8 @@
       "id": "e854487f4fee66d8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 743,
-        "end": 743,
+        "start": 752,
+        "end": 752,
         "sha256": "97f462fc90f039c5470d57da43b84f5caf32b895462b9db5a7662402904e8f9c"
       },
       "actions": [
@@ -68499,8 +68580,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 215,
-        "end": 218,
+        "start": 238,
+        "end": 241,
         "sha256": "cc0d594a3f36b3a7047f7148d32ffa886e0225242e10dfa4d8efba2a6297e2b0"
       },
       "why": "AUT-J13: actual footer volume slider invokes setAudioVolume and exact .25 persisted value is checked by mutation(). Reviewed static association only; this Linux audit did not run the native test."
@@ -68615,8 +68696,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 243,
-        "end": 248,
+        "start": 344,
+        "end": 349,
         "sha256": "6151903da68bd8040f9d14fd868e8ae4c5bff53508497d7bdcfe03cfc36a4536"
       },
       "why": "AUT-J14: imported dialogue clip, open actual Trim & timing editor and apply exact numeric draft. Test compares complete saved model with only sourceStartMs/durationMs/startMs changed. Dynamic clip ID comes from actual import result. Reviewed static association only; this Linux audit did not run the native test."
@@ -70368,8 +70449,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 215,
-        "end": 224,
+        "start": 238,
+        "end": 247,
         "sha256": "3078b4444705087656fe3965b6e579723f011140d89821527486c6defabe111a"
       },
       "why": "AUT-J13/mix: a real synthetic recording is already imported as a scene clip. The actual footer volume slider changes to 0.25, then actual Mute and Unmute controls save 0 and restore 0.25, with exactly one revision and complete intended-content equality for each action. Both mute and master volume are enabled for the imported-audio fixture. The helper will not dispatch either mutation without enabled controls. No zero-clip or unavailable-file distinction is asserted. Static source/action/assertion association only. No new native execution, measured coverage, physical input parity, every conditional branch or legacy retirement is claimed. Existing reveal/scroll/poll helpers govern conditional observation; actions are meaningful ordered descriptions, not a captured wire transcript."
@@ -71097,8 +71178,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 81,
-        "end": 99,
+        "start": 100,
+        "end": 118,
         "sha256": "d897fed3ec755ec7e19708b6a935ed9fd231ab0a622cf990c21c42d786f2ee54"
       },
       "why": "ScrivCLIAudioImport validates an owned synthetic WAV and awaits importAudio. Default import group invokes selected-dialogue then scene-silence import after playhead 3500. verifyImportedAsset checks measured asset and bytes; expectedClip checks placement and clipping to available scene time; mutation checks complete project preservation and one revision. Passing preconditions and stable navigation only. Invalid front-door payloads never witness WorkspaceStore guard failures; picker, security-scope grant, decoder failure and navigation races excluded."
@@ -71107,8 +71188,8 @@
       "id": "f3142c5f6bbed5b9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 809,
-        "end": 811,
+        "start": 818,
+        "end": 820,
         "sha256": "90964b4e76c047a150ad14af6589320cf5dfa4163e529e0e9f748bdc796625e2"
       },
       "actions": [
@@ -71165,8 +71246,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 243,
-        "end": 248,
+        "start": 344,
+        "end": 349,
         "sha256": "6151903da68bd8040f9d14fd868e8ae4c5bff53508497d7bdcfe03cfc36a4536"
       },
       "why": "AUT-J14/timing baseline-trim: a semantic-imported 4000 ms dialogue clip is opened through its actual Trim & timing button. Source 0.500, duration 2.500 and offset 0.250 save exactly sourceStartMs 500, durationMs 2500 and startMs 250. mutation() at audio-library.mjs:60-67 requires one revision and complete intended-content equality; no missing/stale clip or validation rejection branch is claimed. edited forwards the exact entered string to the assigned draft callback; steppers are not covered. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -71465,10 +71546,10 @@
     {
       "id": "f43fd634b3462a11",
       "source": {
-        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 910,
-        "end": 911,
-        "sha256": "c803ddeb6699c76d5458d3286886abdae555235d298da3ddd88d8523cc1a7210"
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIMenuActions.swift",
+        "start": 15,
+        "end": 16,
+        "sha256": "9af88657856d8903038bb4b2ee3bf1975234b7992ebba16d87fa2411566adf8e"
       },
       "actions": [
         "snapshot {resolve: unique hittable Picture actions for Left coral UIButton.path}",
@@ -74366,8 +74447,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 283,
-        "end": 290,
+        "start": 384,
+        "end": 391,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. The validation notice identifier is explicitly required. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -78013,8 +78094,8 @@
       "id": "01531502b0890396",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 248,
-        "end": 248,
+        "start": 295,
+        "end": 295,
         "sha256": "9d9bfc89391eb6607d7b8ca6c285ad8528531ae68f01102b464b497eef707d4d"
       },
       "actions": [
@@ -78025,8 +78106,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 226,
+        "start": 220,
+        "end": 249,
         "sha256": "a2352cfe78250900fd4650adb1a147826473cee7ab23d7283263aec196a62c23"
       },
       "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
@@ -78049,8 +78130,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -78095,8 +78176,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -78117,8 +78198,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 226,
+        "start": 220,
+        "end": 249,
         "sha256": "a2352cfe78250900fd4650adb1a147826473cee7ab23d7283263aec196a62c23"
       },
       "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
@@ -78227,8 +78308,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 226,
+        "start": 220,
+        "end": 249,
         "sha256": "a2352cfe78250900fd4650adb1a147826473cee7ab23d7283263aec196a62c23"
       },
       "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
@@ -78249,9 +78330,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 81,
-        "end": 156,
-        "sha256": "36d626a6f1a642c9fdf88d1a4352f6e94d61dd36f1cdc57d3367dba2ea3c3ba4"
+        "start": 100,
+        "end": 179,
+        "sha256": "ceada3ae5ee021d6fc8927f9d27e9c21dab21f575067bb80302d1ea30a93d5d9"
       },
       "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
     },
@@ -78293,9 +78374,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 81,
-        "end": 156,
-        "sha256": "36d626a6f1a642c9fdf88d1a4352f6e94d61dd36f1cdc57d3367dba2ea3c3ba4"
+        "start": 100,
+        "end": 179,
+        "sha256": "ceada3ae5ee021d6fc8927f9d27e9c21dab21f575067bb80302d1ea30a93d5d9"
       },
       "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
     },
@@ -78315,8 +78396,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 226,
+        "start": 220,
+        "end": 249,
         "sha256": "a2352cfe78250900fd4650adb1a147826473cee7ab23d7283263aec196a62c23"
       },
       "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
@@ -78339,8 +78420,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -78361,8 +78442,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 226,
+        "start": 220,
+        "end": 249,
         "sha256": "a2352cfe78250900fd4650adb1a147826473cee7ab23d7283263aec196a62c23"
       },
       "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
@@ -78371,8 +78452,8 @@
       "id": "4ceaacc7391605bf",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 75,
-        "end": 76,
+        "start": 79,
+        "end": 80,
         "sha256": "c5650d7a83230b2cf2d28ae9e18a1479f9d4597154ffddddc506e76ee0f3020b"
       },
       "actions": [
@@ -78383,9 +78464,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 81,
-        "end": 156,
-        "sha256": "36d626a6f1a642c9fdf88d1a4352f6e94d61dd36f1cdc57d3367dba2ea3c3ba4"
+        "start": 100,
+        "end": 179,
+        "sha256": "ceada3ae5ee021d6fc8927f9d27e9c21dab21f575067bb80302d1ea30a93d5d9"
       },
       "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
     },
@@ -78407,8 +78488,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -78417,8 +78498,8 @@
       "id": "54688c0ab219bddf",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 78,
-        "end": 83,
+        "start": 82,
+        "end": 87,
         "sha256": "c9f8e154a984614b34e4346298008d451529996df09898fc85dea4a17f947cba"
       },
       "actions": [
@@ -78429,9 +78510,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 81,
-        "end": 156,
-        "sha256": "36d626a6f1a642c9fdf88d1a4352f6e94d61dd36f1cdc57d3367dba2ea3c3ba4"
+        "start": 100,
+        "end": 179,
+        "sha256": "ceada3ae5ee021d6fc8927f9d27e9c21dab21f575067bb80302d1ea30a93d5d9"
       },
       "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
     },
@@ -78483,8 +78564,8 @@
       "id": "62840b1aac7945ec",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 110,
-        "end": 110,
+        "start": 114,
+        "end": 114,
         "sha256": "c78a2d4c1048babf885e47676b0026f30b0939dc5c8f5fa972f5a7408de863b0"
       },
       "actions": [
@@ -78495,9 +78576,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 81,
-        "end": 156,
-        "sha256": "36d626a6f1a642c9fdf88d1a4352f6e94d61dd36f1cdc57d3367dba2ea3c3ba4"
+        "start": 100,
+        "end": 179,
+        "sha256": "ceada3ae5ee021d6fc8927f9d27e9c21dab21f575067bb80302d1ea30a93d5d9"
       },
       "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
     },
@@ -78505,8 +78586,8 @@
       "id": "661985afb161b2fa",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 89,
-        "end": 99,
+        "start": 93,
+        "end": 103,
         "sha256": "da5503cef49677e950b4b954d131c2bb3e3666771f9fe19955d9c77c818a73aa"
       },
       "actions": [
@@ -78517,9 +78598,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 81,
-        "end": 156,
-        "sha256": "36d626a6f1a642c9fdf88d1a4352f6e94d61dd36f1cdc57d3367dba2ea3c3ba4"
+        "start": 100,
+        "end": 179,
+        "sha256": "ceada3ae5ee021d6fc8927f9d27e9c21dab21f575067bb80302d1ea30a93d5d9"
       },
       "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
     },
@@ -78541,8 +78622,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -78630,8 +78711,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -78654,8 +78735,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -78664,8 +78745,8 @@
       "id": "8957eb2bb64c1feb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 122,
-        "end": 122,
+        "start": 126,
+        "end": 126,
         "sha256": "8cfd26e5fd91054d0ba869d2a6d7e5749e113b01e9f7d950abea8a4fc904e7d6"
       },
       "actions": [
@@ -78676,8 +78757,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 226,
+        "start": 220,
+        "end": 249,
         "sha256": "a2352cfe78250900fd4650adb1a147826473cee7ab23d7283263aec196a62c23"
       },
       "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
@@ -78740,8 +78821,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 226,
+        "start": 220,
+        "end": 249,
         "sha256": "a2352cfe78250900fd4650adb1a147826473cee7ab23d7283263aec196a62c23"
       },
       "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
@@ -78762,9 +78843,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 81,
-        "end": 156,
-        "sha256": "36d626a6f1a642c9fdf88d1a4352f6e94d61dd36f1cdc57d3367dba2ea3c3ba4"
+        "start": 100,
+        "end": 179,
+        "sha256": "ceada3ae5ee021d6fc8927f9d27e9c21dab21f575067bb80302d1ea30a93d5d9"
       },
       "why": "Two independently expected imports retain separate scene and dialogue placements, exact asset metadata, and every unrelated model field. The library presents one enabled play control per imported clip and both attachment labels; closing changes no saved field. The valid file-metadata/path route is tied to actual imported files being available. This does not assert corruption rejection, symlink failures, byte rereading or playback."
     },
@@ -78808,8 +78889,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -78898,8 +78979,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -78944,8 +79025,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -78966,8 +79047,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 197,
-        "end": 226,
+        "start": 220,
+        "end": 249,
         "sha256": "a2352cfe78250900fd4650adb1a147826473cee7ab23d7283263aec196a62c23"
       },
       "why": "Exact full-model assertions show clip volume 0.375, mute then unmute, and master volume 0.25 then zero then restored 0.25, with one revision per accepted edit. Reopened UI reflects the persisted clip volume and unmuted action. Observable refresh and value propagation are associated, not refresh coalescing efficiency, icon pixels or audible gain."
@@ -79144,8 +79225,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -79168,8 +79249,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -79192,8 +79273,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 241,
-        "end": 313,
+        "start": 342,
+        "end": 414,
         "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
@@ -79344,8 +79425,8 @@
       "id": "29ac337b2c59b8ed",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 810,
-        "end": 811,
+        "start": 819,
+        "end": 820,
         "sha256": "7d465e3f0c21d5f81836c01c2e02a12d8d63afc3cde786dcf09502483556d56d"
       },
       "actions": [
@@ -79383,8 +79464,8 @@
       "id": "3ca2977b041059cb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1080,
-        "end": 1090,
+        "start": 1069,
+        "end": 1079,
         "sha256": "6e7e02f6db3de01649c85911494132b56602c279c01624323914185da4f41abb"
       },
       "actions": [
@@ -79450,8 +79531,8 @@
       "id": "4b378e36b7419278",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1021,
-        "end": 1021,
+        "start": 1010,
+        "end": 1010,
         "sha256": "84d87a6ac462771db62eeb1a6797d89dd971d64a1d2fa9c362c10031c5a089d4"
       },
       "actions": [
@@ -79471,8 +79552,8 @@
       "id": "4d619e5bf1e56d7a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1018,
-        "end": 1019,
+        "start": 1007,
+        "end": 1008,
         "sha256": "628b44ccc5c00dea4e1bf08f684cc8fcc7f340a96d7adf1be3d39482636bb5b0"
       },
       "actions": [
@@ -79593,8 +79674,8 @@
       "id": "75a01461b52b6b7a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1025,
-        "end": 1033,
+        "start": 1014,
+        "end": 1022,
         "sha256": "187da3ecc277e1de0b9e540f95becb8f7093dfb6e51b46df86f429f0c1a2cafc"
       },
       "actions": [
@@ -79617,8 +79698,8 @@
       "id": "7656023cb4f06a0f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 499,
-        "end": 500,
+        "start": 505,
+        "end": 506,
         "sha256": "22d85dad07c5bb07ab387609f677203a127c2d2e9ee654f3e2e36a2ac8616057"
       },
       "actions": [
@@ -79659,8 +79740,8 @@
       "id": "7ef9534ffe31e8a5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1093,
-        "end": 1098,
+        "start": 1082,
+        "end": 1087,
         "sha256": "7a3e5279957baae96588b0e18e86cceb42722fc87827b1f684dd4f8f5dcc0acb"
       },
       "actions": [
@@ -79686,8 +79767,8 @@
       "id": "7f11c250598d1cf6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 714,
-        "end": 714,
+        "start": 723,
+        "end": 723,
         "sha256": "c7b80e0b415de12405742297518bbeeeab63083ebddeced424b056ab9e157d49"
       },
       "actions": [
@@ -79707,8 +79788,8 @@
       "id": "7fd65098bf1ab87a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1172,
-        "end": 1180,
+        "start": 1161,
+        "end": 1169,
         "sha256": "cf5b10621169cec2162228038682640e6c3308b1e59fc741c4f76ed76bab095c"
       },
       "actions": [
@@ -79728,8 +79809,8 @@
       "id": "811be6db468e45c4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 754,
-        "end": 759,
+        "start": 763,
+        "end": 768,
         "sha256": "0c980fa83a4300e5a9837308b443c69da4a6f064c0b4d29088e08fd9b5185965"
       },
       "actions": [
@@ -79749,8 +79830,8 @@
       "id": "83dab709c8cd268d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 718,
-        "end": 718,
+        "start": 727,
+        "end": 727,
         "sha256": "592a2e61beae656bbd65be2757c56ab2fe105580f3fe1a01230279d66aed31a6"
       },
       "actions": [
@@ -79770,8 +79851,8 @@
       "id": "88b3bf3302dd7830",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 704,
-        "end": 711,
+        "start": 713,
+        "end": 720,
         "sha256": "8ab344172387fc3a08adf8c738ccb0537721e2ba7d3f2ea65be587e69dedb1b7"
       },
       "actions": [
@@ -79791,8 +79872,8 @@
       "id": "8a446afa0edb42c2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 983,
-        "end": 992,
+        "start": 972,
+        "end": 981,
         "sha256": "2685c6b896dc3ac9ba34ab17587f41e4cc9ebf701c57509e624d2302a03ac730"
       },
       "actions": [
@@ -79815,8 +79896,8 @@
       "id": "8a67029696cbf0b8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 727,
-        "end": 727,
+        "start": 736,
+        "end": 736,
         "sha256": "855badd29c331125f697c8be79c2e1e9535010812bee9c917f723711a8cd3b42"
       },
       "actions": [
@@ -79836,8 +79917,8 @@
       "id": "8c330d0546d11c31",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 784,
-        "end": 798,
+        "start": 793,
+        "end": 807,
         "sha256": "192b962acc29c719f349a6e8402bf9296e1b795c2e57ffdd47a2ff06f3e0d28d"
       },
       "actions": [
@@ -79856,8 +79937,8 @@
       "id": "8e093b0846960340",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 644,
-        "end": 659,
+        "start": 653,
+        "end": 668,
         "sha256": "c985acb284696831286da12ba8b55a044dcbb709eb303e9100fc2edc581f1cad"
       },
       "actions": [
@@ -79876,8 +79957,8 @@
       "id": "8fb80feb081c33b9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1162,
-        "end": 1164,
+        "start": 1151,
+        "end": 1153,
         "sha256": "6d63236a09570fb3909931fbb1e8c7a6bb4d8554fddda68370519c8da70c359e"
       },
       "actions": [
@@ -79900,8 +79981,8 @@
       "id": "911af19a3e3714a2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 712,
-        "end": 712,
+        "start": 721,
+        "end": 721,
         "sha256": "064796db3df6d13edd8b55016d4d637b041d1a018a5528abd4968a4e545f13c4"
       },
       "actions": [
@@ -79921,8 +80002,8 @@
       "id": "9c23f545f48b7fab",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1190,
-        "end": 1193,
+        "start": 1179,
+        "end": 1182,
         "sha256": "2a0646fc503064aa903a2084d714f1701170f00b4ea8cd3a238c73359b1891a0"
       },
       "actions": [
@@ -80001,8 +80082,8 @@
       "id": "c05c410e803e4d84",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1069,
-        "end": 1077,
+        "start": 1058,
+        "end": 1066,
         "sha256": "d1d009882bdc6d8cc108de227357a233b5a0c0cfddfe9bc165a39b083e2e243c"
       },
       "actions": [
@@ -80049,8 +80130,8 @@
       "id": "c4e9fe3c3fb2bfc6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 728,
-        "end": 730,
+        "start": 737,
+        "end": 739,
         "sha256": "c4009d726a4053ee985a17c6d148bcce5bcc4ceb62f3c1ed922aae3234654073"
       },
       "actions": [
@@ -80092,8 +80173,8 @@
       "id": "d0f390bd0ec97fe3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 739,
-        "end": 741,
+        "start": 748,
+        "end": 750,
         "sha256": "9478da7339993e90d794ae99b033fb46ecdcc77a21251663331900a5adf0af82"
       },
       "actions": [
@@ -80113,8 +80194,8 @@
       "id": "dc2e4f6b205216c4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1186,
-        "end": 1189,
+        "start": 1175,
+        "end": 1178,
         "sha256": "5b8f42fe05b1d16bab668bc20b0aa0218da538ef59c2e9905f6fcfb5a4f1f82b"
       },
       "actions": [
@@ -80175,8 +80256,8 @@
       "id": "df11d43f6e9dfd27",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 803,
-        "end": 805,
+        "start": 812,
+        "end": 814,
         "sha256": "f388c57f2f53a6e5f0a242c097a4436c55706405fb35f5dbe38a5a0fdaa24c27"
       },
       "actions": [
@@ -80195,8 +80276,8 @@
       "id": "e34349d8a4a70318",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 720,
-        "end": 720,
+        "start": 729,
+        "end": 729,
         "sha256": "ab538a8d6c6a3d8db5ad1d3af648383fd550578550cb83053f1347923f0e6556"
       },
       "actions": [
@@ -80216,8 +80297,8 @@
       "id": "e5c016b1314eb20b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 813,
-        "end": 819,
+        "start": 822,
+        "end": 828,
         "sha256": "e4f9ad25b580b3a3017e33460184ebc148836f2416eca0fc0e5130c81f7b750c"
       },
       "actions": [
@@ -80237,8 +80318,8 @@
       "id": "f7a936141238fbaa",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 732,
-        "end": 737,
+        "start": 741,
+        "end": 746,
         "sha256": "a1ea40ff72f3baa12822181aded31f6eb725800db0ddf0385a74dab399a65ad1"
       },
       "actions": [
@@ -80257,10 +80338,10 @@
     {
       "id": "fab401729defa3de",
       "source": {
-        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 927,
-        "end": 929,
-        "sha256": "32815175314d73edb6f8561307f3c565237fcfa9871e1eae2a11f47b856693e6"
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLIMenuActions.swift",
+        "start": 32,
+        "end": 34,
+        "sha256": "59ce82f8a5c6b43607f846169008c416e8d10bc6408421c12c4f1b27b9895bc6"
       },
       "actions": [
         "menu target=the exact direction control path",
@@ -80281,8 +80362,8 @@
       "id": "fce8200a63b6d5a2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1168,
-        "end": 1170,
+        "start": 1157,
+        "end": 1159,
         "sha256": "d7defe0ccd73bddedf632b2b7f031cb135e105f84f8cee5ebf75581e874f65bf"
       },
       "actions": [
@@ -84385,7 +84466,7 @@
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 48,
         "end": 74,
-        "sha256": "101ebf3ae76fb48bd6c169c791812a40d5f6035d47fd96a95ef7a7c997488094"
+        "sha256": "34649b28a373f1266e527324f1ffe1a577008c282f8913f4e86b03e69cff8230"
       },
       "why": "The public test branch reaches the already mapped real-runner dispatcher; the exact native catalog is asserted."
     },
@@ -84449,7 +84530,7 @@
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 48,
         "end": 74,
-        "sha256": "101ebf3ae76fb48bd6c169c791812a40d5f6035d47fd96a95ef7a7c997488094"
+        "sha256": "34649b28a373f1266e527324f1ffe1a577008c282f8913f4e86b03e69cff8230"
       },
       "why": "Direct module invocation returns the same independently checked scenario catalog and successful exit status. The colocated rejection handler is not exercised by this comparison."
     },
@@ -86295,8 +86376,8 @@
       "id": "3e40023b1ede1bea",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 172,
-        "end": 179,
+        "start": 218,
+        "end": 225,
         "sha256": "2e4c1d695db9563d376fbd4882ac258fccbb9e1c79ca8eaf02935c1db4a68b1c"
       },
       "actions": [
@@ -86458,8 +86539,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 215,
-        "end": 226,
+        "start": 238,
+        "end": 249,
         "sha256": "21856bc50b75847fdc35eeddc4ae97097ccca804aaeddb7361fb744dd5b7b332"
       },
       "why": "Exact saved-model assertions observe master volume 0.25, then 0, then restoration to 0.25, each as one accepted revision; save/browser/reopen retains the full model. The current-project volume-memory storage and key are associated with this accepted path. Cross-project mute-memory isolation, nonfinite direct inputs, range-clamp rejection and audible gain are not asserted."
@@ -86489,8 +86570,8 @@
       "id": "a31ede182c93f636",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 78,
-        "end": 98,
+        "start": 82,
+        "end": 102,
         "sha256": "83bf18c717f9bd0b8d052893e2824393c357e6a2287a4980d5e3dd9b390959d1"
       },
       "actions": [
@@ -86501,8 +86582,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 141,
-        "end": 156,
+        "start": 164,
+        "end": 179,
         "sha256": "5f83f4c5e97b0db2d3e5db88294d326bfdf8637c739056acc02ebed1e2f5fe6a"
       },
       "why": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted."
@@ -86620,8 +86701,8 @@
       "id": "c73240fb59e4787f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 20,
-        "end": 21,
+        "start": 24,
+        "end": 25,
         "sha256": "75e74011e2f8ad7d318ac5c7b0b54112581c83af33d37a599463fb5f4555e7d1"
       },
       "actions": [
@@ -86632,8 +86713,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 141,
-        "end": 156,
+        "start": 164,
+        "end": 179,
         "sha256": "5f83f4c5e97b0db2d3e5db88294d326bfdf8637c739056acc02ebed1e2f5fe6a"
       },
       "why": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted."
@@ -86663,8 +86744,8 @@
       "id": "cf8905f61e8b9c32",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 251,
-        "end": 254,
+        "start": 298,
+        "end": 301,
         "sha256": "f83a5ac5c5c9cb227b6406716181205cac94888cb017d3bc1d08e3c3390228d8"
       },
       "actions": [
@@ -86675,8 +86756,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 141,
-        "end": 156,
+        "start": 164,
+        "end": 179,
         "sha256": "5f83f4c5e97b0db2d3e5db88294d326bfdf8637c739056acc02ebed1e2f5fe6a"
       },
       "why": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted."
@@ -86708,8 +86789,8 @@
       "id": "d7c2f1422647d75a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 72,
-        "end": 76,
+        "start": 76,
+        "end": 80,
         "sha256": "962e33c255aa2d6536a87deee729167c169664391ecb2ee06be4985572bed160"
       },
       "actions": [
@@ -86720,8 +86801,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 141,
-        "end": 156,
+        "start": 164,
+        "end": 179,
         "sha256": "5f83f4c5e97b0db2d3e5db88294d326bfdf8637c739056acc02ebed1e2f5fe6a"
       },
       "why": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted."
@@ -86742,8 +86823,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 141,
-        "end": 156,
+        "start": 164,
+        "end": 179,
         "sha256": "5f83f4c5e97b0db2d3e5db88294d326bfdf8637c739056acc02ebed1e2f5fe6a"
       },
       "why": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted."
@@ -86785,8 +86866,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 215,
-        "end": 226,
+        "start": 238,
+        "end": 249,
         "sha256": "21856bc50b75847fdc35eeddc4ae97097ccca804aaeddb7361fb744dd5b7b332"
       },
       "why": "Exact saved-model assertions observe master volume 0.25, then 0, then restoration to 0.25, each as one accepted revision; save/browser/reopen retains the full model. The current-project volume-memory storage and key are associated with this accepted path. Cross-project mute-memory isolation, nonfinite direct inputs, range-clamp rejection and audible gain are not asserted."
@@ -86817,8 +86898,8 @@
       "id": "f0d67e95970fc1b2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 109,
-        "end": 110,
+        "start": 113,
+        "end": 114,
         "sha256": "fe87be1e1899744486b53330aeeb28c7618492cb2b4b2b0dc882998847a98cf5"
       },
       "actions": [
@@ -86829,8 +86910,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 141,
-        "end": 156,
+        "start": 164,
+        "end": 179,
         "sha256": "5f83f4c5e97b0db2d3e5db88294d326bfdf8637c739056acc02ebed1e2f5fe6a"
       },
       "why": "Opening the scene library exposes both exact imported clip IDs, one enabled play control per clip, and the exact Scene track/Follows dialogue badges; closing preserves all saved fields. The scene capture, card construction/refresh and local-file availability path are associated with these assertions. Play is only inspected, never dispatched; cache efficiency, selected-card visuals, scene-title text and missing-file recovery are not asserted."
@@ -89648,8 +89729,8 @@
       "id": "163a16f8a948e933",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 268,
-        "end": 268,
+        "start": 315,
+        "end": 315,
         "sha256": "1e062415822d78eb8e0c6bfa243443f617d8dbfc90e9608c1edfdbe87531f26e"
       },
       "actions": [
@@ -89675,8 +89756,8 @@
       "id": "3e6df2805d7d7238",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 119,
-        "end": 119,
+        "start": 123,
+        "end": 123,
         "sha256": "4ea3aa2434d9efebfef9a6b1b19c6491e573a7c7444692007c7cefc254f5db20"
       },
       "actions": [
@@ -89729,8 +89810,8 @@
       "id": "577546d1d7a8a5f5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 287,
-        "end": 287,
+        "start": 335,
+        "end": 335,
         "sha256": "a4aea52be9c1d54e5f07cb7e5d15b65b3442171f714bc4339192c2118be74316"
       },
       "actions": [
@@ -89783,8 +89864,8 @@
       "id": "bc8beeb314d95f7b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 277,
-        "end": 277,
+        "start": 324,
+        "end": 324,
         "sha256": "ca5766e4df89249881d17f80931ddf1ca9bc7d7584b4c3f560f39fd09dac7b81"
       },
       "actions": [
@@ -89837,8 +89918,8 @@
       "id": "f2ae9d74174561eb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 270,
-        "end": 272,
+        "start": 317,
+        "end": 319,
         "sha256": "9066f41a69654947a308240132d2b84ed61411046331ca30a53f01d4416c395f"
       },
       "actions": [
@@ -95333,8 +95414,8 @@
       "id": "05d9ad3eebda9c31",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 578,
-        "end": 588,
+        "start": 587,
+        "end": 597,
         "sha256": "2ff32aee8f943418ab5ab45c0596f41a3829f614d7c8c6aa7b1f9027abd2faf1"
       },
       "actions": [
@@ -95637,8 +95718,8 @@
       "id": "ba5b2175984c650b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1000,
-        "end": 1007,
+        "start": 989,
+        "end": 996,
         "sha256": "1d7746eb5eaebda72973d221f800db972e6e3b424a80945f188eb40d50f1334d"
       },
       "actions": [
@@ -95656,8 +95737,8 @@
       "id": "bf4911ad6040ca0a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1012,
-        "end": 1015,
+        "start": 1001,
+        "end": 1004,
         "sha256": "16c01113dbe9bb0ece4603282db9180a9e16ee5446fc4cf80a59bdf4f69e0291"
       },
       "actions": [
@@ -95770,8 +95851,8 @@
       "id": "0804ad906d7b43de",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 885,
-        "end": 898,
+        "start": 894,
+        "end": 907,
         "sha256": "22aba8be5405c5b562dbd66aac2817010ec7bc788a3fdd4421e03eab1984f52e"
       },
       "actions": [
@@ -95979,8 +96060,8 @@
       "id": "0c6711b1a4742df3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 590,
-        "end": 600,
+        "start": 599,
+        "end": 609,
         "sha256": "18349d4aeae42228c8413e4d675662e982d0c3b567e8f75a9c8c07bc1228e0c8"
       },
       "actions": [
@@ -97077,8 +97158,8 @@
       "id": "b55017e062ee8c2e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 843,
-        "end": 856,
+        "start": 852,
+        "end": 865,
         "sha256": "76565a1f67b0fed2ef9bef12c55fdcb0351c7c4c214d5c8e7e3889db3a0eed8d"
       },
       "actions": [
@@ -97242,8 +97323,8 @@
       "id": "44151b852ca783e6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 128,
-        "end": 135,
+        "start": 132,
+        "end": 139,
         "sha256": "b9906cd8d7f6bb4f3cacfc69c8f326c69bfcb9f4356f6ad88afea02c1d940dc3"
       },
       "actions": [
@@ -97435,8 +97516,8 @@
       "id": "f57fb797ead5dc18",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 823,
-        "end": 841,
+        "start": 832,
+        "end": 850,
         "sha256": "66ee2357f1c889484d4b5160b803f9da4881687fb23b6fa5886b3e444489cd74"
       },
       "actions": [
@@ -98124,8 +98205,8 @@
       "id": "1816fc45733ef0b0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 895,
-        "end": 905,
+        "start": 904,
+        "end": 914,
         "sha256": "9635d56b9f8c13fbe5917e769ec376a7f6859e360236ca1aa6da63891f3e3ef1"
       },
       "actions": [
@@ -98166,8 +98247,8 @@
       "id": "5333e2c1caa37fd6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 501,
-        "end": 507,
+        "start": 510,
+        "end": 516,
         "sha256": "c5d8c03230fcb60acd4df2e917b682a9f3e7004b6077f1c667938b7555eb1d8f"
       },
       "actions": [
@@ -98572,8 +98653,8 @@
       "id": "1c86ae424f7ff913",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 666,
-        "end": 702,
+        "start": 675,
+        "end": 711,
         "sha256": "ae0144cdea480cbd4caf1e61fa23eeafc10a2f20bd7714e2942d1b75c4dea654"
       },
       "actions": [
@@ -99017,8 +99098,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 274,
-        "end": 282,
+        "start": 375,
+        "end": 383,
         "sha256": "37aabb06f6849e0a41f078cd83206908d76b37eca9522512466c8c078bd66574"
       },
       "why": "Checks source in clamps at zero and increments by 100 ms without saving the draft."
@@ -99027,8 +99108,8 @@
       "id": "54cbf90de5986e38",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 182,
-        "end": 185,
+        "start": 228,
+        "end": 231,
         "sha256": "b208d60a067993329a465ccd56ba1078373e5c829cf13dffc87c376416a4ec0f"
       },
       "actions": [
@@ -99036,8 +99117,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 305,
-        "end": 314,
+        "start": 406,
+        "end": 415,
         "sha256": "52d3936d5228eb60a949a70522742fbf7c73baf208794e6013ede27dbc70168c"
       },
       "why": "Checks the registered shortcut closes the library and allows normal reopening of the persisted project."
@@ -99055,8 +99136,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 251,
-        "end": 270,
+        "start": 352,
+        "end": 371,
         "sha256": "e6cfc65aecd38f41ff41dec3f9a5241eda78eef7427ccec32fa1a93923fa9266"
       },
       "why": "Checks the registered shortcut cancels the draft and leaves the earlier persisted clip unchanged."
@@ -100715,11 +100796,11 @@
       "id": "1580fb77770c6b05",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 667,
-        "end": 668,
+        "start": 676,
+        "end": 677,
         "sha256": "afc35e63d44cb2dc588f844311477dacc5219d24d4e86beefeab50bb55082db8"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "158d6d2aa96d0767",
@@ -100795,11 +100876,11 @@
       "id": "16b6200ece5b77d9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1113,
-        "end": 1114,
+        "start": 1102,
+        "end": 1103,
         "sha256": "7758267ff9cf5280f9d398a2fc4dadfd667db0bb1ac6ea64fef858b2a996b5c8"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "16c1900c3ddd220c",
@@ -100815,11 +100896,11 @@
       "id": "16f1d147f5058fca",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 529,
-        "end": 530,
+        "start": 538,
+        "end": 539,
         "sha256": "2f4e890fd72601ad06471f2bab2c9ee3be008f93c42c1af3f4fad1964ecedb70"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "1779986c0d221573",
@@ -101245,11 +101326,11 @@
       "id": "1f8b8b4294e122e0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1054,
-        "end": 1058,
+        "start": 1043,
+        "end": 1047,
         "sha256": "1cfc9c2c2a831d6f1d26ff49879391d7fd7aa8473bb25ef0282c9c7fd83932ff"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "1f96bbb7c85097a3",
@@ -101595,11 +101676,11 @@
       "id": "2868f8ee45d7cfb2",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 806,
-        "end": 808,
+        "start": 815,
+        "end": 817,
         "sha256": "26129c1a3ce0ab6f5a0b1dd0d75239e4ee6eb607861bde3c399f7e1d08f0c5a3"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "289f01119a4fa1a6",
@@ -101965,11 +102046,11 @@
       "id": "2ea8384858515016",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1040,
-        "end": 1042,
+        "start": 1029,
+        "end": 1031,
         "sha256": "c23495ef2adcd5831a87ae9a41234c620e3b9d5c52610f24a080a1cc9a1ff436"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "2ecad3e3070cf878",
@@ -102075,11 +102156,11 @@
       "id": "3170cf5f42a3fd9e",
       "source": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 19,
-        "end": 19,
+        "start": 18,
+        "end": 18,
         "sha256": "caa1268e6b30f59c4d78c99f39183f1e5399695a5b9d44a6d59a9e8d0e6b95bd"
       },
-      "fileSha256": "087318aa2e099ee10ec8532cf02ff6bd32f804ca98987025172da9a6a40518bd"
+      "fileSha256": "978d079f4c79345eeb784d0f48cc6b81fc46a1a2c611b0af8947d58f6c487be5"
     },
     {
       "id": "3176e1bfe9a5c974",
@@ -102275,11 +102356,11 @@
       "id": "3589739375bd1429",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 930,
-        "end": 931,
+        "start": 919,
+        "end": 920,
         "sha256": "4f5ce61cdddcf4dc00f140e1dd614b4782c64010a2d7c17311055e6fde69bbe7"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "358f7a06cdc04bce",
@@ -102755,11 +102836,11 @@
       "id": "3f9b865fff5df89b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 947,
-        "end": 948,
+        "start": 936,
+        "end": 937,
         "sha256": "b814cae82e2b8bc0390b61861b562f788e819908e94c8894f0b6319c82e5f311"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "3fa3e1b193ffd69f",
@@ -103579,7 +103660,7 @@
         "end": 171,
         "sha256": "2ee57046ab48f4ca97bf710f031839feb29b2385a3ae0de63d0111b24a2a19ed"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "4fb22610ae030c7c",
@@ -103835,11 +103916,11 @@
       "id": "55bed508b9f6942b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 749,
-        "end": 749,
+        "start": 758,
+        "end": 758,
         "sha256": "2d97e0600d661fa33ef65a5b0e7d45d4de32817b62fb62ff62426b3d9b0b1928"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "55c2b44496cddc70",
@@ -104055,11 +104136,11 @@
       "id": "5af7414efe2a6db8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 99,
-        "end": 99,
+        "start": 103,
+        "end": 103,
         "sha256": "d039d74422fa8c9fd6b96b5f80aa49c3cc821077a0eca53ebfad8bd1948d0c27"
       },
-      "fileSha256": "0f29c2d9e9675f05c671a4708dacddcb8f7a2ecc4e1ff692bd6568d71da0edda"
+      "fileSha256": "b68f77d7e39f77f6a8846acba4c9de79ea8ddcf9a5c9edbedc0d7dc2aab49143"
     },
     {
       "id": "5b52388b4f295c73",
@@ -104095,11 +104176,11 @@
       "id": "5bb0054c34f68660",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 708,
-        "end": 708,
+        "start": 717,
+        "end": 717,
         "sha256": "071b412f011c05e1fce2a04a8a1b52b5925a1df4097f4e15f57901ceb72b5215"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "5be418cbdf468540",
@@ -104255,11 +104336,11 @@
       "id": "5eaa79b123d3637b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1157,
-        "end": 1159,
+        "start": 1146,
+        "end": 1148,
         "sha256": "ff75034235e1e3e18922b39d9b97c26d14f65855a6ce88c76ef09c07d11f760f"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "5ecd7291d67d9961",
@@ -104659,7 +104740,7 @@
         "end": 336,
         "sha256": "d16b1f9020b0bcaa25259c8819584f78cc7989345302fcc4470adac8bfde6d71"
       },
-      "fileSha256": "98d52de48b2f8bf4d0d330dd9d72da82135d736fefb0b639f9a099bd5ba9bdc3"
+      "fileSha256": "0396dfa64025f377258d5322fb12b6851c9d36bb94f230532de6e10b6882aa34"
     },
     {
       "id": "6553b5e98e6500e0",
@@ -105165,11 +105246,11 @@
       "id": "7246ffcf3487aed4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 956,
-        "end": 957,
+        "start": 945,
+        "end": 946,
         "sha256": "ed5b29f575f4d028c141c01056a23e43a50909a5be6a046aa8f8c710056d1bf2"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "727fe525cbd185c1",
@@ -105215,11 +105296,11 @@
       "id": "732c87b3a0fdc368",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1107,
-        "end": 1109,
+        "start": 1096,
+        "end": 1098,
         "sha256": "1a449d417630c53324c266ae7130315bd44156f83a57819d60c5708ba85878d9"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "73616b5c2e02f15c",
@@ -105579,7 +105660,7 @@
         "end": 220,
         "sha256": "a6a4e089542e9d6d34c6af6ba2fbd1f2b7aad6bac1f7059fc270a9d64cd3258a"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "7a94ef812f57042f",
@@ -106385,11 +106466,11 @@
       "id": "8c699be11858a1ab",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1101,
-        "end": 1102,
+        "start": 1090,
+        "end": 1091,
         "sha256": "8d2e38632f205e5bf65857774dbb5a73cfa747510b7cdf602a6c76618cec774f"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "8c9a8208e6d2c704",
@@ -106409,7 +106490,7 @@
         "end": 405,
         "sha256": "32975f8107002dab8002e2c2ab137eeca8e4d631a5edf4aac54b0c9c01e1e6fd"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "8cb5dfa4701b88d4",
@@ -106815,11 +106896,11 @@
       "id": "95d6bfd7083277ac",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 966,
-        "end": 967,
+        "start": 955,
+        "end": 956,
         "sha256": "028cd17cf4ba402da9f2ffe58cf6dc92566208cb94e8909022c583569090c5f7"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "95e745cb9bef76dc",
@@ -106869,7 +106950,7 @@
         "end": 296,
         "sha256": "b1ae110c8d7fd2ea91a819152e6f4434d7199cf755bded5dcf0424b23396379b"
       },
-      "fileSha256": "98d52de48b2f8bf4d0d330dd9d72da82135d736fefb0b639f9a099bd5ba9bdc3"
+      "fileSha256": "0396dfa64025f377258d5322fb12b6851c9d36bb94f230532de6e10b6882aa34"
     },
     {
       "id": "9669da48463dfea3",
@@ -107099,7 +107180,7 @@
         "end": 3,
         "sha256": "c5ebf59b9856b043cecb2bb51903c03d02c4b3cc0d73016cc7b0e15ca9b78d19"
       },
-      "fileSha256": "98d52de48b2f8bf4d0d330dd9d72da82135d736fefb0b639f9a099bd5ba9bdc3"
+      "fileSha256": "0396dfa64025f377258d5322fb12b6851c9d36bb94f230532de6e10b6882aa34"
     },
     {
       "id": "9a9bdad371295cf2",
@@ -107415,11 +107496,11 @@
       "id": "9fa5478159ce96a9",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 53,
-        "end": 53,
+        "start": 57,
+        "end": 57,
         "sha256": "a35297eeca164083e2a703609fb257d970d9bcc7c20be37f42918e1d95bf866f"
       },
-      "fileSha256": "0f29c2d9e9675f05c671a4708dacddcb8f7a2ecc4e1ff692bd6568d71da0edda"
+      "fileSha256": "b68f77d7e39f77f6a8846acba4c9de79ea8ddcf9a5c9edbedc0d7dc2aab49143"
     },
     {
       "id": "9fe5586ae86d9eb2",
@@ -107836,10 +107917,10 @@
       "source": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 15,
-        "end": 17,
-        "sha256": "03092b24eae36c7e9d0868da08214920d11afa47c7be90a0cc2bfe89d0b426d2"
+        "end": 16,
+        "sha256": "0780f271791d85a08cc293c61580385f2254b40296641384d7b1291285454ab6"
       },
-      "fileSha256": "087318aa2e099ee10ec8532cf02ff6bd32f804ca98987025172da9a6a40518bd"
+      "fileSha256": "978d079f4c79345eeb784d0f48cc6b81fc46a1a2c611b0af8947d58f6c487be5"
     },
     {
       "id": "a91c8e5c3c1b4f25",
@@ -108705,11 +108786,11 @@
       "id": "bad9f10f05956b18",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 31,
-        "end": 32,
+        "start": 35,
+        "end": 36,
         "sha256": "eae147cf253e8b43570ddc02552ffad52da275a5949ce1dfe1488d5684630692"
       },
-      "fileSha256": "0f29c2d9e9675f05c671a4708dacddcb8f7a2ecc4e1ff692bd6568d71da0edda"
+      "fileSha256": "b68f77d7e39f77f6a8846acba4c9de79ea8ddcf9a5c9edbedc0d7dc2aab49143"
     },
     {
       "id": "badb351bc23fe365",
@@ -109015,11 +109096,11 @@
       "id": "c125d36d45641f8d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 161,
-        "end": 162,
+        "start": 172,
+        "end": 173,
         "sha256": "d8d6d06dc2777c6c7fb43f4273eb2c470e1c7e12563d110cfd7b6f86414d1b8f"
       },
-      "fileSha256": "0f29c2d9e9675f05c671a4708dacddcb8f7a2ecc4e1ff692bd6568d71da0edda"
+      "fileSha256": "b68f77d7e39f77f6a8846acba4c9de79ea8ddcf9a5c9edbedc0d7dc2aab49143"
     },
     {
       "id": "c13ac5156f06eaab",
@@ -109059,7 +109140,7 @@
         "end": 22,
         "sha256": "417fcef5dee8a5cc03ba818f8b1bd0e4db81a6c254332e61f7922a758d170c46"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "c29991583727685a",
@@ -109485,11 +109566,11 @@
       "id": "ca56eb6b0e8d2a5d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
-        "start": 170,
-        "end": 171,
+        "start": 216,
+        "end": 217,
         "sha256": "92dc7d93879816ca01b36cdfbb0aff456e1f4af1ad9c011c1bec5249ca254f75"
       },
-      "fileSha256": "0f29c2d9e9675f05c671a4708dacddcb8f7a2ecc4e1ff692bd6568d71da0edda"
+      "fileSha256": "b68f77d7e39f77f6a8846acba4c9de79ea8ddcf9a5c9edbedc0d7dc2aab49143"
     },
     {
       "id": "ca683ea93e5561ca",
@@ -109689,7 +109770,7 @@
         "end": 427,
         "sha256": "b77a0fd5a8dfa70a7e09ac8df62c344c59d36e0c4dc7855b3a8e579e0cfac9db"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "cecaa4383928653a",
@@ -110255,11 +110336,11 @@
       "id": "db30086d67624444",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1061,
-        "end": 1062,
+        "start": 1050,
+        "end": 1051,
         "sha256": "3c43143d5111f17c593007d5180295f0b4de92b6732140156f45ad133f09e135"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "dbb136af6da7e865",
@@ -110349,7 +110430,7 @@
         "end": 26,
         "sha256": "43d592d63ec1f2c8e108ad1dc5685c0de81d5b8693ed50f933c5b39b3fe9952b"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "dcdb34327d09bd7e",
@@ -110655,11 +110736,11 @@
       "id": "e2964558a0113ed4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 799,
-        "end": 800,
+        "start": 808,
+        "end": 809,
         "sha256": "83ebf925cf6288c9bc988e4db735e508efeac4da9cbc8232fc1597567d079149"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "e2a124d0e7504dc7",
@@ -110685,11 +110766,11 @@
       "id": "e2e6a4833e9c61f3",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 722,
-        "end": 723,
+        "start": 731,
+        "end": 732,
         "sha256": "6dc62486f9385265a3aec6a50f8071a9c526238a3138cadf270059b9707faba0"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "e396823008cfe916",
@@ -111055,11 +111136,11 @@
       "id": "eb6a512f275dd8fb",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
-        "start": 1151,
-        "end": 1152,
+        "start": 1140,
+        "end": 1141,
         "sha256": "8d2e38632f205e5bf65857774dbb5a73cfa747510b7cdf602a6c76618cec774f"
       },
-      "fileSha256": "1f705a72273f474e9a5303e13253abbf69d17e35f9a15867051655faefa01f2e"
+      "fileSha256": "2d919fecc8973224ebe917336256c22173a9f4a41e0443534917168573081687"
     },
     {
       "id": "eb6babcde670379e",

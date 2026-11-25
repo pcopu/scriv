@@ -480,6 +480,12 @@ final class ScrivCLI {
                     result[key] = (result[key] as? [String] ?? []) + ["check-for-updates"]
                 }
             }
+            if run.approvedOrigin == nil {
+                result["semanticMenuActionScopes"] = (result["semanticMenuActionScopes"] as? [String] ?? []) + ScrivCLIMenuActions.localScopes
+                for key in ["semanticApplicationCommands", "commands"] {
+                    result[key] = (result[key] as? [String] ?? []) + ScrivCLIMenuActions.localCommands
+                }
+            }
             if run.approvedOrigin != nil {
                 result["semanticMenuActionScopes"] = (result["semanticMenuActionScopes"] as? [String] ?? []) + ["team-member-actions", "discussion-attachment"]
                 for key in ["syntheticFixtureCommands", "commands"] {
@@ -497,6 +503,9 @@ final class ScrivCLI {
                 ["coverage-snapshot", "coverage-read", "coverage-release"]
 #endif
             return result
+        }
+        if let outcome = try ScrivCLIMenuActions.complete(command, request: request, window: window, run: run) {
+            return outcome
         }
         if command == "check-for-updates" {
             guard Set(request.keys) == ["id", "command"],
@@ -904,28 +913,8 @@ final class ScrivCLI {
                 button.sendAction(action)
                 return ["dispatched": true, "coverage": "semantic-menu-action"]
             }
-            if ScrivCLICharacterPortraitMenu.canHandle(request) {
-                return try ScrivCLICharacterPortraitMenu.dispatch(view: view, window: window, windows: ownedWindows(), request: request)
-            }
-            if ScrivCLIStoryboardMerge.canHandle(request) {
-                return try ScrivCLIStoryboardMerge.dispatch(view: view, window: window, request: request)
-            }
-            if ScrivCLISceneMenu.canHandle(request) {
-                return try ScrivCLISceneMenu.dispatch(view: view, window: window, request: request)
-            }
-            if view.accessibilityLabel == "Image version actions"
-                || request["action"] as? String == "Show captured generation prompt"
-                || request["action"] as? String == "Hide captured generation prompt" {
-                return try ScrivCLIInspectorPromptMenu.dispatch(view: view, window: window, windows: ownedWindows(), request: request)
-            }
-            if view.accessibilityIdentifier == "audio-anchor" {
-                return try ScrivCLIAudioAnchorMenu.dispatch(view: view, window: window, request: request)
-            }
-            if request["action"] as? String == "Edit word timing…" {
-                return try ScrivCLIWordTimingMenu.dispatch(view: view, window: window, request: request)
-            }
-            if request["action"] as? String == "Owned duration…" {
-                return try ScrivCLIDirectionMenu.dispatch(view: view, window: window, request: request)
+            if let outcome = try ScrivCLIMenuActions.dispatch(request, view: view, window: window, windows: ownedWindows(), run: run) {
+                return outcome
             }
             // Narrow public dispatch from the actual owning control. This is
             // semantic menu-action coverage, not opening/choosing a native menu.

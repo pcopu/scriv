@@ -4,7 +4,7 @@ import { mkdtemp, readFile, readlink, realpath, readdir, rmdir, symlink, unlink,
 import { join } from 'node:path';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
-import { observePresentedError } from '../support/presented-error.mjs';
+import { observePresentedAlert, observePresentedError } from '../support/presented-error.mjs';
 import { audioProjectFixture, audioDirectionProjectFixture, syntheticPCM, verifyImportedAsset, invalidAudioRequests,
   invalidTimingDrafts, stableContent, editedContent, syntheticFilename, draftBaseline, trackBaseline } from './support/audio-library-fixtures.mjs';
 import { audioLibrarySteps, sortedProjects } from './support/audio-library-steps.mjs';
@@ -12,12 +12,11 @@ import { audioBoundaryCases, runAudioBoundarySteps } from './support/audio-bound
 import { sourceShrinkCases, runAudioSourceShrinkSteps } from './support/audio-source-shrink-steps.mjs';
 import { attachmentCases, directionAttachmentCases, runAudioAttachmentSteps } from './support/audio-attachment-steps.mjs';
 
-// AUT-J13/AUT-J14 initial semantic-import/library/numeric-timing portions only.
-// Each group owns a fresh actual app. No picker, microphone, playback-output,
-// private menu handler, domain-model setter, storage fault or parallel decoder.
+const audioLibrarySource = 'apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift';
+// AUT-J13/AUT-J14 use the isolated native app and synthetic recordings.
 const defaultGroups = ['import', 'mix', 'timing', 'attachment', 'attachment-direction', 'timing-source-shrink', 'timing-boundaries'];
 // Each accepted interaction group runs in its own isolated app session.
-const groups = defaultGroups;
+const groups = [...defaultGroups, 'native-menu'];
 const args = process.argv.slice(2);
 assert.ok(args.every((arg, index) => arg === '--list-cases' || arg === '--group'
   || args[index - 1] === '--group' && groups.includes(arg)), 'Unknown argument');
@@ -32,6 +31,7 @@ const cases = {
     'dialogue-import', 'scene-silence-import', 'library-preserves-two-clips', 'browser-reopen', 'reject-audio-storage-alias'],
   mix: ['scene-import', 'library-import-rejected', 'clip-volume', 'clip-mute', 'clip-unmute',
     'reopen-library', 'master-volume', 'master-mute', 'master-unmute', 'browser-reopen'],
+  'native-menu': ['scene-import', 'cancel-removal', 'remove-clip', 'present-native-picker'],
   timing: ['dialogue-import', 'baseline-trim', 'cancel-draft-1', 'cancel-draft-2', 'step-source-in',
     ...invalidTimingDrafts.map(test => `reject-${test.name}`), 'correct-and-apply',
     'reopen-noop', 'browser-reopen'],
@@ -39,15 +39,34 @@ const cases = {
 if (args.includes('--list-cases')) {
   console.log(JSON.stringify({ journeys: ['AUT-J13', 'AUT-J14'], groups, nativeVerified: false,
     cases: selected.flatMap(group => cases[group].map(id => ({ group, id }))),
-    groupActions: { import: [{ id: 'import-local-audio', command: 'import-audio',
-      condition: 'storage-destination-leaves-package', entryPoint: {
-        path: 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift', start: 1332, end: 1359,
-        sha256: '0c86ea9d848bcf83d96a864714f561ec9725a3f9d4d81eb9a7dc3bc6a64bed0f',
-      } }] },
+    groupActions: {
+      import: [{ id: 'import-local-audio', command: 'import-audio', condition: 'storage-destination-leaves-package',
+        entryPoint: {
+          path: 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift', start: 1332, end: 1359,
+          sha256: '0c86ea9d848bcf83d96a864714f561ec9725a3f9d4d81eb9a7dc3bc6a64bed0f',
+        } }],
+      'native-menu': [
+        { id: 'audio-library-request-removal', command: 'menu-action', condition: 'open-removal-for-mounted-clip',
+          entryPoint: { path: audioLibrarySource, start: 331, end: 331,
+            sha256: 'c5cacc4aa29930100e46b224d7b24cbd393531dbe1efdd1f8ce6acba1f1d4ba0' },
+          branch: { path: audioLibrarySource, start: 140, end: 152,
+            sha256: 'b0255680f9e3ad6e317b6766f2f7d19441cfdfa2238c6d2bde642919fda95e36' } },
+        { id: 'audio-library-resolve-removal', command: 'resolve-audio-removal', condition: 'confirm-owned-clip-removal',
+          entryPoint: { path: audioLibrarySource, start: 202, end: 213,
+            sha256: 'f3aaecec57a1cb3c166c98ecda0faad4146bb101d60ceb2d2039bea708286828' },
+          branch: { path: audioLibrarySource, start: 153, end: 156,
+            sha256: '69aef083d67d4b61b7e839a13ebdb271bf8f51b81597e69f02a9cbbb38db1550' } },
+        { id: 'audio-library-present-picker', command: 'menu-action', condition: 'scene-import-picker-presentation',
+          entryPoint: { path: audioLibrarySource, start: 107, end: 107,
+            sha256: '1023c99dd68d5565c132c43bb6fef85b72115c917587641bc0eca95478acd7e0' },
+          branch: { path: audioLibrarySource, start: 157, end: 163,
+            sha256: 'ec169c8cb5f5b42ffcbfea86c00b54c949b25b21660dbdd328ffd7b8ee1dd174' } },
+      ],
+    },
     partialBaselineIDs: [`${draftBaseline}::0001`, `${draftBaseline}::0002`, `${draftBaseline}::0003`, `${draftBaseline}::0004`],
     relatedUncoveredBaselineIDs: [`${trackBaseline}::0001`, `${trackBaseline}::0002`, `${trackBaseline}::0005`, `${trackBaseline}::0006`],
-    excluded: ['document picker/cancel', 'microphone', 'audible playback/source-position',
-      'waveform crop/drag/pixels', 'physical/native attachment menu interaction', 'removed-entry draft rejection', 'remove/confirmation',
+    excluded: ['document picker file selection/cancel', 'microphone', 'audible playback/source-position',
+      'waveform crop/drag/pixels', 'physical/native attachment menu interaction', 'removed-entry draft rejection',
       'stale concurrent draft', 'arbitrary storage faults', 'corruption/repair/package export'],
   }, null, 2));
 } else {
@@ -114,6 +133,10 @@ async function runGroup(group) {
       assert.ok(capabilities.commands.includes(command), `Matching compiled app supports ${command}`);
     }
     assert.ok(capabilities.semanticApplicationCommands.includes('import-audio'), 'Audio import is explicitly semantic, not a picker gesture');
+    if (group === 'native-menu') {
+      assert.ok(capabilities.semanticMenuActionScopes.includes('audio-library-actions'), 'Matching compiled app supports the Audio Library menus');
+      assert.ok(capabilities.semanticApplicationCommands.includes('resolve-audio-removal'), 'Matching compiled app supports the owned removal decision');
+    }
     await ui.tab('Script');
     await session.command('key', { input: 's', modifiers: ['command'] });
     sample = await waitForSavedProject(session, project => project.title === 'YAM MAN');
@@ -224,6 +247,84 @@ async function runGroup(group) {
         });
       }
       await run('browser-reopen', reopen);
+    } else if (group === 'native-menu') {
+      await run('scene-import', () => importClip('scene'));
+      const clip = current.audioClips[0];
+      const asset = current.audioAssets[0];
+      assert.match(current.id, /^[0-9a-f-]{36}$/i);
+      assert.match(asset.fileName, /^[0-9a-f]{64}\.wav$/);
+      const recording = join(session.root, 'Projects', current.id + '.scriv', 'audio', asset.fileName);
+      const recordedBytes = await readFile(recording);
+      assert.ok(recordedBytes.length > 0);
+      const options = 'audio-clip-options-' + clip.id;
+      const menu = (target, action) => session.command('menu-action', {
+        target, action, scope: 'audio-library-actions',
+      });
+      const menuUnavailable = /^menu-action: Audio Library menu action is unavailable$/;
+      async function chooseMenuAction(target, action) {
+        const deadline = Date.now() + 3000;
+        for (;;) {
+          try {
+            return await menu(target, action);
+          } catch (error) {
+            // UIKit controls can become hittable before the library finishes
+            // presenting. This specific refusal occurs before any dispatch.
+            if (!menuUnavailable.test(error.message) || Date.now() >= deadline) throw error;
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+      }
+      const resolve = decision => session.command('resolve-audio-removal', { decision });
+      const unavailable = /resolve-audio-removal: Audio clip removal confirmation is unavailable/;
+      async function openRemoval() {
+        const node = await ui.reveal(node => node.identifier === options);
+        assert.equal(node.label, 'Audio options for ' + syntheticFilename);
+        assert.deepEqual(await chooseMenuAction(options, 'Remove clip…'), { dispatched: true, coverage: 'semantic-menu-action' });
+        await observePresentedAlert(session, {
+          title: 'Remove this audio clip?',
+          message: 'This removes the placement, not the original recording or script text.',
+          actions: [{ title: 'Cancel', enabled: true, style: 'cancel' },
+            { title: 'Remove clip', enabled: true, style: 'destructive' }],
+        });
+      }
+      async function waitForLibrary() {
+        await session.waitFor(nodes => nodes.some(node => node.label === 'Close local audio' && node.hittable));
+      }
+      await ui.openLibrary();
+      await run('cancel-removal', async () => {
+        const before = await saved();
+        await assert.rejects(resolve('remove'), unavailable);
+        await assert.rejects(menu(options, 'Mute clip'), { message: menuUnavailable });
+        await openRemoval();
+        await assert.rejects(resolve('dismiss'), unavailable);
+        assert.deepEqual(await resolve('cancel'), { dispatched: true });
+        await waitForLibrary();
+        await ui.reveal(node => node.identifier === options);
+        await unchanged(before);
+        assert.deepEqual(await readFile(recording), recordedBytes);
+      });
+      await run('remove-clip', async () => {
+        const before = current;
+        await openRemoval();
+        assert.deepEqual(await resolve('remove'), { dispatched: true });
+        await waitForLibrary();
+        current = await mutation(before, editedContent(before, project => { project.audioClips = []; }));
+        await assert.rejects(resolve('remove'), unavailable);
+        assert.ok((await session.command('snapshot')).every(node => node.identifier !== options));
+        await ui.closeLibrary();
+        assert.deepEqual((await session.command('loaded-project')).project, current);
+        assert.deepEqual(await readFile(recording), recordedBytes, 'Removing the placement preserves the recording bytes');
+      });
+      await run('present-native-picker', async () => {
+        const before = await saved();
+        await ui.openLibrary();
+        await ui.reveal(node => node.identifier === 'audio-import-menu');
+        assert.deepEqual(await chooseMenuAction('audio-import-menu', 'Import scene audio…'), {
+          dispatched: true, coverage: 'semantic-menu-action', nativePickerPresented: true,
+        });
+        // The native chooser owns the interaction now. No external file is selected.
+        await unchanged(before);
+      });
     } else if (group === 'timing-boundaries') {
       await run('dialogue-import', () => importClip('selected-dialogue', { entryId: 'line1' }));
       current = await runAudioBoundarySteps({ session, ui, run, saved, unchanged, mutation, current });
