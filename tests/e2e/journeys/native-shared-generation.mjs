@@ -19,6 +19,10 @@ if (args.length === 1 && args[0] === '--list-cases') {
       condition: 'image-attaches-while-review-is-open', entryPoint: {
         path: 'apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift', start: 183, end: 192,
         sha256: '831387241b9737b85130529c824ae83b8e74d83a89200090692e185eeeaa83d5',
+      } }, { id: 'sync-project', command: 'activate', trigger: 'Sync this script',
+      condition: 'paid-team-project-has-local-image-without-hosted-replica', entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/Account/ScrivAccountController.swift', start: 24, end: 24,
+        sha256: 'e983e93326c12f3e4c960466e678873b30947bbeeb622d49e89ff1ddd460baa0',
       } }],
   } }));
   process.exit(0);
@@ -298,6 +302,25 @@ try {
     assertExactRequest(reviewNodes(await review.section(2), currentReview));
     await review.activate('generation-review-done');
     await review.closed();
+
+    step = 'restore an absent hosted replica from the saved team image through Account sync';
+    const imagePath = join(session.root, 'Projects', saved.id + '.scriv', 'assets', image.fileName);
+    const imageBytes = await readFile(imagePath);
+    assert.equal(await fixture.removeSharedHostedReplica(image.sha256), true);
+    assert.deepEqual((await fixture.sharedGenerationState()).hosted, []);
+    const workspaceMenu = await ui.reveal(node => node.label === 'Workspace actions');
+    assert.deepEqual(await session.command('menu-action', {
+      target: workspaceMenu.path, scope: 'workspace-panels', action: 'Scriv account…',
+    }), { dispatched: true, coverage: 'semantic-menu-action' });
+    await click('Sync this script');
+    const resynced = await until(fixture.sharedGenerationState, state => state.hosted.length === 1);
+    assert.deepEqual(resynced, completed);
+    await session.waitFor(nodes => nodes.some(node => node.title === 'Sync this script' && node.enabled && node.hittable));
+    await session.command('key', { input: 'Escape', modifiers: [] });
+    await session.waitFor(nodes => nodes.some(node => node.identifier === 'workspace-project' && node.hittable));
+    assert.deepEqual(await session.command('presented-alerts'), []);
+    assert.deepEqual(stableContent((await session.command('loaded-project')).project), stableContent(saved));
+    assert.deepEqual(await readFile(imagePath), imageBytes);
 
     step = 'review the completed job in Shared project history';
     const tabs = await openJobs();

@@ -99,6 +99,7 @@ export async function startNativeCloudFixture() {
       sendHostedPeerSignal: signal => response(['send-hosted-peer-signal', signal]),
       prepareSharedGeneration: project => response(['prepare-shared-generation', project]),
       sharedGenerationState: () => response('shared-generation-state'),
+      removeSharedHostedReplica: digest => response(['remove-shared-hosted-replica', digest]),
       refuseFirstSharedGenerationCreate: () => response('refuse-first-generation-create'),
       generationCreateAttempts: () => response('generation-create-attempts'),
       armGenerationClaim: mode => response(['arm-generation-claim', mode]),
@@ -717,6 +718,20 @@ async function startWorker(root) {
       sharedProjectID = seeded.id;
       return { projectID: sharedProjectID };
     }
+    async function removeSharedHostedReplica(digest) {
+      assert.ok(sharedProjectID);
+      assert.match(digest, /^[a-f0-9]{64}$/);
+      return withFixtureOwner(async token => {
+        const url = new URL('/v1/projects/' + sharedProjectID + '/assets/' + digest, base);
+        const headers = { Authorization: `Bearer ${token}` };
+        const removed = await fixture.dispatchFetch(url, { method: 'DELETE', headers, redirect: 'error' });
+        assert.equal(removed.status, 200);
+        assert.deepEqual(await removed.json(), { ok: true });
+        const absent = await fixture.dispatchFetch(url, { method: 'HEAD', headers, redirect: 'error' });
+        assert.equal(absent.status, 404);
+        return true;
+      });
+    }
     async function sharedGenerationState() {
       assert.ok(sharedProjectID);
       const { results: jobs } = await db.prepare(`SELECT id, target_item_id AS cueID, source_revision AS sourceRevision,
@@ -876,7 +891,7 @@ async function startWorker(root) {
       watchStagedEdit: id => nativeWorker.watchStagedEdit(id), stagedEditState: () => nativeWorker.stagedEditState(),
       prepareHostedImage, repairHostedImage, hostedImageResponses: () => nativeWorker.hostedImageResponses(),
       openHostedPeer, hostedPeerInbox, sendHostedPeerSignal,
-      prepareSharedGeneration, sharedGenerationState,
+      prepareSharedGeneration, sharedGenerationState, removeSharedHostedReplica,
       refuseFirstSharedGenerationCreate: () => {
         assert.ok(sharedProjectID, 'Seed the owned generation project first');
         return nativeWorker.refuseFirstGenerationCreate(sharedProjectID);
@@ -928,7 +943,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'open-hosted-peer': worker.openHostedPeer, 'hosted-peer-inbox': worker.hostedPeerInbox, 'send-hosted-peer-signal': worker.sendHostedPeerSignal,
         'watch-staged-edit': worker.watchStagedEdit, 'staged-edit-state': worker.stagedEditState,
         'hosted-image-responses': worker.hostedImageResponses, 'prepare-shared-generation': worker.prepareSharedGeneration,
-        'shared-generation-state': worker.sharedGenerationState, 'prepare-invitations': worker.prepareInvitations,
+        'shared-generation-state': worker.sharedGenerationState, 'remove-shared-hosted-replica': worker.removeSharedHostedReplica,
+        'prepare-invitations': worker.prepareInvitations,
         'refuse-first-generation-create': worker.refuseFirstSharedGenerationCreate,
         'generation-create-attempts': worker.generationCreateAttempts,
         'arm-generation-claim': worker.armGenerationClaim, 'generation-claim-state': worker.generationClaimState,
