@@ -93,6 +93,14 @@ function with one passing neighboring counter inside that compiler range.
 Follow the reported scenario selector and confirm the action and missing
 condition. For an explicit action selection, use
 `actionReview.functionEdgeCandidates`. Startup has a separate shortlist.
+When the pinned function map also has compiler-resolved call sites, use
+`functionReview.callers` to find exact CLI cases that reached a function
+which can call the unobserved code. Inspect the call condition before
+extending a case. For a missing local image, Tracer identified the inspector
+branch in the existing local images journey. The fixture already carried a
+picture with missing original bytes. Use `journeys/local-images#first-line`
+to open Details, verify the inspector and measure the added lines by itself.
+
 Use `functionReview.entryPoints` to trace wholly unobserved functions to
 their production caller. For example, Join Team’s deep-link entry point is
 the scene URL handler. A cloud sign-out or sync scenario reaching nearby

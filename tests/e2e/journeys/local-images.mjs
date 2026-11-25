@@ -31,6 +31,7 @@ const groups = group ? [group] : ['versions', 'first-line', 'tags', 'source-navi
 if (args.includes('--list-cases')) {
   console.log(JSON.stringify({ journey: 'AUT-J08', nativeVerified: false, groups,
     freshSessionPerGroup: true,
+    groupWitnessPaths: groups.includes('first-line') ? { 'first-line': ['tests/e2e/support/first-line-image-case.mjs'] } : {},
     sourceNavigationEvidence: 'Synthetic actual-UI source navigation; disabled unplaced historical version, placed exact-version cross-scene navigation and selected source-row witness. v48 scoped overlay passed; current composition evidence is recorded separately; no frozen baseline retirement.',
     pictureTagEvidence: 'Synthetic actual-UI acceptance, historical-version add/remove/readd and manual marker persistence; v47 tags overlay passed against v46 app; default composition evidence recorded separately, no legacy retirement.',
     cases: groups.flatMap(value => value === 'boundary' ? imageBoundaryCases : value === 'versions' ? cases : value === 'tags' ? pictureTagCases : value === 'source-navigation' ? sourceNavigationCases : firstLineCases),

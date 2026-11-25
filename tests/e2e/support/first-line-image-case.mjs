@@ -4,7 +4,7 @@ import { waitForSavedProject } from './saved-projects.mjs';
 import { audioLibrarySteps, sortedProjects } from '../journeys/support/audio-library-steps.mjs';
 
 export const firstLineBaselineID = 'apps/mac/Tests/ScrivCoreTests/ImageImportPlacementTests.swift::0001';
-export const firstLineCases = ['first-line-input', 'first-line-import', 'later-line-route', 'first-line-return'];
+export const firstLineCases = ['first-line-input', 'first-line-import', 'later-line-route', 'inspect-missing-original', 'first-line-return'];
 const coralSHA = '827d9145314e931860ee40b45f8348ad3527c93e008d1490b687265d947fb577';
 
 // Literal serialized input from frozen ::0001. Only initializer-generated IDs
@@ -110,6 +110,17 @@ export async function runFirstLineImageCase(app) {
     });
     await check('later-line-route', async () => {
       await selectLine('dialogue'); await route(1500, 'Existing picture · Version 1', true);
+    });
+    await check('inspect-missing-original', async () => {
+      await ui.activate(node => node.title === 'Details' && node.enabled);
+      const inspector = await session.waitFor(nodes => nodes.some(node => node.title === 'Show in script' && node.hittable)
+        && nodes.some(node => node.text === 'No verified local copy is available. Fetch uses configured project storage or available peer Macs.'));
+      assert.ok(inspector.some(node => node.text === 'Image isn’t on this Mac'));
+      assert.ok(inspector.some(node => node.title === 'Fetch image' && node.enabled));
+      assert.ok(inspector.some(node => node.title === 'Choose another image…' && node.enabled));
+      await ui.activate(node => node.title === 'Done' && node.enabled);
+      await session.waitFor(nodes => !nodes.some(node => node.title === 'Show in script' && node.hittable));
+      await route(1500, 'Existing picture · Version 1', true);
     });
     await check('first-line-return', async () => {
       await selectLine('direction'); await route(0, 'Image 2 · Version 1');

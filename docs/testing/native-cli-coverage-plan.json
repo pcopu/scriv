@@ -160,6 +160,75 @@
       "expectedOutcomes": [
         "The app publishes ordered local startup stages with bounded public fields and opens the intact sample project."
       ]
+    },
+    {
+      "id": "missing-original-image-inspector",
+      "title": "Inspect a picture whose original is unavailable",
+      "featureId": "missing-original-image-inspector",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/local-images.mjs",
+        "tests/e2e/support/first-line-image-case.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Images/ImageInspectorControllers.swift",
+        "symbol": "missingImageCard(_:title:cue:)"
+      },
+      "actionIds": [
+        "activate"
+      ],
+      "routeIds": [
+        "journeys/local-images/group/first-line"
+      ],
+      "plannedActions": [
+        "Open Details for the existing picture in the fixture with missing local bytes."
+      ],
+      "expectedOutcomes": [
+        "The inspector shows the exact version, missing local copy, fetch and replacement choices. Closing keeps the saved project and playback position."
+      ]
+    },
+    {
+      "id": "native-accessibility-adapter",
+      "title": "Load the native accessibility bridge for protected alerts",
+      "featureId": "native-accessibility-adapter",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/character-aliases.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "symbol": "nativeAccessibilityAdapter()"
+      },
+      "actionIds": [
+        "native-accessibility-snapshot",
+        "native-accessibility-activate"
+      ],
+      "plannedActions": [
+        "Inspect and activate a real native alias alert with a verified supported control route."
+      ],
+      "expectedOutcomes": [
+        "The app dispatches the exact native control through its verified accessibility adapter."
+      ],
+      "restriction": "The character-alias fallback was denied by Library Validation. Keep this app path on hold until a supported verified route exists."
+    },
+    {
+      "id": "generation-review-invalidation",
+      "title": "Invalidate an open generation brief when its source changes",
+      "featureId": "generation-review-invalidation",
+      "state": "unwritten",
+      "existingPaths": [],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+        "symbol": "invalidate()"
+      },
+      "actionIds": [],
+      "plannedActions": [
+        "Apply a project change through an owned production sync route while the generation brief stays open."
+      ],
+      "expectedOutcomes": [
+        "The stale request is cleared, its tabs are disabled, and the brief can still be closed."
+      ],
+      "restriction": "The verified CLI import route rejects an already presented controller. This condition needs an owned sync fixture that changes the source while the review remains mounted."
     }
   ],
   "associations": [
@@ -623,6 +692,72 @@
       "uncertainty": "",
       "proposedAssertions": [
         "The app publishes ordered local startup stages with bounded public fields and opens the intact sample project."
+      ]
+    },
+    {
+      "rangeId": "missing-original-image-inspector-1",
+      "featureId": "missing-original-image-inspector",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Images/ImageInspectorControllers.swift",
+        "start": 55,
+        "end": 62,
+        "fileSha256": "94eff5c00d962ba4b95a101cfa7b389b457fea146a16d8dbea3a3c784180b4e1",
+        "spanSha256": "ee395c342ae7734f5c3c66f863214ce4c884306d9b54a406f37b2d2f20e1636b",
+        "sha256": "f5e1e096dca50d0ecab625485d15729fbed4d7bcd67558beac320dedb0e1fd3b"
+      },
+      "scenarioIds": [
+        "missing-original-image-inspector"
+      ],
+      "rationale": "Open Details for the existing picture in the fixture with missing local bytes.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The inspector shows the exact version, missing local copy, fetch and replacement choices. Closing keeps the saved project and playback position."
+      ]
+    },
+    {
+      "rangeId": "native-accessibility-adapter-1",
+      "featureId": "native-accessibility-adapter",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 144,
+        "end": 155,
+        "fileSha256": "ffb879a6d53f5bc3b4a9aff008f8a263b153dcebaf364508e5e60925f28aafdc",
+        "spanSha256": "ad4e8741cdfa10cb8af29336555775aa950811d75138c18fc55220a9dc2bb88d",
+        "sha256": "2090d48c575e30564653c89169290b5dbd080103e0b815cb74670e47686c2910"
+      },
+      "scenarioIds": [
+        "native-accessibility-adapter"
+      ],
+      "rationale": "Inspect and activate a real native alias alert with a verified supported control route.",
+      "confidence": "high",
+      "uncertainty": "The character-alias fallback was denied by Library Validation. Keep this app path on hold until a supported verified route exists.",
+      "proposedAssertions": [
+        "The app dispatches the exact native control through its verified accessibility adapter."
+      ]
+    },
+    {
+      "rangeId": "generation-review-invalidation-1",
+      "featureId": "generation-review-invalidation",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
+        "start": 210,
+        "end": 216,
+        "fileSha256": "78b2212c165e620ab11d1c98a5b6c76c77cdfaff9e5cc821e4cbc66e3de8ec98",
+        "spanSha256": "6cd0b7bbdc313f5b405b04f97724389ed71e52766741a3184ba2478e159d268a",
+        "sha256": "241954bf3584795df446a6ce869b029a0a91449071ec272c21256a602a0bd688"
+      },
+      "scenarioIds": [
+        "generation-review-invalidation"
+      ],
+      "rationale": "Apply a project change through an owned production sync route while the generation brief stays open.",
+      "confidence": "high",
+      "uncertainty": "The verified CLI import route rejects an already presented controller. This condition needs an owned sync fixture that changes the source while the review remains mounted.",
+      "proposedAssertions": [
+        "The stale request is cleared, its tabs are disabled, and the brief can still be closed."
       ]
     }
   ]
