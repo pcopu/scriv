@@ -9,15 +9,16 @@ import { reviewSteps } from './support/generation-review-steps.mjs';
 import { generationContextInput } from './support/generation-context-cases.mjs';
 import { fixtureImageHash, recoveredImageHash, startCodexFixture } from './support/codex-loopback-fixture.mjs';
 
-const groups = ['history-prompt', 'history-retry', 'history-artifact', 'history-retry-portrait', 'cancel-unconfirmed', 'completed-without-image'];
+const groups = ['history-prompt', 'history-retry', 'history-artifact', 'history-retry-portrait',
+  'cancel-unconfirmed', 'completed-without-image', 'complete-after-navigation'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
+  const generateImage = { id: 'generate-image', command: 'activate', trigger: 'generation-generate-image',
+    entryPoint: { path: 'apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift', start: 175, end: 181,
+      sha256: 'eeefc45ca6579f22f405fa2c447d4f157bffd72ae659d12a5083ad0bea7093ff' } };
   console.log(JSON.stringify({ groups, groupActions: {
-    'completed-without-image': [{ id: 'generate-image', command: 'activate', trigger: 'generation-generate-image',
-      condition: 'provider-completes-without-an-image', entryPoint: {
-        path: 'apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift', start: 175, end: 181,
-        sha256: 'eeefc45ca6579f22f405fa2c447d4f157bffd72ae659d12a5083ad0bea7093ff',
-      } }],
+    'completed-without-image': [{ ...generateImage, condition: 'provider-completes-without-an-image' }],
+    'complete-after-navigation': [{ ...generateImage, condition: 'provider-completes-after-opening-another-project' }],
   } }));
   process.exit(0);
 }
@@ -29,6 +30,7 @@ const historyRetry = args[1] === 'history-retry' || retryPortrait;
 const historyArtifact = args[1] === 'history-artifact';
 const cancelUnconfirmed = args[1] === 'cancel-unconfirmed';
 const completedWithoutImage = args[1] === 'completed-without-image';
+const completeAfterNavigation = args[1] === 'complete-after-navigation';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
 const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
@@ -148,7 +150,9 @@ try {
 
   step = 'connect to the owned loopback fixture in Settings';
   const submittedRequests = [];
-  const outcomes = [completedWithoutImage ? 'completed-without-image' : 'success'];
+  const outcomes = ['success'];
+  if (completedWithoutImage) outcomes[0] = 'completed-without-image';
+  if (completeAfterNavigation) outcomes[0] = 'held-success';
   if (cancelUnconfirmed) outcomes.push('cancel-unconfirmed');
   else if (historyRetry) outcomes.push('cancel', 'retry-success');
   else if (args.length === 0) outcomes.push('cancel', 'recover', 'missing-artifact', 'input-request', 'failure');
@@ -237,6 +241,11 @@ try {
     assert.deepEqual(await jobs(), []);
     assert.deepEqual(await session.command('persisted-projects'), unchangedOnConnect);
 
+    if (completeAfterNavigation) {
+      step = 'keep an in-flight image in its original job after opening another project';
+      await verifyCompletionAfterNavigation(generate, jobs, before, unchangedOnConnect);
+      return;
+    }
     if (completedWithoutImage) {
       step = 'report a completed provider turn that returned no image';
       await activate(await reveal(generate));
@@ -636,6 +645,7 @@ try {
   else if (cancelUnconfirmed) console.log('PASS: refused interruption retains the original turn for inspection without a duplicate');
   else if (historyArtifact) console.log('PASS: Generation history rejects modified artifact bytes and opens the restored original');
   else if (completedWithoutImage) console.log('PASS: Scriv reports the missing image and preserves the failed job and saved projects');
+  else if (completeAfterNavigation) console.log('PASS: Generation completed after navigation, keeping the image in history and both projects intact');
   else console.log('PASS: native Codex loopback fixture generation, cancellation, reconnect, recovery inspection and refusal');
 } catch (error) {
   failed = true;
@@ -644,4 +654,37 @@ try {
   // Preserve the primary assertion if cleanup also sees incomplete fixture work.
   try { if (fixture && failed) await fixture.close().catch(() => {}); }
   finally { await session.close(); }
+}
+
+async function verifyCompletionAfterNavigation(generate, jobs, original, savedBeforeNavigation) {
+  await activate(await reveal(generate));
+  const [running] = await poll(jobs, rows => rows.length === 1 && rows[0].hasTurnID && rows[0].status === 'running');
+  assert.equal(running.projectID, original.id);
+  assert.equal(running.cueID, 'cue');
+  assert.equal(running.artifact, undefined);
+
+  await session.command('key', { input: 'n', modifiers: ['command'] });
+  const other = await waitForSavedProject(session, project => savedBeforeNavigation.every(saved => saved.id !== project.id));
+  await session.waitFor(nodes => nodes.some(node => byID('workspace-project')(node) && node.title === other.title && node.hittable));
+  assert.deepEqual((await session.command('loaded-project')).project, other);
+  const [stillRunning, ...unexpected] = await jobs();
+  assert.deepEqual(unexpected, []);
+  assert.equal(stillRunning.jobID, running.jobID);
+  assert.equal(stillRunning.status, 'running');
+
+  await fixture.finishHeldImage(running.jobID);
+  await session.waitFor(nodes => nodes.some(node => node.type === 'UILabel'
+    && node.text?.startsWith('Image ready in Generation history. Open its original project to recover it.')));
+  const [complete] = await poll(jobs, rows => rows.length === 1 && rows[0].status === 'completed');
+  assert.equal(complete.jobID, running.jobID);
+  assert.equal(complete.projectID, original.id);
+  assert.equal(complete.cueID, running.cueID);
+  assert.equal(complete.journalVerified, true);
+  assert.equal(complete.hasThreadID && complete.hasTurnID, true);
+  assert.equal(complete.attachmentVerified, false);
+  assert.equal(complete.storedArtifactSHA256, fixtureImageHash);
+  assert.equal(complete.artifact?.sha256, fixtureImageHash);
+  assert.deepEqual((await session.command('loaded-project')).project, other);
+  const byProjectID = (a, b) => a.id.localeCompare(b.id);
+  assert.deepEqual((await session.command('persisted-projects')).sort(byProjectID), [...savedBeforeNavigation, other].sort(byProjectID));
 }

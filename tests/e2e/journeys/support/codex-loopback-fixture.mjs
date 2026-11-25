@@ -83,6 +83,12 @@ export function createCodexFixtureProtocol(root, outcomes, {
   let accountUpdateAnnounced = false;
   const requestIDs = new Set();
   const jobDirectories = new Set();
+  async function imageCompletion(bytes) {
+    const savedPath = join(job.cwd, 'storyboard.png');
+    await writeFile(savedPath, bytes, { flag: 'wx', mode: 0o600 });
+    return { method: 'turn/completed', params: { threadId: job.threadId,
+      turn: { id: job.turnId, status: 'completed', items: [{ type: 'imageGeneration', savedPath }] } } };
+  }
   async function receive({ id, method, params }) {
     // Only print the fixture's expected method, never incoming arbitrary data.
     assert.ok(method === expected[position] && typeof method === 'string', `Unexpected fixture message; expected ${expected[position] ?? 'disconnect'}`);
@@ -209,14 +215,16 @@ export function createCodexFixtureProtocol(root, outcomes, {
       onSubmittedPrompt?.({ prompt: prompt.text, jobID: basename(job.cwd) });
       const replies = [reply({ turn: { id: job.turnId } }), { method: 'item/started',
         params: { threadId: job.threadId, item: { type: 'imageGeneration' } } }];
+      if (job.outcome === 'held-success') {
+        job.completionHeld = true;
+        return replies;
+      }
       if (['cancel', 'recover', 'missing-artifact', 'input-request', 'cancel-unconfirmed'].includes(job.outcome)) return replies;
-      const turn = { id: job.turnId, items: [] };
       if (job.outcome === 'success' || job.outcome === 'retry-success') {
-        const savedPath = join(job.cwd, 'storyboard.png');
-        await writeFile(savedPath, job.outcome === 'retry-success' ? recoveredPng : png, { flag: 'wx', mode: 0o600 });
-        turn.status = 'completed';
-        turn.items.push({ type: 'imageGeneration', savedPath });
-      } else if (job.outcome === 'completed-without-image') {
+        return [...replies, await imageCompletion(job.outcome === 'retry-success' ? recoveredPng : png)];
+      }
+      const turn = { id: job.turnId, items: [] };
+      if (job.outcome === 'completed-without-image') {
         turn.status = 'completed';
       } else {
         turn.status = 'failed';
@@ -259,6 +267,11 @@ export function createCodexFixtureProtocol(root, outcomes, {
   }
   return {
     receive,
+    finishHeldImage(jobID) {
+      assert.ok(job?.completionHeld && basename(job.cwd) === jobID, 'Only the owned held image turn can finish');
+      job.completionHeld = false;
+      return imageCompletion(png);
+    },
     notice(variant) {
       assert.ok((accountRefresh || manualAccountCheck && variant === 'account-update')
         && position >= handshake.length && count === 0, 'Notices are scoped to this idle account fixture');
@@ -292,7 +305,10 @@ export function createCodexFixtureProtocol(root, outcomes, {
       assert.equal(expected[position++], 'transport-drop', 'Only the scheduled cancellation can drop the owned socket');
       reconnecting = true;
     },
-    assertComplete: () => assert.equal(position, expected.length, 'Exact fixture request sequence completed'),
+    assertComplete() {
+      assert.equal(position, expected.length, 'Exact fixture request sequence completed');
+      assert.ok(!job?.completionHeld, 'The held image completion was released');
+    },
   };
 }
 
@@ -352,6 +368,13 @@ export async function startCodexFixture(root, outcomes, options) {
     endpoint: `ws://127.0.0.1:${ownedPort}`,
     race: promise => Promise.race([failed, promise]),
     assertNoTurns: protocol.assertNoTurns,
+    async finishHeldImage(jobID) {
+      await pending;
+      if (failure) throw failure;
+      assert.equal(server.clients.size, 1);
+      const [socket] = server.clients;
+      await send(socket, await protocol.finishHeldImage(jobID));
+    },
     ...(heldAccountRefresh && { async waitForHeldAccountRefresh() {
       const socket = await Promise.race([failed, heldAccountRefresh]);
       return { disconnected: once(socket, 'close', { signal: AbortSignal.timeout(5000) }) };

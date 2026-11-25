@@ -30263,8 +30263,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 240,
-        "end": 261,
+        "start": 249,
+        "end": 270,
         "sha256": "3ef02e83ed470e1fee9dd6de74f70921ffc6fde1062e5a7e8436d7e66f436a61"
       },
       "why": "The provider finishes the real turn without an eligible image. Scriv marks the job failed, retains its journal, and keeps the saved project unchanged."
@@ -95893,8 +95893,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 419,
-        "end": 422,
+        "start": 428,
+        "end": 431,
         "sha256": "14265268c9f3db277c4a24413cc0a013b381ba8cf1a890d8c542c14cb1ba1870"
       },
       "why": "The real panel explains why the same job stays waiting, and the route verifies its identity and unchanged persistent projects."
@@ -95912,8 +95912,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 575,
-        "end": 590,
+        "start": 584,
+        "end": 599,
         "sha256": "c522aa35dfb148dbbb3b526c2a47703dd7c6360053d0e2ea3d9eeebace990dc4"
       },
       "why": "The mounted jobs panel reports the missing local image. The original job has no attachment or artifact and all saved projects remain identical."
@@ -95931,8 +95931,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 423,
-        "end": 431,
+        "start": 432,
+        "end": 440,
         "sha256": "d11334e4559821ae47c839d09e717ff7a7dd0e24d88ab22b0fbd07753127cdfa"
       },
       "why": "The running result keeps the original job waiting. A later inspection observes cancellation of the same turn without creating another job."
@@ -95950,8 +95950,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 400,
-        "end": 409,
+        "start": 409,
+        "end": 418,
         "sha256": "b18b7a0d0db1d073391bc3145f28e3b54d50ca5dda2e6c9edea2f18a5ffe48b6"
       },
       "why": "The visible disconnected state and original waiting job are verified before reconnect, and the saved projects remain identical."
@@ -95969,8 +95969,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 411,
-        "end": 417,
+        "start": 420,
+        "end": 426,
         "sha256": "45a50ec45a290986157429a8e7e119bc4fc238fa9d3db59502f057ddbdac7cb3"
       },
       "why": "The selected first model and second-page model appear exactly once in the real menu."
@@ -96484,8 +96484,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 183,
-        "end": 203,
+        "start": 187,
+        "end": 207,
         "sha256": "8bde83c4f241f4a9e089627b34eaa72f0eb696e9ea860f20025d8f1b29becf5e"
       },
       "why": "The connected loopback provider receives explicit refusals, empty permissions and answers, and a method-not-found response. The settings status, absence of new turns and unchanged saved projects are asserted."
@@ -96524,8 +96524,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 592,
-        "end": 606,
+        "start": 601,
+        "end": 615,
         "sha256": "5d4adf7adae71bf09aa0965256e77fff8b6ac5f11cfead9617400a528688c49e"
       },
       "why": "A request for more input on an active image turn sends empty answers and interrupts that exact owned turn. Existing jobs and saved projects are preserved."
@@ -96544,8 +96544,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 222,
-        "end": 238,
+        "start": 226,
+        "end": 242,
         "sha256": "4a05e70a1203269fdc0397a378760f26171a035d4e2c1cda33262f0e54c19ed6"
       },
       "why": "Each owned account update requests one fresh account read. The Settings controls show the confirmed identity, become disabled on failed reads, and recover to the correct signed-out and ready states. Saved projects and jobs are unchanged."
@@ -96564,8 +96564,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 205,
-        "end": 214,
+        "start": 209,
+        "end": 218,
         "sha256": "a2eec81ece88acc33eb1cc9c96e993ebfd1876c4932da48c4be9b1ff55bdca67"
       },
       "why": "The Settings pane displays the provider warning, configuration warning summary and error while the socket remains connected."
@@ -98299,8 +98299,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 456,
-        "end": 486,
+        "start": 465,
+        "end": 495,
         "sha256": "0bde83871cf42855ad912ac265b0862a677d073f056c12cb1d6c300d5fa97a6d"
       },
       "why": "The retry is bound to the original cue, writes the validated new image, and preserves the other saved cues and their assets."
@@ -98320,8 +98320,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 316,
-        "end": 346,
+        "start": 325,
+        "end": 355,
         "sha256": "17974c79d5e18c324f3d8a0f2e6ac3c10b8da064ffb7db1797e0f54d069c8b3c"
       },
       "why": "Changing only the owned job image produces the saved-image notice. Restoring exact bytes opens the preview."
@@ -98342,8 +98342,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 299,
-        "end": 312,
+        "start": 308,
+        "end": 321,
         "sha256": "3bd248234b0ca1c49d1d70a38eda9c24b8d709345a08699eb36323dd5b6883ef"
       },
       "why": "The displayed prompt matches the local fixture request for the selected job, refuses editing, and preserves its project."
@@ -98362,8 +98362,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 338,
-        "end": 346,
+        "start": 347,
+        "end": 355,
         "sha256": "71aa64b787a5d3dc05f016b2aed4163524d1b57633da574336baeea1153340d6"
       },
       "why": "The validated restored artifact presents the native preview, which covers the previous history control."
@@ -98383,8 +98383,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 443,
-        "end": 454,
+        "start": 452,
+        "end": 463,
         "sha256": "abc56c2a8db6d3b04cc6cce0ff3d82a1c0c0eb724044eda45e6c5ee9b41a6ca7"
       },
       "why": "Cancel dismisses the real confirmation and preserves both original jobs without sending a new request."
@@ -98403,8 +98403,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 456,
-        "end": 469,
+        "start": 465,
+        "end": 478,
         "sha256": "2e1bab281d3b48cd9ec3de1ead22b1bfa199dcfe28cfdd083789f2a836b61000"
       },
       "why": "An original job without references successfully retries through the owned job-directory validation."
@@ -98424,8 +98424,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 456,
-        "end": 472,
+        "start": 465,
+        "end": 481,
         "sha256": "abc6f8dd786b3b8d17f5eda36c5080cb5dbbe89f06b4b343e60bc555c07550f5"
       },
       "why": "The confirmed retry uses the original prompt once, traces the original job via the new journal, and preserves both previous journals."
@@ -98444,8 +98444,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/codex-loopback-fixture.mjs",
-        "start": 201,
-        "end": 209,
+        "start": 207,
+        "end": 215,
         "sha256": "cfaa4b23f94c4e81787e6486057978632753d545341e58e681d738748fe9ac16"
       },
       "why": "With the existing portrait selected, require an exact localImage reference path inside each new owned job directory and verify the actual image digest at the socket boundary."
@@ -98464,8 +98464,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 487,
-        "end": 517,
+        "start": 496,
+        "end": 526,
         "sha256": "7aa4c146ecebee5599d0cb1be3501803d0bbd0283c95c3dc6498afe018b3c3bd"
       },
       "why": "The owned loopback fixture checks the original copied portrait; after replacing it with other valid image bytes, the actual retry reports the reference mismatch and leaves exactly three journals and the package unchanged."
@@ -98484,8 +98484,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 135,
-        "end": 146,
+        "start": 137,
+        "end": 148,
         "sha256": "974b0bb9449d277174ea996e64b1de9b4497074dc053dc5da5f7e467402aae3d"
       },
       "why": "The actual People review shows exactly one attached portrait, names Anna in the exact request, and creates no generation."
@@ -99133,8 +99133,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 385,
-        "end": 397,
+        "start": 394,
+        "end": 406,
         "sha256": "82e8e2a9eb9ea31d91a855d2f9c7a78cc1c73033d4ebd8b09b709a8b52382994"
       },
       "why": "The owned runtime rejects the interruption, the Settings error reports that cancellation was unconfirmed, and the same original turn stays available for inspection with no new submission."
@@ -99739,6 +99739,27 @@
         "sha256": "c6f3b77f4d1ba559fa0810d0cbef527ed7852b1d6c4acf4104f95e32daaa71da"
       },
       "why": "Saving a syntactically valid but unapproved endpoint presents the real isolation refusal and retains the launch network policy."
+    },
+    {
+      "id": "82a45dcff4bef6b2",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1538,
+        "end": 1542,
+        "sha256": "9bbbbf7588763947d0ef851a810ffff5463b3c9e4631de7ce3d0472f446384d6"
+      },
+      "actions": [
+        "activate generation-generate-image against the owned loopback fixture",
+        "press Command-N while the original turn is running",
+        "release the held provider completion and read the job, status and saved projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
+        "start": 659,
+        "end": 690,
+        "sha256": "1f0708ee49c54644bbddbb18031d5a7712addc46624f273250d9afaca7efecc8"
+      },
+      "why": "When a real provider result arrives after navigation, the original job keeps its exact image, the new workspace remains open, and no saved project receives the image automatically."
     }
   ],
   "commentExclusions": [
