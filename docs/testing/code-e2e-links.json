@@ -244,8 +244,8 @@
       "id": "00324f769e9f6195",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 208,
-        "end": 209,
+        "start": 209,
+        "end": 210,
         "sha256": "ed17746d631a4bfffdce23eeb12ebf1fdca88d966ee0e55cf51a0c1eb61ef679"
       },
       "actions": [
@@ -5477,8 +5477,8 @@
       "id": "363005482f3f4c31",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 364,
-        "end": 366,
+        "start": 365,
+        "end": 367,
         "sha256": "4163ac4331a6167f7daad8dbbf913542d0d68f6df0ca446cbf8df91ff8421b29"
       },
       "actions": [
@@ -11709,8 +11709,8 @@
       "id": "27c9916e5a2be34f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 237,
-        "end": 238,
+        "start": 238,
+        "end": 239,
         "sha256": "e0741b99826c54a7e1543c24d29b334f4c37bd62f71fa93bc7d3afd9bcd85faf"
       },
       "actions": [
@@ -13957,8 +13957,8 @@
       "id": "2feba792cdefff92",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 373,
-        "end": 376,
+        "start": 374,
+        "end": 377,
         "sha256": "e6dbe5a80ee740ec4c20ed186027dd3d8de6a624abbf5ee59fb05b9e00c04c6b"
       },
       "actions": [
@@ -19115,8 +19115,8 @@
       "id": "41d08f126e99879f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 289,
-        "end": 292,
+        "start": 290,
+        "end": 293,
         "sha256": "8a6ecb47c8ebcc33e555ec8935dfe0ed064debe2213cf3d2ffc23d952f58d259"
       },
       "actions": [
@@ -23168,8 +23168,8 @@
       "id": "51a85849aeda565e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 210,
-        "end": 211,
+        "start": 211,
+        "end": 212,
         "sha256": "9f42f39113593acce58361794626f20f4a741404f9ed9f435e49c65e6bcba4bf"
       },
       "actions": [
@@ -26320,8 +26320,8 @@
       "id": "5d8f4c4296b6296e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 186,
-        "end": 189,
+        "start": 187,
+        "end": 190,
         "sha256": "33db45876f99cdf9e2550b39845934921f8dc66fcde8f2145523224716999bdb"
       },
       "actions": [
@@ -34919,8 +34919,8 @@
       "id": "7ade705ad8e0afa0",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 199,
-        "end": 201,
+        "start": 200,
+        "end": 202,
         "sha256": "72f1b6d99d9a4d4c97bb8bacabf926cacaeb2c0d56b5d24c555268ec2a179302"
       },
       "actions": [
@@ -35555,8 +35555,8 @@
       "id": "7c8c5ec4146dd2c8",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 228,
-        "end": 230,
+        "start": 229,
+        "end": 231,
         "sha256": "a6912d66c983665ce6ffc1cf0d24956a93db7a302a00dfc155079082c66600c1"
       },
       "actions": [
@@ -40549,8 +40549,8 @@
       "id": "8d9ad3c2259185f7",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 245,
-        "end": 248,
+        "start": 246,
+        "end": 249,
         "sha256": "a012e5e8cc4a1d900a0c3dd6cd9eca7f258f3f235237e3492e47ffcd21aa66fb"
       },
       "actions": [
@@ -45824,8 +45824,8 @@
       "id": "9f671d81d53b2e92",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 250,
-        "end": 278,
+        "start": 251,
+        "end": 279,
         "sha256": "930443f0b830c07f499837fe11c1facdadbf4549f0e40a9548d89741f5e2b1ff"
       },
       "actions": [
@@ -52787,8 +52787,8 @@
       "id": "b414825514bbe57b",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 307,
-        "end": 307,
+        "start": 308,
+        "end": 308,
         "sha256": "2001e995fa2f490b3c7b10d4666b7f82f6f7cac1d5d440eecf1db9a34562d8d5"
       },
       "actions": [
@@ -55267,8 +55267,8 @@
       "id": "bc1b5d8dce9d5bea",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 224,
-        "end": 226,
+        "start": 225,
+        "end": 227,
         "sha256": "56ecb13fc0c593e911da71cf2ff10047a5613206ed4b0e41d93f8a0e4404a2f9"
       },
       "actions": [
@@ -56016,8 +56016,8 @@
       "id": "bead27d811030a06",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 295,
-        "end": 295,
+        "start": 296,
+        "end": 296,
         "sha256": "635722f828162803f7415bffb896eeca61f597233ad2ae2b1a228a1b3820da9e"
       },
       "actions": [
@@ -59377,8 +59377,8 @@
       "id": "cc2bfd2318f202c5",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 297,
-        "end": 297,
+        "start": 298,
+        "end": 298,
         "sha256": "5dad5827ad70c283195e105f6805d9a73a68bde4c32ec27cc6fb37bb9a613b98"
       },
       "actions": [
@@ -63213,8 +63213,8 @@
       "id": "dcb760654ed41c8d",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 176,
-        "end": 183,
+        "start": 177,
+        "end": 184,
         "sha256": "4de99e3f4f3e360d3729141c710ae53e96416dda81511b3bdcd9bea64fcfc121"
       },
       "actions": [
@@ -64250,8 +64250,8 @@
       "id": "dfe1dff3a81c0759",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 203,
-        "end": 205,
+        "start": 204,
+        "end": 206,
         "sha256": "9038120b7ee4960c8676af3a6ea4557ab73afde4ab9061965173cf3fec2a3681"
       },
       "actions": [
@@ -69234,8 +69234,8 @@
       "id": "edfb106ba7599e62",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 207,
-        "end": 207,
+        "start": 208,
+        "end": 208,
         "sha256": "30030c597bb8d222fa5708425ec863c8d63fdfb4ba9620fae5fa53a58f39468c"
       },
       "actions": [
@@ -70996,8 +70996,8 @@
       "id": "f3e4765df137a31f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 293,
-        "end": 293,
+        "start": 294,
+        "end": 294,
         "sha256": "2eee146c7f11991ffabccbcb02ecd812a1816104fce4814ba13453206029bf09"
       },
       "actions": [
@@ -84000,8 +84000,8 @@
       "id": "4579e95b6742509b",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 304,
-        "end": 304,
+        "start": 305,
+        "end": 305,
         "sha256": "251af02bdf06578e58a84c767afd9e956728e2dcfe6df02fa8e6a30d26dc0748"
       },
       "actions": [
@@ -84044,8 +84044,8 @@
       "id": "75ae20557ed42cfa",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 378,
-        "end": 379,
+        "start": 379,
+        "end": 380,
         "sha256": "1674ec57dbd55226a5f98694ec55383a91fb7974f94917174dfd0878836309cc"
       },
       "actions": [
@@ -84064,8 +84064,8 @@
       "id": "8cf7a26516801711",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 308,
-        "end": 308,
+        "start": 309,
+        "end": 309,
         "sha256": "155b99c4fcc8c5940e6ad104d7a26b3a079f0b25c675fef1e383f0117d5a59f0"
       },
       "actions": [
@@ -84103,8 +84103,8 @@
       "id": "a9154208c8debc65",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 281,
-        "end": 284,
+        "start": 282,
+        "end": 285,
         "sha256": "865723df71091dc297a11f0a48b7237fb47cc73dff698e5e859975758577b256"
       },
       "actions": [
@@ -84122,8 +84122,8 @@
       "id": "a930773617cb8f6f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 298,
-        "end": 299,
+        "start": 299,
+        "end": 300,
         "sha256": "5714b5016a5823b874d5af4bede595e152076077087c31e8dbc36352847db9f6"
       },
       "actions": [
@@ -94821,8 +94821,8 @@
       "id": "33720f3b1724fc03",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 363,
-        "end": 366,
+        "start": 364,
+        "end": 367,
         "sha256": "6a904c79ec0c0e5f9b36259dd596081dbe4d8c47edad699777135187d0af49fa"
       },
       "actions": [
@@ -94859,8 +94859,8 @@
       "id": "ed7558e490db107f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 301,
-        "end": 303,
+        "start": 302,
+        "end": 304,
         "sha256": "8de45ae475fd12c6ac0e8886fa94b189913a287f268e8fbf150e362d4066b27c"
       },
       "actions": [
@@ -95721,8 +95721,8 @@
       "id": "1d8fbd0cc16034c9",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 190,
-        "end": 190,
+        "start": 191,
+        "end": 191,
         "sha256": "c2f220899b72eee623adb8310c1209be841530a23487bcce09afcab17542eab6"
       },
       "actions": [
@@ -96565,8 +96565,8 @@
       "id": "97533ef6aeb0075e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 250,
-        "end": 277,
+        "start": 251,
+        "end": 278,
         "sha256": "d866b0ea14eda1229d22a41b3d1927ae0ed0fe87c560747ac1477e0ed82be7e8"
       },
       "actions": [
@@ -96595,9 +96595,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-management.mjs",
-        "start": 145,
-        "end": 152,
-        "sha256": "111fa2e4c995cdfab9d5264edd699d4a4ac04ee4d97758a4dbedac8b581b9a04"
+        "start": 186,
+        "end": 193,
+        "sha256": "0ad23f568b6f893ffed8e8e68b900f07dffa7fc5420e48cc06555e75443fa3b1"
       },
       "why": "Self-removal via the app leaves the original owned Team selected and checks its visible picker as well as exact persisted membership."
     },
@@ -96614,9 +96614,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-management.mjs",
-        "start": 137,
-        "end": 148,
-        "sha256": "d34af80379d714af48f546b4abbb8a1959c16843d13ef3cd28987d57711f18ad"
+        "start": 178,
+        "end": 189,
+        "sha256": "e8c09ae67fec6acdc09470f064e17f3f79a535ffceff10c31c2caae3608ccd89"
       },
       "why": "The real join form shows the Worker rejection with unchanged membership and then saves the expected viewer role through the same supported action."
     },
@@ -96634,9 +96634,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-management.mjs",
-        "start": 116,
-        "end": 135,
-        "sha256": "906a031680f673413e6b5006611b30f2f1ebc9a920cb5d1a2d4d4d1de643f349"
+        "start": 157,
+        "end": 176,
+        "sha256": "08f3856ceeb832d48bfb2c27807926b495567d11356a7f6d5f6636f3a609c53a"
       },
       "why": "Actual stored member actions and the native confirmation mutate only the tracked member after validation. Worker rows establish the mutation and cancellation invariants."
     },
@@ -96654,9 +96654,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-management.mjs",
-        "start": 80,
-        "end": 103,
-        "sha256": "e932b97c19eea1abe454c020f1c7c56f4705d58573a0f8699d364c4f5029fbc8"
+        "start": 121,
+        "end": 144,
+        "sha256": "3ff33923e12477b7a68834b54579a91ee82a772b8f3b9f4dc9ac7108fc63f50e"
       },
       "why": "The app form rejects a blank name, saves a trimmed name through real Team creation, and applies rename to the exact selected Team. Complete isolated Worker rows and roles are compared."
     },
@@ -96673,9 +96673,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-management.mjs",
-        "start": 116,
-        "end": 128,
-        "sha256": "3e1b69a0a11d2bf0ae695c173ff0087800e3beac3a75afa03aefc453a5be95a0"
+        "start": 157,
+        "end": 169,
+        "sha256": "92810a5958909ae589bcfba9845ed02ede4ab316b55caab33a6b70af8ca56d19"
       },
       "why": "The real app rejects wrong Team and member identities, preserves Worker state, and invokes the stored role action on the correct visible owner."
     },
@@ -98671,8 +98671,8 @@
       "id": "697a3568d34c766a",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 238,
-        "end": 244,
+        "start": 239,
+        "end": 245,
         "sha256": "670316272ac7e5906c037a1882487a3c53fd385fec1dfb91e3b75cb307436b80"
       },
       "actions": [
@@ -98771,8 +98771,8 @@
       "id": "f7777456308bd228",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 257,
-        "end": 270,
+        "start": 258,
+        "end": 271,
         "sha256": "2cae5c2308c0c8847b3b1a68c085908ff043b8a612ebb2656b794aaf9c4b8fa9"
       },
       "actions": [
@@ -98885,6 +98885,48 @@
         "sha256": "fc887a97998ccde219fe519c283ff7843f2214b41d7bcd24a5f6695afc107ae9"
       },
       "why": "After accepted history is verified and synced again, acknowledgement leaves the saved project and its original checkpoint bytes intact."
+    },
+    {
+      "id": "0bd23b4fb453301a",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TeamInvitation.swift",
+        "start": 8,
+        "end": 17,
+        "sha256": "4b30a0abd3866cd879b7400f5745508669fcea66189d490f338e108a5e532c9f"
+      },
+      "actions": [
+        "activate Join in Teams",
+        "text an invalid invitation link",
+        "activate team-operation-submit"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-management.mjs",
+        "start": 92,
+        "end": 104,
+        "sha256": "4da6156c7bc7c7cd32ed0f7831057e407a8661fec9c80644ed375ffe4405d1fa"
+      },
+      "why": "The Join form shows the specific URL and scheme validation errors and preserves the complete membership state."
+    },
+    {
+      "id": "ce53a111d2b66e5d",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TeamInvitation.swift",
+        "start": 23,
+        "end": 28,
+        "sha256": "b782e0c911d2b1fbedd13e2c5946879c1ef354a23dacd9293928f302ee06077f"
+      },
+      "actions": [
+        "activate Join in Teams",
+        "text an invitation link for the signed-in fixture server",
+        "activate team-operation-submit"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-management.mjs",
+        "start": 89,
+        "end": 118,
+        "sha256": "7a857de28e93b92015f65afbeaabfebb8d649627ec453d907f0c764bfb154270"
+      },
+      "why": "The Join form rejects a different server port and accepts a link on the configured server with exact viewer membership."
     }
   ],
   "commentExclusions": [
@@ -102876,7 +102918,7 @@
         "end": 134,
         "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
       },
-      "fileSha256": "7c576a1435bf204e12a2738ad9d218e52101fa7f0ead6d0361ee75baea55bdb2"
+      "fileSha256": "87996622cf33e8bd489f880275c8128a1802722d20357b4ba631480bbac7956a"
     },
     {
       "id": "58267d3510d79430",
@@ -102952,11 +102994,11 @@
       "id": "596df4c902f187da",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 280,
-        "end": 280,
+        "start": 281,
+        "end": 281,
         "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
       },
-      "fileSha256": "7c576a1435bf204e12a2738ad9d218e52101fa7f0ead6d0361ee75baea55bdb2"
+      "fileSha256": "87996622cf33e8bd489f880275c8128a1802722d20357b4ba631480bbac7956a"
     },
     {
       "id": "59c64d2ace520826",
@@ -104606,7 +104648,7 @@
         "end": 80,
         "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
       },
-      "fileSha256": "7c576a1435bf204e12a2738ad9d218e52101fa7f0ead6d0361ee75baea55bdb2"
+      "fileSha256": "87996622cf33e8bd489f880275c8128a1802722d20357b4ba631480bbac7956a"
     },
     {
       "id": "7e4a8f19915d9b4e",
@@ -105396,7 +105438,7 @@
         "end": 2,
         "sha256": "4ead8511821dcd95c2efee74b114bac02b04cb9252a4405b4149f9930c721b52"
       },
-      "fileSha256": "7c576a1435bf204e12a2738ad9d218e52101fa7f0ead6d0361ee75baea55bdb2"
+      "fileSha256": "87996622cf33e8bd489f880275c8128a1802722d20357b4ba631480bbac7956a"
     },
     {
       "id": "8e40d7512c7266e1",
@@ -108086,7 +108128,7 @@
         "end": 37,
         "sha256": "da22a6a09e9a6d7bbf1e35ecdac04e969fad1ac1a051025596a84831ff070202"
       },
-      "fileSha256": "7c576a1435bf204e12a2738ad9d218e52101fa7f0ead6d0361ee75baea55bdb2"
+      "fileSha256": "87996622cf33e8bd489f880275c8128a1802722d20357b4ba631480bbac7956a"
     },
     {
       "id": "c3fa07d2ab6ca6a5",

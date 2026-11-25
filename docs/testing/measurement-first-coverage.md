@@ -17,6 +17,15 @@ Use `tracer proposal bind` to classify reviewed plans that need a new scenario o
 a missing CLI action. Query retained measurements for the behavior before
 changing the scenario, then compare the passing union after each batch.
 
+For the signed native automation lane, pass
+`--file docs/testing/native-cli-coverage-plan.json` with the saved
+`--capabilities` and discovery catalog. The focused plan groups the signed
+runtime, WebRTC, GitHub sign-in and signed updater gaps by their production
+entry points. `decisions.queues` identifies the required environment or CLI
+action while the measured scope keeps those gaps in its denominator.
+`decisions.nativeBatch.argv` uses exact existing groups validated against the
+catalog. Revisit the restrictions when the build or isolation mode changes.
+
 With a source range and saved Scriv capabilities, `worklist` lists matching
 actions from passing captures in `recordedActions`. The selector in each
 row uses the exact discovered scenario. Pass its `actionArgs` back to the
@@ -110,6 +119,11 @@ history. After a successful recovery the case presents the same exact record
 again, like a restart after package commit and before journal acknowledgement.
 The second recovery clears the record and preserves the package and history
 bytes.
+
+The `invitation-link-formats` group of `journeys/native-team-management`
+submits five rejected formats and two supported links through Teams’ Join
+form. It checks the rejection messages, the exact synthetic viewer
+membership, the subsequent leave, and the saved project.
 
 The `empty-storyboard` group of `journeys/picture-coverage` imports a script
 with timed words and zero picture placements. It checks the shared words and

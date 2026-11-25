@@ -1,0 +1,471 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed-scenario-association-map",
+  "status": "model-proposed-unreviewed",
+  "scenarios": [
+    {
+      "id": "trusted-local-codex",
+      "title": "Connect a trusted local Codex runtime",
+      "featureId": "trusted-local-codex",
+      "state": "unwritten",
+      "existingPaths": [],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
+        "symbol": "checkConnection"
+      },
+      "actionIds": [
+        "activate"
+      ],
+      "plannedActions": [
+        "Connect and start Codex with an owned signed runtime and an isolated pairing identity."
+      ],
+      "expectedOutcomes": [
+        "Connection readiness, process ownership, and protocol replies come from the real signed companion."
+      ],
+      "restriction": "The current native lane uses an isolated loopback provider. Real helper and Keychain behavior require a separately isolated Mac identity with the verified signed companion. Companion-owned code needs its own instrumented capture."
+    },
+    {
+      "id": "webrtc-peer-transfer",
+      "title": "Fetch an image through WebRTC from another Mac",
+      "featureId": "webrtc-peer-transfer",
+      "state": "unwritten",
+      "existingPaths": [],
+      "entryPoint": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "symbol": "configurePeers"
+      },
+      "actionIds": [
+        "activate"
+      ],
+      "plannedActions": [
+        "Open an owned shared project on both peers and use Preview Fetch image to transfer the original."
+      ],
+      "expectedOutcomes": [
+        "The receiving Mac verifies the original byte digest and attaches the image to the intended project."
+      ],
+      "restriction": "The current signed CLI reports cloudIsolation.peerTransport disabled. WKWebView ICE networking needs an isolated WebRTC lane."
+    },
+    {
+      "id": "github-browser-sign-in",
+      "title": "Finish legacy GitHub sign-in in the browser",
+      "featureId": "github-browser-sign-in",
+      "state": "unwritten",
+      "existingPaths": [],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivSignInController.swift",
+        "symbol": "github"
+      },
+      "actionIds": [
+        "activate"
+      ],
+      "plannedActions": [
+        "Open Continue with GitHub and complete an authorized browser login for a dedicated account."
+      ],
+      "expectedOutcomes": [
+        "The app validates the original login request before publishing the authenticated account."
+      ],
+      "restriction": "The current signed CLI reports cloudIsolation.oauth disabled and the production ASWebAuthenticationSession starts outside the CLI transport policy."
+    },
+    {
+      "id": "signed-app-update",
+      "title": "Check and prepare a signed app update",
+      "featureId": "signed-app-update",
+      "state": "unwritten",
+      "existingPaths": [],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Updates/ScrivUpdateCoordinator.swift",
+        "symbol": "show"
+      },
+      "actionIds": [
+        "check-for-updates"
+      ],
+      "plannedActions": [
+        "From Check for Updates, use an isolated signed release fixture and exercise the real updater callbacks."
+      ],
+      "expectedOutcomes": [
+        "The signed updater reports its state and verifies saved projects before asking to relaunch."
+      ],
+      "restriction": "The retained automation app lacks a valid update signing key. The available CLI action reaches the check sheet; its signed Sparkle path needs a disposable signed update environment."
+    },
+    {
+      "id": "runtime-model-selection",
+      "title": "Select a Codex model in runtime Settings",
+      "featureId": "runtime-model-selection",
+      "state": "unwritten",
+      "existingPaths": [],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
+        "symbol": "updateRuntime modelButton UIAction"
+      },
+      "actionIds": [
+        "codex-model-selection"
+      ],
+      "plannedActions": [
+        "Add scoped CLI selection to the existing model menu, then select a different model while connected to the synthetic provider."
+      ],
+      "expectedOutcomes": [
+        "The existing model action changes the selected runtime model."
+      ]
+    },
+    {
+      "id": "team-invite-link-formats",
+      "title": "Join and leave a team using invitation links",
+      "featureId": "team-invite-link-formats",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/native-team-management.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
+        "symbol": "joinTeam"
+      },
+      "actionIds": [
+        "workspace-panels",
+        "activate",
+        "text",
+        "activate"
+      ],
+      "plannedActions": [
+        "Open Teams, submit several invalid and valid link formats through Join, then leave through its native confirmation."
+      ],
+      "expectedOutcomes": [
+        "Rejected links preserve membership; each legitimate invite creates only the synthetic viewer membership and leave removes it."
+      ],
+      "routeIds": [
+        "journeys/native-team-management/group/invitation-link-formats"
+      ]
+    }
+  ],
+  "associations": [
+    {
+      "rangeId": "trusted-local-codex-1",
+      "featureId": "trusted-local-codex",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/MacRuntimeBridge/MacRuntimeBridge.swift",
+        "start": 17,
+        "end": 209,
+        "fileSha256": "c7cfabb167413c943103cdcf5ea5729cbdd4ddd19146e1ba59bc55b5a1d00be5",
+        "spanSha256": "6682d274e67279da06cc6c54ad61ac9cbc41d282dca51f4f0c50f19ceb022df6",
+        "sha256": "740b34dbe072665c8b11c097b841b1be5999ee198c94ed1c467e1e6fa3f67cad"
+      },
+      "scenarioIds": [
+        "trusted-local-codex"
+      ],
+      "rationale": "Connect and start Codex with an owned signed runtime and an isolated pairing identity.",
+      "confidence": "high",
+      "uncertainty": "The current native lane uses an isolated loopback provider. Real helper and Keychain behavior require a separately isolated Mac identity with the verified signed companion. Companion-owned code needs its own instrumented capture.",
+      "proposedAssertions": [
+        "Connection readiness, process ownership, and protocol replies come from the real signed companion."
+      ]
+    },
+    {
+      "rangeId": "trusted-local-codex-2",
+      "featureId": "trusted-local-codex",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/RuntimeBridgeBootstrap.swift",
+        "start": 5,
+        "end": 116,
+        "fileSha256": "070b39796c79749ab88aed7460f06dcfe08b7ceda0253c56516f611daddfec2d",
+        "spanSha256": "88da5a4bb496b21d9ad1044c922ba07de85581ae24ac85e2f74b8b1bb00fae32",
+        "sha256": "580dfa9643e635fb6fc9497756c59689117a953c14b0dd15b579e80d9cc245de"
+      },
+      "scenarioIds": [
+        "trusted-local-codex"
+      ],
+      "rationale": "Connect and start Codex with an owned signed runtime and an isolated pairing identity.",
+      "confidence": "high",
+      "uncertainty": "The current native lane uses an isolated loopback provider. Real helper and Keychain behavior require a separately isolated Mac identity with the verified signed companion. Companion-owned code needs its own instrumented capture.",
+      "proposedAssertions": [
+        "Connection readiness, process ownership, and protocol replies come from the real signed companion."
+      ]
+    },
+    {
+      "rangeId": "trusted-local-codex-3",
+      "featureId": "trusted-local-codex",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/RuntimeBridgeEnvelope.swift",
+        "start": 5,
+        "end": 160,
+        "fileSha256": "f07188262e54bbccbcace01d64ac115c0bdda8d7169e07112224a356186a8148",
+        "spanSha256": "03f129b266d7f7fcb164af61063b5e92ba0a6519b4d581796c7225612ef48572",
+        "sha256": "0cf3cc9c6e7fd0f15dfbfe3e9c5afcb9ddc27c0aea7e81877e22e34ac3b10f15"
+      },
+      "scenarioIds": [
+        "trusted-local-codex"
+      ],
+      "rationale": "Connect and start Codex with an owned signed runtime and an isolated pairing identity.",
+      "confidence": "high",
+      "uncertainty": "The current native lane uses an isolated loopback provider. Real helper and Keychain behavior require a separately isolated Mac identity with the verified signed companion. Companion-owned code needs its own instrumented capture.",
+      "proposedAssertions": [
+        "Connection readiness, process ownership, and protocol replies come from the real signed companion."
+      ]
+    },
+    {
+      "rangeId": "trusted-local-codex-4",
+      "featureId": "trusted-local-codex",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivRuntimeBootstrapCoordinator.swift",
+        "start": 7,
+        "end": 70,
+        "fileSha256": "d99f33bd9ffe7d652d190622f773e580bb97f6f305d51f457cd076e530601b27",
+        "spanSha256": "53384e489f68f464f378d996e7b6ba00509971da8df7929297057829a1ef62d2",
+        "sha256": "200bf0be6c7aa83f8094be5ad3a82af7f81ea8955317458fd9e93c6fdb2cc29c"
+      },
+      "scenarioIds": [
+        "trusted-local-codex"
+      ],
+      "rationale": "Connect and start Codex with an owned signed runtime and an isolated pairing identity.",
+      "confidence": "high",
+      "uncertainty": "The current native lane uses an isolated loopback provider. Real helper and Keychain behavior require a separately isolated Mac identity with the verified signed companion. Companion-owned code needs its own instrumented capture.",
+      "proposedAssertions": [
+        "Connection readiness, process ownership, and protocol replies come from the real signed companion."
+      ]
+    },
+    {
+      "rangeId": "trusted-local-codex-5",
+      "featureId": "trusted-local-codex",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 250,
+        "end": 270,
+        "fileSha256": "5f1d0a1c57b4f31fa307bf2d80b1cbbfe05b84b786364179ee7a0aeae3304516",
+        "spanSha256": "87642a13c3f978cb12c64be2e9b4b6014dd73c2896093d93cf5c0bdf4a8f8c4a",
+        "sha256": "8414aec9065bf4fc79bf2977ede8201ac33dbf78bccb56e2fb6dd2ef8dc81f1b"
+      },
+      "scenarioIds": [
+        "trusted-local-codex"
+      ],
+      "rationale": "Connect and start Codex with an owned signed runtime and an isolated pairing identity.",
+      "confidence": "high",
+      "uncertainty": "The current native lane uses an isolated loopback provider. Real helper and Keychain behavior require a separately isolated Mac identity with the verified signed companion. Companion-owned code needs its own instrumented capture.",
+      "proposedAssertions": [
+        "Connection readiness, process ownership, and protocol replies come from the real signed companion."
+      ]
+    },
+    {
+      "rangeId": "trusted-local-codex-6",
+      "featureId": "trusted-local-codex",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 294,
+        "end": 312,
+        "fileSha256": "5f1d0a1c57b4f31fa307bf2d80b1cbbfe05b84b786364179ee7a0aeae3304516",
+        "spanSha256": "c637167341d50c83ab1cf19c1449157d6b87fe726e25704af92a252c0903d946",
+        "sha256": "35b745ebcf8e40053c89dfbd49cf3ee3b3493554fb9fccc0eede163653c381da"
+      },
+      "scenarioIds": [
+        "trusted-local-codex"
+      ],
+      "rationale": "Connect and start Codex with an owned signed runtime and an isolated pairing identity.",
+      "confidence": "high",
+      "uncertainty": "The current native lane uses an isolated loopback provider. Real helper and Keychain behavior require a separately isolated Mac identity with the verified signed companion. Companion-owned code needs its own instrumented capture.",
+      "proposedAssertions": [
+        "Connection readiness, process ownership, and protocol replies come from the real signed companion."
+      ]
+    },
+    {
+      "rangeId": "webrtc-peer-transfer-1",
+      "featureId": "webrtc-peer-transfer",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/InternetPeerMedia.swift",
+        "start": 31,
+        "end": 167,
+        "fileSha256": "196057094490cc9280e8257b324d2ce45204af70441c076e6ef7733f2b92fafd",
+        "spanSha256": "661ba07903d97dc2a4a2d5b094d4477789941da7104838b84cd99de650c26156",
+        "sha256": "f425c0328906af334f74a9ce84fedb911efd2af6f4ce0946f8896e917e55d50b"
+      },
+      "scenarioIds": [
+        "webrtc-peer-transfer"
+      ],
+      "rationale": "Open an owned shared project on both peers and use Preview Fetch image to transfer the original.",
+      "confidence": "high",
+      "uncertainty": "The current signed CLI reports cloudIsolation.peerTransport disabled. WKWebView ICE networking needs an isolated WebRTC lane.",
+      "proposedAssertions": [
+        "The receiving Mac verifies the original byte digest and attaches the image to the intended project."
+      ]
+    },
+    {
+      "rangeId": "webrtc-peer-transfer-2",
+      "featureId": "webrtc-peer-transfer",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 2526,
+        "end": 2537,
+        "fileSha256": "d22be0e9ec8cf602c8e7811403515ed51a987ad0ae320a4242b2a46ba54919cb",
+        "spanSha256": "f6c150cb897cc7df8a49d24a5d2ff4641e5226dc8d5c35a294f4e5a3d61d20a5",
+        "sha256": "de9e3d2dc19bc83a2a527138e60c83b25cd3c4396c4a5a1c28a7ad924b97463e"
+      },
+      "scenarioIds": [
+        "webrtc-peer-transfer"
+      ],
+      "rationale": "Open an owned shared project on both peers and use Preview Fetch image to transfer the original.",
+      "confidence": "high",
+      "uncertainty": "The current signed CLI reports cloudIsolation.peerTransport disabled. WKWebView ICE networking needs an isolated WebRTC lane.",
+      "proposedAssertions": [
+        "The receiving Mac verifies the original byte digest and attaches the image to the intended project."
+      ]
+    },
+    {
+      "rangeId": "github-browser-sign-in-1",
+      "featureId": "github-browser-sign-in",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 269,
+        "end": 300,
+        "fileSha256": "4c963481c2fbaf862f48fddf1921a5b8b7e4861714e67d8371c88352ee3a8017",
+        "spanSha256": "c0ae3b6b0becba647c5fc661c3f17f8eec5c1eec8cc1df8006daa07a20abc4fd",
+        "sha256": "ab51f1a613ddf6e77519cb3b86f59f1c725cfe45d429935ac50340c9631c5032"
+      },
+      "scenarioIds": [
+        "github-browser-sign-in"
+      ],
+      "rationale": "Open Continue with GitHub and complete an authorized browser login for a dedicated account.",
+      "confidence": "high",
+      "uncertainty": "The current signed CLI reports cloudIsolation.oauth disabled and the production ASWebAuthenticationSession starts outside the CLI transport policy.",
+      "proposedAssertions": [
+        "The app validates the original login request before publishing the authenticated account."
+      ]
+    },
+    {
+      "rangeId": "signed-app-update-1",
+      "featureId": "signed-app-update",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Updates/ScrivUpdateCoordinator.swift",
+        "start": 38,
+        "end": 95,
+        "fileSha256": "9598abf65a4b42879ab5f258a78d1467de176e0c6c5a366dbbf6fdddce613ae0",
+        "spanSha256": "71fd1eb57b74d77a0f58ceac835c80be3545194f84af2fcfd5c5eca88202a311",
+        "sha256": "4fa15047553ee2e73b06fe02225a6575745a71e61fc11781762450cfc1aea0d8"
+      },
+      "scenarioIds": [
+        "signed-app-update"
+      ],
+      "rationale": "From Check for Updates, use an isolated signed release fixture and exercise the real updater callbacks.",
+      "confidence": "high",
+      "uncertainty": "The retained automation app lacks a valid update signing key. The available CLI action reaches the check sheet; its signed Sparkle path needs a disposable signed update environment.",
+      "proposedAssertions": [
+        "The signed updater reports its state and verifies saved projects before asking to relaunch."
+      ]
+    },
+    {
+      "rangeId": "signed-app-update-2",
+      "featureId": "signed-app-update",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Updates/ScrivUpdatePresentationHandoff.swift",
+        "start": 9,
+        "end": 35,
+        "fileSha256": "d981f7cc24c995b03d29e1b38b1ac6e70c283307f0698870f65092757248ceeb",
+        "spanSha256": "9c563542ab2575dffd380b7bd1a30795fced2e6260b6ffc8bfa1e759aa9abb92",
+        "sha256": "8e7ae3a59b89a083c28ea7f93e1e9bb9182510310bcb44cb828cb3a334d8d6d5"
+      },
+      "scenarioIds": [
+        "signed-app-update"
+      ],
+      "rationale": "From Check for Updates, use an isolated signed release fixture and exercise the real updater callbacks.",
+      "confidence": "high",
+      "uncertainty": "The retained automation app lacks a valid update signing key. The available CLI action reaches the check sheet; its signed Sparkle path needs a disposable signed update environment.",
+      "proposedAssertions": [
+        "The signed updater reports its state and verifies saved projects before asking to relaunch."
+      ]
+    },
+    {
+      "rangeId": "runtime-model-selection-1",
+      "featureId": "runtime-model-selection",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
+        "start": 173,
+        "end": 176,
+        "fileSha256": "fda261dbdf9237c8cf9577e0cb8471c1ce8ecf13b48d2e38a5f02ae0cba6808d",
+        "spanSha256": "63301ae353dd73aed8502c8910a17e65a4c8d475bdcb7a84527d852a96dd340b",
+        "sha256": "c6dcd187b963a805fab438a389eb898194219aa3faa9121d9ab135bdbbe050c6"
+      },
+      "scenarioIds": [
+        "runtime-model-selection"
+      ],
+      "rationale": "Add scoped CLI selection to the existing model menu, then select a different model while connected to the synthetic provider.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The existing model action changes the selected runtime model."
+      ]
+    },
+    {
+      "rangeId": "team-invite-link-formats-1",
+      "featureId": "team-invite-link-formats",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TeamInvitation.swift",
+        "start": 8,
+        "end": 28,
+        "fileSha256": "e5c0cd0b5c185b012365a80a2b8dbdc1542fe299b40a47d0e6714c6466bd2639",
+        "spanSha256": "dc0a7a9988eb833ccf6dac99a1e742775e8f5e5f74d855a0580e561e2c60a989",
+        "sha256": "fed58265ce0d8999931ce1a65a5400bbd49362e15700303dd4916000d254d228"
+      },
+      "scenarioIds": [
+        "team-invite-link-formats"
+      ],
+      "rationale": "Open Teams, submit several invalid and valid link formats through Join, then leave through its native confirmation.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "Rejected links preserve membership; each legitimate invite creates only the synthetic viewer membership and leave removes it."
+      ]
+    },
+    {
+      "rangeId": "team-invite-link-formats-2",
+      "featureId": "team-invite-link-formats",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TeamInvitation.swift",
+        "start": 30,
+        "end": 34,
+        "fileSha256": "e5c0cd0b5c185b012365a80a2b8dbdc1542fe299b40a47d0e6714c6466bd2639",
+        "spanSha256": "f7fb5262301a680c4f0a32f66de9f5d2b4e44a3c08ab261026871893d55fe5e9",
+        "sha256": "c282fe95349e07dda0358fb14f5fd0bc80684820c3dbb3dcc0f91ae5f29c7500"
+      },
+      "scenarioIds": [
+        "team-invite-link-formats"
+      ],
+      "rationale": "Open Teams, submit several invalid and valid link formats through Join, then leave through its native confirmation.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "Rejected links preserve membership; each legitimate invite creates only the synthetic viewer membership and leave removes it."
+      ]
+    },
+    {
+      "rangeId": "team-invite-link-formats-3",
+      "featureId": "team-invite-link-formats",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/TeamInvitation.swift",
+        "start": 40,
+        "end": 42,
+        "fileSha256": "e5c0cd0b5c185b012365a80a2b8dbdc1542fe299b40a47d0e6714c6466bd2639",
+        "spanSha256": "850fa28357a5d0b25da04aafc4bd5e5707b807577f7cd6af281195ae5c110e8d",
+        "sha256": "05d2eec7cd501e2a6fb4bfb8cc9126d0b96604fe738952741e13ff3fb5692f74"
+      },
+      "scenarioIds": [
+        "team-invite-link-formats"
+      ],
+      "rationale": "Open Teams, submit several invalid and valid link formats through Join, then leave through its native confirmation.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "Rejected links preserve membership; each legitimate invite creates only the synthetic viewer membership and leave removes it."
+      ]
+    }
+  ]
+}
