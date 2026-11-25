@@ -82,6 +82,8 @@ export async function startNativeCloudFixture() {
       sessionStates: () => response('session-states'),
       revokeOnlyAppSession: () => response('revoke-only-app-session'),
       primeOwnedEmailQuota: () => response('prime-owned-email-quota'),
+      armEmailRequestRedirect: () => response('arm-email-request-redirect'),
+      emailRequestRedirectState: () => response('email-request-redirect-state'),
       refuseNextLogout: () => response('refuse-next-logout'),
       loseNextEditReceipt: projectId => response(['lose-edit-receipt', projectId]),
       editReceiptState: () => response('edit-receipt-state'),
@@ -168,6 +170,7 @@ async function startWorker(root) {
       let target;
       let pending;
       let logoutRefusal;
+      let emailRequestRedirect;
       let receipt;
       let attempts = 0;
       let interruption;
@@ -216,6 +219,14 @@ async function startWorker(root) {
         async fetch(request) {
           const upstream = () => worker.fetch(request, this.env, this.ctx);
           const { pathname: path, searchParams } = new URL(request.url);
+          if (emailRequestRedirect && path === '/auth/email/verify' && searchParams.has('fixture-redirect')) {
+            emailRequestRedirect.destinationRequests++;
+            return new Response(null, { status: 400 });
+          }
+          if (emailRequestRedirect?.phase === 'armed' && path === '/auth/email/request' && request.method === 'POST') {
+            emailRequestRedirect.phase = 'returned';
+            return new Response(null, { status: 307, headers: { Location: '/auth/email/verify?fixture-redirect=1' } });
+          }
           if (importSnapshot && request.headers.has('authorization')) {
             const state = importSnapshot;
             if (request.method === 'GET' && path === state.path + '/snapshot' && !searchParams.size) {
@@ -600,6 +611,12 @@ async function startWorker(root) {
           return true;
         }
         discussionMemberPageState() { return discussionPages.members; }
+        armEmailRequestRedirect() {
+          if (emailRequestRedirect) throw new Error('Use one owned email redirect');
+          emailRequestRedirect = { phase: 'armed', destinationRequests: 0 };
+          return true;
+        }
+        emailRequestRedirectState() { return emailRequestRedirect; }
         armReplayPage({ projectId, mode }) {
           if (!/^[a-f0-9-]{36}$/i.test(projectId) || !['ahead-of-cursor', 'empty-with-more'].includes(mode)
               || replayPage?.requests.length === 0) throw new Error('Choose one owned replay-page condition');
@@ -1070,6 +1087,8 @@ async function startWorker(root) {
       },
       status: async () => ({ deliveries: await mailbox.count(), outbound }),
       refuseNextLogout: () => nativeWorker.refuseNextLogout(),
+      armEmailRequestRedirect: () => nativeWorker.armEmailRequestRedirect(),
+      emailRequestRedirectState: () => nativeWorker.emailRequestRedirectState(),
       loseEditReceipt: projectId => nativeWorker.loseEditReceipt(projectId),
       editReceiptState: () => nativeWorker.editReceiptState(),
       matchesPendingEdit: payload => nativeWorker.matchesPendingEdit(payload),
@@ -1131,6 +1150,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'session-states': worker.sessionStates, 'refuse-next-logout': worker.refuseNextLogout,
         'create-empty-cloud-copy': worker.createEmptyCloudCopy, 'empty-cloud-copy': worker.emptyCloudCopy,
         'revoke-only-app-session': worker.revokeOnlyAppSession, 'prime-owned-email-quota': worker.primeOwnedEmailQuota,
+        'arm-email-request-redirect': worker.armEmailRequestRedirect, 'email-request-redirect-state': worker.emailRequestRedirectState,
         'lose-edit-receipt': worker.loseEditReceipt,
         'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit,
         'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState,

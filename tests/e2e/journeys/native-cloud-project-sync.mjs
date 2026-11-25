@@ -28,6 +28,14 @@ if (args.length === 1 && args[0] === '--list-cases') {
       } }],
     'lease-renewal': [{ ...editLine, condition: 'lease-available' }],
     'lease-contention': [{ ...editLine, condition: 'lease-held-by-peer' }],
+    'sign-in-recovery': [{ id: 'request-email-sign-in-code', command: 'activate', trigger: 'Continue with email',
+      condition: 'owned-email-request-returns-a-redirect', entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/Account/ScrivSignInController.swift', start: 108, end: 108,
+        sha256: '03448a0a9fc8f287bc5d14e5eb3e0274f2bdc64be8abb92ac4b2efa7670dd6f5',
+      }, branch: {
+        path: 'apps/mac/Sources/ScrivApp/Services/CloudClient.swift', start: 1005, end: 1005,
+        sha256: 'fe42fedab010e3e0c58efb08a43f5f4de213d180100886d208e2c833715c0abe',
+      } }],
     'discussion-pages': [{ id: 'open-project-discussion', command: 'menu-action', trigger: 'workspace-discussion',
       condition: 'thread-messages-span-two-pages', entryPoint: {
         path: 'apps/catalyst/ScrivUIKit/App/ScrivWorkspaceController.swift', start: 130, end: 130,
@@ -740,12 +748,30 @@ async function verifyEmptyCloudReconnect(original, { staleSnapshot }) {
 }
 
 async function verifySignInRecovery() {
+  async function openLocalScript() {
+    session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
+    assert.equal((await session.command('capabilities')).cloudIsolation.network, 'loopback-only');
+    await control(workspaceProject);
+    await session.command('key', { input: 's', modifiers: ['command'] });
+    return waitForSavedProject(session, project => project.title === 'YAM MAN');
+  }
+
+  step = 'refuse a sign-in redirect before an email code is delivered';
+  const redirected = await openLocalScript();
+  assert.equal(await fixture.armEmailRequestRedirect(), true);
+  await requestSignInCode();
+  await session.waitFor(nodes => nodes.some(node => node.text === 'Cloud request failed (307).')
+    && nodes.some(node => node.title?.startsWith('Try again in ') && node.enabled === false));
+  assert.deepEqual(await fixture.emailRequestRedirectState(), { phase: 'returned', destinationRequests: 0 });
+  assert.equal(await fixture.deliveries(), 0);
+  assert.deepEqual(await fixture.sessionStates(), []);
+  assert.deepEqual(await session.command('persisted-projects'), [redirected]);
+  assert.ok(!(await session.command('snapshot')).some(node => node.text === 'Check your email'));
+  await session.close();
+  session = null;
+
   step = 'show an incorrect-code response and preserve the local script';
-  session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
-  assert.equal((await session.command('capabilities')).cloudIsolation.network, 'loopback-only');
-  await control(workspaceProject);
-  await session.command('key', { input: 's', modifiers: ['command'] });
-  const before = await waitForSavedProject(session, project => project.title === 'YAM MAN');
+  const before = await openLocalScript();
   await requestSignInCode();
   await session.waitFor(nodes => nodes.some(node => node.text === 'Check your email'));
   const code = await fixture.takeCode();
@@ -762,10 +788,7 @@ async function verifySignInRecovery() {
   session = null;
 
   step = 'sign in with a fresh owned challenge';
-  session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
-  await control(workspaceProject);
-  await session.command('key', { input: 's', modifiers: ['command'] });
-  const saved = await waitForSavedProject(session, project => project.title === 'YAM MAN');
+  const saved = await openLocalScript();
   await signIn(2);
   await click('Close Projects', true);
   await session.waitFor(nodes => nodes.some(node => node.text?.endsWith(' · Signed in')));
