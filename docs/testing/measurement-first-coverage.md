@@ -375,6 +375,12 @@ After rebuilding for a retirement, pass the previous and new analysis roots to
 the reported reference scopes separately from passing-line gains. Recapture
 changed files and preserve the old build's evidence.
 
+Use `worklist --replay` with current discovery, the new reference root and a
+capture set containing the earlier observations. The Tracer worklist returns
+deduplicated `--case` arguments under `replayCandidates.batches.session.argv`
+and `replayCandidates.batches.startup.argv`. Review each batch, append the
+matching signed build and capture options, and run the modes separately.
+
 ## Required first lookup
 
 Before proposing more scenarios or estimating which code is covered, query the

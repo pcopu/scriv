@@ -51,8 +51,8 @@ if (args.length === 1 && args[0] === '--list-cases') {
         path: 'apps/catalyst/ScrivUIKit/Discussion/ScrivDiscussionController.swift', start: 183, end: 183,
         sha256: 'b0bd0c07d1d0691f7f926051b017887a10166d385974af4565ab6668da7fcfbf',
       }, branch: {
-        path: 'apps/mac/Sources/ScrivApp/Services/CloudClient.swift', start: 912, end: 915,
-        sha256: 'e833c9079bcecb03365b1ac001a692389c5c89ba103e21125e69e36efa7fe65d',
+        path: 'apps/mac/Sources/ScrivApp/Services/CloudClient.swift', start: 912, end: 912,
+        sha256: '0054422af27b8d43e83e339acbd71844787b73f33adfdae04f04e076dfab3a8e',
       } }],
     'reconnect-stale-import-snapshot': [{ ...openLinkedProject, condition: 'initial-import-snapshot-arrives-after-background-replay' }],
     'replay-page-guards': ['final-replay-page-ahead-of-cursor', 'background-replay-receives-empty-page-with-more-events'].map(condition => ({

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { ScrivSession } from '../../../cli/scriv.mjs';
+import { observePresentedAlert } from '../support/presented-error.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { audioLibrarySteps } from './support/audio-library-steps.mjs';
 import { nativeFixtureEmail, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
@@ -44,6 +45,12 @@ try {
   }
   const waitButton = match => session.waitFor(nodes => nodes.filter(node => match(node) && ready(node)).length === 1);
   const selectedTeam = name => waitButton(button(name));
+  async function openTeams() {
+    const workspaceActions = node => node.label === 'Workspace actions' && ready(node);
+    const nodes = await waitButton(workspaceActions);
+    assert.deepEqual(await session.command('menu-action', { scope: 'workspace-panels', action: 'Teams and sharing…',
+      target: nodes.find(workspaceActions).path }), dispatched);
+  }
   const action = id('team-operation-submit');
   const cancel = id('team-operation-cancel');
   async function form(title, stimulus) {
@@ -77,9 +84,7 @@ try {
   await click(button('Sign in with code'), 1000);
   await click(button('Close Projects'), 1000);
 
-  const nodes = await waitButton(node => node.label === 'Workspace actions');
-  const opener = nodes.find(node => node.label === 'Workspace actions' && ready(node));
-  assert.deepEqual(await session.command('menu-action', { scope: 'workspace-panels', action: 'Teams and sharing…', target: opener.path }), dispatched);
+  await openTeams();
   await session.waitFor(present('Make room for collaborators'));
   const original = await teamsState();
   assert.ok(original.selfID);
@@ -197,6 +202,26 @@ try {
   assert.deepEqual(await session.command('loaded-project'), loadedBefore);
   assert.deepEqual(await session.command('persisted-projects'), [packageBefore]);
   assert.deepEqual(await fixture.projectTeams(), []);
+  if (!invitationFormats) {
+    const beforeCheckout = await teamsState();
+    const freeTeam = beforeCheckout.teams.find(team => team.name === 'Synthetic renamed Team');
+    assert.equal(freeTeam?.status, 'free');
+    assert.ok(beforeCheckout.members.some(member => member.teamID === freeTeam.id
+      && member.memberID === beforeCheckout.selfID && member.role === 'owner'));
+    await openTeams();
+    await selectedTeam(freeTeam.name);
+    await ui.activate(button('Subscribe…'));
+    await observePresentedAlert(session, {
+      title: 'Open Team subscription checkout?',
+      message: '$9.99/month for the whole team, with no per-seat charge. Checkout opens in your browser; this button does not complete a payment.',
+      actions: [
+        { title: 'Cancel', style: 'cancel', enabled: true },
+        { title: 'Open checkout', style: 'default', enabled: true },
+      ],
+    });
+    assert.deepEqual(await teamsState(), beforeCheckout);
+    assert.deepEqual(await session.command('persisted-projects'), [packageBefore]);
+  }
   await fixture.assertNoOutbound();
 } finally {
   try { await session?.close(); }

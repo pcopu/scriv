@@ -3186,6 +3186,26 @@
       "why": "The in-process UIKit route refuses a non-button target without changing the app, packages or alerts"
     },
     {
+      "id": "637915b09452460a",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
+        "start": 364,
+        "end": 368,
+        "sha256": "868d19f8ef820de65fbf4965b9fd010adae67b7fbfc2fa11ee823dede3148319"
+      },
+      "actions": [
+        "scriv activate Subscribe…",
+        "scriv presented-alerts"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-management.mjs",
+        "start": 205,
+        "end": 225,
+        "sha256": "457ef84b5b035cb6713b1c4a1add8a2abf75f1a4ff5c2fd80a2d2b0797511ee1"
+      },
+      "why": "The owned free team opens the real confirmation with both choices. The Team data and saved project remain exact and outbound requests stay at zero."
+    },
+    {
       "id": "6a6ba1115104c72a",
       "source": {
         "path": "scripts/compact-cli-archive.mjs",
@@ -3505,6 +3525,26 @@
         "sha256": "7c095871a5893fa994960f883c01506799a49b4b677cc9dd873904a314796a27"
       },
       "why": "Return requires the focused editable text view without composition and leaves the owned project unchanged"
+    },
+    {
+      "id": "b35a806b7cad7063",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
+        "start": 371,
+        "end": 372,
+        "sha256": "b59579cd283433b8946e0726578f9d035a40ed636577f916e2378cf1a7b8847c"
+      },
+      "actions": [
+        "scriv activate Subscribe…",
+        "scriv presented-alerts"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-management.mjs",
+        "start": 205,
+        "end": 225,
+        "sha256": "457ef84b5b035cb6713b1c4a1add8a2abf75f1a4ff5c2fd80a2d2b0797511ee1"
+      },
+      "why": "The owned free team opens the real confirmation with both choices. The Team data and saved project remain exact and outbound requests stay at zero."
     },
     {
       "id": "b4aba535b0f0e334",
@@ -97540,8 +97580,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-management.mjs",
-        "start": 186,
-        "end": 193,
+        "start": 191,
+        "end": 198,
         "sha256": "0ad23f568b6f893ffed8e8e68b900f07dffa7fc5420e48cc06555e75443fa3b1"
       },
       "why": "Self-removal via the app leaves the original owned Team selected and checks its visible picker as well as exact persisted membership."
@@ -97559,8 +97599,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-management.mjs",
-        "start": 178,
-        "end": 189,
+        "start": 183,
+        "end": 194,
         "sha256": "e8c09ae67fec6acdc09470f064e17f3f79a535ffceff10c31c2caae3608ccd89"
       },
       "why": "The real join form shows the Worker rejection with unchanged membership and then saves the expected viewer role through the same supported action."
@@ -97579,8 +97619,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-management.mjs",
-        "start": 157,
-        "end": 176,
+        "start": 162,
+        "end": 181,
         "sha256": "08f3856ceeb832d48bfb2c27807926b495567d11356a7f6d5f6636f3a609c53a"
       },
       "why": "Actual stored member actions and the native confirmation mutate only the tracked member after validation. Worker rows establish the mutation and cancellation invariants."
@@ -97599,8 +97639,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-management.mjs",
-        "start": 121,
-        "end": 144,
+        "start": 126,
+        "end": 149,
         "sha256": "3ff33923e12477b7a68834b54579a91ee82a772b8f3b9f4dc9ac7108fc63f50e"
       },
       "why": "The app form rejects a blank name, saves a trimmed name through real Team creation, and applies rename to the exact selected Team. Complete isolated Worker rows and roles are compared."
@@ -97618,8 +97658,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-management.mjs",
-        "start": 157,
-        "end": 169,
+        "start": 162,
+        "end": 174,
         "sha256": "92810a5958909ae589bcfba9845ed02ede4ab316b55caab33a6b70af8ca56d19"
       },
       "why": "The real app rejects wrong Team and member identities, preserves Worker state, and invokes the stored role action on the correct visible owner."
@@ -99846,8 +99886,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-management.mjs",
-        "start": 92,
-        "end": 104,
+        "start": 97,
+        "end": 109,
         "sha256": "4da6156c7bc7c7cd32ed0f7831057e407a8661fec9c80644ed375ffe4405d1fa"
       },
       "why": "The Join form shows the specific URL and scheme validation errors and preserves the complete membership state."
@@ -99867,8 +99907,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-management.mjs",
-        "start": 89,
-        "end": 118,
+        "start": 94,
+        "end": 123,
         "sha256": "7a857de28e93b92015f65afbeaabfebb8d649627ec453d907f0c764bfb154270"
       },
       "why": "The Join form rejects a different server port and accepts a link on the configured server with exact viewer membership."
