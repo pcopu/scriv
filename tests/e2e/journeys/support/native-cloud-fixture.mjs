@@ -15,7 +15,7 @@ export const interruptedCloudEdit = 'The connection was interrupted before savin
 export const invitationLoadFailure = 'Invitation details were temporarily unavailable.';
 export const invitationRevokeFailure = 'The invitation could not be revoked. Try again.';
 
-export async function startNativeCloudFixture() {
+export async function startNativeCloudFixture({ billingWithoutCustomer = false } = {}) {
   const require = createRequire(join(cloud, 'package.json'));
   const dependencies = dirname(dirname(require.resolve('miniflare/package.json')));
   const root = await realpath(await mkdtemp(join(tmpdir(), 'scriv-native-cloud-')));
@@ -34,7 +34,7 @@ export async function startNativeCloudFixture() {
     for (const name of ['home', 'state', 'tmp']) await mkdir(join(root, name), { mode: 0o700 });
     // Workerd inherits process configuration. Use the same isolated environment
     // as the service journeys, with only the verified dependency search path.
-    child = fork(fileURLToPath(import.meta.url), ['--owned-worker', root], {
+    child = fork(fileURLToPath(import.meta.url), ['--owned-worker', root, ...(billingWithoutCustomer ? ['billing-without-customer'] : [])], {
       cwd: root, execArgv: [], stdio: ['ignore', 'ignore', 'inherit', 'ipc'],
       env: { PATH: dirname(process.execPath), HOME: join(root, 'home'), TMPDIR: join(root, 'tmp'),
         XDG_CONFIG_HOME: join(root, 'home'), XDG_CACHE_HOME: join(root, 'home'),
@@ -120,6 +120,7 @@ export async function startNativeCloudFixture() {
       prepareInvitations: () => response('prepare-invitations'),
       interruptInvitationLoad: () => response('interrupt-invitation-load'),
       invitationState: () => response('invitation-state'),
+      billingPortalState: () => response('billing-portal-state'),
       prepareTeamManagement: () => response('prepare-team-management'),
       addTeamManagementMember: teamId => response(['add-team-management-member', teamId]),
       teamManagementState: () => response('team-management-state'),
@@ -137,7 +138,7 @@ export async function startNativeCloudFixture() {
   } catch (error) { await close(); throw error; }
 }
 
-async function startWorker(root) {
+async function startWorker(root, billingWithoutCustomer) {
   assert.equal(await realpath(process.cwd()), root);
   assert.equal(process.env.HOME, join(root, 'home'));
   const require = createRequire(join(cloud, 'package.json'));
@@ -179,6 +180,7 @@ async function startWorker(root) {
       let hostedImagePath;
       const hostedImageResponses = [];
       let invitations;
+      const billingPortal = { requests: [], accountRefreshes: 0, teamRefreshes: 0 };
       let history;
       let replayPage;
       let importSnapshot;
@@ -221,6 +223,16 @@ async function startWorker(root) {
         async fetch(request) {
           const upstream = () => worker.fetch(request, this.env, this.ctx);
           const { pathname: path, searchParams } = new URL(request.url);
+          if (${billingWithoutCustomer} && path.includes('/billing/')) {
+            if (path !== invitations?.teamPath + '/billing/portal' || request.method !== 'POST') throw new Error('Expected only the owned billing portal request');
+            const response = await upstream();
+            billingPortal.requests.push({ status: response.status, code: (await response.clone().json()).error?.code });
+            return response;
+          }
+          if (${billingWithoutCustomer} && billingPortal.requests.length && request.method === 'GET') {
+            if (path === '/v1/me') billingPortal.accountRefreshes++;
+            if (path === invitations?.teamPath) billingPortal.teamRefreshes++;
+          }
           if (emailRequestRedirect && path === '/auth/email/verify' && searchParams.has('fixture-redirect')) {
             emailRequestRedirect.destinationRequests++;
             return new Response(null, { status: 400 });
@@ -603,6 +615,7 @@ async function startWorker(root) {
           return true;
         }
         invitationRequests() { return { interruptedLoads: invitations.interruptedLoads, revocations: [...invitations.revocations] }; }
+        billingPortalRequests() { return billingPortal; }
         watchDiscussionPages(path, threadID) {
           if (discussionPages) throw new Error('Use a single owned discussion directory');
           discussionPages = { path, requests: [], messagePath: path + '/' + threadID + '/messages', messageRequests: [],
@@ -674,7 +687,9 @@ async function startWorker(root) {
       log: new Log(LogLevel.ERROR), resourcePersistencePath: join(root, 'state'), resourceTmpPath: join(root, 'tmp'),
       workers: [{ ...common, name: 'scriv', modulesRoot: root,
         modules: [{ type: 'ESModule', path: harness }, { type: 'ESModule', path: bundle }],
-        bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', EMAIL_FROM: 'sender@example.invalid' },
+        bindings: { PUBLIC_URL: 'http://127.0.0.1', ENVIRONMENT: 'test', EMAIL_FROM: 'sender@example.invalid',
+          // The owned Worker can reach its missing-customer check while outbound requests remain disabled.
+          ...(billingWithoutCustomer && { STRIPE_SECRET_KEY: 'scriv-local-fixture-placeholder' }) },
         serviceBindings: { EMAIL: 'local-mailbox' }, d1Databases: { DB: 'native-journey-db' }, r2Buckets: ['MEDIA'],
         durableObjects: { PROJECTS: { className: 'ProjectRoom', useSQLite: true }, BILLING: { className: 'BillingCoordinator', useSQLite: true } },
       }, { ...common, name: 'local-mailbox', script: `import { WorkerEntrypoint } from 'cloudflare:workers';
@@ -1055,6 +1070,12 @@ async function startWorker(root) {
         .bind(invitationTeamID).all();
       return { links, members, ...await nativeWorker.invitationRequests() };
     }
+    async function billingPortalState() {
+      assert.ok(billingWithoutCustomer && invitationTeamID);
+      const team = await db.prepare('SELECT subscription_status AS status, stripe_customer_id AS customer, paid_until AS paidUntil FROM teams WHERE id=?')
+        .bind(invitationTeamID).first();
+      return { team, ...await nativeWorker.billingPortalRequests() };
+    }
     let managementMember;
     async function prepareTeamManagement() {
       assert.equal(managementMember, undefined);
@@ -1129,7 +1150,7 @@ async function startWorker(root) {
       },
       generationClaimState: () => nativeWorker.generationClaimState(),
       releaseGenerationClaim: () => nativeWorker.releaseGenerationClaim(),
-      prepareInvitations, invitationState, interruptInvitationLoad: () => nativeWorker.interruptInvitationLoad(),
+      prepareInvitations, invitationState, billingPortalState, interruptInvitationLoad: () => nativeWorker.interruptInvitationLoad(),
       prepareTeamManagement, addTeamManagementMember, teamManagementState,
       prepareHistoryPages, changeHistoryPage: mode => nativeWorker.changeHistoryPage(mode),
       historyPageState: () => nativeWorker.historyPageState(),
@@ -1153,7 +1174,7 @@ async function startWorker(root) {
 
 if (process.argv[2] === '--owned-worker' && process.send) {
   const disconnected = new Promise(resolve => process.once('disconnect', resolve));
-  const worker = await startWorker(process.argv[3]);
+  const worker = await startWorker(process.argv[3], process.argv[4] === 'billing-without-customer');
   try {
     process.on('message', async message => {
       const [operation, value] = Array.isArray(message) ? message : [message];
@@ -1186,6 +1207,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'arm-generation-claim': worker.armGenerationClaim, 'generation-claim-state': worker.generationClaimState,
         'release-generation-claim': worker.releaseGenerationClaim,
         'interrupt-invitation-load': worker.interruptInvitationLoad, 'invitation-state': worker.invitationState,
+        'billing-portal-state': worker.billingPortalState,
         'prepare-team-management': worker.prepareTeamManagement, 'add-team-management-member': worker.addTeamManagementMember,
         'team-management-state': worker.teamManagementState,
         'prepare-history-pages': worker.prepareHistoryPages, 'change-history-page': worker.changeHistoryPage,

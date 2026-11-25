@@ -2609,8 +2609,8 @@
       "id": "07411a26ff1c8d67",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
-        "start": 193,
-        "end": 194,
+        "start": 200,
+        "end": 201,
         "sha256": "3e1f9c1350d3ea914a14962e0e9d40f4b468428a6562fa3b9c151995dac5f234"
       },
       "actions": [
@@ -2619,8 +2619,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-invitations.mjs",
-        "start": 102,
-        "end": 109,
+        "start": 132,
+        "end": 139,
         "sha256": "2504fa450268d3ed028063a4e5228489ce214e63761999aa42788ddfd92a6d2d"
       },
       "why": "The Teams controller reports and recovers from a temporary roster load failure for its selected team."
@@ -2827,6 +2827,25 @@
       "why": "The stored scene import menu action presents its native document chooser. The journey checks the presented controller and verifies that saved projects stay unchanged before any selection."
     },
     {
+      "id": "252bd7130db877af",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 1155,
+        "end": 1156,
+        "sha256": "681c18be0c930edb63c4dc2baa22f179129a0048bf12a586e92ead2cae68e92d"
+      },
+      "actions": [
+        "scriv type Email address"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-invitations.mjs",
+        "start": 67,
+        "end": 72,
+        "sha256": "c86a6af488f77e878fe5715bde44e8ef4252c493a52c3e4259ed6e8bfbe92312"
+      },
+      "why": "Typing in the live text field delivers only the owned fixture sign-in and progresses through the normal email form."
+    },
+    {
       "id": "26aed7484ea958fa",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
@@ -3007,6 +3026,25 @@
         "sha256": "db403451e05aa4c557dfb3566177a4533829214d17d72096dc3c1898df9fdaad"
       },
       "why": "The same-image automatic portrait survives a lower-confidence scan until Not a character is selected. Scriv then saves exactly one revision that removes the portrait and excludes the previous identity while preserving the rest of the project."
+    },
+    {
+      "id": "4566a1dd99ed99d8",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
+        "start": 373,
+        "end": 380,
+        "sha256": "8931775a778839a382dff07d51e9af71213f140135124545cd5587279e52f090"
+      },
+      "actions": [
+        "scriv activate Manage billing"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-invitations.mjs",
+        "start": 83,
+        "end": 102,
+        "sha256": "2e4236843d09d7953ec2d0153bf60690ab2d29e8dda9786985fdd50b1dcb32e3"
+      },
+      "why": "A real missing-customer refusal refreshes account and Team state, displays the Worker message and preserves the subscription and invitations."
     },
     {
       "id": "488b8d4c217c6194",
@@ -3331,6 +3369,25 @@
       "why": "Attaching the generated frame records its immutable version and exposes that exact version in the posted note"
     },
     {
+      "id": "924ad15317d44fac",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
+        "start": 133,
+        "end": 138,
+        "sha256": "bdc9b51cf18dced0b0c552cb94a95774e47cc9f5176f0caa4c3ddf27da912bef"
+      },
+      "actions": [
+        "scriv activate Manage billing"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-invitations.mjs",
+        "start": 83,
+        "end": 91,
+        "sha256": "61b95855859f2e70cbd5645b47cefb0fc375fa5f47caf20a54dd60c6d372e6b7"
+      },
+      "why": "The enabled Manage billing button in the plan card is reachable using normal UIKit controls."
+    },
+    {
       "id": "925e5bbf9683c600",
       "source": {
         "path": "scripts/compact-cli-archive.mjs",
@@ -3410,6 +3467,25 @@
         "sha256": "a1300376d40c43fa49d30c4f7d3adb2bfd9d0a240ad2e96ee766aacbf8e7e942"
       },
       "why": "Selecting Iris, switching to Milo and clearing the speaker each save exactly one revision and preserve the rest of both packages."
+    },
+    {
+      "id": "ad7194ebd328487c",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 348,
+        "end": 348,
+        "sha256": "55c1722653310533780d1085ff67ce016dcb5f2510979b13410ac765c6f423f4"
+      },
+      "actions": [
+        "scriv activate Manage billing"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-invitations.mjs",
+        "start": 89,
+        "end": 102,
+        "sha256": "4a338b9c3bc7b1301792492efe833eaa9f720f7fe79684a7cc02362354f2fd34"
+      },
+      "why": "The owned Worker records one portal request and its authorization-bound missing-customer refusal without egress."
     },
     {
       "id": "b0d2d58f2acbac0a",
@@ -14874,8 +14950,8 @@
       "id": "30784764b10d5109",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
-        "start": 325,
-        "end": 325,
+        "start": 332,
+        "end": 332,
         "sha256": "4b9a9d87d339d3b6bbcf53c3232f84e7ab30d9c0a0c3d2e5a880cce68e7b4249"
       },
       "actions": [
@@ -14884,8 +14960,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-invitations.mjs",
-        "start": 117,
-        "end": 135,
+        "start": 147,
+        "end": 165,
         "sha256": "9f6582eefb3b760cf7fc3f90a9548444b3abe51912c743de2e8d6f5fa5703ee5"
       },
       "why": "The inline Teams handler retries revocation while preserving expired invitations and the existing membership."
@@ -96245,8 +96321,8 @@
       "id": "2c587fc77ba3e2b6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
-        "start": 183,
-        "end": 191,
+        "start": 190,
+        "end": 198,
         "sha256": "e34a458b47bfa04157d9780f927f7e2dcbc72ab4178738d8c8d47edd6e4ad24a"
       },
       "actions": [
@@ -96778,8 +96854,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-invitations.mjs",
-        "start": 124,
-        "end": 135,
+        "start": 154,
+        "end": 165,
         "sha256": "cd739f12f04ed0718ba96dff13c3ebfbc8e570827883b674473dd42352cbb2d7"
       },
       "why": "The first revocation leaves the owned Worker records intact. The retry revokes the active link and refreshes the same sheet without changing the existing membership."
@@ -96799,8 +96875,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-invitations.mjs",
-        "start": 82,
-        "end": 122,
+        "start": 112,
+        "end": 152,
         "sha256": "a60cd4ba484f8fe0b22f579c6ffdfae2806125d3958aaf812e66724235cce4c2"
       },
       "why": "The real invitation sheet reports a temporary list failure and displays both seeded invitation states after reopening."
@@ -97030,8 +97106,8 @@
       "id": "4d8c28aaaaa18be5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
-        "start": 335,
-        "end": 340,
+        "start": 342,
+        "end": 347,
         "sha256": "7ad4f9de44ac8dd8e2d8821f3bc63f3249559f1cb0ab87751b51502da46743ec"
       },
       "actions": [
@@ -97050,8 +97126,8 @@
       "id": "782051fbe8a33fd5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
-        "start": 348,
-        "end": 348,
+        "start": 355,
+        "end": 355,
         "sha256": "7ba73ee29c018315e40dda83a02d82b92792abad588c789d84daaaff77d05a27"
       },
       "actions": [
@@ -97474,8 +97550,8 @@
       "id": "4abb1c74e4e5d499",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
-        "start": 232,
-        "end": 245,
+        "start": 239,
+        "end": 252,
         "sha256": "8d9ec5d8db6f33092d87ec7883c4a4287ebb9f875caaf3e8fe1921f3e7d72bd4"
       },
       "actions": [
@@ -97493,8 +97569,8 @@
       "id": "547d58e8e1053e60",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
-        "start": 247,
-        "end": 266,
+        "start": 254,
+        "end": 273,
         "sha256": "55f5ef9691feb02d987b26fb03d7c4585434b52cc2d5f062216728e527a14327"
       },
       "actions": [
@@ -97513,8 +97589,8 @@
       "id": "87f41d513ed8e422",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Teams/TeamsController.swift",
-        "start": 208,
-        "end": 230,
+        "start": 215,
+        "end": 237,
         "sha256": "68b275d28eba57e71f671c0ee37db6e20d8fcf0a707bf5e742b1de3dd556112e"
       },
       "actions": [

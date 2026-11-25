@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { setTimeout as delay } from 'node:timers/promises';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { audioLibrarySteps } from './support/audio-library-steps.mjs';
@@ -10,8 +11,15 @@ if (args.length === 1 && args[0] === '--list-cases') {
   console.log(JSON.stringify({ groups, groupActions: {
     inline: [{ id: 'revoke-team-invitation', command: 'activate', trigger: 'Revoke',
       condition: 'active-invitation-in-the-teams-tab-with-a-temporary-revocation-failure', entryPoint: {
-        path: 'apps/catalyst/ScrivUIKit/Teams/TeamsController.swift', start: 324, end: 326,
+        path: 'apps/catalyst/ScrivUIKit/Teams/TeamsController.swift', start: 331, end: 333,
         sha256: '7100f03dc4294f9d6e8f691878609ba3a44a0b2b61126b7598e1234f17cf41c5',
+      } }, { id: 'open-team-billing-portal', command: 'activate', trigger: 'Manage billing',
+      condition: 'active-owned-team-has-no-billing-customer', entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/Teams/TeamsController.swift', start: 134, end: 134,
+        sha256: '253085b646915365e28283284987e7322bc0362b271f90c97c0f4927399f2cc1',
+      }, branch: {
+        path: 'apps/catalyst/ScrivUIKit/Teams/TeamsController.swift', start: 380, end: 380,
+        sha256: '2b19b9533a422c74c5cecf5d152a11da6bf7df7860047d573e626afcec134618',
       } }],
   } }));
   process.exit(0);
@@ -19,7 +27,7 @@ if (args.length === 1 && args[0] === '--list-cases') {
 assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]));
 const inline = args[1] === 'inline';
 assert.ok(process.env.SCRIV_E2E_APP, 'Requires a signed Catalyst automation build');
-const fixture = await startNativeCloudFixture();
+const fixture = await startNativeCloudFixture({ billingWithoutCustomer: inline });
 const button = (title, windowPath) => node => node.type === 'UIButton'
   && (node.title === title || node.label === title) && (!windowPath || node.windowPath === windowPath);
 const hasText = (text, windowPath) => nodes => nodes.some(node => node.text === text && (!windowPath || node.windowPath === windowPath));
@@ -57,7 +65,7 @@ try {
   await ui.activate(node => node.identifier === 'workspace-project');
   await clickPresented('Sign in to Scriv…');
   const email = await ui.reveal(node => node.type === 'UITextField' && node.label === 'Email address');
-  await session.command('text', { target: email.path, text: nativeFixtureEmail });
+  assert.deepEqual(await session.command(inline ? 'type' : 'text', { target: email.path, text: nativeFixtureEmail }), { dispatched: true });
   await clickPresented('Continue with email');
   await session.waitFor(hasText('Check your email'));
   assert.deepEqual(await session.deliverFixtureEmailCode(await fixture.takeCode()), { delivered: true });
@@ -71,6 +79,28 @@ try {
   assert.deepEqual(await session.command('menu-action', { target: menuOwner.path, scope: 'workspace-panels', action: 'Teams and sharing…' }),
     { dispatched: true, coverage: 'semantic-menu-action' });
   await session.waitFor(nodes => hasText('Members (1)')(nodes) && hasText('● Active')(nodes));
+  if (inline) {
+    step = 'show the owned billing portal refusal and reload the team without changing it';
+    const billingBefore = await fixture.billingPortalState();
+    assert.equal(billingBefore.team.status, 'active');
+    assert.equal(billingBefore.team.customer, null);
+    assert.ok(billingBefore.team.paidUntil > Date.now());
+    assert.deepEqual(billingBefore.requests, []);
+    await ui.activate(node => button('Manage billing')(node) && node.enabled);
+    await session.waitFor(nodes => hasText('Start a Team subscription before opening the billing portal.')(nodes)
+      && hasText('● Active')(nodes) && nodes.some(node => button('Manage billing')(node) && node.enabled));
+    let billingAfter = await fixture.billingPortalState();
+    const refreshDeadline = Date.now() + 5000;
+    while (billingAfter.teamRefreshes === 0 && Date.now() < refreshDeadline) {
+      await delay(50);
+      billingAfter = await fixture.billingPortalState();
+    }
+    assert.deepEqual(billingAfter.team, billingBefore.team);
+    assert.deepEqual(billingAfter.requests, [{ status: 409, code: 'billing_customer_required' }]);
+    assert.ok(billingAfter.accountRefreshes >= 1 && billingAfter.teamRefreshes >= 1);
+    assert.deepEqual(await fixture.invitationState(), before);
+    await fixture.assertNoOutbound();
+  }
   const heading = 'Invite to ' + nativeFixtureTeam;
   const selector = node => node.type === 'UISegmentedControl'
     && node.segments?.join('|') === 'Overview|Members|Invitations';

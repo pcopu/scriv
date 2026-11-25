@@ -124,11 +124,18 @@ final class TeamsController: ScrivScreenController, UIAdaptivePresentationContro
         statusPill.backgroundColor = (team.isPaid ? UIColor.systemGreen : attention ? UIColor.systemOrange : ScrivUIKitTheme.secondary).withAlphaComponent(0.10)
         let planIcon = ScrivUIKitTheme.card(CharacterTeamUI.symbol("creditcard", size: 26), padding: 13); planIcon.backgroundColor = ScrivUIKitTheme.inset.withAlphaComponent(0.4)
         let row = CharacterTeamUI.row([planIcon, title, CharacterTeamUI.spacer(), statusPill], spacing: 18)
-        if UIKitTeamPolicy.canStartCheckout(team) { let subscribe = CharacterTeamUI.button("Subscribe…", primary: true) { [weak self] in self?.confirmCheckout(team) }; subscribe.isEnabled = !working; row.addArrangedSubview(subscribe) }
-        if team.role == "owner", team.isPaid || team.status != nil && team.status != "free" || currentDetails?["team"]?["billingCustomer"] == .bool(true) {
-            let billing = CharacterTeamUI.button("Manage billing") { [weak self] in self?.openBilling(team, portal: true) }; billing.isEnabled = !working; row.addArrangedSubview(billing)
+        let plan = ScrivUIKitTheme.stack([row], spacing: 12)
+        if UIKitTeamPolicy.canStartCheckout(team) {
+            let subscribe = CharacterTeamUI.button("Subscribe…", primary: true) { [weak self] in self?.confirmCheckout(team) }
+            subscribe.isEnabled = !working
+            plan.addArrangedSubview(CharacterTeamUI.row([subscribe, CharacterTeamUI.spacer()]))
         }
-        let result = ScrivUIKitTheme.stack([ScrivUIKitTheme.card(row)], spacing: 12)
+        if team.role == "owner", team.isPaid || team.status != nil && team.status != "free" || currentDetails?["team"]?["billingCustomer"] == .bool(true) {
+            let billing = CharacterTeamUI.button("Manage billing") { [weak self] in self?.openBilling(team, portal: true) }
+            billing.isEnabled = !working
+            plan.addArrangedSubview(CharacterTeamUI.row([billing, CharacterTeamUI.spacer()]))
+        }
+        let result = ScrivUIKitTheme.stack([ScrivUIKitTheme.card(plan)], spacing: 12)
         if attention { result.addArrangedSubview(ScrivUIKitTheme.notice("Billing needs attention", message: "Manage the existing subscription — do not subscribe again. Team access follows its current billing status.", warning: true)) }
         return result
     }
