@@ -662,6 +662,15 @@ Storyboard's word menu. On the visible word, send `menu-action` with scope
 previous image` or `Move to next image` action. The journey checks both
 directions and the validation error for a word away from the cut.
 
+Use `--case journeys/picture-coverage#storyboard-word-drop` to drive the
+mounted Storyboard drag and drop delegates. Send `storyboard-word-drag` with
+`phase` set to `begin` or `cancel` and target the shared word button. For
+`end`, target the destination card's duration button. The CLI uses the
+drag delegate's local payload and the destination's installed drop handler.
+The journey checks cancellation, one saved cut change, and refusal after
+Undo changes the revision while a drag is held. This covers the local
+UIKit delegate path with a synthetic session.
+
 Use `--scenario journeys/picture-coverage --group layers-word-drags` for
 the Layers word block and its start and end handles. Send horizontal samples
 through `picture-timing-gesture`. The journey checks that cancellation leaves

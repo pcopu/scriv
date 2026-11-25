@@ -5,7 +5,8 @@ import { followListing, runFollowJourney } from './support/picture-follow-steps.
 import { placementCases, runPlacementJourney } from './support/picture-placement-steps.mjs';
 import { timingGestureListing, runPictureTimingGestureJourney } from './support/picture-timing-gestures.mjs';
 import { sharedCutListing, runSharedCutJourney } from './support/picture-shared-cut.mjs';
-import { wordMoveListing, wordDragListing, runStoryboardWordMoves, runLayersWordDrags } from './support/picture-word-actions.mjs';
+import { wordMoveListing, wordDragListing, storyboardDropListing,
+  runStoryboardWordMoves, runLayersWordDrags, runStoryboardWordDrop } from './support/picture-word-actions.mjs';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { fixture, content, expectedContent, validCases, invalidSeconds, foregroundCases,
@@ -15,7 +16,7 @@ import { coverageSteps, ready, sorted } from './support/picture-coverage-steps.m
 // AUT-J09 runs numeric coverage, placement, follow, merge and timing gestures.
 // Each portion uses a fresh isolated UIKit session.
 const args = process.argv.slice(2);
-const groups = ['numeric', 'placements', 'follow', 'merge', 'merge-refusals', 'timing-gestures', 'shared-cuts', 'storyboard-word-moves', 'layers-word-drags', 'empty-storyboard'];
+const groups = ['numeric', 'placements', 'follow', 'merge', 'merge-refusals', 'timing-gestures', 'shared-cuts', 'storyboard-word-moves', 'layers-word-drags', 'empty-storyboard', 'storyboard-word-drop'];
 assert.ok(args.every((arg, index) => arg === '--list-cases' || arg === '--group'
   || args[index - 1] === '--group' && groups.includes(arg)), 'Unknown argument');
 assert.ok(args.filter(arg => arg === '--group').length <= 1, 'Choose one group');
@@ -48,9 +49,10 @@ const groupWitnessPaths = {
   'storyboard-word-moves': ['tests/e2e/journeys/support/picture-word-actions.mjs'],
   'layers-word-drags': ['tests/e2e/journeys/support/picture-word-actions.mjs'],
   'empty-storyboard': ['tests/e2e/journeys/support/empty-storyboard.mjs'],
+  'storyboard-word-drop': ['tests/e2e/journeys/support/picture-word-actions.mjs'],
 };
 if (args.includes('--list-cases')) {
-  const portions = [numericListing, placementListing, followListing, mergeListing, mergeRefusalListing, timingGestureListing, sharedCutListing, wordMoveListing, wordDragListing, { group: 'empty-storyboard', cases: ['pick a shared word before adding pictures'] }];
+  const portions = [numericListing, placementListing, followListing, mergeListing, mergeRefusalListing, timingGestureListing, sharedCutListing, wordMoveListing, wordDragListing, { group: 'empty-storyboard', cases: ['pick a shared word before adding pictures'] }, storyboardDropListing];
   const listing = args.includes('--group') ? portions[groups.indexOf(group)]
     : { journey: 'AUT-J09', groups, freshSessionPerGroup: true, nativeCompositionVerified: false,
       defaultGroups: groups, portions, groupWitnessPaths, groupActions: {
@@ -58,6 +60,14 @@ if (args.includes('--list-cases')) {
           condition: 'extend-with-shift-and-toggle-with-command', entryPoint: {
             path: 'apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift', start: 198, end: 205,
             sha256: '6a379c3fcfdd1530ae1a5def1c73b67313023d451c32f58738b7abfb2bd73d58',
+          } }],
+        'storyboard-word-drop': [{ id: 'drag-storyboard-word', command: 'storyboard-word-drag', trigger: 'storyboard-word',
+          condition: 'drag-payload-survives-until-undo-changes-the-revision', entryPoint: {
+            path: 'apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift', start: 398, end: 412,
+            sha256: 'b822bdbb840414170190027894b424d88c83089541b7cb9897f5852c369827c9',
+          }, branch: {
+            path: 'apps/catalyst/ScrivUIKit/Images/StoryboardInteractionState.swift', start: 42, end: 47,
+            sha256: 'f38f47a370622fdc81cb2ad810795c2f912256a78fff568023af8cb56f7e811c',
           } }],
       } };
   console.log(JSON.stringify(listing, null, 2));
@@ -70,6 +80,8 @@ if (args.includes('--list-cases')) {
   await runSharedCutJourney();
 } else if (group === 'storyboard-word-moves') {
   await runStoryboardWordMoves();
+} else if (group === 'storyboard-word-drop') {
+  await runStoryboardWordDrop();
 } else if (group === 'layers-word-drags') {
   await runLayersWordDrags();
 } else if (group === 'merge-refusals') {

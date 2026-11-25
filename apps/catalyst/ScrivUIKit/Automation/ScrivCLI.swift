@@ -31,6 +31,7 @@ final class ScrivCLI {
     private weak var pictureTimingGesture: (any ScrivCLIPictureTimingDriver)?
     private weak var scriptDurationGesture: (any ScrivCLIScriptDurationDriver)?
     private weak var scriptDurationTarget: UIButton?
+    private var storyboardWordDrag: ScrivCLIStoryboardDrag?
     private var started = false
     private var asynchronousCommandInProgress = false
     private var nativeAccessibility: ScrivCLIAccessibility?
@@ -282,6 +283,7 @@ final class ScrivCLI {
         case "begin":
             guard keys == required else { throw Failure("Invalid picture timing sample") }
             guard pictureTimingGesture?.cliGestureInFlight != true, scriptDurationGesture?.cliGestureInFlight != true,
+                  storyboardWordDrag == nil,
                   !driver.cliGestureInFlight else { throw Failure("An active picture timing gesture already owns input") }
             guard isHittable(view), (view as? UIControl)?.isEnabled != false else { throw Failure("Picture timing control is unavailable") }
             driver.cliBeginGesture()
@@ -316,6 +318,7 @@ final class ScrivCLI {
         case "begin":
             guard keys == required else { throw Failure("Invalid script duration sample") }
             guard scriptDurationGesture?.cliGestureInFlight != true, pictureTimingGesture?.cliGestureInFlight != true,
+                  storyboardWordDrag == nil,
                   !driver.cliGestureInFlight else { throw Failure("An active script duration gesture already owns input") }
             guard isHittable(button), button.isEnabled else { throw Failure("Script duration control is unavailable") }
             driver.cliBeginGesture(on: button)
@@ -334,6 +337,46 @@ final class ScrivCLI {
             guard scriptDurationGesture === driver, scriptDurationTarget === button, driver.cliAcceptsSample else { throw Failure("Target has no active script duration gesture") }
             driver.cancel()
         default: throw Failure("Invalid script duration sample")
+        }
+        return ["dispatched": true]
+    }
+    private func storyboardWordDragSample(_ request: [String: Any], at view: UIView, window: UIWindow) throws -> [String: Bool] {
+        guard Set(request.keys) == ["id", "command", "target", "phase"],
+              let phase = request["phase"] as? String, view.window === window,
+              !isSensitiveSubtree(view), isHittable(view), (view as? UIButton)?.isEnabled == true,
+              let workspace = window.rootViewController as? ScrivWorkspaceController, workspace.store.tab == .storyboard,
+              let storyboard = workspace.children.first(where: { $0 is StoryboardViewController }) as? StoryboardViewController,
+              storyboard.store === workspace.store else { throw Failure("Storyboard word drag is unavailable") }
+        switch phase {
+        case "begin":
+            guard storyboardWordDrag == nil, pictureTimingGesture?.cliGestureInFlight != true,
+                  scriptDurationGesture?.cliGestureInFlight != true else {
+                throw Failure("An active gesture already owns input")
+            }
+            guard let drag = storyboard.cliBeginWordDrag(view) else { throw Failure("Storyboard drag source is unavailable") }
+            storyboardWordDrag = drag
+        case "cancel", "end":
+            guard let drag = storyboardWordDrag, drag.window === window, drag.store === workspace.store else {
+                throw Failure("No active Storyboard word drag")
+            }
+            if phase == "cancel" {
+                guard drag.source === view else { throw Failure("Storyboard drag source is unavailable") }
+                storyboardWordDrag = nil
+                return ["dispatched": true]
+            }
+            guard let drop = storyboard.cliWordDropTarget(view), let delegate = drop.delegate else {
+                throw Failure("Storyboard drop destination is unavailable")
+            }
+            drag.position = view
+            guard delegate.dropInteraction?(drop, canHandle: drag) == true,
+                  let proposal = delegate.dropInteraction?(drop, sessionDidUpdate: drag), proposal.operation == .move else {
+                throw Failure("Storyboard drop destination refused the local drag")
+            }
+            storyboardWordDrag = nil
+            delegate.dropInteraction?(drop, sessionDidEnter: drag)
+            defer { delegate.dropInteraction?(drop, sessionDidEnd: drag) }
+            delegate.dropInteraction?(drop, performDrop: drag)
+        default: throw Failure("Invalid Storyboard word drag sample")
         }
         return ["dispatched": true]
     }
@@ -420,7 +463,7 @@ final class ScrivCLI {
                     "scriptInteractionCountsSchemaVersion": 1,
                     "cloudIsolation": run.publicStatus,
                     "semanticApplicationCommands": ["import-local-image", "import-audio", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error"],
-                    "semanticGestureCommands": ["picture-timing-gesture", "script-duration-gesture"],
+                    "semanticGestureCommands": ["picture-timing-gesture", "script-duration-gesture", "storyboard-word-drag"],
                     "semanticActivationModifiers": ["storyboard-word": ["shift", "command"]],
                     "jsonImportAcknowledgementScope": "owned-presentations",
                     "syntheticFixtureCommands": ["stage-package-fixture"],
@@ -431,7 +474,7 @@ final class ScrivCLI {
                     "sessionID": run.sessionID.uuidString.lowercased(),
                     "workspace": workspace,
                     "verificationRoot": run.root.path,
-                    "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error", "picture-timing-gesture", "script-duration-gesture"]] as [String: Any]
+                    "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error", "picture-timing-gesture", "script-duration-gesture", "storyboard-word-drag"]] as [String: Any]
             if !ScrivUpdateCoordinator.releaseSigningConfigured {
                 for key in ["semanticApplicationCommands", "commands"] {
                     result[key] = (result[key] as? [String] ?? []) + ["check-for-updates"]
@@ -737,6 +780,7 @@ final class ScrivCLI {
         guard isInActivePresentation(view) else { throw Failure("Target is behind the active presentation") }
         if command == "picture-timing-gesture" { return try pictureTimingSample(request, at: view) }
         if command == "script-duration-gesture" { return try scriptDurationSample(request, at: view) }
+        if command == "storyboard-word-drag" { return try storyboardWordDragSample(request, at: view, window: window) }
         if command == "menu" {
             var count = 0
             func describe(_ element: UIMenuElement, depth: Int) throws -> [String: Any] {

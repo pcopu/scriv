@@ -9,6 +9,8 @@ export const wordMoveListing = { journey: 'AUT-J09', portion: 'storyboard-word-m
   cases: ['extend and toggle a word selection', 'move a boundary word to either adjacent picture', 'refuse wrong target and non-boundary word'] };
 export const wordDragListing = { journey: 'AUT-J09', portion: 'layers-word-drags',
   cases: ['preview and cancel a word move', 'save a shifted word and drag both edges', 'refuse overlap'] };
+export const storyboardDropListing = { journey: 'AUT-J09', portion: 'storyboard-word-drop',
+  cases: ['cancel a local word drag', 'drop a boundary word on the neighboring picture', 'refuse a drag captured before Undo'] };
 
 async function importFixture(session, ui, input) {
   await ui.tab('Script');
@@ -101,6 +103,64 @@ export async function runStoryboardWordMoves() {
     console.log('PASS: Storyboard word moves preserve word identity and update the adjacent cut or show the original validation error');
   } catch (cause) {
     throw new Error(`Storyboard word journey failed while trying to ${step}`, { cause });
+  } finally { await session.close(); }
+}
+
+export async function runStoryboardWordDrop() {
+  const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
+  const ui = coverageSteps(session);
+  const command = 'storyboard-word-drag';
+  const word = 'storyboard-word-b-word-0';
+  const parent = 'storyboard-duration-parent';
+  const child = 'storyboard-duration-child';
+  let step = 'discover the native Storyboard word drag';
+  async function sample(phase, identifier) {
+    const target = await ui.reveal(node => node.identifier === identifier);
+    return session.command(command, { phase, target: target.path });
+  }
+  async function dispatch(phase, identifier) {
+    assert.deepEqual(await sample(phase, identifier), { dispatched: true });
+  }
+  try {
+    const caps = await session.command('capabilities');
+    assert.ok(caps.commands.includes(command) && caps.semanticGestureCommands.includes(command),
+      'The app must expose the mounted Storyboard word drag');
+    const input = fixture();
+    input.title = 'Synthetic Storyboard word drops';
+    Object.assign(input.cues[0], { endMs: 1000, authoredDurationMs: 1000 });
+    const before = await importFixture(session, ui, input);
+    await ui.tab('Storyboard');
+
+    step = 'cancel without moving the saved cut';
+    await dispatch('begin', word);
+    await session.waitFor(nodes => nodes.some(node => node.text === '1 word selected'));
+    await assertUnchanged(session, before);
+    await dispatch('cancel', word);
+    await assert.rejects(sample('end', parent), /no active Storyboard word drag/i);
+    await assertUnchanged(session, before);
+
+    step = 'drop on the neighboring picture and persist exactly one cut change';
+    await dispatch('begin', word);
+    await assert.rejects(sample('end', word), /Storyboard drop destination is unavailable/i);
+    await dispatch('end', parent);
+    const moved = content(before);
+    Object.assign(moved.cues[0], { endMs: 1666, authoredDurationMs: 1666 });
+    Object.assign(moved.cues[1], { startMs: 1666, authoredDurationMs: 834, startAnchor: { entryId: 'b', offsetMs: 666 } });
+    const saved = await nextRevision(session, before, moved);
+    assert.deepEqual((await session.command('loaded-project')).project, saved);
+    await assert.rejects(sample('end', parent), /no active Storyboard word drag/i);
+
+    step = 'refuse the captured drop after Undo advances the revision';
+    await dispatch('begin', word);
+    await ui.history();
+    const undone = await nextRevision(session, saved, content(before));
+    await dispatch('end', child);
+    await observePresentedError(session, 'The scene changed during the drag. Select the words again before moving this cut.');
+    await assertUnchanged(session, undone);
+    assert.deepEqual((await session.command('loaded-project')).project, undone);
+    console.log('PASS: mounted Storyboard word drag cancels, moves one saved cut, and refuses stale capture');
+  } catch (cause) {
+    throw new Error(`Storyboard word drop journey failed while trying to ${step}`, { cause });
   } finally { await session.close(); }
 }
 

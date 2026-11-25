@@ -511,6 +511,32 @@ extension StoryboardViewController {
         return actions.count == 1 ? actions.first : nil
     }
 
+    func cliBeginWordDrag(_ view: UIView) -> ScrivCLIStoryboardDrag? {
+        let prefix = "storyboard-word-"
+        guard contextIsCurrent, !scopeToProject, marqueeOrigin == nil, signature == currentSignature,
+              let identifier = view.accessibilityIdentifier, identifier.hasPrefix(prefix),
+              let word = sharedWordButtons[String(identifier.dropFirst(prefix.count))], word === view,
+              viewIfLoaded?.window === word.window else { return nil }
+        let drags = word.interactions.compactMap { $0 as? UIDragInteraction }.filter(\.isEnabled)
+        guard drags.count == 1, let interaction = drags.first,
+              let delegate = interaction.delegate as? StoryboardSharedWordDragDelegate, delegate.owner === self else { return nil }
+        let session = ScrivCLIStoryboardDrag(source: word, store: store)
+        guard delegate.dragInteraction(interaction, sessionIsRestrictedToDraggingApplication: session) else { return nil }
+        session.items = delegate.dragInteraction(interaction, itemsForBeginning: session)
+        return session.items.count == 1 ? session : nil
+    }
+
+    func cliWordDropTarget(_ view: UIView) -> UIDropInteraction? {
+        guard contextIsCurrent, !scopeToProject, marqueeOrigin == nil, signature == currentSignature,
+              let identifier = view.accessibilityIdentifier, identifier.hasPrefix("storyboard-duration-"),
+              let card = cards[String(identifier.dropFirst("storyboard-duration-".count))],
+              card.owner === self, card.store === store, card.navigation == store.navigationContext,
+              view.isDescendant(of: card), view.window === viewIfLoaded?.window else { return nil }
+        let drops = card.interactions.compactMap { $0 as? UIDropInteraction }
+        guard drops.count == 1, let drop = drops.first, drop.delegate === card else { return nil }
+        return drop
+    }
+
     /// Read-only witness for the mounted card's captured production menu context.
     /// Never constructs actions or calls a menu handler/model operation.
     func cliValidatedPictureCue(for button: UIButton) -> (cue: ImageCue, canMerge: Bool)? {
