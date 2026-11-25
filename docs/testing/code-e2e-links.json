@@ -244,8 +244,8 @@
       "id": "00324f769e9f6195",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 211,
-        "end": 212,
+        "start": 212,
+        "end": 213,
         "sha256": "ed17746d631a4bfffdce23eeb12ebf1fdca88d966ee0e55cf51a0c1eb61ef679"
       },
       "actions": [
@@ -5477,8 +5477,8 @@
       "id": "363005482f3f4c31",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 367,
-        "end": 369,
+        "start": 368,
+        "end": 370,
         "sha256": "4163ac4331a6167f7daad8dbbf913542d0d68f6df0ca446cbf8df91ff8421b29"
       },
       "actions": [
@@ -11709,8 +11709,8 @@
       "id": "27c9916e5a2be34f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 240,
-        "end": 241,
+        "start": 241,
+        "end": 242,
         "sha256": "e0741b99826c54a7e1543c24d29b334f4c37bd62f71fa93bc7d3afd9bcd85faf"
       },
       "actions": [
@@ -13957,8 +13957,8 @@
       "id": "2feba792cdefff92",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 376,
-        "end": 379,
+        "start": 377,
+        "end": 380,
         "sha256": "e6dbe5a80ee740ec4c20ed186027dd3d8de6a624abbf5ee59fb05b9e00c04c6b"
       },
       "actions": [
@@ -19115,8 +19115,8 @@
       "id": "41d08f126e99879f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 292,
-        "end": 295,
+        "start": 293,
+        "end": 296,
         "sha256": "8a6ecb47c8ebcc33e555ec8935dfe0ed064debe2213cf3d2ffc23d952f58d259"
       },
       "actions": [
@@ -23168,8 +23168,8 @@
       "id": "51a85849aeda565e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 213,
-        "end": 214,
+        "start": 214,
+        "end": 215,
         "sha256": "9f42f39113593acce58361794626f20f4a741404f9ed9f435e49c65e6bcba4bf"
       },
       "actions": [
@@ -26320,8 +26320,8 @@
       "id": "5d8f4c4296b6296e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 189,
-        "end": 192,
+        "start": 190,
+        "end": 193,
         "sha256": "33db45876f99cdf9e2550b39845934921f8dc66fcde8f2145523224716999bdb"
       },
       "actions": [
@@ -34919,8 +34919,8 @@
       "id": "7ade705ad8e0afa0",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 202,
-        "end": 204,
+        "start": 203,
+        "end": 205,
         "sha256": "72f1b6d99d9a4d4c97bb8bacabf926cacaeb2c0d56b5d24c555268ec2a179302"
       },
       "actions": [
@@ -35555,8 +35555,8 @@
       "id": "7c8c5ec4146dd2c8",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 231,
-        "end": 233,
+        "start": 232,
+        "end": 234,
         "sha256": "a6912d66c983665ce6ffc1cf0d24956a93db7a302a00dfc155079082c66600c1"
       },
       "actions": [
@@ -40549,8 +40549,8 @@
       "id": "8d9ad3c2259185f7",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 248,
-        "end": 251,
+        "start": 249,
+        "end": 252,
         "sha256": "a012e5e8cc4a1d900a0c3dd6cd9eca7f258f3f235237e3492e47ffcd21aa66fb"
       },
       "actions": [
@@ -45824,8 +45824,8 @@
       "id": "9f671d81d53b2e92",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 253,
-        "end": 281,
+        "start": 254,
+        "end": 282,
         "sha256": "f810c85a1436dadf3557d877d52b6c1b69095205dfe1f9f10e05263151f2c148"
       },
       "actions": [
@@ -52787,8 +52787,8 @@
       "id": "b414825514bbe57b",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 310,
-        "end": 310,
+        "start": 311,
+        "end": 311,
         "sha256": "2001e995fa2f490b3c7b10d4666b7f82f6f7cac1d5d440eecf1db9a34562d8d5"
       },
       "actions": [
@@ -55267,8 +55267,8 @@
       "id": "bc1b5d8dce9d5bea",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 227,
-        "end": 229,
+        "start": 228,
+        "end": 230,
         "sha256": "56ecb13fc0c593e911da71cf2ff10047a5613206ed4b0e41d93f8a0e4404a2f9"
       },
       "actions": [
@@ -56016,8 +56016,8 @@
       "id": "bead27d811030a06",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 298,
-        "end": 298,
+        "start": 299,
+        "end": 299,
         "sha256": "635722f828162803f7415bffb896eeca61f597233ad2ae2b1a228a1b3820da9e"
       },
       "actions": [
@@ -59377,8 +59377,8 @@
       "id": "cc2bfd2318f202c5",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 300,
-        "end": 300,
+        "start": 301,
+        "end": 301,
         "sha256": "5dad5827ad70c283195e105f6805d9a73a68bde4c32ec27cc6fb37bb9a613b98"
       },
       "actions": [
@@ -63213,8 +63213,8 @@
       "id": "dcb760654ed41c8d",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 179,
-        "end": 186,
+        "start": 180,
+        "end": 187,
         "sha256": "4de99e3f4f3e360d3729141c710ae53e96416dda81511b3bdcd9bea64fcfc121"
       },
       "actions": [
@@ -64250,8 +64250,8 @@
       "id": "dfe1dff3a81c0759",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 206,
-        "end": 208,
+        "start": 207,
+        "end": 209,
         "sha256": "9038120b7ee4960c8676af3a6ea4557ab73afde4ab9061965173cf3fec2a3681"
       },
       "actions": [
@@ -69234,8 +69234,8 @@
       "id": "edfb106ba7599e62",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 210,
-        "end": 210,
+        "start": 211,
+        "end": 211,
         "sha256": "30030c597bb8d222fa5708425ec863c8d63fdfb4ba9620fae5fa53a58f39468c"
       },
       "actions": [
@@ -70996,8 +70996,8 @@
       "id": "f3e4765df137a31f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 296,
-        "end": 296,
+        "start": 297,
+        "end": 297,
         "sha256": "2eee146c7f11991ffabccbcb02ecd812a1816104fce4814ba13453206029bf09"
       },
       "actions": [
@@ -84000,8 +84000,8 @@
       "id": "4579e95b6742509b",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 307,
-        "end": 307,
+        "start": 308,
+        "end": 308,
         "sha256": "251af02bdf06578e58a84c767afd9e956728e2dcfe6df02fa8e6a30d26dc0748"
       },
       "actions": [
@@ -84044,8 +84044,8 @@
       "id": "75ae20557ed42cfa",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 381,
-        "end": 382,
+        "start": 382,
+        "end": 383,
         "sha256": "1674ec57dbd55226a5f98694ec55383a91fb7974f94917174dfd0878836309cc"
       },
       "actions": [
@@ -84064,8 +84064,8 @@
       "id": "8cf7a26516801711",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 311,
-        "end": 311,
+        "start": 312,
+        "end": 312,
         "sha256": "155b99c4fcc8c5940e6ad104d7a26b3a079f0b25c675fef1e383f0117d5a59f0"
       },
       "actions": [
@@ -84103,8 +84103,8 @@
       "id": "a9154208c8debc65",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 284,
-        "end": 287,
+        "start": 285,
+        "end": 288,
         "sha256": "865723df71091dc297a11f0a48b7237fb47cc73dff698e5e859975758577b256"
       },
       "actions": [
@@ -84122,8 +84122,8 @@
       "id": "a930773617cb8f6f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 301,
-        "end": 302,
+        "start": 302,
+        "end": 303,
         "sha256": "5714b5016a5823b874d5af4bede595e152076077087c31e8dbc36352847db9f6"
       },
       "actions": [
@@ -94821,8 +94821,8 @@
       "id": "33720f3b1724fc03",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 366,
-        "end": 369,
+        "start": 367,
+        "end": 370,
         "sha256": "6a904c79ec0c0e5f9b36259dd596081dbe4d8c47edad699777135187d0af49fa"
       },
       "actions": [
@@ -94859,8 +94859,8 @@
       "id": "ed7558e490db107f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 304,
-        "end": 306,
+        "start": 305,
+        "end": 307,
         "sha256": "8de45ae475fd12c6ac0e8886fa94b189913a287f268e8fbf150e362d4066b27c"
       },
       "actions": [
@@ -95721,8 +95721,8 @@
       "id": "1d8fbd0cc16034c9",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 193,
-        "end": 193,
+        "start": 194,
+        "end": 194,
         "sha256": "c2f220899b72eee623adb8310c1209be841530a23487bcce09afcab17542eab6"
       },
       "actions": [
@@ -96565,8 +96565,8 @@
       "id": "97533ef6aeb0075e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 253,
-        "end": 280,
+        "start": 254,
+        "end": 281,
         "sha256": "2a5f7b398b7d1c2becdd5b19f62eae46e3140ef4e413e5d167df3a70fb08e2fd"
       },
       "actions": [
@@ -96693,8 +96693,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 69,
-        "end": 74,
+        "start": 68,
+        "end": 73,
         "sha256": "8b9099778714dd8b575d1d071eb7758426d05a9e40f6b59b1bb4296a85d7c5e6"
       },
       "why": "A later account read fails. The native Settings pane shows the provider failure and exposes the retry control after the connection is cleared."
@@ -96713,8 +96713,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 46,
-        "end": 48,
+        "start": 45,
+        "end": 47,
         "sha256": "8b4cfe2cbb660be24ff92d99c22bd718f281cf9b2c6719fff02a71a28afa1ec9"
       },
       "why": "The owned provider returns a login identifier and a non-HTTPS URL. The native Settings pane shows the rejection and allows a new sign-in attempt."
@@ -96737,8 +96737,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 46,
-        "end": 74,
+        "start": 45,
+        "end": 73,
         "sha256": "06d164a442ef5c7f7c51b6d678b2eb411e12b27e9f62d79eefdfffc60c94520a"
       },
       "why": "The journey invokes the native sign-in and refresh controls and observes each resulting account status."
@@ -96757,8 +96757,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 46,
-        "end": 48,
+        "start": 45,
+        "end": 47,
         "sha256": "8b4cfe2cbb660be24ff92d99c22bd718f281cf9b2c6719fff02a71a28afa1ec9"
       },
       "why": "The owned provider returns a login identifier and a non-HTTPS URL. The native Settings pane shows the rejection and allows a new sign-in attempt."
@@ -96779,8 +96779,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 50,
-        "end": 74,
+        "start": 49,
+        "end": 73,
         "sha256": "7573d3260f5990cfe6abff187d6f893802b5964b574d906ba04ade687c91d77d"
       },
       "why": "Two consecutive real checks complete with different visible readiness states after the provider replies."
@@ -96799,8 +96799,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 50,
-        "end": 52,
+        "start": 49,
+        "end": 51,
         "sha256": "4d012dcc3eef15941f5e1415f44451a1ba6d9aefde38896235871876969e9287"
       },
       "why": "The explicit refresh sends one account read and a model list request and settles in the connected sign-in-required state."
@@ -96819,8 +96819,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 50,
-        "end": 52,
+        "start": 49,
+        "end": 51,
         "sha256": "4d012dcc3eef15941f5e1415f44451a1ba6d9aefde38896235871876969e9287"
       },
       "why": "The explicit refresh sends one account read and a model list request and settles in the connected sign-in-required state."
@@ -97182,8 +97182,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 54,
-        "end": 63,
+        "start": 53,
+        "end": 62,
         "sha256": "875db7ff0043933cf14abbd0d38ece9a3c990a62cec063f807b0e22262c08d1d"
       },
       "why": "The direct loopback provider emits early completion for the same login identifier and the final account status reflects that outcome."
@@ -97202,8 +97202,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 54,
-        "end": 63,
+        "start": 53,
+        "end": 62,
         "sha256": "875db7ff0043933cf14abbd0d38ece9a3c990a62cec063f807b0e22262c08d1d"
       },
       "why": "The first provider decline becomes visible, then a successful completion refreshes the fixture identity and distinct model catalog."
@@ -97222,8 +97222,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 54,
-        "end": 63,
+        "start": 53,
+        "end": 62,
         "sha256": "875db7ff0043933cf14abbd0d38ece9a3c990a62cec063f807b0e22262c08d1d"
       },
       "why": "The owned provider emits completion before its login-start reply. Its matching early success and decline are both resolved in Settings."
@@ -97242,8 +97242,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 65,
-        "end": 67,
+        "start": 64,
+        "end": 66,
         "sha256": "e5c94761e83eff000fefe4a4821d61b325e590d7ade680455497c8765cee6296"
       },
       "why": "Overlapping provider update messages precede an old account result and a superseded error. The final UI shows the newest signed-out state and no stale error."
@@ -98031,8 +98031,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/codex-loopback-fixture.mjs",
-        "start": 190,
-        "end": 198,
+        "start": 200,
+        "end": 208,
         "sha256": "cfaa4b23f94c4e81787e6486057978632753d545341e58e681d738748fe9ac16"
       },
       "why": "With the existing portrait selected, require an exact localImage reference path inside each new owned job directory and verify the actual image digest at the socket boundary."
@@ -98566,8 +98566,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 103,
-        "end": 113,
+        "start": 102,
+        "end": 112,
         "sha256": "9bcb38e40ce416b550ef4d6ed97e6533edfea0f8a806f2af11aebce86b478567"
       },
       "why": "Checks that the new provider is ready before Disconnect clears connection and model state without creating a job or editing projects."
@@ -98585,8 +98585,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 87,
-        "end": 95,
+        "start": 86,
+        "end": 94,
         "sha256": "5c981e18fe06a8866e6763b4f8430356678dffbfb86ca85e71789ecf753357aa"
       },
       "why": "Checks that cancellation closes the owned transport and shows the cancelled state without keeping a previous error or account action."
@@ -98671,8 +98671,8 @@
       "id": "697a3568d34c766a",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 241,
-        "end": 247,
+        "start": 242,
+        "end": 248,
         "sha256": "670316272ac7e5906c037a1882487a3c53fd385fec1dfb91e3b75cb307436b80"
       },
       "actions": [
@@ -98771,8 +98771,8 @@
       "id": "f7777456308bd228",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 260,
-        "end": 273,
+        "start": 261,
+        "end": 274,
         "sha256": "2cae5c2308c0c8847b3b1a68c085908ff043b8a612ebb2656b794aaf9c4b8fa9"
       },
       "actions": [
@@ -99106,6 +99106,26 @@
         "sha256": "261fa355d0c9e102b15c2f9c62753efccb0fac8b9162ce0557b47bda55616e56"
       },
       "why": "The native sign-in state consumes the real Worker rate limit and prevents immediate retry."
+    },
+    {
+      "id": "61fa15f21185ae7d",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
+        "start": 207,
+        "end": 210,
+        "sha256": "47537ec53ce4362670ff6e95f8775ddb68d88d2938ccb58af3d21a4adab9779f"
+      },
+      "actions": [
+        "scriv activate --target codex-account",
+        "scriv presented-alerts"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 126,
+        "end": 133,
+        "sha256": "e20e41e025f2921c35bc69a85485f193634cb0e17fa96a993c451f56005c99e2"
+      },
+      "why": "The isolated signed-in account opens a public account menu with exactly the refresh, sign-out and cancel actions, while preserving the saved projects."
     }
   ],
   "commentExclusions": [
@@ -103090,14 +103110,14 @@
       "fileSha256": "67609a776565cc5d9bff58fe400f9aa390c365f4115101ce9a5fc3be3b69e228"
     },
     {
-      "id": "57a7a2fba7aa19e4",
+      "id": "5ec0ef7b55780d84",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
         "start": 134,
         "end": 135,
         "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
       },
-      "fileSha256": "0ee77e3064db855a1e39431a84bcac760681cada395fc543a3cf7ff3b32adcf0"
+      "fileSha256": "9e7d0630abad2812e910ec05b5f1c226b01390015ab0881140cbf0859d529c06"
     },
     {
       "id": "58267d3510d79430",
@@ -103170,14 +103190,14 @@
       "fileSha256": "210038b86c852f5dccae67cc7c3f8087e093e23d7dcbd87bc37b2163d9bef21f"
     },
     {
-      "id": "596df4c902f187da",
+      "id": "f98caf8b48155393",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 283,
-        "end": 283,
+        "start": 284,
+        "end": 284,
         "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
       },
-      "fileSha256": "0ee77e3064db855a1e39431a84bcac760681cada395fc543a3cf7ff3b32adcf0"
+      "fileSha256": "9e7d0630abad2812e910ec05b5f1c226b01390015ab0881140cbf0859d529c06"
     },
     {
       "id": "59c64d2ace520826",
@@ -104820,14 +104840,14 @@
       "fileSha256": "5a90ca49651938c579d0f8aae806ade78ff6771a7b3331eb70776c27a2cd2626"
     },
     {
-      "id": "7e3301c314adb44d",
+      "id": "8849ee0d68301de3",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
         "start": 80,
         "end": 81,
         "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
       },
-      "fileSha256": "0ee77e3064db855a1e39431a84bcac760681cada395fc543a3cf7ff3b32adcf0"
+      "fileSha256": "9e7d0630abad2812e910ec05b5f1c226b01390015ab0881140cbf0859d529c06"
     },
     {
       "id": "7e4a8f19915d9b4e",
@@ -105617,7 +105637,7 @@
         "end": 2,
         "sha256": "4ead8511821dcd95c2efee74b114bac02b04cb9252a4405b4149f9930c721b52"
       },
-      "fileSha256": "0ee77e3064db855a1e39431a84bcac760681cada395fc543a3cf7ff3b32adcf0"
+      "fileSha256": "9e7d0630abad2812e910ec05b5f1c226b01390015ab0881140cbf0859d529c06"
     },
     {
       "id": "8e40d7512c7266e1",
@@ -108300,14 +108320,14 @@
       "fileSha256": "f055c6025778e8dac787456d9cd18cbcaea967c7545afa726c462dfe084140ef"
     },
     {
-      "id": "c3e9f0813efb60fb",
+      "id": "2e2d2e1998087b37",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
         "start": 38,
         "end": 38,
         "sha256": "da22a6a09e9a6d7bbf1e35ecdac04e969fad1ac1a051025596a84831ff070202"
       },
-      "fileSha256": "0ee77e3064db855a1e39431a84bcac760681cada395fc543a3cf7ff3b32adcf0"
+      "fileSha256": "9e7d0630abad2812e910ec05b5f1c226b01390015ab0881140cbf0859d529c06"
     },
     {
       "id": "c3fa07d2ab6ca6a5",

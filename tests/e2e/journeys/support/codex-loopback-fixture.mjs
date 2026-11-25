@@ -23,7 +23,10 @@ const activeRequests = new Map([
 
 // Model the app-server protocol at its socket boundary. No backend, account,
 // tools, credentials, arbitrary file names, or real model are available here.
-export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = false, manualAccountCheck = false, holdAccountRefresh = false, ownedPort, onSubmittedPrompt, referenceSHA256 } = {}) {
+export function createCodexFixtureProtocol(root, outcomes, {
+  accountRefresh = false, manualAccountCheck = false, holdAccountRefresh = false, signedInAccount = false,
+  ownedPort, onSubmittedPrompt, referenceSHA256,
+} = {}) {
   const handshake = ['initialize', 'initialized', 'account/read', 'model/list'];
   const anonymous = { account: null, requiresOpenaiAuth: true };
   const updated = { method: 'account/updated', params: {} };
@@ -39,6 +42,10 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
   }
   if (holdAccountRefresh) {
     assert.ok(!manualAccountCheck && !accountRefresh && !outcomes.length, 'A held refresh owns the entire fixture');
+  }
+  if (signedInAccount) {
+    assert.ok(!manualAccountCheck && !accountRefresh && !holdAccountRefresh && !outcomes.length,
+      'The signed-in presentation owns an idle fixture');
   }
   const manualAccountSteps = manualAccountCheck ? [
     { method: 'account/login/start', reply: { result: { loginId: 'synthetic-rejected-login', authUrl: 'http://127.0.0.1/fixture-login' } } },
@@ -95,6 +102,9 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
       return [reply({ userAgent: 'Scriv local fixture' })];
     case 'account/read': {
       assert.equal(params.refreshToken, false);
+      if (signedInAccount) return [reply({
+        account: { type: 'chatgpt', email: 'signed-in-fixture@example.invalid' }, requiresOpenaiAuth: true,
+      })];
       if (holdAccountRefresh) return position <= handshake.length ? [reply(anonymous)] : [];
       if (manualAccountCheck) {
         if (!accountStep) return [reply(anonymous)];

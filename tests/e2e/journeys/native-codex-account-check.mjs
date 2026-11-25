@@ -1,10 +1,19 @@
 import assert from 'node:assert/strict';
 import { ScrivSession } from '../../../cli/scriv.mjs';
+import { observePresentedAlert } from '../support/presented-error.mjs';
 import { audioLibrarySteps } from './support/audio-library-steps.mjs';
 import { startCodexFixture } from './support/codex-loopback-fixture.mjs';
 
+const groups = ['signed-in-account-menu'];
+const args = process.argv.slice(2);
+if (args.length === 1 && args[0] === '--list-cases') {
+  console.log(JSON.stringify({ groups }));
+  process.exit(0);
+}
+assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]));
 assert.ok(process.env.SCRIV_E2E_APP, 'Requires an isolated Catalyst automation bundle');
 const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
+const ui = audioLibrarySteps(session);
 const byID = id => node => node.identifier === id;
 const statusText = (nodes, id) => nodes.find(byID(id))?.text;
 const connection = nodes => statusText(nodes, 'codex-connection-status');
@@ -18,27 +27,17 @@ const needsSignIn = nodes => connection(nodes) === 'Connected · sign-in needed'
 let fixture;
 let step = 'open Codex Settings in the isolated app';
 
-try {
-  const capabilities = await session.command('capabilities');
-  assert.equal(capabilities.cloudIsolation.network, 'disabled');
-  const projects = await session.command('persisted-projects');
+async function connect(endpoint) {
+  const field = await ui.reveal(node => node.type === 'UITextField' && node.label === 'Saved loopback server address');
+  await session.command('text', { target: field.path, text: endpoint });
+  await session.command('end-editing');
+  await ui.activate(byID('codex-connect'));
+}
+
+async function verifyAccountConnections(projects) {
   fixture = await startCodexFixture(session.root, [], { manualAccountCheck: true });
-  const ui = audioLibrarySteps(session);
-  async function connect(endpoint) {
-    const field = await ui.reveal(node => node.type === 'UITextField' && node.label === 'Saved loopback server address');
-    await session.command('text', { target: field.path, text: endpoint });
-    await session.command('end-editing');
-    await ui.activate(byID('codex-connect'));
-  }
 
   await fixture.race((async () => {
-    await session.waitFor(nodes => nodes.some(byID('workspace-tabs')));
-    await session.command('key', { input: ',', modifiers: ['command'] });
-    const settingsCell = node => node.identifier === 'scriv.settings.codex' && node.hittable;
-    const settings = await session.waitFor(nodes => nodes.filter(settingsCell).length === 1);
-    await session.command('activate', { target: settings.find(settingsCell).path });
-    await session.waitFor(nodes => connection(nodes) === 'Not connected');
-
     step = 'connect to the account-required provider';
     await connect(fixture.endpoint);
     await session.waitFor(needsSignIn);
@@ -115,6 +114,41 @@ try {
   await fixture.close();
   fixture = undefined;
   console.log('PASS: native Codex refresh, cancellation and connection recovery');
+}
+
+async function verifySignedInAccountMenu(projects) {
+  step = 'open the signed-in account menu using the real Codex Account control';
+  const email = 'signed-in-fixture@example.invalid';
+  fixture = await startCodexFixture(session.root, [], { signedInAccount: true });
+  await fixture.race((async () => {
+    await connect(fixture.endpoint);
+    await session.waitFor(nodes => connection(nodes) === 'Connected' && statusText(nodes, 'codex-account-status') === email);
+    await ui.activate(signIn);
+    await observePresentedAlert(session, { title: 'ChatGPT on this Mac', message: email, actions: [
+      { title: 'Refresh account', enabled: true, style: 'default' },
+      { title: 'Sign out of ChatGPT', enabled: true, style: 'destructive' },
+      { title: 'Cancel', enabled: true, style: 'cancel' },
+    ] });
+    fixture.assertNoTurns();
+    assert.deepEqual(await session.command('persisted-projects'), projects);
+  })());
+  await fixture.close();
+  fixture = undefined;
+  console.log('PASS: native signed-in Codex Account control offers refresh, sign out and cancel');
+}
+
+try {
+  const capabilities = await session.command('capabilities');
+  assert.equal(capabilities.cloudIsolation.network, 'disabled');
+  const projects = await session.command('persisted-projects');
+  await session.waitFor(nodes => nodes.some(byID('workspace-tabs')));
+  await session.command('key', { input: ',', modifiers: ['command'] });
+  const settingsCell = node => node.identifier === 'scriv.settings.codex' && node.hittable;
+  const settings = await session.waitFor(nodes => nodes.filter(settingsCell).length === 1);
+  await session.command('activate', { target: settings.find(settingsCell).path });
+  await session.waitFor(nodes => connection(nodes) === 'Not connected');
+  if (args[1] === 'signed-in-account-menu') await verifySignedInAccountMenu(projects);
+  else await verifyAccountConnections(projects);
 } catch (cause) {
   throw new Error(`Codex account check failed while trying to ${step}`, { cause });
 } finally {

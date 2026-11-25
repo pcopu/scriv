@@ -148,6 +148,7 @@ const groupedScenarios = new Set([
   'journeys/picture-coverage.mjs', 'journeys/codex-loopback-generation.mjs', 'journeys/native-cloud-image-recovery.mjs',
   'journeys/native-shared-generation.mjs', 'journeys/cue-draft-recovery.mjs', 'journeys/audio-library.mjs',
   'journeys/native-team-management.mjs',
+  'journeys/native-codex-account-check.mjs',
   'journeys/native-first-launch.mjs', 'journeys/local-images.mjs',
 ]);
 const validGroup = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(value);

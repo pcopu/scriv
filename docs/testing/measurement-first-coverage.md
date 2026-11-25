@@ -133,6 +133,13 @@ Worker's own address quota. Recovery uses the incorrect-code UI, a fresh
 owned challenge and a real revocation from the fixture's other session.
 Keep the intervals per group so the shared sign-in failure lines count once.
 
+The Codex Account control has separate signed-out and signed-in behavior.
+Use `journeys/native-codex-account-check#signed-in-account-menu` for the
+signed-in path. The fixture serves an idle synthetic account over loopback.
+The scenario activates `codex-account` and observes the attached account
+menu and unchanged saved projects. Use `--coverage-activate codex-account`
+to measure just that dispatch.
+
 Use `functionReview.entryPoints` to trace wholly unobserved functions to
 their production caller. For example, Join Team’s deep-link entry point is
 the scene URL handler. A cloud sign-out or sync scenario reaching nearby

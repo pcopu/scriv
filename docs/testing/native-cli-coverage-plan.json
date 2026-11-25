@@ -330,6 +330,31 @@
       "expectedOutcomes": [
         "The app rejects the incorrect code, accepts a fresh challenge and returns the unchanged saved script to local-only state after revocation."
       ]
+    },
+    {
+      "id": "signed-in-codex-account-menu",
+      "title": "Inspect the signed-in Codex Account menu",
+      "featureId": "signed-in-codex-account-menu",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/native-codex-account-check.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
+        "symbol": "accountAction"
+      },
+      "actionIds": [
+        "activate"
+      ],
+      "routeIds": [
+        "journeys/native-codex-account-check/group/signed-in-account-menu"
+      ],
+      "plannedActions": [
+        "Open the real Codex Account control after connecting to an idle signed-in loopback fixture."
+      ],
+      "expectedOutcomes": [
+        "Scriv presents the account menu with Refresh account, Sign out of ChatGPT and Cancel and preserves the saved projects."
+      ]
     }
   ],
   "associations": [
@@ -993,6 +1018,28 @@
       "proposedAssertions": [
         "Rate limiting disables immediate retry.",
         "Rejected verification leaves the original sign-in sheet and saved project intact."
+      ]
+    },
+    {
+      "rangeId": "signed-in-codex-account-menu-1",
+      "featureId": "signed-in-codex-account-menu",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
+        "start": 207,
+        "end": 210,
+        "fileSha256": "fda261dbdf9237c8cf9577e0cb8471c1ce8ecf13b48d2e38a5f02ae0cba6808d",
+        "spanSha256": "c1834278bd3caab7ebfb4ffaff8ddf3f2edbe59019f385a6256b17b78e1c7d32",
+        "sha256": "47537ec53ce4362670ff6e95f8775ddb68d88d2938ccb58af3d21a4adab9779f"
+      },
+      "scenarioIds": [
+        "signed-in-codex-account-menu"
+      ],
+      "rationale": "Open the real Codex Account control after connecting to an idle signed-in loopback fixture.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "Scriv presents the account menu with Refresh account, Sign out of ChatGPT and Cancel and preserves the saved projects."
       ]
     }
   ]
