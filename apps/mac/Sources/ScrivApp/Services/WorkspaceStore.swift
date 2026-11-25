@@ -17,7 +17,6 @@ final class WorkspaceStore: ObservableObject {
     /// A freshly added line opens with its placeholder selected, so typing replaces it.
     var requestedEntryEditingSelectsText = false
     @Published var selectedCharacterID: String?
-    @Published var characterCreationRequest: UUID?
     @Published var selectedCueID: String? { didSet { invalidatePromptPresentationContextIfNeeded() } }
     @Published var selectedWordIDs: Set<String> = []
     @Published var tab: WorkspaceTab = .script
@@ -369,16 +368,6 @@ final class WorkspaceStore: ObservableObject {
             markPromptPresentationReady(scope:scope,cue:cue)
             schedulePromptSave(draft,delay:true)
         } catch { setPromptIssue("The new direction was not accepted: " + error.localizedDescription,for:cue) }
-    }
-    func retryGenerationPrompt() {
-        guard let cue = selectedCue ?? currentCue else { return }
-        cancelPromptPresentationReads()
-        do {
-            let scope = try promptScope(for:cue)
-            if let draft = try promptJournal().load(scope) { generationPromptDrafts[scope.key] = draft; schedulePromptSave(draft,delay:false) }
-            else { generationPromptDrafts.removeValue(forKey:scope.key); generationPromptIssues.removeValue(forKey:scope.key) }
-            markPromptPresentationReady(scope:scope,cue:cue)
-        } catch { setPromptIssue(error.localizedDescription,for:cue) }
     }
     func rebaseGenerationPrompt() {
         guard let cue = selectedCue ?? currentCue else { return }
@@ -1243,11 +1232,6 @@ final class WorkspaceStore: ObservableObject {
     func mergeCue(_ id: String, with nextId: String) { if change("Merge image cues", { try ProjectEditing.mergeCues(&$0,leftCueId:id,rightCueId:nextId) }) { selectedCueID = id } }
     func setCueImage(_ id: String, imageId: String?) { change("Select image version") { try ProjectEditing.setCueImage(&$0,cueId:id,imageId:imageId) } }
     func setCharacterPortrait(_ id: String, imageId: String?) { change("Change portrait") { try ProjectEditing.setPortrait(&$0,characterId:id,imageId:imageId) } }
-    func updateCuePrompt(_ id: String, prompt: String) { change("Edit image direction") { p in if let index = p.cues.firstIndex(where: { $0.id == id }) { p.cues[index].prompt = prompt } } }
-    func addCharacter() {
-        tab = .characters
-        characterCreationRequest = UUID()
-    }
     @discardableResult
     func createCharacter(_ character: ScriptCharacter) -> Bool {
         var character = character
@@ -1826,7 +1810,7 @@ final class WorkspaceStore: ObservableObject {
         let url = requestedURL
 #endif
         finishEditing()
-        characterCreationRequest = nil; requestedEntryEditingID = nil
+        requestedEntryEditingID = nil
         navigationGeneration += 1; invalidLocalAssetPaths = []; checkedLocalAssets = [:]; pendingLocalAssetChecks = [:]; let navigation = navigationGeneration
         await flushPendingSaves()
 #if targetEnvironment(macCatalyst)
@@ -1863,7 +1847,7 @@ final class WorkspaceStore: ObservableObject {
         do { try persistInitialProject(value,at:rootURL.appendingPathComponent(value.id).appendingPathExtension("scriv")) }
         catch { errorMessage = "The new project was not accepted: \(error.localizedDescription)"; return }
 #endif
-        characterCreationRequest = nil; requestedEntryEditingID = nil
+        requestedEntryEditingID = nil
         navigationGeneration += 1; invalidLocalAssetPaths = []; checkedLocalAssets = [:]; pendingLocalAssetChecks = [:]
         cloud.disconnect(); canonicalCheckpoint = nil; dirtyItems = [:]; hasConflicts = false
         project = value; projectURL = rootURL.appendingPathComponent(value.id).appendingPathExtension("scriv")
@@ -2269,7 +2253,7 @@ final class WorkspaceStore: ObservableObject {
         }
     }
     func openCloudProject(_ remote: CloudProject) {
-        finishEditing(); characterCreationRequest = nil; requestedEntryEditingID = nil
+        finishEditing(); requestedEntryEditingID = nil
         navigationGeneration += 1; invalidLocalAssetPaths = []; checkedLocalAssets = [:]; pendingLocalAssetChecks = [:]; let navigation = navigationGeneration
         perform {
             await self.flushPendingSaves(); await self.commitTask?.value

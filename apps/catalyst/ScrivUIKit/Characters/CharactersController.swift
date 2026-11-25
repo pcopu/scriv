@@ -16,7 +16,6 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
     private var renderedProject: ScrivProject?
     private var renderedSelection: String?
     private var renderedAssets: [String: String] = [:]
-    private var creationPending = false
     private let analysisStatus = ScrivUIKitTheme.label("",size:13,color:ScrivUIKitTheme.secondary)
     private let analysisDot = CharacterTeamUI.symbol("circle.fill",size:11)
     private let autoTagToggle = UISwitch()
@@ -88,7 +87,6 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
         ribbonHeight?.constant = 150 * presentationScale; ribbonItems.spacing = 10 * presentationScale
         render()
     }
-    override func viewDidAppear(_ animated: Bool) { super.viewDidAppear(animated); consumeCreationRequest() }
     private var availability: [String: String] = [:]
     private var availabilityCheckedAt: TimeInterval = 0
     override func storeDidChange() {
@@ -110,7 +108,7 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
         if renderedProject != store.project || renderedSelection != store.selectedCharacterID || renderedAssets != availability {
             renderedAssets = availability; render()
         }
-        renderAnalysis(); consumeCreationRequest()
+        renderAnalysis()
     }
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) { self.searchText = searchText; render() }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) { searchBar.resignFirstResponder() }
@@ -309,10 +307,6 @@ final class CharactersController: ScrivScreenController, UISearchBarDelegate {
         CharacterTeamUI.present(review,from:self,width:760,height:930)
     }
     private func openNewCharacter() { show(.characterEditor(characterID: nil)) }
-    private func consumeCreationRequest() {
-        guard isViewLoaded, view.window != nil, store.characterCreationRequest != nil, presentedViewController == nil, !creationPending else { return }
-        creationPending = true; store.characterCreationRequest = nil; openNewCharacter(); creationPending = false
-    }
     private func confirmDelete(_ character: ScriptCharacter) {
         let context = store.navigationContext
         CharacterTeamUI.confirmRemoval("Delete \(character.name)?",

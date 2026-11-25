@@ -86,7 +86,7 @@ enum ScrivCLICharacterPortraitMenu {
                   store.codex.jobs.isEmpty, store.codex.sharedJobs.isEmpty,
                   !store.characterAnalysis.isScanning,
                   store.characterAnalysis.availability == "Image analysis is disabled in verification mode.",
-                  store.requestedEntryEditingID == nil, store.characterCreationRequest == nil,
+                  store.requestedEntryEditingID == nil,
                   store.lockedByOther(characterID) == nil,
                   characters.parent === workspace, characters.store === store,
                   characters.contextIsCurrent, !characters.scopeToProject,

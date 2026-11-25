@@ -113,6 +113,22 @@ under `failedReplays` alongside the digest-bound receipt. Resolve that failure
 before repeating the selector. Error messages and stack text stay out of the
 receipt.
 
+## Review retired runtime paths
+
+Use the Tracer worklist’s `runtimeReview` before adding scenarios for code
+with no live caller. Review the current entry points, registered callbacks and
+all supported targets. Record that evidence with a pinned `dead-code` declaration.
+An observed execution or current scenario witness requires review. Pending
+removal remains in the measured scope until the rebuilt reference confirms it.
+
+The synchronous draft retry, direct cue-prompt setter and indirect character
+creation request were retired after tracing their callers in Catalyst and the
+removed AppKit code. The mounted Retry save control uses
+`prepareGenerationPromptForPresentation(force: true)`, direction edits use the
+cue journal, and Add character opens the editor directly. Use cue-draft
+recovery and the character catalog journey to confirm those active paths
+after removing the retired methods and request consumer.
+
 ## Required first lookup
 
 Before proposing more scenarios or estimating which code is covered, query the
