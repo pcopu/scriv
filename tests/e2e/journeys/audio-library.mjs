@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { mkdtemp, readFile, readlink, realpath, readdir, rmdir, symlink, unlink, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
+import { observePresentedError } from '../support/presented-error.mjs';
 import { audioProjectFixture, audioDirectionProjectFixture, syntheticPCM, verifyImportedAsset, invalidAudioRequests,
   invalidTimingDrafts, stableContent, editedContent, syntheticFilename, draftBaseline, trackBaseline } from './support/audio-library-fixtures.mjs';
 import { audioLibrarySteps, sortedProjects } from './support/audio-library-steps.mjs';
@@ -25,7 +29,7 @@ const cases = {
   attachment: attachmentCases,
   'attachment-direction': directionAttachmentCases,
   import: [...invalidAudioRequests().map(test => `reject-${test.name}`),
-    'dialogue-import', 'scene-silence-import', 'library-preserves-two-clips', 'browser-reopen'],
+    'dialogue-import', 'scene-silence-import', 'library-preserves-two-clips', 'browser-reopen', 'reject-audio-storage-alias'],
   mix: ['scene-import', 'library-import-rejected', 'clip-volume', 'clip-mute', 'clip-unmute',
     'reopen-library', 'master-volume', 'master-mute', 'master-unmute', 'browser-reopen'],
   timing: ['dialogue-import', 'baseline-trim', 'cancel-draft-1', 'cancel-draft-2', 'step-source-in',
@@ -35,6 +39,11 @@ const cases = {
 if (args.includes('--list-cases')) {
   console.log(JSON.stringify({ journeys: ['AUT-J13', 'AUT-J14'], groups, nativeVerified: false,
     cases: selected.flatMap(group => cases[group].map(id => ({ group, id }))),
+    groupActions: { import: [{ id: 'import-local-audio', command: 'import-audio',
+      condition: 'storage-destination-leaves-package', entryPoint: {
+        path: 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift', start: 1332, end: 1359,
+        sha256: '0c86ea9d848bcf83d96a864714f561ec9725a3f9d4d81eb9a7dc3bc6a64bed0f',
+      } }] },
     partialBaselineIDs: [`${draftBaseline}::0001`, `${draftBaseline}::0002`, `${draftBaseline}::0003`, `${draftBaseline}::0004`],
     relatedUncoveredBaselineIDs: [`${trackBaseline}::0001`, `${trackBaseline}::0002`, `${trackBaseline}::0005`, `${trackBaseline}::0006`],
     excluded: ['document picker/cancel', 'microphone', 'audible playback/source-position',
@@ -147,6 +156,35 @@ async function runGroup(group) {
         await ui.closeLibrary(); await unchanged(before);
       });
       await run('browser-reopen', reopen);
+      await run('reject-audio-storage-alias', async () => {
+        const before = await saved();
+        assert.match(current.id, /^[0-9a-f-]{36}$/i);
+        const audioDirectory = join(session.root, 'Projects', current.id + '.scriv', 'audio');
+        assert.equal(await realpath(audioDirectory), audioDirectory);
+        const existingFiles = (await readdir(audioDirectory)).sort();
+        const bytes = syntheticPCM({ milliseconds: 1000 });
+        const fileName = createHash('sha256').update(bytes).digest('hex') + '.wav';
+        assert.ok(!existingFiles.includes(fileName));
+        const destination = join(audioDirectory, fileName);
+        const faultRoot = await mkdtemp(join(session.root, 'AudioImportStorage-'));
+        const sentinel = join(faultRoot, 'OutsidePackage.wav');
+        const original = 'Owned fixture bytes outside the project package';
+        try {
+          await writeFile(sentinel, original, { flag: 'wx', mode: 0o600 });
+          await symlink(sentinel, destination);
+          try {
+            assert.deepEqual(await session.command('import-audio', { base64: bytes.toString('base64'), attachment: 'scene' }),
+              { dispatched: true, imported: false, cleanupVerified: true });
+            assert.equal(await readlink(destination), sentinel);
+            assert.equal(await readFile(sentinel, 'utf8'), original);
+            assert.deepEqual(await saved(), before);
+          } finally { await unlink(destination); }
+          assert.deepEqual((await readdir(audioDirectory)).sort(), existingFiles);
+        } finally {
+          await unlink(sentinel);
+          await rmdir(faultRoot);
+        }
+      });
     } else if (group === 'mix') {
       await run('scene-import', () => importClip('scene'));
       await ui.openLibrary();
@@ -276,7 +314,8 @@ async function runGroup(group) {
       await run('browser-reopen', reopen);
     }
     assert.deepEqual(completed, cases[group], 'Every declared selected case ran exactly once');
-    assert.deepEqual(await session.command('presented-alerts'), []);
+    if (group === 'import') await observePresentedError(session, 'The audio file leaves the project package.');
+    else assert.deepEqual(await session.command('presented-alerts'), []);
     console.log(`PASS: AUT-J13/AUT-J14/${group}; semantic audio import and actual UIKit controls only`);
   } catch (error) {
     throw new Error(`AUT-J13/AUT-J14/${group}/${currentCase} failed`, { cause: error });
