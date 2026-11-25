@@ -97,6 +97,9 @@ export async function startNativeCloudFixture() {
       sharedGenerationState: () => response('shared-generation-state'),
       refuseFirstSharedGenerationCreate: () => response('refuse-first-generation-create'),
       generationCreateAttempts: () => response('generation-create-attempts'),
+      armGenerationClaim: mode => response(['arm-generation-claim', mode]),
+      generationClaimState: () => response('generation-claim-state'),
+      releaseGenerationClaim: () => response('release-generation-claim'),
       prepareInvitations: () => response('prepare-invitations'),
       interruptInvitationLoad: () => response('interrupt-invitation-load'),
       invitationState: () => response('invitation-state'),
@@ -160,6 +163,7 @@ async function startWorker(root) {
       let editingLease;
       let stagedEdit;
       let generationCreate;
+      let generationClaim;
       const withoutLeases = operations => JSON.stringify(operations.map(({ lease, ...item }) => item));
       const sameLease = (left, right) => left.token === right.token && left.fence === right.fence;
       async function interruptedCommand(payload, upstream) {
@@ -207,6 +211,33 @@ async function startWorker(root) {
             if (!request.headers.has('authorization')) throw new Error('Expected the owned logout request');
             logoutRefusal = 'consumed';
             return Response.json({ error: { code: 'fixture_unavailable', message: 'Synthetic logout service unavailable' } }, { status: 503 });
+          }
+          if (generationClaim?.phase === 'armed' && path.startsWith(generationClaim.path + '/')
+              && request.headers.has('authorization')) {
+            const relative = path.slice(generationClaim.path.length + 1);
+            if (generationClaim.mode === 'hold' && request.method === 'POST' && /^[a-f0-9-]{36}\\/claim$/.test(relative)) {
+              const response = await upstream();
+              if (!response.ok) return response;
+              const { job } = await response.clone().json();
+              if (relative !== job.id + '/claim' || job.status !== 'running') throw new Error('Expected a real initial shared claim');
+              generationClaim.jobID = job.id;
+              generationClaim.phase = 'held';
+              // Keep this request live while the journey switches projects.
+              await new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => reject(new Error('The held shared claim was not released')), 15000);
+                generationClaim.release = () => { clearTimeout(timeout); resolve(); };
+              });
+              generationClaim.phase = 'returned';
+              return response;
+            }
+            if (generationClaim.mode === 'refuse-renewal' && request.method === 'PATCH' && /^[a-f0-9-]{36}$/.test(relative)) {
+              const body = await request.clone().json();
+              if (body.status === 'running' && body.progressText === 'Saving the generated image to its original project') {
+                generationClaim.jobID = relative;
+                generationClaim.phase = 'refused';
+                return Response.json({ error: { code: 'service_unavailable', message: 'Synthetic shared ownership lookup interrupted' } }, { status: 503 });
+              }
+            }
           }
           if (generationCreate && path === generationCreate.path && request.method === 'POST') {
             const { id, targetItemId: cueID, sourceRevision } = await request.clone().json();
@@ -398,6 +429,21 @@ async function startWorker(root) {
           return true;
         }
         generationCreateAttempts() { return generationCreate.attempts; }
+        armGenerationClaim(projectId, mode) {
+          if (generationClaim || !['hold', 'refuse-renewal'].includes(mode)) throw new Error('Choose one owned shared claim condition');
+          generationClaim = { mode, path: '/v1/projects/' + projectId + '/generation-jobs', phase: 'armed' };
+          return true;
+        }
+        generationClaimState() {
+          const { phase, jobID } = generationClaim;
+          return { phase, ...(jobID && { jobID }) };
+        }
+        releaseGenerationClaim() {
+          if (generationClaim?.phase !== 'held' || !generationClaim.release) throw new Error('The owned claim must be held first');
+          generationClaim.phase = 'released';
+          generationClaim.release();
+          return true;
+        }
         watchHostedImage(path) {
           if (hostedImagePath) throw new Error('A hosted image is already being observed');
           hostedImagePath = path;
@@ -770,6 +816,12 @@ async function startWorker(root) {
         return nativeWorker.refuseFirstGenerationCreate(sharedProjectID);
       },
       generationCreateAttempts: () => nativeWorker.generationCreateAttempts(),
+      armGenerationClaim: mode => {
+        assert.ok(sharedProjectID, 'Seed the owned generation project first');
+        return nativeWorker.armGenerationClaim(sharedProjectID, mode);
+      },
+      generationClaimState: () => nativeWorker.generationClaimState(),
+      releaseGenerationClaim: () => nativeWorker.releaseGenerationClaim(),
       prepareInvitations, invitationState, interruptInvitationLoad: () => nativeWorker.interruptInvitationLoad(),
       prepareTeamManagement, addTeamManagementMember, teamManagementState,
       prepareHistoryPages, changeHistoryPage: mode => nativeWorker.changeHistoryPage(mode),
@@ -811,6 +863,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'shared-generation-state': worker.sharedGenerationState, 'prepare-invitations': worker.prepareInvitations,
         'refuse-first-generation-create': worker.refuseFirstSharedGenerationCreate,
         'generation-create-attempts': worker.generationCreateAttempts,
+        'arm-generation-claim': worker.armGenerationClaim, 'generation-claim-state': worker.generationClaimState,
+        'release-generation-claim': worker.releaseGenerationClaim,
         'interrupt-invitation-load': worker.interruptInvitationLoad, 'invitation-state': worker.invitationState,
         'prepare-team-management': worker.prepareTeamManagement, 'add-team-management-member': worker.addTeamManagementMember,
         'team-management-state': worker.teamManagementState,

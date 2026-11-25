@@ -95829,8 +95829,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-shared-generation.mjs",
-        "start": 191,
-        "end": 195,
+        "start": 250,
+        "end": 254,
         "sha256": "c6f975581152944a8e22f719c72828cda7d33624b0c485d0a550fbfa26dc113d"
       },
       "why": "The Shared project selection displays the completed Team job in the native history sheet."
@@ -95850,8 +95850,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-shared-generation.mjs",
-        "start": 197,
-        "end": 237,
+        "start": 256,
+        "end": 296,
         "sha256": "25c6c2b38738574a82013d5c0f27361654803269769c3ca3036938bc3aa281fc"
       },
       "why": "The waiting job receives a new accepted claim and keeps the same identity through lease renewal, attachment and shared completion."
@@ -95869,8 +95869,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-shared-generation.mjs",
-        "start": 166,
-        "end": 189,
+        "start": 225,
+        "end": 248,
         "sha256": "353ae2cc2c76fbdb6da4c15ea5a7bc51c35def7381f1d13c34b060862cf9302d"
       },
       "why": "The existing command reaches the native shared job workflow. The fixture verifies its completion references the saved cue and the matching hosted bytes."
@@ -98446,8 +98446,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-shared-generation.mjs",
-        "start": 135,
-        "end": 162,
+        "start": 194,
+        "end": 221,
         "sha256": "0013b85c93dbfbf32214d1c03c3a644edf582b13f6353c86f43487e8ad947bfa"
       },
       "why": "Explicit recovery creates the same previously absent shared job, hosts its original bytes once and updates only its original cue."
@@ -98465,8 +98465,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-shared-generation.mjs",
-        "start": 123,
-        "end": 133,
+        "start": 182,
+        "end": 192,
         "sha256": "0d947c15bf41c4980095a71b8a249ed32404f61d58c3de740eac57f73fc95946"
       },
       "why": "A refused shared job creation leaves the original job running locally and the isolated Worker has no job or hosted artifact."
@@ -98785,6 +98785,45 @@
         "sha256": "c5c54006f22743d03d25268234bfb273981505592af0862f890869a6d10e60b8"
       },
       "why": "Valid named cases retain the explicit execution order and distinct group identities. Unknown groups, duplicates and mixed selection forms are rejected before evidence or app launch."
+    },
+    {
+      "id": "81f3017b6120e4a1",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1524,
+        "end": 1524,
+        "sha256": "d7ffc7a81e156efbfd37af2a27faa0791069e1b3bf06aab140bb10be2490784f"
+      },
+      "actions": [
+        "activate Generate image for 01A on the Script tab",
+        "key Command-N"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-shared-generation.mjs",
+        "start": 126,
+        "end": 148,
+        "sha256": "6ddb6c8b8cf79abd045629a71659e5c88174001608dbda111123a50333f151b5"
+      },
+      "why": "Changing projects during an accepted claim cancels the stale local generation path before the provider starts. The selected project, original package and Worker assets are checked."
+    },
+    {
+      "id": "bc4b680414568b04",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1545,
+        "end": 1545,
+        "sha256": "6563cca4f8f2b5c1bc824180712f46dc1a3baceb612323ea6828d61b679fa4b7"
+      },
+      "actions": [
+        "activate Generate image for 01A on the Script tab"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-shared-generation.mjs",
+        "start": 152,
+        "end": 161,
+        "sha256": "9cd66ae06d68ae1eb09e4dc35244d96e9cf5ccdf5e9a95c75a016d38470d37c2"
+      },
+      "why": "A refused ownership renewal keeps the generated artifact on the device and leaves both the cue and hosted assets unchanged until explicit recovery."
     }
   ],
   "commentExclusions": [

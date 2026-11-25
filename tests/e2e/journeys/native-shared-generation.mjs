@@ -10,7 +10,7 @@ import { fixtureImageHash, recoveredImageHash, startCodexFixture } from './suppo
 import { generationContextInput } from './support/generation-context-cases.mjs';
 import { nativeFixtureEmail, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
 
-const groups = ['shared', 'recover-local-only'];
+const groups = ['shared', 'recover-local-only', 'leave-before-claim', 'renewal-refused'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
   console.log(JSON.stringify({ groups }));
@@ -18,6 +18,8 @@ if (args.length === 1 && args[0] === '--list-cases') {
 }
 assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]), 'Choose a shared generation group');
 const recoverLocalOnly = args[1] === 'recover-local-only';
+const leaveBeforeClaim = args[1] === 'leave-before-claim';
+const renewalRefused = args[1] === 'renewal-refused';
 assert.ok(process.env.SCRIV_E2E_APP, 'Requires a signed automation-enabled Catalyst build');
 const project = generationContextInput('spanning-cue');
 project.title = 'Synthetic shared image generation';
@@ -85,7 +87,8 @@ try {
   assert.deepEqual(await fixture.sharedGenerationState(), { jobs: [], operations: [], hosted: [] });
 
   step = 'connect to the owned image runtime';
-  codex = await startCodexFixture(session.root, recoverLocalOnly ? ['recover'] : ['success', 'recover', 'failure']);
+  const turns = leaveBeforeClaim ? [] : renewalRefused ? ['success'] : recoverLocalOnly ? ['recover'] : ['success', 'recover', 'failure'];
+  codex = await startCodexFixture(session.root, turns);
   await codex.race((async () => {
     await session.command('key', { input: ',', modifiers: ['command'] });
     const setting = node => node.identifier === 'scriv.settings.codex' && node.hittable;
@@ -119,6 +122,62 @@ try {
       const workspace = active.find(generating).windowPath;
       await ui.activate(node => node.label === 'Cancel the current image generation' && node.windowPath === workspace);
     };
+
+    if (leaveBeforeClaim) {
+      step = 'leave the project while its accepted shared claim is returning';
+      assert.equal(await fixture.armGenerationClaim('hold'), true);
+      await generateForCue();
+      const { jobID } = await until(fixture.generationClaimState, state => state.phase === 'held');
+      const claimed = (await fixture.sharedGenerationState()).jobs.find(job => job.id === jobID);
+      assert.equal(claimed.status, 'running');
+      await session.command('key', { input: 'n', modifiers: ['command'] });
+      const other = await waitForSavedProject(session, project => project.id !== before.id && !project.cloudProjectId);
+      await session.waitFor(nodes => nodes.some(node => byID('workspace-project')(node) && node.title === other.title && node.hittable));
+      assert.equal(await fixture.releaseGenerationClaim(), true);
+      await until(fixture.generationClaimState, state => state.phase === 'returned');
+      assert.deepEqual((await session.command('loaded-project')).project, other);
+      // The app discards a response from the previous project generation.
+      // The already accepted server lease is left for expiry.
+      const result = await fixture.sharedGenerationState();
+      assert.deepEqual(result.jobs, [claimed]);
+      assert.deepEqual(result.operations, [{ jobID, version: claimed.version, owner: 1 }]);
+      assert.deepEqual(result.hosted, []);
+      assert.deepEqual(await localJobs(), []);
+      assert.deepEqual(stableContent(await savedPackage()), stableContent(before));
+      codex.assertNoTurns();
+      await fixture.assertNoOutbound();
+      return;
+    }
+
+    if (renewalRefused) {
+      step = 'retain the generated image when automatic shared claim renewal is refused';
+      assert.equal(await fixture.armGenerationClaim('refuse-renewal'), true);
+      await generateForCue();
+      const { jobID } = await until(fixture.generationClaimState, state => state.phase === 'refused');
+      const pending = (await until(localJobs, rows => rows.some(row => row.jobID === jobID && row.artifact?.sha256 === fixtureImageHash)))
+        .find(row => row.jobID === jobID);
+      assert.equal(pending.attachmentVerified, false);
+      assert.deepEqual((await fixture.sharedGenerationState()).hosted, []);
+      assert.deepEqual(stableContent(await savedPackage()), stableContent(before));
+
+      step = 'attach the same image only after explicitly recovering ownership';
+      const tabs = await openJobs();
+      await ui.activate(node => node.title === 'Use in original project' && node.windowPath === tabs.windowPath && node.enabled === true);
+      const result = await until(fixture.sharedGenerationState, state => state.jobs.length === 1
+        && state.jobs[0].id === jobID && state.jobs[0].status === 'completed' && state.hosted.length === 1);
+      const [job] = result.jobs;
+      verifyLeaseReceipts(job, result);
+      assert.deepEqual(result.hosted, [{ id: job.imageID, sha256: fixtureImageHash, bytes: 73 }]);
+      const saved = await waitForSavedProject(session, project => project.id === before.id
+        && project.cues.some(cue => cue.id === 'cue' && cue.imageId === job.imageID));
+      assert.deepEqual(saved.entries, before.entries);
+      assert.deepEqual(saved.characters, before.characters);
+      assert.deepEqual(saved.cues, before.cues.map(cue => cue.id === 'cue' ? { ...cue, imageId: job.imageID } : cue));
+      assert.deepEqual(saved.images.map(({ id, sha256 }) => ({ id, sha256 })), [{ id: job.imageID, sha256: fixtureImageHash }]);
+      await until(localJobs, rows => rows.length === 1 && rows[0].jobID === jobID && rows[0].attachmentVerified);
+      await fixture.assertNoOutbound();
+      return;
+    }
 
     if (recoverLocalOnly) {
       step = 'start one local turn after the shared job creation is unavailable';
@@ -273,6 +332,8 @@ try {
   })());
   await codex.close();
   codex = undefined;
+  if (leaveBeforeClaim) console.log('PASS: leaving the project discarded the late claim without starting a model turn');
+  if (renewalRefused) console.log('PASS: refused renewal retained the same local artifact until explicit recovery');
 } catch (error) {
   failed = true;
   throw new Error(`Native shared generation failed during ${step}`, { cause: error });

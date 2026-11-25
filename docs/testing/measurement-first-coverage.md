@@ -7,7 +7,11 @@ existing scenarios. Pass that discovery catalog and retained captures to
 and its shared code together. Check existing witnesses and use
 `extensionCandidates.items` to find scenarios whose passing intervals reached
 both sides of a gap. `marginalGapLines` counts candidate lines beyond earlier
-items on that shortlist. Review the production caller and the exact control
+items on that shortlist. Use `nativeBatches.session.argv` to get the matching
+discovered `test --case` selectors, deduplicated across the passing-neighbor
+and function-edge lists. `actionReview.nativeBatch` narrows the batch to an
+explicit CLI action. Startup has its own batch because it uses a different
+capture mode. Review the production caller and the exact control
 before adding a condition, especially for generic actions such as `activate`.
 Use `tracer proposal bind` to classify reviewed plans that need a new scenario or
 a missing CLI action. Query retained measurements for the behavior before
@@ -137,6 +141,11 @@ in original project. The owned Worker accepts the second creation request for
 the original ID and revision. The journey asserts one image-provider turn,
 one hosted artifact with the original hash, and one changed cue in the saved
 project.
+The `leave-before-claim` group switches projects after the Worker accepts
+the claim and before the app receives it. The new project stays selected,
+no local image turn starts, and the accepted lease remains for expiry.
+The `renewal-refused` group preserves the generated image locally after a
+refused renewal. Use in original project attaches the same image once.
 
 The `peer-discovery` group of `journeys/native-cloud-image-recovery` drives
 Preview's Fetch image control. A second isolated session for the same
