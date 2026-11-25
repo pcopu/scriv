@@ -4,6 +4,20 @@ import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { audioLibrarySteps } from './support/audio-library-steps.mjs';
 import { invitationLoadFailure, invitationRevokeFailure, nativeFixtureEmail, nativeFixtureTeam, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
 
+const args = process.argv.slice(2);
+const groups = ['inline'];
+if (args.length === 1 && args[0] === '--list-cases') {
+  console.log(JSON.stringify({ groups, groupActions: {
+    inline: [{ id: 'revoke-team-invitation', command: 'activate', trigger: 'Revoke',
+      condition: 'active-invitation-in-the-teams-tab-with-a-temporary-revocation-failure', entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/Teams/TeamsController.swift', start: 324, end: 326,
+        sha256: '7100f03dc4294f9d6e8f691878609ba3a44a0b2b61126b7598e1234f17cf41c5',
+      } }],
+  } }));
+  process.exit(0);
+}
+assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]));
+const inline = args[1] === 'inline';
 assert.ok(process.env.SCRIV_E2E_APP, 'Requires a signed Catalyst automation build');
 const fixture = await startNativeCloudFixture();
 const button = (title, windowPath) => node => node.type === 'UIButton'
@@ -50,7 +64,7 @@ try {
   await clickPresented('Sign in with code');
   await clickPresented('Close Projects');
 
-  step = 'open the paid Team invitation sheet';
+  step = 'open the owned paid Team';
   const menu = node => node.label === 'Workspace actions' && node.hittable && node.enabled;
   const workspaceNodes = await session.waitFor(nodes => nodes.filter(menu).length === 1);
   const menuOwner = workspaceNodes.find(menu);
@@ -58,22 +72,47 @@ try {
     { dispatched: true, coverage: 'semantic-menu-action' });
   await session.waitFor(nodes => hasText('Members (1)')(nodes) && hasText('● Active')(nodes));
   const heading = 'Invite to ' + nativeFixtureTeam;
+  const selector = node => node.type === 'UISegmentedControl'
+    && node.segments?.join('|') === 'Overview|Members|Invitations';
+  async function selectSection(index) {
+    const target = await ui.reveal(selector);
+    await session.command('select', { target: target.path, index });
+    return target.windowPath;
+  }
   const open = async () => {
+    if (inline) {
+      const windowPath = await selectSection(2);
+      await session.waitFor(hasText('Invitation links', windowPath));
+      return windowPath;
+    }
     await clickPresented('Invite people');
     const nodes = await session.waitFor(hasText(heading));
     return nodes.find(node => node.text === heading).windowPath;
   };
   const close = async windowPath => {
+    if (inline) {
+      await selectSection(1);
+      await session.waitFor(hasText('Members (1)', windowPath));
+      return;
+    }
     await clickPresented('Done', windowPath);
     await session.waitFor(nodes => !hasText(heading)(nodes) && nodes.some(node => button('Invite people')(node) && node.hittable));
   };
 
-  step = 'show a temporary list failure and reopen the invitation sheet';
+  step = 'show a temporary list failure and reload the invitation list';
   assert.equal(await fixture.interruptInvitationLoad(), true);
-  const failedSheet = await open();
-  await session.waitFor(hasText(invitationLoadFailure, failedSheet));
-  assert.deepEqual(await fixture.invitationState(), { ...before, interruptedLoads: 1 });
-  await close(failedSheet);
+  if (inline) {
+    await clickPresented('Refresh members');
+    await session.waitFor(hasText(invitationLoadFailure));
+    assert.deepEqual(await fixture.invitationState(), { ...before, interruptedLoads: 1 });
+    await clickPresented('Refresh members');
+    await session.waitFor(hasText('Members (1)'));
+  } else {
+    const failedSheet = await open();
+    await session.waitFor(hasText(invitationLoadFailure, failedSheet));
+    assert.deepEqual(await fixture.invitationState(), { ...before, interruptedLoads: 1 });
+    await close(failedSheet);
+  }
 
   const sheet = await open();
   const list = await session.waitFor(nodes => ['Member invitation', 'Viewer invitation', 'Expired'].every(text => hasText(text, sheet)(nodes))

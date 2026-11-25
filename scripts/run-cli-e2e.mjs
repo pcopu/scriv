@@ -148,7 +148,7 @@ const groupedScenarios = new Set([
   'journeys/import-export.mjs', 'journeys/native-cloud-project-sync.mjs', 'journeys/native-team-sharing.mjs',
   'journeys/picture-coverage.mjs', 'journeys/codex-loopback-generation.mjs', 'journeys/native-cloud-image-recovery.mjs',
   'journeys/native-shared-generation.mjs', 'journeys/cue-draft-recovery.mjs', 'journeys/audio-library.mjs',
-  'journeys/native-team-management.mjs',
+  'journeys/native-team-management.mjs', 'journeys/native-team-invitations.mjs',
   'journeys/native-codex-account-check.mjs',
   'journeys/native-first-launch.mjs', 'journeys/local-images.mjs',
 ]);
