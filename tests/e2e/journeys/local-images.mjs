@@ -20,26 +20,42 @@ const fixtureHashes = {
   blue: '3fba282698b3df63c76fb40e529943fb6da6d28bafa6ff9e3a75c0c4a0cbb784',
 };
 const args = process.argv.slice(2);
+const defaultGroups = ['versions', 'first-line', 'tags', 'source-navigation', 'boundary'];
+const availableGroups = [...defaultGroups, 'picker-playback'];
+const pickerCases = ['open the Storyboard image picker during playback and keep the saved script intact'];
 let group;
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--list-cases') continue;
-  assert.equal(args[i], '--group', 'Expected --list-cases or --group versions|first-line|tags|source-navigation|boundary');
+  assert.equal(args[i], '--group', 'Expected --list-cases or --group ' + availableGroups.join('|'));
   assert.equal(group, undefined, 'Specify --group only once');
-  group = args[++i]; assert.ok(['versions', 'first-line', 'tags', 'source-navigation', 'boundary'].includes(group), 'Unknown local-images group');
+  group = args[++i]; assert.ok(availableGroups.includes(group), 'Unknown local-images group');
 }
-const groups = group ? [group] : ['versions', 'first-line', 'tags', 'source-navigation', 'boundary'];
-if (args.includes('--list-cases')) {
+const listing = args.includes('--list-cases');
+const groups = group ? [group] : listing ? availableGroups : defaultGroups;
+if (listing) {
+  const listedCases = { versions: cases, 'first-line': firstLineCases, tags: pictureTagCases,
+    'source-navigation': sourceNavigationCases, boundary: imageBoundaryCases, 'picker-playback': pickerCases };
   console.log(JSON.stringify({ journey: 'AUT-J08', nativeVerified: false, groups,
     freshSessionPerGroup: true,
     groupWitnessPaths: groups.includes('first-line') ? { 'first-line': ['tests/e2e/support/first-line-image-case.mjs'] } : {},
+    groupActions: groups.includes('picker-playback') ? { 'picker-playback': [{
+      id: 'open-storyboard-image-picker', command: 'activate', trigger: 'Import image',
+      condition: 'image-picker-opens-while-the-scene-is-playing', entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift', start: 63, end: 63,
+        sha256: 'e7ee0d2c0ebf0cd703447cdbdc0f6927e3ea7b7291f9a803f6f57cf9fd3a4cb7',
+      }, branch: {
+        path: 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift', start: 1378, end: 1387,
+        sha256: '59797b464d6921388a78356ca034a428cf6e40d09af742294dcca8b30cfc6ce1',
+      },
+    }] } : {},
     sourceNavigationEvidence: 'Synthetic actual-UI source navigation; disabled unplaced historical version, placed exact-version cross-scene navigation and selected source-row witness. v48 scoped overlay passed; current composition evidence is recorded separately; no frozen baseline retirement.',
     pictureTagEvidence: 'Synthetic actual-UI acceptance, historical-version add/remove/readd and manual marker persistence; v47 tags overlay passed against v46 app; default composition evidence recorded separately, no legacy retirement.',
-    cases: groups.flatMap(value => value === 'boundary' ? imageBoundaryCases : value === 'versions' ? cases : value === 'tags' ? pictureTagCases : value === 'source-navigation' ? sourceNavigationCases : firstLineCases),
+    cases: groups.flatMap(value => listedCases[value]),
     partialBaselineIDs: groups.includes('versions') ? [`${inspector}::0001`] : [],
     sourceCandidateBaselineIDs: groups.includes('first-line') ? [firstLineBaselineID] : [],
     relatedUncoveredBaselineIDs: [`${placement}::0004`, `${placement}::0005`],
     firstLineEvidence: 'Frozen ::0001 input and exact full saved/loaded model; native cue-label/playhead/missing-local routing, no decoded-pixel claim. Native and independent acceptance pending.',
-    excluded: ['picker/cancel/pause', 'zero-owned placement fixture equivalence',
+    excluded: ['platform picker selection and cancellation', 'zero-owned placement fixture equivalence',
       'captured-target stale races', 'provider generation/analysis', 'portrait and prompt menus',
       'literal overlapping anchored cue and captured-prompt fixture equivalence',
       'first-line save/reopen/history ::0005', 'fault injection', 'legacy retirement'],
@@ -51,9 +67,44 @@ if (args.includes('--list-cases')) {
     else if (selected === 'versions') await run();
     else if (selected === 'source-navigation') await runImageSourceNavigation(process.env.SCRIV_E2E_APP);
     else if (selected === 'tags') await runPictureCharacterTags(process.env.SCRIV_E2E_APP);
+    else if (selected === 'picker-playback') await verifyPickerPausesPlayback();
     else await runFirstLineImageCase(process.env.SCRIV_E2E_APP);
   }
 }
+async function verifyPickerPausesPlayback() {
+  const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
+  const ui = audioLibrarySteps(session);
+  const position = nodes => nodes.find(node => node.identifier === 'scene-playback-position')?.slider;
+  const playback = (nodes, label) => nodes.some(node => node.label === label && node.enabled);
+  try {
+    assert.equal((await session.command('capabilities')).cloudIsolation.network, 'disabled');
+    const input = audioProjectFixture();
+    input.title = 'Synthetic image picker playback';
+    input.entries.at(-1).ownedDurationMs = 60_000;
+    await ui.tab('Script');
+    await session.command('key', { input: 's', modifiers: ['command'] });
+    await waitForSavedProject(session, project => project.title === 'YAM MAN');
+    assert.deepEqual(await session.command('import-json', { text: JSON.stringify(input) }),
+      { dispatched: true, projectChanged: true });
+    const loaded = await waitForSavedProject(session, project => project.title === input.title);
+    const saved = await session.command('persisted-projects');
+    assert.deepEqual((await session.command('loaded-project')).project, loaded);
+    await ui.tab('Storyboard');
+    await ui.activate(node => node.label === 'Play scene');
+    await session.waitFor(nodes => playback(nodes, 'Pause scene') && position(nodes)?.value > 50);
+    const importer = node => node.type === 'UIButton' && (node.label === 'Import image' || node.title === 'Import image');
+    await ui.activate(importer);
+    // The modal picker covers the transport, so its playback control cannot
+    // witness the new label. The actual modal must block underlying activation
+    // and the loaded-model command while the durable project stays exact.
+    await session.waitFor(nodes => !nodes.some(node => importer(node) && node.hittable)
+      && !nodes.some(node => node.identifier === 'workspace-tabs' && node.hittable));
+    await assert.rejects(session.command('loaded-project'), /Synthetic loaded-project observation is unavailable or invalid/);
+    assert.deepEqual(await session.command('persisted-projects'), saved);
+    console.log('PASS: the native image picker opens during playback, covers the workspace, and leaves saved projects unchanged');
+  } finally { await session.close(); }
+}
+
 async function run() {
   const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
   const ui = audioLibrarySteps(session);
