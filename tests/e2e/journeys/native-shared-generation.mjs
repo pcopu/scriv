@@ -23,6 +23,13 @@ if (args.length === 1 && args[0] === '--list-cases') {
       condition: 'paid-team-project-has-local-image-without-hosted-replica', entryPoint: {
         path: 'apps/catalyst/ScrivUIKit/Account/ScrivAccountController.swift', start: 24, end: 24,
         sha256: 'bee03afe2f72622f86f7b668862ab44bd148f4245d0b6aa94db53d1c3fda3718',
+      } }, { id: 'send-discussion-image-version', command: 'activate', trigger: 'Send message',
+      condition: 'comment-includes-the-generated-image-version', entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/Discussion/ScrivDiscussionController.swift', start: 184, end: 184,
+        sha256: '84a7eeffbaf81f2577ec05db4ed0d6526571c028fa61eca330ef95428a3bd08a',
+      }, branch: {
+        path: 'apps/catalyst/ScrivUIKit/Discussion/DiscussionMessageViews.swift', start: 63, end: 70,
+        sha256: '5bc962228a9f97266f6b9fdce43063acd0f3648f8f247be94e12df2bd737bd0f',
       } }],
   } }));
   process.exit(0);
@@ -321,6 +328,44 @@ try {
     assert.deepEqual(await session.command('presented-alerts'), []);
     assert.deepEqual(stableContent((await session.command('loaded-project')).project), stableContent(saved));
     assert.deepEqual(await readFile(imagePath), imageBytes);
+
+    step = 'post the generated image version and open its image discussion';
+    const cue = saved.cues.find(value => value.id === 'cue');
+    await ui.slider('Playback position', cue.startMs + 1);
+    const actions = await ui.reveal(node => node.label === 'Workspace actions');
+    assert.deepEqual(await session.command('menu-action', {
+      target: actions.path, scope: 'workspace-discussion', action: 'Discussion',
+    }), { dispatched: true, coverage: 'semantic-menu-action' });
+    await session.waitFor(nodes => nodes.some(node => node.text === 'Comments stay with this project.'));
+    const attach = await ui.reveal(node => node.label === 'Attach a project item');
+    const action = `Current image, version ${image.version}`;
+    const menu = await session.command('menu', { target: attach.path });
+    assert.equal(menu.primary.flatMap(item => item.children ?? [])
+      .filter(item => item.title === action && !item.disabled && !item.hidden).length, 1);
+    assert.deepEqual(await session.command('menu-action', {
+      target: attach.path, scope: 'discussion-attachment', action,
+    }), { dispatched: true, coverage: 'semantic-menu-action' });
+    await session.waitFor(nodes => nodes.some(node => node.text === '1 attached item'));
+    const isComposer = node => node.type === 'DiscussionComposerTextView' && node.editable && node.hittable;
+    const composing = await session.waitFor(nodes => nodes.filter(isComposer).length === 1);
+    const comment = 'Review this exact generated image.';
+    await session.command('text', { target: composing.find(isComposer).path, text: comment });
+    await click('Send message');
+    const openImage = `Open attached ${cue.label} · v${image.version}`;
+    await session.waitFor(nodes => {
+      const body = nodes.find(node => node.type === 'DiscussionReadOnlyTextView' && node.text === comment);
+      const cell = body && nodes.find(node => node.type === 'DiscussionMessageCell' && body.path.startsWith(node.path + '.'));
+      return cell && nodes.filter(node => node.path.startsWith(cell.path + '.') && node.type === 'UIButton'
+        && node.label === openImage && node.enabled && node.hittable).length === 1
+        && !nodes.some(node => node.text === '1 attached item');
+    });
+    await click(openImage);
+    await session.waitFor(nodes => nodes.some(node => node.text === 'Comments stay with this image.')
+      && nodes.some(node => node.text === 'No comments yet'));
+    await click('Close discussion');
+    assert.deepEqual(stableContent(await savedPackage()), stableContent(saved));
+    assert.deepEqual(await readFile(imagePath), imageBytes);
+    assert.deepEqual((await fixture.sharedGenerationState()).hosted, completed.hosted);
 
     step = 'review the completed job in Shared project history';
     const tabs = await openJobs();
