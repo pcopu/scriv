@@ -42,6 +42,13 @@ outbox parts, and uses the Account sheet to recover the same receipt with no
 additional part uploads. Each variant opens a fresh workspace and compares
 the full downloaded project with the expected edit.
 
+The `recover-local-only` group of `journeys/native-shared-generation` exercises
+an unavailable job-creation endpoint, then uses Inspect existing turn and Use
+in original project. The owned Worker accepts the second creation request for
+the original ID and revision. The journey asserts one image-provider turn,
+one hosted artifact with the original hash, and one changed cue in the saved
+project.
+
 The `peer-discovery` group of `journeys/native-cloud-image-recovery` drives
 Preview's Fetch image control. A second isolated session for the same
 fixture account receives the actual discovery query through the Worker and

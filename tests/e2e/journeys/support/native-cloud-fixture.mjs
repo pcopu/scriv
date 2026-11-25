@@ -94,6 +94,8 @@ export async function startNativeCloudFixture() {
       sendHostedPeerSignal: signal => response(['send-hosted-peer-signal', signal]),
       prepareSharedGeneration: project => response(['prepare-shared-generation', project]),
       sharedGenerationState: () => response('shared-generation-state'),
+      refuseFirstSharedGenerationCreate: () => response('refuse-first-generation-create'),
+      generationCreateAttempts: () => response('generation-create-attempts'),
       prepareInvitations: () => response('prepare-invitations'),
       interruptInvitationLoad: () => response('interrupt-invitation-load'),
       invitationState: () => response('invitation-state'),
@@ -152,6 +154,7 @@ async function startWorker(root) {
       let history;
       let editingLease;
       let stagedEdit;
+      let generationCreate;
       const withoutLeases = operations => JSON.stringify(operations.map(({ lease, ...item }) => item));
       const sameLease = (left, right) => left.token === right.token && left.fence === right.fence;
       async function interruptedCommand(payload, upstream) {
@@ -186,6 +189,23 @@ async function startWorker(root) {
         async fetch(request) {
           const upstream = () => worker.fetch(request, this.env, this.ctx);
           const { pathname: path, searchParams } = new URL(request.url);
+          if (generationCreate && path === generationCreate.path && request.method === 'POST') {
+            const { id, targetItemId: cueID, sourceRevision } = await request.clone().json();
+            if (!request.headers.has('authorization') || !/^[a-f0-9-]{36}$/.test(id)
+                || cueID !== 'later' || !Number.isSafeInteger(sourceRevision) || generationCreate.attempts.length >= 2)
+              throw new Error('Expected the owned generation request');
+            const attempt = { id, cueID, sourceRevision };
+            if (!generationCreate.attempts.length) {
+              generationCreate.attempts.push({ ...attempt, status: 503 });
+              return Response.json({ error: { code: 'service_unavailable', message: 'Synthetic generation service interruption' } }, { status: 503 });
+            }
+            const first = generationCreate.attempts[0];
+            if (id !== first.id || cueID !== first.cueID || sourceRevision !== first.sourceRevision)
+              throw new Error('Recovery must create the original shared job');
+            const response = await upstream();
+            generationCreate.attempts.push({ ...attempt, status: response.status });
+            return response;
+          }
           if (stagedEdit && (path === stagedEdit.path || path.startsWith(stagedEdit.path + '/'))) {
             const route = path.slice(stagedEdit.path.length);
             const payload = await request.clone().json();
@@ -347,6 +367,13 @@ async function startWorker(root) {
           return true;
         }
         stagedEditState() { return stagedEdit.requests; }
+        refuseFirstGenerationCreate(projectId) {
+          if (generationCreate || typeof projectId !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(projectId))
+            throw new Error('A single owned generation project is required');
+          generationCreate = { path: '/v1/projects/' + projectId + '/generation-jobs', attempts: [] };
+          return true;
+        }
+        generationCreateAttempts() { return generationCreate.attempts; }
         watchHostedImage(path) {
           if (hostedImagePath) throw new Error('A hosted image is already being observed');
           hostedImagePath = path;
@@ -691,6 +718,11 @@ async function startWorker(root) {
       prepareHostedImage, repairHostedImage, hostedImageResponses: () => nativeWorker.hostedImageResponses(),
       openHostedPeer, hostedPeerInbox, sendHostedPeerSignal,
       prepareSharedGeneration, sharedGenerationState,
+      refuseFirstSharedGenerationCreate: () => {
+        assert.ok(sharedProjectID, 'Seed the owned generation project first');
+        return nativeWorker.refuseFirstGenerationCreate(sharedProjectID);
+      },
+      generationCreateAttempts: () => nativeWorker.generationCreateAttempts(),
       prepareInvitations, invitationState, interruptInvitationLoad: () => nativeWorker.interruptInvitationLoad(),
       prepareTeamManagement, addTeamManagementMember, teamManagementState,
       prepareHistoryPages, changeHistoryPage: mode => nativeWorker.changeHistoryPage(mode),
@@ -728,6 +760,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'watch-staged-edit': worker.watchStagedEdit, 'staged-edit-state': worker.stagedEditState,
         'hosted-image-responses': worker.hostedImageResponses, 'prepare-shared-generation': worker.prepareSharedGeneration,
         'shared-generation-state': worker.sharedGenerationState, 'prepare-invitations': worker.prepareInvitations,
+        'refuse-first-generation-create': worker.refuseFirstSharedGenerationCreate,
+        'generation-create-attempts': worker.generationCreateAttempts,
         'interrupt-invitation-load': worker.interruptInvitationLoad, 'invitation-state': worker.invitationState,
         'prepare-team-management': worker.prepareTeamManagement, 'add-team-management-member': worker.addTeamManagementMember,
         'team-management-state': worker.teamManagementState,

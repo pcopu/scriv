@@ -10,6 +10,14 @@ import { fixtureImageHash, recoveredImageHash, startCodexFixture } from './suppo
 import { generationContextInput } from './support/generation-context-cases.mjs';
 import { nativeFixtureEmail, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
 
+const groups = ['shared', 'recover-local-only'];
+const args = process.argv.slice(2);
+if (args.length === 1 && args[0] === '--list-cases') {
+  console.log(JSON.stringify({ groups }));
+  process.exit(0);
+}
+assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]), 'Choose a shared generation group');
+const recoverLocalOnly = args[1] === 'recover-local-only';
 assert.ok(process.env.SCRIV_E2E_APP, 'Requires a signed automation-enabled Catalyst build');
 const project = generationContextInput('spanning-cue');
 project.title = 'Synthetic shared image generation';
@@ -77,7 +85,7 @@ try {
   assert.deepEqual(await fixture.sharedGenerationState(), { jobs: [], operations: [], hosted: [] });
 
   step = 'connect to the owned image runtime';
-  codex = await startCodexFixture(session.root, ['success', 'recover', 'failure']);
+  codex = await startCodexFixture(session.root, recoverLocalOnly ? ['recover'] : ['success', 'recover', 'failure']);
   await codex.race((async () => {
     await session.command('key', { input: ',', modifiers: ['command'] });
     const setting = node => node.identifier === 'scriv.settings.codex' && node.hittable;
@@ -104,6 +112,56 @@ try {
     };
     const localJobs = async () => (await session.command('image-evidence')).jobs;
     const savedPackage = async () => (await session.command('persisted-projects')).find(candidate => candidate.id === before.id);
+
+    const cancelForCue = async label => {
+      const generating = node => generateButton(label)(node) && node.title === 'Generating…';
+      const active = await session.waitForUnique(generating);
+      const workspace = active.find(generating).windowPath;
+      await ui.activate(node => node.label === 'Cancel the current image generation' && node.windowPath === workspace);
+    };
+
+    if (recoverLocalOnly) {
+      step = 'start one local turn after the shared job creation is unavailable';
+      assert.equal(await fixture.refuseFirstSharedGenerationCreate(), true);
+      await generateForCue('01B');
+      const [running] = await until(localJobs, rows => rows.length === 1 && rows[0].status === 'running' && rows[0].hasTurnID);
+      const id = running.jobID;
+      const [rejected] = await fixture.generationCreateAttempts();
+      assert.equal(rejected.id, id);
+      assert.equal(rejected.cueID, 'later');
+      assert.equal(rejected.status, 503);
+      assert.deepEqual(await fixture.sharedGenerationState(), { jobs: [], operations: [], hosted: [] });
+
+      step = 'recover the local artifact explicitly into its original shared project';
+      await cancelForCue('01B');
+      const tabs = await openJobs();
+      const control = title => node => node.title === title && node.windowPath === tabs.windowPath;
+      await ui.activate(control('Inspect existing turn'));
+      const [inspected] = await until(localJobs, rows => rows.length === 1 && rows[0].artifact?.sha256 === recoveredImageHash);
+      assert.equal(inspected.jobID, id);
+      assert.equal(inspected.attachmentVerified, false);
+      assert.deepEqual(await fixture.sharedGenerationState(), { jobs: [], operations: [], hosted: [] });
+      assert.deepEqual(stableContent(await savedPackage()), stableContent(before));
+      await ui.activate(node => control('Use in original project')(node) && node.enabled === true);
+      const result = await until(fixture.sharedGenerationState,
+        state => state.jobs.length === 1 && state.jobs[0].status === 'completed' && state.hosted.length === 1);
+      const [job] = result.jobs;
+      assert.equal(job.id, id);
+      assert.equal(job.cueID, 'later');
+      assert.equal(job.sourceRevision, rejected.sourceRevision);
+      verifyLeaseReceipts(job, result);
+      assert.deepEqual(await fixture.generationCreateAttempts(), [rejected, { ...rejected, status: 201 }]);
+      assert.deepEqual(result.hosted, [{ id: job.imageID, sha256: recoveredImageHash, bytes: 73 }]);
+      const saved = await waitForSavedProject(session, candidate => candidate.id === before.id
+        && candidate.cues.find(cue => cue.id === 'later')?.imageId === job.imageID);
+      assert.deepEqual(saved.images.map(({ id, sha256 }) => ({ id, sha256 })), [{ id: job.imageID, sha256: recoveredImageHash }]);
+      assert.deepEqual(saved.entries, before.entries);
+      assert.deepEqual(saved.characters, before.characters);
+      assert.deepEqual(saved.cues, before.cues.map(cue => cue.id === 'later' ? { ...cue, imageId: job.imageID } : cue));
+      await until(localJobs, rows => rows.length === 1 && rows[0].jobID === id && rows[0].attachmentVerified);
+      await fixture.assertNoOutbound();
+      return;
+    }
 
     step = 'complete a shared job only after the generated image is saved and hosted';
     await generateForCue();
@@ -144,10 +202,7 @@ try {
     const sharedRunning = (await fixture.sharedGenerationState()).jobs.find(record => record.id === id);
     assert.equal(sharedRunning.status, 'running');
     assert.ok(sharedRunning.leaseExpiresAt > Date.now());
-    const generating = node => generateButton('01B')(node) && node.title === 'Generating…';
-    const active = await session.waitFor(nodes => nodes.filter(generating).length === 1);
-    const workspace = active.find(generating).windowPath;
-    await ui.activate(node => node.label === 'Cancel the current image generation' && node.windowPath === workspace);
+    await cancelForCue('01B');
     const waiting = await until(fixture.sharedGenerationState, state => state.jobs.some(record => record.id === id && record.status === 'waiting'));
     const pending = waiting.jobs.find(record => record.id === id);
     assert.equal(pending.imageID, null);
