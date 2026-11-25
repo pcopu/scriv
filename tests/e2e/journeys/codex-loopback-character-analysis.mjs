@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
-import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
+import { audioProjectFixture, editedContent, stableContent } from './support/audio-library-fixtures.mjs';
 import { audioLibrarySteps } from './support/audio-library-steps.mjs';
-import { fixtureImageHash, startCodexFixture } from './support/codex-loopback-fixture.mjs';
+import { characterImageReviewSteps } from './support/character-image-review-steps.mjs';
+import { fixtureImageHash, recheckReason, startCodexFixture } from './support/codex-loopback-fixture.mjs';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Requires the signed isolated Catalyst app');
 const app = process.env.SCRIV_E2E_APP;
@@ -15,7 +16,7 @@ let failed = false;
 let step = 'launch with the owned analysis fixture';
 const fixture = await startCodexFixture(() => session.root, [
   'analysis-success', 'analysis-invalid-thread', 'analysis-tool', 'analysis-approval',
-  'analysis-invalid-result', 'analysis-refused-turn',
+  'analysis-invalid-result', 'analysis-refused-turn', 'analysis-recheck',
 ]);
 try {
   for (const codexAnalysisFixtureOrigin of ['ws://localhost:4500', 'ws://127.0.0.1:4500/foreign', 'wss://127.0.0.1:4500']) {
@@ -25,6 +26,7 @@ try {
   session = await ScrivSession.launch(app, { codexAnalysisFixtureOrigin: fixture.endpoint });
   await fixture.race((async () => {
     const ui = audioLibrarySteps(session);
+    const review = characterImageReviewSteps(session, ui);
     const byID = id => node => node.identifier === id;
     const scan = node => node.type === 'UIButton' && node.title === 'Scan again';
     const untargeted = text => nodes => nodes.some(node => node.text?.includes(text));
@@ -129,6 +131,37 @@ try {
     assert.match(refused, /^Character scan paused\. Character analysis ended without a confirmed result\./);
     assert.deepEqual((await session.command('loaded-project')).project, checked);
     assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === checked.id), checked);
+    assert.deepEqual(await session.command('presented-alerts'), []);
+
+    step = 'review a lower-confidence rescan and retire the previous automatic portrait';
+    await ui.activate(scan);
+    await scanFinished('1 of 1 images checked', refused);
+    const rechecked = await waitForSavedProject(session, candidate => candidate.id === checked.id
+      && candidate.revision > checked.revision && candidate.images[0]?.characterAnalysis?.annotations[0]?.reason === recheckReason);
+    const analysis = rechecked.images[0].characterAnalysis;
+    assert.deepEqual(analysis.annotations.map(({ decision, characterID }) => [decision, characterID]), [['needsReview', 'anna']]);
+    assert.deepEqual(analysis.excludedCharacterIDs, []);
+    assert.deepEqual(rechecked.images[0].characterIds, []);
+    assert.deepEqual(rechecked.characters, checked.characters);
+    assert.equal(rechecked.characters[0].portraitRegion.isAutomatic, true);
+
+    await ui.activate(node => node.title === 'Review 1' && node.enabled !== undefined);
+    await session.waitFor(nodes => nodes.some(node => node.text === recheckReason)
+      && nodes.some(node => node.identifier === 'character-review-ignore' && node.enabled));
+    await review.ignore();
+    await session.waitFor(nodes => nodes.some(node => node.text === 'Nothing else to review'));
+    const resolved = await waitForSavedProject(session, candidate => candidate.id === rechecked.id && candidate.revision > rechecked.revision);
+    assert.equal(resolved.revision, rechecked.revision + 1);
+    assert.deepEqual(stableContent(resolved), editedContent(rechecked, candidate => {
+      const analysis = candidate.images[0].characterAnalysis;
+      analysis.annotations[0].decision = 'ignored';
+      delete analysis.annotations[0].characterID;
+      analysis.excludedCharacterIDs = ['anna'];
+      delete candidate.characters[0].portraitImageId;
+      delete candidate.characters[0].portraitRegion;
+    }));
+    await review.done();
+    assert.deepEqual((await session.command('loaded-project')).project, resolved);
     assert.deepEqual(await session.command('presented-alerts'), []);
   })());
 } catch (error) {

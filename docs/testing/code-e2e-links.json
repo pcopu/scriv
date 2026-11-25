@@ -2951,6 +2951,26 @@
       "why": "The second begin leaves the original gesture available for cancellation and preserves the entire saved model"
     },
     {
+      "id": "3eac558bc882d375",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/CharacterImageAnalysis.swift",
+        "start": 164,
+        "end": 170,
+        "sha256": "3d1cce3af2745be008d14ad1d2a48f3c14d96319222f2fb6482a8dd4b6d22d04"
+      },
+      "actions": [
+        "scriv activate Scan again in the isolated Characters workspace with a lower-confidence follow-up detection for the previously recognized character",
+        "scriv activate Review 1 then activate character-review-ignore"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
+        "start": 136,
+        "end": 165,
+        "sha256": "db403451e05aa4c557dfb3566177a4533829214d17d72096dc3c1898df9fdaad"
+      },
+      "why": "The same-image automatic portrait survives a lower-confidence scan until Not a character is selected. Scriv then saves exactly one revision that removes the portrait and excludes the previous identity while preserving the rest of the project."
+    },
+    {
       "id": "488b8d4c217c6194",
       "source": {
         "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
@@ -96503,8 +96523,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
-        "start": 97,
-        "end": 100,
+        "start": 99,
+        "end": 102,
         "sha256": "b38e3de6a84cac82103c27f5d2e6e89372ba252279c3c13656623391655afa03"
       },
       "why": "The Characters button runs a manually requested scan, reports the sandbox refusal and preserves the checked project."
@@ -96523,8 +96543,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
-        "start": 102,
-        "end": 107,
+        "start": 104,
+        "end": 109,
         "sha256": "2efd65fd7f26311d50728029944d3017df0ff3e847f26885807b298428b7f30a"
       },
       "why": "The synthetic tool notification interrupts its actual thread and turn. The fixture verifies the request and the saved project stays intact."
@@ -96543,8 +96563,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
-        "start": 97,
-        "end": 100,
+        "start": 99,
+        "end": 102,
         "sha256": "b38e3de6a84cac82103c27f5d2e6e89372ba252279c3c13656623391655afa03"
       },
       "why": "The fixture reports that subprocess networking is enabled. Scriv verifies the policy and pauses before the fixture receives image bytes."
@@ -96825,8 +96845,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
-        "start": 109,
-        "end": 117,
+        "start": 111,
+        "end": 119,
         "sha256": "0688cbd64f82ac977fda68d8714c5d5532fcf93a4def03e5b33030f7f6124996"
       },
       "why": "An additional-access request on the active analysis receives empty permissions and interrupts that exact owned turn. The interface reports the stopped scan and the saved result is preserved."
@@ -98765,8 +98785,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/codex-loopback-fixture.mjs",
-        "start": 207,
-        "end": 215,
+        "start": 213,
+        "end": 221,
         "sha256": "cfaa4b23f94c4e81787e6486057978632753d545341e58e681d738748fe9ac16"
       },
       "why": "With the existing portrait selected, require an exact localImage reference path inside each new owned job directory and verify the actual image digest at the socket boundary."
@@ -99040,8 +99060,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
-        "start": 126,
-        "end": 132,
+        "start": 128,
+        "end": 134,
         "sha256": "f8779a126a5e5c4b5d3b1c3af8fe16a87613d960242df7a2c9272dcfad27238a"
       },
       "why": "An error after a submitted turn without a confirmed result pauses analysis and leaves the exact saved and loaded project unchanged."
@@ -99059,8 +99079,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
-        "start": 119,
-        "end": 124,
+        "start": 121,
+        "end": 126,
         "sha256": "0f5eca96f1d51f1f87884babdb3a1bba58110e6f928c93428c2a54ddd95b98b0"
       },
       "why": "A completed analysis with an invalid region leaves the prior character tags intact and exposes an ordinary retryable scan failure."
@@ -99912,8 +99932,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
-        "start": 70,
-        "end": 95,
+        "start": 72,
+        "end": 97,
         "sha256": "517fc278a81a0efaa6e38a6a1676eea56e154416bf855cff97d2fb9b6f13f69d"
       },
       "why": "Enabling auto-tag starts the previously paused scan and persists the recognized character and review candidate using the owned provider."
