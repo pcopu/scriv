@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const scenarioPath = /^tests\/e2e\/(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+\.mjs$/;
 const diagnosticCodes = new Set(['ui-target-ambiguous', 'ui-target-missing', 'ui-wait-timeout',
-  'fixture-dependency-missing', 'scenario-assertion', 'scenario-error']);
+  'fixture-dependency-missing', 'coverage-session-limit', 'scenario-assertion', 'scenario-error']);
 const fd = 3;
 const byteLimit = 1024;
 
@@ -26,6 +26,7 @@ function diagnosticFor(error) {
     case 'SCRIV_UI_TARGET_AMBIGUOUS': code = 'ui-target-ambiguous'; matches = cause.matches; break;
     case 'SCRIV_UI_TARGET_MISSING': code = 'ui-target-missing'; matches = 0; break;
     case 'SCRIV_UI_WAIT_TIMEOUT': code = 'ui-wait-timeout'; break;
+    case 'SCRIV_CLI_COVERAGE_SESSION_LIMIT': code = 'coverage-session-limit'; break;
     case 'ERR_MODULE_NOT_FOUND': case 'MODULE_NOT_FOUND': code = 'fixture-dependency-missing'; break;
     case 'ERR_ASSERTION': code = 'scenario-assertion'; break;
     }

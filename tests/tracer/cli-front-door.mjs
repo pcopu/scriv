@@ -528,6 +528,16 @@ throw new Error('wrapper-only error text', { cause });
       code: 'ui-wait-timeout', location: { path: 'tests/e2e/support/probe-helper.mjs', line: 1 },
     });
 
+    await writeFile(helper, "export function checkTarget() { throw Object.assign(new Error('private slot message'), { code: 'SCRIV_CLI_COVERAGE_SESSION_LIMIT' }); }\n");
+    const exhausted = spawnSync(process.execPath, ['--import', producer, scenario], {
+      env: { ...env, SCRIV_E2E_DIAGNOSTIC_FD: '3' }, encoding: 'utf8', timeout: 5000, maxBuffer: 8192,
+      stdio: ['ignore', 'pipe', 'pipe', 'pipe'],
+    });
+    assert.ifError(exhausted.error);
+    assert.equal(exhausted.status, 1);
+    assert.deepEqual(JSON.parse(exhausted.output[3]), {
+      code: 'coverage-session-limit', location: { path: 'tests/e2e/support/probe-helper.mjs', line: 1 },
+    });
   });
   await journey('compact only finished native profiles with exact export digests', async () => {
     const archive = join(output, 'profile-archive');

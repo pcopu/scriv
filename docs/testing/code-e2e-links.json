@@ -2862,8 +2862,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 612,
-        "end": 617,
+        "start": 622,
+        "end": 627,
         "sha256": "ca1fe28a13ce39399c1c60d671fcd37e4f6bf359bbf1a3d5ea78be724b15380d"
       },
       "why": "The public archive command skips deletion until a terminal native-shape receipt is present and honors its explicit keep request. The fixture uses synthetic coverage."
@@ -2964,8 +2964,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 627,
-        "end": 636,
+        "start": 637,
+        "end": 646,
         "sha256": "ea01faf4a8f0f106c505e218f43824768872fcb5e7c4ad161cf64e983e793fa2"
       },
       "why": "Preview identifies the derived indexes. Apply removes only those files and is safe to repeat. The test checks exact retained bytes and rechecks the imported dataset."
@@ -2983,8 +2983,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 618,
-        "end": 626,
+        "start": 628,
+        "end": 636,
         "sha256": "415f60062b1f7d3048c949464b53186c6b536efd84b85a5f55c0c3bd372a76b1"
       },
       "why": "The public archive command preserves indexes when a raw capture fails its digest or retained source fails Tracer measurement integrity."
@@ -98931,8 +98931,8 @@
       "source": {
         "path": "tests/e2e/support/scenario-diagnostic.mjs",
         "start": 20,
-        "end": 45,
-        "sha256": "95edd29ca9b931d1f178e91d2f368367beafaa141f82104dab06418c10de746c"
+        "end": 46,
+        "sha256": "737806677d6a5949d8c04a3a03bd6e370aae1731a2a00ff5baf26930cb3dbb11"
       },
       "actions": [
         "tracer app -- test tooling"
@@ -98940,8 +98940,8 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 499,
-        "end": 531,
-        "sha256": "6c4acb16b5cce8d54c779897296f32ae303b43d2af5615761d14d488130e2ff3"
+        "end": 541,
+        "sha256": "c9dc8b3afa764420b622d151bcfe02f5828cfb22699f77fed17331446a33f140"
       },
       "why": "A wrapped scenario failure emits its typed code, inner source line and control count through the dedicated descriptor, with error text excluded."
     },
@@ -100083,8 +100083,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 639,
-        "end": 654,
+        "start": 649,
+        "end": 664,
         "sha256": "37fbdcda1385c9e27b1f94799ffd2ae460ba918d00ec2ed6ec47a33983a99fe8"
       },
       "why": "The standard native catalogue preserves strict legacy compatibility and the explicit discovery option publishes the exact downstream branch pins."
@@ -104841,7 +104841,7 @@
         "end": 336,
         "sha256": "d16b1f9020b0bcaa25259c8819584f78cc7989345302fcc4470adac8bfde6d71"
       },
-      "fileSha256": "9c5baf3dc65d535263049e56a4d97378bbd42deaeeaab20291c22214cb9bb806"
+      "fileSha256": "31fb0a6036552618d57c995dfaa7672da9c544f5d2718f554b2d1594868c90c0"
     },
     {
       "id": "6553b5e98e6500e0",
@@ -104911,7 +104911,7 @@
         "end": 1,
         "sha256": "ef36205faffd3ae967869975744f3b264629f6eb58784b8596ffdd4b95450610"
       },
-      "fileSha256": "3af5ef0f0db6d4e1b0841000f7f7240ba09aab2e2a910cb111a274fe0f84c045"
+      "fileSha256": "1f7d0f44cdeda1471a105291d52ca338ee63817b482ecbba62cdca761b02b7d8"
     },
     {
       "id": "686d9ee6b76e23a4",
@@ -107051,7 +107051,7 @@
         "end": 296,
         "sha256": "b1ae110c8d7fd2ea91a819152e6f4434d7199cf755bded5dcf0424b23396379b"
       },
-      "fileSha256": "9c5baf3dc65d535263049e56a4d97378bbd42deaeeaab20291c22214cb9bb806"
+      "fileSha256": "31fb0a6036552618d57c995dfaa7672da9c544f5d2718f554b2d1594868c90c0"
     },
     {
       "id": "9669da48463dfea3",
@@ -107091,7 +107091,7 @@
         "end": 79,
         "sha256": "252800a1211f72c8bea4e4b0dc0575a949c72e90911bbd6b8cbb822d4495ab85"
       },
-      "fileSha256": "3af5ef0f0db6d4e1b0841000f7f7240ba09aab2e2a910cb111a274fe0f84c045"
+      "fileSha256": "1f7d0f44cdeda1471a105291d52ca338ee63817b482ecbba62cdca761b02b7d8"
     },
     {
       "id": "9728cadb7100156c",
@@ -107281,7 +107281,7 @@
         "end": 3,
         "sha256": "c5ebf59b9856b043cecb2bb51903c03d02c4b3cc0d73016cc7b0e15ca9b78d19"
       },
-      "fileSha256": "9c5baf3dc65d535263049e56a4d97378bbd42deaeeaab20291c22214cb9bb806"
+      "fileSha256": "31fb0a6036552618d57c995dfaa7672da9c544f5d2718f554b2d1594868c90c0"
     },
     {
       "id": "9a9bdad371295cf2",

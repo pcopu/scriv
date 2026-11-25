@@ -68,6 +68,8 @@ Scenario stdout/stderr is discarded deliberately: assertion messages and native
 logs can contain private local diagnostics. No screenshots, project contents,
 environment dump, raw Git diff, credentials, or user data are copied to evidence.
 The terminal prints only the summary and evidence file location.
+The `coverage-session-limit` diagnostic means the run used all slots reserved
+by `--coverage-max-sessions`. Count planned app launches, including relaunches.
 
 Each scenario runs in a fresh POSIX process group. The current session launcher
 directly spawns the app into that same group. On timeout, interruption, or a

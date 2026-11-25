@@ -84,7 +84,7 @@ export async function observeSession(session, executable, capabilities) {
     try { await writeFile(join(slots, String(index)), sessionID, { flag: 'wx', mode: 0o600 }); slot = index; break; }
     catch (error) { if (error.code !== 'EEXIST') throw error; }
   }
-  if (slot < 0) throw new Error('coverage-session-limit-reached');
+  if (slot < 0) throw Object.assign(new Error('coverage-session-limit-reached'), { code: 'SCRIV_CLI_COVERAGE_SESSION_LIMIT' });
   const output = join(sessions, sessionID);
   await mkdir(output, { mode: 0o700 });
   const outputOwner = await privateDirectory(output);
