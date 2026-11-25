@@ -1,6 +1,13 @@
 import UIKit
 import ScrivCore
 
+#if SCRIV_CLI_AUTOMATION
+@MainActor
+final class ScriptDirectionCoveragePanRecognizer: UIPanGestureRecognizer {
+    weak var driver: ScriptDirectionRails?
+}
+#endif
+
 final class DirectionHandleButton: UIButton {
     var adjust: ((Int) -> Void)?
     /// Opened by secondary click: a button `menu` also opens on press-and-hold,
@@ -31,6 +38,7 @@ final class ScriptDirectionRails: UIView {
     init(store: WorkspaceStore) { self.store = store; super.init(frame: .zero); backgroundColor = .clear; isOpaque = false; contentMode = .redraw }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError() }
     func update(entries: [ScriptEntry], frames: [String: CGRect]) {
+        if let drag, drag.navigation != store.navigationContext || !entries.contains(drag.entry) { cancel() }
         // This view spans the whole script; redrawing it is costly. Skip
         // relayout/redraw when nothing it renders changed (e.g. playback ticks).
         let locked = Set(entries.filter { $0.kind == .direction && store.lockedByOther($0.id) != nil }.map(\.id))
@@ -47,7 +55,13 @@ final class ScriptDirectionRails: UIView {
                 let start = UIButton(type: .system), end = DirectionHandleButton(type: .system)
                 start.addAction(UIAction { [weak self] _ in self?.store.selectEntry(entry.id) }, for: .touchUpInside)
                 end.addAction(UIAction { [weak self] _ in self?.store.selectEntry(entry.id) }, for: .touchUpInside)
-                let pan = UIPanGestureRecognizer(target: self, action: #selector(dragged(_:))); end.addGestureRecognizer(pan); end.accessibilityIdentifier = entry.id
+                #if SCRIV_CLI_AUTOMATION
+                let pan = ScriptDirectionCoveragePanRecognizer(target: self, action: #selector(dragged(_:)))
+                pan.driver = self
+                #else
+                let pan = UIPanGestureRecognizer(target: self, action: #selector(dragged(_:)))
+                #endif
+                end.addGestureRecognizer(pan); end.accessibilityIdentifier = entry.id
                 end.adjust = { [weak self] delta in
                     guard let self, self.store.lockedByOther(entry.id) == nil, let current = self.store.project.entries.first(where: { $0.id == entry.id }) else { return }
                     self.store.setCoverage(current.id, endMs: self.store.project.startMs(of: current.id) + max(current.ownedDurationMs, current.coverageDurationMs + delta))
@@ -120,23 +134,48 @@ final class ScriptDirectionRails: UIView {
     }
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool { subviews.contains { !$0.isHidden && $0.frame.insetBy(dx: -3, dy: -3).contains(point) } }
     @objc private func dragged(_ gesture: UIPanGestureRecognizer) {
-        guard let button = gesture.view as? UIButton, let id = button.accessibilityIdentifier, let entry = entries.first(where: { $0.id == id }), store.lockedByOther(id) == nil else { return }
-        switch gesture.state {
+        guard let button = gesture.view as? UIButton else { return }
+        advanceDrag(gesture.state, button: button, translation: gesture.translation(in: self).y)
+    }
+    private func advanceDrag(_ state: UIGestureRecognizer.State, button: UIButton, translation: CGFloat) {
+        guard let id = button.accessibilityIdentifier, handles[id]?.1 === button, let entry = entries.first(where: { $0.id == id }) else { return }
+        if state == .cancelled || state == .failed {
+            if drag?.id == id { cancel() }
+            return
+        }
+        guard store.lockedByOther(id) == nil else {
+            if drag?.id == id { cancel() }
+            return
+        }
+        switch state {
         case .began:
+            guard drag == nil else { return }
             store.selectEntry(id); drag = (id, endpoint(entry), endpoint(entry), store.navigationContext, entry)
         case .changed:
-            guard let old = drag else { return }
+            guard let old = drag, old.id == id else { return }
             let minimum = max((frames[id]?.minY ?? 0) + presentation.anchorOffset + 12, y(store.project.startMs(of: id) + entry.ownedDurationMs))
-            drag?.currentY = max(minimum, old.originalY + gesture.translation(in: self).y); setNeedsLayout(); setNeedsDisplay()
+            drag?.currentY = max(minimum, old.originalY + translation); setNeedsLayout(); setNeedsDisplay()
         case .ended:
-            guard let old = drag else { return }; drag = nil
+            guard let old = drag, old.id == id else { return }; drag = nil
             if old.navigation == store.navigationContext, store.project.entries.first(where: { $0.id == id }) == old.entry, abs(old.currentY - old.originalY) >= 1 {
                 let end = max(store.project.startMs(of: id) + entry.ownedDurationMs, PresentationGeometry.railTime(at: Double(old.currentY), rows: geometry))
                 store.setCoverage(id, endMs: end)
             }
             setNeedsLayout(); setNeedsDisplay()
-        case .cancelled, .failed: drag = nil; setNeedsLayout(); setNeedsDisplay()
         default: break
         }
     }
+    func cancel() { drag = nil; setNeedsLayout(); setNeedsDisplay() }
 }
+
+#if SCRIV_CLI_AUTOMATION
+extension ScriptDirectionRails: ScrivCLIScriptDurationDriver {
+    var cliGestureInFlight: Bool { drag != nil }
+    var cliAcceptsSample: Bool { cliGestureInFlight }
+    func cliBeginGesture(on button: UIButton) { advanceDrag(.began, button: button, translation: 0) }
+    func cliSampleGesture(_ translation: Double, on button: UIButton, releasing: Bool) {
+        advanceDrag(.changed, button: button, translation: CGFloat(translation))
+        if releasing { advanceDrag(.ended, button: button, translation: CGFloat(translation)) }
+    }
+}
+#endif

@@ -58,7 +58,65 @@ async function scrub(session) {
   assert.deepEqual((await session.command('persisted-projects')).find(project => project.id === saved.id), saved);
 }
 
-await runScriptJourney({ journey: 'AUT-J03', workflows: { 'hold-and-drag': scrub }, cases: [{
+async function railCoverage(session) {
+  const capabilities = await session.command('capabilities');
+  assert.ok(capabilities.commands.includes(command) && capabilities.semanticGestureCommands.includes(command));
+  const ui = scriptAuthoringSteps(session);
+  await ui.openScript();
+  const input = structureFixture();
+  input.title = 'Synthetic direction coverage rail';
+  const first = input.entries[0];
+  Object.assign(first, { ownedDurationMs: 1000, coverageDurationMs: 1500 });
+  const last = { ...first, id: 'following-direction', order: first.order + 1, text: 'The gate swings shut.',
+    ownedDurationMs: 2000, coverageDurationMs: 2000 };
+  input.entries.push(last);
+  assert.deepEqual(await session.command('import-json', { text: JSON.stringify(input) }), { dispatched: true, projectChanged: true });
+  const before = await ui.saved(project => project.title === input.title);
+  await ui.selectTab('Script');
+  const handle = entry => node => node.type === 'DirectionHandleButton' && node.identifier === entry.id
+    && node.label === 'Coverage end for ' + entry.text;
+  async function observe() {
+    const nodes = await session.waitFor(nodes => nodes.filter(handle(first)).length === 1 && nodes.filter(handle(last)).length === 1);
+    return [nodes.find(handle(first)), nodes.find(handle(last))];
+  }
+  async function gesture(entry, phase, fields = {}) {
+    const nodes = await observe();
+    return session.command(command, { target: nodes.find(handle(entry)).path, phase, ...fields });
+  }
+  const dispatch = async (phase, fields) => assert.deepEqual(await gesture(first, phase, fields), { dispatched: true });
+  async function unchanged() {
+    assert.deepEqual((await session.command('loaded-project')).project, before);
+    assert.deepEqual((await session.command('persisted-projects')).find(project => project.id === before.id), before);
+  }
+  const [from, to] = await observe();
+  assert.ok(from.enabled && from.hittable);
+  assert.ok(to.enabled && to.hittable);
+  const translation = to.frame.y - from.frame.y;
+  assert.ok(translation > 4);
+  await dispatch('begin');
+  await assert.rejects(gesture(last, 'end', { translation }), /no active script duration gesture/i);
+  await dispatch('change', { translation: translation / 2 });
+  await session.waitFor(nodes => nodes.some(node => handle(first)(node) && node.frame.y > from.frame.y + 1));
+  await unchanged();
+  await dispatch('cancel');
+  await session.waitFor(nodes => nodes.some(node => handle(first)(node) && Math.abs(node.frame.y - from.frame.y) < 0.5));
+  await unchanged();
+
+  await dispatch('begin');
+  await dispatch('end', { translation });
+  const saved = await ui.saved(project => project.id === before.id && project.revision > before.revision);
+  const expected = content(before);
+  expected.entries[0].coverageDurationMs = 3000;
+  assert.equal(saved.revision, before.revision + 1);
+  assert.deepEqual(content(saved), expected);
+  assert.deepEqual((await session.command('loaded-project')).project, saved);
+  await assert.rejects(gesture(first, 'end', { translation }), /no active script duration gesture/i);
+}
+
+await runScriptJourney({ journey: 'AUT-J03', workflows: { 'hold-and-drag': scrub, 'rail-coverage': railCoverage }, cases: [{
   group: 'hold-and-drag', id: 'script-duration-preview-cancel-apply',
   oracles: ['The native duration pill previews without saving, cancels cleanly, and commits one exact revision on release.'],
+}, {
+  group: 'rail-coverage', id: 'script-direction-coverage-rail',
+  oracles: ['The coverage rail previews without saving, cancels cleanly, rejects the other handle, and changes coverage only on release.'],
 }] });

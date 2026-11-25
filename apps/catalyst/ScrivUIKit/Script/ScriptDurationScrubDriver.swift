@@ -40,8 +40,8 @@ final class ScriptDurationScrubDriver: NSObject {
     #if SCRIV_CLI_AUTOMATION
     var cliGestureInFlight: Bool { draft != nil }
     var cliAcceptsSample: Bool { draft != nil && !released }
-    func cliBeginGesture() { advance(.began, y: 0) }
-    func cliSampleGesture(_ translation: Double, releasing: Bool) {
+    func cliBeginGesture(on _: UIButton) { advance(.began, y: 0) }
+    func cliSampleGesture(_ translation: Double, on _: UIButton, releasing: Bool) {
         advance(releasing ? .ended : .changed, y: CGFloat(translation))
     }
     #endif
@@ -94,3 +94,7 @@ final class ScriptDurationScrubDriver: NSObject {
         button?.backgroundColor = ScrivUIKitTheme.inset; button?.accessibilityValue = nil
     }
 }
+
+#if SCRIV_CLI_AUTOMATION
+extension ScriptDurationScrubDriver: ScrivCLIScriptDurationDriver {}
+#endif

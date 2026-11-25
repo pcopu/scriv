@@ -11,6 +11,13 @@ import CoreFoundation
     func cancel()
 }
 
+@MainActor protocol ScrivCLIScriptDurationDriver: AnyObject {
+    var cliGestureInFlight: Bool { get }
+    var cliAcceptsSample: Bool { get }
+    func cliBeginGesture(on button: UIButton)
+    func cliSampleGesture(_ translation: Double, on button: UIButton, releasing: Bool)
+    func cancel()
+}
 
 /// Must run before UIApplicationMain and WorkspaceStore's stored CloudClient.
 func prepareScrivCLIEnvironment() throws { try ScrivCLIRunCapability.prepare() }
@@ -22,7 +29,8 @@ final class ScrivCLI {
     static let shared = ScrivCLI()
     private weak var window: UIWindow?
     private weak var pictureTimingGesture: (any ScrivCLIPictureTimingDriver)?
-    private weak var scriptDurationGesture: ScriptDurationScrubDriver?
+    private weak var scriptDurationGesture: (any ScrivCLIScriptDurationDriver)?
+    private weak var scriptDurationTarget: UIButton?
     private var started = false
     private var asynchronousCommandInProgress = false
     private var nativeAccessibility: ScrivCLIAccessibility?
@@ -298,29 +306,32 @@ final class ScrivCLI {
         let keys = Set(request.keys)
         let required: Set<String> = ["id", "command", "target", "phase"]
         guard let phase = request["phase"] as? String, !isSensitiveSubtree(view) else { throw Failure("Invalid script duration sample") }
-        let drivers = (view.gestureRecognizers ?? []).compactMap { recognizer in
-            recognizer.isEnabled ? (recognizer as? ScriptDurationHoldRecognizer)?.driver : nil
+        let drivers = (view.gestureRecognizers ?? []).compactMap { recognizer -> (any ScrivCLIScriptDurationDriver)? in
+            guard recognizer.isEnabled else { return nil }
+            if let hold = recognizer as? ScriptDurationHoldRecognizer { return hold.driver }
+            return (recognizer as? ScriptDirectionCoveragePanRecognizer)?.driver
         }
-        guard drivers.count == 1, let driver = drivers.first else { throw Failure("Target has no script duration gesture") }
+        guard drivers.count == 1, let driver = drivers.first, let button = view as? UIButton else { throw Failure("Target has no script duration gesture") }
         switch phase {
         case "begin":
             guard keys == required else { throw Failure("Invalid script duration sample") }
             guard scriptDurationGesture?.cliGestureInFlight != true, pictureTimingGesture?.cliGestureInFlight != true,
                   !driver.cliGestureInFlight else { throw Failure("An active script duration gesture already owns input") }
-            guard isHittable(view), (view as? UIButton)?.isEnabled == true else { throw Failure("Script duration control is unavailable") }
-            driver.cliBeginGesture()
+            guard isHittable(button), button.isEnabled else { throw Failure("Script duration control is unavailable") }
+            driver.cliBeginGesture(on: button)
             guard driver.cliGestureInFlight else { throw Failure("Script duration control is unavailable") }
             scriptDurationGesture = driver
+            scriptDurationTarget = button
         case "change", "end":
             guard keys == required.union(["translation"]), let displacement = request["translation"] as? NSNumber,
                   CFGetTypeID(displacement) != CFBooleanGetTypeID(), abs(displacement.doubleValue) <= 32_768 else {
                 throw Failure("Invalid script duration sample")
             }
-            guard scriptDurationGesture === driver, driver.cliAcceptsSample else { throw Failure("Target has no active script duration gesture") }
-            driver.cliSampleGesture(displacement.doubleValue, releasing: phase == "end")
+            guard scriptDurationGesture === driver, scriptDurationTarget === button, driver.cliAcceptsSample else { throw Failure("Target has no active script duration gesture") }
+            driver.cliSampleGesture(displacement.doubleValue, on: button, releasing: phase == "end")
         case "cancel":
             guard keys == required else { throw Failure("Invalid script duration sample") }
-            guard scriptDurationGesture === driver, driver.cliAcceptsSample else { throw Failure("Target has no active script duration gesture") }
+            guard scriptDurationGesture === driver, scriptDurationTarget === button, driver.cliAcceptsSample else { throw Failure("Target has no active script duration gesture") }
             driver.cancel()
         default: throw Failure("Invalid script duration sample")
         }
@@ -420,7 +431,7 @@ final class ScrivCLI {
                     "sessionID": run.sessionID.uuidString.lowercased(),
                     "workspace": workspace,
                     "verificationRoot": run.root.path,
-                    "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error", "picture-timing-gesture"]] as [String: Any]
+                    "commands": ["stage-package-fixture", "local-image-evidence", "import-local-image", "import-audio", "presented-alerts", "snapshot", "activate", "text", "select", "scroll", "slider", "keys", "key", "end-editing", "capabilities", "persisted-projects", "loaded-project", "script-interaction-counts", "controller-keys", "type", "selection", "toggle", "image-evidence", "accessibility-activate", "accessibility-snapshot", "native-accessibility-snapshot", "native-accessibility-activate", "return", "script-insert", "script-delete-selection", "delete-backward", "menu", "menu-action", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error", "picture-timing-gesture", "script-duration-gesture"]] as [String: Any]
             if !ScrivUpdateCoordinator.releaseSigningConfigured {
                 for key in ["semanticApplicationCommands", "commands"] {
                     result[key] = (result[key] as? [String] ?? []) + ["check-for-updates"]
