@@ -18,7 +18,10 @@ if (args.length === 1 && args[0] === '--list-cases') {
       sha256: 'eeefc45ca6579f22f405fa2c447d4f157bffd72ae659d12a5083ad0bea7093ff' } };
   console.log(JSON.stringify({ groups, groupActions: {
     'completed-without-image': [{ ...generateImage, condition: 'provider-completes-without-an-image' }],
-    'complete-after-navigation': [{ ...generateImage, condition: 'provider-completes-after-opening-another-project' }],
+    'complete-after-navigation': [{ ...generateImage, condition: 'provider-completes-after-opening-another-project', branch: {
+      path: 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift', start: 1538, end: 1542,
+      sha256: '9bbbbf7588763947d0ef851a810ffff5463b3c9e4631de7ce3d0472f446384d6',
+    } }],
   } }));
   process.exit(0);
 }

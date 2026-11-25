@@ -641,12 +641,13 @@ throw new Error('wrapper-only error text', { cause });
     for (const { id, groups, groupActions } of scenarios) {
       for (const [group, actions] of Object.entries(groupActions ?? {})) {
         assert.ok(groups.includes(group));
-        for (const { id: action, entryPoint } of actions) {
-          if (!entryPoint) continue;
-          const { path, start, end, sha256 } = entryPoint;
-          const lines = (await readFile(join(root, path), 'utf8')).split(/(?<=\n)/);
-          const actual = createHash('sha256').update(lines.slice(start - 1, end).join('')).digest('hex');
-          assert.equal(sha256, actual, `${id}#${group} ${action} must anchor the exact source snippet`);
+        for (const { id: action, entryPoint, branch } of actions) {
+          if (branch) assert.ok(entryPoint, 'A condition branch requires a production entry point');
+          for (const { path, start, end, sha256 } of [entryPoint, branch].filter(Boolean)) {
+            const lines = (await readFile(join(root, path), 'utf8')).split(/(?<=\n)/);
+            const actual = createHash('sha256').update(lines.slice(start - 1, end).join('')).digest('hex');
+            assert.equal(sha256, actual, `${id}#${group} ${action} must anchor the exact source snippet`);
+          }
         }
       }
     }

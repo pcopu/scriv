@@ -2863,8 +2863,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 665,
-        "end": 730,
+        "start": 673,
+        "end": 738,
         "sha256": "635f29088b0104b9671086d0ed5c3a890bc5f5a2bd5222775bc0c492d8454352"
       },
       "why": "The normal reconnect fills an already-linked but empty cloud project using the original local script."
@@ -2948,8 +2948,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 469,
-        "end": 496,
+        "start": 477,
+        "end": 504,
         "sha256": "ed33921bf339afdece7d9622d6320210e6ae10902eaf86f43ec3c6ddc2cde1ab"
       },
       "why": "The isolated cloud journey dispatches the actual attached button action. It refuses an absent menu action and verifies that posting retains one attachment to the selected dialogue."
@@ -3010,8 +3010,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 469,
-        "end": 496,
+        "start": 477,
+        "end": 504,
         "sha256": "ed33921bf339afdece7d9622d6320210e6ae10902eaf86f43ec3c6ddc2cde1ab"
       },
       "why": "The isolated cloud journey dispatches the actual attached button action. It refuses an absent menu action and verifies that posting retains one attachment to the selected dialogue."
@@ -8868,8 +8868,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 836,
-        "end": 848,
+        "start": 844,
+        "end": 856,
         "sha256": "93410c7805d66b2b299460246aa1a2ba15e1ee366a47ecfc02748410401c8086"
       },
       "why": "The conversation follows the genuine composite cursor to a second page and presents both messages in order."
@@ -30263,8 +30263,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 249,
-        "end": 270,
+        "start": 252,
+        "end": 273,
         "sha256": "3ef02e83ed470e1fee9dd6de74f70921ffc6fde1062e5a7e8436d7e66f436a61"
       },
       "why": "The provider finishes the real turn without an eligible image. Scriv marks the job failed, retains its journal, and keeps the saved project unchanged."
@@ -56207,8 +56207,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 579,
-        "end": 591,
+        "start": 587,
+        "end": 599,
         "sha256": "39f0cbedd120f7e6fc36b5f67793857b131846d9291e71019bbd35d98d2c622f"
       },
       "why": "A malformed history page is rejected at the existing cursor and the next valid poll reconnects without changing the saved project."
@@ -58886,8 +58886,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 563,
-        "end": 577,
+        "start": 571,
+        "end": 585,
         "sha256": "21fbf4b7121188f2ae096959fd58592acd07e082bb6a0759fcf6f9aa6938c8ac"
       },
       "why": "The linked project retry consumes the normal events page without changing the saved script."
@@ -95445,8 +95445,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 389,
-        "end": 396,
+        "start": 397,
+        "end": 404,
         "sha256": "2d581fb645a379a9df1c91d1158e0dbd3901709445c90433d33bc7fe5d5203b0"
       },
       "why": "The local package acquires a cloud project ID, the Worker stores the matching project row, and the signed-in discussion composer appears."
@@ -95466,8 +95466,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 437,
-        "end": 449,
+        "start": 445,
+        "end": 457,
         "sha256": "77dc09069997533e69cd2c32cc86ef6eccc1ebf81b1a70fe367a6aeb55fe411f"
       },
       "why": "Opening the Worker project reuses the original local replica and preserves all script fields and the second local project."
@@ -95486,8 +95486,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 115,
-        "end": 124,
+        "start": 123,
+        "end": 132,
         "sha256": "e6ba46941a8316ce0539ddfefb42458222bc953de15aed298c8c065d7b821ce5"
       },
       "why": "The synthetic Worker accepts the exact challenge and the native app dismisses the sign-in prompt. Ordinary text routes remain refused."
@@ -95506,8 +95506,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 503,
-        "end": 518,
+        "start": 511,
+        "end": 526,
         "sha256": "c26e34774395fbffd391ed451198bac0421f5be51fdb0955c945680f5bcb08bf"
       },
       "why": "A second app process with no local replica downloads the entire edited script into a new saved package and verifies its worker project ID."
@@ -95526,8 +95526,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 424,
-        "end": 446,
+        "start": 432,
+        "end": 454,
         "sha256": "6d6ddd4997d127266b12e0f05d35fd2be30b4a5e0dd52f1e1bea870e472a2a9f"
       },
       "why": "The ordinary native edit is committed in the owned Worker. The same pending command receives its original receipt on reconnect. The reopened cloud snapshot contains the complete edited content."
@@ -95546,8 +95546,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 302,
-        "end": 314,
+        "start": 310,
+        "end": 322,
         "sha256": "062f1988b761e0528eba5ed7544407837ec493cf9a0a8ff1d59369efccc6ac99"
       },
       "why": "The Mentions tab shows its empty state and the Conversations tab keeps the saved resolved project thread after a normal refresh."
@@ -95567,8 +95567,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 453,
-        "end": 463,
+        "start": 461,
+        "end": 471,
         "sha256": "e41766c83b14f2fa96c5a60590493f004b0af45eb55dedca52e28d9a352842bc"
       },
       "why": "The native app displays both acknowledged messages, the reply quotes the original, and the conversation offers Reopen conversation after resolving."
@@ -95588,8 +95588,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 322,
-        "end": 333,
+        "start": 330,
+        "end": 341,
         "sha256": "58f86faf9de1f3b94e5ffa5626499e6698e21ec57f4ac1fca035eacaa726cfe5"
       },
       "why": "The real member list enters its no-match state and restores the exact owner from a case-insensitive role search."
@@ -95608,8 +95608,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 465,
-        "end": 499,
+        "start": 473,
+        "end": 507,
         "sha256": "18adb4bbfe3d73589eae494e9460f6368b76bb31829084684d84056a5c137f0b"
       },
       "why": "The line owns its own note and the original project conversation remains resolved and separate."
@@ -95627,8 +95627,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 334,
-        "end": 345,
+        "start": 342,
+        "end": 353,
         "sha256": "d6963f95fd540d2e683ba13772ea6768d128c7a73bb5de63ef3754e6153c5b17"
       },
       "why": "The journey witnesses both selection branches through the picker count and checks the retained selection in the draft."
@@ -95646,8 +95646,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 294,
-        "end": 300,
+        "start": 302,
+        "end": 308,
         "sha256": "b09fd351161853888568e5f22c24bec76a800c01259dd972289f0e5eb72a4e46"
       },
       "why": "The journey requires the invalid request to fail before activating the same visible row successfully."
@@ -95665,8 +95665,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 334,
-        "end": 345,
+        "start": 342,
+        "end": 353,
         "sha256": "d6963f95fd540d2e683ba13772ea6768d128c7a73bb5de63ef3754e6153c5b17"
       },
       "why": "The count alternates between one and zero after each selection and the composer shows the selected member when the picker closes."
@@ -95684,8 +95684,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 315,
-        "end": 320,
+        "start": 323,
+        "end": 328,
         "sha256": "cb196561db925622def196b33288cdcc11e0c309e79ef0557de0726851acf7cd"
       },
       "why": "The journey sees the line scope and exact line message before switching back to the resolved project discussion."
@@ -95703,8 +95703,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 535,
-        "end": 550,
+        "start": 543,
+        "end": 558,
         "sha256": "42af4238cddb926e20681ce6e22a45957e023cc330d0eff4cfe05da70432521a"
       },
       "why": "After activating the mention row the journey verifies the project scope, exact posted message and mention label."
@@ -95722,8 +95722,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 1035,
-        "end": 1047,
+        "start": 1083,
+        "end": 1095,
         "sha256": "dad4a101ba6705826aeadd0d816ce5065452648bd433ca7a44880b3f83034194"
       },
       "why": "The real reconnect uses the freshly downloaded replica and verifies its entire loaded and persisted project after reconnection."
@@ -95741,8 +95741,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 1049,
-        "end": 1062,
+        "start": 1097,
+        "end": 1110,
         "sha256": "7d6a87e3ade08eb4a149c3a515c5c011b8bd381d2f2ffe1ecc3b354a1ff47f14"
       },
       "why": "The authorized local Worker independently reports that the newer session was revoked, while the earlier session and the whole local replica remain intact."
@@ -95760,8 +95760,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 1035,
-        "end": 1047,
+        "start": 1083,
+        "end": 1095,
         "sha256": "dad4a101ba6705826aeadd0d816ce5065452648bd433ca7a44880b3f83034194"
       },
       "why": "The actual sync control enters and exits its busy state, then the loaded and saved replica and Worker project row remain identical."
@@ -95779,8 +95779,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 1075,
-        "end": 1085,
+        "start": 1123,
+        "end": 1133,
         "sha256": "033dc17a4baab545ac8416acba1f1f50e59f7f881d7582cc75f1df3656ead4fd"
       },
       "why": "The signed-out workspace sees each malformed, mismatched or out-of-scope request refused before any presentation."
@@ -95798,8 +95798,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 1133,
-        "end": 1142,
+        "start": 1181,
+        "end": 1190,
         "sha256": "1fbc7322aaeab9e4fa0785f3b502660b5f4531c9e3bc50d2a81ae99944489df7"
       },
       "why": "The owner name, role, team title and inactive plan are read from the real mounted sheet after the Worker loads team details."
@@ -95817,8 +95817,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 1100,
-        "end": 1115,
+        "start": 1148,
+        "end": 1163,
         "sha256": "38998050687396ac008884b4f15d2dc47790feb78413ee966731820a6a6df60c"
       },
       "why": "The journey reads exact original and edited script text from public read-only snapshots and verifies that the complete loaded model is unchanged."
@@ -95836,8 +95836,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 1118,
-        "end": 1130,
+        "start": 1166,
+        "end": 1178,
         "sha256": "968f9b6b086944385e275b6179ea86a1c35aec7e76f390fdd279c2e713826dc9"
       },
       "why": "The real discussion event displays the dedicated message, keeps Restore disabled, and offers no script snapshot."
@@ -95855,8 +95855,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 1106,
-        "end": 1111,
+        "start": 1154,
+        "end": 1159,
         "sha256": "27bd18a472446ec6b56a3bbd60b2b48ae158c0148856cf2672a47af25fa32ff8"
       },
       "why": "The two visually resolved rows show different independently known script text, proving that activation selected the intended revision."
@@ -95874,8 +95874,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 1146,
-        "end": 1149,
+        "start": 1194,
+        "end": 1197,
         "sha256": "a4146540f26469c2bd74ea2a7647d14d3205bb52a336995c65b2a7edcc79f823"
       },
       "why": "The mounted invitation view shows that the free team requires activation and keeps link creation disabled."
@@ -95893,8 +95893,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 428,
-        "end": 431,
+        "start": 431,
+        "end": 434,
         "sha256": "14265268c9f3db277c4a24413cc0a013b381ba8cf1a890d8c542c14cb1ba1870"
       },
       "why": "The real panel explains why the same job stays waiting, and the route verifies its identity and unchanged persistent projects."
@@ -95912,8 +95912,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 584,
-        "end": 599,
+        "start": 587,
+        "end": 602,
         "sha256": "c522aa35dfb148dbbb3b526c2a47703dd7c6360053d0e2ea3d9eeebace990dc4"
       },
       "why": "The mounted jobs panel reports the missing local image. The original job has no attachment or artifact and all saved projects remain identical."
@@ -95931,8 +95931,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 432,
-        "end": 440,
+        "start": 435,
+        "end": 443,
         "sha256": "d11334e4559821ae47c839d09e717ff7a7dd0e24d88ab22b0fbd07753127cdfa"
       },
       "why": "The running result keeps the original job waiting. A later inspection observes cancellation of the same turn without creating another job."
@@ -95950,8 +95950,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 409,
-        "end": 418,
+        "start": 412,
+        "end": 421,
         "sha256": "b18b7a0d0db1d073391bc3145f28e3b54d50ca5dda2e6c9edea2f18a5ffe48b6"
       },
       "why": "The visible disconnected state and original waiting job are verified before reconnect, and the saved projects remain identical."
@@ -95969,8 +95969,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 420,
-        "end": 426,
+        "start": 423,
+        "end": 429,
         "sha256": "45a50ec45a290986157429a8e7e119bc4fc238fa9d3db59502f057ddbdac7cb3"
       },
       "why": "The selected first model and second-page model appear exactly once in the real menu."
@@ -95994,8 +95994,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 965,
-        "end": 974,
+        "start": 1013,
+        "end": 1022,
         "sha256": "5995afe4a1b483b01baf7c3d0e3a31eb041d5fc125652b48589525be80bf356a"
       },
       "why": "The isolated cloud edit error is advertised and can be acknowledged once. A wrong message and a stale repeat are refused. The owned attachment goes away and the complete edit remains saved."
@@ -96016,8 +96016,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 965,
-        "end": 974,
+        "start": 1013,
+        "end": 1022,
         "sha256": "5995afe4a1b483b01baf7c3d0e3a31eb041d5fc125652b48589525be80bf356a"
       },
       "why": "The displayed cloud-save failure belongs to the active linked workspace. Acknowledgement leaves the loaded model and original pending command intact."
@@ -96040,8 +96040,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 976,
-        "end": 985,
+        "start": 1024,
+        "end": 1033,
         "sha256": "d47ad8cfd7afa135e15e1726c9079dd503800a3ea9f50bb715ff3c41124ea41f"
       },
       "why": "The same native workspace reconnects through Account. The real Worker confirms receipt identity and the matching pending record disappears. The complete loaded and saved project remains intact."
@@ -96062,8 +96062,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 1012,
-        "end": 1032,
+        "start": 1060,
+        "end": 1080,
         "sha256": "529e26b9c37c29d4050b061f5400bf2b6ebb601c146f002af1f1685027dcced9"
       },
       "why": "The Account retry sends the saved edit unchanged. The isolated Worker rejects its released lease, and the client preserves the rejected command while resubmitting the edit with a fresh receipt. The scenario checks the complete loaded and saved projects."
@@ -96484,8 +96484,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 187,
-        "end": 207,
+        "start": 190,
+        "end": 210,
         "sha256": "8bde83c4f241f4a9e089627b34eaa72f0eb696e9ea860f20025d8f1b29becf5e"
       },
       "why": "The connected loopback provider receives explicit refusals, empty permissions and answers, and a method-not-found response. The settings status, absence of new turns and unchanged saved projects are asserted."
@@ -96524,8 +96524,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 601,
-        "end": 615,
+        "start": 604,
+        "end": 618,
         "sha256": "5d4adf7adae71bf09aa0965256e77fff8b6ac5f11cfead9617400a528688c49e"
       },
       "why": "A request for more input on an active image turn sends empty answers and interrupts that exact owned turn. Existing jobs and saved projects are preserved."
@@ -96544,8 +96544,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 226,
-        "end": 242,
+        "start": 229,
+        "end": 245,
         "sha256": "4a05e70a1203269fdc0397a378760f26171a035d4e2c1cda33262f0e54c19ed6"
       },
       "why": "Each owned account update requests one fresh account read. The Settings controls show the confirmed identity, become disabled on failed reads, and recover to the correct signed-out and ready states. Saved projects and jobs are unchanged."
@@ -96564,8 +96564,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 209,
-        "end": 218,
+        "start": 212,
+        "end": 221,
         "sha256": "a2eec81ece88acc33eb1cc9c96e993ebfd1876c4932da48c4be9b1ff55bdca67"
       },
       "why": "The Settings pane displays the provider warning, configuration warning summary and error while the socket remains connected."
@@ -97881,8 +97881,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 905,
-        "end": 940,
+        "start": 953,
+        "end": 988,
         "sha256": "05dc1af5ee63f6b0d0948ed0d1dcfdfafae6edf4be5e5864111e6690e4c03c41"
       },
       "why": "The owned Worker renewed the active fenced lease and accepted the editor autosave. After the same authenticated lease was released, its next renewal returned 423 and the app presented its expiry alert while retaining the accepted project."
@@ -98299,8 +98299,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 465,
-        "end": 495,
+        "start": 468,
+        "end": 498,
         "sha256": "0bde83871cf42855ad912ac265b0862a677d073f056c12cb1d6c300d5fa97a6d"
       },
       "why": "The retry is bound to the original cue, writes the validated new image, and preserves the other saved cues and their assets."
@@ -98320,8 +98320,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 325,
-        "end": 355,
+        "start": 328,
+        "end": 358,
         "sha256": "17974c79d5e18c324f3d8a0f2e6ac3c10b8da064ffb7db1797e0f54d069c8b3c"
       },
       "why": "Changing only the owned job image produces the saved-image notice. Restoring exact bytes opens the preview."
@@ -98342,8 +98342,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 308,
-        "end": 321,
+        "start": 311,
+        "end": 324,
         "sha256": "3bd248234b0ca1c49d1d70a38eda9c24b8d709345a08699eb36323dd5b6883ef"
       },
       "why": "The displayed prompt matches the local fixture request for the selected job, refuses editing, and preserves its project."
@@ -98362,8 +98362,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 347,
-        "end": 355,
+        "start": 350,
+        "end": 358,
         "sha256": "71aa64b787a5d3dc05f016b2aed4163524d1b57633da574336baeea1153340d6"
       },
       "why": "The validated restored artifact presents the native preview, which covers the previous history control."
@@ -98383,8 +98383,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 452,
-        "end": 463,
+        "start": 455,
+        "end": 466,
         "sha256": "abc56c2a8db6d3b04cc6cce0ff3d82a1c0c0eb724044eda45e6c5ee9b41a6ca7"
       },
       "why": "Cancel dismisses the real confirmation and preserves both original jobs without sending a new request."
@@ -98403,8 +98403,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 465,
-        "end": 478,
+        "start": 468,
+        "end": 481,
         "sha256": "2e1bab281d3b48cd9ec3de1ead22b1bfa199dcfe28cfdd083789f2a836b61000"
       },
       "why": "An original job without references successfully retries through the owned job-directory validation."
@@ -98424,8 +98424,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 465,
-        "end": 481,
+        "start": 468,
+        "end": 484,
         "sha256": "abc6f8dd786b3b8d17f5eda36c5080cb5dbbe89f06b4b343e60bc555c07550f5"
       },
       "why": "The confirmed retry uses the original prompt once, traces the original job via the new journal, and preserves both previous journals."
@@ -98464,8 +98464,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 496,
-        "end": 526,
+        "start": 499,
+        "end": 529,
         "sha256": "7aa4c146ecebee5599d0cb1be3501803d0bbd0283c95c3dc6498afe018b3c3bd"
       },
       "why": "The owned loopback fixture checks the original copied portrait; after replacing it with other valid image bytes, the actual retry reports the reference mismatch and leaves exactly three journals and the package unchanged."
@@ -98484,8 +98484,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 137,
-        "end": 148,
+        "start": 140,
+        "end": 151,
         "sha256": "974b0bb9449d277174ea996e64b1de9b4497074dc053dc5da5f7e467402aae3d"
       },
       "why": "The actual People review shows exactly one attached portrait, names Anna in the exact request, and creates no generation."
@@ -98504,8 +98504,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 214,
-        "end": 242,
+        "start": 222,
+        "end": 250,
         "sha256": "02d24da05eda3a02270b0923f9ab8558e3ba3bcefa9356fe1651112fd2dab4d0"
       },
       "why": "After the Worker accepts the staged edit and the client loses its response, Account retries the saved manifest. The same receipt arrives through preparation and there are no additional part requests."
@@ -98523,8 +98523,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 185,
-        "end": 212,
+        "start": 193,
+        "end": 220,
         "sha256": "4ea488d12124719bd3fbfdf22d94644ae59886d41a5ca00ace6838f7b3481f41"
       },
       "why": "The owned Worker receives both parts for one real Dialogue insertion, verifies the operation payloads and hashes, and returns one commit receipt. The exercised inputs contain 105 operations."
@@ -98543,8 +98543,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 214,
-        "end": 242,
+        "start": 222,
+        "end": 250,
         "sha256": "02d24da05eda3a02270b0923f9ab8558e3ba3bcefa9356fe1651112fd2dab4d0"
       },
       "why": "The scenario checks both saved parts and the pending command identity, recovers the accepted receipt through Account, and verifies that the exact pending file is removed."
@@ -98562,8 +98562,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 108,
-        "end": 118,
+        "start": 116,
+        "end": 126,
         "sha256": "29b6369831a782477b0b0af13482fde9ed6b6f3c0d852b88428061c7aef24f8b"
       },
       "why": "The owned sign-in challenge already exposes a redacted secure field. Accessibility observation is refused before the fixture delivers a code."
@@ -99074,8 +99074,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 813,
-        "end": 823,
+        "start": 821,
+        "end": 831,
         "sha256": "480d3fff01e218a5cfff03e2b05836acd961448c393ebfd5e0f1f9bc039d016c"
       },
       "why": "Checks that a failed remote revocation shows the exact user warning, clears the local account UI, and preserves the saved script."
@@ -99113,8 +99113,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 850,
-        "end": 870,
+        "start": 862,
+        "end": 882,
         "sha256": "1f77185a2bbe229a10ea1af35c5d4282676289354e5ef3a59d32e8215cf7db68"
       },
       "why": "The native activity screen requests a second directory page using the first page cursor, observes its terminal cursor and leaves the opened script unchanged."
@@ -99133,8 +99133,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 394,
-        "end": 406,
+        "start": 397,
+        "end": 409,
         "sha256": "82e8e2a9eb9ea31d91a855d2f9c7a78cc1c73033d4ebd8b09b709a8b52382994"
       },
       "why": "The owned runtime rejects the interruption, the Settings error reports that cancellation was unconfirmed, and the same original turn stays available for inspection with no new submission."
@@ -99154,8 +99154,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 630,
-        "end": 659,
+        "start": 638,
+        "end": 667,
         "sha256": "ac5042f9c9bf5a2d719ad30b8ea23ddd18217f8d56d03b14d219064db9947585"
       },
       "why": "Opening an owned legacy package recreates its checkpoint when authored content matches the cloud items. A distinct restored draft shows the conflict and retains its exact package bytes without creating a checkpoint."
@@ -99454,8 +99454,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 766,
-        "end": 773,
+        "start": 774,
+        "end": 781,
         "sha256": "8fca2e6e7f89968b896601bc28dd8d2a07631f38e82b163e3a48d3611f4392fd"
       },
       "why": "The authenticated request sees the real Worker revocation response and the app returns to local editing."
@@ -99474,8 +99474,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 786,
-        "end": 792,
+        "start": 794,
+        "end": 800,
         "sha256": "261fa355d0c9e102b15c2f9c62753efccb0fac8b9162ce0557b47bda55616e56"
       },
       "why": "The native sign-in state consumes the real Worker rate limit and prevents immediate retry."
@@ -99494,8 +99494,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 744,
-        "end": 753,
+        "start": 752,
+        "end": 761,
         "sha256": "6e27db69f37e545943594ecb1e724262273be4060368d6e857cef53d28d99515"
       },
       "why": "The real Worker rejects verification while the app keeps its sign-in challenge and the saved project intact."
@@ -99514,8 +99514,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 786,
-        "end": 792,
+        "start": 794,
+        "end": 800,
         "sha256": "261fa355d0c9e102b15c2f9c62753efccb0fac8b9162ce0557b47bda55616e56"
       },
       "why": "The native sign-in state consumes the real Worker rate limit and prevents immediate retry."
@@ -99553,8 +99553,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 894,
-        "end": 900,
+        "start": 942,
+        "end": 948,
         "sha256": "b630a1d452f34cf5f7074c81840a5558d949aeb6c11985d9d53b6dd55eb3dcc0"
       },
       "why": "The existing edit shortcut encounters a real contended Worker lease, reports the conflict and preserves the saved script."
@@ -99714,8 +99714,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
-        "start": 686,
-        "end": 730,
+        "start": 694,
+        "end": 738,
         "sha256": "14ab5a4171778636f84d6755eba8a7dd5a5e20a2ec3b912a5b13d01dcd09b531"
       },
       "why": "A real accepted import advances the background cursor before the older snapshot returns. The client replays from the advanced cursor and preserves the saved script."
@@ -99755,11 +99755,32 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-generation.mjs",
-        "start": 659,
-        "end": 690,
+        "start": 662,
+        "end": 693,
         "sha256": "1f0708ee49c54644bbddbb18031d5a7712addc46624f273250d9afaca7efecc8"
       },
       "why": "When a real provider result arrives after navigation, the original job keeps its exact image, the new workspace remains open, and no saved project receives the image automatically."
+    },
+    {
+      "id": "a6a8ac401fc955ea",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 912,
+        "end": 915,
+        "sha256": "e833c9079bcecb03365b1ac001a692389c5c89ba103e21125e69e36efa7fe65d"
+      },
+      "actions": [
+        "activate Mention a project member after the owned directory repeats its cursor",
+        "observe the member directory error and its Retry control",
+        "activate Retry and verify the member picker and saved project recover"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-project-sync.mjs",
+        "start": 887,
+        "end": 921,
+        "sha256": "d23a493a492de280670a72208cdd692db7843d94cbe12c918794489c2770b90b"
+      },
+      "why": "The native picker refuses a repeated continuation, hides the incomplete member list, then recovers on a real retry while the saved script stays unchanged."
     }
   ],
   "commentExclusions": [

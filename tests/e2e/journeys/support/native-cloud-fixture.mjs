@@ -125,6 +125,8 @@ export async function startNativeCloudFixture() {
       prepareDiscussionPages: () => response('prepare-discussion-pages'),
       discussionPageRequests: () => response('discussion-page-requests'),
       discussionMessagePageRequests: () => response('discussion-message-page-requests'),
+      armDiscussionMemberPage: () => response('arm-discussion-member-page'),
+      discussionMemberPageState: () => response('discussion-member-page-state'),
       assertNoOutbound: async () => assert.equal((await response('status')).outbound, 0),
       close,
     };
@@ -285,6 +287,27 @@ async function startWorker(root) {
               hasMore: page.hasMore, nextCursor: page.nextCursor });
             if (discussionPages.messageRequests.length > 16) throw new Error('The message page request limit was exceeded');
             return firstPage ? Response.json(page) : response;
+          }
+          if (discussionPages && path === discussionPages.memberPath && request.method === 'GET') {
+            const response = await upstream();
+            if (!response.ok) return response;
+            const state = discussionPages.members;
+            const after = searchParams.get('after');
+            const page = await response.clone().json();
+            if (!request.headers.has('authorization') || after === null || page.hasMore)
+              throw new Error('Expected the authenticated owned member directory');
+            if (state.phase === 'idle' || state.phase === 'returned') {
+              state.healthyRequests++;
+              return response;
+            }
+            if (state.phase === 'armed' && after === '' && page.members.length === 1) {
+              state.cursor = page.members[0].id;
+              state.phase = 'continuation';
+            } else if (state.phase === 'continuation' && after === state.cursor && page.members.length === 0) {
+              state.phase = 'returned';
+            } else throw new Error('Unexpected request for the owned stalled member pages');
+            state.requests.push({ after, count: page.members.length, nextCursor: state.cursor });
+            return Response.json({ ...page, hasMore: true, nextCursor: state.cursor });
           }
           if (logoutRefusal === 'armed' && path === '/auth/logout' && request.method === 'POST') {
             if (!request.headers.has('authorization')) throw new Error('Expected the owned logout request');
@@ -564,10 +587,19 @@ async function startWorker(root) {
         invitationRequests() { return { interruptedLoads: invitations.interruptedLoads, revocations: [...invitations.revocations] }; }
         watchDiscussionPages(path, threadID) {
           if (discussionPages) throw new Error('Use a single owned discussion directory');
-          discussionPages = { path, requests: [], messagePath: path + '/' + threadID + '/messages', messageRequests: [] };
+          discussionPages = { path, requests: [], messagePath: path + '/' + threadID + '/messages', messageRequests: [],
+            memberPath: path.slice(0, -'/threads'.length) + '/members',
+            members: { phase: 'idle', healthyRequests: 0, requests: [] } };
         }
         discussionPageRequests() { return discussionPages.requests; }
         discussionMessagePageRequests() { return discussionPages.messageRequests; }
+        armDiscussionMemberPage() {
+          const state = discussionPages?.members;
+          if (!state?.healthyRequests || state.phase !== 'idle') throw new Error('Open the owned member directory first');
+          state.phase = 'armed';
+          return true;
+        }
+        discussionMemberPageState() { return discussionPages.members; }
         armReplayPage({ projectId, mode }) {
           if (!/^[a-f0-9-]{36}$/i.test(projectId) || !['ahead-of-cursor', 'empty-with-more'].includes(mode)
               || replayPage?.requests.length === 0) throw new Error('Choose one owned replay-page condition');
@@ -1069,6 +1101,8 @@ async function startWorker(root) {
       historyPageState: () => nativeWorker.historyPageState(),
       prepareDiscussionPages, discussionPageRequests: () => nativeWorker.discussionPageRequests(),
       discussionMessagePageRequests: () => nativeWorker.discussionMessagePageRequests(),
+      armDiscussionMemberPage: () => nativeWorker.armDiscussionMemberPage(),
+      discussionMemberPageState: () => nativeWorker.discussionMemberPageState(),
       takeCode: () => mailbox.takeCode(),
       projects: async () => (await db.prepare(
         'SELECT projects.id, projects.title FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.id',
@@ -1121,7 +1155,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'prepare-history-pages': worker.prepareHistoryPages, 'change-history-page': worker.changeHistoryPage,
         'history-page-state': worker.historyPageState,
         'prepare-discussion-pages': worker.prepareDiscussionPages, 'discussion-page-requests': worker.discussionPageRequests,
-        'discussion-message-page-requests': worker.discussionMessagePageRequests };
+        'discussion-message-page-requests': worker.discussionMessagePageRequests,
+        'arm-discussion-member-page': worker.armDiscussionMemberPage, 'discussion-member-page-state': worker.discussionMemberPageState };
       assert.ok(Object.hasOwn(operations, operation));
       const result = await operations[operation](value);
       if (process.connected) process.send(result);

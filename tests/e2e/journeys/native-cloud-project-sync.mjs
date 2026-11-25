@@ -9,7 +9,7 @@ import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, interrupte
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
 
-const groups = ['sync', 'lease-renewal', 'lease-contention', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'sign-in-recovery', 'sign-in-rate-limit', 'discussion-pages', 'legacy-local-copy', 'reconnect-empty-cloud', 'reconnect-stale-import-snapshot', 'replay-page-guards'];
+const groups = ['sync', 'lease-renewal', 'lease-contention', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'sign-in-recovery', 'sign-in-rate-limit', 'discussion-pages', 'discussion-member-pages', 'legacy-local-copy', 'reconnect-empty-cloud', 'reconnect-stale-import-snapshot', 'replay-page-guards'];
 const editLine = { id: 'edit-line', command: 'key', trigger: 'Command-Return', entryPoint: {
   path: 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift', start: 1069, end: 1088,
   sha256: 'f25e5f1bb2ff90cab94f0d8e5fc3de3acbd518d08e2ece840e9dd7f1475f8b1c',
@@ -34,6 +34,14 @@ if (args.length === 1 && args[0] === '--list-cases') {
         sha256: '3892e5a99eef6985c79166915b8186f1caa6ec06917f404682b244f910abc9ed',
       } }],
     'reconnect-empty-cloud': [{ ...openLinkedProject, condition: 'linked-local-copy-has-an-empty-cloud-project' }],
+    'discussion-member-pages': [{ id: 'open-discussion-members', command: 'activate', trigger: 'Mention a project member',
+      condition: 'member-directory-repeats-its-page-cursor', entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/Discussion/ScrivDiscussionController.swift', start: 183, end: 183,
+        sha256: 'b0bd0c07d1d0691f7f926051b017887a10166d385974af4565ab6668da7fcfbf',
+      }, branch: {
+        path: 'apps/mac/Sources/ScrivApp/Services/CloudClient.swift', start: 912, end: 915,
+        sha256: 'e833c9079bcecb03365b1ac001a692389c5c89ba103e21125e69e36efa7fe65d',
+      } }],
     'reconnect-stale-import-snapshot': [{ ...openLinkedProject, condition: 'initial-import-snapshot-arrives-after-background-replay' }],
     'replay-page-guards': ['final-replay-page-ahead-of-cursor', 'background-replay-receives-empty-page-with-more-events'].map(condition => ({
       id: 'sync-project', command: 'activate', trigger: 'Sync this script', condition, entryPoint: {
@@ -846,6 +854,10 @@ async function browsePagedDiscussionDirectory() {
     { after: { at: 0, id: '' }, ids: [first.id], hasMore: true, nextCursor: firstCursor },
     { after: firstCursor, ids: [second.id], hasMore: false, nextCursor: { at: second.at, id: second.id } },
   ]);
+  if (args[1] === 'discussion-member-pages') {
+    await recoverDiscussionMemberDirectory(loaded);
+    return;
+  }
 
   step = 'load both directory pages through Project activity';
   const offset = (await fixture.discussionPageRequests()).length;
@@ -872,8 +884,44 @@ async function browsePagedDiscussionDirectory() {
   console.log('PASS: Project activity follows the directory cursor and preserves the active script');
 }
 
+async function recoverDiscussionMemberDirectory(loaded) {
+  step = 'stop a repeated member cursor and retry in the same picker';
+  await browseDiscussionMembers();
+  await click('Remove mention of Scriv user');
+  const persisted = await session.command('persisted-projects');
+  const before = await fixture.discussionMemberPageState();
+  assert.ok(before.healthyRequests > 0);
+  assert.equal(await fixture.armDiscussionMemberPage(), true);
+  await click('Mention a project member', true);
+  const error = node => node.text === 'The member directory stopped advancing.';
+  const failed = await session.waitFor(nodes => nodes.some(error)
+    && nodes.some(node => node.text === 'Couldn’t load members'));
+  assert.ok(!failed.some(node => node.hittable && node.label === 'Mention Scriv user, owner'));
+  const stalled = await fixture.discussionMemberPageState();
+  assert.equal(stalled.phase, 'returned');
+  assert.match(stalled.cursor, /^[a-f0-9-]{36}$/);
+  assert.deepEqual(stalled.requests, [
+    { after: '', count: 1, nextCursor: stalled.cursor },
+    { after: stalled.cursor, count: 0, nextCursor: stalled.cursor },
+  ]);
+  await click('Retry', true);
+  const recovered = await session.waitFor(nodes => !nodes.some(error)
+    && nodes.some(node => node.hittable && node.label === 'Mention Scriv user, owner'));
+  assert.ok(recovered.some(node => node.text === '0 / 20'));
+  const retried = await fixture.discussionMemberPageState();
+  assert.equal(retried.healthyRequests, stalled.healthyRequests + 1);
+  assert.deepEqual(retried.requests, stalled.requests);
+  await click('Done', true);
+  await click('Close discussion', true);
+  await control(workspaceProject, true);
+  assert.deepEqual((await session.command('loaded-project')).project, loaded);
+  assert.deepEqual(await session.command('persisted-projects'), persisted);
+  await fixture.assertNoOutbound();
+  console.log('PASS: the member picker rejects a repeated pagination cursor and recovers on Retry');
+}
+
 try {
-  if (args[1] === 'discussion-pages') await browsePagedDiscussionDirectory();
+  if (['discussion-pages', 'discussion-member-pages'].includes(args[1])) await browsePagedDiscussionDirectory();
   else if (args[1] === 'logout-revocation-failure') await verifyFailedLogout();
   else if (args[1] === 'sign-in-recovery') await verifySignInRecovery();
   else if (args[1] === 'sign-in-rate-limit') await verifySignInRateLimit();
