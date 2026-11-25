@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
+import { isControlIdentifier } from '../../../../cli/coverage-session.mjs';
 
 const ready = node => node.enabled === true && node.hittable;
 export const sortedProjects = projects => [...projects].sort((a, b) => a.id.localeCompare(b.id));
 export function audioLibrarySteps(session) {
-  async function reveal(predicate) {
+  async function revealControl(predicate) {
     for (let attempt = 0; attempt < 8; attempt++) {
       const nodes = await session.waitFor(nodes => nodes.filter(predicate).length === 1);
       const node = nodes.find(predicate);
-      if (ready(node)) return node;
+      if (ready(node)) return { node, nodes };
       const scroll = nodes.filter(candidate => candidate.scroll && candidate.hittable
         && node.path.startsWith(candidate.path + '.')).sort((a, b) => b.path.length - a.path.length)[0];
       assert.ok(scroll, 'Offscreen control requires a reachable native scrolling ancestor');
@@ -17,9 +18,15 @@ export function audioLibrarySteps(session) {
     }
     throw new Error('Audio control remained unreachable after bounded native scrolling');
   }
+  async function reveal(predicate) {
+    return (await revealControl(predicate)).node;
+  }
   async function activate(predicate) {
-    const control = await reveal(predicate);
-    await session.command('activate', { target: control.path });
+    const { node, nodes } = await revealControl(predicate);
+    const id = node.identifier;
+    const identified = isControlIdentifier(id)
+      && nodes.filter(candidate => candidate.identifier === id).length === 1;
+    await session.command('activate', { target: identified ? id : node.path });
   }
   async function tab(name) {
     const nodes = await session.waitFor(nodes => nodes.some(node => node.identifier === 'workspace-tabs' && ready(node)));

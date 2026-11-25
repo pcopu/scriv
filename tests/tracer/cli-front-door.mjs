@@ -58,6 +58,8 @@ export async function main() {
       assert.equal(row.path, `tests/e2e/${row.id}.mjs`);
       assert.ok(!row.path.includes('/support/') && !row.path.includes('/live-e2e/'));
     }
+    const audio = catalog.scenarios.find(row => row.id === 'journeys/audio-library');
+    assert.deepEqual(audio.groups, ['import', 'mix', 'timing', 'attachment', 'attachment-direction', 'timing-source-shrink', 'timing-boundaries']);
     const pictures = catalog.scenarios.find(row => row.id === 'journeys/picture-coverage');
     assert.deepEqual(pictures.groupWitnessPaths.follow, ['tests/e2e/journeys/support/picture-follow-steps.mjs']);
     assert.deepEqual(pictures.groupWitnessPaths['empty-storyboard'], ['tests/e2e/journeys/support/empty-storyboard.mjs']);

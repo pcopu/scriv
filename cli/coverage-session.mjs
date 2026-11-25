@@ -13,6 +13,10 @@ const fail = () => { throw new Error('coverage-session-unavailable'); };
 export function isMenuActionScope(value) {
   return typeof value === 'string' && /^[a-z][a-z0-9-]{0,63}$/.test(value);
 }
+export function isControlIdentifier(value) {
+  // The native CLI's view paths start with a window index.
+  return typeof value === 'string' && /^[a-zA-Z][a-zA-Z0-9._-]{0,127}$/.test(value) && !/\s/.test(value);
+}
 export async function hashFile(path) {
   const hash = createHash('sha256');
   for await (const chunk of createReadStream(path)) hash.update(chunk);
@@ -103,7 +107,7 @@ export async function observeSession(session, executable, capabilities) {
       context.startup ? 'Startup measures the Swift entry point through the first post-handshake snapshot.'
         : 'Initial launch and isolation handshake precede the before snapshot.',
       'Capture transport, polling and background work overlap; snapshots are not globally atomic.',
-      'Records ordered command names, completion states and completed menu scopes from public discovery. Other request fields and response values are omitted.',
+      'Records ordered command names, completion states, discovered menu scopes and fingerprints of completed identifier activations. Raw selectors and other request or response values are omitted.',
       'Expected command errors may pass scenario assertions; command completion alone does not prove assertions.',
       context.startup ? 'Both snapshots were taken before scenario commands. The early buffer is transferred second.'
         : 'Session close captures before termination; work after that snapshot is outside the interval.'] };
@@ -128,12 +132,16 @@ export async function observeSession(session, executable, capabilities) {
   } catch (error) { record.status = 'failed'; record.endedAt = new Date().toISOString(); await save(); throw error; }
   let finishing = null;
   return {
-    record(command, menuScope) {
+    record(command, selector) {
       if (commands.length >= 32768 || typeof command !== 'string' || !/^[a-z][a-z0-9-]{0,63}$/.test(command)) throw new Error('coverage-command-limit-or-name');
       const item = { ordinal: commands.length + 1, command, status: 'pending' }; commands.push(item);
       return status => {
         item.status = status;
-        if (status === 'completed' && command === 'menu-action' && menuScopes.has(menuScope)) item.scope = menuScope;
+        if (status !== 'completed') return;
+        if (command === 'menu-action' && menuScopes.has(selector)) item.scope = selector;
+        if (command === 'activate' && isControlIdentifier(selector)) {
+          item.targetSHA256 = createHash('sha256').update(selector).digest('hex');
+        }
       };
     },
     finish() {

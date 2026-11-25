@@ -253,8 +253,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 157,
-        "end": 159,
+        "start": 159,
+        "end": 161,
         "sha256": "f5af6348d2ca564269f117485e13ad854cac4a4a75ba197b4a35d010367aa351"
       },
       "why": "Reject traversal as an invalid scenario ID through the actual public Tracer boundary, with no evidence summary."
@@ -4473,8 +4473,8 @@
       "id": "0fe791fa940a793f",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 265,
-        "end": 267,
+        "start": 266,
+        "end": 268,
         "sha256": "7b7f87c90ad72047fa13188b9bab73150ea539ec56a32b44fe521db073bd7bce"
       },
       "actions": [
@@ -4494,8 +4494,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 323,
-        "end": 354,
+        "start": 325,
+        "end": 356,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "Workspace routing accepts only inspect with its exact arity and emits the host inspection JSON. Resume/reset/delete are rejected without changing fixture bytes. Other malformed arities are not independently asserted. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -5486,8 +5486,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 174,
-        "end": 193,
+        "start": 176,
+        "end": 195,
         "sha256": "1a299b8bcac0c324c66d692e3f78ec82a816968274a55ae7ee61c02c5e03e72b"
       },
       "why": "Preflight error becomes the recorded macos-required blocker, status not-run, and reason for eligible not-started scenarios while preserving explicit restriction reasons. No started scenario, generic unexpected error or collector failure is tested. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -5802,8 +5802,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 323,
-        "end": 354,
+        "start": 325,
+        "end": 356,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "The public inspector rejects non-owned naming, invokes host validation, returns the exact object explicitly denying native validation and resume authority, and normalizes tested validation failures. Non-string input and native ownership are not established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -6526,8 +6526,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 272,
-        "end": 276,
+        "start": 274,
+        "end": 278,
         "sha256": "f2b6bc72b9ebb2249aeec33bc5359dac552b8895616430f2a47cf0e2b18538ca"
       },
       "why": "Tracer tooling journey drives the actual builder help and verifies advertised source pin and build-record requirements. The exact three-line source snippet moved from 117-119 to 118-120 without changing its bytes. The builder now rebuilds the native plugin and canonical Core using matching signed Sparkle 2.10.1 development headers, but this help-only witness does not establish compilation, plugin loading, runtime behavior or measured coverage. Build verification is recorded separately in docs/verification/clt-native-build-20261111.md."
@@ -7887,8 +7887,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 223,
-        "end": 230,
+        "start": 245,
+        "end": 252,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing invalid drafts: each literal invalid source/duration/offset variant uses actual text fields and Apply, retains its exact raw strings, shows audio-timing-validation with the unchanged-draft explanation, and preserves every saved model field. The catch path presents the inline notice while retaining the sheet and draft. Presence/text are asserted, not content geometry, sheet fitting or the specific invalid-range message. Static reviewed source/action/assertion association only. No native execution, measured coverage, physical-input parity, all-branch coverage or legacy retirement is claimed. Optional reveal/scroll and polling reads remain governed by the original helpers, not a recorded wire transcript."
@@ -8130,8 +8130,8 @@
       "id": "1d6c756757e72e1d",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 280,
-        "end": 282,
+        "start": 281,
+        "end": 283,
         "sha256": "c91f8e510844568a4785909f7090466790f910fea3df9583d474551c76ffaa87"
       },
       "actions": [
@@ -10691,8 +10691,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 323,
-        "end": 354,
+        "start": 325,
+        "end": 356,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "Ownership helper predicates accept the synthetic private directory/files and reject tested directory-mode, file-mode and hard-link cases. Error helper returns the asserted owned-workspace-unavailable. Device/inode sameness is checked on successful access; no replacement race, wrong uid or special-file injection is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -11719,8 +11719,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 260,
-        "end": 270,
+        "start": 262,
+        "end": 272,
         "sha256": "36bf8cc3cdbc3eda366f154f1faee00277fb19c64f18cf0b1f915eea6d79ca23"
       },
       "why": "Actual Tracer invocations reject coverage without an explicit scenario and pinned build/source. This is argument gating, not native coverage."
@@ -13966,8 +13966,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 226,
-        "end": 239,
+        "start": 228,
+        "end": 241,
         "sha256": "a8f0090e4a744bd6f6431442f81732f81ba6e2baa7fb823ad36ce3a0bb5d6bc1"
       },
       "why": "Subset preflight failure retains false fullSuitePassed, finalizes evidence, emits subset summary and returns status 2. Passing/full native suite and runtime-failed exit alternatives are not established. Preconditions and limits: One eligible native scenario ID is selected, but no app is provided; platform-specific preflight produces not-run. Selection metadata, one scenario, false fullSuitePassed and honest blocker are asserted, not native behavior. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -15116,8 +15116,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 223,
-        "end": 230,
+        "start": 245,
+        "end": 252,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. The exact persistent-draft notice copy is asserted. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -15684,8 +15684,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 323,
-        "end": 354,
+        "start": 325,
+        "end": 356,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "Retaining an inspect-only host handle validates absolute canonical UUID-named root, private directory mode and stable identity, then validates owned files. Symlink-root and unsafe-root fixtures reject; valid fixture yields the exact non-resumable inspection. No retained live application lease or concurrent root swap is established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -19124,8 +19124,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 174,
-        "end": 193,
+        "start": 176,
+        "end": 195,
         "sha256": "1a299b8bcac0c324c66d692e3f78ec82a816968274a55ae7ee61c02c5e03e72b"
       },
       "why": "Runner creates one owned output directory and initial actual-app evidence with false fullSuitePassed/baselineMigrated, null app/build provenance and not-run scenario rows. The witness checks these fields after platform preflight. Coverage initialization on line185 is not taken by this noncoverage request; excluded from accepted range. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -19248,8 +19248,8 @@
       "id": "42698e9ceb3ddc97",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 296,
-        "end": 298,
+        "start": 297,
+        "end": 299,
         "sha256": "c574ee7be015002ab7f89a3c0e71b90a46e950494e6f32f0542f499bb75ed46a"
       },
       "actions": [
@@ -20235,8 +20235,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/audio-library-steps.mjs",
-        "start": 46,
-        "end": 53,
+        "start": 53,
+        "end": 60,
         "sha256": "a960c4d00a0593b427d45417a893f6204899106197a5c22ecaf2fabdf1ef4b7d"
       },
       "why": "AUT-J14: openTrim observes the actual audio-trim-editor and all three expected numeric fields after activating the imported clip-specific button. Dynamic clip identity comes only from the actual saved import. The unchanged-context success path is associated; stale/deleted/context rejection branches are not tested here. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -21232,8 +21232,8 @@
       "id": "489faace1dc36a36",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 318,
-        "end": 318,
+        "start": 319,
+        "end": 319,
         "sha256": "d295eb9c29f5d18ed5454114c35a84d25571d1f97cc000501a0f70d830f310e9"
       },
       "actions": [
@@ -21241,8 +21241,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 157,
-        "end": 159,
+        "start": 159,
+        "end": 161,
         "sha256": "f5af6348d2ca564269f117485e13ad854cac4a4a75ba197b4a35d010367aa351"
       },
       "why": "The public test dispatcher preserves invalid-input exit status 2 and the bounded validation reason."
@@ -23199,8 +23199,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 155,
-        "end": 173,
+        "start": 157,
+        "end": 175,
         "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
       },
       "why": "Repeated exact scenario ID is rejected before evidence generation. Valid selection collection is used in normal listing/subset paths; this witness does not establish scenario execution. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -23252,8 +23252,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 309,
-        "end": 315,
+        "start": 311,
+        "end": 317,
         "sha256": "cd102efbe736f66834785a26abc39543d9c93a24533ed7a36de9f9f1e917e6ef"
       },
       "why": "Wrapper records child completion, removes signal listeners and propagates successful exit code, witnessed by direct-wrapper versus Tracer actions equality. SIGINT/other signal fallback and cancellation forwarding remain untested. Preconditions and limits: The trusted configured Tracer runs through the npm wrapper, returns exit 0 and identical actions output. Signal forwarding and failed/terminated process exit alternatives are not exercised. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -26331,8 +26331,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 285,
-        "end": 306,
+        "start": 287,
+        "end": 308,
         "sha256": "c8e46d295c1c6256235b731b1745f7072f079d8e21e4de32b6be36bc4cdbfde0"
       },
       "why": "The runner records provided source manifest/digest/output location and enabled coverage option. Build-record path storage on line 138 remains outside this accepted range. The later not-run report identifies verified exported source and empty coverage; valid native build provenance is not established. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__ and cloud/.dev.vars.example; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution. The restored example is filtered from explicit untracked source includes; the source-manifest producer already excludes all .dev.vars files. Application source and native assertions are unchanged by this tooling witness repair."
@@ -26785,8 +26785,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 223,
-        "end": 230,
+        "start": 245,
+        "end": 252,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -32911,8 +32911,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 223,
-        "end": 230,
+        "start": 245,
+        "end": 252,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -32931,8 +32931,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 309,
-        "end": 315,
+        "start": 311,
+        "end": 317,
         "sha256": "cd102efbe736f66834785a26abc39543d9c93a24533ed7a36de9f9f1e917e6ef"
       },
       "why": "With the trusted configured Tracer, the npm wrapper forwards actions and output matches direct discovery. Signal behavior and other forwarded commands are not covered by this witness."
@@ -34928,8 +34928,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 260,
-        "end": 270,
+        "start": 262,
+        "end": 272,
         "sha256": "36bf8cc3cdbc3eda366f154f1faee00277fb19c64f18cf0b1f915eea6d79ca23"
       },
       "why": "Reject relative tool selection at the public CLI boundary without executing a tool."
@@ -35586,8 +35586,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 155,
-        "end": 173,
+        "start": 157,
+        "end": 175,
         "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
       },
       "why": "Incomplete manifest/digest pairs and timeout values below 100 or above 3600000 are rejected without creating evidence. Neither manifest byte integrity nor successful timeout enforcement is asserted by these invalid-input cases. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -39217,8 +39217,8 @@
       "id": "87fe872823b40e91",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 284,
-        "end": 285,
+        "start": 285,
+        "end": 286,
         "sha256": "76cdc684774783f5641fa8937bfd750cfdce351dd1b6474b490c9a30a208b2e9"
       },
       "actions": [
@@ -39226,8 +39226,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 254,
-        "end": 259,
+        "start": 256,
+        "end": 261,
         "sha256": "ce3baef71321bb58e2d3b5f88d28acc72ab4ca697b67285f06f52d14f7f20572"
       },
       "why": "A nested public tooling request fails with the recursion refusal before any child suite starts. No successful native launch is implied."
@@ -39338,8 +39338,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/audio-library-steps.mjs",
-        "start": 46,
-        "end": 53,
+        "start": 53,
+        "end": 60,
         "sha256": "a960c4d00a0593b427d45417a893f6204899106197a5c22ecaf2fabdf1ef4b7d"
       },
       "why": "AUT-J14: actual clip-specific Trim & timing UIButton forwards to onTrim, and the helper observes the editor plus all three original numeric fields. The separate ellipsis-menu Trim action is not covered by this witness. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -39457,8 +39457,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 223,
-        "end": 230,
+        "start": 245,
+        "end": 252,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -40371,8 +40371,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/audio-library-steps.mjs",
-        "start": 41,
-        "end": 44,
+        "start": 48,
+        "end": 51,
         "sha256": "0833c2d6989fde651eb63f3df8b08a54fe690f518b52419336810141cd5cf6ba"
       },
       "why": "AUT-J13: activating the actual Close local audio UIButton dismisses the local-audio-sheet and exposes ready workspace-tabs. Escape-key closure and concurrent scene change are separate gaps. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -43600,8 +43600,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 323,
-        "end": 354,
+        "start": 325,
+        "end": 356,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "Valid marker size/content and empty lock pass; the deliberately wrong-length marker rejects at the size guard. Same-length corrupt marker, short read, lock nonzero size and unexpected read failure are not rejection-tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -43621,8 +43621,8 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 45,
-        "end": 68,
-        "sha256": "b0cb918df3243b2c0172688deed784f59acfb63d1e3ca3c6b214e8c35a94d23d"
+        "end": 70,
+        "sha256": "6e34fab182c435afcdd31153b685ef7bea519c3b23e12b2e0353b7edf92389d5"
       },
       "why": "Discover regular native entrypoint files in the transitional and journey directories, excluding support and opt-in live-account routes."
     },
@@ -44644,8 +44644,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 316,
-        "end": 318,
+        "start": 318,
+        "end": 320,
         "sha256": "fbd6f2b87f14b45c33d755a5cbbdcf2afb642c65afcb474b1a72c79abeb84bb9"
       },
       "why": "The public wrapper refuses a relative executable selection with exit 2; only executable-selection rejection is asserted."
@@ -45834,8 +45834,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 124,
-        "end": 131,
+        "start": 126,
+        "end": 133,
         "sha256": "29aa39cf179819076f23f7017877fc9962e03cefb6a769ed15dd1d2fd361e329"
       },
       "why": "The current first/last catalog IDs select exactly two real entrypoints in catalog order with explicit subset and total counts. Discovery only, no native execution. The catalog now carries restriction metadata on blocked entries. This existing first/last-selection witness credits ordering and counts only, not execution eligibility or the new restriction branches."
@@ -48751,8 +48751,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 223,
-        "end": 230,
+        "start": 245,
+        "end": 252,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -52796,8 +52796,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 174,
-        "end": 193,
+        "start": 176,
+        "end": 195,
         "sha256": "1a299b8bcac0c324c66d692e3f78ec82a816968274a55ae7ee61c02c5e03e72b"
       },
       "why": "On Linux the runner rejects native execution as macos-required before launching app, preparing coverage or entering runScenario. macOS missing-app behavior on the following line is not credited as executed. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -53315,8 +53315,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 223,
-        "end": 230,
+        "start": 245,
+        "end": 252,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. The caught draft validation error remains in the presented editor. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -55298,8 +55298,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 155,
-        "end": 173,
+        "start": 157,
+        "end": 175,
         "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
       },
       "why": "The parser records list/help switches and rejects unknown arguments; combined help/list or list plus output is rejected by later exclusivity guards. No assumption that all branches fail at this line. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -56027,8 +56027,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 285,
-        "end": 306,
+        "start": 287,
+        "end": 308,
         "sha256": "c8e46d295c1c6256235b731b1745f7072f079d8e21e4de32b6be36bc4cdbfde0"
       },
       "why": "Evidence serialization writes then renames its temporary file. The witness sees only evidence.json in the final output directory. Crash-atomicity, fsync durability and interrupted rename are not tested. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__ and cloud/.dev.vars.example; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution. The restored example is filtered from explicit untracked source includes; the source-manifest producer already excludes all .dev.vars files. Application source and native assertions are unchanged by this tooling witness repair."
@@ -57260,8 +57260,8 @@
       "id": "c31e1aebb17c349a",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 290,
-        "end": 294,
+        "start": 291,
+        "end": 295,
         "sha256": "026faed339518643ae3725d95098d9bc93be4ce3d162d8647cdd7f3a51e6fedf"
       },
       "actions": [
@@ -57271,8 +57271,8 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 45,
-        "end": 68,
-        "sha256": "b0cb918df3243b2c0172688deed784f59acfb63d1e3ca3c6b214e8c35a94d23d"
+        "end": 70,
+        "sha256": "6e34fab182c435afcdd31153b685ef7bea519c3b23e12b2e0353b7edf92389d5"
       },
       "why": "The Tracer test front door delegates catalog discovery to the existing native runner; catalog and direct compatibility outputs match, with no app launched."
     },
@@ -59388,8 +59388,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 285,
-        "end": 306,
+        "start": 287,
+        "end": 308,
         "sha256": "c8e46d295c1c6256235b731b1745f7072f079d8e21e4de32b6be36bc4cdbfde0"
       },
       "why": "Source identity delegates to manifest verification for the supplied manifest/digest; final evidence says verified-exported-source-manifest. This positive case does not test stale/malformed source-manifest rejection or native source-to-build match. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__ and cloud/.dev.vars.example; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution. The restored example is filtered from explicit untracked source includes; the source-manifest producer already excludes all .dev.vars files. Application source and native assertions are unchanged by this tooling witness repair."
@@ -63244,8 +63244,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 155,
-        "end": 173,
+        "start": 157,
+        "end": 175,
         "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
       },
       "why": "Argument iteration detects repeated non-scenario options and missing/control-character option values before evidence creation. The witness includes repeated timeout, missing scenario/app/timeout and newline scenario value. Other value flags are not all tested negatively. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -63461,8 +63461,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 323,
-        "end": 354,
+        "start": 325,
+        "end": 356,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "Successful validation confirms named file/root identity and returns the inspected file set; scenario verifies original filenames and file bytes remain unchanged. This is the successful read-only path, not concurrent replacement detection or guaranteed descriptor cleanup under all failures. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -64260,8 +64260,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 260,
-        "end": 270,
+        "start": 262,
+        "end": 272,
         "sha256": "36bf8cc3cdbc3eda366f154f1faee00277fb19c64f18cf0b1f915eea6d79ca23"
       },
       "why": "Real public CLI rejects invalid session capture bounds before launch; does not verify native slot enforcement."
@@ -69265,8 +69265,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 155,
-        "end": 173,
+        "start": 157,
+        "end": 175,
         "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
       },
       "why": "Timeout parsing rejects exponent notation and passes numeric strings to the later range guard. The 99 and 3600001 bounds are separately rejected later; no actual timeout duration is exercised. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -69873,8 +69873,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 319,
-        "end": 321,
+        "start": 321,
+        "end": 323,
         "sha256": "51d4865cab067848a45c97eb9d43d6b29b6afea090587607f6a6017be2841be9"
       },
       "why": "The public wrapper reports a missing explicitly selected executable as exit 2 with the setup error. This witness does not exercise successful child exit or signal propagation."
@@ -70570,8 +70570,8 @@
       "id": "f25e39b6b930151a",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 237,
-        "end": 237,
+        "start": 238,
+        "end": 238,
         "sha256": "3692cf79f66c111c228c823b5f2cc4332c72b8d34dc64e7e74f4d31765b34cd9"
       },
       "actions": [
@@ -71007,8 +71007,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 285,
-        "end": 306,
+        "start": 287,
+        "end": 308,
         "sha256": "c8e46d295c1c6256235b731b1745f7072f079d8e21e4de32b6be36bc4cdbfde0"
       },
       "why": "Opt-in coverage initializes explicit not-run status, zero imported records and empty intervals; these exact fields remain in final preflight-failed evidence. No collector import or app instrumentation runs. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__ and cloud/.dev.vars.example; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution. The restored example is filtered from explicit untracked source includes; the source-manifest producer already excludes all .dev.vars files. Application source and native assertions are unchanged by this tooling witness repair."
@@ -71904,8 +71904,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 323,
-        "end": 354,
+        "start": 325,
+        "end": 356,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "Validation reads the opened/named root and each marker/lock, checks private regular-file ownership/link count/mode and obtains stable file identities. Hard-linked/mode-0400 marker and absent-lock fixtures reject. No identity-change race, file-symlink race, device mismatch or revalidation of an existing lease.files set is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -73973,8 +73973,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
-        "start": 223,
-        "end": 230,
+        "start": 245,
+        "end": 252,
         "sha256": "850d4ae13f0f99425869d50b68697f247bf62b8e742f634b16f2688238fb6a62"
       },
       "why": "AUT-J14/timing rejects all 14 invalidTimingDrafts in literal fixture order (audio-library-fixtures.mjs:125-134) after the valid baseline and two cancelled drafts. The same editor must show audio-timing-validation plus Nothing was applied text, retain all three exact raw strings, preserve every saved-project field and leave no hidden alert. Cases include negative/oversized source and offset, empty/nonfinite/unparseable source, source at its endpoint, overrun, zero duration and 0.0004 seconds rounded to zero. Input parsing rejects them rather than clamping. This does not prove locale switching, Int overflow, missing assets or a concurrent edit conflict. The validation notice identifier is explicitly required. Reviewed static source-to-CLI-witness association only; no native execution, measured coverage, physical-input parity or legacy-test retirement is claimed by this review."
@@ -77650,15 +77650,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -77696,15 +77696,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -77940,15 +77940,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -78008,15 +78008,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -78142,15 +78142,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -78231,15 +78231,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -78255,15 +78255,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -78409,15 +78409,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -78499,15 +78499,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -78545,15 +78545,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -78745,15 +78745,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -78769,15 +78769,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -78793,15 +78793,15 @@
         "import-json {text: JSON.stringify(audioProjectFixture())}; import-audio {attachment:selected-dialogue,base64:syntheticPCM}",
         "select Script; activate preview-layers-disclosure if collapsed; activate Audio; activate audio-clip-trim-<observed clip id>",
         "text audio-source-in 0.500; text audio-duration 2.500; text audio-placement-offset 0.250; activate audio-apply; persisted-projects",
-        "reopen; text 1.000/2.000/0.250; activate Cancel; repeat cancel cycle; reopen",
+        "reopen; text 1.000/2.000/0.250; activate Cancel; reopen and repeat edits; confirm the trim editor Escape binding and dispatch it; reopen; text source in 0.050; activate Decrease and Increase; verify draft and unchanged packages",
         "for each declared invalidTimingDrafts case: text the three literal fields; activate audio-apply; snapshot; persisted-projects",
         "text 1.000/2.000/0.250; activate audio-apply; persisted-projects; reopen; menu audio-anchor; activate audio-apply without changes"
       ],
       "step": {
         "path": "tests/e2e/journeys/audio-library.mjs",
         "start": 203,
-        "end": 251,
-        "sha256": "57accd679148c7741e1ccfb7e423e92740e2856cbd268762ce625f5b8b41ba6c"
+        "end": 275,
+        "sha256": "4501ec67edf105df506eabc24c97486054bbf8c703fea66440a1a84e2ed88f50"
       },
       "why": "Numeric edits remain local until Apply, cancellation preserves every saved package, invalid drafts retain exact strings and the inline notice, and correction changes only the selected clip source/duration in one revision. Reopening loads 1.000/2.000/0.250 and an unchanged Apply adds no edit. Successful source/offset parsing and matching-current-clip checks are covered; stale conflict, unavailable metadata and waveform output are unclaimed."
     },
@@ -83929,8 +83929,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 174,
-        "end": 192,
+        "start": 176,
+        "end": 194,
         "sha256": "c2db7fdcae7b6a8e421392c00b93eeb747ce091386d559ba809811c06de377e8"
       },
       "why": "The emitted unpinned-source mode is exactly git-working-tree. No independent correctness claim is made for unasserted fingerprint, HEAD or index values."
@@ -83970,8 +83970,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 194,
-        "end": 207,
+        "start": 196,
+        "end": 209,
         "sha256": "079a71d6e49f2c284cb628ace432fe9feb8f3dce11cc1a1f08eca884e3caf025"
       },
       "why": "The fixed restriction object is compared exactly, including status, reason and detail; it is not a new exception or runtime bypass."
@@ -83980,8 +83980,8 @@
       "id": "3c2f504bd74077dc",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 269,
-        "end": 269,
+        "start": 270,
+        "end": 270,
         "sha256": "0b840f3e04282858ef8b3089cac4ff6c783cbb1675f0cd85392afa89bd340952"
       },
       "actions": [
@@ -83991,8 +83991,8 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 45,
-        "end": 68,
-        "sha256": "b0cb918df3243b2c0172688deed784f59acfb63d1e3ca3c6b214e8c35a94d23d"
+        "end": 70,
+        "sha256": "6e34fab182c435afcdd31153b685ef7bea519c3b23e12b2e0353b7edf92389d5"
       },
       "why": "The public test branch reaches the already mapped real-runner dispatcher; the exact native catalog is asserted."
     },
@@ -84010,8 +84010,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 212,
-        "end": 224,
+        "start": 214,
+        "end": 226,
         "sha256": "f8310da0ac848790907f6a7929d7d2796ddc6e86cba7b3bf0fa965e0da312eab"
       },
       "why": "The explicit absent-app identification failure becomes app-identity-unavailable without overwriting the distinct blocked-scenario reason."
@@ -84034,8 +84034,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 245,
-        "end": 252,
+        "start": 247,
+        "end": 254,
         "sha256": "e03f04cc11b3e59a4a9db189220fc319eec54e7528f79023f0ce2764494f7aed"
       },
       "why": "The public path reaches launch with the valid persistent=false options and forwards to the private launcher. Invalid-options rejection is unclaimed."
@@ -84055,8 +84055,8 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 45,
-        "end": 68,
-        "sha256": "b0cb918df3243b2c0172688deed784f59acfb63d1e3ca3c6b214e8c35a94d23d"
+        "end": 70,
+        "sha256": "6e34fab182c435afcdd31153b685ef7bea519c3b23e12b2e0353b7edf92389d5"
       },
       "why": "Direct module invocation returns the same independently checked scenario catalog and successful exit status. The colocated rejection handler is not exercised by this comparison."
     },
@@ -84073,8 +84073,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 174,
-        "end": 192,
+        "start": 176,
+        "end": 194,
         "sha256": "c2db7fdcae7b6a8e421392c00b93eeb747ce091386d559ba809811c06de377e8"
       },
       "why": "On macOS the absent app produces the exact SCRIV_E2E_APP-required blocker asserted by the tooling journey."
@@ -84093,8 +84093,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 285,
-        "end": 306,
+        "start": 287,
+        "end": 308,
         "sha256": "c8e46d295c1c6256235b731b1745f7072f079d8e21e4de32b6be36bc4cdbfde0"
       },
       "why": "The runner delegates the supplied manifest/digest to the existing verifier and retains its verified-exported-source-manifest result before the missing-app gate."
@@ -84112,8 +84112,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 174,
-        "end": 192,
+        "start": 176,
+        "end": 194,
         "sha256": "c2db7fdcae7b6a8e421392c00b93eeb747ce091386d559ba809811c06de377e8"
       },
       "why": "The existing external output parent is resolved and accepted before the evidence directory is created there. Rejection branches and alternate filesystem layouts are unclaimed."
@@ -84132,8 +84132,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 194,
-        "end": 207,
+        "start": 196,
+        "end": 209,
         "sha256": "079a71d6e49f2c284cb628ace432fe9feb8f3dce11cc1a1f08eca884e3caf025"
       },
       "why": "An all-blocked selection stops before the supplied absent app can be identified and preserves not-run evidence."
@@ -84142,8 +84142,8 @@
       "id": "d4b6a0ce34f7b091",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 275,
-        "end": 276,
+        "start": 276,
+        "end": 277,
         "sha256": "e07c264036f9797b3b368ffb17143021b2e1651d7781f36763e261d826b34877"
       },
       "actions": [
@@ -84152,8 +84152,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 365,
-        "end": 370,
+        "start": 367,
+        "end": 372,
         "sha256": "deac6eb145473d79930fb784667b36717f81175485d2c1253e754d1c58abef00"
       },
       "why": "Both argument-count and nested-provenance refusal paths are directly asserted with independent exact error text."
@@ -84176,8 +84176,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 245,
-        "end": 252,
+        "start": 247,
+        "end": 254,
         "sha256": "e03f04cc11b3e59a4a9db189220fc319eec54e7528f79023f0ce2764494f7aed"
       },
       "why": "The supplied absent path reaches the platform/filesystem launch gate and fails before a process can be spawned. Only the current platform path is witnessed."
@@ -84186,8 +84186,8 @@
       "id": "e8a84abfddb1ad02",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 300,
-        "end": 302,
+        "start": 301,
+        "end": 303,
         "sha256": "56b0f4cbd0e53269eead0ee839556a773230bea044f6ed1d36135ea7f153c5b3"
       },
       "actions": [
@@ -84200,8 +84200,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 245,
-        "end": 252,
+        "start": 247,
+        "end": 254,
         "sha256": "e03f04cc11b3e59a4a9db189220fc319eec54e7528f79023f0ce2764494f7aed"
       },
       "why": "Accepted legacy app argument forms reach launch; their filesystem failure, rather than argument-shape rejection, matches direct invocation."
@@ -84220,8 +84220,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 212,
-        "end": 224,
+        "start": 214,
+        "end": 226,
         "sha256": "f8310da0ac848790907f6a7929d7d2796ddc6e86cba7b3bf0fa965e0da312eab"
       },
       "why": "Bundle identification attempts canonical resolution of the deliberately missing app and fails before reading a bundle or executable."
@@ -85978,8 +85978,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/audio-library-steps.mjs",
-        "start": 32,
-        "end": 44,
+        "start": 39,
+        "end": 51,
         "sha256": "a0a9d50dc22985749ce8738585dfdc364b1b8cbeed9c253f311d6d090208c54a"
       },
       "why": "The helper requires the actual labeled Close local audio button and dispatches it once, then asserts the library is absent and the workspace is reachable. This witnesses symbolButton creation, accessibility label and primary-action forwarding only. Symbol pixels, tint and size constraints are outside the association."
@@ -86151,8 +86151,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/audio-library-steps.mjs",
-        "start": 32,
-        "end": 44,
+        "start": 39,
+        "end": 51,
         "sha256": "a0a9d50dc22985749ce8738585dfdc364b1b8cbeed9c253f311d6d090208c54a"
       },
       "why": "The helper requires the actual labeled Close local audio button and dispatches it once, then asserts the library is absent and the workspace is reachable. This witnesses symbolButton creation, accessibility label and primary-action forwarding only. Symbol pixels, tint and size constraints are outside the association."
@@ -86370,8 +86370,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/audio-library-steps.mjs",
-        "start": 32,
-        "end": 44,
+        "start": 39,
+        "end": 51,
         "sha256": "a0a9d50dc22985749ce8738585dfdc364b1b8cbeed9c253f311d6d090208c54a"
       },
       "why": "The helper requires the actual labeled Close local audio button and dispatches it once, then asserts the library is absent and the workspace is reachable. This witnesses symbolButton creation, accessibility label and primary-action forwarding only. Symbol pixels, tint and size constraints are outside the association."
@@ -94830,8 +94830,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 384,
-        "end": 400,
+        "start": 386,
+        "end": 402,
         "sha256": "6e99dc573c72b96fa217ee3f945e9199f10212a3b54bbc46b99547823cda717e"
       },
       "why": "The safe blocker path records the signature failure as not-run and assigns it to the unstarted workspace scenario. Other allowlisted blockers and started-scenario failure behavior remain outside this new negative assertion."
@@ -94849,8 +94849,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 384,
-        "end": 400,
+        "start": 386,
+        "end": 402,
         "sha256": "6e99dc573c72b96fa217ee3f945e9199f10212a3b54bbc46b99547823cda717e"
       },
       "why": "The Darwin platform verifier rejects the unsigned non-executable synthetic bundle before file fingerprinting or scenario execution. This test asserts rejection, not valid signing, all-architecture behavior or native acceptance."
@@ -94868,8 +94868,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 384,
-        "end": 400,
+        "start": 386,
+        "end": 402,
         "sha256": "6e99dc573c72b96fa217ee3f945e9199f10212a3b54bbc46b99547823cda717e"
       },
       "why": "Initial identity handling preserves the fixed signature-verification failure instead of converting it into the generic identity blocker. The evidence remains null app identity because assignment never completes."
@@ -95730,8 +95730,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 260,
-        "end": 270,
+        "start": 262,
+        "end": 272,
         "sha256": "36bf8cc3cdbc3eda366f154f1faee00277fb19c64f18cf0b1f915eea6d79ca23"
       },
       "why": "The public native runner rejects launch coverage without the pinned coverage invocation. The same option parses with the required inputs in the not-run case."
@@ -96575,8 +96575,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 132,
-        "end": 144,
+        "start": 134,
+        "end": 146,
         "sha256": "58a789a4ab0f4eebbfdf4c38d4486d539bd544a7e0381d157c31fda2f4af8f37"
       },
       "why": "The supported groups are read from the actual scenario catalog. The CLI tooling witness checks exact group names and preflight rejection without a native app."
@@ -98344,8 +98344,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 402,
-        "end": 434,
+        "start": 404,
+        "end": 436,
         "sha256": "6c4acb16b5cce8d54c779897296f32ae303b43d2af5615761d14d488130e2ff3"
       },
       "why": "A wrapped scenario failure emits its typed code, inner source line and control count through the dedicated descriptor, with error text excluded."
@@ -98590,6 +98590,63 @@
         "sha256": "5c981e18fe06a8866e6763b4f8430356678dffbfb86ca85e71789ecf753357aa"
       },
       "why": "Checks that cancellation closes the owned transport and shows the cancelled state without keeping a previous error or account action."
+    },
+    {
+      "id": "409e99feb935e544",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift",
+        "start": 95,
+        "end": 98,
+        "sha256": "b74725f79b6e56424e2d2b0cefa6f61f0359a3eb0baf9d4640612237da83af86"
+      },
+      "actions": [
+        "Activate the real Source in decrease and increase controls in the Audio Library timing group"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/audio-library.mjs",
+        "start": 236,
+        "end": 244,
+        "sha256": "37aabb06f6849e0a41f078cd83206908d76b37eca9522512466c8c078bd66574"
+      },
+      "why": "Checks source in clamps at zero and increments by 100 ms without saving the draft."
+    },
+    {
+      "id": "54cbf90de5986e38",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift",
+        "start": 182,
+        "end": 185,
+        "sha256": "b208d60a067993329a465ccd56ba1078373e5c829cf13dffc87c376416a4ec0f"
+      },
+      "actions": [
+        "Discover and dispatch Escape from the active Audio Library responder"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/audio-library.mjs",
+        "start": 267,
+        "end": 276,
+        "sha256": "52d3936d5228eb60a949a70522742fbf7c73baf208794e6013ede27dbc70168c"
+      },
+      "why": "Checks the registered shortcut closes the library and allows normal reopening of the persisted project."
+    },
+    {
+      "id": "73412b78c909258c",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Audio/AudioClipEditorController.swift",
+        "start": 195,
+        "end": 198,
+        "sha256": "6fa0692d2ee28f193c955f432a9b37a2dc02061ccb3717c223d3587dd904f22f"
+      },
+      "actions": [
+        "Discover and dispatch Escape from the active Trim & timing responder"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/audio-library.mjs",
+        "start": 213,
+        "end": 232,
+        "sha256": "e6cfc65aecd38f41ff41dec3f9a5241eda78eef7427ccec32fa1a93923fa9266"
+      },
+      "why": "Checks the registered shortcut cancels the draft and leaves the earlier persisted clip unchanged."
     }
   ],
   "commentExclusions": [
@@ -100721,7 +100778,7 @@
         "end": 15,
         "sha256": "caa1268e6b30f59c4d78c99f39183f1e5399695a5b9d44a6d59a9e8d0e6b95bd"
       },
-      "fileSha256": "cf94acbce35b5a8c879dae62bc779f1c4c6381f3e4d4c7943888fc7cc36f076e"
+      "fileSha256": "1925d5b8aab73f6262bbac3f8b34b6a4a6e0689c52e87ef8192958a52aa4bd01"
     },
     {
       "id": "3176e1bfe9a5c974",
@@ -100927,11 +100984,11 @@
       "id": "358f7a06cdc04bce",
       "source": {
         "path": "scripts/collect-cli-coverage.mjs",
-        "start": 49,
-        "end": 50,
+        "start": 50,
+        "end": 51,
         "sha256": "936c001ad29cd2301b0b5b3141c0b92a919a8a59578aaa27f5de600ed7e0e648"
       },
-      "fileSha256": "bfe9e6fa32a4a98fbf192ce90b55e7bae347dd62e145640092c27f39faccfeca"
+      "fileSha256": "691ffc05f7ae6e093219178c21ec623be06b699a91b59b2df96918685b736ce9"
     },
     {
       "id": "35b5683f0e27971b",
@@ -102581,7 +102638,7 @@
         "end": 133,
         "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
       },
-      "fileSha256": "7f0f4f795485dfcd3add5cc568c8890fa92818658fe43bf1282f4ca7f8188cfd"
+      "fileSha256": "17af52e04cf696c1510bf7a67c4ccae10257cebbcb2f2aa3539f27027edde970"
     },
     {
       "id": "58267d3510d79430",
@@ -102661,7 +102718,7 @@
         "end": 248,
         "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
       },
-      "fileSha256": "7f0f4f795485dfcd3add5cc568c8890fa92818658fe43bf1282f4ca7f8188cfd"
+      "fileSha256": "17af52e04cf696c1510bf7a67c4ccae10257cebbcb2f2aa3539f27027edde970"
     },
     {
       "id": "59c64d2ace520826",
@@ -103297,11 +103354,11 @@
       "id": "6532ebbacd4fa824",
       "source": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 277,
-        "end": 277,
+        "start": 279,
+        "end": 279,
         "sha256": "d16b1f9020b0bcaa25259c8819584f78cc7989345302fcc4470adac8bfde6d71"
       },
-      "fileSha256": "a4117f5b4848bba71b51205c2be9c720cde30dccf09c91df748aa64dd6778d2f"
+      "fileSha256": "3966a40dfca25b212608784ee20f919f82b638e588d59c069afda33bb3d1db12"
     },
     {
       "id": "6553b5e98e6500e0",
@@ -103371,7 +103428,7 @@
         "end": 1,
         "sha256": "ef36205faffd3ae967869975744f3b264629f6eb58784b8596ffdd4b95450610"
       },
-      "fileSha256": "0743193ee30778ea6370aa9a074fe77ae947af9ecc8f4c7f287c9542a8299795"
+      "fileSha256": "1582e903c03d00535bf724f04123802d6ffaaac97b2ea05a880071f34a66c725"
     },
     {
       "id": "686d9ee6b76e23a4",
@@ -104311,7 +104368,7 @@
         "end": 79,
         "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
       },
-      "fileSha256": "7f0f4f795485dfcd3add5cc568c8890fa92818658fe43bf1282f4ca7f8188cfd"
+      "fileSha256": "17af52e04cf696c1510bf7a67c4ccae10257cebbcb2f2aa3539f27027edde970"
     },
     {
       "id": "7e4a8f19915d9b4e",
@@ -104581,7 +104638,7 @@
         "end": 40,
         "sha256": "7ef6744516c1efb7692258f2837d3033e3e89878e8ca73b45f102be6bf4fa8df"
       },
-      "fileSha256": "8f74125b6a800c4c4e66cb8a4058ef4074c10bad2bf61f7e11d47ce8ae3455b8"
+      "fileSha256": "e0d850c398beaaf2aae6aa639cd83565924a8f679bd7b3d3784872767be0e6a5"
     },
     {
       "id": "83e299c16797b741",
@@ -105101,7 +105158,7 @@
         "end": 2,
         "sha256": "4ead8511821dcd95c2efee74b114bac02b04cb9252a4405b4149f9930c721b52"
       },
-      "fileSha256": "7f0f4f795485dfcd3add5cc568c8890fa92818658fe43bf1282f4ca7f8188cfd"
+      "fileSha256": "17af52e04cf696c1510bf7a67c4ccae10257cebbcb2f2aa3539f27027edde970"
     },
     {
       "id": "8e40d7512c7266e1",
@@ -105507,11 +105564,11 @@
       "id": "962a010d6aca9913",
       "source": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 245,
-        "end": 245,
+        "start": 247,
+        "end": 247,
         "sha256": "b1ae110c8d7fd2ea91a819152e6f4434d7199cf755bded5dcf0424b23396379b"
       },
-      "fileSha256": "a4117f5b4848bba71b51205c2be9c720cde30dccf09c91df748aa64dd6778d2f"
+      "fileSha256": "3966a40dfca25b212608784ee20f919f82b638e588d59c069afda33bb3d1db12"
     },
     {
       "id": "9669da48463dfea3",
@@ -105547,11 +105604,11 @@
       "id": "9723ac44ce6c9624",
       "source": {
         "path": "cli/coverage-session.mjs",
-        "start": 72,
-        "end": 73,
+        "start": 76,
+        "end": 77,
         "sha256": "252800a1211f72c8bea4e4b0dc0575a949c72e90911bbd6b8cbb822d4495ab85"
       },
-      "fileSha256": "0743193ee30778ea6370aa9a074fe77ae947af9ecc8f4c7f287c9542a8299795"
+      "fileSha256": "1582e903c03d00535bf724f04123802d6ffaaac97b2ea05a880071f34a66c725"
     },
     {
       "id": "9728cadb7100156c",
@@ -105741,7 +105798,7 @@
         "end": 3,
         "sha256": "c5ebf59b9856b043cecb2bb51903c03d02c4b3cc0d73016cc7b0e15ca9b78d19"
       },
-      "fileSha256": "a4117f5b4848bba71b51205c2be9c720cde30dccf09c91df748aa64dd6778d2f"
+      "fileSha256": "3966a40dfca25b212608784ee20f919f82b638e588d59c069afda33bb3d1db12"
     },
     {
       "id": "9a9bdad371295cf2",
@@ -106377,11 +106434,11 @@
       "id": "a694c3f4c30ad84a",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 290,
-        "end": 291,
+        "start": 291,
+        "end": 292,
         "sha256": "ab0126702db24657bf164332075c99d99cd2af7ebeaa1494135966abe11273df"
       },
-      "fileSha256": "8f74125b6a800c4c4e66cb8a4058ef4074c10bad2bf61f7e11d47ce8ae3455b8"
+      "fileSha256": "e0d850c398beaaf2aae6aa639cd83565924a8f679bd7b3d3784872767be0e6a5"
     },
     {
       "id": "a74883d0a1e2be9c",
@@ -106481,7 +106538,7 @@
         "end": 13,
         "sha256": "03092b24eae36c7e9d0868da08214920d11afa47c7be90a0cc2bfe89d0b426d2"
       },
-      "fileSha256": "cf94acbce35b5a8c879dae62bc779f1c4c6381f3e4d4c7943888fc7cc36f076e"
+      "fileSha256": "1925d5b8aab73f6262bbac3f8b34b6a4a6e0689c52e87ef8192958a52aa4bd01"
     },
     {
       "id": "a91c8e5c3c1b4f25",
@@ -107407,11 +107464,11 @@
       "id": "bc0c5d7330a2bc5a",
       "source": {
         "path": "scripts/collect-cli-coverage.mjs",
-        "start": 139,
-        "end": 139,
+        "start": 140,
+        "end": 140,
         "sha256": "64b42861c5851f8e02f73c3666f0991bcda0269b34023dc60482887c61d2b92b"
       },
-      "fileSha256": "bfe9e6fa32a4a98fbf192ce90b55e7bae347dd62e145640092c27f39faccfeca"
+      "fileSha256": "691ffc05f7ae6e093219178c21ec623be06b699a91b59b2df96918685b736ce9"
     },
     {
       "id": "bc1833afa9de227d",
@@ -107791,7 +107848,7 @@
         "end": 36,
         "sha256": "da22a6a09e9a6d7bbf1e35ecdac04e969fad1ac1a051025596a84831ff070202"
       },
-      "fileSha256": "7f0f4f795485dfcd3add5cc568c8890fa92818658fe43bf1282f4ca7f8188cfd"
+      "fileSha256": "17af52e04cf696c1510bf7a67c4ccae10257cebbcb2f2aa3539f27027edde970"
     },
     {
       "id": "c3fa07d2ab6ca6a5",
@@ -107841,7 +107898,7 @@
         "end": 1,
         "sha256": "55e9b601fd66ab814c615457d88c73bccb6dca1c69745f73b953e71646f7edf2"
       },
-      "fileSha256": "bfe9e6fa32a4a98fbf192ce90b55e7bae347dd62e145640092c27f39faccfeca"
+      "fileSha256": "691ffc05f7ae6e093219178c21ec623be06b699a91b59b2df96918685b736ce9"
     },
     {
       "id": "c590f6c5735d4de5",
@@ -108607,11 +108664,11 @@
       "id": "d39d7e829d2d451d",
       "source": {
         "path": "scripts/collect-cli-coverage.mjs",
-        "start": 305,
-        "end": 306,
+        "start": 310,
+        "end": 311,
         "sha256": "3783407c8fa2e370e33c649034cab7229cb4f2cba92f6cb8ddafd46df97b346a"
       },
-      "fileSha256": "bfe9e6fa32a4a98fbf192ce90b55e7bae347dd62e145640092c27f39faccfeca"
+      "fileSha256": "691ffc05f7ae6e093219178c21ec623be06b699a91b59b2df96918685b736ce9"
     },
     {
       "id": "d3d06c2c105c4ee0",
@@ -109907,11 +109964,11 @@
       "id": "ee826c15d4214490",
       "source": {
         "path": "scripts/collect-cli-coverage.mjs",
-        "start": 236,
-        "end": 236,
+        "start": 238,
+        "end": 238,
         "sha256": "a514b5d4ca41a462b57b7bf3c9e9beb4773dde77896f14574b9a559b3ec891c6"
       },
-      "fileSha256": "bfe9e6fa32a4a98fbf192ce90b55e7bae347dd62e145640092c27f39faccfeca"
+      "fileSha256": "691ffc05f7ae6e093219178c21ec623be06b699a91b59b2df96918685b736ce9"
     },
     {
       "id": "eed11b6a99974033",

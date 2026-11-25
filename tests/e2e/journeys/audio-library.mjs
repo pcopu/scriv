@@ -28,12 +28,12 @@ const cases = {
     'dialogue-import', 'scene-silence-import', 'library-preserves-two-clips', 'browser-reopen'],
   mix: ['scene-import', 'library-import-rejected', 'clip-volume', 'clip-mute', 'clip-unmute',
     'reopen-library', 'master-volume', 'master-mute', 'master-unmute', 'browser-reopen'],
-  timing: ['dialogue-import', 'baseline-trim', 'cancel-draft-1', 'cancel-draft-2',
+  timing: ['dialogue-import', 'baseline-trim', 'cancel-draft-1', 'cancel-draft-2', 'step-source-in',
     ...invalidTimingDrafts.map(test => `reject-${test.name}`), 'correct-and-apply',
     'reopen-noop', 'browser-reopen'],
 };
 if (args.includes('--list-cases')) {
-  console.log(JSON.stringify({ journeys: ['AUT-J13', 'AUT-J14'], nativeVerified: false,
+  console.log(JSON.stringify({ journeys: ['AUT-J13', 'AUT-J14'], groups, nativeVerified: false,
     cases: selected.flatMap(group => cases[group].map(id => ({ group, id }))),
     partialBaselineIDs: [`${draftBaseline}::0001`, `${draftBaseline}::0002`, `${draftBaseline}::0003`, `${draftBaseline}::0004`],
     relatedUncoveredBaselineIDs: [`${trackBaseline}::0001`, `${trackBaseline}::0002`, `${trackBaseline}::0005`, `${trackBaseline}::0006`],
@@ -210,16 +210,38 @@ async function runGroup(group) {
         }));
       });
       const baseline = current;
+      async function escapeFrom(responderType, action) {
+        await session.command('end-editing');
+        const binding = (await session.command('keys')).find(key => key.input === 'Escape' && !key.modifiers.length);
+        assert.deepEqual([binding?.responderType, binding?.action], [responderType, action]);
+        assert.deepEqual(await session.command('key', { input: 'Escape', modifiers: [] }), { dispatched: true });
+      }
       for (const cycle of [1, 2]) {
         await run(`cancel-draft-${cycle}`, async () => {
           const before = await saved();
           await ui.openTrim(current.audioClips[0], ['0.500', '2.500', '0.250']);
           await ui.draft('1.000', '2.000', '0.250');
-          await unchanged(before); await ui.finishTrim(false); await unchanged(before);
+          await unchanged(before);
+          if (cycle === 1) await ui.finishTrim(false);
+          else {
+            await escapeFrom('AudioClipEditorController', 'cancelDraft');
+            await session.waitFor(nodes => nodes.every(node => node.identifier !== 'audio-trim-editor')
+              && nodes.some(node => node.identifier === 'local-audio-sheet' && node.hittable));
+          }
+          await unchanged(before);
         });
       }
       await ui.openTrim(current.audioClips[0], ['0.500', '2.500', '0.250']);
       const beforeInvalid = await saved();
+      await run('step-source-in', async () => {
+        await ui.input('audio-source-in', '0.050');
+        assert.deepEqual(await session.command('end-editing'), true);
+        await ui.activate(node => node.label === 'Decrease Source in by 0.100 seconds');
+        await ui.fields(['0.000', '2.500', '0.250']);
+        await ui.activate(node => node.label === 'Increase Source in by 0.100 seconds');
+        await ui.fields(['0.100', '2.500', '0.250']);
+        await unchanged(beforeInvalid);
+      });
       for (const test of invalidTimingDrafts) {
         await run(`reject-${test.name}`, async () => {
           await ui.draft(test.source, test.duration, test.offset);
@@ -247,7 +269,9 @@ async function runGroup(group) {
         assert.deepEqual(actions.map(action => [action.title, action.state]), [
           ['Scene time', 'off'], ['Dialogue · one two three', 'on'], ['Dialogue · four', 'off'],
         ], 'Attachment options are observed only, never private-handler activated');
-        await ui.finishTrim(); await unchanged(before); await ui.closeLibrary();
+        await ui.finishTrim(); await unchanged(before);
+        await escapeFrom('AudioLibraryController', 'closeAudio');
+        await session.waitFor(nodes => nodes.every(node => node.identifier !== 'local-audio-sheet'));
       });
       await run('browser-reopen', reopen);
     }

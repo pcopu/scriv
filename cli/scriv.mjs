@@ -187,7 +187,8 @@ export class ScrivSession {
   }
   #issue(command, parameters = {}, timeout = 15000) {
     if (this.#closed) return Promise.reject(new Error('Session is closed'));
-    const observed = this.#coverage?.record(command, command === 'menu-action' ? parameters?.scope : undefined);
+    const selector = command === 'menu-action' ? parameters?.scope : command === 'activate' ? parameters?.target : undefined;
+    const observed = this.#coverage?.record(command, selector);
     const id = ++this.#sequence;
     const response = new Promise((resolve, reject) => {
       const timer = setTimeout(() => { this.#pending.delete(id); this.#uncertain = true; reject(new Error(`Timed out: ${command}; outcome uncertain, do not blindly repeat mutations`)); }, timeout);

@@ -123,8 +123,10 @@ manifest are separately pinned, so changing an implementation module is detected
 
 - After real launch/isolation handshake, collect and release a before profile
   through bounded stdio chunks. No app container is read and no counters reset.
-- Observe the actual ordered scenario command names and completion states.
-  Parameters, returned UI/model data, credentials and native logs are not stored.
+- Observe ordered scenario command names and completion states. Completed
+  actions can add an advertised menu scope or a SHA-256 fingerprint of an
+  explicit activation identifier. The capture omits raw selectors, other
+  parameters, returned UI/model data, credentials and native logs.
 - On session close, collect/release the after profile, verify executable/probe
   identity, and terminate the owned app even if collection fails. Transfer
   completion timestamps are not claims of atomic snapshot instants.

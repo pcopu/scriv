@@ -16,6 +16,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const coveragePrefix = '/scriv-source/';
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value);
+const digest = value => typeof value === 'string' && /^[0-9a-f]{64}$/.test(value);
 const required = condition => { if (!condition) throw new Error('coverage-provenance-invalid'); };
 async function input(path, maximum = 8 * 1024 * 1024) {
   const info = await lstat(path);
@@ -213,7 +214,8 @@ export async function exportCoverage(capture, scenarios) {
     required(Array.isArray(record.commands) && record.commands.length > 0 && record.commands.length <= 32768);
     required(record.commands.every((entry, i) => entry.ordinal === i + 1 && /^[a-z][a-z0-9-]{0,63}$/.test(entry.command)
       && ['completed', 'failed-or-uncertain'].includes(entry.status)
-      && (entry.scope === undefined || entry.command === 'menu-action' && entry.status === 'completed' && isMenuActionScope(entry.scope))));
+      && (entry.scope === undefined || entry.command === 'menu-action' && entry.status === 'completed' && isMenuActionScope(entry.scope))
+      && (entry.targetSHA256 === undefined || entry.command === 'activate' && entry.status === 'completed' && digest(entry.targetSHA256))));
     records.push({ directory, record, scenario });
   }
   required(new Set(records.map(row => row.record.slot)).size === records.length);
@@ -258,8 +260,11 @@ export async function exportCoverage(capture, scenarios) {
       sourceManifestSha256: capture.sourceManifestSHA256, toolchainSha256: sha(JSON.stringify(tools)) });
     const actions = capture.startup ? ['launch isolated Scriv through the CLI', 'scriv capabilities']
       : record.commands.map(entry => `scriv ${entry.command}`);
-    const actionLabels = capture.startup ? [] : [...new Set(record.commands.flatMap(({ scope }) =>
-      scope === undefined ? [] : [`scriv menu-action --scope ${scope}`]))];
+    const actionLabels = capture.startup ? [] : [...new Set(record.commands.flatMap(({ scope, targetSHA256 }) => {
+      if (scope !== undefined) return [`scriv menu-action --scope ${scope}`];
+      if (targetSHA256 !== undefined) return [`scriv activate --target-sha256 ${targetSHA256}`];
+      return [];
+    }))];
     const manifest = { version: 1, runId: record.runID, actions, ...(actionLabels.length && { actionLabels }),
       counterMode: 'cumulative', counterReset: false, sourceManifestSha256: capture.sourceManifestSHA256,
       probeSha256: capture.probe.sha256, tools, limitations: [...capture.report.limitations, ...record.limitations,

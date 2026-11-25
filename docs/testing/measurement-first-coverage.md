@@ -19,7 +19,11 @@ caller as `--source`. New session captures derive an exact label from the
 completed menu command and its advertised scope. The ordinary ordered
 command names are preserved. Old captures with only command names still
 answer `--action menu-action`. Use an updated Tracer to import captures with
-scope labels.
+scope labels. For a button, get the stable identifier from the real CLI
+snapshot, dispatch `activate` with that identifier, and pass
+`--action activate --target CONTROL_ID` to the worklist. Completed identifier
+dispatches record a fingerprint, with numeric view paths retaining the generic
+command only. Existing captures remain available through `--action activate`.
 
 For a focused native capture, list the scenario and select one of its
 advertised groups. Use the explicit group to select a focused fixture variant.
