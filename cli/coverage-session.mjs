@@ -54,6 +54,7 @@ export async function observeSession(session, executable, capabilities) {
   const contextInfo = await lstat(contextPath);
   if (!contextInfo.isFile() || contextInfo.isSymbolicLink() || contextInfo.size > 8 * 1024 * 1024 || (contextInfo.mode & 0o077) || contextInfo.uid !== process.getuid() || await realpath(contextPath) !== contextPath) fail();
   const context = JSON.parse(await readFile(contextPath, 'utf8'));
+  const { activationTargetSHA256 } = context;
   const directory = dirname(contextPath);
   const owner = await privateDirectory(directory);
   if (directory === root || directory.startsWith(root + '/') || context.version !== 1 || !uuid(context.invocationID)
@@ -65,6 +66,7 @@ export async function observeSession(session, executable, capabilities) {
       || context.sourceProvenance?.journeySourceManifestSHA256 !== context.journeySourceManifestSHA256
       || context.sourceProvenance?.nativeInputsUnchanged !== true || !Array.isArray(context.sourceProvenance?.differences)
       || (context.startup !== undefined && context.startup !== true)
+      || (activationTargetSHA256 !== undefined && (!hex(activationTargetSHA256) || context.startup || context.maximumSessions !== 1))
       || !hex(context.probeSHA256) || !Number.isSafeInteger(context.maximumSessions) || context.maximumSessions < 1 || context.maximumSessions > 64) fail();
   const sessionID = capabilities.sessionID ?? capabilities.runID;
   if (!uuid(capabilities.runID) || !uuid(sessionID) || capabilities.coverage?.schemaVersion !== 1 || capabilities.coverage.format !== 'llvm-profraw'
@@ -102,15 +104,18 @@ export async function observeSession(session, executable, capabilities) {
     buildRecordSHA256: context.buildRecordSHA256, probeSHA256: context.probeSHA256, counterMode: 'cumulative', counterReset: false,
     attribution: 'observed-during-session-not-causal', phase: 'before-profile', profiles: {}, commands,
     ...(context.startup && { scope: 'startup' }),
+    ...(activationTargetSHA256 && { scope: 'activation', activationTargetSHA256 }),
     limitations: ['One interval per actual app session; sessions are never merged.',
       'runID identifies this process capture; workspaceID may recur across an explicitly owned cold relaunch.',
       context.startup ? 'Startup measures the Swift entry point through the first post-handshake snapshot.'
-        : 'Initial launch and isolation handshake precede the before snapshot.',
+        : activationTargetSHA256 ? 'Snapshots bound the first exact activation dispatch. Other scenario commands run outside the window.'
+          : 'Initial launch and isolation handshake precede the before snapshot.',
       'Capture transport, polling and background work overlap; snapshots are not globally atomic.',
       'Records ordered command names, completion states, discovered menu scopes and fingerprints of completed identifier activations. Raw selectors and other request or response values are omitted.',
       'Expected command errors may pass scenario assertions; command completion alone does not prove assertions.',
       context.startup ? 'Both snapshots were taken before scenario commands. The early buffer is transferred second.'
-        : 'Session close captures before termination; work after that snapshot is outside the interval.'] };
+        : activationTargetSHA256 ? 'Asynchronous work may continue past the after snapshot.'
+          : 'Session close captures before termination; work after that snapshot is outside the interval.'] };
   const save = async () => {
     await ensure();
     await writeFile(join(output, 'session.json.tmp'), JSON.stringify(record, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
@@ -127,11 +132,33 @@ export async function observeSession(session, executable, capabilities) {
     if (context.startup) {
       await collect('after');
       await collect('before', { scope: 'startup' });
-    } else await collect('before');
+    } else if (!activationTargetSHA256) await collect('before');
     record.phase = 'scenario'; await save();
   } catch (error) { record.status = 'failed'; record.endedAt = new Date().toISOString(); await save(); throw error; }
-  let finishing = null;
+  let finishing = null, activationStarted = false, activationInProgress = false, activationOverlapped = false;
+  async function captureActivation(idle, dispatch) {
+    activationStarted = true;
+    if (!idle) return dispatch();
+    activationInProgress = true;
+    try {
+      // A failed measurement leaves the real scenario command and outcome intact.
+      const before = await collect('before').then(() => true, () => false);
+      const ordinal = commands.length + 1;
+      const response = await dispatch();
+      if (before && !activationOverlapped && !finishing) {
+        await collect('after').catch(() => {});
+        if (!activationOverlapped && record.profiles.after) record.activationOrdinal = ordinal;
+      }
+      return response;
+    } finally { activationInProgress = false; }
+  }
   return {
+    ...(activationTargetSHA256 && { activation(command, selector, idle, dispatch) {
+      if (activationInProgress) activationOverlapped = true;
+      if (activationStarted || command !== 'activate' || !isControlIdentifier(selector)
+          || createHash('sha256').update(selector).digest('hex') !== activationTargetSHA256) return;
+      return captureActivation(idle, dispatch);
+    } }),
     record(command, selector) {
       if (commands.length >= 32768 || typeof command !== 'string' || !/^[a-z][a-z0-9-]{0,63}$/.test(command)) throw new Error('coverage-command-limit-or-name');
       const item = { ordinal: commands.length + 1, command, status: 'pending' }; commands.push(item);
@@ -147,9 +174,12 @@ export async function observeSession(session, executable, capabilities) {
     finish() {
       finishing ??= (async () => {
         try {
+          if (activationTargetSHA256 && !record.activationOrdinal) {
+            record.status = 'failed'; record.phase = 'activation-window-unavailable'; return;
+          }
           if (!commands.length || commands.some(command => command.status === 'pending')) throw new Error('coverage-incomplete-command-sequence');
           await verifyCoverageContextSources(context, directory);
-          if (!context.startup) await collect('after');
+          if (!context.startup && !activationTargetSHA256) await collect('after');
           if (await hashFile(executable) !== context.executableSHA256 || (await probeIdentity()).sha256 !== context.probeSHA256) fail();
           await verifyCoverageContextSources(context, directory);
           record.executableUnchanged = true; record.status = 'captured'; record.phase = 'complete';

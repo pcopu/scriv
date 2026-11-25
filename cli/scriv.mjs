@@ -172,7 +172,8 @@ export class ScrivSession {
   }
   command(command, parameters = {}, timeout = 15000) {
     if (this.#stopping) return Promise.reject(new Error('Session is closing or relaunching'));
-    return this.#issue(command, parameters, timeout);
+    return this.#coverage?.activation?.(command, parameters?.target, this.#pending.size === 0,
+      () => this.#issue(command, parameters, timeout)) ?? this.#issue(command, parameters, timeout);
   }
   async deliverFixtureEmailCode(code) {
     if (!this.#fixtureMailbox || this.#stopping || this.#closed || this.#uncertain

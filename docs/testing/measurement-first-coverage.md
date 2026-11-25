@@ -25,6 +25,18 @@ snapshot, dispatch `activate` with that identifier, and pass
 dispatches record a fingerprint, with numeric view paths retaining the generic
 command only. Existing captures remain available through `--action activate`.
 
+When a full session reaches too much surrounding code to locate the action,
+add `--coverage-activate CONTROL_ID` to a pinned capture of one existing
+single-session scenario. Scriv runs the full scenario and samples around its
+first matching activation. A missing, failed or overlapping dispatch yields
+no dispatch interval. Tracer rejects a window if any LLVM line count decreases
+between snapshots. Use the full session for that action and retain the typed
+capture failure for review. Query the resulting capture set with
+`worklist --action activate --target CONTROL_ID --source PATH[:RANGE]` and
+look in `actionReview.dispatchWindows`. The counters include any concurrent
+background work. Use a full session to measure async results and keep the
+scenario's assertions for the behavior.
+
 For compiler function boundaries, export once from an imported session for
 the reference app. This verifies the signed bundle, recorded compiler and
 profile, and original source manifest. It reads retained evidence without

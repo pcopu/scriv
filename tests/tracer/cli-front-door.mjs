@@ -40,6 +40,7 @@ export async function main() {
     assert.match(actions.stdout, /"command":"relaunch-recover"/);
     assert.equal(run(['app', '--', '--help']).stdout, actions.stdout);
     const help = run(['app', '--', 'test', '--help']).stdout;
+    assert.match(help, /--coverage-activate CONTROL_ID/);
     assert.ok(/No app, no macOS or failed provenance means not-run/.test(help) && /--coverage-build-record/.test(help) && /--coverage-startup/.test(help));
   });
   await journey('list genuine native entrypoints without launching an app', async () => {
@@ -264,11 +265,18 @@ export async function main() {
       ['--coverage'], ['--coverage', '--scenario', 'workspace'],
       ['--coverage-build-record', '/tmp/missing-build.json'],
       ['--coverage', '--coverage-max-sessions', '0'], ['--coverage', '--coverage-max-sessions', '65'],
-      ['--llvm-cov', 'relative-tool'], ['--coverage-max-sessions', '1'], ['--coverage-startup'],
+      ['--llvm-cov', 'relative-tool'], ['--coverage-max-sessions', '1'], ['--coverage-startup'], ['--coverage-activate', 'cancel'],
     ]) {
       const result = run(['app', '--', 'test', ...args], 2);
       assert.equal(result.stdout, '');
       assert.ok(result.stderr.length > 0);
+    }
+    assert.match(run(['app', '--', 'test', '--coverage-activate', '0.2'], 2).stderr, /coverage-activate-requires-control-identifier/);
+    const pinned = ['--coverage', '--coverage-activate', 'cancel', '--scenario', 'workspace',
+      '--source-manifest', '/tmp/missing-source.json', '--source-manifest-sha256', '0'.repeat(64),
+      '--coverage-build-record', '/tmp/missing-build.json'];
+    for (const options of [['--coverage-startup'], ['--scenario', 'second'], ['--coverage-max-sessions', '2']]) {
+      assert.match(run(['app', '--', 'test', ...pinned, ...options], 2).stderr, /coverage-activate-requires-one-scenario-and-session/);
     }
   });
   await journey('exercise coverage builder discovery and required provenance arguments', () => {
