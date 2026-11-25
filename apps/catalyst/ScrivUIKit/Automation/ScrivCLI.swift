@@ -426,7 +426,7 @@ final class ScrivCLI {
                 }
             }
             if run.approvedOrigin != nil {
-                result["semanticMenuActionScopes"] = (result["semanticMenuActionScopes"] as? [String] ?? []) + ["team-member-actions"]
+                result["semanticMenuActionScopes"] = (result["semanticMenuActionScopes"] as? [String] ?? []) + ["team-member-actions", "discussion-attachment"]
                 for key in ["syntheticFixtureCommands", "commands"] {
                     result[key] = (result[key] as? [String] ?? []) + ["receive-fixture-email-code"]
                 }
@@ -795,6 +795,21 @@ final class ScrivCLI {
                       let title = request["action"] as? String,
                       let action = teams.cliMemberAction(on: button, teamID: teamID, memberID: memberID, title: title)
                 else { throw Failure("Team member action is outside the supported isolated scope") }
+                button.sendAction(action)
+                return ["dispatched": true, "coverage": "semantic-menu-action"]
+            }
+            if scope == "discussion-attachment" {
+                guard Set(request.keys) == ["id", "command", "target", "scope", "action"],
+                      let approved = run.approvedOrigin,
+                      let title = request["action"] as? String, let button = view as? UIButton,
+                      let workspace = window.rootViewController as? ScrivWorkspaceController,
+                      workspace.store.cloud.baseURL == approved, workspace.store.showDiscussion,
+                      workspace.presentedViewController == nil, workspace.transitionCoordinator == nil,
+                      let panel = workspace.children.compactMap({ $0 as? ScrivDiscussionController }).first,
+                      panel.store === workspace.store, panel.viewIfLoaded?.window === window,
+                      let action = panel.cliAttachmentAction(on: button, title: title) else {
+                    throw Failure("Discussion attachment action is unavailable")
+                }
                 button.sendAction(action)
                 return ["dispatched": true, "coverage": "semantic-menu-action"]
             }

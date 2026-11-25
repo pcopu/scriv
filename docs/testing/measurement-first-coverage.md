@@ -236,6 +236,12 @@ outbox parts, and uses the Account sheet to recover the same receipt with no
 additional part uploads. Each variant opens a fresh workspace and compares
 the full downloaded project with the expected edit.
 
+The `sync` group uses the `discussion-attachment` menu scope to attach the
+selected dialogue to its note. The scope dispatches the attachment panel's
+offered action in an owned loopback session. The journey checks rejection of
+an absent action, deduplication of the same selection, and the attachment in
+the posted note.
+
 The `recover-local-only` group of `journeys/native-shared-generation` exercises
 an unavailable job-creation endpoint, then uses Inspect existing turn and Use
 in original project. The owned Worker accepts the second creation request for

@@ -287,6 +287,15 @@ final class ScrivDiscussionController: ScrivScreenController, UITableViewDataSou
         if let image = store.project.asset(store.selectedCue?.imageId ?? store.currentCue?.imageId) { actions.append(action("Current image, version \(image.version)", id: image.id, image: image.id)) }
         return UIMenu(children: actions)
     }
+#if SCRIV_CLI_AUTOMATION
+    func cliAttachmentAction(on button: UIButton, title: String) -> UIAction? {
+        guard button === attachButton, ready, composerScope == store.discussionDraftKey,
+              contextSnapshot == store.navigationContext, store.discussionAttachments.count < 8 else { return nil }
+        let matches = button.menu?.children.compactMap { $0 as? UIAction }
+            .filter { $0.title == title && $0.attributes.isEmpty } ?? []
+        return matches.count == 1 ? matches.first : nil
+    }
+#endif
     private func renderUnavailable() {
         for child in unavailable.arrangedSubviews { unavailable.removeArrangedSubview(child); child.removeFromSuperview() }
         let title = ScrivUIKitTheme.label(store.account == nil ? "Sign in to keep the conversation" : "Save this project to Scriv Cloud", size: 15, weight: .semibold); title.textAlignment = .center

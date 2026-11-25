@@ -158,11 +158,12 @@ export async function main() {
     assert.equal(receipt.status, 'not-run');
     assert.equal(receipt.fullSuitePassed, false);
   });
-  await journey('discover the existing edit key and its cloud lease cases', async () => {
+  await journey('discover the discussion attachment and cloud lease cases', async () => {
     const scenario = 'journeys/native-cloud-project-sync';
     const { scenarios: [entry] } = JSON.parse(run(['app', '--', 'test', '--list', '--scenario', scenario]).stdout);
     assert.deepEqual(Object.entries(entry.groupActions).map(([name, [action]]) =>
       [name, action.id, action.command, action.trigger, action.condition]), [
+      ['sync', 'attach-discussion-item', 'menu-action', 'discussion-attachment', 'selected-dialogue-attaches-once'],
       ['lease-renewal', 'edit-line', 'key', 'Command-Return', 'lease-available'],
       ['lease-contention', 'edit-line', 'key', 'Command-Return', 'lease-held-by-peer'],
     ]);
@@ -170,7 +171,7 @@ export async function main() {
       assert.ok(entry.groups.includes(group));
       const { path, start, end, sha256 } = action.entryPoint;
       assert.equal(path, 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift');
-      assert.deepEqual([start, end], [1069, 1088]);
+      assert.deepEqual([start, end], group === 'sync' ? [2491, 2495] : [1069, 1088]);
       const lines = (await readFile(join(root, path), 'utf8')).split(/(?<=\n)/);
       assert.equal(sha256, createHash('sha256').update(lines.slice(start - 1, end).join('')).digest('hex'));
     }

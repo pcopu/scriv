@@ -17,6 +17,11 @@ const editLine = { id: 'edit-line', command: 'key', trigger: 'Command-Return', e
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
   console.log(JSON.stringify({ groups, groupActions: {
+    sync: [{ id: 'attach-discussion-item', command: 'menu-action', trigger: 'discussion-attachment',
+      condition: 'selected-dialogue-attaches-once', entryPoint: {
+        path: 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift', start: 2491, end: 2495,
+        sha256: 'a9c19e4c97401c8b04446e76830093faa4751ef9059f217775ac7a80885d04b0',
+      } }],
     'lease-renewal': [{ ...editLine, condition: 'lease-available' }],
     'lease-contention': [{ ...editLine, condition: 'lease-held-by-peer' }],
   } }));
@@ -424,8 +429,34 @@ async function runProjectJourney() {
   await selectDiscussionScope(1);
   await session.waitFor(nodes => nodes.some(node => node.text === 'No comments yet')
     && !nodes.some(node => node.type === 'DiscussionReadOnlyTextView'));
+  step = 'attach the selected dialogue once through the actual discussion menu';
+  assert.ok(capabilities.semanticMenuActionScopes.includes('discussion-attachment'));
+  const attach = await control(node => node.label === 'Attach a project item' && node.type === 'UIButton', true);
+  const offered = (await session.command('menu', { target: attach.path })).primary.flatMap(menu => menu.children ?? []);
+  assert.equal(offered.filter(item => item.title === 'Selected line or direction' && !item.disabled && !item.hidden).length, 1);
+  await assert.rejects(session.command('menu-action', {
+    target: attach.path, scope: 'discussion-attachment', action: 'Absent attachment action',
+  }), /Discussion attachment action is unavailable/);
+  const attachSelected = async () => {
+    const current = await control(node => node.label === 'Attach a project item' && node.type === 'UIButton');
+    assert.deepEqual(await session.command('menu-action', {
+      target: current.path, scope: 'discussion-attachment', action: 'Selected line or direction',
+    }), { dispatched: true, coverage: 'semantic-menu-action' });
+  };
+  await attachSelected();
+  await session.waitFor(nodes => nodes.some(node => node.text === '1 attached item'));
+  await attachSelected();
+  const staged = await session.command('snapshot');
+  assert.equal(staged.filter(node => /^\d+ attached items?$/.test(node.text ?? '')).map(node => node.text).join(), '1 attached item');
+
+  step = 'show the attached dialogue in the posted note';
   await compose(lineComment);
-  await session.waitFor(nodes => lineOnly(nodes, lineComment));
+  await session.waitFor(nodes => {
+    if (!lineOnly(nodes, lineComment) || nodes.some(node => node.text === '1 attached item')) return false;
+    const row = nodes.find(node => node.type === 'DiscussionMessageCell');
+    return nodes.filter(node => node.path.startsWith(row.path + '.') && node.type === 'UIButton'
+      && /^Line \d+ · /.test(node.title ?? node.label ?? '')).length === 1;
+  });
   await selectDiscussionScope(0);
   await session.waitFor(discussionState);
   await control(node => node.title === 'Reopen conversation');
