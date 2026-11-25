@@ -4,7 +4,7 @@ export const sorted = projects => [...projects].sort((a, b) => a.id.localeCompar
 export function coverageSteps(session) {
   async function reveal(predicate) {
     for (let attempt = 0; attempt < 8; attempt++) {
-      const nodes = await session.waitFor(nodes => nodes.filter(predicate).length === 1);
+      const nodes = await session.waitForUnique(predicate);
       const node = nodes.find(predicate);
       if (ready(node)) return node;
       const ancestor = nodes.filter(candidate => candidate.scroll && candidate.hittable

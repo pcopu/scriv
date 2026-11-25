@@ -244,8 +244,8 @@
       "id": "00324f769e9f6195",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 181,
-        "end": 182,
+        "start": 194,
+        "end": 195,
         "sha256": "ed17746d631a4bfffdce23eeb12ebf1fdca88d966ee0e55cf51a0c1eb61ef679"
       },
       "actions": [
@@ -4473,8 +4473,8 @@
       "id": "0fe791fa940a793f",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 252,
-        "end": 254,
+        "start": 265,
+        "end": 267,
         "sha256": "7b7f87c90ad72047fa13188b9bab73150ea539ec56a32b44fe521db073bd7bce"
       },
       "actions": [
@@ -5477,8 +5477,8 @@
       "id": "363005482f3f4c31",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 308,
-        "end": 310,
+        "start": 321,
+        "end": 323,
         "sha256": "4163ac4331a6167f7daad8dbbf913542d0d68f6df0ca446cbf8df91ff8421b29"
       },
       "actions": [
@@ -8130,8 +8130,8 @@
       "id": "1d6c756757e72e1d",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 267,
-        "end": 269,
+        "start": 280,
+        "end": 282,
         "sha256": "c91f8e510844568a4785909f7090466790f910fea3df9583d474551c76ffaa87"
       },
       "actions": [
@@ -11709,8 +11709,8 @@
       "id": "27c9916e5a2be34f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 201,
-        "end": 202,
+        "start": 214,
+        "end": 215,
         "sha256": "ad3d84aedfe9ac2699c0884c5cddfa3f82fe5e9d49cc62c94d3b6f0291423133"
       },
       "actions": [
@@ -13957,8 +13957,8 @@
       "id": "2feba792cdefff92",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 317,
-        "end": 320,
+        "start": 330,
+        "end": 333,
         "sha256": "2c812b3746a3626aeef8210fc9651bf318dbc82c96d91b8e0ad85c7475ede9be"
       },
       "actions": [
@@ -19115,8 +19115,8 @@
       "id": "41d08f126e99879f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 236,
-        "end": 239,
+        "start": 249,
+        "end": 252,
         "sha256": "e3bb9e64f0e0b8302b9e32634be0d9d286d1132135ad7ec91f96a13c158db879"
       },
       "actions": [
@@ -19248,8 +19248,8 @@
       "id": "42698e9ceb3ddc97",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 283,
-        "end": 285,
+        "start": 296,
+        "end": 298,
         "sha256": "c574ee7be015002ab7f89a3c0e71b90a46e950494e6f32f0542f499bb75ed46a"
       },
       "actions": [
@@ -21232,8 +21232,8 @@
       "id": "489faace1dc36a36",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 305,
-        "end": 305,
+        "start": 318,
+        "end": 318,
         "sha256": "d295eb9c29f5d18ed5454114c35a84d25571d1f97cc000501a0f70d830f310e9"
       },
       "actions": [
@@ -23168,8 +23168,8 @@
       "id": "51a85849aeda565e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 183,
-        "end": 184,
+        "start": 196,
+        "end": 197,
         "sha256": "9f42f39113593acce58361794626f20f4a741404f9ed9f435e49c65e6bcba4bf"
       },
       "actions": [
@@ -26320,8 +26320,8 @@
       "id": "5d8f4c4296b6296e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 163,
-        "end": 166,
+        "start": 176,
+        "end": 179,
         "sha256": "33db45876f99cdf9e2550b39845934921f8dc66fcde8f2145523224716999bdb"
       },
       "actions": [
@@ -34919,8 +34919,8 @@
       "id": "7ade705ad8e0afa0",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 172,
-        "end": 174,
+        "start": 185,
+        "end": 187,
         "sha256": "72f1b6d99d9a4d4c97bb8bacabf926cacaeb2c0d56b5d24c555268ec2a179302"
       },
       "actions": [
@@ -35555,8 +35555,8 @@
       "id": "7c8c5ec4146dd2c8",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 194,
-        "end": 196,
+        "start": 207,
+        "end": 209,
         "sha256": "a6912d66c983665ce6ffc1cf0d24956a93db7a302a00dfc155079082c66600c1"
       },
       "actions": [
@@ -39217,8 +39217,8 @@
       "id": "87fe872823b40e91",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 271,
-        "end": 272,
+        "start": 284,
+        "end": 285,
         "sha256": "76cdc684774783f5641fa8937bfd750cfdce351dd1b6474b490c9a30a208b2e9"
       },
       "actions": [
@@ -40549,8 +40549,8 @@
       "id": "8d9ad3c2259185f7",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 203,
-        "end": 206,
+        "start": 216,
+        "end": 219,
         "sha256": "54f510a5148d289cf549d94e07f767e9fe42225f8ac816ce0c4e22b132c2012d"
       },
       "actions": [
@@ -43610,8 +43610,8 @@
       "id": "9912ab5e8458fede",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 118,
-        "end": 125,
+        "start": 131,
+        "end": 138,
         "sha256": "36da1655c9ac5dd106c8327bf691ca3767b9736b85ba1858c2d149eed7466839"
       },
       "actions": [
@@ -45824,8 +45824,8 @@
       "id": "9f671d81d53b2e92",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 208,
-        "end": 225,
+        "start": 221,
+        "end": 238,
         "sha256": "3385b75564f89a33dda057d5697fe2464bdd5fca9f5780306c7be37aea1f0020"
       },
       "actions": [
@@ -52787,8 +52787,8 @@
       "id": "b414825514bbe57b",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 254,
-        "end": 254,
+        "start": 267,
+        "end": 267,
         "sha256": "2001e995fa2f490b3c7b10d4666b7f82f6f7cac1d5d440eecf1db9a34562d8d5"
       },
       "actions": [
@@ -55267,8 +55267,8 @@
       "id": "bc1b5d8dce9d5bea",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 190,
-        "end": 192,
+        "start": 203,
+        "end": 205,
         "sha256": "56ecb13fc0c593e911da71cf2ff10047a5613206ed4b0e41d93f8a0e4404a2f9"
       },
       "actions": [
@@ -56016,8 +56016,8 @@
       "id": "bead27d811030a06",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 242,
-        "end": 242,
+        "start": 255,
+        "end": 255,
         "sha256": "635722f828162803f7415bffb896eeca61f597233ad2ae2b1a228a1b3820da9e"
       },
       "actions": [
@@ -57260,8 +57260,8 @@
       "id": "c31e1aebb17c349a",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 277,
-        "end": 281,
+        "start": 290,
+        "end": 294,
         "sha256": "026faed339518643ae3725d95098d9bc93be4ce3d162d8647cdd7f3a51e6fedf"
       },
       "actions": [
@@ -59377,8 +59377,8 @@
       "id": "cc2bfd2318f202c5",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 244,
-        "end": 244,
+        "start": 257,
+        "end": 257,
         "sha256": "5dad5827ad70c283195e105f6805d9a73a68bde4c32ec27cc6fb37bb9a613b98"
       },
       "actions": [
@@ -63213,8 +63213,8 @@
       "id": "dcb760654ed41c8d",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 153,
-        "end": 160,
+        "start": 166,
+        "end": 173,
         "sha256": "06fbeb3b6752cd8f6de5ece6cd087c19ac08cfc8597602a6ba461b7661d1ea6a"
       },
       "actions": [
@@ -64250,8 +64250,8 @@
       "id": "dfe1dff3a81c0759",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 176,
-        "end": 178,
+        "start": 189,
+        "end": 191,
         "sha256": "9038120b7ee4960c8676af3a6ea4557ab73afde4ab9061965173cf3fec2a3681"
       },
       "actions": [
@@ -69234,8 +69234,8 @@
       "id": "edfb106ba7599e62",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 180,
-        "end": 180,
+        "start": 193,
+        "end": 193,
         "sha256": "30030c597bb8d222fa5708425ec863c8d63fdfb4ba9620fae5fa53a58f39468c"
       },
       "actions": [
@@ -70570,8 +70570,8 @@
       "id": "f25e39b6b930151a",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 224,
-        "end": 224,
+        "start": 237,
+        "end": 237,
         "sha256": "3692cf79f66c111c228c823b5f2cc4332c72b8d34dc64e7e74f4d31765b34cd9"
       },
       "actions": [
@@ -70996,8 +70996,8 @@
       "id": "f3e4765df137a31f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 240,
-        "end": 240,
+        "start": 253,
+        "end": 253,
         "sha256": "2eee146c7f11991ffabccbcb02ecd812a1816104fce4814ba13453206029bf09"
       },
       "actions": [
@@ -83920,8 +83920,8 @@
       "id": "07fcf0624ce6adac",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 38,
-        "end": 38,
+        "start": 39,
+        "end": 39,
         "sha256": "8277e04dd891a4fc2edcda350d3c1a41e00e59d8d0a634a406c051e8a4679278"
       },
       "actions": [
@@ -83980,8 +83980,8 @@
       "id": "3c2f504bd74077dc",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 256,
-        "end": 256,
+        "start": 269,
+        "end": 269,
         "sha256": "0b840f3e04282858ef8b3089cac4ff6c783cbb1675f0cd85392afa89bd340952"
       },
       "actions": [
@@ -84000,8 +84000,8 @@
       "id": "4579e95b6742509b",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 251,
-        "end": 251,
+        "start": 264,
+        "end": 264,
         "sha256": "251af02bdf06578e58a84c767afd9e956728e2dcfe6df02fa8e6a30d26dc0748"
       },
       "actions": [
@@ -84044,8 +84044,8 @@
       "id": "75ae20557ed42cfa",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 322,
-        "end": 323,
+        "start": 335,
+        "end": 336,
         "sha256": "1674ec57dbd55226a5f98694ec55383a91fb7974f94917174dfd0878836309cc"
       },
       "actions": [
@@ -84064,8 +84064,8 @@
       "id": "8cf7a26516801711",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 255,
-        "end": 255,
+        "start": 268,
+        "end": 268,
         "sha256": "155b99c4fcc8c5940e6ad104d7a26b3a079f0b25c675fef1e383f0117d5a59f0"
       },
       "actions": [
@@ -84083,8 +84083,8 @@
       "id": "a3569881fdfec942",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 32,
-        "end": 33,
+        "start": 33,
+        "end": 34,
         "sha256": "038166e24484d79551a958affc1c0e7d40fdf7154ed9b0bdabd36fe0a871ea86"
       },
       "actions": [
@@ -84103,8 +84103,8 @@
       "id": "a9154208c8debc65",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 228,
-        "end": 231,
+        "start": 241,
+        "end": 244,
         "sha256": "865723df71091dc297a11f0a48b7237fb47cc73dff698e5e859975758577b256"
       },
       "actions": [
@@ -84122,8 +84122,8 @@
       "id": "a930773617cb8f6f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 246,
-        "end": 246,
+        "start": 259,
+        "end": 259,
         "sha256": "26954abe226d657590ba030fd82494ae8769c26cc99515a9ad638ec1a68c4260"
       },
       "actions": [
@@ -84142,8 +84142,8 @@
       "id": "d4b6a0ce34f7b091",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 262,
-        "end": 263,
+        "start": 275,
+        "end": 276,
         "sha256": "e07c264036f9797b3b368ffb17143021b2e1651d7781f36763e261d826b34877"
       },
       "actions": [
@@ -84186,8 +84186,8 @@
       "id": "e8a84abfddb1ad02",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 287,
-        "end": 289,
+        "start": 300,
+        "end": 302,
         "sha256": "56b0f4cbd0e53269eead0ee839556a773230bea044f6ed1d36135ea7f153c5b3"
       },
       "actions": [
@@ -84210,8 +84210,8 @@
       "id": "efb9818655d67789",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 46,
-        "end": 47,
+        "start": 47,
+        "end": 48,
         "sha256": "000e92f912130597da544920cdd983c54d1bb1e844b7d90f41f946959d399e6d"
       },
       "actions": [
@@ -94821,8 +94821,8 @@
       "id": "33720f3b1724fc03",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 307,
-        "end": 310,
+        "start": 320,
+        "end": 323,
         "sha256": "a05d40f97c2b138e4802fb9f1ffaba7cd1c490560e6febe7d93044f69f56cbf5"
       },
       "actions": [
@@ -94840,8 +94840,8 @@
       "id": "7663dcd63820656c",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 51,
-        "end": 56,
+        "start": 52,
+        "end": 57,
         "sha256": "18bb5d2f3dd4c4a96a7000eb28c1bed7fcf919dc7857ed60853ebe6dd8ac84ee"
       },
       "actions": [
@@ -94859,8 +94859,8 @@
       "id": "ed7558e490db107f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 248,
-        "end": 250,
+        "start": 261,
+        "end": 263,
         "sha256": "26b5f341a94a5cc0d925efe79a673ac65963787df2e0041f2aae0730e78ffa47"
       },
       "actions": [
@@ -95721,8 +95721,8 @@
       "id": "1d8fbd0cc16034c9",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 167,
-        "end": 167,
+        "start": 180,
+        "end": 180,
         "sha256": "c2f220899b72eee623adb8310c1209be841530a23487bcce09afcab17542eab6"
       },
       "actions": [
@@ -96565,8 +96565,8 @@
       "id": "97533ef6aeb0075e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 208,
-        "end": 224,
+        "start": 221,
+        "end": 237,
         "sha256": "3790bcabd4e5dde66f235f5a163a3c2a5076eccd2095784c5cc1c171d8f19d06"
       },
       "actions": [
@@ -98330,6 +98330,25 @@
         "sha256": "0f5eca96f1d51f1f87884babdb3a1bba58110e6f928c93428c2a54ddd95b98b0"
       },
       "why": "A completed analysis with an invalid region leaves the prior character tags intact and exposes an ordinary retryable scan failure."
+    },
+    {
+      "id": "2299f754d898c605",
+      "source": {
+        "path": "tests/e2e/support/scenario-diagnostic.mjs",
+        "start": 20,
+        "end": 45,
+        "sha256": "9d0c186da41ab4925cdb91ba91928fe5275bdb2dde541ca3e82cc742b9d2ee5a"
+      },
+      "actions": [
+        "tracer app -- test tooling"
+      ],
+      "step": {
+        "path": "tests/tracer/cli-front-door.mjs",
+        "start": 397,
+        "end": 416,
+        "sha256": "9395b4d6147793d316a9dbf698093e93e01c8b7cfb99db515881bb1594572b83"
+      },
+      "why": "A wrapped scenario failure emits its typed code, inner source line and control count through the dedicated descriptor, with error text excluded."
     }
   ],
   "commentExclusions": [
@@ -102317,11 +102336,11 @@
       "id": "57a7a2fba7aa19e4",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 119,
-        "end": 120,
+        "start": 132,
+        "end": 133,
         "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
       },
-      "fileSha256": "f250ddbffa028e74e6316f774118ff77d49b8fffd4dc30c22ee555e6ee5978f5"
+      "fileSha256": "3bfc90455b7c17cd7a1c341fae2dbd715e69975b317170bb2de22f094145ad32"
     },
     {
       "id": "58267d3510d79430",
@@ -102397,11 +102416,11 @@
       "id": "596df4c902f187da",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 227,
-        "end": 227,
+        "start": 240,
+        "end": 240,
         "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
       },
-      "fileSha256": "f250ddbffa028e74e6316f774118ff77d49b8fffd4dc30c22ee555e6ee5978f5"
+      "fileSha256": "3bfc90455b7c17cd7a1c341fae2dbd715e69975b317170bb2de22f094145ad32"
     },
     {
       "id": "59c64d2ace520826",
@@ -103041,7 +103060,7 @@
         "end": 272,
         "sha256": "d16b1f9020b0bcaa25259c8819584f78cc7989345302fcc4470adac8bfde6d71"
       },
-      "fileSha256": "640ee7c3b64b24a7c68d42b4ce9b7687ed3f30c89cd583e8648ab87ec5d5fd35"
+      "fileSha256": "4695cf9a94f4702f07d9cd9672cf5dbb276944050788227b42f2f55d9eea4c53"
     },
     {
       "id": "6553b5e98e6500e0",
@@ -104047,11 +104066,11 @@
       "id": "7e3301c314adb44d",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 77,
-        "end": 78,
+        "start": 78,
+        "end": 79,
         "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
       },
-      "fileSha256": "f250ddbffa028e74e6316f774118ff77d49b8fffd4dc30c22ee555e6ee5978f5"
+      "fileSha256": "3bfc90455b7c17cd7a1c341fae2dbd715e69975b317170bb2de22f094145ad32"
     },
     {
       "id": "7e4a8f19915d9b4e",
@@ -104321,7 +104340,7 @@
         "end": 40,
         "sha256": "7ef6744516c1efb7692258f2837d3033e3e89878e8ca73b45f102be6bf4fa8df"
       },
-      "fileSha256": "07f35ab00fc8f14d9e9b6780a843bfe598a39bca73cda0b0e7aebbe3a5046ead"
+      "fileSha256": "de90a7687f688e7ce1130c98a92e6dbcc3f61d32e44be9e820150224e90e5e59"
     },
     {
       "id": "83e299c16797b741",
@@ -104841,7 +104860,7 @@
         "end": 2,
         "sha256": "4ead8511821dcd95c2efee74b114bac02b04cb9252a4405b4149f9930c721b52"
       },
-      "fileSha256": "f250ddbffa028e74e6316f774118ff77d49b8fffd4dc30c22ee555e6ee5978f5"
+      "fileSha256": "3bfc90455b7c17cd7a1c341fae2dbd715e69975b317170bb2de22f094145ad32"
     },
     {
       "id": "8e40d7512c7266e1",
@@ -105251,7 +105270,7 @@
         "end": 240,
         "sha256": "b1ae110c8d7fd2ea91a819152e6f4434d7199cf755bded5dcf0424b23396379b"
       },
-      "fileSha256": "640ee7c3b64b24a7c68d42b4ce9b7687ed3f30c89cd583e8648ab87ec5d5fd35"
+      "fileSha256": "4695cf9a94f4702f07d9cd9672cf5dbb276944050788227b42f2f55d9eea4c53"
     },
     {
       "id": "9669da48463dfea3",
@@ -105481,7 +105500,7 @@
         "end": 3,
         "sha256": "c5ebf59b9856b043cecb2bb51903c03d02c4b3cc0d73016cc7b0e15ca9b78d19"
       },
-      "fileSha256": "640ee7c3b64b24a7c68d42b4ce9b7687ed3f30c89cd583e8648ab87ec5d5fd35"
+      "fileSha256": "4695cf9a94f4702f07d9cd9672cf5dbb276944050788227b42f2f55d9eea4c53"
     },
     {
       "id": "9a9bdad371295cf2",
@@ -106117,11 +106136,11 @@
       "id": "a694c3f4c30ad84a",
       "source": {
         "path": "cli/scriv.mjs",
-        "start": 277,
-        "end": 278,
+        "start": 290,
+        "end": 291,
         "sha256": "ab0126702db24657bf164332075c99d99cd2af7ebeaa1494135966abe11273df"
       },
-      "fileSha256": "07f35ab00fc8f14d9e9b6780a843bfe598a39bca73cda0b0e7aebbe3a5046ead"
+      "fileSha256": "de90a7687f688e7ce1130c98a92e6dbcc3f61d32e44be9e820150224e90e5e59"
     },
     {
       "id": "a74883d0a1e2be9c",
@@ -107527,11 +107546,11 @@
       "id": "c3e9f0813efb60fb",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 35,
-        "end": 35,
+        "start": 36,
+        "end": 36,
         "sha256": "da22a6a09e9a6d7bbf1e35ecdac04e969fad1ac1a051025596a84831ff070202"
       },
-      "fileSha256": "f250ddbffa028e74e6316f774118ff77d49b8fffd4dc30c22ee555e6ee5978f5"
+      "fileSha256": "3bfc90455b7c17cd7a1c341fae2dbd715e69975b317170bb2de22f094145ad32"
     },
     {
       "id": "c3fa07d2ab6ca6a5",

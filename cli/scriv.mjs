@@ -203,7 +203,20 @@ export class ScrivSession {
       if (predicate(snapshot)) return snapshot;
       await new Promise(resolve => setTimeout(resolve, 50));
     } while (Date.now() < deadline);
-    throw new Error('UI condition did not become true');
+    throw Object.assign(new Error('UI condition did not become true'), { code: 'SCRIV_UI_WAIT_TIMEOUT' });
+  }
+  async waitForUnique(predicate, timeout = 15000) {
+    let matches;
+    try {
+      return await this.waitFor(nodes => {
+        matches = nodes.filter(predicate).length;
+        return matches === 1;
+      }, timeout);
+    } catch (cause) {
+      if (cause?.code !== 'SCRIV_UI_WAIT_TIMEOUT') throw cause;
+      const code = matches ? 'SCRIV_UI_TARGET_AMBIGUOUS' : 'SCRIV_UI_TARGET_MISSING';
+      throw Object.assign(new Error(`Expected exactly one native control, found ${matches}`, { cause }), { code, matches });
+    }
   }
   async close() {
     if (this.#relaunching) throw new Error('Await relaunch before closing its returned session');

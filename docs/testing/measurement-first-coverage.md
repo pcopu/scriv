@@ -97,6 +97,12 @@ The previous 20.76% figure describes that manual map, not execution coverage.
 Keep the existing assertions and reviewed map; use instrumentation to guide
 coverage discovery instead of maintaining more manual links before each run.
 
+For failed native replays, the receipt can include a typed failure, its scenario
+source location, and the number of matching controls. Tracer shows these fields
+under `failedReplays` alongside the digest-bound receipt. Resolve that failure
+before repeating the selector. Error messages and stack text stay out of the
+receipt.
+
 ## Required first lookup
 
 Before proposing more scenarios or estimating which code is covered, query the

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /** Actual-app evidence only. No mock fallback, raw logs, or migration promotion. */
 import { verifySourceManifest } from './export-cli-source-manifest.mjs';
+import { readScenarioDiagnostic, scenarioDiagnosticModule } from '../tests/e2e/support/scenario-diagnostic.mjs';
 import { scenarioRestrictions } from '../cli/scenario-restrictions.mjs';
 import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -76,13 +77,16 @@ export async function runScenario(script, { app, timeoutMs, cwd = repo, coverage
   const result = { scenario: relative(repo, script), ...(group && { group }), status: 'failed', startedAt: now(), endedAt: null, exitCode: null, signal: null, reason: null, cleanup: 'not-started' };
   // A dedicated group contains the Node scenario and its directly spawned Scriv app.
   // Never kill by executable name or bundle ID, which could target the user's app.
-  const env = { ...process.env, SCRIV_E2E_APP: app };
+  const env = { ...process.env, SCRIV_E2E_APP: app, SCRIV_E2E_DIAGNOSTIC_FD: '3' };
   delete env.SCRIV_E2E_COVERAGE_CONTEXT;
   delete env.SCRIV_E2E_COVERAGE_STARTUP;
   if (coverageContext) env.SCRIV_E2E_COVERAGE_CONTEXT = coverageContext;
   if (coverageContext && startupCoverage) env.SCRIV_E2E_COVERAGE_STARTUP = '1';
   const scriptArgs = group ? [script, '--group', group] : [script];
-  const child = spawn(process.execPath, scriptArgs, { cwd, detached: true, env, stdio: 'ignore' });
+  const child = spawn(process.execPath, ['--import', scenarioDiagnosticModule, ...scriptArgs],
+    { cwd, detached: true, env, stdio: ['ignore', 'ignore', 'ignore', 'pipe'] });
+  const diagnosticStream = child.stdio[3];
+  const diagnostic = diagnosticStream ? readScenarioDiagnostic(diagnosticStream) : Promise.resolve(null);
   let timer;
   let interrupted = null;
   const abort = signal => { interrupted = signal; if (child.pid) signalGroup(child.pid, 'SIGTERM'); };
@@ -112,6 +116,15 @@ export async function runScenario(script, { app, timeoutMs, cwd = repo, coverage
   result.endedAt = now();
   if (!result.reason && result.exitCode === 0 && !result.cleanup.startsWith('uncertain')) result.status = 'passed';
   else result.reason ??= result.cleanup.startsWith('uncertain') ? 'app-cleanup-uncertain' : 'scenario-nonzero-exit';
+  if (result.reason === 'scenario-nonzero-exit') {
+    // The child writes a small message synchronously before exiting. Bound the
+    // drain in case a surviving descendant has inherited the descriptor.
+    let drainTimer;
+    const recorded = await Promise.race([diagnostic, new Promise(resolve => { drainTimer = setTimeout(resolve, 250); })]);
+    clearTimeout(drainTimer);
+    if (recorded) result.diagnostic = recorded;
+  }
+  diagnosticStream?.destroy();
   return result;
 }
 

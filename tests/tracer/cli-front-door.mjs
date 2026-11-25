@@ -394,6 +394,26 @@ export async function main() {
     assert.deepEqual(await readdir(join(output, dirs[0])), ['evidence.json']);
     assert.equal(result.stdout.includes(sentinel.trim()), false);
   });
+  await journey('record a typed scenario failure without publishing the error text', async () => {
+    const root = join(output, 'diagnostic-probe', 'tests/e2e');
+    const support = join(root, 'support');
+    await mkdir(support, { recursive: true });
+    const producer = join(support, 'scenario-diagnostic.mjs');
+    await writeFile(producer, await readFile(new URL('../e2e/support/scenario-diagnostic.mjs', import.meta.url)));
+    const scenario = join(root, 'diagnostic-probe.mjs');
+    await writeFile(scenario, `const cause = Object.assign(new Error('fixture-only error text'), { code: 'SCRIV_UI_TARGET_AMBIGUOUS', matches: 2 });
+throw new Error('wrapper-only error text', { cause });
+`);
+    const child = spawnSync(process.execPath, ['--import', producer, scenario], {
+      env: { ...env, SCRIV_E2E_DIAGNOSTIC_FD: '3' }, encoding: 'utf8', timeout: 5000, maxBuffer: 8192,
+      stdio: ['ignore', 'pipe', 'pipe', 'pipe'],
+    });
+    assert.ifError(child.error);
+    assert.equal(child.status, 1);
+    assert.deepEqual(JSON.parse(child.output[3]), {
+      code: 'ui-target-ambiguous', matches: 2, location: { path: 'tests/e2e/diagnostic-probe.mjs', line: 1 },
+    });
+  });
   await journey('compact only finished native profiles with exact export digests', async () => {
     const archive = join(output, 'profile-archive');
     const bytes = Buffer.from('retained raw counters\n'.repeat(12000));
