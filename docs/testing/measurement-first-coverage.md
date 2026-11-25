@@ -1,5 +1,12 @@
 # Measurement-first coverage
 
+Use the [managed coverage archive](coverage-storage-policy.md) for repeated
+captures. Reuse a verified shared source snapshot and compatible signed build,
+check its disk budget before admission, and inspect retention verification after
+each batch. Keep APFS physical measurements separate from logical source sizes
+and per-file block accounting. Historical captures use the same preservation
+checks; do not move their receipt-bound paths or delete evidence to reach a limit.
+
 Start at a production entry point and identify the user behavior that reaches
 it. Discover the actual CLI actions and use `tracer app -- test --list` to find
 existing scenarios. Pass that discovery catalog and retained captures to

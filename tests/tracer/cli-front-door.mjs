@@ -3,6 +3,9 @@
  * fake app, model substitute, native acceptance or baseline retirement. */
 import assert from 'node:assert/strict';
 import { assertServiceDiscovery } from './service-discovery.mjs';
+import { runStorageInputsJourney } from './storage-inputs-journey.mjs';
+import { runStorageMeasureJourney } from './storage-measure-journey.mjs';
+import { runStorageRetentionJourney } from './storage-retention-journey.mjs';
 import { spawnSync } from 'node:child_process';
 import { mkdtemp, realpath, readFile, readdir, mkdir, writeFile, symlink, link, chmod, lstat, rm } from 'node:fs/promises';
 import { createHash, randomUUID } from 'node:crypto';
@@ -23,19 +26,38 @@ export async function main() {
   const output = await realpath(await mkdtemp(join(tmpdir(), 'scriv-tracer-tooling-')));
   let passed = 0;
   const run = (args, expected = 0, environment = {}) => {
-    const child = spawnSync(executable, [...prefix, ...args], { cwd: root, env: { ...env, ...environment }, encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024, shell: false });
+    const storage = args[0] === 'app' && args[1] === '--' && args[2] === 'test' && args[3] === 'storage';
+    const child = spawnSync(executable, [...prefix, ...args], { cwd: root, env: { ...env, ...environment }, encoding: 'utf8',
+      timeout: storage ? 120000 : 30000, maxBuffer: storage ? 16 * 1024 * 1024 : 1024 * 1024, shell: false });
     if (child.error) throw new Error(`Tracer could not run (${child.error.code ?? 'spawn-error'}). Install Tracer or set SCRIV_TRACER_CLI to its absolute entrypoint.`);
     assert.equal(child.signal, null);
     assert.equal(child.status, expected, child.stderr);
     return child;
   };
   const journey = async (name, work) => { await work(); passed++; console.log(`PASS Tracer CLI journey: ${name}`); };
+  // Storage verification pins the actual package, even when the public entry
+  // was a managed launcher or an npm/PATH symlink. Discovery never updates it.
+  const immutableTracer = async () => {
+    const candidates = configured ? [configured]
+      : (process.env.PATH ?? '').split(':').filter(Boolean).map(path => resolve(path, 'tracer'));
+    for (const candidate of candidates) {
+      const canonical = await realpath(candidate).catch(() => null);
+      if (canonical?.endsWith('/bin/tracer.mjs')) return canonical;
+    }
+    const status = JSON.parse(run(['update', '--status', '--json']).stdout);
+    if (status.runningManaged && isAbsolute(status.home) && /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(status.current)) {
+      const path = join(status.home, 'releases', status.current, 'bin/tracer.mjs');
+      if (await realpath(path) === path) return path;
+    }
+    throw new Error('Storage tooling requires the immutable Tracer package bin/tracer.mjs; set SCRIV_TRACER_CLI to that entrypoint.');
+  };
   let catalog;
   await journey('discover the advertised native and tooling routes', () => {
     const actions = run(['actions']);
     assert.match(actions.stdout, /tracer app -- test --list/);
     assert.match(actions.stdout, /tracer app -- test tooling/);
     assert.match(actions.stdout, /tracer app -- test compact --archive/);
+    assert.match(actions.stdout, /tracer app -- test storage init/);
     assert.match(actions.stdout, /--fresh-startup/);
     assert.match(actions.stdout, /--startup-trace/);
     assert.match(actions.stdout, /"command":"relaunch-recover"/);
@@ -636,6 +658,9 @@ throw new Error('wrapper-only error text', { cause });
     assert.deepEqual(JSON.parse(run(['--root', analysis, 'measure', 'check', '--json']).stdout).invalid, []);
     await rm(archive, { recursive: true });
   });
+  await runStorageInputsJourney({ run, output, journey });
+  await runStorageMeasureJourney({ run, output, journey });
+  await runStorageRetentionJourney({ run, output, journey, tracerCLI: await immutableTracer() });
   await journey('verify the exact source of each declared native action', async () => {
     const { scenarios } = JSON.parse(run(['app', '--', 'test', '--list']).stdout);
     for (const { id, groups, groupActions } of scenarios) {
