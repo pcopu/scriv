@@ -97054,8 +97054,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-startup-save-recovery.mjs",
-        "start": 118,
-        "end": 126,
+        "start": 152,
+        "end": 160,
         "sha256": "6d84b5b9583d801af8f7cc8eb8b4ad574f2f862a733ec43bf249b091e94daa54"
       },
       "why": "The cold process reports its recovery mode and publishes the recovered workspace before the scenario opens any project."
@@ -97076,8 +97076,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-startup-save-recovery.mjs",
-        "start": 118,
-        "end": 129,
+        "start": 152,
+        "end": 163,
         "sha256": "9ddb33c2da4afd4de24720cc52939e0609dce252f25bc418ca7ad200fc5887c2"
       },
       "why": "The resumed process and existing package stay in the already owned root during journal recovery."
@@ -97098,8 +97098,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-startup-save-recovery.mjs",
-        "start": 117,
-        "end": 128,
+        "start": 151,
+        "end": 162,
         "sha256": "6dc364536e99619edd2f1be359e13ec856e58a7ce5d75865262e902c134a6274"
       },
       "why": "The host waits for the app to report the new recovery process, then the same workspace publishes the restored project."
@@ -97119,8 +97119,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-startup-save-recovery.mjs",
-        "start": 135,
-        "end": 140,
+        "start": 182,
+        "end": 187,
         "sha256": "a7e65de5fb662cbe619c4db546d5e44651cf0a36f11005d9d7fdf6eb3c05b532"
       },
       "why": "A second recovery launch with an empty journal leaves both packages and the recovered revision intact without creating a replacement project."
@@ -97162,8 +97162,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-startup-save-recovery.mjs",
-        "start": 117,
-        "end": 133,
+        "start": 151,
+        "end": 167,
         "sha256": "a1e2736a992ac460ebe1d5a58a5a4905b7a9bc74b53c0836742e97d335bd88e1"
       },
       "why": "Startup discovers the real pending save and opens the owned original package, records exactly one revision, and acknowledges the record."
@@ -98824,6 +98824,67 @@
         "sha256": "9cd66ae06d68ae1eb09e4dc35244d96e9cf5ccdf5e9a95c75a016d38470d37c2"
       },
       "why": "A refused ownership renewal keeps the generated artifact on the device and leaves both the cue and hosted assets unchanged until explicit recovery."
+    },
+    {
+      "id": "9857f8bd18755798",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+        "start": 167,
+        "end": 171,
+        "sha256": "b371e05d879856c99df27009b6353b180e7e4280d50a6bb65c6e11b8b563848f"
+      },
+      "actions": [
+        "scriv relaunch-recover",
+        "scriv persisted-projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-startup-save-recovery.mjs",
+        "start": 169,
+        "end": 180,
+        "sha256": "fc887a97998ccde219fe519c283ff7843f2214b41d7bcd24a5f6695afc107ae9"
+      },
+      "why": "A pending record with an exact accepted project and history is acknowledged by a cold startup with identical saved bytes."
+    },
+    {
+      "id": "a7024d58c925f6b6",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/PendingProjectSaveJournal.swift",
+        "start": 193,
+        "end": 197,
+        "sha256": "c519773968dfaea497d544b8f17049527a4e80f4386820b5605efe1f4274ab93"
+      },
+      "actions": [
+        "scriv relaunch-recover",
+        "scriv presented-alerts",
+        "scriv persisted-projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-startup-save-recovery.mjs",
+        "start": 117,
+        "end": 142,
+        "sha256": "76d8057a0014e530dfa8e71deb79e954c131948d11624f9a257b1acc978e38ff"
+      },
+      "why": "A diverged source in a legacy journal record is reported and its exact bytes are retained along with the saved package and history."
+    },
+    {
+      "id": "ad4309d29929f422",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/ProjectRepository.swift",
+        "start": 44,
+        "end": 51,
+        "sha256": "7a7b6fb09abeeebbee327a793b1d33d243628fc7d67605e78d7640daad4b74bd"
+      },
+      "actions": [
+        "scriv relaunch-recover",
+        "scriv persisted-projects"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-startup-save-recovery.mjs",
+        "start": 169,
+        "end": 180,
+        "sha256": "fc887a97998ccde219fe519c283ff7843f2214b41d7bcd24a5f6695afc107ae9"
+      },
+      "why": "After accepted history is verified and synced again, acknowledgement leaves the saved project and its original checkpoint bytes intact."
     }
   ],
   "commentExclusions": [

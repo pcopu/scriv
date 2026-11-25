@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { constants } from 'node:fs';
-import { access, lstat, open, readFile, readdir, realpath } from 'node:fs/promises';
+import { access, lstat, open, readFile, readdir, realpath, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { inspectOwnedWorkspace } from '../../../cli/owned-workspace.mjs';
@@ -20,11 +20,11 @@ const pending = async () => (await readdir(journal)).filter(name => name.endsWit
 const saved = async () => sortedProjects(await session.command('persisted-projects'));
 let step = 'save two isolated packages';
 
-async function waitForAlert(prefix) {
+async function waitForAlert(prefix, detail = '') {
   const deadline = Date.now() + 15000;
   do {
     const alerts = await session.command('presented-alerts');
-    if (alerts.some(alert => alert.message.startsWith(prefix) && alert.viewAttachedToWindow
+    if (alerts.some(alert => alert.message.startsWith(prefix) && alert.message.includes(detail) && alert.viewAttachedToWindow
         && !alert.beingPresented && !alert.beingDismissed)) return;
     await new Promise(resolve => setTimeout(resolve, 50));
   } while (Date.now() < deadline);
@@ -114,6 +114,40 @@ try {
     }
   } finally { await pendingFile.close(); }
 
+  const invalidRecords = [
+    ['unsupported schema', { ...record, schemaVersion: 3 }, 'Invalid pending project-save identity'],
+    ['diverged legacy snapshot', { ...record, schemaVersion: 1, beforeRevision: undefined,
+      before: { ...before, title: 'A divergent saved source' } }, 'exact, contiguous source-to-target change'],
+    ['missing source revision', { ...record, beforeRevision: before.revision + 1 }, 'exact, contiguous source-to-target change'],
+    ['relative package location', { ...record, scope: { ...record.scope, packagePath: 'relative.scriv' } },
+      'Invalid pending-save scope'],
+    ['invalid server origin', { ...record, scope: { ...record.scope, server: 'file:///owned-fixture' } },
+      'requires a credential-free server origin'],
+  ];
+  const editableRecord = await open(recordPath, constants.O_RDWR | constants.O_NOFOLLOW);
+  try {
+    const info = await editableRecord.stat();
+    assert.ok(info.isFile() && info.uid === process.getuid() && info.nlink === 1);
+    assert.deepEqual(await editableRecord.readFile(), retained);
+    for (const [condition, invalid, detail] of invalidRecords) {
+      step = 'retain the pending record with ' + condition;
+      const bytes = Buffer.from(JSON.stringify(invalid));
+      await editableRecord.truncate(0);
+      assert.equal((await editableRecord.write(bytes, 0, bytes.length, 0)).bytesWritten, bytes.length);
+      session = await session.relaunchRecoveringPendingSaves();
+      await waitForAlert('Project recovery needs attention. No pending changes were discarded:', detail);
+      assert.deepEqual(await saved(), sortedProjects([sample, before]));
+      assert.deepEqual((await readdir(history)).sort(), initialHistory);
+      assert.deepEqual(await pending(), records);
+      assert.deepEqual(await readFile(recordPath), bytes);
+    }
+  } finally {
+    try {
+      await editableRecord.truncate(0);
+      assert.equal((await editableRecord.write(retained, 0, retained.length, 0)).bytesWritten, retained.length);
+    } finally { await editableRecord.close(); }
+  }
+
   step = 'recover the retained package on a cold launch without using the picker';
   session = await session.relaunchRecoveringPendingSaves();
   const reopened = await session.command('capabilities');
@@ -131,6 +165,19 @@ try {
   const historyAfter = (await readdir(history)).sort();
   assert.deepEqual(historyAfter, [...initialHistory, revision].sort());
   assert.deepEqual(JSON.parse(await readFile(join(history, revision))).snapshot, expected);
+
+  step = 'acknowledge an exact record left after its package and history were saved';
+  const canonicalPath = join(record.scope.packagePath, 'project.json');
+  const canonical = await readFile(canonicalPath);
+  const checkpoint = await readFile(join(history, revision));
+  await writeFile(recordPath, retained, { flag: 'wx', mode: 0o600 });
+  session = await session.relaunchRecoveringPendingSaves();
+  await session.waitFor(nodes => nodes.some(node => node.identifier === 'workspace-project' && node.title === before.title && node.hittable));
+  assert.deepEqual(await pending(), []);
+  assert.deepEqual(await saved(), sortedProjects([sample, expected]));
+  assert.deepEqual(await readFile(canonicalPath), canonical);
+  assert.deepEqual(await readFile(join(history, revision)), checkpoint);
+  assert.deepEqual((await readdir(history)).sort(), historyAfter);
 
   step = 'repeat startup recovery with an empty journal';
   session = await session.relaunchRecoveringPendingSaves();

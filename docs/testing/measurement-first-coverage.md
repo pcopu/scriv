@@ -47,6 +47,12 @@ look in `actionReview.dispatchWindows`. The counters include any concurrent
 background work. Use a full session to measure async results and keep the
 scenario's assertions for the behavior.
 
+When the anchors around a gap rose in the same matching control window, the
+worklist shows `dispatchBatch` alongside that recorded action. An explicit
+control lookup returns the same cases in `actionReview.dispatchBatch`. Its
+examples point back to the interval and anchor lines. Use the separate
+`actionReview.nativeBatch` for whole-session leads that need caller review.
+
 For compiler function boundaries, export once from an imported session for
 the reference app. This verifies the signed bundle, recorded compiler and
 profile, and original source manifest. It reads retained evidence without
@@ -96,6 +102,14 @@ assertions. Tracer's focused worklist can match those paths to the exact
 selector, even when the linked assertion covers a nearby observed line in the
 caller. The picture and Script structure catalogs declare their group-owned
 support files. Shared support remains eligible for each group that uses it.
+
+The `journeys/native-startup-save-recovery` case uses the owned cold
+relaunch to check five distinct record validation errors in addition to
+unreadable bytes. Every rejection preserves both packages, the journal and
+history. After a successful recovery the case presents the same exact record
+again, like a restart after package commit and before journal acknowledgement.
+The second recovery clears the record and preserves the package and history
+bytes.
 
 The `empty-storyboard` group of `journeys/picture-coverage` imports a script
 with timed words and zero picture placements. It checks the shared words and
