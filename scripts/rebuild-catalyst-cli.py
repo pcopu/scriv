@@ -124,6 +124,8 @@ def main():
     parser.add_argument('--template', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--work', type=Path, required=True)
+    parser.add_argument('--discard-work-after-build', action='store_true',
+                        help='Remove a newly created private work directory only after signature, source and coverage-record verification')
     parser.add_argument('--identity', required=True)
     parser.add_argument('--version', required=True)
     parser.add_argument('--build', required=True)
@@ -138,6 +140,16 @@ def main():
     if args.coverage and not re.fullmatch(r'[a-f0-9]{64}', args.coverage_source_manifest_sha256):
         parser.error('Coverage source manifest SHA-256 must be 64 lowercase hexadecimal characters.')
     template, output, work = args.template.resolve(), args.output.resolve(), args.work.resolve()
+    if args.discard_work_after_build:
+        if not args.coverage:
+            parser.error('--discard-work-after-build requires a verified coverage build record.')
+        if work.exists() or Path(os.path.abspath(args.work)) != work:
+            parser.error('Discardable work must be a new canonical directory.')
+        if work == ROOT or ROOT in work.parents or work in ROOT.parents:
+            parser.error('Discardable work must be outside the source tree.')
+        parent = work.parent.stat()
+        if parent.st_uid != os.getuid() or parent.st_mode & 0o022:
+            parser.error('Discardable work needs an existing private parent owned by this user.')
     record_fd = None
     forbidden = (ROOT, template, output, work)
     if args.coverage:
@@ -192,9 +204,13 @@ def main():
     support = sdk / 'System/iOSSupport'
     if not (support / 'System/Library/Frameworks/UIKit.framework').exists():
         parser.error('The selected standalone macOS SDK lacks UIKit/Catalyst support.')
-    work.mkdir(parents=True, exist_ok=True)
+    work.mkdir(parents=True, exist_ok=not args.discard_work_after_build, mode=0o700)
+    work_identity = work.stat()
     output.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(template, output, symlinks=True)
+    # Request independent copy-on-write files, preserving signed framework links
+    # and metadata. Copying a whole template for each build must not materialize
+    # every unchanged resource on APFS. Failure leaves work available to inspect.
+    run('/bin/cp', '-cRp', template, output)
     # Compiled icon assets require the verified template, but runtime resources
     # must match the source being compiled rather than the template's old code.
     for name in ('PeerTransfer', 'SampleImages'):
@@ -313,6 +329,16 @@ def main():
                                   args.coverage_source_manifest_sha256, forbidden)
         finally:
             os.close(record_fd)
+    if args.discard_work_after_build:
+        # All compiler outputs needed for replay are in the verified app. Keep
+        # the source manifest and build record outside this owned scratch tree.
+        current = work.lstat()
+        if work.is_symlink() or work.resolve() != work or (
+                current.st_dev, current.st_ino, current.st_uid) != (
+                work_identity.st_dev, work_identity.st_ino, os.getuid()):
+            raise RuntimeError('Build work changed; retaining it for inspection.')
+        shutil.rmtree(work)
+        print('Removed verified build scratch; signed app and coverage record retained.')
     print(platform)
     print(f'Built {output}; compiled assets and third-party Sparkle retained; app, Core, native adapter and XPC rebuilt from source.')
 

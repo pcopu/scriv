@@ -86,7 +86,8 @@ async function verifyTools(capture) {
 // including all app resources, packages and build scripts, must remain exact.
 const hostProbePaths = new Set(['cli/scriv.mjs', 'cli/owned-workspace.mjs', 'cli/scenario-restrictions.mjs',
   'cli/coverage-profile.mjs', 'cli/coverage-session.mjs', 'scripts/run-cli-e2e.mjs', 'scripts/run-service-journeys.mjs',
-  'scripts/collect-cli-coverage.mjs', 'scripts/export-cli-call-map.py', 'scripts/compact-cli-archive.mjs', 'scripts/export-cli-source-manifest.mjs', 'scripts/prepare-coverage-analysis.mjs']);
+  'scripts/collect-cli-coverage.mjs', 'scripts/export-cli-call-map.py', 'scripts/compact-cli-archive.mjs', 'scripts/export-cli-source-manifest.mjs', 'scripts/prepare-coverage-analysis.mjs',
+  'scripts/coverage-storage.mjs', 'scripts/coverage-storage-inputs.mjs', 'scripts/coverage-storage-retention.mjs', 'scripts/coverage-storage-measure.mjs']);
 function hostOnlyChange(path) {
   return path === 'AGENTS.md' || hostProbePaths.has(path)
     || ['tests/e2e/', 'tests/tracer/', 'cloud/tests-e2e/', 'updates/tests-e2e/', 'docs/'].some(prefix => path.startsWith(prefix));

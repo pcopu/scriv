@@ -15,6 +15,16 @@ distinct. Reuse existing assertions and run scenarios without waiting for a
 complete manual source-to-assertion map.
 See `docs/testing/measurement-first-coverage.md` for the verified workflow.
 
+For repeated captures, use the managed archive in
+`docs/testing/coverage-storage-policy.md`. Share exact source and signed build
+inputs, put native output beneath its initialized policy, and inspect automatic
+retention status after each batch. Keep original evidence, raw profiles, LCOV,
+datasets and outcomes. Remove derived data only after replay verification;
+apply the same verifier to old runs without changing their canonical paths.
+Measure real APFS container usage as well as file allocation, and compare equally
+cleaned states before projecting another 100 runs. A configured admission reserve
+is not a measured peak bound or permission to delete valid captures.
+
 For coverage work, first query the retained evidence with `tracer measure where
 --capture-set /external/captures.json --source PATH[:RANGE]` (or `measure union
 --capture-set ...` for a scope). Reuse its observed scenario matches before

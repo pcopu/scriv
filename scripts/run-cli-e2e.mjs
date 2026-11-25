@@ -6,6 +6,7 @@ import { readScenarioDiagnostic, scenarioDiagnosticModule } from '../tests/e2e/s
 import { isControlIdentifier } from '../cli/coverage-session.mjs';
 import { scenarioRestrictions } from '../cli/scenario-restrictions.mjs';
 import { launchModes } from '../cli/scriv.mjs';
+import { enterStorageRun, finishStorageRun } from './coverage-storage.mjs';
 import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
@@ -297,103 +298,125 @@ export async function main(args = process.argv.slice(2)) {
     if (outputReal === buildSourceReal || outputReal.startsWith(buildSourceReal + '/')) throw new Error('output-must-be-outside-build-source');
   }
   await mkdir(outputReal, { recursive: true });
-  const output = await mkdtemp(join(outputReal, 'scriv-cli-e2e-'));
-  const path = join(output, 'evidence.json');
-  const report = { schemaVersion: 1, kind: 'actual-app-cli-scenarios', selection, fullSuitePassed: false, launcherMode: 'direct-spawn-inherited-process-group', cleanupScope: 'Only the runner-owned process group is verified; detached or LaunchServices-launched descendants are unsupported.', baselineMigrated: false, startedAt: now(), endedAt: null, status: 'not-run', platform: process.platform, nodeVersion: process.version, buildAttestation: null, sourceToAppMatch: 'not-established', source: null, app: null, blocker: null, scenarios: selected.map(({ name, group }) => ({ scenario: `tests/e2e/${name}`, ...(group && { group }), status: 'not-run', reason: scenarioRestrictions[name.slice(0, -4)]?.reason ?? 'not-started' })) };
-  if (coverage) report.coverage = { status: 'not-run', imported: 0, intervals: [] };
-  if (keepIndexedProfiles) report.keepIndexedProfiles = true;
-  let capture; let collector;
-  async function save() { await writeFile(path + '.tmp', JSON.stringify(report, null, 2) + '\n', { mode: 0o600 }); await rename(path + '.tmp', path); }
+  const storageLease = await enterStorageRun(outputReal, repo);
   try {
-    report.source = await sourceIdentity(sourceOptions);
-    if (!selected.length) throw new Error('no-scenarios');
-    if (selected.every(({ name }) => scenarioRestrictions[name.slice(0, -4)])) throw new Error('selected-scenarios-blocked');
-    if (app) {
-      try { report.app = await bundleIdentity(app); }
-      catch (error) {
-        if (['app-signature-verification-failed', 'coverage-activation-window-unavailable'].includes(error.message)) throw error;
-        throw new Error('app-identity-unavailable');
-      }
-    }
-    if (process.platform !== 'darwin') throw new Error('macos-required');
-    if (!app) throw new Error('SCRIV_E2E_APP-required');
-    if (coverage) {
-      try {
-        collector = await import('./collect-cli-coverage.mjs');
-        capture = await collector.prepareCoverage({ app, output, sourceOptions, ...coverageOptions });
-        report.coverage = capture.report;
-        report.buildAttestation = { kind: 'producer-declared-coverage-build-record', sha256: capture.buildRecordSHA256, cryptographicallyAttested: false };
-        report.sourceToAppMatch = capture.sourceProvenance.differences.length
-          ? 'producer-declared-build-record-with-host-only-journey-delta' : 'producer-declared-build-record';
-      } catch { throw new Error('coverage-preflight-failed'); }
-    }
-    await save();
-    for (const [i, { name, group }] of selected.entries()) {
-      if (scenarioRestrictions[name.slice(0, -4)]) continue; // Never spawn or allocate capture for a denied route.
-      const context = capture ? await collector.coverageContext(capture, `tests/e2e/${name}`, i, group) : undefined;
-      report.scenarios[i] = await runScenario(join(repo, 'tests/e2e', name),
-        { app, timeoutMs, coverageContext: context, startupCoverage: capture?.startup, group });
-      await save();
-      if (report.scenarios[i].status !== 'passed') {
-        for (const remaining of report.scenarios.slice(i + 1)) if (remaining.reason === 'not-started') remaining.reason = 'stopped-after-failure';
-        break;
-      }
-    }
-    const after = await sourceIdentity(sourceOptions);
-    report.sourceUnchanged = JSON.stringify(after) === JSON.stringify(report.source);
-    report.appUnchanged = null;
-    report.appUnchanged = JSON.stringify(await bundleIdentity(app)) === JSON.stringify(report.app);
-    if (!report.sourceUnchanged || !report.appUnchanged) report.blocker = 'inputs-changed-during-run';
-    if (selected.some(({ name }) => scenarioRestrictions[name.slice(0, -4)])) report.blocker ??= 'selected-scenarios-blocked';
-    report.status = !report.blocker && report.scenarios.every(s => s.status === 'passed') ? 'passed' : 'failed';
-    if (capture && report.blocker) {
-      capture.report.status = 'not-exported';
-      capture.report.blocker = report.blocker;
-    }
-    if (capture && !report.blocker) {
-      try {
-        await collector.exportCoverage(capture, report.scenarios);
-        report.sourceUnchanged = JSON.stringify(await sourceIdentity(sourceOptions)) === JSON.stringify(report.source);
-        report.appUnchanged = null;
-        report.appUnchanged = JSON.stringify(await bundleIdentity(app)) === JSON.stringify(report.app);
-        if (!report.sourceUnchanged || !report.appUnchanged) throw new Error('inputs-changed-during-export');
-        report.sourceCheckScope = 'through capture and LLVM export, before explicit measurement import';
-      } catch (error) {
-        if (['app-signature-verification-failed', 'coverage-activation-window-unavailable'].includes(error.message)) throw error;
-        throw new Error('coverage-capture-or-export-failed');
-      }
-      await save();
-      try { await collector.importCoverage(capture); }
-      catch (error) {
-        if (error.message === 'coverage-activation-counter-decreased') throw error;
-        throw new Error('coverage-import-failed');
-      }
-      report.measurementWritesAfterSourceCheck = capture.report.imported;
-    }
-  } catch (error) {
-    const safe = ['selected-scenarios-blocked', 'macos-required', 'SCRIV_E2E_APP-required', 'no-scenarios', 'app-identity-unavailable', 'app-signature-verification-failed', 'submodule-provenance-unsupported', 'coverage-preflight-failed', 'coverage-capture-or-export-failed', 'coverage-import-failed', 'coverage-activation-window-unavailable', 'coverage-activation-counter-decreased'];
-    report.blocker = safe.includes(error.message) || /^source-manifest-(?:symlink|special-file|unsafe-path|missing-file|must-be-outside-source|digest-required|digest-mismatch|invalid|content-mismatch|file-set-mismatch)$/.test(error.message) ? error.message : 'evidence-or-preflight-failed';
-    report.status = report.scenarios.some(s => s.startedAt) ? 'failed' : 'not-run';
-    for (const item of report.scenarios) if (item.status === 'not-run' && item.reason === 'not-started') item.reason = report.blocker;
-    if (capture) { report.coverage.failureStage = report.coverage.status; report.coverage.status = 'failed'; }
-  }
-  if (capture) {
-    try { await collector.saveCoverageStatus(capture); }
-    catch { report.blocker ??= 'coverage-evidence-save-failed'; report.status = 'failed'; }
-  }
-  report.fullSuitePassed = report.status === 'passed' && selection.mode === 'all';
-  report.endedAt = now(); await save();
-  if (capture?.report.status === 'imported' && !keepIndexedProfiles) {
+    const output = await mkdtemp(join(outputReal, 'scriv-cli-e2e-'));
+    const path = join(output, 'evidence.json');
+    const report = { schemaVersion: 1, kind: 'actual-app-cli-scenarios', selection, fullSuitePassed: false, launcherMode: 'direct-spawn-inherited-process-group', cleanupScope: 'Only the runner-owned process group is verified; detached or LaunchServices-launched descendants are unsupported.', baselineMigrated: false, startedAt: now(), endedAt: null, status: 'not-run', platform: process.platform, nodeVersion: process.version, buildAttestation: null, sourceToAppMatch: 'not-established', source: null, app: null, blocker: null, scenarios: selected.map(({ name, group }) => ({ scenario: `tests/e2e/${name}`, ...(group && { group }), status: 'not-run', reason: scenarioRestrictions[name.slice(0, -4)]?.reason ?? 'not-started' })) };
+    if (coverage) report.coverage = { status: 'not-run', imported: 0, intervals: [] };
+    if (keepIndexedProfiles) report.keepIndexedProfiles = true;
+    let capture; let collector;
+    async function save() { await writeFile(path + '.tmp', JSON.stringify(report, null, 2) + '\n', { mode: 0o600 }); await rename(path + '.tmp', path); }
     try {
-      const { filesRemoved, allocatedBytesRemoved } = await pruneRunIndexes(output, { apply: true, tracer: capture.tracerCLI });
-      if (filesRemoved) console.error(`Discarded ${filesRemoved} LLVM indexes (${allocatedBytesRemoved} allocated bytes).`);
-    } catch {
-      console.error('Could not finish removing LLVM indexes. The recorded coverage outcome is available.');
+      report.source = await sourceIdentity(sourceOptions);
+      if (!selected.length) throw new Error('no-scenarios');
+      if (selected.every(({ name }) => scenarioRestrictions[name.slice(0, -4)])) throw new Error('selected-scenarios-blocked');
+      if (app) {
+        try { report.app = await bundleIdentity(app); }
+        catch (error) {
+          if (['app-signature-verification-failed', 'coverage-activation-window-unavailable'].includes(error.message)) throw error;
+          throw new Error('app-identity-unavailable');
+        }
+      }
+      if (process.platform !== 'darwin') throw new Error('macos-required');
+      if (!app) throw new Error('SCRIV_E2E_APP-required');
+      if (coverage) {
+        try {
+          collector = await import('./collect-cli-coverage.mjs');
+          capture = await collector.prepareCoverage({ app, output, sourceOptions, ...coverageOptions });
+          report.coverage = capture.report;
+          report.buildAttestation = { kind: 'producer-declared-coverage-build-record', sha256: capture.buildRecordSHA256, cryptographicallyAttested: false };
+          report.sourceToAppMatch = capture.sourceProvenance.differences.length
+            ? 'producer-declared-build-record-with-host-only-journey-delta' : 'producer-declared-build-record';
+        } catch { throw new Error('coverage-preflight-failed'); }
+      }
+      await save();
+      for (const [i, { name, group }] of selected.entries()) {
+        if (scenarioRestrictions[name.slice(0, -4)]) continue; // Never spawn or allocate capture for a denied route.
+        const context = capture ? await collector.coverageContext(capture, `tests/e2e/${name}`, i, group) : undefined;
+        report.scenarios[i] = await runScenario(join(repo, 'tests/e2e', name),
+          { app, timeoutMs, coverageContext: context, startupCoverage: capture?.startup, group });
+        await save();
+        if (report.scenarios[i].status !== 'passed') {
+          for (const remaining of report.scenarios.slice(i + 1)) if (remaining.reason === 'not-started') remaining.reason = 'stopped-after-failure';
+          break;
+        }
+      }
+      const after = await sourceIdentity(sourceOptions);
+      report.sourceUnchanged = JSON.stringify(after) === JSON.stringify(report.source);
+      report.appUnchanged = null;
+      report.appUnchanged = JSON.stringify(await bundleIdentity(app)) === JSON.stringify(report.app);
+      if (!report.sourceUnchanged || !report.appUnchanged) report.blocker = 'inputs-changed-during-run';
+      if (selected.some(({ name }) => scenarioRestrictions[name.slice(0, -4)])) report.blocker ??= 'selected-scenarios-blocked';
+      report.status = !report.blocker && report.scenarios.every(s => s.status === 'passed') ? 'passed' : 'failed';
+      if (capture && report.blocker) {
+        capture.report.status = 'not-exported';
+        capture.report.blocker = report.blocker;
+      }
+      if (capture && !report.blocker) {
+        try {
+          await collector.exportCoverage(capture, report.scenarios);
+          report.sourceUnchanged = JSON.stringify(await sourceIdentity(sourceOptions)) === JSON.stringify(report.source);
+          report.appUnchanged = null;
+          report.appUnchanged = JSON.stringify(await bundleIdentity(app)) === JSON.stringify(report.app);
+          if (!report.sourceUnchanged || !report.appUnchanged) throw new Error('inputs-changed-during-export');
+          report.sourceCheckScope = 'through capture and LLVM export, before explicit measurement import';
+        } catch (error) {
+          if (['app-signature-verification-failed', 'coverage-activation-window-unavailable'].includes(error.message)) throw error;
+          throw new Error('coverage-capture-or-export-failed');
+        }
+        await save();
+        try { await collector.importCoverage(capture); }
+        catch (error) {
+          if (error.message === 'coverage-activation-counter-decreased') throw error;
+          throw new Error('coverage-import-failed');
+        }
+        report.measurementWritesAfterSourceCheck = capture.report.imported;
+      }
+    } catch (error) {
+      const safe = ['selected-scenarios-blocked', 'macos-required', 'SCRIV_E2E_APP-required', 'no-scenarios', 'app-identity-unavailable', 'app-signature-verification-failed', 'submodule-provenance-unsupported', 'coverage-preflight-failed', 'coverage-capture-or-export-failed', 'coverage-import-failed', 'coverage-activation-window-unavailable', 'coverage-activation-counter-decreased'];
+      report.blocker = safe.includes(error.message) || /^source-manifest-(?:symlink|special-file|unsafe-path|missing-file|must-be-outside-source|digest-required|digest-mismatch|invalid|content-mismatch|file-set-mismatch)$/.test(error.message) ? error.message : 'evidence-or-preflight-failed';
+      report.status = report.scenarios.some(s => s.startedAt) ? 'failed' : 'not-run';
+      for (const item of report.scenarios) if (item.status === 'not-run' && item.reason === 'not-started') item.reason = report.blocker;
+      if (capture) { report.coverage.failureStage = report.coverage.status; report.coverage.status = 'failed'; }
     }
-  }
-  console.log(`CLI E2E ${report.status} (${cases.size ? `${selected.length} selected cases` : `${selection.mode} ${selected.length}/${available.length}`}); evidence: ${path}`);
-  return report.status === 'passed' ? 0 : report.status === 'not-run' ? 2 : 1;
+    if (capture) {
+      try { await collector.saveCoverageStatus(capture); }
+      catch { report.blocker ??= 'coverage-evidence-save-failed'; report.status = 'failed'; }
+    }
+    report.fullSuitePassed = report.status === 'passed' && selection.mode === 'all';
+    report.endedAt = now(); await save();
+    if (storageLease) {
+      try {
+        const stored = await finishStorageRun(storageLease, { runRoot: output,
+          tracerCLI: capture?.tracerCLI?.prefix?.[0], repo });
+        console.error(`Coverage storage ${stored.status}; receipt: ${stored.path}`);
+      } catch (error) {
+        // The frozen app outcome remains truthful even if retention is blocked.
+        // Preserve all uncertain artifacts and make this independent failure visible.
+        await writeFile(join(output, 'storage-failure.json'), JSON.stringify({ version: 1,
+          kind: 'scriv-coverage-storage-failure', status: 'retained-unverified', reason: error.message,
+          evidence: path, measuredAt: now() }, null, 2) + '\n', { flag: 'wx', mode: 0o600 })
+          .catch(() => console.error('Coverage storage failure receipt could not be written.'));
+        console.error('Coverage storage retained unverified artifacts; inspect the storage status before continuing.');
+      }
+    } else if (capture?.report.status === 'imported' && !keepIndexedProfiles) {
+      // Preserve d789c62's default behavior for archives without a storage policy.
+      try {
+        const { filesRemoved, allocatedBytesRemoved } = await pruneRunIndexes(output, { apply: true, tracer: capture.tracerCLI });
+        if (filesRemoved) console.error(`Discarded ${filesRemoved} LLVM indexes (${allocatedBytesRemoved} allocated bytes).`);
+      } catch {
+        console.error('Could not finish removing LLVM indexes. The recorded coverage outcome is available.');
+      }
+    }
+    console.log(`CLI E2E ${report.status} (${cases.size ? `${selected.length} selected cases` : `${selection.mode} ${selected.length}/${available.length}`}); evidence: ${path}`);
+    return report.status === 'passed' ? 0 : report.status === 'not-run' ? 2 : 1;
+  } finally { await storageLease?.release(); }
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  main().then(code => { process.exitCode = code; }).catch(() => { console.error('CLI E2E runner could not write evidence or accept its arguments.'); process.exitCode = 2; });
+  main().then(code => { process.exitCode = code; }).catch(error => {
+    console.error(/^storage-(budget-exhausted|archive-busy);/.test(error.message)
+      ? error.message : 'CLI E2E runner could not write evidence or accept its arguments.');
+    process.exitCode = 2;
+  });
 }

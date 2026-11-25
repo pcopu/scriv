@@ -24,7 +24,7 @@ export async function hashFile(path) {
 }
 export async function probeIdentity() {
   const files = [];
-  for (const path of ['cli/scriv.mjs', 'cli/owned-workspace.mjs', 'cli/scenario-restrictions.mjs', 'cli/coverage-profile.mjs', 'cli/coverage-session.mjs', 'scripts/run-cli-e2e.mjs', 'scripts/collect-cli-coverage.mjs', 'scripts/compact-cli-archive.mjs', 'scripts/export-cli-source-manifest.mjs', 'scripts/prepare-coverage-analysis.mjs']) files.push({ path, sha256: await hashFile(join(root, path)) });
+  for (const path of ['cli/scriv.mjs', 'cli/owned-workspace.mjs', 'cli/scenario-restrictions.mjs', 'cli/coverage-profile.mjs', 'cli/coverage-session.mjs', 'scripts/run-cli-e2e.mjs', 'scripts/collect-cli-coverage.mjs', 'scripts/compact-cli-archive.mjs', 'scripts/export-cli-source-manifest.mjs', 'scripts/prepare-coverage-analysis.mjs', 'scripts/coverage-storage.mjs', 'scripts/coverage-storage-inputs.mjs', 'scripts/coverage-storage-retention.mjs', 'scripts/coverage-storage-measure.mjs']) files.push({ path, sha256: await hashFile(join(root, path)) });
   return { files, sha256: createHash('sha256').update(JSON.stringify(files)).digest('hex') };
 }
 async function privateDirectory(path) {
