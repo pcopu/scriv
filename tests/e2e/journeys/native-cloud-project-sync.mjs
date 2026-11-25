@@ -9,7 +9,7 @@ import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, interrupte
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
 
-const groups = ['sync', 'lease-renewal', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'discussion-pages', 'legacy-local-copy'];
+const groups = ['sync', 'lease-renewal', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'sign-in-recovery', 'sign-in-rate-limit', 'discussion-pages', 'legacy-local-copy'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
   console.log(JSON.stringify({ groups }));
@@ -68,12 +68,15 @@ const byID = (a, b) => a.id.localeCompare(b.id);
 const content = ({ revision, modifiedAt, entries, characters, ...rest }) => ({
   ...rest, entries: [...entries].sort(byID), characters: [...characters].sort(byID),
 });
-async function signIn(deliveries) {
+async function requestSignInCode() {
   await session.command('activate', { target: (await control(workspaceProject)).path });
   await click('Sign in to Scriv…', true);
   const email = await control(node => node.type === 'UITextField' && node.label === 'Email address', true);
   await session.command('text', { target: email.path, text: nativeFixtureEmail });
   await click('Continue with email');
+}
+async function signIn(deliveries) {
+  await requestSignInCode();
   await session.waitFor(nodes => nodes.some(node => node.text === 'Check your email'));
   assert.equal(await fixture.deliveries(), deliveries);
   const codeField = await control(node => node.type === 'UITextField' && node.sensitive && node.text === '<redacted>', true);
@@ -549,6 +552,69 @@ async function verifyLegacyLocalCopy(linked) {
   console.log('PASS: identical legacy copy reconnects and differing legacy draft stays on disk');
 }
 
+async function verifySignInRecovery() {
+  step = 'show an incorrect-code response and preserve the local script';
+  session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
+  assert.equal((await session.command('capabilities')).cloudIsolation.network, 'loopback-only');
+  await control(workspaceProject);
+  await session.command('key', { input: 's', modifiers: ['command'] });
+  const before = await waitForSavedProject(session, project => project.title === 'YAM MAN');
+  await requestSignInCode();
+  await session.waitFor(nodes => nodes.some(node => node.text === 'Check your email'));
+  const code = await fixture.takeCode();
+  const different = (code[0] === '0' ? '1' : '0') + code.slice(1);
+  await session.deliverFixtureEmailCode(different);
+  await click('Sign in with code');
+  const invalidCode = 'This sign-in code is expired, used, or does not match this device. Request a new code if needed.';
+  await session.waitFor(nodes => nodes.some(node => node.text === invalidCode)
+    && nodes.some(node => node.title === 'Sign in with code' && node.enabled === false));
+  assert.deepEqual(await fixture.sessionStates(), []);
+  assert.equal(await fixture.deliveries(), 1);
+  assert.deepEqual(await session.command('persisted-projects'), [before]);
+  await session.close();
+  session = null;
+
+  step = 'sign in with a fresh owned challenge';
+  session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
+  await control(workspaceProject);
+  await session.command('key', { input: 's', modifiers: ['command'] });
+  const saved = await waitForSavedProject(session, project => project.title === 'YAM MAN');
+  await signIn(2);
+  await click('Close Projects', true);
+  await session.waitFor(nodes => nodes.some(node => node.text?.endsWith(' · Signed in')));
+  assert.deepEqual(await fixture.sessionStates(), [{ revoked: false }]);
+
+  step = 'refresh the account after another owned device revokes its session';
+  await openWorkspacePanel('Scriv account…');
+  assert.equal(await fixture.revokeOnlyAppSession(), true);
+  await click('Refresh account', true);
+  const signedOut = await session.waitFor(nodes => nodes.some(node => node.text?.endsWith(' · Local only')));
+  assert.equal(signedOut.find(workspaceProject)?.title, saved.title);
+  assert.deepEqual(await fixture.sessionStates(), [{ revoked: true }, { revoked: true }]);
+  assert.deepEqual(await session.command('persisted-projects'), [saved]);
+  await fixture.assertNoOutbound();
+  console.log('PASS: incorrect code and server revocation preserve the script, with a fresh sign-in between them');
+}
+
+async function verifySignInRateLimit() {
+  step = 'request a code after the real Worker has accepted the address quota';
+  assert.equal(await fixture.primeOwnedEmailQuota(), 5);
+  session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
+  assert.equal((await session.command('capabilities')).cloudIsolation.network, 'loopback-only');
+  await control(workspaceProject);
+  await session.command('key', { input: 's', modifiers: ['command'] });
+  const saved = await waitForSavedProject(session, project => project.title === 'YAM MAN');
+  await requestSignInCode();
+  await session.waitFor(nodes => nodes.some(node => node.text === 'Too many requests. Please wait and retry.')
+    && nodes.some(node => node.title?.startsWith('Try again in ') && node.enabled === false));
+  assert.equal(await fixture.deliveries(), 5);
+  assert.deepEqual(await fixture.sessionStates(), []);
+  assert.deepEqual(await session.command('persisted-projects'), [saved]);
+  assert.deepEqual(await session.command('presented-alerts'), []);
+  await fixture.assertNoOutbound();
+  console.log('PASS: rate limiting keeps sign-in idle with a disabled retry and an unchanged local script');
+}
+
 async function verifyFailedLogout() {
   step = 'sign in to the owned Worker and save the local script';
   session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
@@ -618,6 +684,8 @@ async function browsePagedDiscussionDirectory() {
 try {
   if (args[1] === 'discussion-pages') await browsePagedDiscussionDirectory();
   else if (args[1] === 'logout-revocation-failure') await verifyFailedLogout();
+  else if (args[1] === 'sign-in-recovery') await verifySignInRecovery();
+  else if (args[1] === 'sign-in-rate-limit') await verifySignInRateLimit();
   else await runProjectJourney();
 } catch (error) {
   throw new Error('Native cloud project journey failed during ' + step, { cause: error });

@@ -278,6 +278,58 @@
         "The picker receives a complete copy of the live project, including its package members and history."
       ],
       "restriction": "The Catalyst app stages the export in its sandbox temporary directory. An inherited host temporary directory did not redirect it. This path needs a verified owned CLI observation of the picker and stage."
+    },
+    {
+      "id": "sign-in-rate-limit",
+      "title": "Report rate limiting for a native email code request",
+      "featureId": "email-sign-in-boundaries",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/native-cloud-project-sync.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "symbol": "requestEmailCode"
+      },
+      "actionIds": [
+        "text",
+        "activate"
+      ],
+      "routeIds": [
+        "journeys/native-cloud-project-sync/group/sign-in-rate-limit"
+      ],
+      "plannedActions": [
+        "Request a code from the real sign-in sheet after the owned Worker has accepted its address quota."
+      ],
+      "expectedOutcomes": [
+        "The sign-in sheet displays the Worker rate limit, disables retry during cooldown and preserves the local script."
+      ]
+    },
+    {
+      "id": "sign-in-recovery",
+      "title": "Recover native sign-in after an incorrect code and remote revocation",
+      "featureId": "email-sign-in-boundaries",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/native-cloud-project-sync.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "symbol": "verifyEmailCode"
+      },
+      "actionIds": [
+        "text",
+        "activate"
+      ],
+      "routeIds": [
+        "journeys/native-cloud-project-sync/group/sign-in-recovery"
+      ],
+      "plannedActions": [
+        "Submit an incorrect fixture code, sign in in a fresh owned app session and refresh after a real remote revocation."
+      ],
+      "expectedOutcomes": [
+        "The app rejects the incorrect code, accepts a fresh challenge and returns the unchanged saved script to local-only state after revocation."
+      ]
     }
   ],
   "associations": [
@@ -851,6 +903,96 @@
       "uncertainty": "The Catalyst app stages the export in its sandbox temporary directory. An inherited host temporary directory did not redirect it. This path needs a verified owned CLI observation of the picker and stage.",
       "proposedAssertions": [
         "The picker receives a complete copy of the live project, including its package members and history."
+      ]
+    },
+    {
+      "rangeId": "sign-in-rate-limit-1",
+      "featureId": "email-sign-in-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 227,
+        "end": 229,
+        "fileSha256": "4c963481c2fbaf862f48fddf1921a5b8b7e4861714e67d8371c88352ee3a8017",
+        "spanSha256": "b677fc75ed6ced2411dde0fc46e235a939927ccc92a3d22815ddec48aca82791",
+        "sha256": "b673ef3de1423f99264617dd4a846f07f370a4f964c358d1f47317b5a5906558"
+      },
+      "scenarioIds": [
+        "sign-in-rate-limit"
+      ],
+      "rationale": "Request a code from the real sign-in sheet after the owned Worker has accepted its address quota.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The sign-in sheet displays the Worker rate limit, disables retry during cooldown and preserves the local script."
+      ]
+    },
+    {
+      "rangeId": "sign-in-recovery-1",
+      "featureId": "email-sign-in-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 259,
+        "end": 261,
+        "fileSha256": "4c963481c2fbaf862f48fddf1921a5b8b7e4861714e67d8371c88352ee3a8017",
+        "spanSha256": "b677fc75ed6ced2411dde0fc46e235a939927ccc92a3d22815ddec48aca82791",
+        "sha256": "b673ef3de1423f99264617dd4a846f07f370a4f964c358d1f47317b5a5906558"
+      },
+      "scenarioIds": [
+        "sign-in-recovery"
+      ],
+      "rationale": "Submit an incorrect fixture code, sign in in a fresh owned app session and refresh after a real remote revocation.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The app rejects the incorrect code, accepts a fresh challenge and returns the unchanged saved script to local-only state after revocation."
+      ]
+    },
+    {
+      "rangeId": "sign-in-recovery-revoked-session",
+      "featureId": "email-sign-in-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 169,
+        "end": 171,
+        "fileSha256": "4c963481c2fbaf862f48fddf1921a5b8b7e4861714e67d8371c88352ee3a8017",
+        "spanSha256": "54a9dccf8cb534730b086ea5bb8ecd4d505227334c2d548ab90b66670be3582f",
+        "sha256": "b966623ebbdbd0ff288da0ce53e875a1daee44af0129986e68df211e71409af4"
+      },
+      "scenarioIds": [
+        "sign-in-recovery"
+      ],
+      "rationale": "Refresh account from the native account sheet after a second owned device revokes the initial session.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The workspace returns to local-only status and the saved project is unchanged."
+      ]
+    },
+    {
+      "rangeId": "email-sign-in-boundaries-flow",
+      "featureId": "email-sign-in-boundaries",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/EmailSignInFlow.swift",
+        "start": 85,
+        "end": 90,
+        "fileSha256": "8474c511cbfc9ec7bc79a09c974f167f1ca567b3a7dd349f4a320e6abb56af31",
+        "spanSha256": "f623ab153c6d79347049baedb425d8ff2336ffc6dd7e2947acf23cfd9146a8cd",
+        "sha256": "5af7c90f1b537eb62777bd8904fb7c083ab2f06c04dd4f745a1a97e314883046"
+      },
+      "scenarioIds": [
+        "sign-in-rate-limit",
+        "sign-in-recovery"
+      ],
+      "rationale": "The same sign-in state machine handles request throttling and an incorrect code.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "Rate limiting disables immediate retry.",
+        "Rejected verification leaves the original sign-in sheet and saved project intact."
       ]
     }
   ]

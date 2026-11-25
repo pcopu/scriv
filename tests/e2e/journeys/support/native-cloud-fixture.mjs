@@ -77,6 +77,8 @@ export async function startNativeCloudFixture() {
       projects: () => response('projects'),
       projectTeams: () => response('project-teams'),
       sessionStates: () => response('session-states'),
+      revokeOnlyAppSession: () => response('revoke-only-app-session'),
+      primeOwnedEmailQuota: () => response('prime-owned-email-quota'),
       refuseNextLogout: () => response('refuse-next-logout'),
       loseNextEditReceipt: projectId => response(['lose-edit-receipt', projectId]),
       editReceiptState: () => response('edit-receipt-state'),
@@ -539,6 +541,30 @@ async function startWorker(root) {
       try { return await action(token); }
       finally { await post('/auth/logout', 200, {}, token); }
     }
+    async function revokeOnlyAppSession() {
+      const { results } = await db.prepare('SELECT sessions.id FROM sessions JOIN users ON users.id = sessions.user_id WHERE users.email = ? AND sessions.revoked_at IS NULL AND sessions.expires_at > ?')
+        .bind(nativeFixtureEmail, Date.now()).all();
+      assert.equal(results.length, 1, 'Use the only live session in the synthetic fixture');
+      const sessionId = results[0].id;
+      assert.match(sessionId, /^[a-f0-9-]{36}$/i);
+      return withFixtureOwner(async token => {
+        const response = await fixture.dispatchFetch(new URL('/auth/sessions/' + sessionId, base), {
+          method: 'DELETE', headers: { Authorization: `Bearer ${token}` }, redirect: 'error',
+        });
+        assert.equal(response.status, 200);
+        assert.deepEqual(await response.json(), { ok: true });
+        return true;
+      });
+    }
+    async function primeOwnedEmailQuota() {
+      assert.equal(await mailbox.count(), 0, 'Use a fresh owned mailbox');
+      for (let index = 0; index < 5; index++) {
+        const codeChallenge = createHash('sha256').update(randomBytes(32)).digest('base64url');
+        await post('/auth/email/request', 202, { email: nativeFixtureEmail, codeChallenge });
+        await mailbox.takeCode();
+      }
+      return mailbox.count();
+    }
     let presenceObserver;
     let presenceObserverId;
     let presenceObserverProjectId;
@@ -791,7 +817,7 @@ async function startWorker(root) {
       const { results: members } = await db.prepare('SELECT team_id AS teamID,user_id AS memberID,role FROM team_members ORDER BY team_id,user_id').all();
       return { selfID: self?.id ?? null, teams, members };
     }
-    return { origin: base.origin, createFreeTeam,
+    return { origin: base.origin, createFreeTeam, revokeOnlyAppSession, primeOwnedEmailQuota,
       createPaidTeam: () => withFixtureOwner(async token => ({ id: (await seedPaidTeam(token)).id })),
       openPresenceObserver,
       closeObservedPresenceConnection,
@@ -852,6 +878,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'open-presence-observer': worker.openPresenceObserver, 'observed-presence': worker.observedPresence,
         'close-observed-presence': worker.closeObservedPresenceConnection,
         'session-states': worker.sessionStates, 'refuse-next-logout': worker.refuseNextLogout,
+        'revoke-only-app-session': worker.revokeOnlyAppSession, 'prime-owned-email-quota': worker.primeOwnedEmailQuota,
         'lose-edit-receipt': worker.loseEditReceipt,
         'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit,
         'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState,

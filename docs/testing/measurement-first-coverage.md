@@ -126,6 +126,13 @@ branch in the existing local images journey. The fixture already carried a
 picture with missing original bytes. Use `journeys/local-images#first-line`
 to open Details, verify the inspector and measure the added lines by itself.
 
+For the native email sign-in failure paths, run `native-cloud-project-sync`
+with the exact `sign-in-rate-limit` and `sign-in-recovery` groups. Both use the
+owned Worker and preserve the saved script. Rate limiting comes from the
+Worker's own address quota. Recovery uses the incorrect-code UI, a fresh
+owned challenge and a real revocation from the fixture's other session.
+Keep the intervals per group so the shared sign-in failure lines count once.
+
 Use `functionReview.entryPoints` to trace wholly unobserved functions to
 their production caller. For example, Join Team’s deep-link entry point is
 the scene URL handler. A cloud sign-out or sync scenario reaching nearby
