@@ -63,7 +63,7 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
     if (outcome === 'cancel') return [...turn, 'turn/interrupt', 'transport-drop', ...handshake, 'model/list', 'thread/read', 'thread/read', 'thread/read'];
     if (outcome === 'recover' || outcome === 'missing-artifact') return [...turn, 'turn/interrupt', 'thread/read'];
     if (outcome === 'analysis-invalid-thread') return ['thread/start'];
-    if (outcome === 'analysis-tool' || activeRequests.has(outcome)) return [...turn, 'turn/interrupt'];
+    if (outcome === 'analysis-tool' || outcome === 'analysis-invalid-result' || activeRequests.has(outcome)) return [...turn, 'turn/interrupt'];
     return turn;
   })];
   let position = 0;
@@ -168,13 +168,17 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
         if (job.outcome === 'analysis-tool') return [accepted, { method: 'item/started',
           params: { threadId: job.threadId, turnId: job.turnId, item: { type: 'commandExecution' } } }];
         if (job.outcome === 'analysis-approval') return [accepted];
-        assert.equal(job.outcome, 'analysis-success');
+        if (job.outcome === 'analysis-refused-turn') {
+          return [{ id, error: { code: -32000, message: 'Synthetic scan turn was refused' } }];
+        }
+        assert.ok(['analysis-success', 'analysis-invalid-result'].includes(job.outcome));
         const detections = [
           { region: { x: 0.05, y: 0.1, width: 0.4, height: 0.5 }, portraitRegion: { x: 0.1, y: 0.15, width: 0.3, height: 0.3 },
             kind: 'face', characterID: 'anna', suggestedName: null, confidence: 0.98, reason: 'Green coat', subjectKey: 'anna' },
           { region: { x: 0.6, y: 0.1, width: 0.3, height: 0.4 }, portraitRegion: null,
             kind: 'obscured', characterID: null, suggestedName: null, confidence: 0.3, reason: 'Identity obscured', subjectKey: 'unknown' },
         ];
+        if (job.outcome === 'analysis-invalid-result') detections[0].region.width = 2;
         return [accepted, { method: 'turn/completed', params: { threadId: job.threadId,
           turn: { id: job.turnId, status: 'completed', items: [{ type: 'agentMessage', id: 'analysis-result', text: JSON.stringify({ detections }) }] } } }];
       }

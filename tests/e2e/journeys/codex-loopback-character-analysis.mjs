@@ -13,7 +13,10 @@ input.characters.push({ id: 'anna', name: 'Anna', aliases: [], biography: '', ap
 let session;
 let failed = false;
 let step = 'launch with the owned analysis fixture';
-const fixture = await startCodexFixture(() => session.root, ['analysis-success', 'analysis-invalid-thread', 'analysis-tool', 'analysis-approval']);
+const fixture = await startCodexFixture(() => session.root, [
+  'analysis-success', 'analysis-invalid-thread', 'analysis-tool', 'analysis-approval',
+  'analysis-invalid-result', 'analysis-refused-turn',
+]);
 try {
   for (const codexAnalysisFixtureOrigin of ['ws://localhost:4500', 'ws://127.0.0.1:4500/foreign', 'wss://127.0.0.1:4500']) {
     await assert.rejects(ScrivSession.launch(app, { codexAnalysisFixtureOrigin }), /Invalid session options/);
@@ -102,7 +105,22 @@ try {
     assert.deepEqual(await fixture.request('item/permissions/requestApproval', { activeTurn: true }), {
       result: { permissions: {}, scope: 'turn' },
     });
-    await scanFinished('Codex requested a tool or additional access during character analysis.', toolActivity);
+    const approvalRefusal = await scanFinished('Codex requested a tool or additional access during character analysis.', toolActivity);
+    assert.deepEqual((await session.command('loaded-project')).project, checked);
+    assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === checked.id), checked);
+    assert.deepEqual(await session.command('presented-alerts'), []);
+
+    step = 'report a completed scan with invalid regions as a retryable error';
+    await ui.activate(scan);
+    const invalid = await scanFinished('Codex returned invalid character regions or identities. No tags were changed.', approvalRefusal);
+    assert.match(invalid, /need retry/);
+    assert.deepEqual((await session.command('loaded-project')).project, checked);
+    assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === checked.id), checked);
+
+    step = 'pause when a submitted turn has no confirmed result';
+    await ui.activate(scan);
+    const refused = await scanFinished('Synthetic scan turn was refused', invalid);
+    assert.match(refused, /^Character scan paused\. Character analysis ended without a confirmed result\./);
     assert.deepEqual((await session.command('loaded-project')).project, checked);
     assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === checked.id), checked);
     assert.deepEqual(await session.command('presented-alerts'), []);

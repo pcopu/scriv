@@ -95769,8 +95769,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
-        "start": 66,
-        "end": 86,
+        "start": 69,
+        "end": 89,
         "sha256": "b34e62440ca19747e8e6fd0954241b6f25137f1f7d21f22270973dac8f2f1a9f"
       },
       "why": "The enabled Characters button runs its primary action and saves the result of the idle scan."
@@ -95789,8 +95789,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
-        "start": 93,
-        "end": 98,
+        "start": 96,
+        "end": 101,
         "sha256": "2efd65fd7f26311d50728029944d3017df0ff3e847f26885807b298428b7f30a"
       },
       "why": "The synthetic tool notification interrupts its actual thread and turn. The fixture verifies the request and the saved project stays intact."
@@ -95809,8 +95809,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
-        "start": 88,
-        "end": 91,
+        "start": 91,
+        "end": 94,
         "sha256": "b38e3de6a84cac82103c27f5d2e6e89372ba252279c3c13656623391655afa03"
       },
       "why": "The fixture reports that subprocess networking is enabled. Scriv verifies the policy and pauses before the fixture receives image bytes."
@@ -96091,9 +96091,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
-        "start": 100,
-        "end": 108,
-        "sha256": "1a87f3855319ac66574473126d33719280076ccd3ba5ea94a1c51c44c55d6634"
+        "start": 103,
+        "end": 111,
+        "sha256": "0688cbd64f82ac977fda68d8714c5d5532fcf93a4def03e5b33030f7f6124996"
       },
       "why": "An additional-access request on the active analysis receives empty permissions and interrupts that exact owned turn. The interface reports the stopped scan and the saved result is preserved."
     },
@@ -98031,8 +98031,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/codex-loopback-fixture.mjs",
-        "start": 182,
-        "end": 190,
+        "start": 186,
+        "end": 194,
         "sha256": "cfaa4b23f94c4e81787e6486057978632753d545341e58e681d738748fe9ac16"
       },
       "why": "With the existing portrait selected, require an exact localImage reference path inside each new owned job directory and verify the actual image digest at the socket boundary."
@@ -98292,6 +98292,44 @@
         "sha256": "bc7dd1e5870689ac2b80c31840c4b2fdea6b4b59f199d46ac73c7e06cbfdf2dd"
       },
       "why": "The production driver finishes a zero-delta hold unchanged and applies exactly one owned duration revision for the subsequent release."
+    },
+    {
+      "id": "b37fcc9e5dca8380",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 991,
+        "end": 998,
+        "sha256": "1e09f01aab597d8b48f2599a3dac3a568feec36165ef787cab2de3e7346f3930"
+      },
+      "actions": [
+        "tracer app -- test --scenario journeys/codex-loopback-character-analysis"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
+        "start": 120,
+        "end": 126,
+        "sha256": "f8779a126a5e5c4b5d3b1c3af8fe16a87613d960242df7a2c9272dcfad27238a"
+      },
+      "why": "An error after a submitted turn without a confirmed result pauses analysis and leaves the exact saved and loaded project unchanged."
+    },
+    {
+      "id": "d2bd91f64f5b97be",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CharacterAnalysisController.swift",
+        "start": 175,
+        "end": 187,
+        "sha256": "8f189046c1e223ee55e2a0b0827f69090f39b3a4ba5cf8db02ab78c184e23d32"
+      },
+      "actions": [
+        "tracer app -- test --scenario journeys/codex-loopback-character-analysis"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/codex-loopback-character-analysis.mjs",
+        "start": 113,
+        "end": 118,
+        "sha256": "0f5eca96f1d51f1f87884babdb3a1bba58110e6f928c93428c2a54ddd95b98b0"
+      },
+      "why": "A completed analysis with an invalid region leaves the prior character tags intact and exposes an ordinary retryable scan failure."
     }
   ],
   "commentExclusions": [
