@@ -101890,7 +101890,7 @@
         "end": 7,
         "sha256": "2499044ffcd21271b877cb5f0ec2bfc46697c9d06d5c41e65170bf911e8d9703"
       },
-      "fileSha256": "04d452981ecdedadf8fec3dd05b201cf61cb6070652936eb50b3c71b916d8312"
+      "fileSha256": "27dd2773459cf4bfadd722d3c2caf7ed1eefc0c473465e667bc10d01c41919e9"
     },
     {
       "id": "2ac540eb7ef2d2dd",
@@ -106266,11 +106266,11 @@
       "id": "86b60b8e6c79d5ba",
       "source": {
         "path": "apps/mac/Sources/ScrivCore/Digest.swift",
-        "start": 45,
-        "end": 48,
+        "start": 47,
+        "end": 50,
         "sha256": "95961c826e3dd8c34284b326661e462e4d1d1fb94d0fd21353da1cc16ccee1ea"
       },
-      "fileSha256": "04d452981ecdedadf8fec3dd05b201cf61cb6070652936eb50b3c71b916d8312"
+      "fileSha256": "27dd2773459cf4bfadd722d3c2caf7ed1eefc0c473465e667bc10d01c41919e9"
     },
     {
       "id": "86cead0bddd3822e",
@@ -108470,7 +108470,7 @@
         "end": 16,
         "sha256": "dddc7253e825aefa700934fa43b582507a795ae062d641a6d5fb7c0687539eb1"
       },
-      "fileSha256": "04d452981ecdedadf8fec3dd05b201cf61cb6070652936eb50b3c71b916d8312"
+      "fileSha256": "27dd2773459cf4bfadd722d3c2caf7ed1eefc0c473465e667bc10d01c41919e9"
     },
     {
       "id": "b2a9d4a4f8a5852b",
