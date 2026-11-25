@@ -134,6 +134,32 @@
       "routeIds": [
         "journeys/native-team-management/group/invitation-link-formats"
       ]
+    },
+    {
+      "id": "startup-stage-diagnostics",
+      "title": "Trace a fresh local launch",
+      "featureId": "startup-stage-diagnostics",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/native-first-launch.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/catalyst/ScrivUIKit/App/AppDelegate.swift",
+        "symbol": "scene(_:willConnectTo:options:)"
+      },
+      "actionIds": [
+        "--startup-trace"
+      ],
+      "routeIds": [
+        "journeys/native-first-launch/group/startup-trace"
+      ],
+      "captureMode": "startup",
+      "plannedActions": [
+        "Launch Scriv in a fresh owned workspace with --startup-trace."
+      ],
+      "expectedOutcomes": [
+        "The app publishes ordered local startup stages with bounded public fields and opens the intact sample project."
+      ]
     }
   ],
   "associations": [
@@ -465,6 +491,138 @@
       "uncertainty": "",
       "proposedAssertions": [
         "Rejected links preserve membership; each legitimate invite creates only the synthetic viewer membership and leave removes it."
+      ]
+    },
+    {
+      "rangeId": "startup-stage-diagnostics-1",
+      "featureId": "startup-stage-diagnostics",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/StartupTrace.swift",
+        "start": 39,
+        "end": 39,
+        "fileSha256": "31b90eefd871149f5775d9aeaf417c1321649cf497a36b9d920e2eb3fcb6e670",
+        "spanSha256": "cc192b60b75d7e6ba09781bebe5f6b306a1e1539d8fe3770a147197a10d72f8b",
+        "sha256": "82ae57e7bad0abdba4642812922ae05759b31a87b4167b98c8f6ef2f28b685d9"
+      },
+      "scenarioIds": [
+        "startup-stage-diagnostics"
+      ],
+      "rationale": "Launch Scriv in a fresh owned workspace with --startup-trace.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The app publishes ordered local startup stages with bounded public fields and opens the intact sample project."
+      ]
+    },
+    {
+      "rangeId": "startup-stage-diagnostics-2",
+      "featureId": "startup-stage-diagnostics",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/StartupTrace.swift",
+        "start": 54,
+        "end": 66,
+        "fileSha256": "31b90eefd871149f5775d9aeaf417c1321649cf497a36b9d920e2eb3fcb6e670",
+        "spanSha256": "8405971d59c2964990973a5fee0d3302af2d744e8da9ec83e766402d56b93360",
+        "sha256": "56ab62a5f010e4d4f7a57a7e0c826124af847b27e8dceabc0796b371d6ac3637"
+      },
+      "scenarioIds": [
+        "startup-stage-diagnostics"
+      ],
+      "rationale": "Launch Scriv in a fresh owned workspace with --startup-trace.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The app publishes ordered local startup stages with bounded public fields and opens the intact sample project."
+      ]
+    },
+    {
+      "rangeId": "startup-stage-diagnostics-3",
+      "featureId": "startup-stage-diagnostics",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/StartupTrace.swift",
+        "start": 70,
+        "end": 76,
+        "fileSha256": "31b90eefd871149f5775d9aeaf417c1321649cf497a36b9d920e2eb3fcb6e670",
+        "spanSha256": "5644057ff7e7b29aa9caf5041fdf0d7859d2112dd75ab95d4e813d81cd8ff862",
+        "sha256": "68bb7c8a058cbe3a237041b1fadf72efa2dcff5bfebb3f7a0a461c4792610d38"
+      },
+      "scenarioIds": [
+        "startup-stage-diagnostics"
+      ],
+      "rationale": "Launch Scriv in a fresh owned workspace with --startup-trace.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The app publishes ordered local startup stages with bounded public fields and opens the intact sample project."
+      ]
+    },
+    {
+      "rangeId": "startup-stage-diagnostics-4",
+      "featureId": "startup-stage-diagnostics",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/StartupTrace.swift",
+        "start": 85,
+        "end": 85,
+        "fileSha256": "31b90eefd871149f5775d9aeaf417c1321649cf497a36b9d920e2eb3fcb6e670",
+        "spanSha256": "ccfb4c18e2f512c38e27566e150c608bc096d02c05bd50a2b085272d307127d3",
+        "sha256": "d9fbc0c24b474d3694dedb7c19cb49032626a7ef05ae913b29498a071d2f72b8"
+      },
+      "scenarioIds": [
+        "startup-stage-diagnostics"
+      ],
+      "rationale": "Launch Scriv in a fresh owned workspace with --startup-trace.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The app publishes ordered local startup stages with bounded public fields and opens the intact sample project."
+      ]
+    },
+    {
+      "rangeId": "startup-stage-diagnostics-5",
+      "featureId": "startup-stage-diagnostics",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/StartupTrace.swift",
+        "start": 87,
+        "end": 90,
+        "fileSha256": "31b90eefd871149f5775d9aeaf417c1321649cf497a36b9d920e2eb3fcb6e670",
+        "spanSha256": "3eb7786bf6773581826110e0ce6b957c110b05bc47dcd0fd7e5e9386371317e3",
+        "sha256": "a149356c64b0654a5430740928dd2027e0eeef7776107e53499b3a1c188d7df8"
+      },
+      "scenarioIds": [
+        "startup-stage-diagnostics"
+      ],
+      "rationale": "Launch Scriv in a fresh owned workspace with --startup-trace.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The app publishes ordered local startup stages with bounded public fields and opens the intact sample project."
+      ]
+    },
+    {
+      "rangeId": "startup-stage-diagnostics-6",
+      "featureId": "startup-stage-diagnostics",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivCore/StartupTrace.swift",
+        "start": 92,
+        "end": 92,
+        "fileSha256": "31b90eefd871149f5775d9aeaf417c1321649cf497a36b9d920e2eb3fcb6e670",
+        "spanSha256": "28d86778615f6af47bb1bc4f40face756749768e5111f114cfa234a5060c25af",
+        "sha256": "4893f40e3781eb896c82d046a08067a11e35cdf2f1dfaf26fea90b8db6676413"
+      },
+      "scenarioIds": [
+        "startup-stage-diagnostics"
+      ],
+      "rationale": "Launch Scriv in a fresh owned workspace with --startup-trace.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The app publishes ordered local startup stages with bounded public fields and opens the intact sample project."
       ]
     }
   ]

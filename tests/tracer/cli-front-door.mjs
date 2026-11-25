@@ -37,6 +37,7 @@ export async function main() {
     assert.match(actions.stdout, /tracer app -- test tooling/);
     assert.match(actions.stdout, /tracer app -- test compact --archive/);
     assert.match(actions.stdout, /--fresh-startup/);
+    assert.match(actions.stdout, /--startup-trace/);
     assert.match(actions.stdout, /"command":"relaunch-recover"/);
     assert.equal(run(['app', '--', '--help']).stdout, actions.stdout);
     const help = run(['app', '--', 'test', '--help']).stdout;
@@ -46,6 +47,7 @@ export async function main() {
   await journey('list genuine native entrypoints without launching an app', async () => {
     catalog = JSON.parse(run(['app', '--', 'test', '--list']).stdout);
     assert.equal(catalog.kind, 'native-cli-scenario-catalog');
+    assert.deepEqual(catalog.launchModes, ['--persistent-workspace', '--fresh-startup', '--startup-trace']);
     const entrypoints = async directory => (await readdir(join(root, 'tests/e2e', directory), { withFileTypes: true }))
       .filter(entry => entry.isFile() && /^[A-Za-z0-9_-]+\.mjs$/.test(entry.name))
       .map(entry => `tests/e2e/${directory ? directory + '/' : ''}${entry.name}`);

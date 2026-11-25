@@ -4,6 +4,7 @@ import { verifySourceManifest } from './export-cli-source-manifest.mjs';
 import { readScenarioDiagnostic, scenarioDiagnosticModule } from '../tests/e2e/support/scenario-diagnostic.mjs';
 import { isControlIdentifier } from '../cli/coverage-session.mjs';
 import { scenarioRestrictions } from '../cli/scenario-restrictions.mjs';
+import { launchModes } from '../cli/scriv.mjs';
 import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
@@ -147,6 +148,7 @@ const groupedScenarios = new Set([
   'journeys/picture-coverage.mjs', 'journeys/codex-loopback-generation.mjs', 'journeys/native-cloud-image-recovery.mjs',
   'journeys/native-shared-generation.mjs', 'journeys/cue-draft-recovery.mjs', 'journeys/audio-library.mjs',
   'journeys/native-team-management.mjs',
+  'journeys/native-first-launch.mjs',
 ]);
 const validGroup = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(value);
 function discoverGroupCatalog(name) {
@@ -275,7 +277,7 @@ export async function main(args = process.argv.slice(2)) {
       return { id, path: `tests/e2e/${name}`, ...(restriction && { restriction }),
         ...(groupedScenarios.has(name) && !restriction && discoverGroupCatalog(name)) };
     });
-    console.log(JSON.stringify({ schemaVersion: 1, kind: 'native-cli-scenario-catalog', selection, scenarios }, null, 2));
+    console.log(JSON.stringify({ schemaVersion: 1, kind: 'native-cli-scenario-catalog', selection, launchModes, scenarios }, null, 2));
     return 0;
   }
   // Keep generated evidence out of the fingerprinted source tree.

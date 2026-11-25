@@ -26,6 +26,19 @@ action while the measured scope keeps those gaps in its denominator.
 `decisions.nativeBatch.argv` uses exact existing groups validated against the
 catalog. Revisit the restrictions when the build or isolation mode changes.
 
+The `startup-trace` group of `journeys/native-first-launch` uses the same
+fresh local launch as `tracer app -- /absolute/path/to/ScrivAutomation.app
+--startup-trace`. The scenario reads only the new process's local startup
+diagnostics and checks their bounded fields, stage order, and the saved sample
+project. Read `decisions.nativeStartupBatch.argv` for the exact case with
+`--coverage-startup`.
+
+The retained automation bundle signs its embedded Codex companion separately.
+The app executable contains LLVM coverage maps. The signed companion
+executable needs a separately instrumented build and its own capture in an
+isolated signed runtime session. Keep that distinction in the coverage
+report when scheduling the trusted-runtime plan.
+
 With a source range and saved Scriv capabilities, `worklist` lists matching
 actions from passing captures in `recordedActions`. The selector in each
 row uses the exact discovered scenario. Pass its `actionArgs` back to the

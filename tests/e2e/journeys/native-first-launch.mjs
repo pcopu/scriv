@@ -1,9 +1,21 @@
 import assert from 'node:assert/strict';
+import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
+import { setTimeout as delay } from 'node:timers/promises';
+import { promisify } from 'node:util';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
+
+const groups = ['startup-trace'];
+const args = process.argv.slice(2);
+if (args.length === 1 && args[0] === '--list-cases') {
+  console.log(JSON.stringify({ groups }));
+  process.exit(0);
+}
+assert.ok(args.length === 0 || (args.length === 2 && args[0] === '--group' && groups.includes(args[1])));
+const startupTrace = args[1] === 'startup-trace';
 
 const app = process.env.SCRIV_E2E_APP;
 assert.ok(app, 'Requires an isolated Catalyst automation bundle');
@@ -15,8 +27,37 @@ const assetNames = new Map(provenance.images.map(image => [image.sha256, image.f
 await assert.rejects(ScrivSession.launch(app, { freshStartup: true, persistent: true }), /Invalid session options/);
 await assert.rejects(ScrivSession.launch(app, { freshStartup: true, cloudFixtureOrigin: 'http://127.0.0.1:43210' }), /Invalid session options/);
 await assert.rejects(ScrivSession.launch(app, { freshStartup: true, codexAnalysisFixtureOrigin: 'ws://127.0.0.1:43210' }), /Invalid session options/);
+await assert.rejects(ScrivSession.launch(app, { startupTrace: true }), /Invalid session options/);
+await assert.rejects(ScrivSession.launch(app, { freshStartup: true, startupTrace: 'all' }), /Invalid session options/);
 
-const session = await ScrivSession.launch(app, { freshStartup: true });
+async function verifyStartupTrace(pid) {
+  assert.ok(Number.isSafeInteger(pid) && pid > 0);
+  const log = promisify(execFile);
+  const predicate = `processIdentifier == ${pid} AND subsystem == "app.scriv.startup" AND category == "local-startup"`;
+  const deadline = Date.now() + 10000;
+  const stages = ['sceneEntered', 'storeConstructionBegin', 'storeConstructionEnd', 'windowCreated',
+    'windowVisibilityRequested', 'bootstrapEnd', 'heartbeatSecond'];
+  do {
+    const { stdout } = await log('/usr/bin/log', ['show', '--last', '1m', '--style', 'ndjson', '--predicate', predicate],
+      { maxBuffer: 1024 * 1024, timeout: 8000 });
+    const events = stdout.split('\n').filter(Boolean).map(line => JSON.parse(line)).filter(row => row.eventMessage).map(({ eventMessage }) => {
+      const match = /^stage=(\w+) sequence=(\d+) elapsed_ms=(\d+) error_family=(?:none|cocoa|posix|url|other) error_code=-?\d+ underlying_family=(?:none|cocoa|posix|url|other) underlying_code=-?\d+$/.exec(eventMessage);
+      assert.ok(match, 'Startup diagnostics use only the public stage and numeric error fields');
+      return { stage: match[1], sequence: Number(match[2]), elapsed: Number(match[3]) };
+    }).sort((a, b) => a.sequence - b.sequence);
+    if (stages.every(stage => events.some(event => event.stage === stage))) {
+      assert.ok(events.length <= 128);
+      assert.ok(events.every((event, i) => event.sequence === i + 1 && event.elapsed >= (events[i - 1]?.elapsed ?? 0)));
+      const launch = stages.slice(0, 5).map(stage => events.findIndex(event => event.stage === stage));
+      assert.ok(launch.every((index, i) => i === 0 || index > launch[i - 1]));
+      return;
+    }
+    await delay(250);
+  } while (Date.now() < deadline);
+  throw new Error('Fresh startup did not publish its local stage diagnostics');
+}
+
+const session = await ScrivSession.launch(app, { freshStartup: true, startupTrace });
 try {
   const capabilities = await session.command('capabilities');
   assert.deepEqual(capabilities.workspace, { persistent: false, resumed: false, freshStartup: true, bootstrapping: false });
@@ -62,6 +103,7 @@ try {
   await session.waitFor(nodes => readyTabs(nodes)?.selected === storyboard
     && nodes.some(node => /Label/.test(node.type) && node.text?.startsWith('19 images · ')));
   assert.deepEqual(await session.command('presented-alerts'), []);
+  if (startupTrace) await verifyStartupTrace(session.pid);
   console.log('PASS: first startup creates and illustrates the local sample project');
 } finally {
   await session.close();
