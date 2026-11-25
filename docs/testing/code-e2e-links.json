@@ -95670,9 +95670,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-image-recovery.mjs",
-        "start": 58,
-        "end": 81,
-        "sha256": "85c134023e0ae1c238f31de3e2d3e909dc8180164639237fee04ea0acf3d065b"
+        "start": 68,
+        "end": 94,
+        "sha256": "096dc2b9f0c86ea4d4f2f04ca2b9483fc08fcef2f9fc2e9d52333877a59b32ae"
       },
       "why": "Opening a cloud project starts the download. Invalid bytes produce the native no-replica status, leave the file missing, and preserve the loaded project."
     },
@@ -95691,9 +95691,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-image-recovery.mjs",
-        "start": 83,
-        "end": 94,
-        "sha256": "acc86e1525ff257d9999b4a0bb2e488736199a40899b28c519f3016de0bd2abb"
+        "start": 137,
+        "end": 149,
+        "sha256": "32e82e0feafa1daf47e2cda39a112f292a829c5b14b54c21fcbfcd3b2a734768"
       },
       "why": "Preview fetches the repaired image through the Worker, checks exact persisted PNG bytes, and preserves the loaded and saved project."
     },
@@ -95711,9 +95711,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-cloud-image-recovery.mjs",
-        "start": 83,
-        "end": 90,
-        "sha256": "2a3ce89ec6f77e0e92dae246e97ebc3406d9d08141732e2e3f4315632c08044a"
+        "start": 137,
+        "end": 144,
+        "sha256": "08b1edc267d4d766ab2afb77df2e878780617da24be7fb07d9cc3590ffb7ac79"
       },
       "why": "The accessible Preview control retrieves the repaired image and the picture replaces the missing-image message."
     },
@@ -98175,6 +98175,66 @@
         "sha256": "28a15da8422c543ff18ff8abcfcb24d6be0d84ea463b6e99e52b04b584e59e9e"
       },
       "why": "The UIKit metadata snapshot tracks the same enabled, hittable playback control from Play to Pause. This assertion covers the reported labels and paths."
+    },
+    {
+      "id": "85a35ef68ab12024",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 2594,
+        "end": 2612,
+        "sha256": "430f05cd22955765994029fb593de2aef4daf6e4fbe1cf0f0885785c7ffa89f8"
+      },
+      "actions": [
+        "scriv activate Fetch image",
+        "scriv snapshot"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-image-recovery.mjs",
+        "start": 113,
+        "end": 124,
+        "sha256": "514fba662a2b5dd4c32f7053e45e9a31af8d89603ded954f86b10f56865da89b"
+      },
+      "why": "The fixture responds with an availability message for the exact query. The real app handles that reply and visibly advances to trying another source after the disabled WebRTC transport refuses the attempt."
+    },
+    {
+      "id": "a56df7c73b2f0d69",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1745,
+        "end": 1764,
+        "sha256": "1af2c6c2188a9d5e7ffe6da6c4f3cfe215ba5b892fe094e7df0b576d8b4f6dea"
+      },
+      "actions": [
+        "scriv activate Fetch image",
+        "scriv menu-action Scriv account…"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-image-recovery.mjs",
+        "start": 110,
+        "end": 135,
+        "sha256": "6232cade35e76cf68639467d37853ef7666b90374d9fb2d50649c41afd87ca13"
+      },
+      "why": "The Preview control requests the exact image hash from a second authorized fixture device after corrupt hosted bytes are refused. Account shows the discovery and expiry states. The project and its missing asset remain unchanged."
+    },
+    {
+      "id": "a9298f301da18d30",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 859,
+        "end": 877,
+        "sha256": "d0d4466ab43aec50ec29e8743d24fd81e81af2658a1564b3eb3588cd5e95b925"
+      },
+      "actions": [
+        "scriv activate Fetch image",
+        "scriv snapshot"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-cloud-image-recovery.mjs",
+        "start": 113,
+        "end": 124,
+        "sha256": "514fba662a2b5dd4c32f7053e45e9a31af8d89603ded954f86b10f56865da89b"
+      },
+      "why": "The approved loopback Worker records a matching outbound discovery request and serves the authorized fixture reply. The native side visibly handles the reply through the polling transport."
     }
   ],
   "commentExclusions": [
@@ -102166,7 +102226,7 @@
         "end": 120,
         "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
       },
-      "fileSha256": "1ba8ad1dae463e135bb7c5b614fde76f55c03f59a7eee0f4a786a5ffe8621a5b"
+      "fileSha256": "f250ddbffa028e74e6316f774118ff77d49b8fffd4dc30c22ee555e6ee5978f5"
     },
     {
       "id": "58267d3510d79430",
@@ -102246,7 +102306,7 @@
         "end": 227,
         "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
       },
-      "fileSha256": "1ba8ad1dae463e135bb7c5b614fde76f55c03f59a7eee0f4a786a5ffe8621a5b"
+      "fileSha256": "f250ddbffa028e74e6316f774118ff77d49b8fffd4dc30c22ee555e6ee5978f5"
     },
     {
       "id": "59c64d2ace520826",
@@ -103896,7 +103956,7 @@
         "end": 78,
         "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
       },
-      "fileSha256": "1ba8ad1dae463e135bb7c5b614fde76f55c03f59a7eee0f4a786a5ffe8621a5b"
+      "fileSha256": "f250ddbffa028e74e6316f774118ff77d49b8fffd4dc30c22ee555e6ee5978f5"
     },
     {
       "id": "7e4a8f19915d9b4e",
@@ -104686,7 +104746,7 @@
         "end": 2,
         "sha256": "4ead8511821dcd95c2efee74b114bac02b04cb9252a4405b4149f9930c721b52"
       },
-      "fileSha256": "1ba8ad1dae463e135bb7c5b614fde76f55c03f59a7eee0f4a786a5ffe8621a5b"
+      "fileSha256": "f250ddbffa028e74e6316f774118ff77d49b8fffd4dc30c22ee555e6ee5978f5"
     },
     {
       "id": "8e40d7512c7266e1",
@@ -107376,7 +107436,7 @@
         "end": 35,
         "sha256": "da22a6a09e9a6d7bbf1e35ecdac04e969fad1ac1a051025596a84831ff070202"
       },
-      "fileSha256": "1ba8ad1dae463e135bb7c5b614fde76f55c03f59a7eee0f4a786a5ffe8621a5b"
+      "fileSha256": "f250ddbffa028e74e6316f774118ff77d49b8fffd4dc30c22ee555e6ee5978f5"
     },
     {
       "id": "c3fa07d2ab6ca6a5",

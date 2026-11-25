@@ -2,11 +2,21 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { setTimeout as delay } from 'node:timers/promises';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
 import { audioLibrarySteps } from './support/audio-library-steps.mjs';
 import { nativeFixtureEmail, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
+
+const groups = ['peer-discovery'];
+const args = process.argv.slice(2);
+if (args.length === 1 && args[0] === '--list-cases') {
+  console.log(JSON.stringify({ groups }));
+  process.exit(0);
+}
+assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]));
+const peerDiscovery = args[1] === 'peer-discovery';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Requires a verified automation-enabled Catalyst app');
 const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAEElEQVR4nGP4EGADRAwQCgAsbgXx43oYYAAAAABJRU5ErkJggg==', 'base64');
@@ -69,9 +79,12 @@ try {
   await ui.tab('Script');
   await session.waitFor(nodes => nodes.some(node => node.text === 'Hosted picture · Version 1')
     && nodes.some(node => node.text === 'Image isn’t on this Mac'));
-  const actions = await ui.reveal(node => node.label === 'Workspace actions');
-  assert.deepEqual(await session.command('menu-action', { target: actions.path, scope: 'workspace-panels', action: 'Scriv account…' }),
-    { dispatched: true, coverage: 'semantic-menu-action' });
+  async function openAccount() {
+    const button = await ui.reveal(node => node.label === 'Workspace actions');
+    assert.deepEqual(await session.command('menu-action', { target: button.path, scope: 'workspace-panels', action: 'Scriv account…' }),
+      { dispatched: true, coverage: 'semantic-menu-action' });
+  }
+  await openAccount();
   await session.waitFor(nodes => nodes.some(node => node.text?.startsWith('No hosted image or other authorized Mac is available.')));
   assert.deepEqual(await fixture.hostedImageResponses(), [200]);
   await assert.rejects(readFile(path), { code: 'ENOENT' });
@@ -80,19 +93,62 @@ try {
     && !nodes.some(node => node.text?.startsWith('No hosted image or other authorized Mac is available.')));
   assert.deepEqual((await session.command('loaded-project')).project, replica);
 
-  step = 'fetch the repaired image using the Preview control';
-  await fixture.repairHostedImage();
-  assert.deepEqual(await fixture.hostedImageResponses(), [200]);
-  await click('Fetch image');
-  await session.waitFor(nodes => nodes.some(node => node.identifier === 'preview-picture' && node.hittable)
-    && !nodes.some(node => node.text === 'Image isn’t on this Mac'));
-  assert.deepEqual(await fixture.hostedImageResponses(), [200, 200]);
-  assert.deepEqual(await readFile(path), png, 'The verified original image reached the native replica');
-  assert.deepEqual((await session.command('loaded-project')).project, replica);
-  assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === replica.id), replica);
-  assert.deepEqual(await session.command('presented-alerts'), []);
+  async function waitForQuery() {
+    const deadline = Date.now() + 12_000;
+    do {
+      const { deviceId, signals } = await fixture.hostedPeerInbox();
+      if (signals.length) {
+        assert.equal(signals.length, 1);
+        assert.notEqual(signals[0].fromDeviceId, deviceId);
+        assert.equal(signals[0].type, 'asset-request');
+        return signals[0];
+      }
+      await delay(150);
+    } while (Date.now() < deadline);
+    throw new Error('No native peer discovery signal reached the fixture');
+  }
+  if (peerDiscovery) {
+    step = 'discover an authorized fixture device from the real Preview action';
+    assert.equal(await fixture.openHostedPeer(), true);
+    await click('Fetch image');
+    const query = await waitForQuery();
+    const queryObservedAt = performance.now();
+    assert.match(query.payload.requestId, /^[a-f0-9-]{36}$/i);
+    assert.deepEqual(query.payload, { action: 'query', hash: digest, requestId: query.payload.requestId });
+    await openAccount();
+    await session.waitFor(nodes => nodes.some(node => node.text === 'Looking for a Mac that has this image…'));
+    assert.deepEqual(await fixture.sendHostedPeerSignal({ toDeviceId: query.fromDeviceId,
+      action: 'available', requestId: query.payload.requestId }), { ok: true });
+    await session.waitFor(nodes => nodes.some(node => node.text === 'Trying another available Mac…'));
+    await assert.rejects(readFile(path), { code: 'ENOENT' });
+    assert.deepEqual(await fixture.hostedImageResponses(), [200, 200]);
+
+    step = 'let the native peer discovery timeout expire';
+    // The native timeout is 65 seconds. Poll only near its deadline.
+    await delay(Math.max(0, 62_000 - (performance.now() - queryObservedAt)));
+    await session.waitFor(nodes => nodes.some(node => node.text === 'No peer delivered the image. Keep the source Mac open and retry.'));
+    await session.command('key', { input: 'Escape', modifiers: [] });
+    await session.waitFor(nodes => nodes.some(node => button('Fetch image')(node) && node.hittable));
+    assert.deepEqual((await session.command('loaded-project')).project, replica);
+    assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === replica.id), replica);
+    assert.deepEqual(await session.command('presented-alerts'), []);
+    await assert.rejects(readFile(path), { code: 'ENOENT' });
+  } else {
+    step = 'fetch the repaired image using the Preview control';
+    await fixture.repairHostedImage();
+    assert.deepEqual(await fixture.hostedImageResponses(), [200]);
+    await click('Fetch image');
+    await session.waitFor(nodes => nodes.some(node => node.identifier === 'preview-picture' && node.hittable)
+      && !nodes.some(node => node.text === 'Image isn’t on this Mac'));
+    assert.deepEqual(await fixture.hostedImageResponses(), [200, 200]);
+    assert.deepEqual(await readFile(path), png, 'The verified original image reached the native replica');
+    assert.deepEqual((await session.command('loaded-project')).project, replica);
+    assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === replica.id), replica);
+    assert.deepEqual(await session.command('presented-alerts'), []);
+  }
   await fixture.assertNoOutbound();
-  console.log('PASS: native Team project preserves its script when hosted bytes are corrupt and fetches the repaired image');
+  console.log(peerDiscovery ? 'PASS: native peer discovery handles a fixture offer, a disabled data channel, and expiry'
+    : 'PASS: native Team project preserves its script when hosted bytes are corrupt and fetches the repaired image');
 } catch (error) { throw new Error(`Native cloud image recovery failed during ${step}`, { cause: error }); }
 finally {
   try { await session?.close(); }

@@ -32,6 +32,14 @@ outbox parts, and uses the Account sheet to recover the same receipt with no
 additional part uploads. Each variant opens a fresh workspace and compares
 the full downloaded project with the expected edit.
 
+The `peer-discovery` group of `journeys/native-cloud-image-recovery` drives
+Preview's Fetch image control. A second isolated session for the same
+fixture account receives the actual discovery query through the Worker and
+replies with the current request ID. The journey checks retry status and
+native expiry in Account and confirms the project still has no local image
+bytes. WebRTC is disabled in these isolated runs. The default group exercises
+recovery from the repaired hosted copy.
+
 On November 20, all 12 cloud journeys passed in a fresh capture. The 15-module
 Worker scope observed 1,154 of 1,164 statement anchors, including 11 from real
 module initialization. Passing billing transport, media recovery and natural

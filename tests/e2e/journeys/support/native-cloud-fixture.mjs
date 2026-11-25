@@ -86,6 +86,9 @@ export async function startNativeCloudFixture() {
       prepareHostedImage: input => response(['prepare-hosted-image', input]),
       repairHostedImage: () => response('repair-hosted-image'),
       hostedImageResponses: () => response('hosted-image-responses'),
+      openHostedPeer: () => response('open-hosted-peer'),
+      hostedPeerInbox: () => response('hosted-peer-inbox'),
+      sendHostedPeerSignal: signal => response(['send-hosted-peer-signal', signal]),
       prepareSharedGeneration: project => response(['prepare-shared-generation', project]),
       sharedGenerationState: () => response('shared-generation-state'),
       prepareInvitations: () => response('prepare-invitations'),
@@ -403,15 +406,19 @@ async function startWorker(root) {
       assert.equal(response.status, expectedStatus, `Unexpected fixture status for ${path}`);
       return response.json();
     }
-    async function withFixtureOwner(action) {
+    async function fixtureOwnerToken(deviceName) {
       // Only the test adapter ever sees this setup session's code or credential.
       const codeVerifier = randomBytes(32).toString('base64url');
       const codeChallenge = createHash('sha256').update(codeVerifier).digest('base64url');
       const { challengeId } = await post('/auth/email/request', 202, { email: nativeFixtureEmail, codeChallenge });
       const code = await mailbox.takeCode();
       assert.ok(typeof code === 'string' && /^\d{6}$/.test(code), 'Fixture delivery must contain a code');
-      const { token } = await post('/auth/email/verify', 200, { challengeId, code, codeVerifier, deviceName: 'Team fixture setup' });
+      const { token } = await post('/auth/email/verify', 200, { challengeId, code, codeVerifier, deviceName });
       assert.ok(typeof token === 'string' && token.length > 0, 'Fixture authorization was issued');
+      return token;
+    }
+    async function withFixtureOwner(action) {
+      const token = await fixtureOwnerToken('Team fixture setup');
       try { return await action(token); }
       finally { await post('/auth/logout', 200, {}, token); }
     }
@@ -515,7 +522,7 @@ async function startWorker(root) {
         const { object_key: key } = await db.prepare("SELECT object_key FROM assets WHERE project_id=? AND sha256=? AND state='ready'")
           .bind(id, image.sha256).first();
         const bucket = await fixture.getR2Bucket('MEDIA', 'scriv');
-        hostedImage = { bucket, key, bytes };
+        hostedImage = { bucket, key, bytes, projectPath, digest: image.sha256 };
         const corrupt = Buffer.from(bytes);
         corrupt[corrupt.length - 1] ^= 1;
         await bucket.put(key, corrupt);
@@ -531,6 +538,29 @@ async function startWorker(root) {
       assert.deepEqual(await nativeWorker.hostedImageResponses(), [200]);
       await bucket.put(key, bytes);
       return true;
+    }
+    let hostedPeerToken;
+    async function openHostedPeer() {
+      assert.ok(hostedImage && !hostedPeerToken);
+      hostedPeerToken = await fixtureOwnerToken('Synthetic image source Mac');
+      return true;
+    }
+    async function hostedPeerInbox() {
+      assert.ok(hostedPeerToken);
+      const response = await fixture.dispatchFetch(new URL(hostedImage.projectPath + '/signals', base), {
+        headers: { Authorization: `Bearer ${hostedPeerToken}` }, redirect: 'error',
+      });
+      assert.equal(response.status, 200);
+      const { deviceId, signals } = await response.json();
+      return { deviceId, signals: signals.map(({ id, fromDeviceId, type, payload }) => ({ id, fromDeviceId, type, payload })) };
+    }
+    async function sendHostedPeerSignal({ toDeviceId, action, requestId }) {
+      assert.ok(hostedPeerToken && action === 'available');
+      assert.match(toDeviceId, /^[a-f0-9-]{36}$/i);
+      assert.match(requestId, /^[a-f0-9-]{36}$/i);
+      return post(hostedImage.projectPath + '/signals', 200, {
+        toDeviceId, type: 'asset-request', payload: { action, requestId, hash: hostedImage.digest },
+      }, hostedPeerToken);
     }
     let invitationTeamID;
     async function prepareInvitations() {
@@ -601,6 +631,7 @@ async function startWorker(root) {
       watchEditingLease: scope => nativeWorker.watchEditingLease(scope), editingLeaseState: () => nativeWorker.editingLeaseState(),
       watchStagedEdit: id => nativeWorker.watchStagedEdit(id), stagedEditState: () => nativeWorker.stagedEditState(),
       prepareHostedImage, repairHostedImage, hostedImageResponses: () => nativeWorker.hostedImageResponses(),
+      openHostedPeer, hostedPeerInbox, sendHostedPeerSignal,
       prepareSharedGeneration, sharedGenerationState,
       prepareInvitations, invitationState, interruptInvitationLoad: () => nativeWorker.interruptInvitationLoad(),
       prepareTeamManagement, addTeamManagementMember, teamManagementState,
@@ -633,6 +664,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState,
         'watch-editing-lease': worker.watchEditingLease, 'editing-lease-state': worker.editingLeaseState,
         'prepare-hosted-image': worker.prepareHostedImage, 'repair-hosted-image': worker.repairHostedImage,
+        'open-hosted-peer': worker.openHostedPeer, 'hosted-peer-inbox': worker.hostedPeerInbox, 'send-hosted-peer-signal': worker.sendHostedPeerSignal,
         'watch-staged-edit': worker.watchStagedEdit, 'staged-edit-state': worker.stagedEditState,
         'hosted-image-responses': worker.hostedImageResponses, 'prepare-shared-generation': worker.prepareSharedGeneration,
         'shared-generation-state': worker.sharedGenerationState, 'prepare-invitations': worker.prepareInvitations,
