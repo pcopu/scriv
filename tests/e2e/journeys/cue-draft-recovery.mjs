@@ -14,11 +14,18 @@ const corrected = 'Cafe\u0301 🎬 recovery corrected';
 const refusal = 'Image direction exceeds 30,000 UTF-16 characters. Shorten the draft before applying it; the exact draft remains saved on this Mac.';
 const cases = ['retain-rejected-direction', 'cold-recovery', 'repeated-cold-recovery', 'correct-and-save', 'cold-clean-state',
   'review-recovered-direction-after-undo', 'cancel-and-discard-local-direction'];
-assert.ok(process.argv.slice(2).every(arg => arg === '--list-cases'), 'Unknown argument');
-if (process.argv.includes('--list-cases')) {
-  console.log(JSON.stringify({ journey: 'cue-draft-recovery', nativeVerified: false, status: 'prepared-not-run', cases,
+const groups = ['cold-recovery', 'journal-write-retry', 'journal-read-retry'];
+const args = process.argv.slice(2);
+const list = args.length === 1 && args[0] === '--list-cases';
+const group = args[0] === '--group' ? args[1] : 'cold-recovery';
+assert.ok(list || !args.length || args.length === 2 && args[0] === '--group' && groups.includes(group), 'Choose one listed group');
+if (list) {
+  console.log(JSON.stringify({ journey: 'cue-draft-recovery', nativeVerified: false, status: 'prepared-not-run', groups, cases: [...cases, ...groups.slice(1)],
     excluded: ['crash durability', 'PendingProjectSaveJournal replay', 'EditorDraftJournal', 'account conflicts',
       'CAS contention', 'storage exhaustion', 'physical keyboard parity'] }, null, 2));
+} else if (group !== 'cold-recovery') {
+  const { runCueDraftJournalFailure } = await import('./support/cue-draft-journal-failure.mjs');
+  await runCueDraftJournalFailure(group);
 } else {
   assert.ok(process.env.SCRIV_E2E_APP, 'Requires a verified automation-enabled Catalyst bundle on macOS');
   let session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { persistent: true });

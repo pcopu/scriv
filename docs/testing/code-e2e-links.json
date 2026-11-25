@@ -13283,8 +13283,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 117,
-        "end": 132,
+        "start": 124,
+        "end": 139,
         "sha256": "800e262db6afedc84aa289563e6d2c39177991046fa5c2bcf486843aa46f383d"
       },
       "why": "After observing the exact corrected saved project and UI, observe an empty recovery journal. A third owned reopen preserves complete loaded and saved state and keeps the journal empty. Eventual successful acknowledgement and cache clearing only. The later empty-journal read does not prove that deletion could never precede canonical persistence at an unobserved failure window. Busy retry, competing CAS, presentation-read readiness and crash cases are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes. No clear-generation fence or cancellation-of-delayed-read credit."
@@ -16453,8 +16453,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 133,
+        "start": 80,
+        "end": 140,
         "sha256": "06595ccbae800cca97950092be3b8545cd579e442d39380a0c1f247d911f18cc"
       },
       "why": "Exact over-limit rejection plus unchanged canonical state and retained exact text; successful correction assertion is separately at current witness lines 115-130. Do not include identity/epoch/64-KiB rejection branches. At original authorship this was a prepared native-unrun association; it remains a manual source/witness relationship. No branch-complete claim. Cold-open readiness now waits for the matching workspace-project header to be enabled and hittable before loaded-project. This adds five preceding helper lines; the linked retained-draft and correction assertions keep their exact model, Date, package and journal-byte oracles. The assertion message now describes the empty journal when observed after the saved correction; it does not prove deletion ordering through an unobserved failure window. Assertion behavior and source spans are unchanged."
@@ -20335,8 +20335,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 114,
-        "end": 126,
+        "start": 121,
+        "end": 133,
         "sha256": "26942ecc11e7dc25ac580a746b3abd698f795fdf49bc21009f93dd7bb56b3660"
       },
       "why": "Correct retained direction to valid exact Unicode text. Assert one prompt-only revision, unchanged complete unrelated project data, matching displayed and loaded prompt, and no stale refusal. Changed-draft application only; unchanged queueSave, failed change, rejected context, lease failure and concurrency branches are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
@@ -31528,8 +31528,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 112,
+        "start": 80,
+        "end": 119,
         "sha256": "1f0e70e3088f998508f4c38a054573d6c65e28e411f41c4111299b85cc251faa"
       },
       "why": "Enter the exact oversized Unicode direction through the native editor. Assert one scoped draft retains exact text and source prompt, complete loaded/saved canonical projects remain unchanged, and exact journal bytes survive two owned cold reopens. Ordinary local draft creation, persistence and retention only; competing edits, conditional rebase, alias/account/navigation guards, lease failures and durable crash guarantees are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
@@ -31624,8 +31624,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "Matching active draft application error must surface the exact public refusal; cancellation/stale-draft branches not asserted. At original authorship this was a prepared native-unrun association; it remains a manual source/witness relationship. No branch-complete claim. Cold-open readiness now waits for the matching workspace-project header to be enabled and hittable before loaded-project. This adds five preceding helper lines; the linked retained-draft and correction assertions keep their exact model, Date, package and journal-byte oracles."
@@ -34730,8 +34730,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 112,
+        "start": 80,
+        "end": 119,
         "sha256": "1f0e70e3088f998508f4c38a054573d6c65e28e411f41c4111299b85cc251faa"
       },
       "why": "Enter the exact oversized Unicode direction through the native editor. Assert one scoped draft retains exact text and source prompt, complete loaded/saved canonical projects remain unchanged, and exact journal bytes survive two owned cold reopens. Ordinary local draft creation, persistence and retention only; competing edits, conditional rebase, alias/account/navigation guards, lease failures and durable crash guarantees are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
@@ -47183,8 +47183,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 117,
-        "end": 132,
+        "start": 124,
+        "end": 139,
         "sha256": "800e262db6afedc84aa289563e6d2c39177991046fa5c2bcf486843aa46f383d"
       },
       "why": "After observing the exact corrected saved project and UI, observe an empty recovery journal. A third owned reopen preserves complete loaded and saved state and keeps the journal empty. Eventual successful acknowledgement and cache clearing only. The later empty-journal read does not prove that deletion could never precede canonical persistence at an unobserved failure window. Busy retry, competing CAS, presentation-read readiness and crash cases are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes. No clear-generation fence or cancellation-of-delayed-read credit."
@@ -61870,8 +61870,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 114,
-        "end": 126,
+        "start": 121,
+        "end": 133,
         "sha256": "26942ecc11e7dc25ac580a746b3abd698f795fdf49bc21009f93dd7bb56b3660"
       },
       "why": "Correct retained direction to valid exact Unicode text. Assert one prompt-only revision, unchanged complete unrelated project data, matching displayed and loaded prompt, and no stale refusal. Changed-draft application only; unchanged queueSave, failed change, rejected context, lease failure and concurrency branches are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes."
@@ -69994,8 +69994,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 117,
-        "end": 132,
+        "start": 124,
+        "end": 139,
         "sha256": "800e262db6afedc84aa289563e6d2c39177991046fa5c2bcf486843aa46f383d"
       },
       "why": "After observing the exact corrected saved project and UI, observe an empty recovery journal. A third owned reopen preserves complete loaded and saved state and keeps the journal empty. Eventual successful acknowledgement and cache clearing only. The later empty-journal read does not prove that deletion could never precede canonical persistence at an unobserved failure window. Busy retry, competing CAS, presentation-read readiness and crash cases are not covered. This is a source-to-existing-assertion semantic association, not a new native run or observed line/branch coverage. Native runs require an independently verified matching automation build; no Mac writes while storage is blocked. Do not infer causality or execution from these hashes. No clear-generation fence or cancellation-of-delayed-read credit."
@@ -71692,8 +71692,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "Repeated owned native cold open must rediscover exact journal text and reproduce refusal while canonical state stays unchanged. At original authorship this was a prepared native-unrun association; it remains a manual source/witness relationship. No branch-complete claim. Cold-open readiness now waits for the matching workspace-project header to be enabled and hittable before loaded-project. This adds five preceding helper lines; the linked retained-draft and correction assertions keep their exact model, Date, package and journal-byte oracles."
@@ -81455,8 +81455,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 133,
+        "start": 80,
+        "end": 140,
         "sha256": "06595ccbae800cca97950092be3b8545cd579e442d39380a0c1f247d911f18cc"
       },
       "why": "The panel refreshes status/recovery visibility and rebuilds recovery content when the cue draft state changes. Exact refusal appears after oversize input/reopen and disappears after correction; layout measurement and every signature variant are not independently asserted."
@@ -81930,8 +81930,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 133,
+        "start": 80,
+        "end": 140,
         "sha256": "06595ccbae800cca97950092be3b8545cd579e442d39380a0c1f247d911f18cc"
       },
       "why": "The panel refreshes status/recovery visibility and rebuilds recovery content when the cue draft state changes. Exact refusal appears after oversize input/reopen and disappears after correction; layout measurement and every signature variant are not independently asserted."
@@ -82543,8 +82543,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 133,
+        "start": 80,
+        "end": 140,
         "sha256": "06595ccbae800cca97950092be3b8545cd579e442d39380a0c1f247d911f18cc"
       },
       "why": "A real generationPromptIssue mounts the exact oversize notice. The fixture exercises the issue branch, not source-conflict review or retry/discard handling."
@@ -83368,8 +83368,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 133,
+        "start": 80,
+        "end": 140,
         "sha256": "06595ccbae800cca97950092be3b8545cd579e442d39380a0c1f247d911f18cc"
       },
       "why": "Status and recovery containers hold the exact local direction refusal observed during each retained-draft phase."
@@ -84249,8 +84249,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "The real scope resolves the retained regular JSON member under private storage; the host checks its hashed filename and nonsymlink regular-file shape. No adversarial replacement or refusal is exercised."
@@ -84308,8 +84308,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "The one-record save passes the count guard, writes the full JSON and completes file-attribute setup before native acceptance; independent host reads and two relaunches verify intact data. Permission bits, atomic race visibility and exhaustion are not separate oracles."
@@ -84367,8 +84367,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 116,
-        "end": 133,
+        "start": 123,
+        "end": 140,
         "sha256": "7fccc2d5a10ac6449a2f1704845a167a9aa5680fe40434711fd442d540bd75ac"
       },
       "why": "After the corrected canonical save, the production asynchronous clear uses clearIfAvailable and removes the matching draft. Both immediate and cold clean observations require zero journal records. Busy, missing-record and stale-revision preservation alternatives are unclaimed."
@@ -84486,8 +84486,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "Successful unlock and action return complete the actual journal save/read used by repeated exact recovery. Scheduling and contention behavior are not inferred."
@@ -84935,8 +84935,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "The authentic same-project/same-cue draft passes application identity and cue lookup before the independently expected length refusal. Wrong-scope, missing-scene and missing-cue failure branches are not covered."
@@ -85024,8 +85024,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 116,
-        "end": 133,
+        "start": 123,
+        "end": 140,
         "sha256": "7fccc2d5a10ac6449a2f1704845a167a9aa5680fe40434711fd442d540bd75ac"
       },
       "why": "The accepted candidate validates and returns to canonical persistence; the independent entire-project expectation checks one prompt change, exactly one revision and unchanged unrelated fields."
@@ -85083,8 +85083,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "The oversized canonical prompt remains below the private draft-record limit and is retained whole. This tests accepted local storage of a rejected canonical value, not the journal size-limit rejection."
@@ -85112,8 +85112,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 116,
-        "end": 133,
+        "start": 123,
+        "end": 140,
         "sha256": "7fccc2d5a10ac6449a2f1704845a167a9aa5680fe40434711fd442d540bd75ac"
       },
       "why": "Replacing the recovered rejected text with the exact decomposed-Unicode corrected prompt produces a candidate differing only in that cue prompt and passes its encoded-size guard. The 64KiB rejection is not exercised."
@@ -85231,8 +85231,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "The test enters 29999 ASCII characters plus one surrogate-pair emoji and asserts the exact UTF-16-limit refusal, full untruncated journal text and unchanged canonical model/date bits through two relaunches."
@@ -85260,8 +85260,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "The real direction edit constructs a stable scope and filename; the retained record asserts the exact owned package path, project ID and cue ID and is recovered for that same cue. No independent SHA-256 oracle or alternate account/scope rejection is claimed."
@@ -85319,8 +85319,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "Both journal directory and package path are real owned synthetic locations. Exact package-path assertions and unchanged package models support the accepted external-journal location; a journal placed inside a package is not tested."
@@ -85348,8 +85348,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "The accepted draft is encoded before replacing the owned record; the host independently decodes exact text and scope, then checks byte stability after relaunch. Same-revision changed-content rejection is not claimed."
@@ -85407,8 +85407,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "Normal member resolution and valid-draft checks admit the production-generated record that cold recovery displays exactly. Invalid UUID, epoch/date, identity and record-size fixtures are not supplied."
@@ -85436,8 +85436,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "The retained source prompt still matches the canonical cue across relaunch; application reaches the exact size refusal instead of a rebase conflict. Drift/rebase scenarios remain untested."
@@ -85525,8 +85525,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "Actual file bytes are read, decoded, validated and checked for this cue scope before the UI restores the exact rejected text; unchanged full journal bytes are asserted on each cold retry. Malformed identity and concurrent file growth are excluded."
@@ -85554,8 +85554,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "The draft starts with the empty source prompt and receives the exact 30001-UTF16-unit input. Two normal-open recoveries retain its bytes/revision and reach the size refusal, implying the unchanged-base predicate permits application. Nonmatching-base refusal is excluded."
@@ -85643,8 +85643,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "The sole owned cue record obtains its stable target and passes total-size preparation. There are no other JSON records; the other-record capacity loop and eviction/concurrency behavior are untested."
@@ -85672,8 +85672,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "Retain/load operations use the owned directory and normal journal lock path. This association is successful recovery plumbing only, not a replaced-directory security test."
@@ -85701,8 +85701,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "Actual async presentation uses loadIfAvailable and actual text input saves the draft. The accepted new/matching revision is read back from private storage on cold open with exact bytes and original source prompt. Busy and CAS-refusal branches are not asserted."
@@ -85760,8 +85760,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "The regular owned journal lock opens successfully and is closed after accepted retain/load operations. No malicious lock inode, descriptor failure or private-ownership enforcement is asserted."
@@ -85789,8 +85789,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "Normal uncontended lock acquisition allows the exact retained record to be written and read. The explicit busy/EINTR/error loop bodies remain outside this mapping."
@@ -85848,8 +85848,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 73,
-        "end": 87,
+        "start": 80,
+        "end": 94,
         "sha256": "25b6bd95d8fa8b540c9e138cfc2a4ae389e8d10a5cf2b2bcb3689c1271141d68"
       },
       "why": "Cold recovery resolves the owned regular record and passes its bounded stat check; its exact text and original source are visible again. Oversized/malformed-file rejection is excluded."
@@ -94889,8 +94889,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 188,
-        "end": 203,
+        "start": 195,
+        "end": 210,
         "sha256": "df223fc2e1e01bd06c5189432d71ea993fe8dd13953ba3734d54daec86b1eb28"
       },
       "why": "The user-visible review control remains available while a valid draft still refers to old source. An explicit activation applies that draft and removes the review state. Discard and retry are outside this witness."
@@ -94910,8 +94910,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 190,
-        "end": 205,
+        "start": 197,
+        "end": 212,
         "sha256": "2a12b0c41143f4265594f0b5d9b1a82dbe3db5dd3f09ac147f49e5a9e7438252"
       },
       "why": "A real retained draft stays separate from the project after Undo. Explicit review applies only the intended prompt and clears the original journal after persistence. Witnesses successful rebase only."
@@ -98404,8 +98404,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 233,
-        "end": 243,
+        "start": 240,
+        "end": 250,
         "sha256": "e9a49bce49737701ea2da5da00535ae41362a58ba0f4095dfb5584ccbd310df0"
       },
       "why": "Only the confirmed local discard removes the draft file. The complete saved packages and reopened direction remain unchanged."
@@ -98426,8 +98426,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
-        "start": 218,
-        "end": 238,
+        "start": 225,
+        "end": 245,
         "sha256": "ace87a050146a63e2ae1cc9a1ad512bd7ffb415e2943c441b9abfaeb3fc9df3d"
       },
       "why": "Both scoped sheet controls act on the presented image-direction draft. Cancel preserves its exact bytes, and confirmation removes the draft and reveals the same saved direction."
@@ -98492,6 +98492,46 @@
         "sha256": "f4fb3d63befb06e7977a96a543a7dd55016818d419ddf9c9856a93c1ae782656"
       },
       "why": "The native owned-duration-dialog group checks presentation, initial 0.000, edits via the public text command, and verifies the draft does not mutate the loaded model or packages. Apply and Cancel are observed as actions in the controller."
+    },
+    {
+      "id": "011d460e3796a826",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 154,
+        "end": 158,
+        "sha256": "299ac16a20e9a3048050cb6d67a9fffcad17de2ad71029b16048a8d1de5f538b"
+      },
+      "actions": [
+        "enter exact synthetic direction with text while private journal lock is unavailable",
+        "observe the retained input and activate Retry retaining this text after restoring journal access"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/cue-draft-journal-failure.mjs",
+        "start": 97,
+        "end": 119,
+        "sha256": "9e055443b4fa882d6fc13ad64199f6bfd30be821584350c60cb115d84c18b2a6"
+      },
+      "why": "The real write refusal surfaces the attempted text without persisting it. The existing retry action commits exactly one revision, preserving all other fields."
+    },
+    {
+      "id": "2e5067d581f2f873",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 284,
+        "end": 287,
+        "sha256": "f3f51dadf9fc17b99a0aafd915bab93b8ce2930476c550e351765a47de00af59"
+      },
+      "actions": [
+        "cold relaunch and open the owned synthetic project with the journal inaccessible",
+        "observe the read error and activate Retry save after restoring journal access"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/cue-draft-journal-failure.mjs",
+        "start": 73,
+        "end": 93,
+        "sha256": "8bd04e46494ce2420c497e46f047ec635554ee955913c5a47c396cc151ecd0c5"
+      },
+      "why": "The production reader error leaves the composer read-only and both projects unchanged. Normal Retry save restores editing with the original canonical direction."
     }
   ],
   "commentExclusions": [
@@ -102483,7 +102523,7 @@
         "end": 133,
         "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
       },
-      "fileSha256": "fc7039515854f4b966d472153c5973aeed6ede0bd463415e4218c75812acfbe5"
+      "fileSha256": "ac81e480c86f589d0e48d1fa3f2e53417820d8a563142d67d5c125d3bac0b05a"
     },
     {
       "id": "58267d3510d79430",
@@ -102563,7 +102603,7 @@
         "end": 241,
         "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
       },
-      "fileSha256": "fc7039515854f4b966d472153c5973aeed6ede0bd463415e4218c75812acfbe5"
+      "fileSha256": "ac81e480c86f589d0e48d1fa3f2e53417820d8a563142d67d5c125d3bac0b05a"
     },
     {
       "id": "59c64d2ace520826",
@@ -104213,7 +104253,7 @@
         "end": 79,
         "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
       },
-      "fileSha256": "fc7039515854f4b966d472153c5973aeed6ede0bd463415e4218c75812acfbe5"
+      "fileSha256": "ac81e480c86f589d0e48d1fa3f2e53417820d8a563142d67d5c125d3bac0b05a"
     },
     {
       "id": "7e4a8f19915d9b4e",
@@ -105003,7 +105043,7 @@
         "end": 2,
         "sha256": "4ead8511821dcd95c2efee74b114bac02b04cb9252a4405b4149f9930c721b52"
       },
-      "fileSha256": "fc7039515854f4b966d472153c5973aeed6ede0bd463415e4218c75812acfbe5"
+      "fileSha256": "ac81e480c86f589d0e48d1fa3f2e53417820d8a563142d67d5c125d3bac0b05a"
     },
     {
       "id": "8e40d7512c7266e1",
@@ -107693,7 +107733,7 @@
         "end": 36,
         "sha256": "da22a6a09e9a6d7bbf1e35ecdac04e969fad1ac1a051025596a84831ff070202"
       },
-      "fileSha256": "fc7039515854f4b966d472153c5973aeed6ede0bd463415e4218c75812acfbe5"
+      "fileSha256": "ac81e480c86f589d0e48d1fa3f2e53417820d8a563142d67d5c125d3bac0b05a"
     },
     {
       "id": "c3fa07d2ab6ca6a5",

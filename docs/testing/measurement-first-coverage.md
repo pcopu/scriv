@@ -50,6 +50,15 @@ the image-direction composer. The confirmation sheet exposes the ordinary
 Cancel preserves the exact local journal bytes, confirmation clears the
 journal, and the saved direction survives reopening the owned workspace.
 
+Two focused `journeys/cue-draft-recovery` groups exercise a real write
+refusal on the app-created lock in a private synthetic workspace.
+`journal-write-retry` preserves the attempted text and commits it once with
+Retry retaining this text. `journal-read-retry` opens the saved project after
+an owned cold relaunch, checks that the composer stays read-only after the
+read error, and restores editing through Retry save. The test restores the
+exact lock inode’s permissions. Both groups verify the full saved and loaded
+project state and the absence of provider jobs.
+
 The `journeys/native-cloud-project-sync` groups `staged-edit` and
 `staged-receipt-retry` use the Script tab's Dialogue button to insert between
 adjacent scene order values. Their isolated Worker verifies that one dialogue
