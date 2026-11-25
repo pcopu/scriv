@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile, readdir, realpath, rename, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { ScrivSession } from '../../../cli/scriv.mjs';
@@ -9,7 +9,7 @@ import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, interrupte
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
 
-const groups = ['sync', 'lease-renewal', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'discussion-pages'];
+const groups = ['sync', 'lease-renewal', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'discussion-pages', 'legacy-local-copy'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
   console.log(JSON.stringify({ groups }));
@@ -344,6 +344,11 @@ async function runProjectJourney() {
   await click('Close discussion');
   assert.deepEqual(await session.command('presented-alerts'), []);
 
+  if (args[1] === 'legacy-local-copy') {
+    await verifyLegacyLocalCopy(synced);
+    await fixture.assertNoOutbound();
+    return;
+  }
   if (args[1] === 'lease-renewal') {
     await verifyEditingLeaseRenewal(synced);
     await fixture.assertNoOutbound();
@@ -464,6 +469,84 @@ async function runProjectJourney() {
   await verifyAccountReconnectAndSignOut(await verifyInterruptedCloudEditRecovery(downloaded));
   await fixture.assertNoOutbound();
   console.log('PASS: native sync, linked edit, discussions and fresh cloud replica');
+}
+
+async function verifyLegacyLocalCopy(linked) {
+  assert.match(linked.id, /^[a-f0-9-]{36}$/i);
+  const packagePath = join(session.root, 'Projects', linked.id + '.scriv');
+  const checkpointPath = join(packagePath, 'cloud-sync.json');
+  const metadataPath = join(packagePath, 'project.json');
+  assert.equal(await realpath(packagePath), packagePath);
+  assert.equal(await realpath(metadataPath), metadataPath);
+
+  async function checkpoint() {
+    const deadline = Date.now() + 15000;
+    do {
+      const bytes = await readFile(checkpointPath).catch(error => {
+        if (error.code !== 'ENOENT') throw error;
+      });
+      if (bytes) return JSON.parse(bytes);
+      await delay(50);
+    } while (Date.now() < deadline);
+    throw new Error('The linked package did not receive its checkpoint');
+  }
+  async function openLocal(project) {
+    await session.command('activate', { target: 'workspace-project' });
+    await click('On this Mac');
+    const search = await control(projectsSearch, true);
+    await session.command('text', { target: search.path, text: project.title });
+    await session.waitFor(nodes => nodes.some(node => node.text === project.title + ' · '
+      + project.scenes.length + (project.scenes.length === 1 ? ' scene' : ' scenes')));
+    await click('Open project', true);
+  }
+  async function stageOlderPackage(name) {
+    assert.equal(await realpath(checkpointPath), checkpointPath);
+    await rename(checkpointPath, join(session.root, name));
+    await assert.rejects(readFile(checkpointPath), { code: 'ENOENT' });
+  }
+
+  step = 'reopen an identical legacy copy through the native project browser';
+  await control(node => workspaceProject(node) && node.title === linked.title, true);
+  const originalCheckpoint = await checkpoint();
+  assert.equal(originalCheckpoint.projectId, linked.cloudProjectId);
+  const original = (await session.command('loaded-project')).project;
+  assert.equal(original.id, linked.id);
+  await session.command('key', { input: 'n', modifiers: ['command'] });
+  const unrelated = await waitForSavedProject(session, candidate => candidate.id !== linked.id);
+  assert.equal(unrelated.cloudProjectId ?? null, null);
+  await control(node => workspaceProject(node) && node.title === unrelated.title, true);
+  await stageOlderPackage('fixture-original-checkpoint.json');
+  await openLocal(linked);
+  const rebuilt = await checkpoint();
+  assert.equal(rebuilt.projectId, originalCheckpoint.projectId);
+  assert.ok(rebuilt.headSeq >= originalCheckpoint.headSeq);
+  assert.deepEqual([...rebuilt.items].sort(byID), [...originalCheckpoint.items].sort(byID));
+  await control(node => workspaceProject(node) && node.title === linked.title, true);
+  const reopened = (await session.command('loaded-project')).project;
+  // The Worker returns cue items independently of the package array order.
+  const canonicalContent = project => content({ ...project, cues: [...project.cues].sort(byID) });
+  assert.deepEqual(canonicalContent(reopened), canonicalContent(original));
+  assert.deepEqual(await session.command('presented-alerts'), []);
+
+  step = 'reopen a differing legacy copy and observe the conflict without replacing the draft';
+  await openLocal(unrelated);
+  await control(node => workspaceProject(node) && node.title === unrelated.title, true);
+  await stageOlderPackage('fixture-rebuilt-checkpoint.json');
+  const draft = JSON.parse(await readFile(metadataPath, 'utf8'));
+  assert.equal(draft.id, linked.id);
+  assert.equal(draft.cloudProjectId, linked.cloudProjectId);
+  assert.ok(draft.characters.length > 0);
+  draft.characters[0].biography += ' Legacy local change.';
+  const input = JSON.stringify(draft) + '\n';
+  const staged = join(session.root, 'fixture-legacy-project.json');
+  await writeFile(staged, input, { flag: 'wx', mode: 0o600 });
+  await rename(staged, metadataPath);
+  await openLocal(linked);
+  await observePresentedError(session, 'This older local copy has no cloud checkpoint and differs from the server. Export your draft before opening the cloud version.');
+  assert.equal(await readFile(metadataPath, 'utf8'), input);
+  await assert.rejects(readFile(checkpointPath), { code: 'ENOENT' });
+  assert.deepEqual(await fixture.projects(), [{ id: linked.cloudProjectId, title: linked.title }]);
+  console.log('PASS: identical legacy copy reconnects and differing legacy draft stays on disk');
 }
 
 async function verifyFailedLogout() {

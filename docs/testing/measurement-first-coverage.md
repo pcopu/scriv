@@ -13,6 +13,12 @@ Use `tracer proposal bind` to classify reviewed plans that need a new scenario o
 a missing CLI action. Query retained measurements for the behavior before
 changing the scenario, then compare the passing union after each batch.
 
+With a source range and saved Scriv capabilities, `worklist` lists matching
+actions from passing captures in `recordedActions`. The selector in each
+row uses the exact discovered scenario. Pass its `actionArgs` back to the
+same source lookup to review the action. A recorded target SHA-256 filters
+evidence. Read the scenario or live CLI snapshot for the actual control.
+
 For an advertised Scriv menu scope such as `script-entries`, pass the scope
 as `--action script-entries`, the saved app `--capabilities` response, and the
 caller as `--source`. New session captures derive an exact label from the
