@@ -3,12 +3,13 @@
 ## Scope and checkpoints
 
 This change adds managed archive storage on top of Scriv
-`bb03ae94d96938c13990493206d9717b7e665ff6`, which includes the existing
+`7d7d404ffee0568d564f58135d8f7e1f40415d0d`, which includes the existing
 index-pruning change `d789c627d94024e3a1a292349f21c98db102498f` and subsequent
 native journey work. The original `compact --prune`, default unmanaged index
 cleanup, deferred function-map regeneration and `--keep-indexed-profiles`
 behavior are preserved. The final reconciliation also keeps the newer exact
-native-action source validation and empty-cloud-project reconnect case.
+native-action source validation, empty-cloud-project reconnect case and
+Storyboard word-modifier support.
 
 The public CLI used Tracer `f031a47cab64307df1f045bcd433be62d433aea9`.
 The provenance continuation separately used its unchanged pinned runtime from
@@ -22,7 +23,7 @@ by the existing journey; no runtime pin was relaxed.
 | `npm run check` | Passed | Cloud TypeScript check, 25 design concepts, 3 sample frames and repository asset/release-file integrity. |
 | `npm test` through the pinned public Tracer entrypoint | **48/48 public CLI journeys passed** | Existing CLI behavior plus the storage paths listed below. Native scenarios executed: **0**. |
 | `tracer app -- test provenance` with the pinned runtime | Passed | Existing source provenance/recovery journey and **18** measurement-output checks using synthetic importer fixtures. |
-| `tracer check --json` | **2,784/2,784 links and 1,205/1,205 comment declarations valid** | Reviewed manual-association integrity only. No measured native coverage or exclusions were added to obtain this result. |
+| `tracer check --json` | **2,785/2,785 links and 1,205/1,205 comment declarations valid** | Reviewed manual-association integrity only. No measured native coverage or exclusions were added to obtain this result. |
 | `git diff --check` | Passed | No whitespace errors in the patch. |
 
 The storage checks cover complete source sharing and reuse; independent file
