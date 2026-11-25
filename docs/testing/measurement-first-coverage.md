@@ -146,6 +146,12 @@ The contention case uses another owned session to acquire and release the
 real Worker lease. It verifies the rejection, the absence of an active
 editor and the unchanged saved script.
 
+Use `tracer app -- test --list --condition-branches` to export the exact
+production ranges declared by named cases. Use a Tracer worklist that
+supports condition branches to match those ranges directly to selectors.
+The standard `--list` catalogue remains compatible with older Tracer
+worklists.
+
 The Codex Account control has separate signed-out and signed-in behavior.
 Use `journeys/native-codex-account-check#signed-in-account-menu` for the
 signed-in path. The fixture serves an idle synthetic account over loopback.

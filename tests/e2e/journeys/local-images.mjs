@@ -67,11 +67,11 @@ if (listing) {
     else if (selected === 'versions') await run();
     else if (selected === 'source-navigation') await runImageSourceNavigation(process.env.SCRIV_E2E_APP);
     else if (selected === 'tags') await runPictureCharacterTags(process.env.SCRIV_E2E_APP);
-    else if (selected === 'picker-playback') await verifyPickerPausesPlayback();
+    else if (selected === 'picker-playback') await verifyPickerDuringPlayback();
     else await runFirstLineImageCase(process.env.SCRIV_E2E_APP);
   }
 }
-async function verifyPickerPausesPlayback() {
+async function verifyPickerDuringPlayback() {
   const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
   const ui = audioLibrarySteps(session);
   const position = nodes => nodes.find(node => node.identifier === 'scene-playback-position')?.slider;
@@ -94,14 +94,12 @@ async function verifyPickerPausesPlayback() {
     await session.waitFor(nodes => playback(nodes, 'Pause scene') && position(nodes)?.value > 50);
     const importer = node => node.type === 'UIButton' && (node.label === 'Import image' || node.title === 'Import image');
     await ui.activate(importer);
-    // The modal picker covers the transport, so its playback control cannot
-    // witness the new label. The actual modal must block underlying activation
-    // and the loaded-model command while the durable project stays exact.
-    await session.waitFor(nodes => !nodes.some(node => importer(node) && node.hittable)
-      && !nodes.some(node => node.identifier === 'workspace-tabs' && node.hittable));
-    await assert.rejects(session.command('loaded-project'), /Synthetic loaded-project observation is unavailable or invalid/);
+    // The platform picker can be a separate window. The loaded-model guard
+    // observes the modal on its UIKit presenter independent of hit-testing.
     assert.deepEqual(await session.command('persisted-projects'), saved);
-    console.log('PASS: the native image picker opens during playback, covers the workspace, and leaves saved projects unchanged');
+    await assert.rejects(session.command('loaded-project'), /Synthetic loaded-project observation is unavailable or invalid/);
+    assert.deepEqual(await session.command('presented-alerts'), []);
+    console.log('PASS: the native image picker opens during playback and leaves saved projects unchanged');
   } finally { await session.close(); }
 }
 

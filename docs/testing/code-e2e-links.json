@@ -244,8 +244,8 @@
       "id": "00324f769e9f6195",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 217,
-        "end": 218,
+        "start": 221,
+        "end": 222,
         "sha256": "ed17746d631a4bfffdce23eeb12ebf1fdca88d966ee0e55cf51a0c1eb61ef679"
       },
       "actions": [
@@ -330,8 +330,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 196,
-        "end": 208,
+        "start": 194,
+        "end": 206,
         "sha256": "7bdda4dcf1c828b93a9481bebf7915de212812fa615906bee87cf8653edc1eee"
       },
       "why": "AUT-J08: coral then blue already imported, blue selected. Activate actual historical collection cell then Use version; exactly one revision changes only image1.imageId back to first.id, all source/timing/assets/lineage unchanged and selected image visibly decoded. Conditional reveal/polling in ui helper. No physical cell tap, missing asset, stale context, lease denial or search claim. Reviewed static association only, not native execution or measured coverage."
@@ -4735,8 +4735,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 159,
+        "start": 137,
+        "end": 157,
         "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
       },
       "why": "AUT-J08: second blue import follows existing coral image; imported exact successor has version2/previousVersionId and only intended cue attachment changes. Production destination/candidate path is followed through importer, not model mutation. No overflow, navigation race, stale target, failure or provider path inferred. Reviewed static association only, not native execution or measured coverage."
@@ -5749,8 +5749,8 @@
       "id": "363005482f3f4c31",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 375,
-        "end": 377,
+        "start": 381,
+        "end": 383,
         "sha256": "4163ac4331a6167f7daad8dbbf913542d0d68f6df0ca446cbf8df91ff8421b29"
       },
       "actions": [
@@ -11050,8 +11050,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 159,
+        "start": 137,
+        "end": 157,
         "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
       },
       "why": "AUT-J08: second finite-PNG import after coral and inspector dismissal (caller 142). Exact digest-derived filename/MIME/bytecount, distinct asset and immutable prior asset are checked with visible decoding. Only new PNG file path; existing-file corruption, other formats and atomic failure branches not tested. Reviewed static association only, not native execution or measured coverage."
@@ -11888,8 +11888,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 160,
+        "start": 137,
+        "end": 158,
         "sha256": "8cb849006b4ae488bb4eee69cb064d8cfba779351f54e9be888213673c1ce932"
       },
       "why": "ScrivCLILocalImageImport post-picker semantic route awaits importImage then attachImage for finite coral/blue PNGs. importVersion independently asserts known hashes, size/type, immutable metadata, version increment and previousVersionId, exact changed attachment and complete other content; visible checks decoded dimensions and displayed preview. Only local nonstale import and version success are associated: invalid CLI payloads are intercepted, 25MiB/decoder/overflow failures, stale generation, cloud upload, AppKit and picker not witnessed."
@@ -12001,8 +12001,8 @@
       "id": "27c9916e5a2be34f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 247,
-        "end": 248,
+        "start": 253,
+        "end": 254,
         "sha256": "6802dd13c9923d0334e04a434570bf0eb6439f1331e5102bae5b2b0c89a8d978"
       },
       "actions": [
@@ -14249,8 +14249,8 @@
       "id": "2feba792cdefff92",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 384,
-        "end": 385,
+        "start": 390,
+        "end": 391,
         "sha256": "97da2e3e0497e4e4ef0df44b1dd78c095946d81f0987de5b0c883b46922517a9"
       },
       "actions": [
@@ -19427,8 +19427,8 @@
       "id": "41d08f126e99879f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 299,
-        "end": 302,
+        "start": 305,
+        "end": 308,
         "sha256": "8a6ecb47c8ebcc33e555ec8935dfe0ed064debe2213cf3d2ffc23d952f58d259"
       },
       "actions": [
@@ -19749,8 +19749,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 159,
+        "start": 137,
+        "end": 157,
         "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
       },
       "why": "AUT-J08: second blue import follows existing coral image; imported exact successor has version2/previousVersionId and only intended cue attachment changes. Production destination/candidate path is followed through importer, not model mutation. No overflow, navigation race, stale target, failure or provider path inferred. Reviewed static association only, not native execution or measured coverage."
@@ -23002,8 +23002,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 159,
+        "start": 137,
+        "end": 157,
         "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
       },
       "why": "AUT-J08: initial imported versions fixture has no images and cue image1 selected. Same post-picker production importer returns imported/cleanupVerified; test asserts exact asset, one revision and target-only change, saved and loaded equality plus decoded2x2/73byte visible preview. Read polling can repeat. No picker, permission, race or failed-cleanup claim. Reviewed static association only, not native execution or measured coverage."
@@ -23480,8 +23480,8 @@
       "id": "51a85849aeda565e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 219,
-        "end": 220,
+        "start": 223,
+        "end": 224,
         "sha256": "9f42f39113593acce58361794626f20f4a741404f9ed9f435e49c65e6bcba4bf"
       },
       "actions": [
@@ -23775,8 +23775,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 176,
-        "end": 179,
+        "start": 174,
+        "end": 177,
         "sha256": "6a596ea40fe44855e3a830ec755e0a37fd4439532a774d5914a8ac5d2b2339fd"
       },
       "why": "AUT-J08: one reject-inputs iteration after synthetic versions fixture import. Unexpected path key fails this dispatcher guard, and invariant() asserts all packages unchanged and no alert. The ../coral fixture token is rejected deeper and is not attributed here. Reviewed static association only, not native execution or measured coverage."
@@ -26632,8 +26632,8 @@
       "id": "5d8f4c4296b6296e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 195,
-        "end": 198,
+        "start": 199,
+        "end": 202,
         "sha256": "33db45876f99cdf9e2550b39845934921f8dc66fcde8f2145523224716999bdb"
       },
       "actions": [
@@ -27252,8 +27252,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 160,
+        "start": 137,
+        "end": 158,
         "sha256": "8cb849006b4ae488bb4eee69cb064d8cfba779351f54e9be888213673c1ce932"
       },
       "why": "ScrivCLILocalImageImport post-picker semantic route awaits importImage then attachImage for finite coral/blue PNGs. importVersion independently asserts known hashes, size/type, immutable metadata, version increment and previousVersionId, exact changed attachment and complete other content; visible checks decoded dimensions and displayed preview. Only local nonstale import and version success are associated: invalid CLI payloads are intercepted, 25MiB/decoder/overflow failures, stale generation, cloud upload, AppKit and picker not witnessed."
@@ -32801,8 +32801,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 159,
+        "start": 137,
+        "end": 157,
         "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
       },
       "why": "AUT-J08: second blue import follows existing coral image; imported exact successor has version2/previousVersionId and only intended cue attachment changes. Production destination/candidate path is followed through importer, not model mutation. No overflow, navigation race, stale target, failure or provider path inferred. Reviewed static association only, not native execution or measured coverage."
@@ -35272,8 +35272,8 @@
       "id": "7ade705ad8e0afa0",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 208,
-        "end": 210,
+        "start": 212,
+        "end": 214,
         "sha256": "72f1b6d99d9a4d4c97bb8bacabf926cacaeb2c0d56b5d24c555268ec2a179302"
       },
       "actions": [
@@ -35908,8 +35908,8 @@
       "id": "7c8c5ec4146dd2c8",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 238,
-        "end": 240,
+        "start": 243,
+        "end": 245,
         "sha256": "a6912d66c983665ce6ffc1cf0d24956a93db7a302a00dfc155079082c66600c1"
       },
       "actions": [
@@ -36448,8 +36448,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 196,
-        "end": 208,
+        "start": 194,
+        "end": 206,
         "sha256": "7bdda4dcf1c828b93a9481bebf7915de212812fa615906bee87cf8653edc1eee"
       },
       "why": "AUT-J08: coral then blue already imported, blue selected. Activate actual historical collection cell then Use version; exactly one revision changes only image1.imageId back to first.id, all source/timing/assets/lineage unchanged and selected image visibly decoded. Conditional reveal/polling in ui helper. No physical cell tap, missing asset, stale context, lease denial or search claim. Reviewed static association only, not native execution or measured coverage."
@@ -40902,9 +40902,9 @@
       "id": "8d9ad3c2259185f7",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 255,
-        "end": 258,
-        "sha256": "96a95723a7108007fd8ccd123f9989fe58ee70cc08722092d5492dc9722ba54e"
+        "start": 261,
+        "end": 264,
+        "sha256": "879ca4f5a6737d68c0033dbc5a29fda48bc677ed32826eccf0e706186eedf22e"
       },
       "actions": [
         "tracer actions",
@@ -44320,8 +44320,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 196,
-        "end": 208,
+        "start": 194,
+        "end": 206,
         "sha256": "7bdda4dcf1c828b93a9481bebf7915de212812fa615906bee87cf8653edc1eee"
       },
       "why": "AUT-J08: coral then blue already imported, blue selected. Activate actual historical collection cell then Use version; exactly one revision changes only image1.imageId back to first.id, all source/timing/assets/lineage unchanged and selected image visibly decoded. Conditional reveal/polling in ui helper. No physical cell tap, missing asset, stale context, lease denial or search claim. Reviewed static association only, not native execution or measured coverage."
@@ -46177,9 +46177,9 @@
       "id": "9f671d81d53b2e92",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 260,
-        "end": 288,
-        "sha256": "f810c85a1436dadf3557d877d52b6c1b69095205dfe1f9f10e05263151f2c148"
+        "start": 266,
+        "end": 294,
+        "sha256": "5bf0285e9e05d273bedcc8e54eb5190163faae09b4a05ab28972554939085d3a"
       },
       "actions": [
         "tracer app -- test --list",
@@ -53140,8 +53140,8 @@
       "id": "b414825514bbe57b",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 318,
-        "end": 318,
+        "start": 324,
+        "end": 324,
         "sha256": "2001e995fa2f490b3c7b10d4666b7f82f6f7cac1d5d440eecf1db9a34562d8d5"
       },
       "actions": [
@@ -55620,9 +55620,9 @@
       "id": "bc1b5d8dce9d5bea",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 234,
-        "end": 236,
-        "sha256": "56ecb13fc0c593e911da71cf2ff10047a5613206ed4b0e41d93f8a0e4404a2f9"
+        "start": 238,
+        "end": 241,
+        "sha256": "2f1e9a00012b5b035160ef6bab0550946224c789f548f5ed7abcde8f9f4961ce"
       },
       "actions": [
         "tracer app -- test --scenario ../outside",
@@ -56389,8 +56389,8 @@
       "id": "bead27d811030a06",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 306,
-        "end": 306,
+        "start": 312,
+        "end": 312,
         "sha256": "635722f828162803f7415bffb896eeca61f597233ad2ae2b1a228a1b3820da9e"
       },
       "actions": [
@@ -56596,8 +56596,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 160,
+        "start": 137,
+        "end": 158,
         "sha256": "8cb849006b4ae488bb4eee69cb064d8cfba779351f54e9be888213673c1ce932"
       },
       "why": "ScrivCLILocalImageImport post-picker semantic route awaits importImage then attachImage for finite coral/blue PNGs. importVersion independently asserts known hashes, size/type, immutable metadata, version increment and previousVersionId, exact changed attachment and complete other content; visible checks decoded dimensions and displayed preview. Only local nonstale import and version success are associated: invalid CLI payloads are intercepted, 25MiB/decoder/overflow failures, stale generation, cloud upload, AppKit and picker not witnessed."
@@ -58341,8 +58341,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 196,
-        "end": 208,
+        "start": 194,
+        "end": 206,
         "sha256": "7bdda4dcf1c828b93a9481bebf7915de212812fa615906bee87cf8653edc1eee"
       },
       "why": "AUT-J08: coral then blue already imported, blue selected. Activate actual historical collection cell then Use version; exactly one revision changes only image1.imageId back to first.id, all source/timing/assets/lineage unchanged and selected image visibly decoded. Conditional reveal/polling in ui helper. No physical cell tap, missing asset, stale context, lease denial or search claim. Reviewed static association only, not native execution or measured coverage."
@@ -59770,8 +59770,8 @@
       "id": "cc2bfd2318f202c5",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 308,
-        "end": 308,
+        "start": 314,
+        "end": 314,
         "sha256": "5dad5827ad70c283195e105f6805d9a73a68bde4c32ec27cc6fb37bb9a613b98"
       },
       "actions": [
@@ -62917,8 +62917,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 159,
+        "start": 137,
+        "end": 157,
         "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
       },
       "why": "AUT-J08: second blue import follows existing coral image; imported exact successor has version2/previousVersionId and only intended cue attachment changes. Production destination/candidate path is followed through importer, not model mutation. No overflow, navigation race, stale target, failure or provider path inferred. Reviewed static association only, not native execution or measured coverage."
@@ -63606,8 +63606,8 @@
       "id": "dcb760654ed41c8d",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 185,
-        "end": 192,
+        "start": 189,
+        "end": 196,
         "sha256": "4de99e3f4f3e360d3729141c710ae53e96416dda81511b3bdcd9bea64fcfc121"
       },
       "actions": [
@@ -64643,8 +64643,8 @@
       "id": "dfe1dff3a81c0759",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 212,
-        "end": 214,
+        "start": 216,
+        "end": 218,
         "sha256": "9038120b7ee4960c8676af3a6ea4557ab73afde4ab9061965173cf3fec2a3681"
       },
       "actions": [
@@ -69627,8 +69627,8 @@
       "id": "edfb106ba7599e62",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 216,
-        "end": 216,
+        "start": 220,
+        "end": 220,
         "sha256": "30030c597bb8d222fa5708425ec863c8d63fdfb4ba9620fae5fa53a58f39468c"
       },
       "actions": [
@@ -71389,8 +71389,8 @@
       "id": "f3e4765df137a31f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 303,
-        "end": 303,
+        "start": 309,
+        "end": 309,
         "sha256": "2eee146c7f11991ffabccbcb02ecd812a1816104fce4814ba13453206029bf09"
       },
       "actions": [
@@ -74474,8 +74474,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 159,
+        "start": 137,
+        "end": 157,
         "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
       },
       "why": "AUT-J08: second finite-PNG import after coral and inspector dismissal (caller 142). Exact digest-derived filename/MIME/bytecount, distinct asset and immutable prior asset are checked with visible decoding. Only new PNG file path; existing-file corruption, other formats and atomic failure branches not tested. Reviewed static association only, not native execution or measured coverage."
@@ -82075,8 +82075,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 183,
-        "end": 193,
+        "start": 181,
+        "end": 191,
         "sha256": "9b549d4385229275dfa1fa8177ba502d96183992b37f9c5931bfe6214dbcadb3"
       },
       "why": "The installed inspect callback passes the selected asset/cue identity into the image-detail route. The actual inspector and decoded original are asserted; absent-image refusal and hint wording are not."
@@ -82147,8 +82147,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 183,
-        "end": 193,
+        "start": 181,
+        "end": 191,
         "sha256": "9b549d4385229275dfa1fa8177ba502d96183992b37f9c5931bfe6214dbcadb3"
       },
       "why": "The constructed button is returned to Preview and mounted for the observed inspector action; structural support only."
@@ -82262,8 +82262,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 183,
-        "end": 193,
+        "start": 181,
+        "end": 191,
         "sha256": "9b549d4385229275dfa1fa8177ba502d96183992b37f9c5931bfe6214dbcadb3"
       },
       "why": "The actual inspect button is mounted in the Preview header before public activation opens the original image. Header typography and 16:9 badge appearance are not asserted."
@@ -82525,8 +82525,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 159,
+        "start": 137,
+        "end": 157,
         "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
       },
       "why": "Changing the selected asset invalidates the media signature and mounts a UIKitAssetImageView configured with the real local URL and expected digest. The observer proves that exact asset decoded and is visibly mounted; aspect-ratio pixel correctness and missing-image branches are excluded."
@@ -82640,8 +82640,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 183,
-        "end": 193,
+        "start": 181,
+        "end": 191,
         "sha256": "9b549d4385229275dfa1fa8177ba502d96183992b37f9c5931bfe6214dbcadb3"
       },
       "why": "The inspect factory builds and identifies the real compact button used by the public native activation. Its action and identity are asserted; icon appearance is not."
@@ -82665,8 +82665,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 196,
-        "end": 208,
+        "start": 194,
+        "end": 206,
         "sha256": "7bdda4dcf1c828b93a9481bebf7915de212812fa615906bee87cf8653edc1eee"
       },
       "why": "The version factory constructs and identifies the native control that actually opens version choices. Its button identity/action is covered; chevron position and visual compactness are not."
@@ -82777,8 +82777,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 159,
+        "start": 137,
+        "end": 157,
         "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
       },
       "why": "Changing the selected asset invalidates the media signature and mounts a UIKitAssetImageView configured with the real local URL and expected digest. The observer proves that exact asset decoded and is visibly mounted; aspect-ratio pixel correctness and missing-image branches are excluded."
@@ -82804,8 +82804,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 183,
-        "end": 193,
+        "start": 181,
+        "end": 191,
         "sha256": "9b549d4385229275dfa1fa8177ba502d96183992b37f9c5931bfe6214dbcadb3"
       },
       "why": "The inspect factory builds and identifies the real compact button used by the public native activation. Its action and identity are asserted; icon appearance is not."
@@ -82853,8 +82853,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 196,
-        "end": 208,
+        "start": 194,
+        "end": 206,
         "sha256": "7bdda4dcf1c828b93a9481bebf7915de212812fa615906bee87cf8653edc1eee"
       },
       "why": "The version factory constructs and identifies the native control that actually opens version choices. Its button identity/action is covered; chevron position and visual compactness are not."
@@ -83072,8 +83072,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 183,
-        "end": 193,
+        "start": 181,
+        "end": 191,
         "sha256": "9b549d4385229275dfa1fa8177ba502d96183992b37f9c5931bfe6214dbcadb3"
       },
       "why": "The shared compact factory forwards the inspect action into the production UIButton constructor. No font/inset/border assertion is made."
@@ -83121,8 +83121,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 196,
-        "end": 208,
+        "start": 194,
+        "end": 206,
         "sha256": "7bdda4dcf1c828b93a9481bebf7915de212812fa615906bee87cf8653edc1eee"
       },
       "why": "The version factory constructs and identifies the native control that actually opens version choices. Its button identity/action is covered; chevron position and visual compactness are not."
@@ -83189,8 +83189,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 196,
-        "end": 208,
+        "start": 194,
+        "end": 206,
         "sha256": "7bdda4dcf1c828b93a9481bebf7915de212812fa615906bee87cf8653edc1eee"
       },
       "why": "The Preview version action captures the actual selected cue/asset, presents its ImagePickerViewController and mounts its button. The historical cell and exact chosen attachment are asserted; stale-context refusal is not."
@@ -83436,8 +83436,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 159,
+        "start": 137,
+        "end": 157,
         "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
       },
       "why": "A real selected asset takes the image-present metadata branch after import; no missing-image alternative is inferred."
@@ -83852,8 +83852,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 139,
-        "end": 159,
+        "start": 137,
+        "end": 157,
         "sha256": "cd0ab7b7e952455d99219c53479bb9200fb69c3c5b344c21304ae4a736d57750"
       },
       "why": "The image metadata row mounts the version control subsequently used by the same versions journey. This is presence/action plumbing, not tag styling or layout."
@@ -83945,8 +83945,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 183,
-        "end": 193,
+        "start": 181,
+        "end": 191,
         "sha256": "9b549d4385229275dfa1fa8177ba502d96183992b37f9c5931bfe6214dbcadb3"
       },
       "why": "The actual Inspect button is enabled for the selected local asset and accepts native activation, opening its original image inspector. This establishes the image-present enabled state, not the no-image disabled alternative."
@@ -83972,8 +83972,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 183,
-        "end": 193,
+        "start": 181,
+        "end": 191,
         "sha256": "9b549d4385229275dfa1fa8177ba502d96183992b37f9c5931bfe6214dbcadb3"
       },
       "why": "The retained inspect control is the actual button activated by the witness; structural support only."
@@ -84393,8 +84393,8 @@
       "id": "4579e95b6742509b",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 315,
-        "end": 315,
+        "start": 321,
+        "end": 321,
         "sha256": "251af02bdf06578e58a84c767afd9e956728e2dcfe6df02fa8e6a30d26dc0748"
       },
       "actions": [
@@ -84437,8 +84437,8 @@
       "id": "75ae20557ed42cfa",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 397,
-        "end": 398,
+        "start": 403,
+        "end": 404,
         "sha256": "1674ec57dbd55226a5f98694ec55383a91fb7974f94917174dfd0878836309cc"
       },
       "actions": [
@@ -84457,8 +84457,8 @@
       "id": "8cf7a26516801711",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 319,
-        "end": 319,
+        "start": 325,
+        "end": 325,
         "sha256": "155b99c4fcc8c5940e6ad104d7a26b3a079f0b25c675fef1e383f0117d5a59f0"
       },
       "actions": [
@@ -84496,8 +84496,8 @@
       "id": "a9154208c8debc65",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 291,
-        "end": 294,
+        "start": 297,
+        "end": 300,
         "sha256": "865723df71091dc297a11f0a48b7237fb47cc73dff698e5e859975758577b256"
       },
       "actions": [
@@ -84515,8 +84515,8 @@
       "id": "a930773617cb8f6f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 309,
-        "end": 310,
+        "start": 315,
+        "end": 316,
         "sha256": "5714b5016a5823b874d5af4bede595e152076077087c31e8dbc36352847db9f6"
       },
       "actions": [
@@ -88553,8 +88553,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 119,
-        "end": 137,
+        "start": 117,
+        "end": 135,
         "sha256": "a611dd1448f934393f6cd222c439b04079ea9c71806a8907a7c76edfe169481f"
       },
       "why": "Successful local-image observation requires the actual local controller job collection to be empty before returning generationJobCount:0, which the journey checks during the nonprovider import. No journal-load or recovery-success claim is made."
@@ -95234,8 +95234,8 @@
       "id": "33720f3b1724fc03",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 374,
-        "end": 377,
+        "start": 380,
+        "end": 383,
         "sha256": "6a904c79ec0c0e5f9b36259dd596081dbe4d8c47edad699777135187d0af49fa"
       },
       "actions": [
@@ -95272,8 +95272,8 @@
       "id": "ed7558e490db107f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 312,
-        "end": 314,
+        "start": 318,
+        "end": 320,
         "sha256": "8de45ae475fd12c6ac0e8886fa94b189913a287f268e8fbf150e362d4066b27c"
       },
       "actions": [
@@ -96134,8 +96134,8 @@
       "id": "1d8fbd0cc16034c9",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 199,
-        "end": 199,
+        "start": 203,
+        "end": 203,
         "sha256": "c2f220899b72eee623adb8310c1209be841530a23487bcce09afcab17542eab6"
       },
       "actions": [
@@ -96978,9 +96978,9 @@
       "id": "97533ef6aeb0075e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 260,
-        "end": 287,
-        "sha256": "2a5f7b398b7d1c2becdd5b19f62eae46e3140ef4e413e5d167df3a70fb08e2fd"
+        "start": 266,
+        "end": 293,
+        "sha256": "6ca00133a1a363a6f2606b07d5977aec67fb6b5d1c68d670b960653d1d307741"
       },
       "actions": [
         "List one Script scenario and inspect its named groups",
@@ -99084,8 +99084,8 @@
       "id": "697a3568d34c766a",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 248,
-        "end": 254,
+        "start": 254,
+        "end": 260,
         "sha256": "670316272ac7e5906c037a1882487a3c53fd385fec1dfb91e3b75cb307436b80"
       },
       "actions": [
@@ -99184,9 +99184,9 @@
       "id": "f7777456308bd228",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 267,
-        "end": 280,
-        "sha256": "2cae5c2308c0c8847b3b1a68c085908ff043b8a612ebb2656b794aaf9c4b8fa9"
+        "start": 273,
+        "end": 286,
+        "sha256": "3bb9b98b259f3cbd477e259101178601f3ffc19a49c81f76b3e3731b0ecc0252"
       },
       "actions": [
         "tracer app -- test with multiple exact --case selectors"
@@ -99564,8 +99564,8 @@
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
         "start": 162,
-        "end": 178,
-        "sha256": "c198cb494ff4a92dfc34f4324c065222d166cb466634854b5c6e3e2fe9952432"
+        "end": 182,
+        "sha256": "7ecd781a19e8d939050c8ef37f960d51e0379bc9fd78d23037eac9d8b1f1f0ab"
       },
       "actions": [
         "tracer app -- test --list --scenario journeys/native-cloud-project-sync"
@@ -99888,28 +99888,27 @@
       "why": "The same mounted UIKit delegates capture and apply the local word transfer. The CLI verifies the native refusal when Undo changes the project revision."
     },
     {
-      "id": "1ccbba948101e4d9",
+      "id": "62b2b4d512e6f618",
       "source": {
-        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
-        "start": 1378,
-        "end": 1392,
-        "sha256": "670b983a066b600b9197b0353d271a34a97e53daf3ef16ad4dd9279a25857f99"
+        "path": "scripts/run-cli-e2e.mjs",
+        "start": 172,
+        "end": 180,
+        "sha256": "64bb8c619ac97854c72d1372e613cad8d9de6f7ed35bb5fb5d8dcbc72cfaf629"
       },
       "actions": [
-        "start playback in the Storyboard footer",
-        "activate Import image in Storyboard while playback is advancing",
-        "verify the modal covers the workspace and keeps the exact saved project"
+        "list the default and explicit condition-branch discovery catalogues",
+        "feed the default catalogue to the older Worklist and verify the exact selector"
       ],
       "step": {
-        "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 92,
-        "end": 104,
-        "sha256": "276e27402fa698f65d34e22487273a144c419d070141f646c03bd79cb20983bb"
+        "path": "tests/tracer/cli-front-door.mjs",
+        "start": 639,
+        "end": 654,
+        "sha256": "37fbdcda1385c9e27b1f94799ffd2ae460ba918d00ec2ed6ec47a33983a99fe8"
       },
-      "why": "The real UIKit picker opens while playback was active. Its modal blocks the covered controls and the loaded-model observer while saved projects remain exact."
+      "why": "The standard native catalogue preserves strict legacy compatibility and the explicit discovery option publishes the exact downstream branch pins."
     },
     {
-      "id": "36f8b7f9874bb8fe",
+      "id": "a8cf64cd65940511",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Shared/UIKitFileAccess.swift",
         "start": 82,
@@ -99919,15 +99918,36 @@
       "actions": [
         "start playback in the Storyboard footer",
         "activate Import image in Storyboard while playback is advancing",
-        "verify the modal covers the workspace and keeps the exact saved project"
+        "verify the active picker prevents loaded-model observation and keeps the saved project intact"
       ],
       "step": {
         "path": "tests/e2e/journeys/local-images.mjs",
         "start": 92,
-        "end": 104,
-        "sha256": "276e27402fa698f65d34e22487273a144c419d070141f646c03bd79cb20983bb"
+        "end": 102,
+        "sha256": "722f6cac575a73abc805c027cc6e860e32a4b3e10e8d3df8c331e2de808eae58"
       },
-      "why": "The real UIKit picker opens while playback was active. Its modal blocks the covered controls and the loaded-model observer while saved projects remain exact."
+      "why": "The real UIKit picker opens during confirmed playback. Its modal prevents cross-presentation model access while the saved project stays exact."
+    },
+    {
+      "id": "b42f118a483efe8a",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1378,
+        "end": 1392,
+        "sha256": "670b983a066b600b9197b0353d271a34a97e53daf3ef16ad4dd9279a25857f99"
+      },
+      "actions": [
+        "start playback in the Storyboard footer",
+        "activate Import image in Storyboard while playback is advancing",
+        "verify the active picker prevents loaded-model observation and keeps the saved project intact"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/local-images.mjs",
+        "start": 92,
+        "end": 102,
+        "sha256": "722f6cac575a73abc805c027cc6e860e32a4b3e10e8d3df8c331e2de808eae58"
+      },
+      "why": "The real UIKit picker opens during confirmed playback. Its modal prevents cross-presentation model access while the saved project stays exact."
     }
   ],
   "commentExclusions": [
@@ -101429,7 +101449,7 @@
         "end": 14,
         "sha256": "26122fef75831a749712a677d404efaa03ae3aafde91570739dce0f97af497bb"
       },
-      "fileSha256": "991f80890bd27f76108a95ddead032e4762b943b240d16b62d3375f3c92fc2f6"
+      "fileSha256": "90861a476f9a16b7ef79eb0ef0a48ff2a3941a206394e01ba541534e8466d807"
     },
     {
       "id": "258d607537b2d0a0",
@@ -103919,7 +103939,7 @@
         "end": 136,
         "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
       },
-      "fileSha256": "b8414be30fb5a54a71bda91621ce3946efd095e484420ec656435fff94314aca"
+      "fileSha256": "25fc44beb4ba52902f7c5e8cab8293d2875606ee5fd6ef765b26f7536ca7f67c"
     },
     {
       "id": "58267d3510d79430",
@@ -103995,11 +104015,11 @@
       "id": "2ca9d6c803785da5",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 290,
-        "end": 290,
+        "start": 296,
+        "end": 296,
         "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
       },
-      "fileSha256": "b8414be30fb5a54a71bda91621ce3946efd095e484420ec656435fff94314aca"
+      "fileSha256": "25fc44beb4ba52902f7c5e8cab8293d2875606ee5fd6ef765b26f7536ca7f67c"
     },
     {
       "id": "59c64d2ace520826",
@@ -104639,7 +104659,7 @@
         "end": 336,
         "sha256": "d16b1f9020b0bcaa25259c8819584f78cc7989345302fcc4470adac8bfde6d71"
       },
-      "fileSha256": "3d5eec6aa1f518c00b49d9fa98d5a9180815595de1b1ccbd164834113813d9f9"
+      "fileSha256": "98d52de48b2f8bf4d0d330dd9d72da82135d736fefb0b639f9a099bd5ba9bdc3"
     },
     {
       "id": "6553b5e98e6500e0",
@@ -105649,7 +105669,7 @@
         "end": 82,
         "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
       },
-      "fileSha256": "b8414be30fb5a54a71bda91621ce3946efd095e484420ec656435fff94314aca"
+      "fileSha256": "25fc44beb4ba52902f7c5e8cab8293d2875606ee5fd6ef765b26f7536ca7f67c"
     },
     {
       "id": "7e4a8f19915d9b4e",
@@ -106439,7 +106459,7 @@
         "end": 2,
         "sha256": "4ead8511821dcd95c2efee74b114bac02b04cb9252a4405b4149f9930c721b52"
       },
-      "fileSha256": "b8414be30fb5a54a71bda91621ce3946efd095e484420ec656435fff94314aca"
+      "fileSha256": "25fc44beb4ba52902f7c5e8cab8293d2875606ee5fd6ef765b26f7536ca7f67c"
     },
     {
       "id": "8e40d7512c7266e1",
@@ -106695,11 +106715,11 @@
       "id": "944737997e16957f",
       "source": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 120,
-        "end": 120,
+        "start": 118,
+        "end": 118,
         "sha256": "28281abde8149cce234d70e1aeec50318dd7b3bc141801b3c792807d6eae867e"
       },
-      "fileSha256": "991f80890bd27f76108a95ddead032e4762b943b240d16b62d3375f3c92fc2f6"
+      "fileSha256": "90861a476f9a16b7ef79eb0ef0a48ff2a3941a206394e01ba541534e8466d807"
     },
     {
       "id": "94a5e4014507cd3e",
@@ -106849,7 +106869,7 @@
         "end": 296,
         "sha256": "b1ae110c8d7fd2ea91a819152e6f4434d7199cf755bded5dcf0424b23396379b"
       },
-      "fileSha256": "3d5eec6aa1f518c00b49d9fa98d5a9180815595de1b1ccbd164834113813d9f9"
+      "fileSha256": "98d52de48b2f8bf4d0d330dd9d72da82135d736fefb0b639f9a099bd5ba9bdc3"
     },
     {
       "id": "9669da48463dfea3",
@@ -107079,7 +107099,7 @@
         "end": 3,
         "sha256": "c5ebf59b9856b043cecb2bb51903c03d02c4b3cc0d73016cc7b0e15ca9b78d19"
       },
-      "fileSha256": "3d5eec6aa1f518c00b49d9fa98d5a9180815595de1b1ccbd164834113813d9f9"
+      "fileSha256": "98d52de48b2f8bf4d0d330dd9d72da82135d736fefb0b639f9a099bd5ba9bdc3"
     },
     {
       "id": "9a9bdad371295cf2",
@@ -109129,7 +109149,7 @@
         "end": 39,
         "sha256": "da22a6a09e9a6d7bbf1e35ecdac04e969fad1ac1a051025596a84831ff070202"
       },
-      "fileSha256": "b8414be30fb5a54a71bda91621ce3946efd095e484420ec656435fff94314aca"
+      "fileSha256": "25fc44beb4ba52902f7c5e8cab8293d2875606ee5fd6ef765b26f7536ca7f67c"
     },
     {
       "id": "c3fa07d2ab6ca6a5",
@@ -110105,11 +110125,11 @@
       "id": "d8ab343c9c1592c1",
       "source": {
         "path": "tests/e2e/journeys/local-images.mjs",
-        "start": 125,
-        "end": 125,
+        "start": 123,
+        "end": 123,
         "sha256": "fa5f6c6f5dec1b1af2de8f32b2d593d5b122d4c50020aa7b2de85bebcc77385a"
       },
-      "fileSha256": "991f80890bd27f76108a95ddead032e4762b943b240d16b62d3375f3c92fc2f6"
+      "fileSha256": "90861a476f9a16b7ef79eb0ef0a48ff2a3941a206394e01ba541534e8466d807"
     },
     {
       "id": "d8b2a5a4d8f1067a",

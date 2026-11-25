@@ -636,8 +636,24 @@ throw new Error('wrapper-only error text', { cause });
     assert.deepEqual(JSON.parse(run(['--root', analysis, 'measure', 'check', '--json']).stdout).invalid, []);
     await rm(archive, { recursive: true });
   });
+  await journey('keep native discovery compatible with older Tracer worklists', async () => {
+    const args = ['app', '--', 'test', '--list', '--scenario', 'journeys/picture-coverage'];
+    const legacy = JSON.parse(run(args).stdout);
+    const extended = JSON.parse(run([...args, '--condition-branches']).stdout);
+    const [legacyAction] = legacy.scenarios[0].groupActions['storyboard-word-drop'];
+    const [extendedAction] = extended.scenarios[0].groupActions['storyboard-word-drop'];
+    const { branch, ...originalAction } = extendedAction;
+    assert.equal(branch.path, 'apps/catalyst/ScrivUIKit/Images/StoryboardInteractionState.swift');
+    assert.deepEqual(legacyAction, originalAction);
+    const routes = join(output, 'legacy-native-catalog.json');
+    await writeFile(routes, JSON.stringify(legacy));
+    const result = JSON.parse(run(['worklist', '--routes', routes, '--action', legacyAction.id, '--json']).stdout);
+    assert.deepEqual(result.actionCases.items[0].cases.map(row => row.argv),
+      [['test', '--case', 'journeys/picture-coverage#storyboard-word-drop']]);
+    run(['app', '--', 'test', '--condition-branches'], 2);
+  });
   await journey('verify the exact source of each declared native action', async () => {
-    const { scenarios } = JSON.parse(run(['app', '--', 'test', '--list']).stdout);
+    const { scenarios } = JSON.parse(run(['app', '--', 'test', '--list', '--condition-branches']).stdout);
     for (const { id, groups, groupActions } of scenarios) {
       for (const [group, actions] of Object.entries(groupActions ?? {})) {
         assert.ok(groups.includes(group));
