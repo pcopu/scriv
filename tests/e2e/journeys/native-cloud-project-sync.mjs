@@ -9,10 +9,14 @@ import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, interrupte
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
 
-const groups = ['sync', 'lease-renewal', 'lease-contention', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'sign-in-recovery', 'sign-in-rate-limit', 'discussion-pages', 'legacy-local-copy', 'reconnect-empty-cloud', 'replay-page-guards'];
+const groups = ['sync', 'lease-renewal', 'lease-contention', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'sign-in-recovery', 'sign-in-rate-limit', 'discussion-pages', 'legacy-local-copy', 'reconnect-empty-cloud', 'reconnect-stale-import-snapshot', 'replay-page-guards'];
 const editLine = { id: 'edit-line', command: 'key', trigger: 'Command-Return', entryPoint: {
   path: 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift', start: 1069, end: 1088,
   sha256: 'f25e5f1bb2ff90cab94f0d8e5fc3de3acbd518d08e2ece840e9dd7f1475f8b1c',
+} };
+const openLinkedProject = { id: 'open-local-project', command: 'activate', trigger: 'Open project', entryPoint: {
+  path: 'apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift', start: 173, end: 177,
+  sha256: 'c3d46efc0f3cde003b14837376b94c0860d878ebafa83942e18d9116cca38a05',
 } };
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
@@ -29,11 +33,8 @@ if (args.length === 1 && args[0] === '--list-cases') {
         path: 'apps/catalyst/ScrivUIKit/App/ScrivWorkspaceController.swift', start: 130, end: 130,
         sha256: '3892e5a99eef6985c79166915b8186f1caa6ec06917f404682b244f910abc9ed',
       } }],
-    'reconnect-empty-cloud': [{ id: 'open-local-project', command: 'activate', trigger: 'Open project',
-      condition: 'linked-local-copy-has-an-empty-cloud-project', entryPoint: {
-        path: 'apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift', start: 173, end: 177,
-        sha256: 'c3d46efc0f3cde003b14837376b94c0860d878ebafa83942e18d9116cca38a05',
-      } }],
+    'reconnect-empty-cloud': [{ ...openLinkedProject, condition: 'linked-local-copy-has-an-empty-cloud-project' }],
+    'reconnect-stale-import-snapshot': [{ ...openLinkedProject, condition: 'initial-import-snapshot-arrives-after-background-replay' }],
     'replay-page-guards': ['final-replay-page-ahead-of-cursor', 'background-replay-receives-empty-page-with-more-events'].map(condition => ({
       id: 'sync-project', command: 'activate', trigger: 'Sync this script', condition, entryPoint: {
         path: 'apps/catalyst/ScrivUIKit/Account/ScrivAccountController.swift', start: 24, end: 24,
@@ -379,8 +380,8 @@ async function runProjectJourney() {
   await click('Close Projects', true);
   await control(workspaceProject, true);
 
-  if (args[1] === 'reconnect-empty-cloud') {
-    await verifyEmptyCloudReconnect(original);
+  if (['reconnect-empty-cloud', 'reconnect-stale-import-snapshot'].includes(args[1])) {
+    await verifyEmptyCloudReconnect(original, { staleSnapshot: args[1] === 'reconnect-stale-import-snapshot' });
     await fixture.assertNoOutbound();
     return;
   }
@@ -660,7 +661,7 @@ async function verifyLegacyLocalCopy(linked) {
   console.log('PASS: identical legacy copy reconnects and differing legacy draft stays on disk');
 }
 
-async function verifyEmptyCloudReconnect(original) {
+async function verifyEmptyCloudReconnect(original, { staleSnapshot }) {
   step = 'stage an owned local copy whose cloud project was created before its script was uploaded';
   const remote = await fixture.createEmptyCloudCopy(original.title);
   assert.deepEqual(remote.entries, []);
@@ -683,7 +684,33 @@ async function verifyEmptyCloudReconnect(original) {
   await rename(staged, metadataPath);
 
   step = 'open the linked script and let normal synchronization fill the empty cloud project';
+  if (staleSnapshot) assert.equal(await fixture.armImportSnapshot(remote.id), true);
   await openLocalFromProjects(linked);
+  if (staleSnapshot) {
+    step = 'hold the original snapshot until background replay has advanced the cloud cursor';
+    const deadline = Date.now() + 20000;
+    let state = await fixture.importSnapshotState();
+    while (state.replayedThrough === undefined && Date.now() < deadline) {
+      await delay(100);
+      state = await fixture.importSnapshotState();
+    }
+    assert.equal(state.phase, 'held');
+    assert.equal(state.oldHead, remote.headSeq);
+    assert.ok(state.sequence > state.oldHead);
+    assert.equal(state.replayedThrough, state.sequence);
+    assert.equal(await fixture.releaseImportSnapshot(), true);
+    const returnedBy = Date.now() + 10000;
+    for (let returned = await fixture.importSnapshotState();;) {
+      if (returned.replayAfterReturn !== undefined) {
+        assert.equal(returned.phase, 'returned');
+        assert.equal(returned.replayAfterReturn, state.sequence);
+        break;
+      }
+      assert.ok(Date.now() < returnedBy, 'The app must replay from the newer cursor after receiving the stale snapshot');
+      await delay(100);
+      returned = await fixture.importSnapshotState();
+    }
+  }
   await control(node => workspaceProject(node) && node.title === linked.title, true);
   const until = Date.now() + 15_000;
   let seeded = await fixture.emptyCloudCopy();

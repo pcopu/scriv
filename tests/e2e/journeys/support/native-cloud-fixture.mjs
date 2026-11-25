@@ -96,6 +96,9 @@ export async function startNativeCloudFixture() {
       stagedEditState: () => response('staged-edit-state'),
       armReplayPage: (projectId, mode) => response(['arm-replay-page', { projectId, mode }]),
       replayPageRequests: () => response('replay-page-requests'),
+      armImportSnapshot: projectId => response(['arm-import-snapshot', projectId]),
+      importSnapshotState: () => response('import-snapshot-state'),
+      releaseImportSnapshot: () => response('release-import-snapshot'),
       prepareHostedImage: input => response(['prepare-hosted-image', input]),
       repairHostedImage: () => response('repair-hosted-image'),
       hostedImageResponses: () => response('hosted-image-responses'),
@@ -171,6 +174,7 @@ async function startWorker(root) {
       let invitations;
       let history;
       let replayPage;
+      let importSnapshot;
       let discussionPages;
       let editingLease;
       let stagedEdit;
@@ -210,6 +214,49 @@ async function startWorker(root) {
         async fetch(request) {
           const upstream = () => worker.fetch(request, this.env, this.ctx);
           const { pathname: path, searchParams } = new URL(request.url);
+          if (importSnapshot && request.headers.has('authorization')) {
+            const state = importSnapshot;
+            if (request.method === 'GET' && path === state.path + '/snapshot' && !searchParams.size) {
+              if (state.phase === 'armed') {
+                const response = await upstream();
+                if (!response.ok) return response;
+                const body = await response.clone().text();
+                const snapshot = JSON.parse(body);
+                if (!snapshot.canImport || snapshot.items.length) throw new Error('Expected the real empty snapshot');
+                Object.assign(state, { phase: 'awaiting-import', body, oldHead: snapshot.headSeq });
+                return response;
+              }
+              if (state.phase === 'imported') {
+                state.phase = 'held';
+                // Hold the genuine pre-import snapshot while another request
+                // can read the real Worker state and advance the app cursor.
+                await new Promise((resolve, reject) => {
+                  const timeout = setTimeout(() => reject(new Error('The stale import snapshot was not released')), 25000);
+                  state.release = () => { clearTimeout(timeout); resolve(); };
+                });
+                state.phase = 'returned';
+                return new Response(state.body, {headers: {'content-type': 'application/json'}});
+              }
+            }
+            if (state.phase === 'awaiting-import' && request.method === 'POST' && path === state.path + '/import') {
+              const response = await upstream();
+              if (!response.ok) return response;
+              const { seq, snapshotRequired } = await response.clone().json();
+              if (!Number.isSafeInteger(seq) || seq <= state.oldHead || !snapshotRequired)
+                throw new Error('Expected the canonical import event');
+              Object.assign(state, { phase: 'imported', sequence: seq });
+              return response;
+            }
+            if (request.method === 'GET' && path === state.path + '/events' && ['held', 'returned'].includes(state.phase)) {
+              const response = await upstream();
+              const after = Number(searchParams.get('after'));
+              if (response.ok && after === state.sequence) {
+                if (state.phase === 'held') state.replayedThrough = after;
+                else state.replayAfterReturn ??= after;
+              }
+              return response;
+            }
+          }
           if (discussionPages && path === discussionPages.path && request.method === 'GET' && searchParams.get('scope') === 'all') {
             const response = await upstream();
             if (response.ok) {
@@ -528,6 +575,21 @@ async function startWorker(root) {
           return true;
         }
         replayPageRequests() { return replayPage.requests; }
+        armImportSnapshot(projectId) {
+          if (importSnapshot || !/^[a-f0-9-]{36}$/i.test(projectId)) throw new Error('Use one owned empty cloud project');
+          importSnapshot = { path: '/v1/projects/' + projectId, phase: 'armed' };
+          return true;
+        }
+        importSnapshotState() {
+          const { phase, oldHead, sequence, replayedThrough, replayAfterReturn } = importSnapshot;
+          return { phase, oldHead, sequence, replayedThrough, replayAfterReturn };
+        }
+        releaseImportSnapshot() {
+          if (importSnapshot.phase !== 'held' || importSnapshot.replayedThrough !== importSnapshot.sequence)
+            throw new Error('Replay must advance before the stale snapshot is released');
+          importSnapshot.release();
+          return true;
+        }
         watchHistory(path, seq) {
           if (history || !Number.isSafeInteger(seq)) throw new Error('Use one owned project import revision');
           history = { path, seq, events: [], snapshots: [], mode: null };
@@ -985,6 +1047,8 @@ async function startWorker(root) {
       holdCompetingEditingLease, releaseCompetingEditingLease,
       watchStagedEdit: id => nativeWorker.watchStagedEdit(id), stagedEditState: () => nativeWorker.stagedEditState(),
       armReplayPage: scope => nativeWorker.armReplayPage(scope), replayPageRequests: () => nativeWorker.replayPageRequests(),
+      armImportSnapshot: id => nativeWorker.armImportSnapshot(id), importSnapshotState: () => nativeWorker.importSnapshotState(),
+      releaseImportSnapshot: () => nativeWorker.releaseImportSnapshot(),
       prepareHostedImage, repairHostedImage, hostedImageResponses: () => nativeWorker.hostedImageResponses(),
       openHostedPeer, hostedPeerInbox, sendHostedPeerSignal,
       prepareSharedGeneration, sharedGenerationState, removeSharedHostedReplica,
@@ -1042,6 +1106,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'open-hosted-peer': worker.openHostedPeer, 'hosted-peer-inbox': worker.hostedPeerInbox, 'send-hosted-peer-signal': worker.sendHostedPeerSignal,
         'watch-staged-edit': worker.watchStagedEdit, 'staged-edit-state': worker.stagedEditState,
         'arm-replay-page': worker.armReplayPage, 'replay-page-requests': worker.replayPageRequests,
+        'arm-import-snapshot': worker.armImportSnapshot, 'import-snapshot-state': worker.importSnapshotState,
+        'release-import-snapshot': worker.releaseImportSnapshot,
         'hosted-image-responses': worker.hostedImageResponses, 'prepare-shared-generation': worker.prepareSharedGeneration,
         'shared-generation-state': worker.sharedGenerationState, 'remove-shared-hosted-replica': worker.removeSharedHostedReplica,
         'prepare-invitations': worker.prepareInvitations,
