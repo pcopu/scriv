@@ -94891,7 +94891,7 @@
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
         "start": 188,
         "end": 203,
-        "sha256": "a657fbf909245e2b85d8bbfb30998ddfb8eab5549e04d1e62afe09d9076b2ff1"
+        "sha256": "df223fc2e1e01bd06c5189432d71ea993fe8dd13953ba3734d54daec86b1eb28"
       },
       "why": "The user-visible review control remains available while a valid draft still refers to old source. An explicit activation applies that draft and removes the review state. Discard and retry are outside this witness."
     },
@@ -94912,7 +94912,7 @@
         "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
         "start": 190,
         "end": 205,
-        "sha256": "1c08a2120b248cfdfcf763ea2e67a281cc556bf86808e16ecb9e0496be31c57a"
+        "sha256": "2a12b0c41143f4265594f0b5d9b1a82dbe3db5dd3f09ac147f49e5a9e7438252"
       },
       "why": "A real retained draft stays separate from the project after Undo. Explicit review applies only the intended prompt and clears the original journal after persistence. Witnesses successful rebase only."
     },

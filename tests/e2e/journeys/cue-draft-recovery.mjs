@@ -196,7 +196,7 @@ if (process.argv.includes('--list-cases')) {
     assert.equal(revisedDraft[0].record.text, recovery);
     assert.deepEqual((await session.command('loaded-project')).project, restored);
     assert.deepEqual(sortedProjects(await session.command('persisted-projects')), sortedProjects([sentinel, restored]));
-    await review.activate(node => node.title === 'Use this draft' || node.label === 'Use this draft');
+    await review.activate(node => node.type === 'UIButton' && node.title === 'Use this draft');
     const rebased = await savedDirection(restored, recovery);
     await session.waitFor(nodes => !nodes.some(node => node.text === reviewStatus
       || node.text === 'Direction saved in local recovery until the project save completes.'));
