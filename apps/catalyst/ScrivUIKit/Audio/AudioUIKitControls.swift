@@ -203,6 +203,19 @@ final class MeasuredAudioWaveformView: UIView {
             return true
         }
     }
+    #if SCRIV_CLI_AUTOMATION
+    func cliDrag(from: Int, to: Int) -> Bool {
+        guard (0...sourceDurationMs).contains(from), (0...sourceDurationMs).contains(to), plot.width > 0 else { return false }
+        let start = CGPoint(x: x(from), y: plot.midY)
+        let end = CGPoint(x: x(to), y: plot.midY)
+        let begin = ScrivCLITimingPan(point: start, phase: .began)
+        guard gestureRecognizerShouldBegin(begin) else { return false }
+        panned(begin)
+        panned(ScrivCLITimingPan(point: end, phase: .changed))
+        panned(ScrivCLITimingPan(point: end, phase: .ended))
+        return true
+    }
+    #endif
 }
 
 private func drawAudioPlayhead(_ context: CGContext, x: CGFloat, top: CGFloat, bottom: CGFloat) {
@@ -276,4 +289,23 @@ final class ManualWordTimelineView: UIView {
         if draggingStart { onRangeChanged?(min(word.endMs - 1, max(0, time))...word.endMs) }
         else { onRangeChanged?(word.startMs...min(durationMs, max(word.startMs + 1, time))) }
     }
+    #if SCRIV_CLI_AUTOMATION
+    func cliTap(at time: Int, onTrack: Bool) -> Bool {
+        guard (0...durationMs).contains(time), bounds.width > 16 else { return false }
+        tapped(ScrivCLITimingTap(point: CGPoint(x: x(time), y: onTrack ? 30 : 57)))
+        return true
+    }
+
+    func cliDrag(from: Int, to: Int) -> Bool {
+        guard (0...durationMs).contains(from), (0...durationMs).contains(to), bounds.width > 16 else { return false }
+        let start = CGPoint(x: x(from), y: 30)
+        let end = CGPoint(x: x(to), y: 30)
+        let begin = ScrivCLITimingPan(point: start, phase: .began)
+        guard gestureRecognizerShouldBegin(begin) else { return false }
+        panned(begin)
+        panned(ScrivCLITimingPan(point: end, phase: .changed))
+        panned(ScrivCLITimingPan(point: end, phase: .ended))
+        return true
+    }
+    #endif
 }

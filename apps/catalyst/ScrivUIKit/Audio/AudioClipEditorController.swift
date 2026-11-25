@@ -150,6 +150,8 @@ final class AudioClipEditorController: ScrivScreenController {
         } catch { showNotice(error.localizedDescription) }
     }
     #if SCRIV_CLI_AUTOMATION
+    var cliWaveform: MeasuredAudioWaveformView { waveform }
+
     /// Boolean-only witnesses keep the editor's private snapshot private. The
     /// observer permits changed clip values so full-model comparisons expose
     /// unintended mutations; dispatch additionally requires the original value.

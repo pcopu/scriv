@@ -9,6 +9,10 @@ final class WordTimingEditorController: ScrivScreenController {
     var cliOwnsCurrentScene: Bool {
         contextIsCurrent && store.selectedSceneID == draft.original.sceneId
     }
+    var cliTimeline: ManualWordTimelineView? {
+        guard leaseHeld, !closed, store.project.entries.contains(draft.original) else { return nil }
+        return timeline
+    }
 #endif
     private var draft: ManualWordTimingDraft
     private let chips = UIStackView()

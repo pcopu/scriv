@@ -4,7 +4,7 @@ import UIKit
 @MainActor
 enum ScrivCLIMenuActions {
     static let localScopes = ["audio-library-actions"]
-    static let localCommands = ["resolve-audio-removal"]
+    static let localCommands = ["resolve-audio-removal"] + ScrivCLITimingControls.commands
 
     static func dispatch(_ request: [String: Any], view: UIView, window: UIWindow,
                          windows: @autoclosure () -> [UIWindow],
@@ -40,7 +40,9 @@ enum ScrivCLIMenuActions {
 
     static func complete(_ command: String, request: [String: Any], window: UIWindow,
                          run: ScrivCLIRunCapability) throws -> [String: Bool]? {
-        guard command == "resolve-audio-removal" else { return nil }
+        guard command == "resolve-audio-removal" else {
+            return try ScrivCLITimingControls.dispatch(command, request: request, window: window, run: run)
+        }
         guard Set(request.keys) == ["id", "command", "decision"],
               let decision = request["decision"] as? String, decision == "cancel" || decision == "remove",
               let library = audioLibrary(in: window, run: run),

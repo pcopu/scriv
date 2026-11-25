@@ -11,12 +11,15 @@ import { audioLibrarySteps, sortedProjects } from './support/audio-library-steps
 import { audioBoundaryCases, runAudioBoundarySteps } from './support/audio-boundary-steps.mjs';
 import { sourceShrinkCases, runAudioSourceShrinkSteps } from './support/audio-source-shrink-steps.mjs';
 import { attachmentCases, directionAttachmentCases, runAudioAttachmentSteps } from './support/audio-attachment-steps.mjs';
+import { timingGestureCases, runTimingGestureSteps } from './support/audio-timing-gesture-steps.mjs';
 
 const audioLibrarySource = 'apps/catalyst/ScrivUIKit/Audio/AudioLibraryController.swift';
+const timingControlsSource = 'apps/catalyst/ScrivUIKit/Audio/AudioUIKitControls.swift';
+const timingDispatchSource = 'apps/catalyst/ScrivUIKit/Automation/ScrivCLITimingControls.swift';
 // AUT-J13/AUT-J14 use the isolated native app and synthetic recordings.
 const defaultGroups = ['import', 'mix', 'timing', 'attachment', 'attachment-direction', 'timing-source-shrink', 'timing-boundaries'];
 // Each accepted interaction group runs in its own isolated app session.
-const groups = [...defaultGroups, 'native-menu'];
+const groups = [...defaultGroups, 'native-menu', 'timing-gestures'];
 const args = process.argv.slice(2);
 assert.ok(args.every((arg, index) => arg === '--list-cases' || arg === '--group'
   || args[index - 1] === '--group' && groups.includes(arg)), 'Unknown argument');
@@ -32,6 +35,7 @@ const cases = {
   mix: ['scene-import', 'library-import-rejected', 'clip-volume', 'clip-mute', 'clip-unmute',
     'reopen-library', 'master-volume', 'master-mute', 'master-unmute', 'browser-reopen'],
   'native-menu': ['scene-import', 'cancel-removal', 'remove-clip', 'present-native-picker'],
+  'timing-gestures': timingGestureCases,
   timing: ['dialogue-import', 'baseline-trim', 'cancel-draft-1', 'cancel-draft-2', 'step-source-in',
     ...invalidTimingDrafts.map(test => `reject-${test.name}`), 'correct-and-apply',
     'reopen-noop', 'browser-reopen'],
@@ -39,6 +43,7 @@ const cases = {
 if (args.includes('--list-cases')) {
   console.log(JSON.stringify({ journeys: ['AUT-J13', 'AUT-J14'], groups, nativeVerified: false,
     cases: selected.flatMap(group => cases[group].map(id => ({ group, id }))),
+    groupWitnessPaths: { 'timing-gestures': ['tests/e2e/journeys/support/audio-timing-gesture-steps.mjs'] },
     groupActions: {
       import: [{ id: 'import-local-audio', command: 'import-audio', condition: 'storage-destination-leaves-package',
         entryPoint: {
@@ -62,11 +67,33 @@ if (args.includes('--list-cases')) {
           branch: { path: audioLibrarySource, start: 157, end: 163,
             sha256: 'ec169c8cb5f5b42ffcbfea86c00b54c949b25b21660dbdd328ffd7b8ee1dd174' } },
       ],
+      'timing-gestures': [
+        { id: 'audio-trim-handle-drag', command: 'timing-drag', condition: 'waveform-near-and-far-trim-handles',
+          entryPoint: { path: timingDispatchSource, start: 16, end: 25,
+            sha256: 'bfe2369cf3313c0155e37ff1134062d03e6ce001983913e136b6c88d74a8a835' },
+          branch: { path: timingControlsSource, start: 176, end: 189,
+            sha256: 'cd02645050a7cbc35850c7e73738f4a90c724f651bd941e2e0c9e507bc0692ac' } },
+        { id: 'audio-trim-accessibility-adjustment', command: 'audio-trim-action', condition: 'adjust-start-and-end-of-draft-trim',
+          entryPoint: { path: timingDispatchSource, start: 31, end: 39,
+            sha256: 'e8a6f0e350794618139e4fdfd48239992473aed2d36d081fcfdc07771595c825' },
+          branch: { path: timingControlsSource, start: 198, end: 205,
+            sha256: '0d7601d101b717a0741d0b91c97e87e94ba318940c9027a19a9c07f7f4f0020d' } },
+        { id: 'word-timing-timeline-tap', command: 'timing-tap', condition: 'tap-timing-track-and-ruler',
+          entryPoint: { path: timingDispatchSource, start: 26, end: 30,
+            sha256: '0431cb4d5abb96a2660b39ef83a6f5f2edc12178243c3afc28da283c7a1da699' },
+          branch: { path: timingControlsSource, start: 273, end: 277,
+            sha256: '8e21f1f1033760f5ad58e2cf85b9a8c58f3980ebfda4506abab7824a65a626c8' } },
+        { id: 'word-timing-handle-drag', command: 'timing-drag', condition: 'timeline-near-and-far-word-handles',
+          entryPoint: { path: timingDispatchSource, start: 16, end: 25,
+            sha256: 'bfe2369cf3313c0155e37ff1134062d03e6ce001983913e136b6c88d74a8a835' },
+          branch: { path: timingControlsSource, start: 278, end: 291,
+            sha256: '006c4c69382867ba99aeb5b87f2ce1f8511c8f709c29ac22fc7cdf6f1c0ef130' } },
+      ],
     },
     partialBaselineIDs: [`${draftBaseline}::0001`, `${draftBaseline}::0002`, `${draftBaseline}::0003`, `${draftBaseline}::0004`],
     relatedUncoveredBaselineIDs: [`${trackBaseline}::0001`, `${trackBaseline}::0002`, `${trackBaseline}::0005`, `${trackBaseline}::0006`],
     excluded: ['document picker file selection/cancel', 'microphone', 'audible playback/source-position',
-      'waveform crop/drag/pixels', 'physical/native attachment menu interaction', 'removed-entry draft rejection',
+      'waveform crop/pixels', 'hardware gesture input', 'physical/native attachment menu interaction', 'removed-entry draft rejection',
       'stale concurrent draft', 'arbitrary storage faults', 'corruption/repair/package export'],
   }, null, 2));
 } else {
@@ -136,6 +163,11 @@ async function runGroup(group) {
     if (group === 'native-menu') {
       assert.ok(capabilities.semanticMenuActionScopes.includes('audio-library-actions'), 'Matching compiled app supports the Audio Library menus');
       assert.ok(capabilities.semanticApplicationCommands.includes('resolve-audio-removal'), 'Matching compiled app supports the owned removal decision');
+    }
+    if (group === 'timing-gestures') {
+      for (const command of ['timing-drag', 'timing-tap', 'audio-trim-action']) {
+        assert.ok(capabilities.semanticApplicationCommands.includes(command), `Matching compiled app supports ${command}`);
+      }
     }
     await ui.tab('Script');
     await session.command('key', { input: 's', modifiers: ['command'] });
@@ -325,6 +357,9 @@ async function runGroup(group) {
         // The native chooser owns the interaction now. No external file is selected.
         await unchanged(before);
       });
+    } else if (group === 'timing-gestures') {
+      await run('scene-import', () => importClip('scene'));
+      current = await runTimingGestureSteps({ session, ui, run, saved, unchanged, mutation, current });
     } else if (group === 'timing-boundaries') {
       await run('dialogue-import', () => importClip('selected-dialogue', { entryId: 'line1' }));
       current = await runAudioBoundarySteps({ session, ui, run, saved, unchanged, mutation, current });
