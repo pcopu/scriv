@@ -35,6 +35,15 @@ session receipts, and capture intervals carry the selected group. Use the
 group name when labeling its evidence so a passing focused run identifies the
 conditions that ran.
 
+The `owned-duration-dialog` group of `journeys/script-structure` opens the
+Script row’s Edit owned duration button through ordinary CLI activation. It
+checks the attached dialog and its initial value, edits the Seconds field,
+and compares both saved packages and the complete loaded model before and
+after the pending draft. Apply and Cancel are listed in the public controller
+state. The current UIKit CLI snapshot exposes the field, and Apply and Cancel
+still need a verified public activation route. Scene renaming is excluded by
+the current `script-scenes` menu scope.
+
 The existing `journeys/cue-draft-recovery` scenario scopes “Discard draft…” to
 the image-direction composer. The confirmation sheet exposes the ordinary
 `activate` action for its Cancel and Discard buttons. The journey checks that

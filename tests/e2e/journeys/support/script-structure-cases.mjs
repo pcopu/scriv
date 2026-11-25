@@ -24,10 +24,17 @@ export const scriptStructureCases = [{
     'explicit confirmation and cancellation for entry and scene removal',
     'Undo/Redo restores and replays scene removal; unrelated package stays identical',
     'moving between consecutive representable orders renumbers only the affected scene'],
+}, {
+  group: 'owned-duration-dialog', id: 'draft-owned-duration-for-direction',
+  nativeVerified: false, retirementAllowed: false,
+  route: 'import-json → Script row Edit owned duration → presented-alerts → type into Seconds',
+  sourceRoutes: ['ScriptEntryRow.durationButton → ScriptScreenController.editDuration'],
+  oracles: ['exact attached Owned duration dialog for the imported direction, including Cancel and Apply presentation',
+    'the covered workspace is unavailable and a pending field draft leaves the complete loaded and saved projects exact'],
 }];
 export const structureExcluded = [
   'physical menu presentation/dismissal',
-  'rename-scene alert and physical row context menu interactions',
+  'rename-scene alert, owned-duration alert button activation and physical row context menu interactions',
   'speaker assignment, lease/cloud/session paths',
   'frozen-method retirement and process relaunch',
 ];

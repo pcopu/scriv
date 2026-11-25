@@ -98470,6 +98470,28 @@
         "sha256": "0d947c15bf41c4980095a71b8a249ed32404f61d58c3de740eac57f73fc95946"
       },
       "why": "A refused shared job creation leaves the original job running locally and the isolated Worker has no job or hosted artifact."
+    },
+    {
+      "id": "4f653244cb83e05b",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptScreenController.swift",
+        "start": 488,
+        "end": 494,
+        "sha256": "8e5f336887722f587a63a3c122a89b512c7e4d0b0ade37f30c26c17a14a8707f"
+      },
+      "actions": [
+        "activate the unique Edit owned duration control in the proven Script entry row",
+        "observe the attached Owned duration alert and its Seconds field",
+        "text on the exact Seconds field with 1.25",
+        "observe the draft and compare the loaded model and both saved packages"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/script-owned-duration-steps.mjs",
+        "start": 35,
+        "end": 55,
+        "sha256": "f4fb3d63befb06e7977a96a543a7dd55016818d419ddf9c9856a93c1ae782656"
+      },
+      "why": "The native owned-duration-dialog group checks presentation, initial 0.000, edits via the public text command, and verifies the draft does not mutate the loaded model or packages. Apply and Cancel are observed as actions in the controller."
     }
   ],
   "commentExclusions": [
@@ -99201,7 +99223,7 @@
         "end": 6,
         "sha256": "4ce71b4c0e09aa1c377d5c13312c80774d8d37c40a2c3227cf22891c685e4d44"
       },
-      "fileSha256": "465f3a1fe93b951527f2d2d4c98317a9391aecfa49d3cd868e25c46bde24d8d2"
+      "fileSha256": "b52ade1497285fcc0299b2533bd60ecef428eb5a18c542ed21a95dc5aba0a5eb"
     },
     {
       "id": "14070ada6645e4d2",
@@ -100811,7 +100833,7 @@
         "end": 50,
         "sha256": "936c001ad29cd2301b0b5b3141c0b92a919a8a59578aaa27f5de600ed7e0e648"
       },
-      "fileSha256": "50ada16eec979cddf412075a2365059bac6ffa0447b25f4bd2f5f863f53d34e4"
+      "fileSha256": "bfe9e6fa32a4a98fbf192ce90b55e7bae347dd62e145640092c27f39faccfeca"
     },
     {
       "id": "35b5683f0e27971b",
@@ -103251,7 +103273,7 @@
         "end": 1,
         "sha256": "ef36205faffd3ae967869975744f3b264629f6eb58784b8596ffdd4b95450610"
       },
-      "fileSha256": "b2bdd74d597c12c1ecc9e9e35b3c0fc40688eb11518d0602709eb52b0b3cc5c3"
+      "fileSha256": "0743193ee30778ea6370aa9a074fe77ae947af9ecc8f4c7f287c9542a8299795"
     },
     {
       "id": "686d9ee6b76e23a4",
@@ -104461,7 +104483,7 @@
         "end": 40,
         "sha256": "7ef6744516c1efb7692258f2837d3033e3e89878e8ca73b45f102be6bf4fa8df"
       },
-      "fileSha256": "de90a7687f688e7ce1130c98a92e6dbcc3f61d32e44be9e820150224e90e5e59"
+      "fileSha256": "8f74125b6a800c4c4e66cb8a4058ef4074c10bad2bf61f7e11d47ce8ae3455b8"
     },
     {
       "id": "83e299c16797b741",
@@ -105427,11 +105449,11 @@
       "id": "9723ac44ce6c9624",
       "source": {
         "path": "cli/coverage-session.mjs",
-        "start": 69,
-        "end": 70,
+        "start": 72,
+        "end": 73,
         "sha256": "252800a1211f72c8bea4e4b0dc0575a949c72e90911bbd6b8cbb822d4495ab85"
       },
-      "fileSha256": "b2bdd74d597c12c1ecc9e9e35b3c0fc40688eb11518d0602709eb52b0b3cc5c3"
+      "fileSha256": "0743193ee30778ea6370aa9a074fe77ae947af9ecc8f4c7f287c9542a8299795"
     },
     {
       "id": "9728cadb7100156c",
@@ -106261,7 +106283,7 @@
         "end": 291,
         "sha256": "ab0126702db24657bf164332075c99d99cd2af7ebeaa1494135966abe11273df"
       },
-      "fileSha256": "de90a7687f688e7ce1130c98a92e6dbcc3f61d32e44be9e820150224e90e5e59"
+      "fileSha256": "8f74125b6a800c4c4e66cb8a4058ef4074c10bad2bf61f7e11d47ce8ae3455b8"
     },
     {
       "id": "a74883d0a1e2be9c",
@@ -107291,7 +107313,7 @@
         "end": 139,
         "sha256": "64b42861c5851f8e02f73c3666f0991bcda0269b34023dc60482887c61d2b92b"
       },
-      "fileSha256": "50ada16eec979cddf412075a2365059bac6ffa0447b25f4bd2f5f863f53d34e4"
+      "fileSha256": "bfe9e6fa32a4a98fbf192ce90b55e7bae347dd62e145640092c27f39faccfeca"
     },
     {
       "id": "bc1833afa9de227d",
@@ -107721,7 +107743,7 @@
         "end": 1,
         "sha256": "55e9b601fd66ab814c615457d88c73bccb6dca1c69745f73b953e71646f7edf2"
       },
-      "fileSha256": "50ada16eec979cddf412075a2365059bac6ffa0447b25f4bd2f5f863f53d34e4"
+      "fileSha256": "bfe9e6fa32a4a98fbf192ce90b55e7bae347dd62e145640092c27f39faccfeca"
     },
     {
       "id": "c590f6c5735d4de5",
@@ -108487,11 +108509,11 @@
       "id": "d39d7e829d2d451d",
       "source": {
         "path": "scripts/collect-cli-coverage.mjs",
-        "start": 301,
-        "end": 302,
+        "start": 305,
+        "end": 306,
         "sha256": "3783407c8fa2e370e33c649034cab7229cb4f2cba92f6cb8ddafd46df97b346a"
       },
-      "fileSha256": "50ada16eec979cddf412075a2365059bac6ffa0447b25f4bd2f5f863f53d34e4"
+      "fileSha256": "bfe9e6fa32a4a98fbf192ce90b55e7bae347dd62e145640092c27f39faccfeca"
     },
     {
       "id": "d3d06c2c105c4ee0",
@@ -109787,11 +109809,11 @@
       "id": "ee826c15d4214490",
       "source": {
         "path": "scripts/collect-cli-coverage.mjs",
-        "start": 234,
-        "end": 234,
+        "start": 236,
+        "end": 236,
         "sha256": "a514b5d4ca41a462b57b7bf3c9e9beb4773dde77896f14574b9a559b3ec891c6"
       },
-      "fileSha256": "50ada16eec979cddf412075a2365059bac6ffa0447b25f4bd2f5f863f53d34e4"
+      "fileSha256": "bfe9e6fa32a4a98fbf192ce90b55e7bae347dd62e145640092c27f39faccfeca"
     },
     {
       "id": "eed11b6a99974033",
