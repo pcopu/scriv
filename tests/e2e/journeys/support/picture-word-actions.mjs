@@ -6,7 +6,7 @@ import { content, fixture } from './picture-coverage-cases.mjs';
 import { coverageSteps } from './picture-coverage-steps.mjs';
 
 export const wordMoveListing = { journey: 'AUT-J09', portion: 'storyboard-word-moves',
-  cases: ['move a boundary word to either adjacent picture', 'refuse wrong target and non-boundary word'] };
+  cases: ['extend and toggle a word selection', 'move a boundary word to either adjacent picture', 'refuse wrong target and non-boundary word'] };
 export const wordDragListing = { journey: 'AUT-J09', portion: 'layers-word-drags',
   cases: ['preview and cancel a word move', 'save a shifted word and drag both edges', 'refuse overlap'] };
 
@@ -50,6 +50,33 @@ export async function runStoryboardWordMoves() {
     Object.assign(input.cues[0], { endMs: 1000, authoredDurationMs: 1000 });
     const before = await importFixture(session, ui, input);
     await ui.tab('Storyboard');
+
+    step = 'extend and toggle the selected Storyboard words without editing the script';
+    const [first, middle, last] = before.entries.flatMap(entry => entry.words);
+    assert.ok(first && middle && last);
+    async function selectWord(word, modifiers) {
+      const target = 'storyboard-word-' + word.id;
+      await ui.reveal(node => node.identifier === target);
+      assert.deepEqual(await session.command('activate', { target, ...(modifiers && { modifiers }) }), { dispatched: true });
+    }
+    const selected = count => session.waitFor(nodes => nodes.some(node =>
+      node.text === `${count} ${count === 1 ? 'word' : 'words'} selected`));
+    await selectWord(first);
+    await selected(1);
+    const word = await ui.reveal(node => node.identifier === 'storyboard-word-' + last.id);
+    assert.deepEqual((await session.command('capabilities')).semanticActivationModifiers['storyboard-word'], ['shift', 'command']);
+    await assert.rejects(session.command('activate', { target: word.path, modifiers: ['option'] }),
+      /Storyboard word activation is unavailable/);
+    await selected(1);
+    await selectWord(last, ['shift']);
+    await selected(3);
+    await selectWord(middle, ['command']);
+    await selected(2);
+    await selectWord(middle, ['command']);
+    await selected(3);
+    await ui.activate(node => node.identifier === 'storyboard-deselect');
+    await session.waitFor(nodes => nodes.some(node => node.identifier === 'storyboard-deselect' && node.enabled === false));
+    await assertUnchanged(session, before);
 
     step = 'move the first word to the previous picture';
     const firstWord = await ui.reveal(node => node.identifier === 'storyboard-word-b-word-0');

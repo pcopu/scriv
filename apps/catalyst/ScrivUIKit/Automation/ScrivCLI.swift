@@ -410,6 +410,7 @@ final class ScrivCLI {
                     "cloudIsolation": run.publicStatus,
                     "semanticApplicationCommands": ["import-local-image", "import-audio", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error"],
                     "semanticGestureCommands": ["picture-timing-gesture", "script-duration-gesture"],
+                    "semanticActivationModifiers": ["storyboard-word": ["shift", "command"]],
                     "jsonImportAcknowledgementScope": "owned-presentations",
                     "syntheticFixtureCommands": ["stage-package-fixture"],
                     "publicDelegateCommands": ["return", "script-insert", "script-delete-selection"],
@@ -913,6 +914,17 @@ final class ScrivCLI {
                 throw Failure("Native accessibility activation was not handled")
             }
         case "activate":
+            if request["modifiers"] != nil {
+                guard Set(request.keys) == ["id", "command", "target", "modifiers"],
+                      let modifiers = request["modifiers"] as? [String],
+                      let workspace = window.rootViewController as? ScrivWorkspaceController,
+                      workspace.store.tab == .storyboard,
+                      let storyboard = workspace.children.first(where: { $0 is StoryboardViewController }) as? StoryboardViewController,
+                      storyboard.store === workspace.store, storyboard.cliActivateWord(view, modifiers: modifiers) else {
+                    throw Failure("Storyboard word activation is unavailable for these modifiers")
+                }
+                return ["dispatched": true]
+            }
             if let cell = view as? UICollectionViewCell {
                 var parent = cell.superview
                 while parent != nil && !(parent is UICollectionView) { parent = parent?.superview }

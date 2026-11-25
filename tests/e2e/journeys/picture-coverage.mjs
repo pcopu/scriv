@@ -53,7 +53,13 @@ if (args.includes('--list-cases')) {
   const portions = [numericListing, placementListing, followListing, mergeListing, mergeRefusalListing, timingGestureListing, sharedCutListing, wordMoveListing, wordDragListing, { group: 'empty-storyboard', cases: ['pick a shared word before adding pictures'] }];
   const listing = args.includes('--group') ? portions[groups.indexOf(group)]
     : { journey: 'AUT-J09', groups, freshSessionPerGroup: true, nativeCompositionVerified: false,
-      defaultGroups: groups, portions, groupWitnessPaths };
+      defaultGroups: groups, portions, groupWitnessPaths, groupActions: {
+        'storyboard-word-moves': [{ id: 'select-storyboard-words', command: 'activate', trigger: 'storyboard-word',
+          condition: 'extend-with-shift-and-toggle-with-command', entryPoint: {
+            path: 'apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift', start: 198, end: 205,
+            sha256: '6a379c3fcfdd1530ae1a5def1c73b67313023d451c32f58738b7abfb2bd73d58',
+          } }],
+      } };
   console.log(JSON.stringify(listing, null, 2));
 } else if (group === 'empty-storyboard') {
   const { runEmptyStoryboard } = await import('./support/empty-storyboard.mjs');

@@ -421,6 +421,14 @@ fileprivate struct StoryboardWordReference { let word: TimedWord; let entryID: S
     init(text: String) { super.init(frame: .zero); playbackUnderline.backgroundColor = UIColor.systemOrange.cgColor; playbackUnderline.cornerRadius = 1.5; playbackUnderline.isHidden = true; layer.addSublayer(playbackUnderline); setTitle(text, for: .normal); titleLabel?.font = .systemFont(ofSize: 14); titleLabel?.numberOfLines = 0; titleLabel?.lineBreakMode = .byCharWrapping; layer.cornerRadius = 8; contentEdgeInsets = UIEdgeInsets(top: 7, left: 12, bottom: 7, right: 12); addAction(UIAction { [weak self] _ in guard let self else { return }; self.onSelect?(self.modifiers) }, for: .touchUpInside) }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(text:)") }
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) { modifiers = event?.modifierFlags ?? []; super.touchesEnded(touches, with: event) }
+#if SCRIV_CLI_AUTOMATION
+    func cliActivate(with flags: UIKeyModifierFlags) {
+        let previous = modifiers
+        modifiers = flags
+        defer { modifiers = previous }
+        sendActions(for: .touchUpInside)
+    }
+#endif
 }
 
 @MainActor private final class StoryboardWordFlowView: UIView {
@@ -477,6 +485,19 @@ fileprivate struct StoryboardWordReference { let word: TimedWord; let entryID: S
 
 #if SCRIV_CLI_AUTOMATION
 extension StoryboardViewController {
+    func cliActivateWord(_ view: UIView, modifiers: [String]) -> Bool {
+        let choices: [String: UIKeyModifierFlags] = ["shift": .shift, "command": .command]
+        let flags = modifiers.compactMap { choices[$0] }
+        let prefix = "storyboard-word-"
+        guard !flags.isEmpty, flags.count == modifiers.count, Set(modifiers).count == modifiers.count,
+              contextIsCurrent, marqueeOrigin == nil, signature == currentSignature,
+              let identifier = view.accessibilityIdentifier, identifier.hasPrefix(prefix),
+              let word = sharedWordButtons[String(identifier.dropFirst(prefix.count))],
+              word === view, viewIfLoaded?.window === word.window else { return false }
+        word.cliActivate(with: flags.reduce([]) { $0.union($1) })
+        return true
+    }
+
     func cliWordMoveAction(for button: UIButton, wordID: String, title: String) -> UIAction? {
         guard title == "Move to previous image" || title == "Move to next image",
               contextIsCurrent, marqueeOrigin == nil, signature == currentSignature,
