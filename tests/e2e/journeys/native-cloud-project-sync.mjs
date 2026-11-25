@@ -9,10 +9,17 @@ import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, interrupte
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
 
-const groups = ['sync', 'lease-renewal', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'sign-in-recovery', 'sign-in-rate-limit', 'discussion-pages', 'legacy-local-copy'];
+const groups = ['sync', 'lease-renewal', 'lease-contention', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'sign-in-recovery', 'sign-in-rate-limit', 'discussion-pages', 'legacy-local-copy'];
+const editLine = { id: 'edit-line', command: 'key', trigger: 'Command-Return', entryPoint: {
+  path: 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift', start: 1069, end: 1088,
+  sha256: 'f25e5f1bb2ff90cab94f0d8e5fc3de3acbd518d08e2ece840e9dd7f1475f8b1c',
+} };
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
-  console.log(JSON.stringify({ groups }));
+  console.log(JSON.stringify({ groups, groupActions: {
+    'lease-renewal': [{ ...editLine, condition: 'lease-available' }],
+    'lease-contention': [{ ...editLine, condition: 'lease-held-by-peer' }],
+  } }));
   process.exit(0);
 }
 assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]), 'Choose a supported cloud project group');
@@ -38,7 +45,7 @@ const click = async (label, settled) => session.command('activate', { target: (a
   node => node.type === 'UIButton' && (node.title === label || node.label === label), settled)).path });
 const workspaceProject = node => node.identifier === 'workspace-project';
 const projectsSearch = node => node.placeholder === 'Find a project';
-async function openCloudDialogue(line) {
+async function requestCloudDialogueEdit(line) {
   const script = scriptAuthoringSteps(session);
   await script.selectTab('Script');
   assert.equal(line.kind, 'dialogue');
@@ -47,6 +54,10 @@ async function openCloudDialogue(line) {
     && command.action === 'toggleScriptEditingFromKeyboard:');
   assert.ok(editKey, 'The selected script line exposes its native edit shortcut');
   await script.key(editKey.input, editKey.modifiers);
+  return script;
+}
+async function openCloudDialogue(line) {
+  const script = await requestCloudDialogueEdit(line);
   const editorID = 'script-editor-' + line.id;
   const nodes = await session.waitFor(nodes => nodesByID(nodes, editorID).some(node => node.firstResponder && node.text === line.text));
   await script.reveal(nodesByID(nodes, editorID)[0], nodes);
@@ -354,6 +365,11 @@ async function runProjectJourney() {
   }
   if (args[1] === 'lease-renewal') {
     await verifyEditingLeaseRenewal(synced);
+    await fixture.assertNoOutbound();
+    return;
+  }
+  if (args[1] === 'lease-contention') {
+    await verifyContendedEditingLease(synced);
     await fixture.assertNoOutbound();
     return;
   }
@@ -692,6 +708,23 @@ try {
 } finally {
   try { await session?.close(); }
   finally { await fixture.close(); }
+}
+
+async function verifyContendedEditingLease(project) {
+  step = 'request the native editor while another owned session holds its lease';
+  const line = project.entries.find(entry => entry.id === 'line-01');
+  const before = await waitForSavedProject(session, candidate => candidate.id === project.id);
+  assert.equal(await fixture.holdCompetingEditingLease(project.cloudProjectId, line.id), true);
+  try {
+    await requestCloudDialogueEdit(line);
+    const { nodes } = await observePresentedError(session, 'Scriv user is editing this item.');
+    assert.ok(!nodes.some(node => node.identifier === 'script-editor-' + line.id && node.firstResponder));
+    assert.deepEqual((await fixture.editingLeaseState()).acquisitions, [{ status: 423, code: 'item_locked' }]);
+    assert.deepEqual((await session.command('persisted-projects')).find(candidate => candidate.id === project.id), before);
+  } finally {
+    assert.equal(await fixture.releaseCompetingEditingLease(), true);
+  }
+  console.log('PASS: a competing editor owns the lease, so the real edit shortcut reports contention and preserves the saved script');
 }
 
 async function verifyEditingLeaseRenewal(project) {

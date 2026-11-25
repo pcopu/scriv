@@ -158,7 +158,7 @@ function discoverGroupCatalog(name) {
   delete env.SCRIV_E2E_COVERAGE_CONTEXT;
   const output = execFileSync(process.execPath, [join(repo, 'tests/e2e', name), '--list-cases'],
     { cwd: repo, env, encoding: 'utf8', timeout: 5000, maxBuffer: 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
-  const { groups, groupWitnessPaths } = JSON.parse(output);
+  const { groups, groupWitnessPaths, groupActions } = JSON.parse(output);
   if (!Array.isArray(groups) || !groups.length || !groups.every(validGroup)
       || new Set(groups).size !== groups.length) throw new Error('invalid-scenario-group-catalog');
   if (groupWitnessPaths !== undefined) {
@@ -168,7 +168,11 @@ function discoverGroupCatalog(name) {
           || !Array.isArray(paths) || !paths.length || new Set(paths).size !== paths.length
           || paths.some(path => typeof path !== 'string' || !witnessPath.test(path)))) throw new Error('invalid-scenario-group-witnesses');
   }
-  return { groups, ...(groupWitnessPaths !== undefined && { groupWitnessPaths }) };
+  if (groupActions !== undefined && (!groupActions || typeof groupActions !== 'object' || Array.isArray(groupActions)
+    || Object.entries(groupActions).some(([group, actions]) => !groups.includes(group) || !Array.isArray(actions) || !actions.length))) {
+    throw new Error('invalid-scenario-group-actions');
+  }
+  return { groups, ...(groupWitnessPaths !== undefined && { groupWitnessPaths }), ...(groupActions !== undefined && { groupActions }) };
 }
 
 export async function main(args = process.argv.slice(2)) {

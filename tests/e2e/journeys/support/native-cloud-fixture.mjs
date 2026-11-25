@@ -87,6 +87,8 @@ export async function startNativeCloudFixture() {
       interruptedEditState: () => response('interrupted-edit-state'),
       watchEditingLease: (projectId, itemId) => response(['watch-editing-lease', { projectId, itemId }]),
       editingLeaseState: () => response('editing-lease-state'),
+      holdCompetingEditingLease: (projectId, itemId) => response(['hold-competing-editing-lease', { projectId, itemId }]),
+      releaseCompetingEditingLease: () => response('release-competing-editing-lease'),
       watchStagedEdit: (projectId, dropReceipt) => response(['watch-staged-edit', { projectId, dropReceipt }]),
       stagedEditState: () => response('staged-edit-state'),
       prepareHostedImage: input => response(['prepare-hosted-image', input]),
@@ -331,6 +333,8 @@ async function startWorker(root) {
               if (request.method === 'POST') {
                 const response = await upstream();
                 if (response.ok && !editingLease.initial) editingLease.initial = await response.clone().json();
+                const code = response.ok ? null : (await response.clone().json()).error.code;
+                editingLease.acquisitions.push({ status: response.status, code });
                 return response;
               }
               const { initial, renewals } = editingLease;
@@ -409,12 +413,13 @@ async function startWorker(root) {
         watchEditingLease({ projectId, itemId }) {
           if (editingLease || ![projectId, itemId].every(id => typeof id === 'string' && /^[a-zA-Z0-9_-]{1,64}$/.test(id)))
             throw new Error('A single owned editing lease is required');
-          editingLease = { path: '/v1/projects/' + projectId, itemId, renewals: [], acceptedEdits: 0 };
+          editingLease = { path: '/v1/projects/' + projectId, itemId, acquisitions: [], renewals: [], acceptedEdits: 0 };
           return true;
         }
         editingLeaseState() {
           if (!editingLease) throw new Error('No editing lease is being observed');
-          return { initialExpiresAt: editingLease.initial?.expiresAt ?? null, renewals: [...editingLease.renewals], acceptedEdits: editingLease.acceptedEdits };
+          return { initialExpiresAt: editingLease.initial?.expiresAt ?? null, acquisitions: [...editingLease.acquisitions],
+            renewals: [...editingLease.renewals], acceptedEdits: editingLease.acceptedEdits };
         }
         watchStagedEdit({ projectId, dropReceipt }) {
           if (stagedEdit || typeof dropReceipt !== 'boolean' || typeof projectId !== 'string'
@@ -540,6 +545,40 @@ async function startWorker(root) {
       const token = await fixtureOwnerToken('Team fixture setup');
       try { return await action(token); }
       finally { await post('/auth/logout', 200, {}, token); }
+    }
+    let competingLease;
+    async function holdCompetingEditingLease({ projectId, itemId }) {
+      assert.ok(!competingLease && /^[a-f0-9-]{36}$/i.test(projectId) && /^line-[0-9]+$/.test(itemId));
+      const path = '/v1/projects/' + projectId + '/leases';
+      const token = await fixtureOwnerToken('Synthetic competing Mac');
+      try {
+        const sessionId = randomUUID();
+        const lease = await post(path, 200, { itemId, sessionId }, token);
+        assert.equal(lease.itemId, itemId);
+        assert.equal(lease.sessionId, sessionId);
+        await nativeWorker.watchEditingLease({ projectId, itemId });
+        competingLease = { path, token, lease };
+        return true;
+      } catch (error) {
+        await post('/auth/logout', 200, {}, token);
+        throw error;
+      }
+    }
+    async function releaseCompetingEditingLease() {
+      assert.ok(competingLease, 'Only the owned competing lease can be released');
+      const { path, token, lease: { itemId, sessionId, token: leaseToken, fence, epoch } } = competingLease;
+      try {
+        const response = await fixture.dispatchFetch(new URL(path, base), {
+          method: 'DELETE', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ itemId, sessionId, token: leaseToken, fence, epoch }), redirect: 'error',
+        });
+        assert.equal(response.status, 200);
+        assert.deepEqual(await response.json(), { ok: true });
+        return true;
+      } finally {
+        competingLease = undefined;
+        await post('/auth/logout', 200, {}, token);
+      }
     }
     async function revokeOnlyAppSession() {
       const { results } = await db.prepare('SELECT sessions.id FROM sessions JOIN users ON users.id = sessions.user_id WHERE users.email = ? AND sessions.revoked_at IS NULL AND sessions.expires_at > ?')
@@ -833,6 +872,7 @@ async function startWorker(root) {
       interruptEdit: projectId => nativeWorker.interruptEdit(projectId),
       interruptedEditState: () => nativeWorker.interruptedEditState(),
       watchEditingLease: scope => nativeWorker.watchEditingLease(scope), editingLeaseState: () => nativeWorker.editingLeaseState(),
+      holdCompetingEditingLease, releaseCompetingEditingLease,
       watchStagedEdit: id => nativeWorker.watchStagedEdit(id), stagedEditState: () => nativeWorker.stagedEditState(),
       prepareHostedImage, repairHostedImage, hostedImageResponses: () => nativeWorker.hostedImageResponses(),
       openHostedPeer, hostedPeerInbox, sendHostedPeerSignal,
@@ -883,6 +923,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit,
         'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState,
         'watch-editing-lease': worker.watchEditingLease, 'editing-lease-state': worker.editingLeaseState,
+        'hold-competing-editing-lease': worker.holdCompetingEditingLease, 'release-competing-editing-lease': worker.releaseCompetingEditingLease,
         'prepare-hosted-image': worker.prepareHostedImage, 'repair-hosted-image': worker.repairHostedImage,
         'open-hosted-peer': worker.openHostedPeer, 'hosted-peer-inbox': worker.hostedPeerInbox, 'send-hosted-peer-signal': worker.sendHostedPeerSignal,
         'watch-staged-edit': worker.watchStagedEdit, 'staged-edit-state': worker.stagedEditState,

@@ -355,6 +355,31 @@
       "expectedOutcomes": [
         "Scriv presents the account menu with Refresh account, Sign out of ChatGPT and Cancel and preserves the saved projects."
       ]
+    },
+    {
+      "id": "cloud-editing-lease-contention",
+      "title": "Refuse a cloud line edit while another session holds its lease",
+      "featureId": "cloud-editing-lease-contention",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/native-cloud-project-sync.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "symbol": "beginEdit"
+      },
+      "actionIds": [
+        "key"
+      ],
+      "routeIds": [
+        "journeys/native-cloud-project-sync/group/lease-contention"
+      ],
+      "plannedActions": [
+        "Use the real Command-Return edit shortcut while another owned session holds the editing lease."
+      ],
+      "expectedOutcomes": [
+        "The Worker refuses the editing lease. Scriv reports the conflict and preserves the saved script."
+      ]
     }
   ],
   "associations": [
@@ -1040,6 +1065,28 @@
       "uncertainty": "",
       "proposedAssertions": [
         "Scriv presents the account menu with Refresh account, Sign out of ChatGPT and Cancel and preserves the saved projects."
+      ]
+    },
+    {
+      "rangeId": "cloud-editing-lease-contention-1",
+      "featureId": "cloud-editing-lease-contention",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1081,
+        "end": 1087,
+        "fileSha256": "d22be0e9ec8cf602c8e7811403515ed51a987ad0ae320a4242b2a46ba54919cb",
+        "spanSha256": "728d9c381cd37bfb7a7bea1cc39ec210b0465c337cc8307e67c81779c6f62064",
+        "sha256": "32fcb205472f97ca54a76138bc05e7c7c31c9f36e7fd7e4affd63622b760f3a0"
+      },
+      "scenarioIds": [
+        "cloud-editing-lease-contention"
+      ],
+      "rationale": "Use the real Command-Return edit shortcut while another owned session holds the editing lease.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The Worker refuses the editing lease. Scriv reports the conflict and preserves the saved script."
       ]
     }
   ]

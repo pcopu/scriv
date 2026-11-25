@@ -133,6 +133,16 @@ Worker's own address quota. Recovery uses the incorrect-code UI, a fresh
 owned challenge and a real revocation from the fixture's other session.
 Keep the intervals per group so the shared sign-in failure lines count once.
 
+For a line edit, the native case catalog advertises `edit-line` and its
+available and contended lease conditions. Run
+`tracer worklist --routes CATALOG --action edit-line` to resolve the two
+case selectors. With the signed reference, capture set and function map,
+the source-focused worklist also resolves `WorkspaceStore.beginEdit`
+and its direct lease helper to the existing Command-Return action.
+The contention case uses another owned session to acquire and release the
+real Worker lease. It verifies the rejection, the absence of an active
+editor and the unchanged saved script.
+
 The Codex Account control has separate signed-out and signed-in behavior.
 Use `journeys/native-codex-account-check#signed-in-account-menu` for the
 signed-in path. The fixture serves an idle synthetic account over loopback.
