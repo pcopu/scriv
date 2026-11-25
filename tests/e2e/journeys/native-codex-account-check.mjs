@@ -11,7 +11,7 @@ if (args.length === 1 && args[0] === '--list-cases') {
     'signed-in-account-menu': [{ id: 'codex-model-selection', command: 'menu-action', trigger: 'codex-model-selection',
       condition: 'select-an-offered-loopback-provider-model', entryPoint: {
         path: 'apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift', start: 171, end: 176,
-        sha256: 'acd543acabcdc6fd5c2b60d221830acc2a2e1a9b1b920ecf85b2ce45613dacb1',
+        sha256: 'c2b3b41217cbc874e2bad8a6208eb2206746fd4b796d6697f0aab11801a21fa4',
       } }],
   } }));
   process.exit(0);

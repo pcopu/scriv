@@ -22,7 +22,7 @@ if (args.length === 1 && args[0] === '--list-cases') {
       } }, { id: 'sync-project', command: 'activate', trigger: 'Sync this script',
       condition: 'paid-team-project-has-local-image-without-hosted-replica', entryPoint: {
         path: 'apps/catalyst/ScrivUIKit/Account/ScrivAccountController.swift', start: 24, end: 24,
-        sha256: 'e983e93326c12f3e4c960466e678873b30947bbeeb622d49e89ff1ddd460baa0',
+        sha256: 'bee03afe2f72622f86f7b668862ab44bd148f4245d0b6aa94db53d1c3fda3718',
       } }],
   } }));
   process.exit(0);
