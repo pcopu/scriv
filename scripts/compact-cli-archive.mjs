@@ -1,6 +1,6 @@
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { lstat, mkdtemp, readFile, readdir, realpath, rename, rm } from 'node:fs/promises';
+import { lstat, mkdtemp, readFile, readdir, realpath, rename, rm, unlink } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, relative } from 'node:path';
 import { promisify } from 'node:util';
 
@@ -13,6 +13,9 @@ const measuredReportKinds = new Set(['lcov-intervals', 'lcov-reference-source-ga
 const sameFile = (first, second) => first.dev === second.dev && first.ino === second.ino
   && first.ctimeMs === second.ctimeMs && first.size === second.size;
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
+const digest = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
+const runName = /^scriv-cli-e2e-[A-Za-z0-9]{6}$/;
+const sessionID = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/;
 const worthCompressing = info => info && info.size <= maximum
   && info.blocks * 512 >= Math.max(128 * 1024, info.size / 2);
 
@@ -49,9 +52,9 @@ export async function compactFile(path, expectedSHA256) {
   }
 }
 
-async function readReceipt(path) {
+async function readReceipt(path, limit = 1024 * 1024) {
   const info = await ownedFile(path);
-  if (!info || info.size > 1024 * 1024) return;
+  if (!info || info.size > limit) return;
   try { return JSON.parse(await readFile(path, 'utf8')); }
   catch (error) { if (!(error instanceof SyntaxError) && error.code !== 'ENOENT') throw error; }
 }
@@ -115,17 +118,118 @@ async function findArtifacts(directory, candidates) {
   }
 }
 
-export async function compactArchive(args, repo) {
-  const [flag, archive, option] = args;
-  if (flag !== '--archive' || !archive || !isAbsolute(archive) || (args.length !== 2 && !(args.length === 3 && option === '--apply'))) {
-    throw new Error('Use tracer app -- test compact --archive /absolute/archived-runs [--apply]');
+async function matchesDigest(path, expected) {
+  const info = await ownedFile(path);
+  return digest(expected) && info && info.size <= maximum && sha256(await readFile(path)) === expected ? info : undefined;
+}
+
+// The raw captures and exact LCOV inputs remain the evidence. LLVM indexes
+// are reproducible working files and are never needed to read Tracer's dataset.
+export async function pruneRunIndexes(directory, { apply = false, tracer } = {}) {
+  const result = { candidates: [], filesRemoved: 0, allocatedBytesRemoved: 0 };
+  const coverage = join(directory, 'coverage');
+  const receiptPath = join(directory, 'evidence.json');
+  const capturePath = join(coverage, 'capture.json');
+  const receiptInfo = await ownedFile(receiptPath), captureInfo = await ownedFile(capturePath);
+  const receipt = await readReceipt(receiptPath), capture = await readReceipt(capturePath);
+  const analysis = join(coverage, 'analysis', 'source');
+  const datasetPath = join(analysis, 'docs/testing/code-e2e-measurements.json');
+  if (!runName.test(basename(directory)) || !receiptInfo || !captureInfo
+      || receipt?.schemaVersion !== 1 || receipt.kind !== 'actual-app-cli-scenarios'
+      || !['passed', 'failed'].includes(receipt.status) || !Number.isFinite(Date.parse(receipt.endedAt))
+      || receipt.sourceUnchanged !== true || receipt.appUnchanged !== true || receipt.keepIndexedProfiles === true
+      || !Array.isArray(receipt.scenarios)
+      || !receipt.scenarios.some(row => ['owned-process-group-exited', 'owned-process-group-terminated'].includes(row?.cleanup))
+      || receipt.scenarios.some(row => row?.cleanup?.startsWith('uncertain'))
+      || capture?.status !== 'imported' || !Array.isArray(capture.intervals) || !capture.intervals.length
+      || capture.imported !== capture.intervals.length || capture.analysis?.root !== analysis
+      || capture.analysis.dataset !== datasetPath || JSON.stringify(receipt.coverage) !== JSON.stringify(capture)) return result;
+  const datasetInfo = await ownedFile(datasetPath);
+  const dataset = await readReceipt(datasetPath, maximum);
+  if (!datasetInfo || dataset?.version !== 1 || dataset.kind !== 'lcov-intervals'
+      || !Array.isArray(dataset.intervals) || dataset.intervals.length !== capture.imported) return result;
+  const imported = new Map(dataset.intervals.map(row => [row?.id, row]));
+  const indexes = [];
+  for (const interval of capture.intervals) {
+    if (interval?.status !== 'imported' || interval.imported !== true || !sessionID.test(interval.runID)) return result;
+    const session = join(coverage, 'sessions', interval.runID);
+    const receipt = await readReceipt(join(session, 'import.json'));
+    const stored = imported.get(receipt?.id);
+    if (!digest(receipt?.id) || stored?.manifest?.runId !== interval.runID
+        || !await matchesDigest(join(session, 'interval.json'), stored.manifestSha256)) return result;
+    imported.delete(receipt.id);
+    const exports = await readReceipt(join(session, 'exports.json'));
+    const candidates = [];
+    for (const phase of ['before', 'after']) {
+      const path = join(session, phase + '.profdata');
+      const info = await matchesDigest(path, exports?.[phase]?.indexedSHA256);
+      if (info) candidates.push({ path, info });
+    }
+    if (!candidates.length) continue;
+    for (const phase of ['before', 'after']) {
+      const raw = exports?.[phase]?.rawSHA256, lcov = exports?.[phase]?.lcovSHA256;
+      if (lcov !== stored.manifest[phase]?.sha256
+          || !await matchesDigest(join(session, phase + '.profraw'), raw)
+          || !await matchesDigest(join(session, phase + '.lcov'), lcov)) return result;
+    }
+    indexes.push(...candidates);
   }
-  const apply = option === '--apply';
+  if (!indexes.length) return result;
+  const configured = process.env.SCRIV_TRACER_CLI;
+  const executable = tracer?.executable ?? (configured?.endsWith('.mjs') ? process.execPath : configured || 'tracer');
+  const prefix = tracer?.prefix ?? (configured?.endsWith('.mjs') ? [configured] : []);
+  const checked = await execute(executable, [...prefix, '--root', analysis, 'measure', 'check', '--json'],
+    { cwd: analysis, timeout: 30000, maxBuffer: 1024 * 1024, env: { ...process.env, TRACER_NO_UPDATE: '1' } })
+    .then(({ stdout }) => JSON.parse(stdout)).catch(() => null);
+  if (checked?.kind !== 'lcov-intervals' || checked.intervals !== capture.imported || checked.invalid?.length !== 0) return result;
+  for (const [path, info] of [[receiptPath, receiptInfo], [capturePath, captureInfo], [datasetPath, datasetInfo]]) {
+    const current = await ownedFile(path);
+    if (!current || !sameFile(info, current)) return result;
+  }
+  result.candidates = indexes.map(({ path }) => path);
+  for (const { path, info } of apply ? indexes : []) {
+    const current = await ownedFile(path);
+    if (!current || !sameFile(info, current)) continue;
+    try { await unlink(path); }
+    catch (error) { if (error.code === 'ENOENT') continue; throw error; }
+    result.filesRemoved++;
+    result.allocatedBytesRemoved += info.blocks * 512;
+  }
+  return result;
+}
+
+async function* archivedRuns(directory) {
+  if (runName.test(basename(directory))) { yield directory; return; }
+  const entries = await readdir(directory, { withFileTypes: true });
+  if (entries.some(entry => entry.isFile() && entry.name === 'tracer.json')) return;
+  for (const entry of entries) {
+    if (entry.isDirectory() && !entry.name.startsWith('.') && !entry.name.endsWith('.app')
+        && !['docs', 'design', 'node_modules'].includes(entry.name)) yield* archivedRuns(join(directory, entry.name));
+  }
+}
+
+export async function compactArchive(args, repo) {
+  const [flag, archive, ...options] = args;
+  if (flag !== '--archive' || !archive || !isAbsolute(archive)
+      || new Set(options).size !== options.length || !options.every(option => ['--apply', '--prune'].includes(option))) {
+    throw new Error('Use tracer app -- test compact --archive /absolute/archived-runs [--prune] [--apply]');
+  }
+  const apply = options.includes('--apply');
   const root = await realpath(archive);
   const stat = await lstat(root);
   if (archive !== root || !stat.isDirectory() || stat.uid !== process.getuid?.() || (stat.mode & 0o022) !== 0
       || root === '/' || root === repo || root.startsWith(repo + '/') || repo.startsWith(root + '/')) {
     throw new Error('Archive must be an owned, canonical directory outside the live source tree');
+  }
+  if (options.includes('--prune')) {
+    const result = { mode: apply ? 'apply' : 'preview', candidates: [], filesRemoved: 0, allocatedBytesRemoved: 0 };
+    for await (const directory of archivedRuns(root)) {
+      const run = await pruneRunIndexes(directory, { apply });
+      result.candidates.push(...run.candidates.map(path => relative(root, path)));
+      result.filesRemoved += run.filesRemoved;
+      result.allocatedBytesRemoved += run.allocatedBytesRemoved;
+    }
+    return result;
   }
   if (apply && process.platform !== 'darwin') throw new Error('Applying archive compression requires macOS');
   const candidates = new Map();

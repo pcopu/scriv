@@ -78,7 +78,10 @@ examples point back to the interval and anchor lines. Use the separate
 For compiler function boundaries, export once from an imported session for
 the reference app. This verifies the signed bundle, recorded compiler and
 profile, and original source manifest. It reads retained evidence without
-launching the app.
+launching the app. If the runner removed the derived LLVM index after import,
+the exporter rebuilds it from the retained raw profile using the pinned tool.
+Pass `--llvm-profdata /absolute/tool` if the original tool differs from the
+current `xcrun` selection.
 
 ```sh
 node scripts/collect-cli-coverage.mjs --export-functions \

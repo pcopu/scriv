@@ -42,6 +42,7 @@ export async function main() {
     assert.equal(run(['app', '--', '--help']).stdout, actions.stdout);
     const help = run(['app', '--', 'test', '--help']).stdout;
     assert.match(help, /--coverage-activate CONTROL_ID/);
+    assert.match(help, /--keep-indexed-profiles/);
     assert.ok(/No app, no macOS or failed provenance means not-run/.test(help) && /--coverage-build-record/.test(help) && /--coverage-startup/.test(help));
   });
   await journey('list genuine native entrypoints without launching an app', async () => {
@@ -311,6 +312,7 @@ export async function main() {
       ['--coverage-build-record', '/tmp/missing-build.json'],
       ['--coverage', '--coverage-max-sessions', '0'], ['--coverage', '--coverage-max-sessions', '65'],
       ['--llvm-cov', 'relative-tool'], ['--coverage-max-sessions', '1'], ['--coverage-startup'], ['--coverage-activate', 'cancel'],
+      ['--keep-indexed-profiles'],
     ]) {
       const result = run(['app', '--', 'test', ...args], 2);
       assert.equal(result.stdout, '');
@@ -559,6 +561,77 @@ throw new Error('wrapper-only error text', { cause });
       assert.deepEqual(await readFile(rawProfile), bytes);
       assert.equal((await lstat(staleProfile)).ino, staleBefore.ino);
     }
+    await rm(archive, { recursive: true });
+  });
+  await journey('prune LLVM indexes only after the retained coverage passes integrity checks', async () => {
+    const archive = join(output, 'index-archive');
+    const directory = join(archive, 'scriv-cli-e2e-Test01');
+    const coverage = join(directory, 'coverage');
+    const analysis = join(coverage, 'analysis', 'source');
+    const dataset = join(analysis, 'docs/testing/code-e2e-measurements.json');
+    const runID = randomUUID(), invocationID = randomUUID();
+    const session = join(coverage, 'sessions', runID);
+    const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+    const json = (path, value) => writeFile(path, JSON.stringify(value));
+    const source = 'synthetic coverage fixture\n';
+    const sources = JSON.stringify({ version: 1, kind: 'tracer-source-manifest',
+      files: [{ path: 'fixture.txt', sha256: hash(source), hashTiming: 'capture' }] });
+    const tools = [{ name: 'synthetic-LCOV-fixture', version: '1', sha256: null, hashTiming: 'unavailable' }];
+    const manifest = { version: 1, runId: runID, actions: ['synthetic fixture'], counterMode: 'cumulative', counterReset: false,
+      sourceManifestSha256: hash(sources), probeSha256: hash('probe'), tools, limitations: ['Synthetic tooling coverage.'] };
+    const exports = {};
+    await mkdir(session, { recursive: true });
+    await mkdir(analysis, { recursive: true });
+    assert.equal(spawnSync('git', ['init', '-q', analysis], { env }).status, 0);
+    await writeFile(join(analysis, 'fixture.txt'), source);
+    await writeFile(join(coverage, 'build-sources.json'), sources);
+    for (const [i, phase] of ['before', 'after'].entries()) {
+      const raw = phase + ' synthetic raw profile', indexed = phase + ' disposable index';
+      const lcov = `SF:/scriv-source/fixture.txt\nDA:1,${i}\nend_of_record\n`;
+      await writeFile(join(session, phase + '.profraw'), raw);
+      await writeFile(join(session, phase + '.profdata'), indexed);
+      await writeFile(join(session, phase + '.lcov'), lcov);
+      exports[phase] = { rawSHA256: hash(raw), indexedSHA256: hash(indexed), lcovSHA256: hash(lcov) };
+      manifest[phase] = { sha256: hash(lcov), runId: runID, buildSha256: hash('build'),
+        sourceManifestSha256: hash(sources), toolchainSha256: hash(JSON.stringify(tools)) };
+    }
+    await json(join(session, 'exports.json'), exports);
+    await json(join(session, 'interval.json'), manifest);
+    const imported = JSON.parse(run(['--root', analysis, 'measure', 'import', '--before', join(session, 'before.lcov'),
+      '--after', join(session, 'after.lcov'), '--manifest', join(session, 'interval.json'), '--sources',
+      join(coverage, 'build-sources.json'), '--strip-prefix', '/scriv-source/', '--json']).stdout);
+    await json(join(session, 'import.json'), imported);
+    const capture = { status: 'imported', invocationID, imported: 1, analysis: { root: analysis, dataset },
+      intervals: [{ runID, status: 'imported', imported: true }] };
+    await json(join(coverage, 'capture.json'), capture);
+    const evidence = { schemaVersion: 1, kind: 'actual-app-cli-scenarios', status: 'passed',
+      endedAt: new Date().toISOString(), sourceUnchanged: true, appUnchanged: true,
+      scenarios: [{ status: 'passed', cleanup: 'owned-process-group-exited' }], coverage: capture };
+    const receipt = join(directory, 'evidence.json');
+    const prune = (...flags) => JSON.parse(run(['app', '--', 'test', 'compact', '--archive', archive, '--prune', ...flags]).stdout);
+    assert.equal(prune('--apply').filesRemoved, 0);
+    await json(receipt, { ...evidence, keepIndexedProfiles: true });
+    assert.equal(prune('--apply').filesRemoved, 0);
+    await json(receipt, evidence);
+    const raw = join(session, 'before.profraw');
+    const rawBytes = await readFile(raw);
+    await writeFile(raw, 'corrupt');
+    assert.equal(prune('--apply').filesRemoved, 0);
+    await writeFile(raw, rawBytes);
+    const retainedSource = join(analysis, 'fixture.txt');
+    await writeFile(retainedSource, 'stale');
+    assert.equal(prune('--apply').filesRemoved, 0);
+    await writeFile(retainedSource, source);
+    const retained = [receipt, dataset, raw, join(session, 'after.lcov'), join(session, 'import.json')];
+    const before = await Promise.all(retained.map(path => readFile(path)));
+    assert.equal(prune().candidates.length, 2);
+    assert.equal(prune('--apply').filesRemoved, 2);
+    assert.equal(prune('--apply').filesRemoved, 0);
+    for (const phase of ['before', 'after']) {
+      await assert.rejects(lstat(join(session, phase + '.profdata')), { code: 'ENOENT' });
+    }
+    assert.deepEqual(await Promise.all(retained.map(path => readFile(path))), before);
+    assert.deepEqual(JSON.parse(run(['--root', analysis, 'measure', 'check', '--json']).stdout).invalid, []);
     await rm(archive, { recursive: true });
   });
   console.log(`PASS ${passed}/${passed} public Tracer CLI journeys. Native scenarios executed: 0; tooling artifacts: ${output}`);

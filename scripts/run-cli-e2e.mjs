@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /** Actual-app evidence only. No mock fallback, raw logs, or migration promotion. */
 import { verifySourceManifest } from './export-cli-source-manifest.mjs';
+import { pruneRunIndexes } from './compact-cli-archive.mjs';
 import { readScenarioDiagnostic, scenarioDiagnosticModule } from '../tests/e2e/support/scenario-diagnostic.mjs';
 import { isControlIdentifier } from '../cli/coverage-session.mjs';
 import { scenarioRestrictions } from '../cli/scenario-restrictions.mjs';
@@ -179,7 +180,7 @@ export async function main(args = process.argv.slice(2)) {
   const sourceOptions = {}; const requested = []; const cases = new Map(); const seen = new Set();
   const coverageOptions = {};
   let outputParent = tmpdir(); let timeoutMs = 120000; let app = process.env.SCRIV_E2E_APP;
-  let list = false; let help = false; let coverage = false; let group;
+  let list = false; let help = false; let coverage = false; let keepIndexedProfiles = false; let group;
   const valued = new Set(['--app', '--source-manifest', '--source-manifest-sha256', '--output-dir', '--timeout-ms', '--scenario', '--group', '--case', '--coverage-build-record', '--coverage-build-source-root', '--coverage-build-source-manifest', '--coverage-build-source-manifest-sha256', '--llvm-profdata', '--llvm-cov', '--tracer', '--coverage-max-sessions', '--coverage-activate']);
   for (let i = 0; i < args.length; i++) {
     const flag = args[i];
@@ -229,6 +230,7 @@ export async function main(args = process.argv.slice(2)) {
       if (cases.has(value)) throw new Error('duplicate-scenario-case');
       cases.set(value, { name: `${id}.mjs`, group: selectedGroup });
     }
+    else if (flag === '--keep-indexed-profiles') keepIndexedProfiles = true;
     else if (flag === '--list') list = true;
     else if (flag === '--help') help = true;
     else throw new Error('invalid-arguments');
@@ -242,7 +244,7 @@ export async function main(args = process.argv.slice(2)) {
   }
   if (cases.size && (requested.length || group || list)) throw new Error('case-cannot-mix-with-scenario-group-or-list');
   const explicitCount = cases.size || requested.length;
-  if (!coverage && Object.keys(coverageOptions).length) throw new Error('coverage-options-require-coverage');
+  if (!coverage && (keepIndexedProfiles || Object.keys(coverageOptions).length)) throw new Error('coverage-options-require-coverage');
   if (coverage && (!sourceOptions.manifest || !coverageOptions.buildRecordPath || !explicitCount)) throw new Error('coverage-requires-pinned-build-source-and-scenarios');
   if (coverageOptions.activationTargetSHA256) {
     if (explicitCount !== 1 || coverageOptions.startup || (coverageOptions.maximumSessions ?? 1) !== 1) {
@@ -252,7 +254,7 @@ export async function main(args = process.argv.slice(2)) {
   }
   if (help) {
     if (args.length !== 1) throw new Error('help-must-be-used-alone');
-    console.log('Run through Tracer: tracer app -- test [OPTIONS]\n  --list                         Discover native scenario IDs and known restrictions as JSON; no app is launched.\n  --scenario ID                  Select an exact listed ID; repeat for a subset.\n  --group NAME                  Run one listed group of one explicit scenario.\n  --case ID[#GROUP]              Repeat exact selectors in run order, separately from --scenario/--group.\n  --app /path/ScrivAutomation.app Override SCRIV_E2E_APP. Requires macOS.\n  --output-dir /existing/path     Evidence parent outside the source tree (default: OS temp).\n  --timeout-ms 120000             Per-scenario limit, 100 through 3600000.\n  --source-manifest /external/source.json --source-manifest-sha256 SHA256\n                                 Pin exported source bytes; both options are required.\n  --coverage                     Capture each real session, export separate LCOV pairs, import through Tracer.\n                                 Requires --scenario or --case, pinned source and --coverage-build-record.\n  --coverage-startup             Measure entry through the real CLI handshake. Requires --coverage.\n                                 Run the selected scenarios normally and keep their outcomes.\n  --coverage-activate CONTROL_ID  Measure the first exact activate dispatch in one session.\n                                 Requires --coverage and one explicit scenario or case.\n  --coverage-build-record /external/build.json  Record produced by the coverage builder.\n  --coverage-build-source-root /immutable/source --coverage-build-source-manifest /external/build-source.json\n  --coverage-build-source-manifest-sha256 SHA256\n                                 Optional original build tree; all three required. Only host test/docs/probe changes are allowed.\n  --coverage-max-sessions 64      Maximum total capture attempts, 1 through 64.\n  --llvm-profdata /absolute/tool --llvm-cov /absolute/tool\n                                 Optional compatible LLVM tools; defaults to xcrun discovery.\n  --tracer /absolute/tracer       Optional Tracer 0.1.2+ entrypoint; defaults to SCRIV_TRACER_CLI or PATH.\n  --help                         Show this help.\n\nNo selection runs all native scenarios in sorted order; subsets are labeled in evidence.\nNo app, no macOS or failed provenance means not-run, never a simulated pass.\nKnown blocked scenarios are not launched and cannot count as passing; no bypass option exists.\nExit: 0 selected scenarios passed; 1 failed; 2 not-run or invalid input.\nTooling only: tracer app -- test tooling\nDirect compatibility: node scripts/run-cli-e2e.mjs [OPTIONS]');
+    console.log('Run through Tracer: tracer app -- test [OPTIONS]\n  --list                         Discover native scenario IDs and known restrictions as JSON; no app is launched.\n  --scenario ID                  Select an exact listed ID; repeat for a subset.\n  --group NAME                  Run one listed group of one explicit scenario.\n  --case ID[#GROUP]              Repeat exact selectors in run order, separately from --scenario/--group.\n  --app /path/ScrivAutomation.app Override SCRIV_E2E_APP. Requires macOS.\n  --output-dir /existing/path     Evidence parent outside the source tree (default: OS temp).\n  --timeout-ms 120000             Per-scenario limit, 100 through 3600000.\n  --source-manifest /external/source.json --source-manifest-sha256 SHA256\n                                 Pin exported source bytes; both options are required.\n  --coverage                     Capture each real session, export separate LCOV pairs, import through Tracer.\n                                 Requires --scenario or --case, pinned source and --coverage-build-record.\n  --keep-indexed-profiles        Keep derived LLVM indexes after a verified import. Requires --coverage.\n  --coverage-startup             Measure entry through the real CLI handshake. Requires --coverage.\n                                 Run the selected scenarios normally and keep their outcomes.\n  --coverage-activate CONTROL_ID  Measure the first exact activate dispatch in one session.\n                                 Requires --coverage and one explicit scenario or case.\n  --coverage-build-record /external/build.json  Record produced by the coverage builder.\n  --coverage-build-source-root /immutable/source --coverage-build-source-manifest /external/build-source.json\n  --coverage-build-source-manifest-sha256 SHA256\n                                 Optional original build tree; all three required. Only host test/docs/probe changes are allowed.\n  --coverage-max-sessions 64      Maximum total capture attempts, 1 through 64.\n  --llvm-profdata /absolute/tool --llvm-cov /absolute/tool\n                                 Optional compatible LLVM tools; defaults to xcrun discovery.\n  --tracer /absolute/tracer       Optional Tracer 0.1.2+ entrypoint; defaults to SCRIV_TRACER_CLI or PATH.\n  --help                         Show this help.\n\nNo selection runs all native scenarios in sorted order; subsets are labeled in evidence.\nNo app, no macOS or failed provenance means not-run, never a simulated pass.\nKnown blocked scenarios are not launched and cannot count as passing; no bypass option exists.\nExit: 0 selected scenarios passed; 1 failed; 2 not-run or invalid input.\nTooling only: tracer app -- test tooling\nDirect compatibility: node scripts/run-cli-e2e.mjs [OPTIONS]');
     return 0;
   }
   const available = await discoverScenarios();
@@ -299,6 +301,7 @@ export async function main(args = process.argv.slice(2)) {
   const path = join(output, 'evidence.json');
   const report = { schemaVersion: 1, kind: 'actual-app-cli-scenarios', selection, fullSuitePassed: false, launcherMode: 'direct-spawn-inherited-process-group', cleanupScope: 'Only the runner-owned process group is verified; detached or LaunchServices-launched descendants are unsupported.', baselineMigrated: false, startedAt: now(), endedAt: null, status: 'not-run', platform: process.platform, nodeVersion: process.version, buildAttestation: null, sourceToAppMatch: 'not-established', source: null, app: null, blocker: null, scenarios: selected.map(({ name, group }) => ({ scenario: `tests/e2e/${name}`, ...(group && { group }), status: 'not-run', reason: scenarioRestrictions[name.slice(0, -4)]?.reason ?? 'not-started' })) };
   if (coverage) report.coverage = { status: 'not-run', imported: 0, intervals: [] };
+  if (keepIndexedProfiles) report.keepIndexedProfiles = true;
   let capture; let collector;
   async function save() { await writeFile(path + '.tmp', JSON.stringify(report, null, 2) + '\n', { mode: 0o600 }); await rename(path + '.tmp', path); }
   try {
@@ -380,6 +383,14 @@ export async function main(args = process.argv.slice(2)) {
   }
   report.fullSuitePassed = report.status === 'passed' && selection.mode === 'all';
   report.endedAt = now(); await save();
+  if (capture?.report.status === 'imported' && !keepIndexedProfiles) {
+    try {
+      const { filesRemoved, allocatedBytesRemoved } = await pruneRunIndexes(output, { apply: true, tracer: capture.tracerCLI });
+      if (filesRemoved) console.error(`Discarded ${filesRemoved} LLVM indexes (${allocatedBytesRemoved} allocated bytes).`);
+    } catch {
+      console.error('Could not finish removing LLVM indexes. The recorded coverage outcome is available.');
+    }
+  }
   console.log(`CLI E2E ${report.status} (${cases.size ? `${selected.length} selected cases` : `${selection.mode} ${selected.length}/${available.length}`}); evidence: ${path}`);
   return report.status === 'passed' ? 0 : report.status === 'not-run' ? 2 : 1;
 }

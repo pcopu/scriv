@@ -3,7 +3,8 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { createHash, randomUUID } from 'node:crypto';
 import { constants } from 'node:fs';
-import { access, lstat, realpath, readFile, writeFile, mkdir, readdir, rename } from 'node:fs/promises';
+import { access, lstat, realpath, readFile, writeFile, mkdir, mkdtemp, readdir, rename, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { hashFile, isMenuActionScope, probeIdentity, verifyCoverageContextSources } from '../cli/coverage-session.mjs';
@@ -343,7 +344,7 @@ export async function importCoverage(capture) {
 }
 
 // Reuse an imported profile to locate compiler-mapped functions without a new app run.
-async function exportFunctionMap(session, app, llvmCov) {
+async function exportFunctionMap(session, app, llvmCov, llvmProfdata) {
   const directory = await realpath(session), bundle = await realpath(app);
   const capture = dirname(dirname(directory));
   required(basename(dirname(directory)) === 'sessions' && basename(capture) === 'coverage' && bundle.endsWith('.app'));
@@ -362,7 +363,7 @@ async function exportFunctionMap(session, app, llvmCov) {
     && interval.sourceManifestSha256 === sourceManifestSha256 && interval.after.sourceManifestSha256 === sourceManifestSha256
     && interval.after.toolchainSha256 === sha(JSON.stringify(interval.tools)));
   const executable = join(bundle, 'Contents/MacOS/Scriv');
-  const profile = join(directory, 'after.profdata');
+  let profile = join(directory, 'after.profdata');
   const covPath = llvmCov || (await execute('xcrun', ['--find', 'llvm-cov'], { encoding: 'utf8', timeout: 30000 })).stdout.trim();
   const cov = await tool('llvm-cov', covPath);
   const expectedTool = interval.tools.find(entry => entry.name === 'llvm-cov');
@@ -373,10 +374,33 @@ async function exportFunctionMap(session, app, llvmCov) {
       && sha(await input(profile, 64 * 1024 * 1024)) === exports.after.indexedSHA256
       && sha(await input(join(directory, 'after.lcov'), 64 * 1024 * 1024)) === interval.after.sha256);
   };
-  await verifyInputs();
-  const { stdout } = await execute(cov.executable, ['export', executable, `-instr-profile=${profile}`, '-skip-expansions', '-skip-branches'],
-    { timeout: 120000, maxBuffer: 64 * 1024 * 1024, encoding: 'buffer' });
-  await verifyInputs();
+  let staging, stdout;
+  try {
+    const needsIndex = await lstat(profile).then(() => false, error => {
+      if (error.code === 'ENOENT') return true;
+      throw error;
+    });
+    if (needsIndex) {
+      const path = llvmProfdata || (await execute('xcrun', ['--find', 'llvm-profdata'],
+        { encoding: 'utf8', timeout: 30000 })).stdout.trim();
+      const profdata = await tool('llvm-profdata', path);
+      const expectedProfdata = interval.tools.find(entry => entry.name === 'llvm-profdata');
+      const raw = join(directory, 'after.profraw');
+      required(expectedProfdata?.hashTiming === 'capture' && profdata.identity.sha256 === expectedProfdata.sha256
+        && sha(await input(raw, 16 * 1024 * 1024)) === exports.after.rawSHA256);
+      staging = await mkdtemp(join(await realpath(tmpdir()), 'scriv-llvm-index-'));
+      profile = join(staging, 'after.profdata');
+      await execute(profdata.executable, ['merge', '-sparse', raw, '-o', profile], { timeout: 120000, maxBuffer: 65536 });
+      required(await hashFile(profdata.executable) === expectedProfdata.sha256
+        && sha(await input(raw, 16 * 1024 * 1024)) === exports.after.rawSHA256);
+    }
+    await verifyInputs();
+    ({ stdout } = await execute(cov.executable, ['export', executable, `-instr-profile=${profile}`, '-skip-expansions', '-skip-branches'],
+      { timeout: 120000, maxBuffer: 64 * 1024 * 1024, encoding: 'buffer' }));
+    await verifyInputs();
+  } finally {
+    if (staging) await rm(staging, { recursive: true, force: true });
+  }
   const data = JSON.parse(stdout);
   required(data.type === 'llvm.coverage.json.export' && /^2\./.test(data.version) && Array.isArray(data.data));
   const sources = new Map(JSON.parse(sourceBytes).files.map(({ path, sha256 }) => [path, sha256]));
@@ -411,7 +435,7 @@ async function main(args) {
   const exporting = args[0] === '--export-functions';
   required(exporting || args[0] === '--verify-source-provenance');
   const values = {};
-  const allowed = exporting ? ['--session', '--app', '--llvm-cov'] : ['--source-root', '--source-manifest', '--source-manifest-sha256',
+  const allowed = exporting ? ['--session', '--app', '--llvm-cov', '--llvm-profdata'] : ['--source-root', '--source-manifest', '--source-manifest-sha256',
     '--coverage-build-source-root', '--coverage-build-source-manifest', '--coverage-build-source-manifest-sha256'];
   for (let index = 1; index < args.length; index += 2) {
     required(allowed.includes(args[index]) && args[index + 1] && !Object.hasOwn(values, args[index]));
@@ -419,7 +443,7 @@ async function main(args) {
   }
   if (exporting) {
     required(values['--session'] && values['--app']);
-    console.log(JSON.stringify(await exportFunctionMap(values['--session'], values['--app'], values['--llvm-cov'])));
+    console.log(JSON.stringify(await exportFunctionMap(values['--session'], values['--app'], values['--llvm-cov'], values['--llvm-profdata'])));
     return;
   }
   required(values['--source-root'] && values['--source-manifest'] && values['--source-manifest-sha256']);

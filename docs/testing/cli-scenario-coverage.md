@@ -139,8 +139,8 @@ manifest are separately pinned, so changing an implementation module is detected
   is checked again after import. The strict eligible source file set is unchanged.
 
 Private output includes `coverage/capture.json`, pinned build/source/probe/Tracer
-records and `coverage/sessions/RUN_UUID/` containing raw profiles, indexed
-profiles, LCOV, session/interval/export records and successful import receipts.
+records and `coverage/sessions/RUN_UUID/` containing raw profiles, LCOV,
+session/interval/export records and successful import receipts.
 The collector exports line counters only. The raw profiles can regenerate
 function and branch data separately. The analysis copy holds only source files
 named by the exports, with their original build hashes.
@@ -148,7 +148,13 @@ On macOS the collector uses transparent filesystem compression for the raw and
 indexed profiles, LCOV exports and final Tracer dataset when it reduces
 allocated blocks and preserves exact bytes and permissions. Tracer and LLVM
 can read the original paths directly. The capture receipt records the number of
-allocated bytes saved. Use one retained pinned checkout and build for all
+allocated bytes saved by compression. After a finished run passes Tracer's
+integrity check and the raw profiles and LCOV match their recorded digests, the
+runner removes the derived `.profdata` indexes. Use `--keep-indexed-profiles`
+with `--coverage` to retain them for direct LLVM work. Failed imports and
+incomplete runs keep their files. The function-map exporter can regenerate a
+missing index in temporary storage with the original `llvm-profdata`.
+Use one retained pinned checkout and build for all
 compatible runs and keep the per-run analysis roots limited to measured files.
 Both capture.json and the runner's evidence.json track phases/outcomes. The
 measurement dataset stores only Tracer's validated counters and provenance, not
@@ -176,9 +182,17 @@ tracer app -- test compact --archive /absolute/archived-runs
 tracer app -- test compact --archive /absolute/archived-runs --apply
 ```
 
-The archive scan checks native files against their recorded export digests and
-preserves paths, bytes and permissions. The result reports how many files were
-compacted and the reduction in allocated blocks. Check filesystem free space
+Add `--prune` to preview or remove redundant LLVM indexes from completed
+archives after the same import and digest checks.
+
+```sh
+tracer app -- test compact --archive /absolute/archived-runs --prune
+tracer app -- test compact --archive /absolute/archived-runs --prune --apply
+```
+
+The archive scan checks native files against their recorded export digests.
+The result reports the number of files compacted or removed and their
+allocated blocks saved. Check filesystem free space
 separately because archived snapshots can already share blocks. If testing
 needs another exact copy of a verified source snapshot on the same APFS volume,
 clone the snapshot into a new path with `cp -cRp` and verify the same manifest.
