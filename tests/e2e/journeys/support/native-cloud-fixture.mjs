@@ -84,6 +84,8 @@ export async function startNativeCloudFixture() {
       primeOwnedEmailQuota: () => response('prime-owned-email-quota'),
       armEmailRequestRedirect: () => response('arm-email-request-redirect'),
       emailRequestRedirectState: () => response('email-request-redirect-state'),
+      armEmailRequestChallenge: () => response('arm-email-request-challenge'),
+      emailRequestChallengeState: () => response('email-request-challenge-state'),
       refuseNextLogout: () => response('refuse-next-logout'),
       loseNextEditReceipt: projectId => response(['lose-edit-receipt', projectId]),
       editReceiptState: () => response('edit-receipt-state'),
@@ -170,7 +172,7 @@ async function startWorker(root) {
       let target;
       let pending;
       let logoutRefusal;
-      let emailRequestRedirect;
+      let emailRequestRedirect, emailRequestChallenge;
       let receipt;
       let attempts = 0;
       let interruption;
@@ -226,6 +228,11 @@ async function startWorker(root) {
           if (emailRequestRedirect?.phase === 'armed' && path === '/auth/email/request' && request.method === 'POST') {
             emailRequestRedirect.phase = 'returned';
             return new Response(null, { status: 307, headers: { Location: '/auth/email/verify?fixture-redirect=1' } });
+          }
+          if (emailRequestChallenge && path === '/auth/email/request' && request.method === 'POST') {
+            emailRequestChallenge.requests++;
+            if (request.headers.has('authorization')) emailRequestChallenge.authorizedRequests++;
+            return new Response(null, { status: 401, headers: { 'WWW-Authenticate': 'Basic realm="Scriv isolated fixture"' } });
           }
           if (importSnapshot && request.headers.has('authorization')) {
             const state = importSnapshot;
@@ -612,11 +619,17 @@ async function startWorker(root) {
         }
         discussionMemberPageState() { return discussionPages.members; }
         armEmailRequestRedirect() {
-          if (emailRequestRedirect) throw new Error('Use one owned email redirect');
+          if (emailRequestRedirect || emailRequestChallenge) throw new Error('Use one owned email redirect');
           emailRequestRedirect = { phase: 'armed', destinationRequests: 0 };
           return true;
         }
         emailRequestRedirectState() { return emailRequestRedirect; }
+        armEmailRequestChallenge() {
+          if (emailRequestChallenge || emailRequestRedirect) throw new Error('Use one owned email challenge');
+          emailRequestChallenge = { requests: 0, authorizedRequests: 0 };
+          return true;
+        }
+        emailRequestChallengeState() { return emailRequestChallenge; }
         armReplayPage({ projectId, mode }) {
           if (!/^[a-f0-9-]{36}$/i.test(projectId) || !['ahead-of-cursor', 'empty-with-more'].includes(mode)
               || replayPage?.requests.length === 0) throw new Error('Choose one owned replay-page condition');
@@ -1089,6 +1102,8 @@ async function startWorker(root) {
       refuseNextLogout: () => nativeWorker.refuseNextLogout(),
       armEmailRequestRedirect: () => nativeWorker.armEmailRequestRedirect(),
       emailRequestRedirectState: () => nativeWorker.emailRequestRedirectState(),
+      armEmailRequestChallenge: () => nativeWorker.armEmailRequestChallenge(),
+      emailRequestChallengeState: () => nativeWorker.emailRequestChallengeState(),
       loseEditReceipt: projectId => nativeWorker.loseEditReceipt(projectId),
       editReceiptState: () => nativeWorker.editReceiptState(),
       matchesPendingEdit: payload => nativeWorker.matchesPendingEdit(payload),
@@ -1151,6 +1166,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'create-empty-cloud-copy': worker.createEmptyCloudCopy, 'empty-cloud-copy': worker.emptyCloudCopy,
         'revoke-only-app-session': worker.revokeOnlyAppSession, 'prime-owned-email-quota': worker.primeOwnedEmailQuota,
         'arm-email-request-redirect': worker.armEmailRequestRedirect, 'email-request-redirect-state': worker.emailRequestRedirectState,
+        'arm-email-request-challenge': worker.armEmailRequestChallenge, 'email-request-challenge-state': worker.emailRequestChallengeState,
         'lose-edit-receipt': worker.loseEditReceipt,
         'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit,
         'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState,
