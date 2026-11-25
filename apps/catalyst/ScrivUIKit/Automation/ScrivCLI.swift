@@ -414,7 +414,7 @@ final class ScrivCLI {
                     "syntheticFixtureCommands": ["stage-package-fixture"],
                     "publicDelegateCommands": ["return", "script-insert", "script-delete-selection"],
                     "publicTextInputCommands": ["delete-backward"],
-                    "semanticMenuActionScopes": ["script-zoom", "layers-direction-duration", "audio-anchor", "layers-word-timing", "image-inspector-prompt-disclosure", "script-scenes", "script-entries"] + ScrivCLIStoryboardMerge.scopes + ["character-portrait-options", "character-delete", "workspace-discussion", "workspace-panels"],
+                    "semanticMenuActionScopes": ["script-zoom", "layers-direction-duration", "audio-anchor", "layers-word-timing", "image-inspector-prompt-disclosure", "script-scenes", "script-entries"] + ScrivCLIStoryboardMerge.scopes + ["character-portrait-options", "character-delete", "workspace-discussion", "workspace-panels", "codex-model-selection"],
                     "runID": run.runID.uuidString.lowercased(),
                     "sessionID": run.sessionID.uuidString.lowercased(),
                     "workspace": workspace,
@@ -809,6 +809,16 @@ final class ScrivCLI {
                       panel.store === workspace.store, panel.viewIfLoaded?.window === window,
                       let action = panel.cliAttachmentAction(on: button, title: title) else {
                     throw Failure("Discussion attachment action is unavailable")
+                }
+                button.sendAction(action)
+                return ["dispatched": true, "coverage": "semantic-menu-action"]
+            }
+            if scope == "codex-model-selection" {
+                guard Set(request.keys) == ["id", "command", "target", "scope", "action"],
+                      let title = request["action"] as? String, let button = view as? UIButton,
+                      let workspace = window.rootViewController as? ScrivWorkspaceController,
+                      let action = ScrivSettingsController.cliModelAction(on: button, title: title, store: workspace.store) else {
+                    throw Failure("Codex model action is unavailable")
                 }
                 button.sendAction(action)
                 return ["dispatched": true, "coverage": "semantic-menu-action"]

@@ -129,11 +129,12 @@ export function createCodexFixtureProtocol(root, outcomes, {
       assert.equal(params.includeHidden, false);
       if (accountStep?.reply) return accountReplies();
       const defaultModel = { id: model, model, isDefault: true, inputModalities: ['text', 'image'] };
+      const extraModel = { id: secondModel, model: secondModel, inputModalities: ['text'] };
       if (params.cursor === undefined) {
-        return [reply({ data: [defaultModel], nextCursor: reconnecting ? catalogCursor : null })];
+        return [reply({ data: signedInAccount ? [defaultModel, extraModel] : [defaultModel],
+          nextCursor: reconnecting ? catalogCursor : null })];
       }
       assert.equal(params.cursor, catalogCursor);
-      const extraModel = { id: secondModel, model: secondModel, inputModalities: ['text'] };
       return [reply({ data: [defaultModel, extraModel], nextCursor: null })];
     }
     case 'thread/start': {

@@ -7,7 +7,13 @@ import { startCodexFixture } from './support/codex-loopback-fixture.mjs';
 const groups = ['signed-in-account-menu'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
-  console.log(JSON.stringify({ groups }));
+  console.log(JSON.stringify({ groups, groupActions: {
+    'signed-in-account-menu': [{ id: 'codex-model-selection', command: 'menu-action', trigger: 'codex-model-selection',
+      condition: 'select-an-offered-loopback-provider-model', entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift', start: 171, end: 176,
+        sha256: 'acd543acabcdc6fd5c2b60d221830acc2a2e1a9b1b920ecf85b2ce45613dacb1',
+      } }],
+  } }));
   process.exit(0);
 }
 assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]));
@@ -123,6 +129,31 @@ async function verifySignedInAccountMenu(projects) {
   await fixture.race((async () => {
     await connect(fixture.endpoint);
     await session.waitFor(nodes => connection(nodes) === 'Connected' && statusText(nodes, 'codex-account-status') === email);
+    step = 'select another offered model using the real Codex Settings menu';
+    const selectedModel = label => node => node.identifier === 'codex-model' && node.label === 'Model: ' + label;
+    const choices = async target => {
+      const { primary } = await session.command('menu', { target });
+      return primary.flatMap(menu => menu.children ?? []).map(({ title, state, disabled, hidden }) => ({ title, state, disabled, hidden }));
+    };
+    const initial = 'scriv-fixture', alternate = 'scriv-fixture-extra';
+    const target = (await ui.reveal(selectedModel(initial))).path;
+    assert.deepEqual(await choices(target), [
+      { title: initial, state: 'on', disabled: false, hidden: false },
+      { title: alternate, state: 'off', disabled: false, hidden: false },
+    ]);
+    const scope = 'codex-model-selection';
+    assert.ok((await session.command('capabilities')).semanticMenuActionScopes.includes(scope));
+    await assert.rejects(session.command('menu-action', { target, scope, action: 'unadvertised-fixture-model' }),
+      /Codex model action is unavailable/);
+    assert.deepEqual(await session.command('menu-action', { target, scope, action: alternate }),
+      { dispatched: true, coverage: 'semantic-menu-action' });
+    const updated = (await ui.reveal(selectedModel(alternate))).path;
+    assert.deepEqual(await choices(updated), [
+      { title: initial, state: 'off', disabled: false, hidden: false },
+      { title: alternate, state: 'on', disabled: false, hidden: false },
+    ]);
+
+    step = 'open the signed-in account menu using the real Codex Account control';
     await ui.activate(signIn);
     await observePresentedAlert(session, { title: 'ChatGPT on this Mac', message: email, actions: [
       { title: 'Refresh account', enabled: true, style: 'default' },

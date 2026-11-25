@@ -91,8 +91,10 @@
       "id": "runtime-model-selection",
       "title": "Select a Codex model in runtime Settings",
       "featureId": "runtime-model-selection",
-      "state": "unwritten",
-      "existingPaths": [],
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/native-codex-account-check.mjs"
+      ],
       "entryPoint": {
         "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
         "symbol": "updateRuntime modelButton UIAction"
@@ -100,11 +102,15 @@
       "actionIds": [
         "codex-model-selection"
       ],
+      "routeIds": [
+        "journeys/native-codex-account-check/group/signed-in-account-menu"
+      ],
       "plannedActions": [
-        "Add scoped CLI selection to the existing model menu, then select a different model while connected to the synthetic provider."
+        "Connect the isolated Settings pane to the owned loopback provider and inspect the two models in the existing menu.",
+        "Reject an unadvertised model and dispatch the second offered model through its stored Settings menu action."
       ],
       "expectedOutcomes": [
-        "The existing model action changes the selected runtime model."
+        "The Settings button displays the second model and the menu marks that model as selected."
       ]
     },
     {
@@ -643,18 +649,18 @@
         "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
         "start": 173,
         "end": 176,
-        "fileSha256": "fda261dbdf9237c8cf9577e0cb8471c1ce8ecf13b48d2e38a5f02ae0cba6808d",
+        "fileSha256": "acd543acabcdc6fd5c2b60d221830acc2a2e1a9b1b920ecf85b2ce45613dacb1",
         "spanSha256": "63301ae353dd73aed8502c8910a17e65a4c8d475bdcb7a84527d852a96dd340b",
         "sha256": "c6dcd187b963a805fab438a389eb898194219aa3faa9121d9ab135bdbbe050c6"
       },
       "scenarioIds": [
         "runtime-model-selection"
       ],
-      "rationale": "Add scoped CLI selection to the existing model menu, then select a different model while connected to the synthetic provider.",
+      "rationale": "The signed-in account journey selects the second model from the real Settings menu using scoped CLI dispatch.",
       "confidence": "high",
       "uncertainty": "",
       "proposedAssertions": [
-        "The existing model action changes the selected runtime model."
+        "An unadvertised model is rejected. The selected model and menu checkmarks change when the offered second model is chosen."
       ]
     },
     {
@@ -885,7 +891,7 @@
         "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
         "start": 144,
         "end": 155,
-        "fileSha256": "c7735308b743d8bbbe9fafefcd3381326ec20e00380d158544dc2083b9054894",
+        "fileSha256": "3616bbb7b35a4e2d6d0fb60f977e781f1a89e7be6c7f4303c9959e192c2b2c7a",
         "spanSha256": "ad4e8741cdfa10cb8af29336555775aa950811d75138c18fc55220a9dc2bb88d",
         "sha256": "2090d48c575e30564653c89169290b5dbd080103e0b815cb74670e47686c2910"
       },
@@ -1063,7 +1069,7 @@
         "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
         "start": 207,
         "end": 210,
-        "fileSha256": "fda261dbdf9237c8cf9577e0cb8471c1ce8ecf13b48d2e38a5f02ae0cba6808d",
+        "fileSha256": "acd543acabcdc6fd5c2b60d221830acc2a2e1a9b1b920ecf85b2ce45613dacb1",
         "spanSha256": "c1834278bd3caab7ebfb4ffaff8ddf3f2edbe59019f385a6256b17b78e1c7d32",
         "sha256": "47537ec53ce4362670ff6e95f8775ddb68d88d2938ccb58af3d21a4adab9779f"
       },

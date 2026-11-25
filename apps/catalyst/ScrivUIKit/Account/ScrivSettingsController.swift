@@ -266,6 +266,28 @@ class ScrivSettingsController: ScrivScreenController, UIDocumentPickerDelegate, 
         UIKitFileAccess.shared.choose(types: [.folder, UIKitFileAccess.projectType], directory: url.deletingLastPathComponent(), from: self) { _ in }
         // Browsing here is read-only. Choosing a folder never replaces the project.
     }
+
+#if SCRIV_CLI_AUTOMATION
+    static func cliModelAction(on button: UIButton, title: String, store: WorkspaceStore) -> UIAction? {
+        var responder: UIResponder? = button
+        for _ in 0..<64 {
+            guard let current = responder else { return nil }
+            if let settings = current as? ScrivSettingsController {
+                let runtime = store.codex
+                guard settings.store === store, settings.pane == .codex, !settings.runtimeOnly,
+                      settings.setupView?.modelButton === button, !settings.working,
+                      runtime.isConnected, !runtime.isRunning, !runtime.isGenerating,
+                      (try? CodexLocalSetup.endpointURL(runtime.endpoint)) != nil,
+                      runtime.availableModels.contains(title), let menu = button.menu else { return nil }
+                let actions = menu.children.compactMap { $0 as? UIAction }
+                    .filter { $0.title == title && $0.attributes.isEmpty }
+                return actions.count == 1 ? actions.first : nil
+            }
+            responder = current.next
+        }
+        return nil
+    }
+#endif
 }
 
 @MainActor
