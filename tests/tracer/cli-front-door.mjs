@@ -90,8 +90,19 @@ export async function main() {
       notice: 'a retained measurement result\n'.repeat(16000),
     }));
     const outside = join(output, 'outside.json');
+    const backup = join(archive, 'batch', 'before-rebinding.json');
+    const savedLinks = Array.from({ length: 800 }, (_, index) => ({
+      id: index.toString(16).padStart(16, '0'),
+      source: { path: 'apps/mac/Sources/ScrivCore/TimingEngine.swift', start: 10, end: 20, sha256: 'a'.repeat(64) },
+      actions: ['inspect the archived synthetic mapping witness'],
+      why: 'The complete archive remains readable and byte-identical after compaction.',
+    }));
+    const backupBytes = Buffer.from(JSON.stringify({ version: 1, links: savedLinks }));
     await writeFile(map, bytes, { mode: 0o600 });
     await writeFile(report, reportBytes, { mode: 0o600 });
+    await writeFile(backup, backupBytes, { mode: 0o600 });
+    await writeFile(join(archive, 'invalid-map.json'), JSON.stringify({ version: 1,
+      links: [{ ...savedLinks[0], source: { ...savedLinks[0].source, sha256: 'invalid' } }, ...savedLinks.slice(1)] }));
     await writeFile(join(archive, 'unrelated-report.json'), bytes);
     await writeFile(join(archive, 'incomplete-report.json'), reportBytes.subarray(0, reportBytes.length - 1));
     await writeFile(outside, bytes);
@@ -99,12 +110,13 @@ export async function main() {
     await symlink(snapshot, join(archive, 'linked-snapshot'));
     await link(outside, join(maps, 'assertion-journey-map-services.json'));
     await writeFile(join(maps, 'unrelated.json'), bytes);
-    const artifacts = [[map, bytes], [report, reportBytes]];
+    const artifacts = [[map, bytes], [report, reportBytes], [backup, backupBytes]];
     const before = await Promise.all(artifacts.map(([path]) => lstat(path)));
     const args = ['app', '--', 'test', 'compact', '--archive', archive];
     const preview = JSON.parse(run(args).stdout);
     assert.equal(preview.mode, 'preview');
-    assert.deepEqual(preview.candidates, ['batch/gap-series-report.json', 'batch/source/docs/testing/code-e2e-links.json']);
+    assert.deepEqual(preview.candidates, ['batch/before-rebinding.json', 'batch/gap-series-report.json',
+      'batch/source/docs/testing/code-e2e-links.json']);
     assert.equal(preview.filesCompacted, 0);
     assert.equal((await lstat(report)).ino, before[1].ino);
     run(['app', '--', 'test', 'compact', '--archive', root, '--apply'], 2);

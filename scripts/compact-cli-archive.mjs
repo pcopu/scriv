@@ -82,6 +82,19 @@ async function findProfiles(directory, candidates) {
   }
 }
 
+function isArchivedLinkMap(document) {
+  return document?.version === 1 && Array.isArray(document.links) && document.links.length > 0
+    && document.links.every(link => {
+      const source = link?.source;
+      return typeof link?.id === 'string' && /^[a-f0-9]{16}$/.test(link.id)
+        && typeof source?.path === 'string' && source.path.length > 0 && digest(source.sha256)
+        && Number.isSafeInteger(source.start) && Number.isSafeInteger(source.end)
+        && source.start > 0 && source.end >= source.start
+        && Array.isArray(link.actions) && link.actions.length > 0
+        && link.actions.every(action => typeof action === 'string' && action.length > 0);
+    });
+}
+
 async function findArtifacts(directory, candidates) {
   const entries = await readdir(directory, { withFileTypes: true });
   if (basename(directory).startsWith('scriv-cli-e2e-')) await findProfiles(directory, candidates);
@@ -107,13 +120,13 @@ async function findArtifacts(directory, candidates) {
         && !['docs', 'design', 'node_modules'].includes(entry.name)) {
       await findArtifacts(path, candidates);
     }
-    if (entry.isFile() && entry.name.includes('report') && entry.name.endsWith('.json')
+    if (entry.isFile() && entry.name.endsWith('.json')
         && worthCompressing(await ownedFile(path))) {
       const bytes = await readFile(path);
-      let report;
-      try { report = JSON.parse(bytes); }
+      let document;
+      try { document = JSON.parse(bytes); }
       catch { continue; }
-      if (measuredReportKinds.has(report?.kind)) candidates.set(path, sha256(bytes));
+      if (measuredReportKinds.has(document?.kind) || isArchivedLinkMap(document)) candidates.set(path, sha256(bytes));
     }
   }
 }

@@ -173,9 +173,10 @@ tracer --root EXTERNAL_ANALYSIS_ROOT measure report --json
 tracer --root EXTERNAL_ANALYSIS_ROOT measure check --json
 ```
 
-For existing archived Scriv snapshots on macOS, preview large coverage maps,
-Tracer measurement reports, and native profiles or exports from finished
-imports. Apply to the same archive while no process is writing it.
+For existing archived Scriv snapshots on macOS, preview large coverage maps
+including v1 Tracer link-map backups saved under other JSON filenames, Tracer
+measurement reports, and native profiles or exports from finished imports.
+Apply to the same archive while no process is writing it.
 
 ```sh
 tracer app -- test compact --archive /absolute/archived-runs
