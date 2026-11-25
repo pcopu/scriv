@@ -42394,8 +42394,8 @@
       "id": "939038c833ce66c7",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 223,
-        "end": 227,
+        "start": 186,
+        "end": 190,
         "sha256": "bf651ec70c409400f017ed66394a022c9a213d29d615cc1004d59df100215465"
       },
       "actions": [
@@ -43826,8 +43826,8 @@
       "id": "99e8a7a1b59b7ab4",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 248,
-        "end": 252,
+        "start": 211,
+        "end": 215,
         "sha256": "32c3319cd005816c6f35302a5a1dbe6a2fe33f7615c0b2e3dba867ab2c09e1da"
       },
       "actions": [
@@ -81446,8 +81446,8 @@
       "id": "0957d586eae53d64",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 253,
-        "end": 254,
+        "start": 216,
+        "end": 217,
         "sha256": "ace6e13b8c0b878e81aa49f511d616a77da832af8bccb7fea891d15114e327d1"
       },
       "actions": [
@@ -81465,8 +81465,8 @@
       "id": "0c0fd31fc0b063fe",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 188,
-        "end": 189,
+        "start": 151,
+        "end": 152,
         "sha256": "ba24c60a5393d6b65cf699c65555259013823a30434330eece9ba34068cbc5ec"
       },
       "actions": [
@@ -81596,8 +81596,8 @@
       "id": "1b8bc4c83fad63af",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 208,
-        "end": 210,
+        "start": 171,
+        "end": 173,
         "sha256": "ee96da727adbf0f91742a5ded1e5fc7297cd06c958ead78b5a8ecc71aca9cfe1"
       },
       "actions": [
@@ -81620,8 +81620,8 @@
       "id": "1c86589a36cb977c",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 235,
-        "end": 236,
+        "start": 198,
+        "end": 199,
         "sha256": "db57f879f1335c390a051c2f10f37b8c72569b370dc694b9d3d4a165d956f327"
       },
       "actions": [
@@ -81713,8 +81713,8 @@
       "id": "2cc2f1c0c30bd0ab",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 238,
-        "end": 246,
+        "start": 201,
+        "end": 209,
         "sha256": "ca98e040149dd5ee2034f85c43ce4bbc112b07083a2913a52f06e60ad72656bf"
       },
       "actions": [
@@ -81921,8 +81921,8 @@
       "id": "4ac2745cb519c921",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 256,
-        "end": 257,
+        "start": 219,
+        "end": 220,
         "sha256": "05cea76887e6f8373a4b0631fa6b55fd4d0799a0ca590f86f00160f05080b61b"
       },
       "actions": [
@@ -81985,8 +81985,8 @@
       "id": "51e28860f7ecbdd0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 297,
-        "end": 303,
+        "start": 260,
+        "end": 266,
         "sha256": "dad6298488565548b9c6cff554a6eeede48285104d78c60b5d2aab49ed9743d8"
       },
       "actions": [
@@ -82346,8 +82346,8 @@
       "id": "7d354515c91948b6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 249,
-        "end": 250,
+        "start": 212,
+        "end": 213,
         "sha256": "454d5c6e038cb76ebffcfc618b2602f88bad730afeabc5579810037732895f7f"
       },
       "actions": [
@@ -82421,8 +82421,8 @@
       "id": "91ebfc74881632f5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 231,
-        "end": 232,
+        "start": 194,
+        "end": 195,
         "sha256": "5a47c75274edee5efe061a3e325563a386aa17ec63c31efd5ca2fe6ca66ff29b"
       },
       "actions": [
@@ -82534,8 +82534,8 @@
       "id": "a46033b981756237",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 264,
-        "end": 265,
+        "start": 227,
+        "end": 228,
         "sha256": "ed71a54de521415eb4a7d757a5c40e7a9d816184f29a663ffdc6adee3b7e802b"
       },
       "actions": [
@@ -82689,8 +82689,8 @@
       "id": "b32f480f3ca7f637",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 286,
-        "end": 286,
+        "start": 249,
+        "end": 249,
         "sha256": "db432e8158a521f5b4ed9a793853b70b1a16a9fbb0badb2f053621c8aa1ee30c"
       },
       "actions": [
@@ -82806,8 +82806,8 @@
       "id": "ba74f440f103d0ab",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 194,
-        "end": 194,
+        "start": 157,
+        "end": 157,
         "sha256": "58f5d614382a635b2cf9ddbb81e21407de198091bd2ce5e83f5d1a306b1ebd43"
       },
       "actions": [
@@ -83005,8 +83005,8 @@
       "id": "c1e32f1e01708c55",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 226,
-        "end": 229,
+        "start": 189,
+        "end": 192,
         "sha256": "6da4bd511dc6163b3a1b46104fa89db82c84d518c10c6f02def4deb3843be78e"
       },
       "actions": [
@@ -83248,8 +83248,8 @@
       "id": "d5c9ac2b53b3c77d",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 220,
-        "end": 224,
+        "start": 183,
+        "end": 187,
         "sha256": "61323f0a7d6f1be4c84dcf9b77b238ca5f7c4ffed16fe5211435e9f9e0da3a29"
       },
       "actions": [
@@ -83359,8 +83359,8 @@
       "id": "e3a8dc9fa7b4810e",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 191,
-        "end": 192,
+        "start": 154,
+        "end": 155,
         "sha256": "4c903cd74e8513a4fc30f02ff880da986e97b93506e52791c28830ee247264e1"
       },
       "actions": [
@@ -83421,8 +83421,8 @@
       "id": "e64ab0fa69b4b045",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 197,
-        "end": 206,
+        "start": 160,
+        "end": 169,
         "sha256": "beb9fad056a8969499f5052a1e808bdec8a3fd69b3a579743959fac60cdf5093"
       },
       "actions": [
@@ -94878,8 +94878,8 @@
       "id": "03817bfaf4469689",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 267,
-        "end": 270,
+        "start": 230,
+        "end": 233,
         "sha256": "221462bbc61a01ccb47ea29aee7759182ebd9018df299fc31d3006130319b940"
       },
       "actions": [
@@ -98414,8 +98414,8 @@
       "id": "bd562c7a16be9823",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 271,
-        "end": 282,
+        "start": 234,
+        "end": 245,
         "sha256": "f73f9bcc3cd3ed63671557c33a7846489989064b6012f2b283defb5044cc5dfb"
       },
       "actions": [
@@ -99807,7 +99807,7 @@
         "end": 19,
         "sha256": "968e98c64aa041bb3ddfdd3a459d4c540c1b53cc15405195805dfa60a9a31a9e"
       },
-      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
+      "fileSha256": "08894b26098de2f7d2fb35847f81a2b516a5e61d79830ac0ae3965e7bb7f654e"
     },
     {
       "id": "1d0028d2a9e17649",
@@ -101777,7 +101777,7 @@
         "end": 28,
         "sha256": "38c5003eafec65643c928bb6da68ab093ea1e7b479cdab1e259a0c1815049f4e"
       },
-      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
+      "fileSha256": "08894b26098de2f7d2fb35847f81a2b516a5e61d79830ac0ae3965e7bb7f654e"
     },
     {
       "id": "4575142c0d5ae61e",
@@ -102623,11 +102623,11 @@
       "id": "56d4244fef846eac",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 225,
-        "end": 225,
+        "start": 188,
+        "end": 188,
         "sha256": "0761fe3f28180d2f6c2af26fe1824bb2840f0a2a7536a629320f5a5c34dcefd0"
       },
-      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
+      "fileSha256": "08894b26098de2f7d2fb35847f81a2b516a5e61d79830ac0ae3965e7bb7f654e"
     },
     {
       "id": "56e70cbbe6b4f3db",
@@ -103793,11 +103793,11 @@
       "id": "6fed2bc33af91027",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 307,
-        "end": 307,
+        "start": 270,
+        "end": 270,
         "sha256": "5be9e10bd1b36e06637592a284550c5f3416f5ef45c1f9d0797820b79ff30fae"
       },
-      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
+      "fileSha256": "08894b26098de2f7d2fb35847f81a2b516a5e61d79830ac0ae3965e7bb7f654e"
     },
     {
       "id": "700f5cf2b2e321b9",
@@ -106427,7 +106427,7 @@
         "end": 64,
         "sha256": "01feb036e0ffd841a5ac7e42b269dd495172361a85ebbfd85a10f9ae557d8592"
       },
-      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
+      "fileSha256": "08894b26098de2f7d2fb35847f81a2b516a5e61d79830ac0ae3965e7bb7f654e"
     },
     {
       "id": "a60f5933b3447f92",
@@ -109097,7 +109097,7 @@
         "end": 121,
         "sha256": "96c1fe196d3f82e25aa4099c36e0567b9b9cf18a39f4213720e90820ead118fb"
       },
-      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
+      "fileSha256": "08894b26098de2f7d2fb35847f81a2b516a5e61d79830ac0ae3965e7bb7f654e"
     },
     {
       "id": "dd55e6a0e1b884c2",
@@ -109413,11 +109413,11 @@
       "id": "e396823008cfe916",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 290,
-        "end": 290,
+        "start": 253,
+        "end": 253,
         "sha256": "db3a1961262cea87df8a46a87303a87c5264f3ba7d32205c6e2752ea954d75ff"
       },
-      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
+      "fileSha256": "08894b26098de2f7d2fb35847f81a2b516a5e61d79830ac0ae3965e7bb7f654e"
     },
     {
       "id": "e3984197f06699d9",

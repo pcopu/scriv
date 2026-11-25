@@ -196,6 +196,19 @@ cue journal, and Add character opens the editor directly. Use cue-draft
 recovery and the character catalog journey to confirm those active paths
 after removing the retired methods and request consumer.
 
+The retired `ScrivPlaybackControlsView` was a duplicate Preview transport.
+The old reference recorded 32 instrumented lines in the type and no observed
+execution. Source and resource searches found no constructor, registration,
+or reflected lookup in supported builds. The workspace mounts
+`AudioTransportView`; use `tracer app -- test --scenario transport` to verify
+the live controls on each tab and their real playback behavior. The older
+proposal's Preview transport association describes its historical checkpoint.
+
+After rebuilding for a retirement, pass the previous and new analysis roots to
+`measure batch --baseline-reference-root OLD --reference-root NEW`. Compare
+the reported reference scopes separately from passing-line gains. Recapture
+changed files and preserve the old build's evidence.
+
 ## Required first lookup
 
 Before proposing more scenarios or estimating which code is covered, query the

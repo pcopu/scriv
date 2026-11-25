@@ -148,43 +148,6 @@ import ScrivCore
     }
 }
 
-@MainActor final class ScrivPlaybackControlsView: UIView {
-    private let store: WorkspaceStore
-    private let play = UIButton(type: .system), seek = UISlider(), volume = UISlider(), mute = UIButton(type: .system)
-    private let clock = ImageUI.label(size: 11, weight: .medium)
-    init(store: WorkspaceStore, compact: Bool = false) {
-        self.store = store; super.init(frame: .zero)
-        let previous = UIButton(type: .system), next = UIButton(type: .system)
-        previous.setImage(UIImage(systemName: "backward.end.fill"), for: .normal); previous.accessibilityLabel = "Previous picture"
-        next.setImage(UIImage(systemName: "forward.end.fill"), for: .normal); next.accessibilityLabel = "Next picture"
-        previous.addAction(UIAction { [weak self] _ in guard let self else { return }; self.store.seek(toMs: Double(self.store.sceneCues.map(\.startMs).last { Double($0) < self.store.playheadMs - 100 } ?? 0)) }, for: .touchUpInside)
-        next.addAction(UIAction { [weak self] _ in guard let self else { return }; self.store.seek(toMs: Double(self.store.sceneCues.first { Double($0.startMs) > self.store.playheadMs + 100 }?.startMs ?? self.store.sceneDurationMs)) }, for: .touchUpInside)
-        play.addAction(UIAction { [weak self] _ in self?.store.togglePlayback() }, for: .touchUpInside)
-        seek.accessibilityLabel = "Playback position"; seek.addAction(UIAction { [weak self] _ in guard let self else { return }; self.store.seek(toMs: Double(self.seek.value)) }, for: .valueChanged)
-        volume.minimumValue = 0; volume.maximumValue = 1; volume.widthAnchor.constraint(equalToConstant: 58).isActive = true
-        volume.accessibilityLabel = "Local audio volume"; volume.addAction(UIAction { [weak self] _ in guard let self else { return }; self.store.setAudioVolume(Double(self.volume.value)) }, for: .valueChanged)
-        mute.addAction(UIAction { [weak self] _ in self?.store.toggleAudioMute() }, for: .touchUpInside)
-        [previous, next, mute].forEach { $0.widthAnchor.constraint(equalToConstant: 26).isActive = true; $0.heightAnchor.constraint(equalToConstant: 32).isActive = true; $0.tintColor = ScrivUIKitTheme.ink }
-        play.widthAnchor.constraint(equalToConstant: compact ? 26 : 36).isActive = true; play.heightAnchor.constraint(equalToConstant: compact ? 32 : 36).isActive = true
-        play.backgroundColor = compact ? .clear : ImageUI.accent; play.tintColor = compact ? ImageUI.accent : .white; play.layer.cornerRadius = compact ? 0 : 18
-        if compact { [previous, next, mute].forEach { $0.tintColor = ImageUI.accent } }
-        play.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 17, weight: .semibold), forImageIn: .normal)
-        clock.font = .monospacedDigitSystemFont(ofSize: 13, weight: .medium); clock.numberOfLines = 1
-        clock.setContentCompressionResistancePriority(.required, for: .horizontal)
-        seek.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        let row = ImageUI.row([previous, play, next, clock, seek, mute, volume], spacing: 6); addSubview(row); row.scrivPinEdges(to: self, insets: NSDirectionalEdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
-        backgroundColor = ScrivUIKitTheme.panel; layer.cornerRadius = 11; layer.borderColor = ScrivUIKitTheme.hairline.cgColor; layer.borderWidth = compact ? 0 : 0.5; update()
-    }
-    @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(store:)") }
-    func update() {
-        play.setImage(UIImage(systemName: store.isPlaying ? "pause.fill" : "play.fill"), for: .normal); play.accessibilityLabel = store.isPlaying ? "Pause" : "Play"
-        clock.text = "\(ScrivFormat.time(Int(store.playheadMs))) / \(ScrivFormat.time(store.sceneDurationMs))"
-        seek.maximumValue = Float(max(1, store.sceneDurationMs)); if !seek.isTracking { seek.value = Float(store.playheadMs) }
-        if !volume.isTracking { volume.value = Float(store.project.audioVolume) }; volume.isEnabled = !store.project.audioClips.isEmpty; mute.isEnabled = volume.isEnabled
-        mute.setImage(UIImage(systemName: store.project.audioVolume == 0 ? "speaker.slash.fill" : "speaker.wave.2.fill"), for: .normal); mute.accessibilityLabel = store.project.audioVolume == 0 ? "Unmute local audio" : "Mute local audio"
-    }
-}
-
 @MainActor final class GenerationPanelViewController: ScrivScreenController, UITextViewDelegate {
     private let prompt = GenerationDirectionTextView(frame: .zero, textContainer: nil)
     private let target = ImageUI.label(size: 15, weight: .medium, secondary: true)
