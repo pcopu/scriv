@@ -90110,8 +90110,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90154,8 +90154,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90198,8 +90198,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90242,8 +90242,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90286,8 +90286,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90330,8 +90330,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native-produced journal snapshots and full canonical invariants witness ordinary recovery, explicit rebase and reviewed acknowledgement. Failure and discard alternatives are unclaimed."
     },
@@ -90374,8 +90374,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native-produced journal snapshots and full canonical invariants witness ordinary recovery, explicit rebase and reviewed acknowledgement. Failure and discard alternatives are unclaimed."
     },
@@ -90418,8 +90418,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90462,8 +90462,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90506,8 +90506,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90550,8 +90550,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90594,8 +90594,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90638,8 +90638,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90682,8 +90682,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90726,8 +90726,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90770,8 +90770,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native-produced journal snapshots and full canonical invariants witness ordinary recovery, explicit rebase and reviewed acknowledgement. Failure and discard alternatives are unclaimed."
     },
@@ -90814,8 +90814,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90858,8 +90858,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90902,8 +90902,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90946,8 +90946,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -90990,8 +90990,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -91034,8 +91034,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -91078,8 +91078,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native-produced journal snapshots and full canonical invariants witness ordinary recovery, explicit rebase and reviewed acknowledgement. Failure and discard alternatives are unclaimed."
     },
@@ -91122,8 +91122,8 @@
       "step": {
         "path": "tests/e2e/journeys/support/editor-draft-recovery-steps.mjs",
         "start": 29,
-        "end": 98,
-        "sha256": "fa29e1e2d62edd6251ca9caba8d44aa3ae8379d8d1c6c2717d6c7a0ea3d7391c"
+        "end": 99,
+        "sha256": "5e62eacf5a57063be5ac56af189ddd2a63a76718eb717e96edd52c59ce899a82"
       },
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
@@ -97662,8 +97662,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
-        "start": 113,
-        "end": 139,
+        "start": 117,
+        "end": 143,
         "sha256": "9fadd8232d70c38b0467b24538352319e9910bfb8eb7453029f9a2c02975040e"
       },
       "why": "The mounted word block and its start and end handles share the production drag lifecycle and apply the expected real saved authored changes."
@@ -97681,8 +97681,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/picture-word-actions.mjs",
-        "start": 122,
-        "end": 139,
+        "start": 126,
+        "end": 143,
         "sha256": "765de7127a45a71932501267993c728c377418d2a0597ce0329cadac03f15bf7"
       },
       "why": "The native block drag keeps the cuts and other words intact. The overlap guard refuses the later drag and leaves the prior saved package unchanged."
@@ -98337,7 +98337,7 @@
         "path": "tests/e2e/support/scenario-diagnostic.mjs",
         "start": 20,
         "end": 45,
-        "sha256": "9d0c186da41ab4925cdb91ba91928fe5275bdb2dde541ca3e82cc742b9d2ee5a"
+        "sha256": "95edd29ca9b931d1f178e91d2f368367beafaa141f82104dab06418c10de746c"
       },
       "actions": [
         "tracer app -- test tooling"
@@ -98345,8 +98345,8 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 397,
-        "end": 416,
-        "sha256": "9395b4d6147793d316a9dbf698093e93e01c8b7cfb99db515881bb1594572b83"
+        "end": 429,
+        "sha256": "6c4acb16b5cce8d54c779897296f32ae303b43d2af5615761d14d488130e2ff3"
       },
       "why": "A wrapped scenario failure emits its typed code, inner source line and control count through the dedicated descriptor, with error text excluded."
     },
@@ -103142,7 +103142,7 @@
         "end": 272,
         "sha256": "d16b1f9020b0bcaa25259c8819584f78cc7989345302fcc4470adac8bfde6d71"
       },
-      "fileSha256": "4695cf9a94f4702f07d9cd9672cf5dbb276944050788227b42f2f55d9eea4c53"
+      "fileSha256": "b6e55f215c38528ddb0ced93e91f21742c2f0f552993669c7bdbd3b2420941e5"
     },
     {
       "id": "6553b5e98e6500e0",
@@ -105352,7 +105352,7 @@
         "end": 240,
         "sha256": "b1ae110c8d7fd2ea91a819152e6f4434d7199cf755bded5dcf0424b23396379b"
       },
-      "fileSha256": "4695cf9a94f4702f07d9cd9672cf5dbb276944050788227b42f2f55d9eea4c53"
+      "fileSha256": "b6e55f215c38528ddb0ced93e91f21742c2f0f552993669c7bdbd3b2420941e5"
     },
     {
       "id": "9669da48463dfea3",
@@ -105582,7 +105582,7 @@
         "end": 3,
         "sha256": "c5ebf59b9856b043cecb2bb51903c03d02c4b3cc0d73016cc7b0e15ca9b78d19"
       },
-      "fileSha256": "4695cf9a94f4702f07d9cd9672cf5dbb276944050788227b42f2f55d9eea4c53"
+      "fileSha256": "b6e55f215c38528ddb0ced93e91f21742c2f0f552993669c7bdbd3b2420941e5"
     },
     {
       "id": "9a9bdad371295cf2",

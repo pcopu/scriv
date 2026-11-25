@@ -62,8 +62,9 @@ export async function editorDraftRecoverySteps({ getSession, root, baseline, tre
   await getSession().waitFor(nodes => nodes.some(n => n.title === 'Apply reviewed draft') && nodes.some(n => n.title === 'Keep for later' && n.hittable && n.enabled === true));
   let nodes = await getSession().command('snapshot');
   assert.equal(nodes.find(n => n.title === 'Apply reviewed draft').enabled, false, 'Original recovery base must be reviewed before apply');
-  assert.equal(nodes.find(n => n.label === 'Current saved line').text, text);
-  assert.equal(nodes.find(n => n.label === 'Your local draft').text, text);
+  const recoveredText = label => nodes.find(n => n.type === 'ScriptTextView' && n.label === label)?.text;
+  assert.equal(recoveredText('Current saved line'), text);
+  assert.equal(recoveredText('Your local draft'), text);
   await activate(n => n.title === 'Keep for later');
   await getSession().waitFor(nodes => !nodes.some(n => n.title === 'Apply reviewed draft')
     && nodes.some(n => n.identifier === 'workspace-tabs' && n.hittable));

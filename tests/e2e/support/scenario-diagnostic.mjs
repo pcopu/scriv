@@ -18,7 +18,7 @@ function sanitize(raw) {
   return result;
 }
 
-function diagnosticFor(error, entry) {
+function diagnosticFor(error) {
   const locations = [];
   let code, matches;
   for (let cause = error, depth = 0; cause && depth < 8; cause = cause.cause, depth++) {
@@ -40,8 +40,8 @@ function diagnosticFor(error, entry) {
     }
     locations.unshift(...causeLocations);
   }
-  return sanitize({ code: code ?? 'scenario-error', matches,
-    location: locations.find(location => location.path === entry) ?? locations[0] });
+  // Each cause moves its frames to the front, including eligible shared fixture frames.
+  return sanitize({ code: code ?? 'scenario-error', matches, location: locations[0] });
 }
 
 export function readScenarioDiagnostic(stream) {
@@ -66,7 +66,7 @@ if (process.env.SCRIV_E2E_DIAGNOSTIC_FD === String(fd) && entry && scenarioPath.
     try {
       // This dedicated descriptor carries only allowlisted fields. Standard
       // error remains disconnected and the failure retains its normal exit.
-      const diagnostic = JSON.stringify(diagnosticFor(error, entry));
+      const diagnostic = JSON.stringify(diagnosticFor(error));
       if (Buffer.byteLength(diagnostic) <= byteLimit) writeSync(fd, diagnostic);
     } catch { /* A missing diagnostic channel must not replace the failure. */ }
   });

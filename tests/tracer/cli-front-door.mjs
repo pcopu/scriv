@@ -413,6 +413,19 @@ throw new Error('wrapper-only error text', { cause });
     assert.deepEqual(JSON.parse(child.output[3]), {
       code: 'ui-target-ambiguous', matches: 2, location: { path: 'tests/e2e/diagnostic-probe.mjs', line: 1 },
     });
+    const helper = join(support, 'probe-helper.mjs');
+    await writeFile(helper, "export function checkTarget() { throw Object.assign(new Error('private helper message'), { code: 'SCRIV_UI_WAIT_TIMEOUT' }); }\n");
+    await writeFile(scenario, "import { checkTarget } from './support/probe-helper.mjs';\ntry { checkTarget(); } catch (cause) { throw new Error('private outer message', { cause }); }\n");
+    const nested = spawnSync(process.execPath, ['--import', producer, scenario], {
+      env: { ...env, SCRIV_E2E_DIAGNOSTIC_FD: '3' }, encoding: 'utf8', timeout: 5000, maxBuffer: 8192,
+      stdio: ['ignore', 'pipe', 'pipe', 'pipe'],
+    });
+    assert.ifError(nested.error);
+    assert.equal(nested.status, 1);
+    assert.deepEqual(JSON.parse(nested.output[3]), {
+      code: 'ui-wait-timeout', location: { path: 'tests/e2e/support/probe-helper.mjs', line: 1 },
+    });
+
   });
   await journey('compact only finished native profiles with exact export digests', async () => {
     const archive = join(output, 'profile-archive');

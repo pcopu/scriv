@@ -82,7 +82,10 @@ export async function runLayersWordDrags() {
   const ui = coverageSteps(session);
   let step = 'open the word timeline with room between words';
   let layersWindow;
-  function target(label) { return node => node.windowPath === layersWindow && node.label === label; }
+  function target(label) {
+    const type = label === 'Move' ? 'UIButton' : 'UIView';
+    return node => node.windowPath === layersWindow && node.type === type && node.label === label;
+  }
   async function gesture(label, phase, translation) {
     const matches = target(label);
     const nodes = await session.waitFor(items => items.filter(matches).length === 1
@@ -106,8 +109,9 @@ export async function runLayersWordDrags() {
     await ui.tab('Script');
     await ui.activate(node => node.identifier === 'preview-layers-disclosure' && node.label === 'Expand Layers');
     await ui.activate(node => node.identifier !== 'preview-layers-disclosure' && node.label === 'Expand Layers');
-    const shown = await session.waitFor(nodes => nodes.some(node => node.label === 'Move' && node.hittable));
-    const visibleWord = shown.find(node => node.label === 'Move' && node.hittable);
+    const visibleMove = node => node.type === 'UIButton' && node.label === 'Move' && node.hittable;
+    const shown = await session.waitForUnique(visibleMove);
+    const visibleWord = shown.find(visibleMove);
     layersWindow = visibleWord.windowPath;
 
     step = 'preview and cancel retiming the whole word';
