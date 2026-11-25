@@ -6,4 +6,9 @@ import { moveAndDeleteStructure } from './support/script-structure-edits.mjs';
 
 await runScriptJourney({ journey: 'AUT-J03',
   workflows: { 'create-navigate-reopen': createNavigateReopen, 'move-delete': moveAndDeleteStructure, 'owned-duration-dialog': observeOwnedDurationDialog },
+  groupWitnessPaths: {
+    'create-navigate-reopen': ['tests/e2e/journeys/support/script-structure-steps.mjs'],
+    'move-delete': ['tests/e2e/journeys/support/script-structure-edits.mjs'],
+    'owned-duration-dialog': ['tests/e2e/journeys/support/script-owned-duration-steps.mjs'],
+  },
   cases: scriptStructureCases, excluded: structureExcluded });

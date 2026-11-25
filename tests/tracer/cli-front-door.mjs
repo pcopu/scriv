@@ -58,6 +58,11 @@ export async function main() {
       assert.equal(row.path, `tests/e2e/${row.id}.mjs`);
       assert.ok(!row.path.includes('/support/') && !row.path.includes('/live-e2e/'));
     }
+    const pictures = catalog.scenarios.find(row => row.id === 'journeys/picture-coverage');
+    assert.deepEqual(pictures.groupWitnessPaths.follow, ['tests/e2e/journeys/support/picture-follow-steps.mjs']);
+    assert.deepEqual(pictures.groupWitnessPaths['empty-storyboard'], ['tests/e2e/journeys/support/empty-storyboard.mjs']);
+    const structure = catalog.scenarios.find(row => row.id === 'journeys/script-structure');
+    assert.deepEqual(structure.groupWitnessPaths['owned-duration-dialog'], ['tests/e2e/journeys/support/script-owned-duration-steps.mjs']);
     const direct = spawnSync(process.execPath, ['scripts/run-cli-e2e.mjs', '--list'], { cwd: root, env, encoding: 'utf8', timeout: 30000 });
     assert.equal(direct.status, 0);
     assert.deepEqual(JSON.parse(direct.stdout), catalog);

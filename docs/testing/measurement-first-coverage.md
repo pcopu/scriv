@@ -35,6 +35,17 @@ session receipts, and capture intervals carry the selected group. Use the
 group name when labeling its evidence so a passing focused run identifies the
 conditions that ran.
 
+Grouped discovery can declare `groupWitnessPaths` for checked-in support
+assertions. Tracer's focused worklist can match those paths to the exact
+selector, even when the linked assertion covers a nearby observed line in the
+caller. The picture and Script structure catalogs declare their group-owned
+support files. Shared support remains eligible for each group that uses it.
+
+The `empty-storyboard` group of `journeys/picture-coverage` imports a script
+with timed words and zero picture placements. It checks the shared words and
+their menu, selects and deselects a word, then uses Write in Script. The full
+loaded project and both saved packages stay exact.
+
 The `owned-duration-dialog` group of `journeys/script-structure` opens the
 Script row’s Edit owned duration button through ordinary CLI activation. It
 checks the attached dialog and its initial value, edits the Seconds field,

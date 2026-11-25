@@ -244,8 +244,8 @@
       "id": "00324f769e9f6195",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 195,
-        "end": 196,
+        "start": 202,
+        "end": 203,
         "sha256": "ed17746d631a4bfffdce23eeb12ebf1fdca88d966ee0e55cf51a0c1eb61ef679"
       },
       "actions": [
@@ -253,8 +253,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 152,
-        "end": 154,
+        "start": 157,
+        "end": 159,
         "sha256": "f5af6348d2ca564269f117485e13ad854cac4a4a75ba197b4a35d010367aa351"
       },
       "why": "Reject traversal as an invalid scenario ID through the actual public Tracer boundary, with no evidence summary."
@@ -2487,8 +2487,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 122,
-        "end": 134,
+        "start": 136,
+        "end": 148,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: after importing the anchored parent/child fixture and correcting the same invalid-input sheet, real duration texts 0.001, 86400, 1.2345, 10 and 0.5 save child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. Each edit has complete expected saved-model equality and one revision; each is followed by real reopen/Cancel/Undo/Redo. Parent, script, audio and scene runtime remain unchanged. The source IDs are fixed by fixture, not arbitrary injected model mutations. setCueDuration changes only the chosen authored extent before resolving and validating. Missing-cue and invalid-core-bound rejections are not tested here. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -4494,8 +4494,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 318,
-        "end": 349,
+        "start": 323,
+        "end": 354,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "Workspace routing accepts only inspect with its exact arity and emits the host inspection JSON. Resume/reset/delete are rejected without changing fixture bytes. Other malformed arities are not independently asserted. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -5477,8 +5477,8 @@
       "id": "363005482f3f4c31",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 322,
-        "end": 324,
+        "start": 329,
+        "end": 331,
         "sha256": "4163ac4331a6167f7daad8dbbf913542d0d68f6df0ca446cbf8df91ff8421b29"
       },
       "actions": [
@@ -5486,8 +5486,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 169,
-        "end": 188,
+        "start": 174,
+        "end": 193,
         "sha256": "1a299b8bcac0c324c66d692e3f78ec82a816968274a55ae7ee61c02c5e03e72b"
       },
       "why": "Preflight error becomes the recorded macos-required blocker, status not-run, and reason for eligible not-started scenarios while preserving explicit restriction reasons. No started scenario, generic unexpected error or collector failure is tested. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -5802,8 +5802,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 318,
-        "end": 349,
+        "start": 323,
+        "end": 354,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "The public inspector rejects non-owned naming, invokes host validation, returns the exact object explicitly denying native validation and resume authority, and normalizes tested validation failures. Non-string input and native ownership are not established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -6526,8 +6526,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 267,
-        "end": 271,
+        "start": 272,
+        "end": 276,
         "sha256": "f2b6bc72b9ebb2249aeec33bc5359dac552b8895616430f2a47cf0e2b18538ca"
       },
       "why": "Tracer tooling journey drives the actual builder help and verifies advertised source pin and build-record requirements. The exact three-line source snippet moved from 117-119 to 118-120 without changing its bytes. The builder now rebuilds the native plugin and canonical Core using matching signed Sparkle 2.10.1 development headers, but this help-only witness does not establish compilation, plugin loading, runtime behavior or measured coverage. Build verification is recorded separately in docs/verification/clt-native-build-20261111.md."
@@ -9818,8 +9818,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 122,
-        "end": 134,
+        "start": 136,
+        "end": 148,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: after importing the anchored parent/child fixture and correcting the same invalid-input sheet, real duration texts 0.001, 86400, 1.2345, 10 and 0.5 save child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. Each edit has complete expected saved-model equality and one revision; each is followed by real reopen/Cancel/Undo/Redo. Parent, script, audio and scene runtime remain unchanged. The source IDs are fixed by fixture, not arbitrary injected model mutations. Authored end beyond the scene is clipped to 4000 while authored duration remains 86400000/10000 for reopening. It does not prove later scene-growth restoration. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -10691,8 +10691,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 318,
-        "end": 349,
+        "start": 323,
+        "end": 354,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "Ownership helper predicates accept the synthetic private directory/files and reject tested directory-mode, file-mode and hard-link cases. Error helper returns the asserted owned-workspace-unavailable. Device/inode sameness is checked on successful access; no replacement race, wrong uid or special-file injection is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -11709,8 +11709,8 @@
       "id": "27c9916e5a2be34f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 215,
-        "end": 216,
+        "start": 222,
+        "end": 223,
         "sha256": "ad3d84aedfe9ac2699c0884c5cddfa3f82fe5e9d49cc62c94d3b6f0291423133"
       },
       "actions": [
@@ -11719,8 +11719,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 255,
-        "end": 265,
+        "start": 260,
+        "end": 270,
         "sha256": "36bf8cc3cdbc3eda366f154f1faee00277fb19c64f18cf0b1f915eea6d79ca23"
       },
       "why": "Actual Tracer invocations reject coverage without an explicit scenario and pinned build/source. This is argument gating, not native coverage."
@@ -13957,8 +13957,8 @@
       "id": "2feba792cdefff92",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 331,
-        "end": 334,
+        "start": 338,
+        "end": 341,
         "sha256": "2c812b3746a3626aeef8210fc9651bf318dbc82c96d91b8e0ad85c7475ede9be"
       },
       "actions": [
@@ -13966,8 +13966,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 221,
-        "end": 234,
+        "start": 226,
+        "end": 239,
         "sha256": "a8f0090e4a744bd6f6431442f81732f81ba6e2baa7fb823ad36ce3a0bb5d6bc1"
       },
       "why": "Subset preflight failure retains false fullSuitePassed, finalizes evidence, emits subset summary and returns status 2. Passing/full native suite and runtime-failed exit alternatives are not established. Preconditions and limits: One eligible native scenario ID is selected, but no app is provided; platform-specific preflight produces not-run. Selection metadata, one scenario, false fullSuitePassed and honest blocker are asserted, not native behavior. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -15684,8 +15684,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 318,
-        "end": 349,
+        "start": 323,
+        "end": 354,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "Retaining an inspect-only host handle validates absolute canonical UUID-named root, private directory mode and stable identity, then validates owned files. Symlink-root and unsafe-root fixtures reject; valid fixture yields the exact non-resumable inspection. No retained live application lease or concurrent root swap is established. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -19115,8 +19115,8 @@
       "id": "41d08f126e99879f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 250,
-        "end": 253,
+        "start": 257,
+        "end": 260,
         "sha256": "e3bb9e64f0e0b8302b9e32634be0d9d286d1132135ad7ec91f96a13c158db879"
       },
       "actions": [
@@ -19124,8 +19124,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 169,
-        "end": 188,
+        "start": 174,
+        "end": 193,
         "sha256": "1a299b8bcac0c324c66d692e3f78ec82a816968274a55ae7ee61c02c5e03e72b"
       },
       "why": "Runner creates one owned output directory and initial actual-app evidence with false fullSuitePassed/baselineMigrated, null app/build provenance and not-run scenario rows. The witness checks these fields after platform preflight. Coverage initialization on line185 is not taken by this noncoverage request; excluded from accepted range. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -20171,8 +20171,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 112,
-        "end": 119,
+        "start": 126,
+        "end": 133,
         "sha256": "19a2c939dfe920ea34febf8929adab245c01b6bd024af6111b8c94c5cf8ade29"
       },
       "why": "AUT-J09: each actual invalidSeconds fixture retains inline numeric error and unchanged packages. No rejection branch for changed navigation or unavailable lease is inferred. Reviewed static association only; this Linux audit did not run the native test."
@@ -20605,8 +20605,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 137,
-        "end": 150,
+        "start": 151,
+        "end": 164,
         "sha256": "1d7d68f8dfb3df7904f652475b3fee79510e9aa3efbb36c0dca98670afc7fc9c"
       },
       "why": "AUT-J09/numeric foreground boundaries: after final child coverage 1000\u20131500 is saved, real seeks 999,1000,1500 require Preview subtitles Parent,Child,Parent, respectively. The enclosing parent survives while latest-starting child wins only inside its half-open interval; scene slider maximum stays 4000. No ties at equal start times or no-active-cue path is tested. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -21241,8 +21241,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 152,
-        "end": 154,
+        "start": 157,
+        "end": 159,
         "sha256": "f5af6348d2ca564269f117485e13ad854cac4a4a75ba197b4a35d010367aa351"
       },
       "why": "The public test dispatcher preserves invalid-input exit status 2 and the bounded validation reason."
@@ -23168,8 +23168,8 @@
       "id": "51a85849aeda565e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 197,
-        "end": 198,
+        "start": 204,
+        "end": 205,
         "sha256": "9f42f39113593acce58361794626f20f4a741404f9ed9f435e49c65e6bcba4bf"
       },
       "actions": [
@@ -23199,8 +23199,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 150,
-        "end": 168,
+        "start": 155,
+        "end": 173,
         "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
       },
       "why": "Repeated exact scenario ID is rejected before evidence generation. Valid selection collection is used in normal listing/subset paths; this witness does not establish scenario execution. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -23252,8 +23252,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 304,
-        "end": 310,
+        "start": 309,
+        "end": 315,
         "sha256": "cd102efbe736f66834785a26abc39543d9c93a24533ed7a36de9f9f1e917e6ef"
       },
       "why": "Wrapper records child completion, removes signal listeners and propagates successful exit code, witnessed by direct-wrapper versus Tracer actions equality. SIGINT/other signal fallback and cancellation forwarding remain untested. Preconditions and limits: The trusted configured Tracer runs through the npm wrapper, returns exit 0 and identical actions output. Signal forwarding and failed/terminated process exit alternatives are not exercised. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -26320,8 +26320,8 @@
       "id": "5d8f4c4296b6296e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 177,
-        "end": 180,
+        "start": 184,
+        "end": 187,
         "sha256": "33db45876f99cdf9e2550b39845934921f8dc66fcde8f2145523224716999bdb"
       },
       "actions": [
@@ -26331,8 +26331,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 280,
-        "end": 301,
+        "start": 285,
+        "end": 306,
         "sha256": "c8e46d295c1c6256235b731b1745f7072f079d8e21e4de32b6be36bc4cdbfde0"
       },
       "why": "The runner records provided source manifest/digest/output location and enabled coverage option. Build-record path storage on line 138 remains outside this accepted range. The later not-run report identifies verified exported source and empty coverage; valid native build provenance is not established. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__ and cloud/.dev.vars.example; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution. The restored example is filtered from explicit untracked source includes; the source-manifest producer already excludes all .dev.vars files. Application source and native assertions are unchanged by this tooling witness repair."
@@ -32931,8 +32931,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 304,
-        "end": 310,
+        "start": 309,
+        "end": 315,
         "sha256": "cd102efbe736f66834785a26abc39543d9c93a24533ed7a36de9f9f1e917e6ef"
       },
       "why": "With the trusted configured Tracer, the npm wrapper forwards actions and output matches direct discovery. Signal behavior and other forwarded commands are not covered by this witness."
@@ -34919,8 +34919,8 @@
       "id": "7ade705ad8e0afa0",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 186,
-        "end": 188,
+        "start": 193,
+        "end": 195,
         "sha256": "72f1b6d99d9a4d4c97bb8bacabf926cacaeb2c0d56b5d24c555268ec2a179302"
       },
       "actions": [
@@ -34928,8 +34928,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 255,
-        "end": 265,
+        "start": 260,
+        "end": 270,
         "sha256": "36bf8cc3cdbc3eda366f154f1faee00277fb19c64f18cf0b1f915eea6d79ca23"
       },
       "why": "Reject relative tool selection at the public CLI boundary without executing a tool."
@@ -35555,8 +35555,8 @@
       "id": "7c8c5ec4146dd2c8",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 208,
-        "end": 210,
+        "start": 215,
+        "end": 217,
         "sha256": "a6912d66c983665ce6ffc1cf0d24956a93db7a302a00dfc155079082c66600c1"
       },
       "actions": [
@@ -35586,8 +35586,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 150,
-        "end": 168,
+        "start": 155,
+        "end": 173,
         "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
       },
       "why": "Incomplete manifest/digest pairs and timeout values below 100 or above 3600000 are rejected without creating evidence. Neither manifest byte integrity nor successful timeout enforcement is asserted by these invalid-input cases. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -39226,8 +39226,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 249,
-        "end": 254,
+        "start": 254,
+        "end": 259,
         "sha256": "ce3baef71321bb58e2d3b5f88d28acc72ab4ca697b67285f06f52d14f7f20572"
       },
       "why": "A nested public tooling request fails with the recursion refusal before any child suite starts. No successful native launch is implied."
@@ -40549,8 +40549,8 @@
       "id": "8d9ad3c2259185f7",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 217,
-        "end": 220,
+        "start": 224,
+        "end": 227,
         "sha256": "54f510a5148d289cf549d94e07f767e9fe42225f8ac816ce0c4e22b132c2012d"
       },
       "actions": [
@@ -43600,8 +43600,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 318,
-        "end": 349,
+        "start": 323,
+        "end": 354,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "Valid marker size/content and empty lock pass; the deliberately wrong-length marker rejects at the size guard. Same-length corrupt marker, short read, lock nonzero size and unexpected read failure are not rejection-tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -43621,8 +43621,8 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 45,
-        "end": 63,
-        "sha256": "318a8414a83274876a07322757b9ad2b20adf2bba4503f526bcc1f1c2dd5971d"
+        "end": 68,
+        "sha256": "b0cb918df3243b2c0172688deed784f59acfb63d1e3ca3c6b214e8c35a94d23d"
       },
       "why": "Discover regular native entrypoint files in the transitional and journey directories, excluding support and opt-in live-account routes."
     },
@@ -44644,8 +44644,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 311,
-        "end": 313,
+        "start": 316,
+        "end": 318,
         "sha256": "fbd6f2b87f14b45c33d755a5cbbdcf2afb642c65afcb474b1a72c79abeb84bb9"
       },
       "why": "The public wrapper refuses a relative executable selection with exit 2; only executable-selection rejection is asserted."
@@ -45824,9 +45824,9 @@
       "id": "9f671d81d53b2e92",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 222,
-        "end": 239,
-        "sha256": "3385b75564f89a33dda057d5697fe2464bdd5fca9f5780306c7be37aea1f0020"
+        "start": 229,
+        "end": 246,
+        "sha256": "cf5a37e840c6f19290d38dff16e9bfec65a7eb6a0bbe2ed97993b2289df91bd1"
       },
       "actions": [
         "tracer app -- test --list",
@@ -45834,8 +45834,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 119,
-        "end": 126,
+        "start": 124,
+        "end": 131,
         "sha256": "29aa39cf179819076f23f7017877fc9962e03cefb6a769ed15dd1d2fd361e329"
       },
       "why": "The current first/last catalog IDs select exactly two real entrypoints in catalog order with explicit subset and total counts. Discovery only, no native execution. The catalog now carries restriction metadata on blocked entries. This existing first/last-selection witness credits ordering and counts only, not execution eligibility or the new restriction branches."
@@ -45964,8 +45964,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 122,
-        "end": 134,
+        "start": 136,
+        "end": 148,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: after importing the anchored parent/child fixture and correcting the same invalid-input sheet, real duration texts 0.001, 86400, 1.2345, 10 and 0.5 save child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. Each edit has complete expected saved-model equality and one revision; each is followed by real reopen/Cancel/Undo/Redo. Parent, script, audio and scene runtime remain unchanged. The source IDs are fixed by fixture, not arbitrary injected model mutations. In particular, 1.2345 is rounded to 1235 milliseconds and reopened as 1.235. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -49107,8 +49107,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 137,
-        "end": 150,
+        "start": 151,
+        "end": 164,
         "sha256": "1d7d68f8dfb3df7904f652475b3fee79510e9aa3efbb36c0dca98670afc7fc9c"
       },
       "why": "AUT-J09/numeric foreground boundaries: after final child coverage 1000\u20131500 is saved, real seeks 999,1000,1500 require Preview subtitles Parent,Child,Parent, respectively. The enclosing parent survives while latest-starting child wins only inside its half-open interval; scene slider maximum stays 4000. No ties at equal start times or no-active-cue path is tested. Scene cue ordering feeds currentCue.last so latest-starting active cue wins. Equal-start ID ordering remains a gap. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -52787,8 +52787,8 @@
       "id": "b414825514bbe57b",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 268,
-        "end": 268,
+        "start": 275,
+        "end": 275,
         "sha256": "2001e995fa2f490b3c7b10d4666b7f82f6f7cac1d5d440eecf1db9a34562d8d5"
       },
       "actions": [
@@ -52796,8 +52796,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 169,
-        "end": 188,
+        "start": 174,
+        "end": 193,
         "sha256": "1a299b8bcac0c324c66d692e3f78ec82a816968274a55ae7ee61c02c5e03e72b"
       },
       "why": "On Linux the runner rejects native execution as macos-required before launching app, preparing coverage or entering runScenario. macOS missing-app behavior on the following line is not credited as executed. Preconditions and limits: The tooling environment removes SCRIV_E2E_APP and coverage context. On this Linux environment macos-required is the first platform failure; no app or native scenario launches. A single new evidence directory with exact not-run result and catalog selection is asserted. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -53168,8 +53168,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 125,
-        "end": 127,
+        "start": 139,
+        "end": 141,
         "sha256": "cb7b9fe69501d8c14244f642c1288c5a564116453ff00f79af4d22275c8b83a8"
       },
       "why": "AUT-J09: precondition is the imported parent/child fixture and the already-open current coverage sheet, after invalid input or explicit reopen. Set the selected valid case text, Apply, and observe the saved result. savedAfter (85-93) asserts one revision and every expected project field. Reopen, Cancel, history and stale-source branches are outside this link. Reviewed static association only; this Linux audit did not run the native test."
@@ -55267,8 +55267,8 @@
       "id": "bc1b5d8dce9d5bea",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 204,
-        "end": 206,
+        "start": 211,
+        "end": 213,
         "sha256": "56ecb13fc0c593e911da71cf2ff10047a5613206ed4b0e41d93f8a0e4404a2f9"
       },
       "actions": [
@@ -55298,8 +55298,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 150,
-        "end": 168,
+        "start": 155,
+        "end": 173,
         "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
       },
       "why": "The parser records list/help switches and rejects unknown arguments; combined help/list or list plus output is rejected by later exclusivity guards. No assumption that all branches fail at this line. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -55658,8 +55658,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 122,
-        "end": 134,
+        "start": 136,
+        "end": 148,
         "sha256": "20e82826aca82ece5f91403841c30d0c64d717185b6ab260ea9dbdb673d76047"
       },
       "why": "AUT-J09/numeric: existing real duration inputs 0.001,86400,1.2345,10,0.5 with reopen/Cancel/Undo/Redo require exact child authored extents 1,86400000,1235,10000,500 and resolved ends 1001,4000,2235,4000,1500. All parent/source/audio data remains exact. The source-start table accumulates owned source duration and resolves the child at b + 0 = 1000 within a 4000 ms scene. These are valid fixture inputs; missing/invalid anchors, duplicate entry IDs and symlink/media behavior are not covered. Static reviewed source/action/assertion association only. No native execution, measured coverage, physical-input parity, all-branch coverage or legacy retirement is claimed. Optional reveal/scroll and polling reads remain governed by the original helpers, not a recorded wire transcript."
@@ -56016,8 +56016,8 @@
       "id": "bead27d811030a06",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 256,
-        "end": 256,
+        "start": 263,
+        "end": 263,
         "sha256": "635722f828162803f7415bffb896eeca61f597233ad2ae2b1a228a1b3820da9e"
       },
       "actions": [
@@ -56027,8 +56027,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 280,
-        "end": 301,
+        "start": 285,
+        "end": 306,
         "sha256": "c8e46d295c1c6256235b731b1745f7072f079d8e21e4de32b6be36bc4cdbfde0"
       },
       "why": "Evidence serialization writes then renames its temporary file. The witness sees only evidence.json in the final output directory. Crash-atomicity, fsync durability and interrupted rename are not tested. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__ and cloud/.dev.vars.example; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution. The restored example is filtered from explicit untracked source includes; the source-manifest producer already excludes all .dev.vars files. Application source and native assertions are unchanged by this tooling witness repair."
@@ -57271,8 +57271,8 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 45,
-        "end": 63,
-        "sha256": "318a8414a83274876a07322757b9ad2b20adf2bba4503f526bcc1f1c2dd5971d"
+        "end": 68,
+        "sha256": "b0cb918df3243b2c0172688deed784f59acfb63d1e3ca3c6b214e8c35a94d23d"
       },
       "why": "The Tracer test front door delegates catalog discovery to the existing native runner; catalog and direct compatibility outputs match, with no app launched."
     },
@@ -58385,8 +58385,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 125,
-        "end": 127,
+        "start": 139,
+        "end": 141,
         "sha256": "cb7b9fe69501d8c14244f642c1288c5a564116453ff00f79af4d22275c8b83a8"
       },
       "why": "AUT-J09: precondition is the imported parent/child fixture and the already-open current coverage sheet, after invalid input or explicit reopen. Set the selected valid case text, Apply, and observe the saved result. savedAfter (85-93) asserts one revision and every expected project field. Reopen, Cancel, history and stale-source branches are outside this link. Reviewed static association only; this Linux audit did not run the native test."
@@ -59377,8 +59377,8 @@
       "id": "cc2bfd2318f202c5",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 258,
-        "end": 258,
+        "start": 265,
+        "end": 265,
         "sha256": "5dad5827ad70c283195e105f6805d9a73a68bde4c32ec27cc6fb37bb9a613b98"
       },
       "actions": [
@@ -59388,8 +59388,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 280,
-        "end": 301,
+        "start": 285,
+        "end": 306,
         "sha256": "c8e46d295c1c6256235b731b1745f7072f079d8e21e4de32b6be36bc4cdbfde0"
       },
       "why": "Source identity delegates to manifest verification for the supplied manifest/digest; final evidence says verified-exported-source-manifest. This positive case does not test stale/malformed source-manifest rejection or native source-to-build match. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__ and cloud/.dev.vars.example; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution. The restored example is filtered from explicit untracked source includes; the source-manifest producer already excludes all .dev.vars files. Application source and native assertions are unchanged by this tooling witness repair."
@@ -62813,8 +62813,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 137,
-        "end": 150,
+        "start": 151,
+        "end": 164,
         "sha256": "1d7d68f8dfb3df7904f652475b3fee79510e9aa3efbb36c0dca98670afc7fc9c"
       },
       "why": "AUT-J09/numeric foreground boundaries: after final child coverage 1000\u20131500 is saved, real seeks 999,1000,1500 require Preview subtitles Parent,Child,Parent, respectively. The enclosing parent survives while latest-starting child wins only inside its half-open interval; scene slider maximum stays 4000. No ties at equal start times or no-active-cue path is tested. Seek updates inspected cue from the current clock cue so paused Preview reflects each boundary. The scene-end fallback on the same line is not exercised. Static reviewed association only. No new native execution, measured coverage, full branch coverage, physical input parity or test retirement is claimed. Conditional reveal/poll reads remain in the existing helpers; this is not a recorded wire trace."
@@ -63213,8 +63213,8 @@
       "id": "dcb760654ed41c8d",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 167,
-        "end": 174,
+        "start": 174,
+        "end": 181,
         "sha256": "06fbeb3b6752cd8f6de5ece6cd087c19ac08cfc8597602a6ba461b7661d1ea6a"
       },
       "actions": [
@@ -63244,8 +63244,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 150,
-        "end": 168,
+        "start": 155,
+        "end": 173,
         "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
       },
       "why": "Argument iteration detects repeated non-scenario options and missing/control-character option values before evidence creation. The witness includes repeated timeout, missing scenario/app/timeout and newline scenario value. Other value flags are not all tested negatively. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -63461,8 +63461,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 318,
-        "end": 349,
+        "start": 323,
+        "end": 354,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "Successful validation confirms named file/root identity and returns the inspected file set; scenario verifies original filenames and file bytes remain unchanged. This is the successful read-only path, not concurrent replacement detection or guaranteed descriptor cleanup under all failures. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -64250,8 +64250,8 @@
       "id": "dfe1dff3a81c0759",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 190,
-        "end": 192,
+        "start": 197,
+        "end": 199,
         "sha256": "9038120b7ee4960c8676af3a6ea4557ab73afde4ab9061965173cf3fec2a3681"
       },
       "actions": [
@@ -64260,8 +64260,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 255,
-        "end": 265,
+        "start": 260,
+        "end": 270,
         "sha256": "36bf8cc3cdbc3eda366f154f1faee00277fb19c64f18cf0b1f915eea6d79ca23"
       },
       "why": "Real public CLI rejects invalid session capture bounds before launch; does not verify native slot enforcement."
@@ -69234,8 +69234,8 @@
       "id": "edfb106ba7599e62",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 194,
-        "end": 194,
+        "start": 201,
+        "end": 201,
         "sha256": "30030c597bb8d222fa5708425ec863c8d63fdfb4ba9620fae5fa53a58f39468c"
       },
       "actions": [
@@ -69265,8 +69265,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 150,
-        "end": 168,
+        "start": 155,
+        "end": 173,
         "sha256": "0bf88a0f077eec9495be26a4b5a5f9d4f34d6ab257a66470a21643f321e6a01a"
       },
       "why": "Timeout parsing rejects exponent notation and passes numeric strings to the later range guard. The 99 and 3600001 bounds are separately rejected later; no actual timeout duration is exercised. Preconditions and limits: output is an owned empty temporary directory. catalog.scenarios[0].id is chosen from preceding discovery. Each argument-array invocation must exit 2 and leave output empty. The final tooling extra-argument request is intercepted by nested-tooling guard, so it does not test cli/scriv.mjs line 176. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -69873,8 +69873,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 314,
-        "end": 316,
+        "start": 319,
+        "end": 321,
         "sha256": "51d4865cab067848a45c97eb9d43d6b29b6afea090587607f6a6017be2841be9"
       },
       "why": "The public wrapper reports a missing explicitly selected executable as exit 2 with the setup error. This witness does not exercise successful child exit or signal propagation."
@@ -70996,8 +70996,8 @@
       "id": "f3e4765df137a31f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 254,
-        "end": 254,
+        "start": 261,
+        "end": 261,
         "sha256": "2eee146c7f11991ffabccbcb02ecd812a1816104fce4814ba13453206029bf09"
       },
       "actions": [
@@ -71007,8 +71007,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 280,
-        "end": 301,
+        "start": 285,
+        "end": 306,
         "sha256": "c8e46d295c1c6256235b731b1745f7072f079d8e21e4de32b6be36bc4cdbfde0"
       },
       "why": "Opt-in coverage initializes explicit not-run status, zero imported records and empty intervals; these exact fields remain in final preflight-failed evidence. No collector import or app instrumentation runs. Preconditions and limits: includes is the exact preceding Git untracked list excluding __pycache__ and cloud/.dev.vars.example; export stdout supplies digest. The pinned source mode and empty not-run coverage intervals are asserted. Linux macos-required occurs before coverage build-record verification/collector/native execution, so those later operations are excluded. Reviewed static CLI-witness association, not measured line/branch coverage or native execution. The restored example is filtered from explicit untracked source includes; the source-manifest producer already excludes all .dev.vars files. Application source and native assertions are unchanged by this tooling witness repair."
@@ -71904,8 +71904,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 318,
-        "end": 349,
+        "start": 323,
+        "end": 354,
         "sha256": "ff9e7299e9e6c273f5ecc192a3c1e9851edb91cfddcf1eb9e93b64139db9dd05"
       },
       "why": "Validation reads the opened/named root and each marker/lock, checks private regular-file ownership/link count/mode and obtains stable file identities. Hard-linked/mode-0400 marker and absent-lock fixtures reject. No identity-change race, file-symlink race, device mismatch or revalidation of an existing lease.files set is tested. Preconditions and limits: All paths are new synthetic fixtures created by the witness. In order: valid private directory; symlink to it; symlinked parent; hard-linked marker; mode-0400 marker; wrong-length marker text; missing lock; mode-0755 root; non-owned name; relative traversal. Exact read-only inspection object and all original filenames/bytes unchanged are asserted. Native descendant/lock validation and retained-process resume authority are explicitly absent. Reviewed static CLI-witness association, not measured line/branch coverage or native execution."
@@ -83929,8 +83929,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 169,
-        "end": 187,
+        "start": 174,
+        "end": 192,
         "sha256": "c2db7fdcae7b6a8e421392c00b93eeb747ce091386d559ba809811c06de377e8"
       },
       "why": "The emitted unpinned-source mode is exactly git-working-tree. No independent correctness claim is made for unasserted fingerprint, HEAD or index values."
@@ -83970,8 +83970,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 189,
-        "end": 202,
+        "start": 194,
+        "end": 207,
         "sha256": "079a71d6e49f2c284cb628ace432fe9feb8f3dce11cc1a1f08eca884e3caf025"
       },
       "why": "The fixed restriction object is compared exactly, including status, reason and detail; it is not a new exception or runtime bypass."
@@ -83991,8 +83991,8 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 45,
-        "end": 63,
-        "sha256": "318a8414a83274876a07322757b9ad2b20adf2bba4503f526bcc1f1c2dd5971d"
+        "end": 68,
+        "sha256": "b0cb918df3243b2c0172688deed784f59acfb63d1e3ca3c6b214e8c35a94d23d"
       },
       "why": "The public test branch reaches the already mapped real-runner dispatcher; the exact native catalog is asserted."
     },
@@ -84000,8 +84000,8 @@
       "id": "4579e95b6742509b",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 265,
-        "end": 265,
+        "start": 272,
+        "end": 272,
         "sha256": "251af02bdf06578e58a84c767afd9e956728e2dcfe6df02fa8e6a30d26dc0748"
       },
       "actions": [
@@ -84010,8 +84010,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 207,
-        "end": 219,
+        "start": 212,
+        "end": 224,
         "sha256": "f8310da0ac848790907f6a7929d7d2796ddc6e86cba7b3bf0fa965e0da312eab"
       },
       "why": "The explicit absent-app identification failure becomes app-identity-unavailable without overwriting the distinct blocked-scenario reason."
@@ -84034,8 +84034,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 240,
-        "end": 247,
+        "start": 245,
+        "end": 252,
         "sha256": "e03f04cc11b3e59a4a9db189220fc319eec54e7528f79023f0ce2764494f7aed"
       },
       "why": "The public path reaches launch with the valid persistent=false options and forwards to the private launcher. Invalid-options rejection is unclaimed."
@@ -84044,8 +84044,8 @@
       "id": "75ae20557ed42cfa",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 336,
-        "end": 337,
+        "start": 343,
+        "end": 344,
         "sha256": "1674ec57dbd55226a5f98694ec55383a91fb7974f94917174dfd0878836309cc"
       },
       "actions": [
@@ -84055,8 +84055,8 @@
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
         "start": 45,
-        "end": 63,
-        "sha256": "318a8414a83274876a07322757b9ad2b20adf2bba4503f526bcc1f1c2dd5971d"
+        "end": 68,
+        "sha256": "b0cb918df3243b2c0172688deed784f59acfb63d1e3ca3c6b214e8c35a94d23d"
       },
       "why": "Direct module invocation returns the same independently checked scenario catalog and successful exit status. The colocated rejection handler is not exercised by this comparison."
     },
@@ -84064,8 +84064,8 @@
       "id": "8cf7a26516801711",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 269,
-        "end": 269,
+        "start": 276,
+        "end": 276,
         "sha256": "155b99c4fcc8c5940e6ad104d7a26b3a079f0b25c675fef1e383f0117d5a59f0"
       },
       "actions": [
@@ -84073,8 +84073,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 169,
-        "end": 187,
+        "start": 174,
+        "end": 192,
         "sha256": "c2db7fdcae7b6a8e421392c00b93eeb747ce091386d559ba809811c06de377e8"
       },
       "why": "On macOS the absent app produces the exact SCRIV_E2E_APP-required blocker asserted by the tooling journey."
@@ -84093,8 +84093,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 280,
-        "end": 301,
+        "start": 285,
+        "end": 306,
         "sha256": "c8e46d295c1c6256235b731b1745f7072f079d8e21e4de32b6be36bc4cdbfde0"
       },
       "why": "The runner delegates the supplied manifest/digest to the existing verifier and retains its verified-exported-source-manifest result before the missing-app gate."
@@ -84103,8 +84103,8 @@
       "id": "a9154208c8debc65",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 242,
-        "end": 245,
+        "start": 249,
+        "end": 252,
         "sha256": "865723df71091dc297a11f0a48b7237fb47cc73dff698e5e859975758577b256"
       },
       "actions": [
@@ -84112,8 +84112,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 169,
-        "end": 187,
+        "start": 174,
+        "end": 192,
         "sha256": "c2db7fdcae7b6a8e421392c00b93eeb747ce091386d559ba809811c06de377e8"
       },
       "why": "The existing external output parent is resolved and accepted before the evidence directory is created there. Rejection branches and alternate filesystem layouts are unclaimed."
@@ -84122,8 +84122,8 @@
       "id": "a930773617cb8f6f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 260,
-        "end": 260,
+        "start": 267,
+        "end": 267,
         "sha256": "26954abe226d657590ba030fd82494ae8769c26cc99515a9ad638ec1a68c4260"
       },
       "actions": [
@@ -84132,8 +84132,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 189,
-        "end": 202,
+        "start": 194,
+        "end": 207,
         "sha256": "079a71d6e49f2c284cb628ace432fe9feb8f3dce11cc1a1f08eca884e3caf025"
       },
       "why": "An all-blocked selection stops before the supplied absent app can be identified and preserves not-run evidence."
@@ -84152,8 +84152,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 360,
-        "end": 365,
+        "start": 365,
+        "end": 370,
         "sha256": "deac6eb145473d79930fb784667b36717f81175485d2c1253e754d1c58abef00"
       },
       "why": "Both argument-count and nested-provenance refusal paths are directly asserted with independent exact error text."
@@ -84176,8 +84176,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 240,
-        "end": 247,
+        "start": 245,
+        "end": 252,
         "sha256": "e03f04cc11b3e59a4a9db189220fc319eec54e7528f79023f0ce2764494f7aed"
       },
       "why": "The supplied absent path reaches the platform/filesystem launch gate and fails before a process can be spawned. Only the current platform path is witnessed."
@@ -84200,8 +84200,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 240,
-        "end": 247,
+        "start": 245,
+        "end": 252,
         "sha256": "e03f04cc11b3e59a4a9db189220fc319eec54e7528f79023f0ce2764494f7aed"
       },
       "why": "Accepted legacy app argument forms reach launch; their filesystem failure, rather than argument-shape rejection, matches direct invocation."
@@ -84220,8 +84220,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 207,
-        "end": 219,
+        "start": 212,
+        "end": 224,
         "sha256": "f8310da0ac848790907f6a7929d7d2796ddc6e86cba7b3bf0fa965e0da312eab"
       },
       "why": "Bundle identification attempts canonical resolution of the deliberately missing app and fails before reading a bundle or executable."
@@ -94821,8 +94821,8 @@
       "id": "33720f3b1724fc03",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 321,
-        "end": 324,
+        "start": 328,
+        "end": 331,
         "sha256": "a05d40f97c2b138e4802fb9f1ffaba7cd1c490560e6febe7d93044f69f56cbf5"
       },
       "actions": [
@@ -94830,8 +94830,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 379,
-        "end": 395,
+        "start": 384,
+        "end": 400,
         "sha256": "6e99dc573c72b96fa217ee3f945e9199f10212a3b54bbc46b99547823cda717e"
       },
       "why": "The safe blocker path records the signature failure as not-run and assigns it to the unstarted workspace scenario. Other allowlisted blockers and started-scenario failure behavior remain outside this new negative assertion."
@@ -94849,8 +94849,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 379,
-        "end": 395,
+        "start": 384,
+        "end": 400,
         "sha256": "6e99dc573c72b96fa217ee3f945e9199f10212a3b54bbc46b99547823cda717e"
       },
       "why": "The Darwin platform verifier rejects the unsigned non-executable synthetic bundle before file fingerprinting or scenario execution. This test asserts rejection, not valid signing, all-architecture behavior or native acceptance."
@@ -94859,8 +94859,8 @@
       "id": "ed7558e490db107f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 262,
-        "end": 264,
+        "start": 269,
+        "end": 271,
         "sha256": "26b5f341a94a5cc0d925efe79a673ac65963787df2e0041f2aae0730e78ffa47"
       },
       "actions": [
@@ -94868,8 +94868,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 379,
-        "end": 395,
+        "start": 384,
+        "end": 400,
         "sha256": "6e99dc573c72b96fa217ee3f945e9199f10212a3b54bbc46b99547823cda717e"
       },
       "why": "Initial identity handling preserves the fixed signature-verification failure instead of converting it into the generic identity blocker. The evidence remains null app identity because assignment never completes."
@@ -95721,8 +95721,8 @@
       "id": "1d8fbd0cc16034c9",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 181,
-        "end": 181,
+        "start": 188,
+        "end": 188,
         "sha256": "c2f220899b72eee623adb8310c1209be841530a23487bcce09afcab17542eab6"
       },
       "actions": [
@@ -95730,8 +95730,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 255,
-        "end": 265,
+        "start": 260,
+        "end": 270,
         "sha256": "36bf8cc3cdbc3eda366f154f1faee00277fb19c64f18cf0b1f915eea6d79ca23"
       },
       "why": "The public native runner rejects launch coverage without the pinned coverage invocation. The same option parses with the required inputs in the not-run case."
@@ -96565,9 +96565,9 @@
       "id": "97533ef6aeb0075e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 222,
-        "end": 238,
-        "sha256": "3790bcabd4e5dde66f235f5a163a3c2a5076eccd2095784c5cc1c171d8f19d06"
+        "start": 229,
+        "end": 245,
+        "sha256": "c536875e14c1ba3de0b8da95e0cd4179427f382b561b366ec3829d79edca4b43"
       },
       "actions": [
         "List one Script scenario and inspect its named groups",
@@ -96575,8 +96575,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 127,
-        "end": 139,
+        "start": 132,
+        "end": 144,
         "sha256": "58a789a4ab0f4eebbfdf4c38d4486d539bd544a7e0381d157c31fda2f4af8f37"
       },
       "why": "The supported groups are read from the actual scenario catalog. The CLI tooling witness checks exact group names and preflight rejection without a native app."
@@ -98344,8 +98344,8 @@
       ],
       "step": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 397,
-        "end": 429,
+        "start": 402,
+        "end": 434,
         "sha256": "6c4acb16b5cce8d54c779897296f32ae303b43d2af5615761d14d488130e2ff3"
       },
       "why": "A wrapped scenario failure emits its typed code, inner source line and control count through the dedicated descriptor, with error text excluded."
@@ -98532,6 +98532,26 @@
         "sha256": "8bd04e46494ce2420c497e46f047ec635554ee955913c5a47c396cc151ecd0c5"
       },
       "why": "The production reader error leaves the composer read-only and both projects unchanged. Normal Retry save restores editing with the original canonical direction."
+    },
+    {
+      "id": "d29862da1316afd0",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Images/StoryboardViewController.swift",
+        "start": 102,
+        "end": 104,
+        "sha256": "f8e5ce22b1c56b82b08b966c4ac0edcfc776600de7619f509d694fb63980717e"
+      },
+      "actions": [
+        "select Storyboard with the exact synthetic script and no picture placements",
+        "inspect the visible shared words and menu, select and deselect the first word, then activate Write in Script"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/support/empty-storyboard.mjs",
+        "start": 21,
+        "end": 41,
+        "sha256": "f8c2f0e55e6846f1f1e560954eb01d60fdc91a5006a7385b6c3f9c18cd9b19fb"
+      },
+      "why": "The empty-scene branch exposes text and a real transition to Script. The journey verifies no picture cards and unchanged loaded and saved projects."
     }
   ],
   "commentExclusions": [
@@ -99753,7 +99773,7 @@
         "end": 16,
         "sha256": "68fb3d000de47f53c6cb1fd15e9abdee8e2368ac581d877a725fb0853e95ec07"
       },
-      "fileSha256": "14fec31e4dcb3b2206d45b9c0a12b75b61d96bb25d4b759bbfd858188b3bacc0"
+      "fileSha256": "f41c28c7c4f4346e18308c35f5253d6530fd9abb174bc660efba5c738e0a152a"
     },
     {
       "id": "1e09369ab73c26ab",
@@ -99783,7 +99803,7 @@
         "end": 19,
         "sha256": "323dffba07536e70282395d36131e6c46fb97deeaf2a1513e13d0369dca5c31f"
       },
-      "fileSha256": "14fec31e4dcb3b2206d45b9c0a12b75b61d96bb25d4b759bbfd858188b3bacc0"
+      "fileSha256": "f41c28c7c4f4346e18308c35f5253d6530fd9abb174bc660efba5c738e0a152a"
     },
     {
       "id": "1e8bd322382b0d12",
@@ -101169,11 +101189,11 @@
       "id": "3c371da3f1b35fe7",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 84,
-        "end": 84,
+        "start": 98,
+        "end": 98,
         "sha256": "af9e0f42fdda7bd4fd4c2b38b80e3822126ac844a2caf189060b324ebb60ce58"
       },
-      "fileSha256": "8e560745ccd53a5aa05076fbac06760229bac1e42cfeeb2157627a03e5fa2e2d"
+      "fileSha256": "e46bc076538427bde07a9e4ce9cd3d02429846913702199959e659893c7335a8"
     },
     {
       "id": "3c78dc9bfef370e8",
@@ -102523,7 +102543,7 @@
         "end": 133,
         "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
       },
-      "fileSha256": "ac81e480c86f589d0e48d1fa3f2e53417820d8a563142d67d5c125d3bac0b05a"
+      "fileSha256": "7f0f4f795485dfcd3add5cc568c8890fa92818658fe43bf1282f4ca7f8188cfd"
     },
     {
       "id": "58267d3510d79430",
@@ -102539,11 +102559,11 @@
       "id": "58319f29415d5b7c",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 106,
-        "end": 106,
+        "start": 120,
+        "end": 120,
         "sha256": "1b17bda0191087556148337bec47d95c875c68b9896b536e113de140e69c67f4"
       },
-      "fileSha256": "8e560745ccd53a5aa05076fbac06760229bac1e42cfeeb2157627a03e5fa2e2d"
+      "fileSha256": "e46bc076538427bde07a9e4ce9cd3d02429846913702199959e659893c7335a8"
     },
     {
       "id": "586b4673e9247bc7",
@@ -102599,11 +102619,11 @@
       "id": "596df4c902f187da",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 241,
-        "end": 241,
+        "start": 248,
+        "end": 248,
         "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
       },
-      "fileSha256": "ac81e480c86f589d0e48d1fa3f2e53417820d8a563142d67d5c125d3bac0b05a"
+      "fileSha256": "7f0f4f795485dfcd3add5cc568c8890fa92818658fe43bf1282f4ca7f8188cfd"
     },
     {
       "id": "59c64d2ace520826",
@@ -103239,11 +103259,11 @@
       "id": "6532ebbacd4fa824",
       "source": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 272,
-        "end": 272,
+        "start": 277,
+        "end": 277,
         "sha256": "d16b1f9020b0bcaa25259c8819584f78cc7989345302fcc4470adac8bfde6d71"
       },
-      "fileSha256": "b6e55f215c38528ddb0ced93e91f21742c2f0f552993669c7bdbd3b2420941e5"
+      "fileSha256": "a4117f5b4848bba71b51205c2be9c720cde30dccf09c91df748aa64dd6778d2f"
     },
     {
       "id": "6553b5e98e6500e0",
@@ -103713,7 +103733,7 @@
         "end": 111,
         "sha256": "a4308328107eab2aa31194380982f38474fa67b59ecfa31bf85b127116a36576"
       },
-      "fileSha256": "14fec31e4dcb3b2206d45b9c0a12b75b61d96bb25d4b759bbfd858188b3bacc0"
+      "fileSha256": "f41c28c7c4f4346e18308c35f5253d6530fd9abb174bc660efba5c738e0a152a"
     },
     {
       "id": "71b0baa240cc79a3",
@@ -104253,7 +104273,7 @@
         "end": 79,
         "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
       },
-      "fileSha256": "ac81e480c86f589d0e48d1fa3f2e53417820d8a563142d67d5c125d3bac0b05a"
+      "fileSha256": "7f0f4f795485dfcd3add5cc568c8890fa92818658fe43bf1282f4ca7f8188cfd"
     },
     {
       "id": "7e4a8f19915d9b4e",
@@ -105043,7 +105063,7 @@
         "end": 2,
         "sha256": "4ead8511821dcd95c2efee74b114bac02b04cb9252a4405b4149f9930c721b52"
       },
-      "fileSha256": "ac81e480c86f589d0e48d1fa3f2e53417820d8a563142d67d5c125d3bac0b05a"
+      "fileSha256": "7f0f4f795485dfcd3add5cc568c8890fa92818658fe43bf1282f4ca7f8188cfd"
     },
     {
       "id": "8e40d7512c7266e1",
@@ -105449,11 +105469,11 @@
       "id": "962a010d6aca9913",
       "source": {
         "path": "tests/tracer/cli-front-door.mjs",
-        "start": 240,
-        "end": 240,
+        "start": 245,
+        "end": 245,
         "sha256": "b1ae110c8d7fd2ea91a819152e6f4434d7199cf755bded5dcf0424b23396379b"
       },
-      "fileSha256": "b6e55f215c38528ddb0ced93e91f21742c2f0f552993669c7bdbd3b2420941e5"
+      "fileSha256": "a4117f5b4848bba71b51205c2be9c720cde30dccf09c91df748aa64dd6778d2f"
     },
     {
       "id": "9669da48463dfea3",
@@ -105539,11 +105559,11 @@
       "id": "97ac15b68b777d54",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 137,
-        "end": 138,
+        "start": 151,
+        "end": 152,
         "sha256": "74acdf8669f2162367b5bc4d998a32bc6e617b8053053a10c27e9999305adca0"
       },
-      "fileSha256": "8e560745ccd53a5aa05076fbac06760229bac1e42cfeeb2157627a03e5fa2e2d"
+      "fileSha256": "e46bc076538427bde07a9e4ce9cd3d02429846913702199959e659893c7335a8"
     },
     {
       "id": "97c3992f51e328e7",
@@ -105683,7 +105703,7 @@
         "end": 3,
         "sha256": "c5ebf59b9856b043cecb2bb51903c03d02c4b3cc0d73016cc7b0e15ca9b78d19"
       },
-      "fileSha256": "b6e55f215c38528ddb0ced93e91f21742c2f0f552993669c7bdbd3b2420941e5"
+      "fileSha256": "a4117f5b4848bba71b51205c2be9c720cde30dccf09c91df748aa64dd6778d2f"
     },
     {
       "id": "9a9bdad371295cf2",
@@ -105823,7 +105843,7 @@
         "end": 5,
         "sha256": "9b1af15059ba8c08ba910ce3365d246c053ae57b9c159770ef1af1b51b5faa81"
       },
-      "fileSha256": "14fec31e4dcb3b2206d45b9c0a12b75b61d96bb25d4b759bbfd858188b3bacc0"
+      "fileSha256": "f41c28c7c4f4346e18308c35f5253d6530fd9abb174bc660efba5c738e0a152a"
     },
     {
       "id": "9c8cab780eedda4c",
@@ -106159,11 +106179,11 @@
       "id": "a360be545eec64b6",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 120,
-        "end": 120,
+        "start": 134,
+        "end": 134,
         "sha256": "5dc43e82a592a27b0758f2c98ef1fb8c8ee94cb84018a70dfccc877580e179f4"
       },
-      "fileSha256": "8e560745ccd53a5aa05076fbac06760229bac1e42cfeeb2157627a03e5fa2e2d"
+      "fileSha256": "e46bc076538427bde07a9e4ce9cd3d02429846913702199959e659893c7335a8"
     },
     {
       "id": "a37b41cd0be2820d",
@@ -107733,7 +107753,7 @@
         "end": 36,
         "sha256": "da22a6a09e9a6d7bbf1e35ecdac04e969fad1ac1a051025596a84831ff070202"
       },
-      "fileSha256": "ac81e480c86f589d0e48d1fa3f2e53417820d8a563142d67d5c125d3bac0b05a"
+      "fileSha256": "7f0f4f795485dfcd3add5cc568c8890fa92818658fe43bf1282f4ca7f8188cfd"
     },
     {
       "id": "c3fa07d2ab6ca6a5",
@@ -108409,11 +108429,11 @@
       "id": "d0dee9046abab7c6",
       "source": {
         "path": "tests/e2e/journeys/picture-coverage.mjs",
-        "start": 154,
-        "end": 154,
+        "start": 168,
+        "end": 168,
         "sha256": "7dfeff6eb9ba44d6d88519271cd5f7b7c6a91b7091826c371b52c2734a1a726c"
       },
-      "fileSha256": "8e560745ccd53a5aa05076fbac06760229bac1e42cfeeb2157627a03e5fa2e2d"
+      "fileSha256": "e46bc076538427bde07a9e4ce9cd3d02429846913702199959e659893c7335a8"
     },
     {
       "id": "d13306861e6c6cec",
@@ -110133,7 +110153,7 @@
         "end": 16,
         "sha256": "690226a1b0853d3a163445a5632c8d87581c29b124aa6358cea1f042a88a7f1e"
       },
-      "fileSha256": "8e560745ccd53a5aa05076fbac06760229bac1e42cfeeb2157627a03e5fa2e2d"
+      "fileSha256": "e46bc076538427bde07a9e4ce9cd3d02429846913702199959e659893c7335a8"
     },
     {
       "id": "f40038939032b029",

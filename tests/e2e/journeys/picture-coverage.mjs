@@ -15,7 +15,7 @@ import { coverageSteps, ready, sorted } from './support/picture-coverage-steps.m
 // AUT-J09 runs numeric coverage, placement, follow, merge and timing gestures.
 // Each portion uses a fresh isolated UIKit session.
 const args = process.argv.slice(2);
-const groups = ['numeric', 'placements', 'follow', 'merge', 'merge-refusals', 'timing-gestures', 'shared-cuts', 'storyboard-word-moves', 'layers-word-drags'];
+const groups = ['numeric', 'placements', 'follow', 'merge', 'merge-refusals', 'timing-gestures', 'shared-cuts', 'storyboard-word-moves', 'layers-word-drags', 'empty-storyboard'];
 assert.ok(args.every((arg, index) => arg === '--list-cases' || arg === '--group'
   || args[index - 1] === '--group' && groups.includes(arg)), 'Unknown argument');
 assert.ok(args.filter(arg => arg === '--group').length <= 1, 'Choose one group');
@@ -38,12 +38,26 @@ const numericListing = { journey: 'AUT-J09', portion: 'numeric-picture-coverage'
       'reopen authored extent', 'only target cue extent changes', 'startup package unchanged'],
     excluded: ['drag/scrub', 'physical input', 'picker', 'scene-growth restoration', 'pixels', 'restart recovery'],
   };
+const groupWitnessPaths = {
+  placements: ['tests/e2e/journeys/support/picture-placement-steps.mjs'],
+  follow: ['tests/e2e/journeys/support/picture-follow-steps.mjs'],
+  merge: ['tests/e2e/journeys/support/picture-merge-steps.mjs'],
+  'merge-refusals': ['tests/e2e/journeys/support/picture-merge-refusals.mjs'],
+  'timing-gestures': ['tests/e2e/journeys/support/picture-timing-gestures.mjs'],
+  'shared-cuts': ['tests/e2e/journeys/support/picture-shared-cut.mjs'],
+  'storyboard-word-moves': ['tests/e2e/journeys/support/picture-word-actions.mjs'],
+  'layers-word-drags': ['tests/e2e/journeys/support/picture-word-actions.mjs'],
+  'empty-storyboard': ['tests/e2e/journeys/support/empty-storyboard.mjs'],
+};
 if (args.includes('--list-cases')) {
-  const portions = [numericListing, placementListing, followListing, mergeListing, mergeRefusalListing, timingGestureListing, sharedCutListing, wordMoveListing, wordDragListing];
+  const portions = [numericListing, placementListing, followListing, mergeListing, mergeRefusalListing, timingGestureListing, sharedCutListing, wordMoveListing, wordDragListing, { group: 'empty-storyboard', cases: ['pick a shared word before adding pictures'] }];
   const listing = args.includes('--group') ? portions[groups.indexOf(group)]
     : { journey: 'AUT-J09', groups, freshSessionPerGroup: true, nativeCompositionVerified: false,
-      defaultGroups: groups, portions };
+      defaultGroups: groups, portions, groupWitnessPaths };
   console.log(JSON.stringify(listing, null, 2));
+} else if (group === 'empty-storyboard') {
+  const { runEmptyStoryboard } = await import('./support/empty-storyboard.mjs');
+  await runEmptyStoryboard();
 } else if (group === 'timing-gestures') {
   await runPictureTimingGestureJourney();
 } else if (group === 'shared-cuts') {

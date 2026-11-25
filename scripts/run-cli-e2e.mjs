@@ -146,16 +146,23 @@ const groupedScenarios = new Set([
   'journeys/native-shared-generation.mjs', 'journeys/cue-draft-recovery.mjs',
 ]);
 const validGroup = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(value);
-function discoverGroups(name) {
+function discoverGroupCatalog(name) {
   const env = { ...process.env };
   delete env.SCRIV_E2E_APP;
   delete env.SCRIV_E2E_COVERAGE_CONTEXT;
   const output = execFileSync(process.execPath, [join(repo, 'tests/e2e', name), '--list-cases'],
     { cwd: repo, env, encoding: 'utf8', timeout: 5000, maxBuffer: 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
-  const { groups } = JSON.parse(output);
+  const { groups, groupWitnessPaths } = JSON.parse(output);
   if (!Array.isArray(groups) || !groups.length || !groups.every(validGroup)
       || new Set(groups).size !== groups.length) throw new Error('invalid-scenario-group-catalog');
-  return groups;
+  if (groupWitnessPaths !== undefined) {
+    const witnessPath = /^tests\/e2e\/(?:journeys\/)?support\/(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+\.mjs$/;
+    if (!groupWitnessPaths || typeof groupWitnessPaths !== 'object' || Array.isArray(groupWitnessPaths)
+        || Object.entries(groupWitnessPaths).some(([group, paths]) => !groups.includes(group)
+          || !Array.isArray(paths) || !paths.length || new Set(paths).size !== paths.length
+          || paths.some(path => typeof path !== 'string' || !witnessPath.test(path)))) throw new Error('invalid-scenario-group-witnesses');
+  }
+  return { groups, ...(groupWitnessPaths !== undefined && { groupWitnessPaths }) };
 }
 
 export async function main(args = process.argv.slice(2)) {
@@ -224,7 +231,7 @@ export async function main(args = process.argv.slice(2)) {
   const names = requested.length ? available.filter(name => requested.includes(name.slice(0, -4))) : available;
   if (group) {
     if (list || requested.length !== 1 || !groupedScenarios.has(names[0])) throw new Error('group-requires-one-supported-scenario');
-    if (!discoverGroups(names[0]).includes(group)) throw new Error('unknown-scenario-group');
+    if (!discoverGroupCatalog(names[0]).groups.includes(group)) throw new Error('unknown-scenario-group');
   }
   const selection = { mode: requested.length ? 'subset' : 'all', availableScenarioCount: available.length, selectedScenarioCount: names.length, ...(group && { group }) };
   if (list) {
@@ -233,7 +240,7 @@ export async function main(args = process.argv.slice(2)) {
       const id = name.slice(0, -4);
       const restriction = scenarioRestrictions[id];
       return { id, path: `tests/e2e/${name}`, ...(restriction && { restriction }),
-        ...(groupedScenarios.has(name) && !restriction && { groups: discoverGroups(name) }) };
+        ...(groupedScenarios.has(name) && !restriction && discoverGroupCatalog(name)) };
     });
     console.log(JSON.stringify({ schemaVersion: 1, kind: 'native-cli-scenario-catalog', selection, scenarios }, null, 2));
     return 0;
