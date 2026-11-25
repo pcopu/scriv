@@ -93,6 +93,31 @@ function with one passing neighboring counter inside that compiler range.
 Follow the reported scenario selector and confirm the action and missing
 condition. For an explicit action selection, use
 `actionReview.functionEdgeCandidates`. Startup has a separate shortlist.
+To add Swift call sites to an existing function map, run this once on the
+original producer's unchanged source and its exported build manifest.
+
+```sh
+python3 scripts/export-cli-call-map.py --source-root /external/build-source \
+  --source-manifest /external/build-sources.json --functions /external/functions.json \
+  --scratch-directory /external/scratch > /external/functions-with-calls.json
+```
+
+Use the Catalyst toolchain for that build. The command verifies the full
+source manifest before and after indexing, covers the Swift files in the
+function map and removes its temporary compiler data. Use the resulting file
+in `worklist --function-map`. Swift symbol and source locations supply
+uniquely resolved call sites. Dynamic dispatch and ambiguous targets still
+need source review.
+
+Under `functionReview.callers.declarations`, the exact case observed the line
+that declares the callback. Read the registration, then invoke the real
+action. For example, the Settings window's Export project button reaches
+`WorkspaceStore.exportProject()`. The `import-export#native-export-refusal`
+case invokes it with a different valid saved snapshot and verifies the native
+error and preservation of both snapshots. The success path opens a system
+picker and stages its package in the app container. It needs an owned
+observation of the picker and its stage.
+
 When the pinned function map also has compiler-resolved call sites, use
 `functionReview.callers` to find exact CLI cases that reached a function
 which can call the unobserved code. Inspect the call condition before

@@ -320,6 +320,44 @@ export async function main() {
       assert.match(result.stderr, args.includes('--coverage') ? /--coverage requires --coverage-source-manifest, --coverage-source-manifest-sha256 and --coverage-build-record together/ : /Coverage source manifest, digest and build record require --coverage/);
     }
   });
+  if (process.platform === 'darwin') await journey('export exact Swift call sites from pinned sources', async () => {
+    const sourceRoot = join(output, 'compiler-call-source');
+    const core = 'apps/mac/Sources/ScrivCore/Recovery.swift', app = 'apps/catalyst/ScrivUIKit/Entry.swift';
+    const header = 'apps/catalyst/CLIInstrumentation/ScrivCLICoverageBridge.h';
+    const content = {
+      [core]: 'public func productionRecovery() -> Int {\n    return 42\n}\n',
+      [app]: 'import ScrivCore\nfunc action() -> Int {\n    return productionRecovery()\n}\n',
+      [header]: '// Synthetic automation bridge.\n',
+    };
+    const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+    for (const [path, bytes] of Object.entries(content)) {
+      await mkdir(dirname(join(sourceRoot, path)), { recursive: true });
+      await writeFile(join(sourceRoot, path), bytes);
+    }
+    const files = Object.keys(content).sort().map(path => ({ path, sha256: hash(content[path]) }));
+    const manifest = JSON.stringify({ schemaVersion: 1, kind: 'scriv-exported-source',
+      baseCommit: '0'.repeat(40), files });
+    const sourceManifest = join(output, 'compiler-call-source.json'), functions = join(output, 'compiler-functions.json');
+    await writeFile(sourceManifest, manifest);
+    const inputMap = { version: 1, kind: 'llvm-function-map', buildSha256: '1'.repeat(64),
+      sourceManifestSha256: hash(manifest), files: files.filter(row => row.path.endsWith('.swift')).map(row => ({
+        ...row, ranges: row.path === app ? [[2, 4]] : [[1, 3]],
+      })) };
+    await writeFile(functions, JSON.stringify(inputMap));
+    const args = ['scripts/export-cli-call-map.py', '--source-root', sourceRoot, '--source-manifest', sourceManifest,
+      '--functions', functions, '--scratch-directory', output];
+    const compile = () => spawnSync('python3', args, { cwd: root, env, encoding: 'utf8', timeout: 120000 });
+    const result = compile();
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(JSON.parse(result.stdout), { ...inputMap, calls: [
+      { caller: { path: app, line: 3 }, callee: { path: core, start: 1, end: 3 } },
+    ] });
+    await writeFile(join(sourceRoot, core), content[core].replace('42', '43'));
+    const stale = compile();
+    assert.equal(stale.status, 2);
+    assert.match(stale.stderr, /compiler call map.*pinned source/i);
+    assert.equal(stale.stdout, '');
+  });
   await journey('keep a pinned coverage request explicitly not-run without a native environment', async () => {
     const git = spawnSync('git', ['ls-files', '--others', '--exclude-standard', '-z'], { cwd: root, env, encoding: 'utf8', timeout: 30000 });
     assert.equal(git.status, 0);

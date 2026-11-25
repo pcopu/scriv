@@ -77,3 +77,38 @@ export async function verifyPackageExport(session, step) {
   assert.deepEqual(await session.command('export-project'), result);
   assert.deepEqual(await step.saved(), before);
 }
+
+async function nativeExportControl(session) {
+  await session.command('key', { input: ',', modifiers: ['command'] });
+  const isExport = node => node.type === 'UIButton' && node.title === 'Export project…' && node.enabled && node.hittable;
+  const nodes = await session.waitForUnique(isExport);
+  return nodes.find(isExport);
+}
+
+export async function verifyNativeExportRefusal(session) {
+  const original = await session.command('loaded-project');
+  const { id } = original.project;
+  assert.match(id, /^[0-9a-f-]{36}$/i);
+  const metadata = join(session.root, 'Projects', `${id}.scriv`, 'project.json');
+  const bytes = await readFile(metadata);
+  const replacement = Buffer.from(JSON.stringify({ ...JSON.parse(bytes), title: 'Different owned snapshot' }));
+
+  const control = await nativeExportControl(session);
+  await writeFile(metadata, replacement);
+  try {
+    assert.deepEqual(await session.command('activate', { target: control.path }), { dispatched: true });
+    const message = 'Scriv could not confirm the latest project on disk. Finish saving before trying again.';
+    let alert;
+    for (let i = 0; i < 80 && !alert; i++) {
+      alert = (await session.command('presented-alerts')).find(item => item.message === message
+        && item.viewAttachedToWindow && !item.beingPresented && !item.beingDismissed);
+      if (!alert) await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    assert.ok(alert, 'The Settings action reports its actual export refusal');
+    assert.deepEqual(alert.actions, [{ title: 'OK', enabled: true, style: 'default' }]);
+    assert.deepEqual(await readFile(metadata), replacement, 'Export preserves the other saved snapshot');
+    assert.deepEqual(await session.command('loaded-project'), original);
+  } finally {
+    await writeFile(metadata, bytes);
+  }
+}

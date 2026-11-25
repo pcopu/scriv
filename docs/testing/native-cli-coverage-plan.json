@@ -229,6 +229,55 @@
         "The stale request is cleared, its tabs are disabled, and the brief can still be closed."
       ],
       "restriction": "The verified CLI import route rejects an already presented controller. This condition needs an owned sync fixture that changes the source while the review remains mounted."
+    },
+    {
+      "id": "native-export-refusal",
+      "title": "Refuse a native export when the saved project changed",
+      "featureId": "native-export-refusal",
+      "state": "existing",
+      "existingPaths": [
+        "tests/e2e/journeys/import-export.mjs",
+        "tests/e2e/journeys/support/package-export-steps.mjs"
+      ],
+      "entryPoint": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "symbol": "exportProject()"
+      },
+      "actionIds": [
+        "key",
+        "activate"
+      ],
+      "routeIds": [
+        "journeys/import-export/group/native-export-refusal"
+      ],
+      "plannedActions": [
+        "Open Settings and activate Export project with a different valid snapshot in the owned project."
+      ],
+      "expectedOutcomes": [
+        "The app reports the export refusal and preserves both the loaded project and the different saved snapshot."
+      ]
+    },
+    {
+      "id": "native-export-picker-staging",
+      "title": "Hand the verified package to the native project export picker",
+      "featureId": "native-export-picker-staging",
+      "state": "unwritten",
+      "existingPaths": [],
+      "entryPoint": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "symbol": "exportProject()"
+      },
+      "actionIds": [
+        "key",
+        "activate"
+      ],
+      "plannedActions": [
+        "Export a current saved project through the real Settings button and observe the owned staging and picker."
+      ],
+      "expectedOutcomes": [
+        "The picker receives a complete copy of the live project, including its package members and history."
+      ],
+      "restriction": "The Catalyst app stages the export in its sandbox temporary directory. An inherited host temporary directory did not redirect it. This path needs a verified owned CLI observation of the picker and stage."
     }
   ],
   "associations": [
@@ -758,6 +807,50 @@
       "uncertainty": "The verified CLI import route rejects an already presented controller. This condition needs an owned sync fixture that changes the source while the review remains mounted.",
       "proposedAssertions": [
         "The stale request is cleared, its tabs are disabled, and the brief can still be closed."
+      ]
+    },
+    {
+      "rangeId": "native-export-refusal-1",
+      "featureId": "native-export-refusal",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1985,
+        "end": 1990,
+        "fileSha256": "d22be0e9ec8cf602c8e7811403515ed51a987ad0ae320a4242b2a46ba54919cb",
+        "spanSha256": "9a670bfd5711b8635ab67f8b77e580e32379b7aca9445b60d6a852a5b97cef45",
+        "sha256": "9fab9088922d4993db9542bf16257a4177f40ff6f6391f0d40ca97fb859cca28"
+      },
+      "scenarioIds": [
+        "native-export-refusal"
+      ],
+      "rationale": "Open Settings and activate Export project with a different valid snapshot in the owned project.",
+      "confidence": "high",
+      "uncertainty": "",
+      "proposedAssertions": [
+        "The app reports the export refusal and preserves both the loaded project and the different saved snapshot."
+      ]
+    },
+    {
+      "rangeId": "native-export-picker-staging-1",
+      "featureId": "native-export-picker-staging",
+      "status": "model-proposed-unreviewed",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 1991,
+        "end": 1996,
+        "fileSha256": "d22be0e9ec8cf602c8e7811403515ed51a987ad0ae320a4242b2a46ba54919cb",
+        "spanSha256": "08d62579c9b590a7daa725dc7f01a2a690a27e1585f1f758c39bd8a135668e71",
+        "sha256": "a1e8b5906c92b1ae3043078d154b1490078f4104201813a96c6002d78b3d121c"
+      },
+      "scenarioIds": [
+        "native-export-picker-staging"
+      ],
+      "rationale": "Export a current saved project through the real Settings button and observe the owned staging and picker.",
+      "confidence": "high",
+      "uncertainty": "The Catalyst app stages the export in its sandbox temporary directory. An inherited host temporary directory did not redirect it. This path needs a verified owned CLI observation of the picker and stage.",
+      "proposedAssertions": [
+        "The picker receives a complete copy of the live project, including its package members and history."
       ]
     }
   ]

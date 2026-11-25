@@ -3,7 +3,7 @@ import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { fountainSteps } from './support/fountain-steps.mjs';
 import { importCases, metadataSource, forcedSource, invalidFilenames, openingLines } from './support/fountain-cases.mjs';
-import { verifyPackageExport } from './support/package-export-steps.mjs';
+import { verifyPackageExport, verifyNativeExportRefusal } from './support/package-export-steps.mjs';
 
 // IJ-02, with independently selectable Fountain and project package cases.
 // Installation uses production importScript validation. Exports use Scriv's
@@ -26,7 +26,7 @@ const invalidExports = sample => [
   { path: '/not-an-export-destination' }, { url: 'file:///not-an-export-destination' },
   { name: 'NotAnExport.fountain' }, { text: 'Title: Not input' }, { projectID: sample.id },
 ];
-const groups = ['roundtrip', 'import', 'filename', 'package'];
+const groups = ['roundtrip', 'import', 'filename', 'package', 'native-export-refusal'];
 const args = process.argv.slice(2);
 let selected = groups;
 if (args.includes('--group')) {
@@ -45,6 +45,7 @@ const manifest = [
   { group: 'filename', id: 'metadata-fallback' },
   ...openingLines.map((_, index) => ({ group: 'filename', id: `opening-colon-${index + 1}` })),
   { group: 'package', id: 'saved-media-and-history' },
+  { group: 'native-export-refusal', id: 'changed-snapshot' },
 ].filter(test => selected.includes(test.group));
 if (args.includes('--list-cases')) {
   // Authorship inventory only: does not launch the app or claim native passes.
@@ -171,6 +172,9 @@ if (args.includes('--list-cases')) {
     }
     if (selected.includes('package')) {
       await run('package', 'saved-media-and-history', () => verifyPackageExport(session, step));
+    }
+    if (selected.includes('native-export-refusal')) {
+      await run('native-export-refusal', 'changed-snapshot', () => verifyNativeExportRefusal(session));
     }
     currentCase = 'final-preservation';
     assert.deepEqual((await step.saved()).find(project => project.id === sample.id), sample);
