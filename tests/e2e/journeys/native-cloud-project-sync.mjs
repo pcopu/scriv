@@ -9,7 +9,7 @@ import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, interrupte
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
 
-const groups = ['sync', 'lease-renewal', 'lease-contention', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'sign-in-recovery', 'sign-in-rate-limit', 'discussion-pages', 'legacy-local-copy'];
+const groups = ['sync', 'lease-renewal', 'lease-contention', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure', 'sign-in-recovery', 'sign-in-rate-limit', 'discussion-pages', 'legacy-local-copy', 'reconnect-empty-cloud'];
 const editLine = { id: 'edit-line', command: 'key', trigger: 'Command-Return', entryPoint: {
   path: 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift', start: 1069, end: 1088,
   sha256: 'f25e5f1bb2ff90cab94f0d8e5fc3de3acbd518d08e2ece840e9dd7f1475f8b1c',
@@ -24,6 +24,11 @@ if (args.length === 1 && args[0] === '--list-cases') {
       } }],
     'lease-renewal': [{ ...editLine, condition: 'lease-available' }],
     'lease-contention': [{ ...editLine, condition: 'lease-held-by-peer' }],
+    'reconnect-empty-cloud': [{ id: 'open-local-project', command: 'activate', trigger: 'Open project',
+      condition: 'linked-local-copy-has-an-empty-cloud-project', entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift', start: 173, end: 177,
+        sha256: 'c3d46efc0f3cde003b14837376b94c0860d878ebafa83942e18d9116cca38a05',
+      } }],
   } }));
   process.exit(0);
 }
@@ -112,6 +117,15 @@ async function openCloudFromProjects(title) {
   await session.waitFor(nodes => nodes.some(node => node.text === title + ' · Cloud project'));
   await click('Open project');
   await control(node => workspaceProject(node) && node.title === title, true);
+}
+async function openLocalFromProjects(project) {
+  await session.command('activate', { target: 'workspace-project' });
+  await click('On this Mac');
+  const search = await control(projectsSearch, true);
+  await session.command('text', { target: search.path, text: project.title });
+  await session.waitFor(nodes => nodes.some(node => node.text === project.title + ' · '
+    + project.scenes.length + (project.scenes.length === 1 ? ' scene' : ' scenes')));
+  await click('Open project', true);
 }
 const newReplicaContent = ({ id, createdAt, ...project }) => content(project);
 const stagedGroup = args[1] === 'staged-edit' || args[1] === 'staged-receipt-retry';
@@ -354,6 +368,12 @@ async function runProjectJourney() {
   await click('Close Projects', true);
   await control(workspaceProject, true);
 
+  if (args[1] === 'reconnect-empty-cloud') {
+    await verifyEmptyCloudReconnect(original);
+    await fixture.assertNoOutbound();
+    return;
+  }
+
   step = 'create and seed the cloud project through Discussion';
   await openDiscussion();
   await click('Save script to cloud');
@@ -540,15 +560,6 @@ async function verifyLegacyLocalCopy(linked) {
     } while (Date.now() < deadline);
     throw new Error('The linked package did not receive its checkpoint');
   }
-  async function openLocal(project) {
-    await session.command('activate', { target: 'workspace-project' });
-    await click('On this Mac');
-    const search = await control(projectsSearch, true);
-    await session.command('text', { target: search.path, text: project.title });
-    await session.waitFor(nodes => nodes.some(node => node.text === project.title + ' · '
-      + project.scenes.length + (project.scenes.length === 1 ? ' scene' : ' scenes')));
-    await click('Open project', true);
-  }
   async function stageOlderPackage(name) {
     assert.equal(await realpath(checkpointPath), checkpointPath);
     await rename(checkpointPath, join(session.root, name));
@@ -566,7 +577,7 @@ async function verifyLegacyLocalCopy(linked) {
   assert.equal(unrelated.cloudProjectId ?? null, null);
   await control(node => workspaceProject(node) && node.title === unrelated.title, true);
   await stageOlderPackage('fixture-original-checkpoint.json');
-  await openLocal(linked);
+  await openLocalFromProjects(linked);
   const rebuilt = await checkpoint();
   assert.equal(rebuilt.projectId, originalCheckpoint.projectId);
   assert.ok(rebuilt.headSeq >= originalCheckpoint.headSeq);
@@ -579,7 +590,7 @@ async function verifyLegacyLocalCopy(linked) {
   assert.deepEqual(await session.command('presented-alerts'), []);
 
   step = 'reopen a differing legacy copy and observe the conflict without replacing the draft';
-  await openLocal(unrelated);
+  await openLocalFromProjects(unrelated);
   await control(node => workspaceProject(node) && node.title === unrelated.title, true);
   await stageOlderPackage('fixture-rebuilt-checkpoint.json');
   const draft = JSON.parse(await readFile(metadataPath, 'utf8'));
@@ -591,12 +602,56 @@ async function verifyLegacyLocalCopy(linked) {
   const staged = join(session.root, 'fixture-legacy-project.json');
   await writeFile(staged, input, { flag: 'wx', mode: 0o600 });
   await rename(staged, metadataPath);
-  await openLocal(linked);
+  await openLocalFromProjects(linked);
   await observePresentedError(session, 'This older local copy has no cloud checkpoint and differs from the server. Export your draft before opening the cloud version.');
   assert.equal(await readFile(metadataPath, 'utf8'), input);
   await assert.rejects(readFile(checkpointPath), { code: 'ENOENT' });
   assert.deepEqual(await fixture.projects(), [{ id: linked.cloudProjectId, title: linked.title }]);
   console.log('PASS: identical legacy copy reconnects and differing legacy draft stays on disk');
+}
+
+async function verifyEmptyCloudReconnect(original) {
+  step = 'stage an owned local copy whose cloud project was created before its script was uploaded';
+  const remote = await fixture.createEmptyCloudCopy(original.title);
+  assert.deepEqual(remote.entries, []);
+  assert.equal(remote.canImport, true);
+  assert.ok(original.entries.length > 0);
+  assert.match(original.id, /^[a-f0-9-]{36}$/i);
+  await session.command('key', { input: 'n', modifiers: ['command'] });
+  const other = await waitForSavedProject(session, candidate => candidate.id !== original.id);
+  await control(node => workspaceProject(node) && node.title === other.title, true);
+  const packagePath = join(session.root, 'Projects', original.id + '.scriv');
+  const metadataPath = join(packagePath, 'project.json');
+  assert.equal(await realpath(metadataPath), metadataPath);
+  await assert.rejects(readFile(join(packagePath, 'cloud-sync.json')), { code: 'ENOENT' });
+  const retained = JSON.parse(await readFile(metadataPath, 'utf8'));
+  assert.equal(retained.id, original.id);
+  assert.equal(retained.cloudProjectId ?? null, null);
+  const linked = { ...retained, revision: retained.revision + 1, cloudProjectId: remote.id };
+  const staged = join(session.root, 'fixture-linked-empty-cloud.json');
+  await writeFile(staged, JSON.stringify(linked) + '\n', { flag: 'wx', mode: 0o600 });
+  await rename(staged, metadataPath);
+
+  step = 'open the linked script and let normal synchronization fill the empty cloud project';
+  await openLocalFromProjects(linked);
+  await control(node => workspaceProject(node) && node.title === linked.title, true);
+  const until = Date.now() + 15_000;
+  let seeded = await fixture.emptyCloudCopy();
+  while (seeded.canImport && Date.now() < until) {
+    await delay(100);
+    seeded = await fixture.emptyCloudCopy();
+  }
+  assert.equal(seeded.id, remote.id);
+  assert.equal(seeded.canImport, false);
+  assert.ok(seeded.headSeq > remote.headSeq);
+  assert.deepEqual(seeded.entries.sort(byID), original.entries.map(({ id, text }) => ({ id, text })).sort(byID));
+  assert.deepEqual(await fixture.projects(), [{ id: remote.id, title: original.title }]);
+  assert.deepEqual(await session.command('presented-alerts'), []);
+  const contents = project => content({ ...project, cues: [...project.cues].sort(byID) });
+  assert.deepEqual(contents((await session.command('loaded-project')).project), contents(linked));
+  const saved = (await session.command('persisted-projects')).find(project => project.id === original.id);
+  assert.deepEqual(contents(saved), contents(linked));
+  console.log('PASS: reopening a linked local script fills its empty cloud project and preserves the saved script');
 }
 
 async function verifySignInRecovery() {
