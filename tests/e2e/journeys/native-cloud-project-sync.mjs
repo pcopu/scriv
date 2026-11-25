@@ -9,7 +9,7 @@ import { nativeFixtureEmail, nativeFixtureTeam, lostCloudEditReceipt, interrupte
 import { byID as nodesByID, keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
 import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
 
-const groups = ['sync', 'lease-renewal', 'staged-edit', 'staged-receipt-retry'];
+const groups = ['sync', 'lease-renewal', 'staged-edit', 'staged-receipt-retry', 'logout-revocation-failure'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
   console.log(JSON.stringify({ groups }));
@@ -466,8 +466,38 @@ async function runProjectJourney() {
   console.log('PASS: native sync, linked edit, discussions and fresh cloud replica');
 }
 
+async function verifyFailedLogout() {
+  step = 'sign in to the owned Worker and save the local script';
+  session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
+  assert.equal((await session.command('capabilities')).cloudIsolation.network, 'loopback-only');
+  await control(workspaceProject);
+  await session.command('key', { input: 's', modifiers: ['command'] });
+  const saved = await waitForSavedProject(session, project => project.title === 'YAM MAN');
+
+  await signIn(1);
+  await click('Close Projects', true);
+  await control(workspaceProject, true);
+  const signedIn = await session.waitFor(nodes => nodes.some(node => node.text?.endsWith(' · Signed in')));
+  assert.ok(signedIn.some(node => workspaceProject(node) && node.hittable));
+  await openWorkspacePanel('Scriv account…');
+  assert.deepEqual(await fixture.sessionStates(), [{ revoked: false }]);
+
+  step = 'sign out locally when the server cannot revoke the session';
+  assert.equal(await fixture.refuseNextLogout(), true);
+  await click('Sign out', true);
+  const { nodes } = await observePresentedError(session,
+    'Signed out on this Mac. The server could not confirm session revocation; reconnect to review your active sessions.');
+  assert.ok(nodes.some(node => node.text?.endsWith(' · Local only')), 'The workspace returned to local-only state');
+  assert.deepEqual(await fixture.sessionStates(), [{ revoked: false }], 'The Worker did not confirm revocation');
+  assert.deepEqual((await session.command('loaded-project')).project, saved);
+  assert.deepEqual(await session.command('persisted-projects'), [saved]);
+  await fixture.assertNoOutbound();
+  console.log('PASS: native sign-out retains the local script when server revocation fails');
+}
+
 try {
-  await runProjectJourney();
+  if (args[1] === 'logout-revocation-failure') await verifyFailedLogout();
+  else await runProjectJourney();
 } catch (error) {
   throw new Error('Native cloud project journey failed during ' + step, { cause: error });
 } finally {

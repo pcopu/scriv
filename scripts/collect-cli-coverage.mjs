@@ -322,6 +322,63 @@ export async function importCoverage(capture) {
   await saveCoverageStatus(capture);
 }
 
+// Reuse an imported profile to locate compiler-mapped functions without a new app run.
+async function exportFunctionMap(session, app, llvmCov) {
+  const directory = await realpath(session), bundle = await realpath(app);
+  const capture = dirname(dirname(directory));
+  required(basename(dirname(directory)) === 'sessions' && basename(capture) === 'coverage' && bundle.endsWith('.app'));
+  const readJSON = async (path, maximum) => JSON.parse(await input(path, maximum));
+  const interval = await readJSON(join(directory, 'interval.json'));
+  const exports = await readJSON(join(directory, 'exports.json'));
+  const build = await readJSON(join(capture, 'build-record.json'));
+  const record = await readJSON(join(capture, 'capture.json'));
+  const sourceBytes = await input(join(capture, 'build-sources.json'), 64 * 1024 * 1024);
+  const sourceManifestSha256 = sha(sourceBytes);
+  const { buildSha256 } = interval.after;
+  required(uuid(interval.runId) && basename(directory) === interval.runId && interval.after.runId === interval.runId
+    && record.intervals.some(entry => entry.runID === interval.runId && entry.status === 'imported' && entry.imported === true)
+    && build.kind === 'scriv-coverage-build' && build.sourceUnchanged === true && build.coveragePrefix === coveragePrefix
+    && build.executableSha256 === buildSha256 && build.sourceManifestSha256 === sourceManifestSha256
+    && interval.sourceManifestSha256 === sourceManifestSha256 && interval.after.sourceManifestSha256 === sourceManifestSha256
+    && interval.after.toolchainSha256 === sha(JSON.stringify(interval.tools)));
+  const executable = join(bundle, 'Contents/MacOS/Scriv');
+  const profile = join(directory, 'after.profdata');
+  const covPath = llvmCov || (await execute('xcrun', ['--find', 'llvm-cov'], { encoding: 'utf8', timeout: 30000 })).stdout.trim();
+  const cov = await tool('llvm-cov', covPath);
+  const expectedTool = interval.tools.find(entry => entry.name === 'llvm-cov');
+  required(expectedTool?.hashTiming === 'capture' && cov.identity.sha256 === expectedTool.sha256);
+  const verifyInputs = async () => {
+    await execute('/usr/bin/codesign', ['--verify', '--deep', '--strict', '--all-architectures', bundle], { timeout: 30000 });
+    required(await hashFile(executable) === buildSha256 && await hashFile(cov.executable) === expectedTool.sha256
+      && sha(await input(profile, 64 * 1024 * 1024)) === exports.after.indexedSHA256
+      && sha(await input(join(directory, 'after.lcov'), 64 * 1024 * 1024)) === interval.after.sha256);
+  };
+  await verifyInputs();
+  const { stdout } = await execute(cov.executable, ['export', executable, `-instr-profile=${profile}`, '-skip-expansions', '-skip-branches'],
+    { timeout: 120000, maxBuffer: 64 * 1024 * 1024, encoding: 'buffer' });
+  await verifyInputs();
+  const data = JSON.parse(stdout);
+  required(data.type === 'llvm.coverage.json.export' && /^2\./.test(data.version) && Array.isArray(data.data));
+  const sources = new Map(JSON.parse(sourceBytes).files.map(({ path, sha256 }) => [path, sha256]));
+  const files = new Map();
+  for (const { functions } of data.data) {
+    for (const { filenames, regions } of functions) {
+      const [start, , end, endColumn, , fileIndex, , kind] = regions[0];
+      required(kind === 0 && [start, end, endColumn, fileIndex].every(Number.isSafeInteger)
+        && start > 0 && end >= start && endColumn > 0 && filenames[fileIndex]?.startsWith(coveragePrefix));
+      const path = filenames[fileIndex].slice(coveragePrefix.length);
+      required(safeSourcePath(path) && sources.has(path));
+      const last = endColumn === 1 && end > start ? end - 1 : end;
+      if (!files.has(path)) files.set(path, new Map());
+      files.get(path).set(`${start}:${last}`, [start, last]);
+    }
+  }
+  required(files.size > 0);
+  const rows = [...files].sort(([a], [b]) => a.localeCompare(b)).map(([path, ranges]) =>
+    ({ path, sha256: sources.get(path), ranges: [...ranges.values()].sort(([a, b], [c, d]) => a - c || d - b) }));
+  return { version: 1, kind: 'llvm-function-map', buildSha256, sourceManifestSha256, files: rows };
+}
+
 // Public source preflight uses synthetic trees in tooling journeys and launches no app.
 async function main(args) {
   if (args[0] === '--verify-session-source-provenance') {
@@ -331,13 +388,19 @@ async function main(args) {
     console.log(JSON.stringify(await verifyCoverageContextSources(context, dirname(contextPath))));
     return;
   }
-  required(args[0] === '--verify-source-provenance');
+  const exporting = args[0] === '--export-functions';
+  required(exporting || args[0] === '--verify-source-provenance');
   const values = {};
-  const allowed = ['--source-root', '--source-manifest', '--source-manifest-sha256',
+  const allowed = exporting ? ['--session', '--app', '--llvm-cov'] : ['--source-root', '--source-manifest', '--source-manifest-sha256',
     '--coverage-build-source-root', '--coverage-build-source-manifest', '--coverage-build-source-manifest-sha256'];
   for (let index = 1; index < args.length; index += 2) {
     required(allowed.includes(args[index]) && args[index + 1] && !Object.hasOwn(values, args[index]));
     values[args[index]] = args[index + 1];
+  }
+  if (exporting) {
+    required(values['--session'] && values['--app']);
+    console.log(JSON.stringify(await exportFunctionMap(values['--session'], values['--app'], values['--llvm-cov'])));
+    return;
   }
   required(values['--source-root'] && values['--source-manifest'] && values['--source-manifest-sha256']);
   const buildFlags = allowed.slice(3).filter(flag => Object.hasOwn(values, flag));
@@ -349,5 +412,11 @@ async function main(args) {
     buildSourceRoot: buildFlags.length ? resolve(values['--coverage-build-source-root']) : resolve(values['--source-root']), buildSourceOptions })));
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  main(process.argv.slice(2)).catch(() => { console.error('Coverage source preflight failed; preserve the pinned build and journey inputs.'); process.exitCode = 2; });
+  const args = process.argv.slice(2);
+  main(args).catch(() => {
+    console.error(args[0] === '--export-functions'
+      ? 'Could not export compiler function ranges from the pinned session and app.'
+      : 'Coverage source preflight failed; preserve the pinned build and journey inputs.');
+    process.exitCode = 2;
+  });
 }

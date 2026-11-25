@@ -77,6 +77,7 @@ export async function startNativeCloudFixture() {
       projects: () => response('projects'),
       projectTeams: () => response('project-teams'),
       sessionStates: () => response('session-states'),
+      refuseNextLogout: () => response('refuse-next-logout'),
       loseNextEditReceipt: projectId => response(['lose-edit-receipt', projectId]),
       editReceiptState: () => response('edit-receipt-state'),
       matchesPendingEdit: payload => response(['matches-pending-edit', payload]),
@@ -145,6 +146,7 @@ async function startWorker(root) {
       }
       let target;
       let pending;
+      let logoutRefusal;
       let receipt;
       let attempts = 0;
       let interruption;
@@ -189,6 +191,11 @@ async function startWorker(root) {
         async fetch(request) {
           const upstream = () => worker.fetch(request, this.env, this.ctx);
           const { pathname: path, searchParams } = new URL(request.url);
+          if (logoutRefusal === 'armed' && path === '/auth/logout' && request.method === 'POST') {
+            if (!request.headers.has('authorization')) throw new Error('Expected the owned logout request');
+            logoutRefusal = 'consumed';
+            return Response.json({ error: { code: 'fixture_unavailable', message: 'Synthetic logout service unavailable' } }, { status: 503 });
+          }
           if (generationCreate && path === generationCreate.path && request.method === 'POST') {
             const { id, targetItemId: cueID, sourceRevision } = await request.clone().json();
             if (!request.headers.has('authorization') || !/^[a-f0-9-]{36}$/.test(id)
@@ -330,6 +337,11 @@ async function startWorker(root) {
           return Response.json({ error: { code: 'receipt_unavailable', message: ${JSON.stringify(lostCloudEditReceipt)} } }, { status: 503 });
         }
         scheduled(event) { return worker.scheduled(event, this.env, this.ctx); }
+        refuseNextLogout() {
+          if (logoutRefusal) throw new Error('Only one owned revocation refusal is supported');
+          logoutRefusal = 'armed';
+          return true;
+        }
         closeFixturePresence(projectId, connectionId) {
           return this.env.PROJECTS.get(this.env.PROJECTS.idFromName(projectId)).closeFixturePresence(connectionId);
         }
@@ -708,6 +720,7 @@ async function startWorker(root) {
         return { ready: Boolean(presenceObserverId), updates: observedPresence };
       },
       status: async () => ({ deliveries: await mailbox.count(), outbound }),
+      refuseNextLogout: () => nativeWorker.refuseNextLogout(),
       loseEditReceipt: projectId => nativeWorker.loseEditReceipt(projectId),
       editReceiptState: () => nativeWorker.editReceiptState(),
       matchesPendingEdit: payload => nativeWorker.matchesPendingEdit(payload),
@@ -751,7 +764,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'create-paid-team': worker.createPaidTeam, projects: worker.projects, 'project-teams': worker.projectTeams,
         'open-presence-observer': worker.openPresenceObserver, 'observed-presence': worker.observedPresence,
         'close-observed-presence': worker.closeObservedPresenceConnection,
-        'session-states': worker.sessionStates, 'lose-edit-receipt': worker.loseEditReceipt,
+        'session-states': worker.sessionStates, 'refuse-next-logout': worker.refuseNextLogout,
+        'lose-edit-receipt': worker.loseEditReceipt,
         'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit,
         'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState,
         'watch-editing-lease': worker.watchEditingLease, 'editing-lease-state': worker.editingLeaseState,

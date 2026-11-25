@@ -25,6 +25,24 @@ snapshot, dispatch `activate` with that identifier, and pass
 dispatches record a fingerprint, with numeric view paths retaining the generic
 command only. Existing captures remain available through `--action activate`.
 
+For compiler function boundaries, export once from an imported session for
+the reference app. This verifies the signed bundle, recorded compiler and
+profile, and original source manifest. It reads retained evidence without
+launching the app.
+
+```sh
+node scripts/collect-cli-coverage.mjs --export-functions \
+  --session /external/run/coverage/sessions/SESSION_ID \
+  --app /absolute/path/to/ScrivAutomation.app > /external/functions.json
+tracer worklist --routes /external/discovery.json --capture-set /external/captures.json \
+  --reference-root /external/reference/source --function-map /external/functions.json
+```
+
+Use `functionReview.entryPoints` to trace wholly unobserved functions to
+their production caller. For example, Join Team’s deep-link entry point is
+the scene URL handler. A cloud sign-out or sync scenario reaching nearby
+source lines has a different entry point.
+
 For a focused native capture, list the scenario and select one of its
 advertised groups. Use the explicit group to select a focused fixture variant.
 
