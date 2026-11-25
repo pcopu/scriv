@@ -53,7 +53,8 @@ try {
 
     step = 'open Characters and connect through Settings';
     await ui.tab('Characters');
-    const switchNode = await ui.reveal(node => node.label === 'Auto-tag new images' && node.type === 'UISwitch');
+    const autoTagSwitch = node => node.label === 'Auto-tag new images' && node.type === 'UISwitch';
+    const switchNode = await ui.reveal(autoTagSwitch);
     await session.command('toggle', { target: switchNode.path, value: false });
     await session.waitFor(nodes => nodes.some(node => scan(node) && node.enabled === false));
     await session.command('key', { input: ',', modifiers: ['command'] });
@@ -66,11 +67,13 @@ try {
     await ui.activate(byID('codex-connect'));
     await session.waitFor(nodes => nodes.some(node => node.identifier === 'codex-connection-status' && node.text === 'Connected'));
 
-    step = 'scan and save the recognized character and review candidate';
+    step = 'enable auto-tagging and save the recognized character and review candidate';
     await ui.tab('Characters');
     await session.waitFor(untargeted('Image analysis ready'));
     fixture.assertNoTurns();
-    await ui.activate(scan);
+    const paused = await ui.reveal(autoTagSwitch);
+    assert.equal(paused.isOn, false);
+    await session.command('toggle', { target: paused.path, value: true });
     await scanFinished('1 of 1 images checked');
     const checked = await waitForSavedProject(session, candidate => candidate.id === original.id
       && candidate.images[0]?.characterAnalysis?.providerID === 'codex-app-server');
@@ -87,6 +90,9 @@ try {
     assert.equal(checked.characters[0].portraitImageId, image.id);
     assert.deepEqual(checked.entries, original.entries);
     assert.deepEqual(checked.cues, original.cues);
+    const running = await ui.reveal(autoTagSwitch);
+    assert.equal(running.isOn, true);
+    await session.command('toggle', { target: running.path, value: false });
 
     step = 'decline an unconfirmed sandbox before the picture is sent';
     await ui.activate(scan);

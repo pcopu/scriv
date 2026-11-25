@@ -38,15 +38,45 @@ try {
   await openPopup();
   await ui.activate(byID('codex-advanced'));
   await session.waitFor(nodes => !nodes.some(byID('codex-done')) && nodes.some(byID('codex-settings')) && idle(nodes));
-  for (const pane of ['scriv.settings.general', 'scriv.settings.codex']) {
-    const hittable = node => node.identifier === pane && node.hittable;
-    const nodes = await session.waitFor(nodes => nodes.filter(hittable).length === 1);
-    await session.command('activate', { target: nodes.find(hittable).path });
-  }
+  await selectSettingsPane('general');
+  await selectSettingsPane('codex');
   await session.waitFor(nodes => nodes.some(byID('codex-settings')) && idle(nodes));
   assert.deepEqual(await session.command('persisted-projects'), saved);
   assert.deepEqual(await session.command('loaded-project'), loaded);
-  console.log('PASS: the workspace Codex popup closes or hands off to disconnected Codex Settings');
+  await followPlaybackInGeneralSettings();
+  assert.deepEqual(await session.command('persisted-projects'), saved);
+  assert.deepEqual(await session.command('loaded-project'), loaded);
+  console.log('PASS: Codex Settings handoff and General playback preference preserve the active project');
 } finally {
   await session.close();
+}
+
+async function selectSettingsPane(name) {
+  const hittable = node => node.identifier === `scriv.settings.${name}` && node.hittable;
+  const nodes = await session.waitFor(nodes => nodes.filter(hittable).length === 1);
+  await session.command('activate', { target: nodes.find(hittable).path });
+}
+
+async function followPlaybackInGeneralSettings() {
+  const followSwitch = async value => {
+    const shown = node => node.text === 'Follow active line during playback';
+    const nodes = await session.waitFor(nodes => nodes.some(shown));
+    const label = nodes.find(shown);
+    const row = label.path.slice(0, label.path.lastIndexOf('.'));
+    const switches = nodes.filter(node => node.path.startsWith(`${row}.`) && typeof node.isOn === 'boolean');
+    assert.equal(switches.length, 1);
+    assert.ok(switches[0].enabled && switches[0].hittable);
+    assert.equal(switches[0].isOn, value);
+    return switches[0].path;
+  };
+  await selectSettingsPane('general');
+  await session.command('toggle', { target: await followSwitch(true), value: false });
+  await followSwitch(false);
+  await selectSettingsPane('codex');
+  await session.waitFor(nodes => nodes.some(byID('codex-settings')) && idle(nodes));
+  await selectSettingsPane('general');
+  await session.command('toggle', { target: await followSwitch(false), value: true });
+  await followSwitch(true);
+  await selectSettingsPane('codex');
+  await session.waitFor(nodes => nodes.some(byID('codex-settings')) && idle(nodes));
 }
