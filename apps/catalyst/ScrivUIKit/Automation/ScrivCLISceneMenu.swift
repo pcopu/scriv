@@ -5,18 +5,22 @@ import ScrivCore
 /// Dispatches stored structure actions from the mounted Script menus.
 @MainActor
 enum ScrivCLISceneMenu {
+    private static let subjects = ["script-scenes": "Scene", "script-entries": "Entry", "script-speaker": "Speaker"]
+
     private struct Failure: LocalizedError {
         let subject: String
         var errorDescription: String? { "\(subject) menu action is outside the supported isolated scope" }
     }
     static func canHandle(_ request: [String: Any]) -> Bool {
-        let scope = request["scope"] as? String
-        return scope == "script-scenes" || scope == "script-entries"
+        guard let scope = request["scope"] as? String else { return false }
+        return subjects[scope] != nil
     }
-    static func dispatch(view: UIView, window: UIWindow, request: [String: Any]) throws -> [String: Any] {
-        let isEntry = request["scope"] as? String == "script-entries"
-        let failure = Failure(subject: isEntry ? "Entry" : "Scene")
-        guard request["command"] as? String == "menu-action", canHandle(request),
+    static func dispatch(view: UIView, window: UIWindow, request: [String: Any], run: ScrivCLIRunCapability) throws -> [String: Any] {
+        guard let scope = request["scope"] as? String, let subject = subjects[scope] else { throw Failure(subject: "Script") }
+        let isEntry = scope == "script-entries", isSpeaker = scope == "script-speaker"
+        let failure = Failure(subject: subject)
+        guard request["command"] as? String == "menu-action",
+              !isSpeaker || run.approvedOrigin == nil,
               request["target"] is String, let title = request["action"] as? String,
               let button = view as? UIButton, button.isEnabled, button.showsMenuAsPrimaryAction,
               let workspace = window.rootViewController as? ScrivWorkspaceController,
@@ -48,11 +52,17 @@ enum ScrivCLISceneMenu {
             view.isFirstResponder || view.subviews.contains(where: hasFirstResponder)
         }
         guard !scriptView.subviews.contains(where: hasFirstResponder),
-              let menu = button.menu, menu.title.isEmpty, menu.options.isEmpty else { throw failure }
+              let menu = button.menu, menu.title == (isSpeaker ? "Speaker" : ""), menu.options.isEmpty else { throw failure }
         let keys = Set(request.keys)
         var required: Set<String> = ["id", "command", "target", "action", "scope"]
         let action: UIAction?
-        if isEntry {
+        if isSpeaker {
+            required.formUnion(["entryID", "characterID"])
+            guard keys == required, let entryID = request["entryID"] as? String,
+                  let character = request["characterID"], character is NSNull || character is String else { throw failure }
+            action = speakerAction(title, characterID: character as? String, entryID: entryID,
+                                   menu: menu, button: button, surface: scriptView, store: store)
+        } else if isEntry {
             required.insert("entryID")
             guard keys == required, let entryID = request["entryID"] as? String,
                   script.cliOwnsEntryMenu(button, entryID: entryID) else { throw failure }
@@ -69,6 +79,30 @@ enum ScrivCLISceneMenu {
         _ = try ScrivCLILoadedProject.observe(workspace: workspace)
         button.sendAction(action)
         return ["dispatched": true, "coverage": "semantic-menu-action"]
+    }
+
+    private static func speakerAction(_ title: String, characterID: String?, entryID: String, menu: UIMenu,
+                                      button: UIButton, surface: UIView, store: WorkspaceStore) -> UIAction? {
+        var owner: UIView? = button.superview
+        while let view = owner, !(view is ScriptEntryRow) { owner = view.superview }
+        func editing(_ view: UIView) -> Bool {
+            if let row = view as? ScriptEntryRow, !row.editor.isHidden { return true }
+            return view.subviews.contains(where: editing)
+        }
+        guard let row = owner as? ScriptEntryRow, row.speakerMenuButton === button, row.entryID == entryID,
+              store.selectedEntryID == entryID, !editing(surface),
+              let entry = store.sceneEntries.first(where: { $0.id == entryID && $0.kind == .dialogue }) else { return nil }
+        let characters = store.project.characters
+        let expected = ["No speaker"] + characters.map(\.name)
+        let ids: [String?] = [nil] + characters.map { Optional($0.id) }
+        let actions = menu.children.compactMap { $0 as? UIAction }
+        guard actions.count == expected.count, menu.children.count == expected.count,
+              actions.map(\.title) == expected, Set(expected).count == expected.count,
+              let index = ids.firstIndex(of: characterID), title == expected[index] else { return nil }
+        for (position, action) in actions.enumerated() {
+            guard action.attributes.isEmpty, action.state == (ids[position] == entry.characterId ? .on : .off) else { return nil }
+        }
+        return actions[index]
     }
     private static func entryAction(_ title: String, menu: UIMenu) -> UIAction? {
         let expected = ["Move up", "Move down", "Delete entry"]

@@ -31,11 +31,19 @@ export const scriptStructureCases = [{
   sourceRoutes: ['ScriptEntryRow.durationButton → ScriptScreenController.editDuration'],
   oracles: ['exact attached Owned duration dialog for the imported direction, including Cancel and Apply presentation',
     'the covered workspace is unavailable and a pending field draft leaves the complete loaded and saved projects exact'],
+}, {
+  group: 'speaker-choice', id: 'assign-switch-and-clear-dialogue-speaker',
+  nativeVerified: false, retirementAllowed: false,
+  route: 'import-json → selected dialogue Change speaker menu → Iris → Milo → No speaker',
+  sourceRoutes: ['ScriptScreenController.speakerMenu → WorkspaceStore.setEntryCharacter'],
+  oracles: ['the menu checks the current speaker after each choice',
+    'wrong row or character identities leave loaded and saved projects intact',
+    'a valid choice saves exactly one revision on the selected line and preserves words, timing, and other content'],
 }];
 export const structureExcluded = [
   'physical menu presentation/dismissal',
   'rename-scene alert, owned-duration alert button activation and physical row context menu interactions',
-  'speaker assignment, lease/cloud/session paths',
+  'speaker edits in lease/cloud sessions',
   'frozen-method retirement and process relaunch',
 ];
 export const sceneTitle = 'INT. NEW SCENE — DAY';

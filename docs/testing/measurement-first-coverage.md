@@ -218,6 +218,15 @@ state. The current UIKit CLI snapshot exposes the field, and Apply and Cancel
 still need a verified public activation route. Scene renaming is excluded by
 the current `script-scenes` menu scope.
 
+Use `--case journeys/script-structure#speaker-choice` to assign, switch or
+clear the speaker on an existing dialogue. Inspect its visible Change speaker
+menu and send `menu-action` with scope `script-speaker`, the exact action
+title, the selected `entryID`, and the offered `characterID`. Send JSON null
+for No speaker. The route is available in a local isolated run and verifies
+the current mounted row and unambiguous menu. The journey checks the selected
+menu item and the persisted speaker after each edit, including refusal of
+incorrect row and character identities.
+
 The existing `journeys/cue-draft-recovery` scenario scopes “Discard draft…” to
 the image-direction composer. The confirmation sheet exposes the ordinary
 `activate` action for its Cancel and Discard buttons. The journey checks that

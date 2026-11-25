@@ -3,7 +3,7 @@ import UIKit
 
 @MainActor
 enum ScrivCLIMenuActions {
-    static let localScopes = ["audio-library-actions"]
+    static let localScopes = ["audio-library-actions", "script-speaker"]
     static let localCommands = ["resolve-audio-removal"] + ScrivCLITimingControls.commands
 
     static func dispatch(_ request: [String: Any], view: UIView, window: UIWindow,
@@ -16,7 +16,7 @@ enum ScrivCLIMenuActions {
             return try ScrivCLIStoryboardMerge.dispatch(view: view, window: window, request: request)
         }
         if ScrivCLISceneMenu.canHandle(request) {
-            return try ScrivCLISceneMenu.dispatch(view: view, window: window, request: request)
+            return try ScrivCLISceneMenu.dispatch(view: view, window: window, request: request, run: run)
         }
         if view.accessibilityLabel == "Image version actions"
             || request["action"] as? String == "Show captured generation prompt"

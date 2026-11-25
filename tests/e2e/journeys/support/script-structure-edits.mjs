@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { audioProjectFixture } from './audio-library-fixtures.mjs';
 import { audioLibrarySteps, sortedProjects } from './audio-library-steps.mjs';
 import { scriptAuthoringSteps, lines } from './script-authoring-steps.mjs';
 
@@ -24,6 +25,57 @@ const fixture = { schemaVersion: 1, id: 'script-editing-input', title: 'Script s
 const { id: entryID } = first;
 const dispatched = { dispatched: true, coverage: 'semantic-menu-action' };
 const content = ({ revision, modifiedAt, ...rest }) => rest;
+
+export async function changeDialogueSpeaker(session) {
+  const caps = await session.command('capabilities');
+  assert.ok(caps.semanticMenuActionScopes.includes('script-speaker'), 'The CLI exposes the actual Change speaker menu');
+  const step = scriptAuthoringSteps(session), ui = audioLibrarySteps(session);
+  const startup = await step.openScript();
+  const input = audioProjectFixture();
+  input.title = 'Synthetic speaker assignment';
+  for (const [id, name] of [['iris', 'Iris'], ['milo', 'Milo']]) {
+    input.characters.push({ id, name, aliases: [], biography: '', appearance: '', color: 'blue' });
+  }
+  assert.deepEqual(await session.command('import-json', { text: JSON.stringify(input) }), { dispatched: true, projectChanged: true });
+  await step.selectTab('Script');
+  let current = await step.saved(project => project.title === input.title);
+  const original = current;
+  const [line, other] = current.entries;
+  assert.equal(line.characterId, undefined);
+  const menuButton = () => ui.reveal(node => node.type === 'UIButton' && node.label === 'Change speaker');
+  async function assertMenu(selected) {
+    const { primary, secondary, context } = await session.command('menu', { target: (await menuButton()).path });
+    assert.deepEqual([secondary, context], [[], []]);
+    assert.equal(primary.length, 1);
+    assert.equal(primary[0].title, 'Speaker');
+    assert.deepEqual(primary[0].children, ['No speaker', 'Iris', 'Milo'].map(title => ({
+      type: 'action', title, disabled: false, hidden: false, state: title === selected ? 'on' : 'off',
+    })));
+  }
+  async function choose(action, characterID, entryID = line.id) {
+    return session.command('menu-action', { target: (await menuButton()).path, scope: 'script-speaker',
+      action, entryID, characterID });
+  }
+  await assertMenu('No speaker');
+  const before = await session.command('loaded-project');
+  for (const invalid of [['Iris', 'milo', line.id], ['Iris', 'iris', other.id], ['Iris', 'missing', line.id]]) {
+    await assert.rejects(choose(...invalid), /Speaker menu action is outside the supported isolated scope/);
+  }
+  assert.deepEqual(await session.command('loaded-project'), before);
+  assert.deepEqual(sortedProjects(await session.command('persisted-projects')), sortedProjects([startup, original]));
+  for (const [action, id] of [['Iris', 'iris'], ['Milo', 'milo'], ['No speaker', null]]) {
+    assert.deepEqual(await choose(action, id), dispatched);
+    const revision = current.revision + 1;
+    current = await step.saved(project => project.id === original.id && project.revision >= revision);
+    assert.equal(current.revision, revision);
+    const expected = id === null ? line : { ...line, characterId: id };
+    assert.deepEqual(content(current), { ...content(original), entries: [expected, other] });
+    assert.deepEqual((await session.command('loaded-project')).project, current);
+    assert.deepEqual(sortedProjects(await session.command('persisted-projects')), sortedProjects([startup, current]));
+    await assertMenu(action);
+  }
+  assert.deepEqual(await session.command('presented-alerts'), []);
+}
 
 export async function moveAndDeleteStructure(session) {
   const caps = await session.command('capabilities');

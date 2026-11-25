@@ -128,7 +128,7 @@ export function scriptAuthoringSteps(session) {
     addDialogue, waitEditor, finishEditor, displayed, savedExactText, returnFailureEvidence };
 }
 
-export async function runScriptJourney({ journey, workflows, cases, companions = [], excluded = [], groupWitnessPaths }, args = process.argv.slice(2)) {
+export async function runScriptJourney({ journey, workflows, cases, companions = [], excluded = [], groupWitnessPaths, groupActions }, args = process.argv.slice(2)) {
   let selected = Object.keys(workflows);
   let list = false;
   let groupSeen = false;
@@ -145,6 +145,8 @@ export async function runScriptJourney({ journey, workflows, cases, companions =
     console.log(JSON.stringify({ journey, nativeVerified: false, companions, groups: selected,
       cases: cases.filter(test => selected.includes(test.group)), excluded,
       ...(groupWitnessPaths && { groupWitnessPaths: Object.fromEntries(Object.entries(groupWitnessPaths)
+        .filter(([group]) => selected.includes(group))) }),
+      ...(groupActions && { groupActions: Object.fromEntries(Object.entries(groupActions)
         .filter(([group]) => selected.includes(group))) }) }, null, 2));
     return;
   }

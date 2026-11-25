@@ -6,7 +6,7 @@ import ScrivCore
 /// this sheet cannot generate, save, rebase, discard or change a script/tag.
 @MainActor final class GenerationBriefReviewController: UIViewController {
     let snapshot: GenerationBriefSnapshot
-    private let store: WorkspaceStore?
+    private let store: WorkspaceStore
     private let originalNavigation: Int
     private let originalScope: String
     private let originalSceneID: String
@@ -30,14 +30,6 @@ import ScrivCore
         modalPresentationStyle = .formSheet
         preferredContentSize = GenerationReviewUI.preferredSize
     }
-    /// The same real controller can render an immutable snapshot without a live
-    /// workspace, enabling native first-load/layout tests without disk mutation.
-    init(snapshot: GenerationBriefSnapshot) {
-        self.snapshot = snapshot; store = nil; originalNavigation = 0
-        originalScope = ""; originalSceneID = ""; originalCue = nil; originalImage = nil
-        super.init(nibName: nil, bundle: nil)
-        modalPresentationStyle = .formSheet; preferredContentSize = GenerationReviewUI.preferredSize
-    }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError("Use init(store:context:)") }
 
     override func viewDidLoad() {
@@ -47,9 +39,7 @@ import ScrivCore
             UIPasteboard.general.string = text
         })
         view.addSubview(reviewView); reviewView.scrivPinEdges(to: view)
-        if let store {
-            subscription = store.objectWillChange.sink { [weak self] _ in DispatchQueue.main.async { self?.storeDidChange() } }
-        }
+        subscription = store.objectWillChange.sink { [weak self] _ in DispatchQueue.main.async { self?.storeDidChange() } }
         storeDidChange()
     }
     /// Escape closes the review like Done, as every other sheet does. This
@@ -63,7 +53,6 @@ import ScrivCore
     @objc func closeFromEscape() { guard presentedViewController == nil else { return }; dismiss(animated: true) }
     override func viewDidAppear(_ animated: Bool) { super.viewDidAppear(animated); becomeFirstResponder() }
     var reviewIsCurrent: Bool {
-        guard let store else { return true }
         return store.navigationContext == originalNavigation && store.generationPromptScopeKey == originalScope && store.selectedSceneID == originalSceneID &&
         store.project.cues.first(where: { $0.id == snapshot.context.cueID }) == originalCue &&
         store.project.asset(originalCue?.imageId) == originalImage && store.selectedImageGenerationContext == snapshot.context
