@@ -121,6 +121,7 @@ export async function startNativeCloudFixture() {
       historyPageState: () => response('history-page-state'),
       prepareDiscussionPages: () => response('prepare-discussion-pages'),
       discussionPageRequests: () => response('discussion-page-requests'),
+      discussionMessagePageRequests: () => response('discussion-message-page-requests'),
       assertNoOutbound: async () => assert.equal((await response('status')).outbound, 0),
       close,
     };
@@ -217,6 +218,26 @@ async function startWorker(root) {
               if (discussionPages.requests.length > 16) throw new Error('The discussion page request limit was exceeded');
             }
             return response;
+          }
+          if (discussionPages && path === discussionPages.messagePath && request.method === 'GET') {
+            const response = await upstream();
+            if (!response.ok) return response;
+            if (!request.headers.has('authorization') || !searchParams.has('after') || !searchParams.has('afterId'))
+              throw new Error('Expected an authenticated discussion cursor');
+            const after = { at: Number(searchParams.get('after')), id: searchParams.get('afterId') };
+            const firstPage = after.at === 0 && after.id === '';
+            let page = await response.clone().json();
+            // Lower the page size for this owned thread only. The next request
+            // carries a genuine message cursor and goes through the real Worker.
+            if (firstPage) {
+              if (page.hasMore || page.messages.length !== 2) throw new Error('Expected two owned message fixtures');
+              const [first] = page.messages;
+              page = { messages: [first], hasMore: true, nextCursor: { at: first.at, id: first.id } };
+            }
+            discussionPages.messageRequests.push({ after, ids: page.messages.map(message => message.id),
+              hasMore: page.hasMore, nextCursor: page.nextCursor });
+            if (discussionPages.messageRequests.length > 16) throw new Error('The message page request limit was exceeded');
+            return firstPage ? Response.json(page) : response;
           }
           if (logoutRefusal === 'armed' && path === '/auth/logout' && request.method === 'POST') {
             if (!request.headers.has('authorization')) throw new Error('Expected the owned logout request');
@@ -494,11 +515,12 @@ async function startWorker(root) {
           return true;
         }
         invitationRequests() { return { interruptedLoads: invitations.interruptedLoads, revocations: [...invitations.revocations] }; }
-        watchDiscussionPages(path) {
+        watchDiscussionPages(path, threadID) {
           if (discussionPages) throw new Error('Use a single owned discussion directory');
-          discussionPages = { path, requests: [] };
+          discussionPages = { path, requests: [], messagePath: path + '/' + threadID + '/messages', messageRequests: [] };
         }
         discussionPageRequests() { return discussionPages.requests; }
+        discussionMessagePageRequests() { return discussionPages.messageRequests; }
         armReplayPage({ projectId, mode }) {
           if (!/^[a-f0-9-]{36}$/i.test(projectId) || !['ahead-of-cursor', 'empty-with-more'].includes(mode)
               || replayPage?.requests.length === 0) throw new Error('Choose one owned replay-page condition');
@@ -769,10 +791,16 @@ async function startWorker(root) {
         }));
         const saved = await seedProject({ title, scenes: [scene], entries, characters: [], images: [], cues: [] }, token);
         const path = saved.path + '/threads';
-        await post(path, 201, { itemId: null }, token);
+        const { thread } = await post(path, 201, { itemId: null }, token);
+        const messages = [];
+        for (const body of ['First paged discussion message', 'Second paged discussion message']) {
+          const { message } = await post(path + '/' + thread.id + '/messages', 201, { id: randomUUID(), body }, token);
+          messages.push({ id: message.id, body: message.body, at: message.at });
+        }
         for (const entry of entries) await post(path, 201, { itemId: entry.id }, token);
-        await nativeWorker.watchDiscussionPages(path);
-        return { id: saved.id, title };
+        await nativeWorker.watchDiscussionPages(path, thread.id);
+        messages.sort((a, b) => a.at - b.at || (a.id < b.id ? -1 : 1));
+        return { id: saved.id, title, messages };
       });
     }
     let sharedProjectID;
@@ -976,6 +1004,7 @@ async function startWorker(root) {
       prepareHistoryPages, changeHistoryPage: mode => nativeWorker.changeHistoryPage(mode),
       historyPageState: () => nativeWorker.historyPageState(),
       prepareDiscussionPages, discussionPageRequests: () => nativeWorker.discussionPageRequests(),
+      discussionMessagePageRequests: () => nativeWorker.discussionMessagePageRequests(),
       takeCode: () => mailbox.takeCode(),
       projects: async () => (await db.prepare(
         'SELECT projects.id, projects.title FROM projects JOIN users ON projects.owner_id = users.id WHERE email = ? AND archived_at IS NULL ORDER BY projects.id',
@@ -1025,7 +1054,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'team-management-state': worker.teamManagementState,
         'prepare-history-pages': worker.prepareHistoryPages, 'change-history-page': worker.changeHistoryPage,
         'history-page-state': worker.historyPageState,
-        'prepare-discussion-pages': worker.prepareDiscussionPages, 'discussion-page-requests': worker.discussionPageRequests };
+        'prepare-discussion-pages': worker.prepareDiscussionPages, 'discussion-page-requests': worker.discussionPageRequests,
+        'discussion-message-page-requests': worker.discussionMessagePageRequests };
       assert.ok(Object.hasOwn(operations, operation));
       const result = await operations[operation](value);
       if (process.connected) process.send(result);

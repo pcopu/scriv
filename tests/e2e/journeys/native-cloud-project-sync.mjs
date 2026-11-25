@@ -24,6 +24,11 @@ if (args.length === 1 && args[0] === '--list-cases') {
       } }],
     'lease-renewal': [{ ...editLine, condition: 'lease-available' }],
     'lease-contention': [{ ...editLine, condition: 'lease-held-by-peer' }],
+    'discussion-pages': [{ id: 'open-project-discussion', command: 'menu-action', trigger: 'workspace-discussion',
+      condition: 'thread-messages-span-two-pages', entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/App/ScrivWorkspaceController.swift', start: 130, end: 130,
+        sha256: '3892e5a99eef6985c79166915b8186f1caa6ec06917f404682b244f910abc9ed',
+      } }],
     'reconnect-empty-cloud': [{ id: 'open-local-project', command: 'activate', trigger: 'Open project',
       condition: 'linked-local-copy-has-an-empty-cloud-project', entryPoint: {
         path: 'apps/catalyst/ScrivUIKit/Projects/ProjectBrowserController.swift', start: 173, end: 177,
@@ -801,7 +806,19 @@ async function browsePagedDiscussionDirectory() {
   const loaded = (await session.command('loaded-project')).project;
   assert.equal(loaded.cloudProjectId, project.id);
   assert.equal(loaded.entries.length, 101);
+  step = 'load two message pages through the native Discussion action';
   await openDiscussion();
+  const [first, second] = project.messages;
+  const nodes = await session.waitFor(nodes => project.messages.every(({ body }) => nodes.some(node =>
+    node.type === 'DiscussionReadOnlyTextView' && node.text === body)));
+  const messageViews = nodes.filter(node => node.type === 'DiscussionReadOnlyTextView')
+    .sort((a, b) => a.frame.y - b.frame.y);
+  assert.deepEqual(messageViews.map(node => node.text), project.messages.map(message => message.body));
+  const firstCursor = { at: first.at, id: first.id };
+  assert.deepEqual(await fixture.discussionMessagePageRequests(), [
+    { after: { at: 0, id: '' }, ids: [first.id], hasMore: true, nextCursor: firstCursor },
+    { after: firstCursor, ids: [second.id], hasMore: false, nextCursor: { at: second.at, id: second.id } },
+  ]);
 
   step = 'load both directory pages through Project activity';
   const offset = (await fixture.discussionPageRequests()).length;
