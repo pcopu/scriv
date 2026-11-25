@@ -75,6 +75,7 @@ export async function startNativeCloudFixture() {
       emptyCloudCopy: () => response('empty-cloud-copy'),
       openPresenceObserver: projectId => response(['open-presence-observer', projectId]),
       observedPresence: () => response('observed-presence'),
+      echoObservedPresence: (projectId, itemId) => response(['echo-observed-presence', { projectId, itemId }]),
       closeObservedPresenceConnection: (projectId, connectionId) => response(['close-observed-presence', { projectId, connectionId }]),
       projects: () => response('projects'),
       projectTeams: () => response('project-teams'),
@@ -669,6 +670,18 @@ async function startWorker(root) {
       observer.on('close', () => { presenceObserverClosed = true; });
       return true;
     }
+    async function echoObservedPresence({ projectId, itemId }) {
+      assert.equal(projectId, presenceObserverProjectId, 'Use the project observed by this fixture');
+      assert.ok(presenceObserverId && !presenceObserverClosed && presenceObserver.readyState === presenceObserver.OPEN);
+      const update = { type: 'presence', itemId };
+      if (itemId !== null) {
+        const original = observedPresence.findLast(presence => presence.itemId === itemId && presence.selection);
+        assert.ok(original, 'Use a selection already published by the native app');
+        update.selection = original.selection;
+      }
+      await new Promise((resolve, reject) => presenceObserver.send(JSON.stringify(update), error => error ? reject(error) : resolve()));
+      return true;
+    }
     function closeObservedPresenceConnection({ projectId, connectionId }) {
       assert.equal(projectId, presenceObserverProjectId, 'Use the project observed by this fixture');
       assert.ok(presenceObserverId && !presenceObserverClosed && connectionId !== presenceObserverId
@@ -927,6 +940,7 @@ async function startWorker(root) {
       createPaidTeam: () => withFixtureOwner(async token => ({ id: (await seedPaidTeam(token)).id })),
       createEmptyCloudCopy, emptyCloudCopy,
       openPresenceObserver,
+      echoObservedPresence,
       closeObservedPresenceConnection,
       observedPresence: () => {
         assert.ok(presenceObserver && !presenceObserverClosed, 'Synthetic presence observer is disconnected');
@@ -985,6 +999,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
       const operations = { status: worker.status, 'take-code': worker.takeCode, 'create-free-team': worker.createFreeTeam,
         'create-paid-team': worker.createPaidTeam, projects: worker.projects, 'project-teams': worker.projectTeams,
         'open-presence-observer': worker.openPresenceObserver, 'observed-presence': worker.observedPresence,
+        'echo-observed-presence': worker.echoObservedPresence,
         'close-observed-presence': worker.closeObservedPresenceConnection,
         'session-states': worker.sessionStates, 'refuse-next-logout': worker.refuseNextLogout,
         'create-empty-cloud-copy': worker.createEmptyCloudCopy, 'empty-cloud-copy': worker.emptyCloudCopy,

@@ -1792,8 +1792,8 @@
       "id": "046b5f07271ce8f5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 234,
-        "end": 234,
+        "start": 227,
+        "end": 227,
         "sha256": "48eda0b8dd515c955f7497a609c32f61c5b19128d60fe0e62e341ebb58434796"
       },
       "actions": [
@@ -1940,8 +1940,8 @@
       "id": "04a0bee004750daf",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 232,
-        "end": 233,
+        "start": 225,
+        "end": 226,
         "sha256": "05b368f54bac170701a397e04716cd7009fcb3063372e1f7dd0d77cf89f21cad"
       },
       "actions": [
@@ -6296,8 +6296,8 @@
       "id": "14e904d3d04bf771",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 217,
-        "end": 218,
+        "start": 210,
+        "end": 211,
         "sha256": "a0010b5db746ed1b76386bd4dd81e3c4a0712a91f2a64ad142c92b363db27cc8"
       },
       "actions": [
@@ -6716,8 +6716,8 @@
       "id": "171736b63d17a848",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 267,
-        "end": 269,
+        "start": 260,
+        "end": 262,
         "sha256": "343f9af135607d98815eb8983f78e2d6c496e602edb04b363f134718dba3b2ad"
       },
       "actions": [
@@ -7370,8 +7370,8 @@
       "id": "196f0e3486a63a4f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 263,
-        "end": 265,
+        "start": 256,
+        "end": 258,
         "sha256": "d30989c6addc7c341493a2cc17c7d3cdc89edf9e1c885ae66c6537d8352169f7"
       },
       "actions": [
@@ -13769,8 +13769,8 @@
       "id": "2d87b2d43f033846",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 252,
-        "end": 252,
+        "start": 245,
+        "end": 245,
         "sha256": "78c4d78709528cc332dec98775c58571e1a60a67abeefe8a522fa6514023f7d8"
       },
       "actions": [
@@ -21265,8 +21265,8 @@
       "id": "47a04b096e170c7a",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 244,
-        "end": 249,
+        "start": 237,
+        "end": 242,
         "sha256": "df0a6e111ee9eab11dc7c238c0a4b0df9ae37313bac92f6f5ee969454f868a3f"
       },
       "actions": [
@@ -27437,8 +27437,8 @@
       "id": "5fbef320df695378",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 267,
-        "end": 270,
+        "start": 260,
+        "end": 263,
         "sha256": "2d3407de430f3452529aa1ea07988ad6d5db94dc7c4dd5e02c3c245fbb5e61f6"
       },
       "actions": [
@@ -29593,8 +29593,8 @@
       "id": "687184a948a804b8",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 250,
-        "end": 250,
+        "start": 243,
+        "end": 243,
         "sha256": "8c62cef6efad9dceebee3e594d5e78111fda85e7e4ba214740708582ea34f85a"
       },
       "actions": [
@@ -30522,6 +30522,26 @@
       "why": "Membership PATCH invokes refreshTeamAccess then refreshAccess for this project and member. The prior member lease disappears from the asserted GET list. Entry increments generation, resolves project and selects matching active leases; no concurrent in-flight request observes the generation change, and sessionId-specific filtering is not established by a nonempty lease case. SVC-J03, one canonical ordered 36-request HTTP journey. Symbolic projectId/teamId/itemId/actors and body names resolve to pinned scenario fixture declarations at lines 86\u2013116 and intervening statements. Four synthetic authenticated users, an active paid team and empty R2 are seeded before HTTP; this is not provider login or billing. Request helper lines 97\u2013112 verifies real loopback HTTP status, JSON error code when supplied and security headers. Source-specific witness is listed; only stated assertions and paths are associated. Static reviewed navigation mapping, not measured line/branch coverage, native acceptance or a new test run. WebSockets, discussions, assets, atomic batches, concurrency and untested alternatives remain gaps."
     },
     {
+      "id": "6ac061f36dd85129",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 737,
+        "end": 744,
+        "sha256": "6770242f3a2e0738044092b7e1132f37d377c7f17130c8ca0ca76d735888a47e"
+      },
+      "actions": [
+        "send presence from the second live session through the owned Worker",
+        "observe marker arrival and removal in the app while the saved line remains intact"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-sharing.mjs",
+        "start": 171,
+        "end": 186,
+        "sha256": "8d576cc8cd82ec6b1d5cf7612104a30efae3527f29c790a4d9bf34aa621ad336"
+      },
+      "why": "The real socket presence delta is applied to the matching project and reaches the visible Script row."
+    },
+    {
       "id": "6ae85e0c8c5642ac",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/App/ScrivWorkspaceController.swift",
@@ -30652,8 +30672,8 @@
       "id": "6b81229347243b77",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 263,
-        "end": 265,
+        "start": 256,
+        "end": 258,
         "sha256": "d30989c6addc7c341493a2cc17c7d3cdc89edf9e1c885ae66c6537d8352169f7"
       },
       "actions": [
@@ -31097,8 +31117,8 @@
       "id": "6ce70398218807d7",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 208,
-        "end": 208,
+        "start": 201,
+        "end": 201,
         "sha256": "1b0a4e788e5d0cdc40b67bf9d760e1d7d8c3b7156c3b19ddc546934c8b5850ba"
       },
       "actions": [
@@ -37104,8 +37124,8 @@
       "id": "80132e8febab36a5",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 239,
-        "end": 241,
+        "start": 232,
+        "end": 234,
         "sha256": "587e5b7a794bd786fabf4b12560e50172b3c462a7a5e79eb34318c89de4ca893"
       },
       "actions": [
@@ -49850,8 +49870,8 @@
       "id": "a9bf58791390eb4b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 227,
-        "end": 237,
+        "start": 220,
+        "end": 230,
         "sha256": "e07dc69757def65e532966e9257897704516a423462e4868e09b850ff64e9118"
       },
       "actions": [
@@ -55106,9 +55126,9 @@
       "id": "bb08561ba361c84f",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 193,
-        "end": 193,
-        "sha256": "771b4e802bf39e05f522300da079b396de6cd01e9d85cfa6ddefcff2219b7431"
+        "start": 186,
+        "end": 186,
+        "sha256": "c3447206a6a8b12bc5af994ced6a293f1bd3bc640a7d28486a2a349f42298e26"
       },
       "actions": [
         "activate {target: snapshot unique Open Source target, version 2 button.path}",
@@ -55795,8 +55815,8 @@
       "id": "bcc2b3968c198efe",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 298,
-        "end": 300,
+        "start": 291,
+        "end": 293,
         "sha256": "86f182ccfd0b85a7100816e1a10c0b33a3e3e9602bbecabddb41e9a02ae4d5f5"
       },
       "actions": [
@@ -72954,8 +72974,8 @@
       "id": "fac47cf180a2d3f7",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 252,
-        "end": 252,
+        "start": 245,
+        "end": 245,
         "sha256": "78c4d78709528cc332dec98775c58571e1a60a67abeefe8a522fa6514023f7d8"
       },
       "actions": [
@@ -74363,8 +74383,8 @@
       "id": "ff4d69fbdccba269",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 257,
-        "end": 260,
+        "start": 250,
+        "end": 253,
         "sha256": "c5949204e90951d2a4c4e7ed7efee24b2c692b1d0012489e436a13d5dd9c8559"
       },
       "actions": [
@@ -80617,8 +80637,8 @@
       "id": "3a77fd7a6abaa979",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 256,
-        "end": 256,
+        "start": 249,
+        "end": 249,
         "sha256": "6150ac3d3ed30dc20e06805984cb3bfa92906db008beab4657d8c494ce166a79"
       },
       "actions": [
@@ -81369,9 +81389,9 @@
       "id": "d2741e8b74e5c02b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 183,
-        "end": 187,
-        "sha256": "dcb9a40d69048398abe9f897c3e0d9008377625ca4ec75b71ea5b5d81ffc7e9c"
+        "start": 176,
+        "end": 180,
+        "sha256": "28607623f31604d59548265c99ee6df66c39cf6b3e993c7b857543877a4f78d2"
       },
       "actions": [
         "key {input: zoomInput, modifiers: [\"command\"]}",
@@ -87106,8 +87126,8 @@
       "id": "1fc82855814e9684",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 279,
-        "end": 280,
+        "start": 272,
+        "end": 273,
         "sha256": "c3f2cd01dec2469fb5139b9af28a2db1cf039048d31da8561f1d6284d49dd24f"
       },
       "actions": [
@@ -90777,6 +90797,26 @@
       "why": "Native text, cold journal recovery, explicit keep/rebase and matching reviewed apply drive these ordinary-path statements, witnessed by full journal and canonical model invariants. Error alternatives and concurrency branches are unclaimed."
     },
     {
+      "id": "76c74674d3d257bf",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
+        "start": 33,
+        "end": 41,
+        "sha256": "cc253cd78c7e4c10c9011c019ab8ca1ec4f311c8e0a249d9618d92bf7fff91bb"
+      },
+      "actions": [
+        "publish the app selection back from the authorized second session",
+        "observe the peer marker under the exact displayed line, clear it and compare the unchanged saved script"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-sharing.mjs",
+        "start": 171,
+        "end": 186,
+        "sha256": "8d576cc8cd82ec6b1d5cf7612104a30efae3527f29c790a4d9bf34aa621ad336"
+      },
+      "why": "The mounted script text view renders the incoming peer caret on the selected line and removes it when no item is selected."
+    },
+    {
       "id": "76c85d5f677e1df5",
       "source": {
         "path": "apps/mac/Sources/ScrivCore/EditorDraftJournal.swift",
@@ -94134,8 +94174,8 @@
       "id": "1c3050213b5e8fdc",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 255,
-        "end": 256,
+        "start": 248,
+        "end": 249,
         "sha256": "f5fbe8136334f7603f1ec26b478eeadd1e8eb17b055e49516f8b30a34d8ebe17"
       },
       "actions": [
@@ -94228,8 +94268,8 @@
       "id": "43fdac8af93776df",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 262,
-        "end": 265,
+        "start": 255,
+        "end": 258,
         "sha256": "fa4c0d6ce1d650d371e111584a9ed1d3b966d36c36907fe94b4aca3be36a6994"
       },
       "actions": [
@@ -96524,8 +96564,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-sharing.mjs",
-        "start": 183,
-        "end": 189,
+        "start": 204,
+        "end": 210,
         "sha256": "4dac15bf225fb263d6ea5baf1b5268a44c3b95ddca365b7926b6f664a974d838"
       },
       "why": "Cancel dismisses the mounted confirmation and leaves exactly the original saved package and personal cloud project."
@@ -96543,8 +96583,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-sharing.mjs",
-        "start": 191,
-        "end": 206,
+        "start": 212,
+        "end": 227,
         "sha256": "762977fe1f1711f605ba9ff781c92e425992e67e148f726625a8822886675800"
       },
       "why": "Share on the active confirmation creates the selected Team copy. The new local and remote IDs are distinct, and the original remains personal and unchanged."
@@ -96562,8 +96602,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-sharing.mjs",
-        "start": 86,
-        "end": 103,
+        "start": 92,
+        "end": 109,
         "sha256": "2628d0111586a0b0996465c5788f458c76966b89e11e0f120f667614128a0542"
       },
       "why": "Sharing a local-only package syncs its existing local identity directly to the selected Team and leaves the personal project and earlier copy intact."
@@ -96581,8 +96621,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-sharing.mjs",
-        "start": 191,
-        "end": 206,
+        "start": 212,
+        "end": 227,
         "sha256": "762977fe1f1711f605ba9ff781c92e425992e67e148f726625a8822886675800"
       },
       "why": "The personal cloud project produces an independently persisted Team copy with its own linked identities and the same document contents."
@@ -98717,8 +98757,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-sharing.mjs",
-        "start": 147,
-        "end": 156,
+        "start": 153,
+        "end": 162,
         "sha256": "d3a4d8e9c450a58935784518f4bf6dd063a01a026a51ff20dac1d00835b033f9"
       },
       "why": "Two CLI-driven editor selections arrive with exact offsets and item identity over the same live socket."
@@ -98737,8 +98777,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-sharing.mjs",
-        "start": 157,
-        "end": 162,
+        "start": 163,
+        "end": 168,
         "sha256": "420985d9099c5775006b64c4f737660640fdc2b181bd4535a650e541c212a720"
       },
       "why": "The second session sees the unchanged item and selection over a different connection after the isolated socket closes."
@@ -102004,11 +102044,11 @@
       "id": "39db8e03e3811af1",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 213,
-        "end": 215,
+        "start": 206,
+        "end": 208,
         "sha256": "136efc498f29a3eeb88b6c619ea5ddb30db7c041f79da647b886cfbeec10af0a"
       },
-      "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d"
+      "fileSha256": "068650ad9c5a537d11c5943743241287c91ae141582ece0ec939ec4595cd55fd"
     },
     {
       "id": "39e758cb13d04ddc",
@@ -102264,11 +102304,11 @@
       "id": "3eef96111c1521c6",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 230,
-        "end": 231,
+        "start": 223,
+        "end": 224,
         "sha256": "261c2911b0b45ab2aa560b102e8ef3875e1edb653cd4f36881233b0467137389"
       },
-      "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d"
+      "fileSha256": "068650ad9c5a537d11c5943743241287c91ae141582ece0ec939ec4595cd55fd"
     },
     {
       "id": "3efcd4c502055cd5",
@@ -103188,7 +103228,7 @@
         "end": 101,
         "sha256": "82590c775a47c465d4880e80813ef3809534e8e866f182df4772fba052aa4e46"
       },
-      "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d"
+      "fileSha256": "068650ad9c5a537d11c5943743241287c91ae141582ece0ec939ec4595cd55fd"
     },
     {
       "id": "510bed2f9d11307f",
@@ -105165,10 +105205,10 @@
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
         "start": 171,
-        "end": 173,
-        "sha256": "86471c9fcdb282892f0766688e70d2d077570763d93612a23bfa44a0bcc93c07"
+        "end": 172,
+        "sha256": "a0f37c4eaf7729f4c67e80b6943aa495e9294012d9e35729bd211cfe694ed812"
       },
-      "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d"
+      "fileSha256": "068650ad9c5a537d11c5943743241287c91ae141582ece0ec939ec4595cd55fd"
     },
     {
       "id": "7b89c534adb49bc6",
@@ -107884,11 +107924,11 @@
       "id": "b2a9d4a4f8a5852b",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 225,
-        "end": 225,
+        "start": 218,
+        "end": 218,
         "sha256": "771b51346c053b08389f00a5eef6c9abbb47831bc712d5a7c1235ec05a3b1681"
       },
-      "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d"
+      "fileSha256": "068650ad9c5a537d11c5943743241287c91ae141582ece0ec939ec4595cd55fd"
     },
     {
       "id": "b2adeeebcf7c6edc",
@@ -109224,11 +109264,11 @@
       "id": "cd8f2a54d52bbb67",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 258,
-        "end": 259,
+        "start": 251,
+        "end": 252,
         "sha256": "aecc4f63b6f351f5b58000d3cd21b197545fc70ec70654306c4f2dad72480a04"
       },
-      "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d"
+      "fileSha256": "068650ad9c5a537d11c5943743241287c91ae141582ece0ec939ec4595cd55fd"
     },
     {
       "id": "cd987abcc453f1a8",
@@ -109854,11 +109894,11 @@
       "id": "dc02563994337c3c",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 182,
-        "end": 182,
+        "start": 175,
+        "end": 175,
         "sha256": "cc16237d8ccc86909936a082d3ed16c52a6fdd7791155b389814f0f73cd47bac"
       },
-      "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d"
+      "fileSha256": "068650ad9c5a537d11c5943743241287c91ae141582ece0ec939ec4595cd55fd"
     },
     {
       "id": "dc075575e6bfb2d1",
@@ -110164,11 +110204,11 @@
       "id": "e1f726b9be863bb1",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 286,
-        "end": 288,
+        "start": 279,
+        "end": 281,
         "sha256": "568f9ea944d2d74a7d4adc44e05cd4302f5357832d83ca30c315eaeeda93cf58"
       },
-      "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d"
+      "fileSha256": "068650ad9c5a537d11c5943743241287c91ae141582ece0ec939ec4595cd55fd"
     },
     {
       "id": "e209cdfac6288bc7",
@@ -110568,7 +110608,7 @@
         "end": 6,
         "sha256": "944d151e3dd2c9807064bed60100635889fbe5bb646daef9ffbb08330afe23fc"
       },
-      "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d"
+      "fileSha256": "068650ad9c5a537d11c5943743241287c91ae141582ece0ec939ec4595cd55fd"
     },
     {
       "id": "e997dc9d28f95dc5",
@@ -110734,11 +110774,11 @@
       "id": "ec95003ea3d3f057",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Script/ScriptTextViews.swift",
-        "start": 221,
-        "end": 221,
+        "start": 214,
+        "end": 214,
         "sha256": "9c58b21b31124c24b3b152622a689433450c1deca0409d89bc97c50ff9723392"
       },
-      "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d"
+      "fileSha256": "068650ad9c5a537d11c5943743241287c91ae141582ece0ec939ec4595cd55fd"
     },
     {
       "id": "ecc8d790627fe1fd",
@@ -110848,7 +110888,7 @@
         "end": 75,
         "sha256": "cb971feb76fd3cb4f9281ccf67f186120da3eb42ee946606f13548282279e9d2"
       },
-      "fileSha256": "93364eef8e00b1af44915ac4f3d8bf8967198c524b611ec6e588dc915a3c260d"
+      "fileSha256": "068650ad9c5a537d11c5943743241287c91ae141582ece0ec939ec4595cd55fd"
     },
     {
       "id": "eedd429ba4ad5f34",

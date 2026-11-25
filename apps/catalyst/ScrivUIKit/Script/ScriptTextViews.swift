@@ -168,20 +168,13 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
         let raw = display.closestPosition(to: point).map { display.offset(from: display.beginningOfDocument, to: $0) } ?? 0
         onEdit?(min(lastEntry?.text.utf16.count ?? 0, max(0, raw)))
     }
-    /// `startMs` and `continued` may be precomputed for the whole scene in one
-    /// pass; otherwise they are derived from `project` for this row alone.
+    /// Uses the start time and speaker continuation from the scene's ordered pass.
     /// Returns whether anything was re-rendered.
     @discardableResult
-    func configure(entry: ScriptEntry, project: ScrivProject, selected: Bool, active: Bool, search: String, currentWordID: String?, peers: [PresencePeer], locked: Bool, speakerMenu: @autoclosure () -> UIMenu, fontSize: CGFloat, presentation: ScriptPresentationMetrics = .expanded, startMs: Int? = nil, continued: Bool? = nil, menuContext: Int = 0, currentMatch: Bool = false) -> Bool {
-        let start = startMs ?? project.startMs(of: entry.id)
-        let continued = continued ?? {
-            let ordered = project.entries(in: entry.sceneId)
-            let previous = ordered.firstIndex(where: { $0.id == entry.id }).flatMap { index in ordered[..<index].last { $0.ownedDurationMs > 0 } }
-            return entry.characterId != nil && previous?.kind == .dialogue && previous?.characterId == entry.characterId
-        }()
+    func configure(entry: ScriptEntry, project: ScrivProject, selected: Bool, active: Bool, search: String, currentWordID: String?, peers: [PresencePeer], locked: Bool, speakerMenu: @autoclosure () -> UIMenu, fontSize: CGFloat, presentation: ScriptPresentationMetrics = .expanded, startMs: Int, continued: Bool, menuContext: Int = 0, currentMatch: Bool = false) -> Bool {
         // Only this row's own word affects its rendering.
         let wordID = currentWordID.flatMap { id in entry.words.contains { $0.id == id } ? id : nil }
-        let input = RenderInput(entry: entry, characters: project.characters, cues: project.cues, selected: selected, active: active, search: search, currentWordID: wordID, peers: peers, locked: locked, fontSize: fontSize, presentation: presentation, startMs: start, continued: continued, menuContext: menuContext, currentMatch: currentMatch)
+        let input = RenderInput(entry: entry, characters: project.characters, cues: project.cues, selected: selected, active: active, search: search, currentWordID: wordID, peers: peers, locked: locked, fontSize: fontSize, presentation: presentation, startMs: startMs, continued: continued, menuContext: menuContext, currentMatch: currentMatch)
         if input == renderedInput { return false }
         renderedInput = input
         lastEntry = entry
@@ -189,8 +182,8 @@ final class ScriptEntryRow: UIView, UITextViewDelegate, UIContextMenuInteraction
         topInset.constant = presentation.rowPadding; bottomInset.constant = -presentation.rowPadding
         textStack.spacing = presentation.textSpacing
         DurationHoldFeedback.tick(durationButton, title: ScrivFormat.duration(entry.ownedDurationMs)); durationButton.isEnabled = !locked
-        timestamp.text = ScrivFormat.time(start)
-        splitPictureButton.isHidden = !selected || !project.cues.contains { $0.sceneId == entry.sceneId && $0.durationMs > 1 && $0.startMs < start + max(entry.ownedDurationMs, entry.coverageDurationMs) && $0.endMs > start }
+        timestamp.text = ScrivFormat.time(startMs)
+        splitPictureButton.isHidden = !selected || !project.cues.contains { $0.sceneId == entry.sceneId && $0.durationMs > 1 && $0.startMs < startMs + max(entry.ownedDurationMs, entry.coverageDurationMs) && $0.endMs > startMs }
         splitPictureButton.isEnabled = !locked
         let direction = entry.kind == .direction
         let color = direction ? ScrivUIKitTheme.color(entry.color) : ScrivUIKitTheme.ink

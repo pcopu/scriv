@@ -11,7 +11,13 @@ import { keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mj
 const groups = ['sharing', 'live-presence'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
-  console.log(JSON.stringify({ groups }));
+  console.log(JSON.stringify({ groups, groupActions: {
+    'live-presence': [{ id: 'incoming-script-selection', command: 'event', trigger: 'presence-delta',
+      condition: 'another-live-session-selects-then-leaves-the-displayed-line', entryPoint: {
+        path: 'apps/mac/Sources/ScrivApp/Services/CloudClient.swift', start: 737, end: 744,
+        sha256: '6770242f3a2e0738044092b7e1132f37d377c7f17130c8ca0ca76d735888a47e',
+      } }],
+  } }));
   process.exit(0);
 }
 assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]), 'Choose a supported native Team group');
@@ -161,11 +167,26 @@ async function run() {
     'The second session receives the exact selection again over a new app connection', 10_000);
     await script.waitEditor(editorID, line.text, latestSelection.start, latestSelection.end);
     await script.finishEditor();
+
+    step = 'display and clear the second live session’s selection on the unchanged script';
+    const display = byID(`script-line-${line.id}`);
+    const peerMarker = nodes => {
+      const row = nodes.find(node => display(node) && node.hittable && node.text === line.text);
+      if (!row) return undefined;
+      return nodes.some(node => node.path.startsWith(row.path + '.') && node.label === 'Scriv user is editing here'
+        && node.frame.width > 0 && node.frame.height > 0);
+    };
+    const initial = await script.displayed(line.id, line.text, { finished: true });
+    assert.equal(peerMarker(initial), false);
+    assert.equal(await fixture.echoObservedPresence(shared.cloudProjectId, line.id), true);
+    await session.waitFor(nodes => peerMarker(nodes) === true);
+    assert.equal(await fixture.echoObservedPresence(shared.cloudProjectId, null), true);
+    await session.waitFor(nodes => peerMarker(nodes) === false);
     assert.deepEqual((await session.command('loaded-project')).project, shared);
     assert.deepEqual(await packages(), sortedProjects([sample, shared]));
     assert.deepEqual(await session.command('presented-alerts'), []);
     await fixture.assertNoOutbound();
-    console.log('PASS: another live session receives both native Script selections and the restored selection after reconnect');
+    console.log('PASS: native Script selections travel both ways and survive an isolated reconnect');
     return;
   }
 
