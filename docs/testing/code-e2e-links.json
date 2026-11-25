@@ -96171,8 +96171,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-sharing.mjs",
-        "start": 102,
-        "end": 108,
+        "start": 183,
+        "end": 189,
         "sha256": "4dac15bf225fb263d6ea5baf1b5268a44c3b95ddca365b7926b6f664a974d838"
       },
       "why": "Cancel dismisses the mounted confirmation and leaves exactly the original saved package and personal cloud project."
@@ -96190,8 +96190,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-sharing.mjs",
-        "start": 110,
-        "end": 125,
+        "start": 191,
+        "end": 206,
         "sha256": "762977fe1f1711f605ba9ff781c92e425992e67e148f726625a8822886675800"
       },
       "why": "Share on the active confirmation creates the selected Team copy. The new local and remote IDs are distinct, and the original remains personal and unchanged."
@@ -96209,9 +96209,9 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-sharing.mjs",
-        "start": 126,
-        "end": 145,
-        "sha256": "c3410a60bf4adbabc253a6cf8d77bfbc1feb828666861a47fc23a53394f89463"
+        "start": 86,
+        "end": 103,
+        "sha256": "2628d0111586a0b0996465c5788f458c76966b89e11e0f120f667614128a0542"
       },
       "why": "Sharing a local-only package syncs its existing local identity directly to the selected Team and leaves the personal project and earlier copy intact."
     },
@@ -96228,8 +96228,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-team-sharing.mjs",
-        "start": 110,
-        "end": 125,
+        "start": 191,
+        "end": 206,
         "sha256": "762977fe1f1711f605ba9ff781c92e425992e67e148f726625a8822886675800"
       },
       "why": "The personal cloud project produces an independently persisted Team copy with its own linked identities and the same document contents."
@@ -98349,6 +98349,46 @@
         "sha256": "9395b4d6147793d316a9dbf698093e93e01c8b7cfb99db515881bb1594572b83"
       },
       "why": "A wrapped scenario failure emits its typed code, inner source line and control count through the dedicated descriptor, with error text excluded."
+    },
+    {
+      "id": "0e9380357823e96d",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 815,
+        "end": 820,
+        "sha256": "8881cf70badb14c1fdf80b0b5e1d7c53c00d3a06b0f9b8b2da10f3cdd8ff64b2"
+      },
+      "actions": [
+        "scriv selection --target script-editor --start 1 --end 3",
+        "scriv selection --target script-editor --start 4 --end 7"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-sharing.mjs",
+        "start": 147,
+        "end": 156,
+        "sha256": "d3a4d8e9c450a58935784518f4bf6dd063a01a026a51ff20dac1d00835b033f9"
+      },
+      "why": "Two CLI-driven editor selections arrive with exact offsets and item identity over the same live socket."
+    },
+    {
+      "id": "b81e4437ee3f8e09",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 694,
+        "end": 699,
+        "sha256": "0eccac0dc8b671cd5810719d2cc712ba0a7725e26d784d1e3c063a4e09b1685d"
+      },
+      "actions": [
+        "scriv selection --target script-editor --start 4 --end 7",
+        "isolated Team fixture closes the observed app socket"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-team-sharing.mjs",
+        "start": 157,
+        "end": 162,
+        "sha256": "420985d9099c5775006b64c4f737660640fdc2b181bd4535a650e541c212a720"
+      },
+      "why": "The second session sees the unchanged item and selection over a different connection after the isolated socket closes."
     }
   ],
   "commentExclusions": [
@@ -102340,7 +102380,7 @@
         "end": 133,
         "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
       },
-      "fileSha256": "3bfc90455b7c17cd7a1c341fae2dbd715e69975b317170bb2de22f094145ad32"
+      "fileSha256": "2b7e023fbbba8f805d60ccf135b725fd0c1e3b50c64435016023ace2b08dcadf"
     },
     {
       "id": "58267d3510d79430",
@@ -102420,7 +102460,7 @@
         "end": 240,
         "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
       },
-      "fileSha256": "3bfc90455b7c17cd7a1c341fae2dbd715e69975b317170bb2de22f094145ad32"
+      "fileSha256": "2b7e023fbbba8f805d60ccf135b725fd0c1e3b50c64435016023ace2b08dcadf"
     },
     {
       "id": "59c64d2ace520826",
@@ -104070,7 +104110,7 @@
         "end": 79,
         "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
       },
-      "fileSha256": "3bfc90455b7c17cd7a1c341fae2dbd715e69975b317170bb2de22f094145ad32"
+      "fileSha256": "2b7e023fbbba8f805d60ccf135b725fd0c1e3b50c64435016023ace2b08dcadf"
     },
     {
       "id": "7e4a8f19915d9b4e",
@@ -104860,7 +104900,7 @@
         "end": 2,
         "sha256": "4ead8511821dcd95c2efee74b114bac02b04cb9252a4405b4149f9930c721b52"
       },
-      "fileSha256": "3bfc90455b7c17cd7a1c341fae2dbd715e69975b317170bb2de22f094145ad32"
+      "fileSha256": "2b7e023fbbba8f805d60ccf135b725fd0c1e3b50c64435016023ace2b08dcadf"
     },
     {
       "id": "8e40d7512c7266e1",
@@ -107550,7 +107590,7 @@
         "end": 36,
         "sha256": "da22a6a09e9a6d7bbf1e35ecdac04e969fad1ac1a051025596a84831ff070202"
       },
-      "fileSha256": "3bfc90455b7c17cd7a1c341fae2dbd715e69975b317170bb2de22f094145ad32"
+      "fileSha256": "2b7e023fbbba8f805d60ccf135b725fd0c1e3b50c64435016023ace2b08dcadf"
     },
     {
       "id": "c3fa07d2ab6ca6a5",

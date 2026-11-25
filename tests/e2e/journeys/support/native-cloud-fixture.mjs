@@ -71,6 +71,9 @@ export async function startNativeCloudFixture() {
       takeCode: () => response('take-code'),
       createFreeTeam: () => response('create-free-team'),
       createPaidTeam: () => response('create-paid-team'),
+      openPresenceObserver: projectId => response(['open-presence-observer', projectId]),
+      observedPresence: () => response('observed-presence'),
+      closeObservedPresenceConnection: (projectId, connectionId) => response(['close-observed-presence', { projectId, connectionId }]),
       projects: () => response('projects'),
       projectTeams: () => response('project-teams'),
       sessionStates: () => response('session-states'),
@@ -127,8 +130,17 @@ async function startWorker(root) {
     // Forward the exact request to the real Worker before dropping its first
     // receipt. Control is private RPC, with no additional public HTTP route.
     await writeFile(harness, `import { WorkerEntrypoint } from 'cloudflare:workers';
-      import worker from './worker.mjs';
+      import worker, { ProjectRoom as ProductionProjectRoom } from './worker.mjs';
       export * from './worker.mjs';
+      export class ProjectRoom extends ProductionProjectRoom {
+        closeFixturePresence(connectionId) {
+          const matches = this.ctx.getWebSockets().filter(socket => socket.readyState === WebSocket.OPEN
+            && socket.deserializeAttachment()?.connectionId === connectionId);
+          if (matches.length !== 1) throw new Error('The owned presence connection must match exactly one open socket');
+          matches[0].close(1012, 'Synthetic fixture reconnect');
+          return true;
+        }
+      }
       let target;
       let pending;
       let receipt;
@@ -298,6 +310,9 @@ async function startWorker(root) {
           return Response.json({ error: { code: 'receipt_unavailable', message: ${JSON.stringify(lostCloudEditReceipt)} } }, { status: 503 });
         }
         scheduled(event) { return worker.scheduled(event, this.env, this.ctx); }
+        closeFixturePresence(projectId, connectionId) {
+          return this.env.PROJECTS.get(this.env.PROJECTS.idFromName(projectId)).closeFixturePresence(connectionId);
+        }
         loseEditReceipt(projectId) {
           if (target || typeof projectId !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(projectId)) throw new Error('A single owned project is required');
           target = '/v1/projects/' + projectId + '/commands';
@@ -421,6 +436,43 @@ async function startWorker(root) {
       const token = await fixtureOwnerToken('Team fixture setup');
       try { return await action(token); }
       finally { await post('/auth/logout', 200, {}, token); }
+    }
+    let presenceObserver;
+    let presenceObserverId;
+    let presenceObserverProjectId;
+    let presenceObserverClosed = false;
+    const observedPresence = [];
+    async function openPresenceObserver(projectId) {
+      assert.match(projectId, /^[a-f0-9-]{36}$/i);
+      assert.ok(!presenceObserver);
+      const token = await fixtureOwnerToken('Synthetic presence observer');
+      const WebSocket = require('ws');
+      const url = new URL(`/v1/projects/${projectId}/socket`, base);
+      url.protocol = 'ws:';
+      const observer = new WebSocket(url, { headers: { Authorization: `Bearer ${token}`, 'X-Scriv-Presence': 'delta-v1' },
+        handshakeTimeout: 5000, maxPayload: 65536 });
+      presenceObserver = observer;
+      presenceObserverProjectId = projectId;
+      observer.on('message', bytes => {
+        const { type, connectionId, peers } = JSON.parse(bytes.toString());
+        if (type === 'hello') presenceObserverId = connectionId;
+        if (type === 'presence' || type === 'presence-delta') {
+          for (const peer of peers) {
+            if (peer.connectionId === presenceObserverId || typeof peer.itemId !== 'string') continue;
+            observedPresence.push({ connectionId: peer.connectionId, itemId: peer.itemId, selection: peer.selection ?? null });
+            if (observedPresence.length > 32) observedPresence.shift();
+          }
+        }
+      });
+      observer.on('error', () => { presenceObserverClosed = true; });
+      observer.on('close', () => { presenceObserverClosed = true; });
+      return true;
+    }
+    function closeObservedPresenceConnection({ projectId, connectionId }) {
+      assert.equal(projectId, presenceObserverProjectId, 'Use the project observed by this fixture');
+      assert.ok(presenceObserverId && !presenceObserverClosed && connectionId !== presenceObserverId
+        && observedPresence.some(peer => peer.connectionId === connectionId), 'Use an observed native app connection');
+      return nativeWorker.closeFixturePresence(projectId, connectionId);
     }
     function createFreeTeam() {
       return withFixtureOwner(async token => {
@@ -622,6 +674,12 @@ async function startWorker(root) {
     }
     return { origin: base.origin, createFreeTeam,
       createPaidTeam: () => withFixtureOwner(async token => ({ id: (await seedPaidTeam(token)).id })),
+      openPresenceObserver,
+      closeObservedPresenceConnection,
+      observedPresence: () => {
+        assert.ok(presenceObserver && !presenceObserverClosed, 'Synthetic presence observer is disconnected');
+        return { ready: Boolean(presenceObserverId), updates: observedPresence };
+      },
       status: async () => ({ deliveries: await mailbox.count(), outbound }),
       loseEditReceipt: projectId => nativeWorker.loseEditReceipt(projectId),
       editReceiptState: () => nativeWorker.editReceiptState(),
@@ -647,7 +705,7 @@ async function startWorker(root) {
       sessionStates: async () => (await db.prepare(
         'SELECT revoked_at IS NOT NULL AS revoked FROM sessions JOIN users ON sessions.user_id = users.id WHERE users.email = ? ORDER BY sessions.created_at, sessions.id',
       ).bind(nativeFixtureEmail).all()).results.map(({ revoked }) => ({ revoked: Boolean(revoked) })),
-      close: () => fixture.dispose() };
+      close: () => { presenceObserver?.terminate(); return fixture.dispose(); } };
   } catch (error) { await fixture?.dispose(); throw error; }
 }
 
@@ -659,6 +717,8 @@ if (process.argv[2] === '--owned-worker' && process.send) {
       const [operation, value] = Array.isArray(message) ? message : [message];
       const operations = { status: worker.status, 'take-code': worker.takeCode, 'create-free-team': worker.createFreeTeam,
         'create-paid-team': worker.createPaidTeam, projects: worker.projects, 'project-teams': worker.projectTeams,
+        'open-presence-observer': worker.openPresenceObserver, 'observed-presence': worker.observedPresence,
+        'close-observed-presence': worker.closeObservedPresenceConnection,
         'session-states': worker.sessionStates, 'lose-edit-receipt': worker.loseEditReceipt,
         'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit,
         'interrupt-edit': worker.interruptEdit, 'interrupted-edit-state': worker.interruptedEditState,

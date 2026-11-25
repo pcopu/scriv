@@ -1,10 +1,21 @@
 import assert from 'node:assert/strict';
+import { setTimeout as delay } from 'node:timers/promises';
 import { isDeepStrictEqual } from 'node:util';
 import { ScrivSession } from '../../../cli/scriv.mjs';
 import { waitForSavedProject } from '../support/saved-projects.mjs';
 import { audioLibrarySteps, sortedProjects } from './support/audio-library-steps.mjs';
 import { audioProjectFixture } from './support/audio-library-fixtures.mjs';
 import { nativeFixtureEmail, nativeFixtureTeam, startNativeCloudFixture } from './support/native-cloud-fixture.mjs';
+import { keyIs, scriptAuthoringSteps } from './support/script-authoring-steps.mjs';
+
+const groups = ['sharing', 'live-presence'];
+const args = process.argv.slice(2);
+if (args.length === 1 && args[0] === '--list-cases') {
+  console.log(JSON.stringify({ groups }));
+  process.exit(0);
+}
+assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]), 'Choose a supported native Team group');
+const livePresence = args[1] === 'live-presence';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Requires a signed Catalyst automation build');
 const fixture = await startNativeCloudFixture();
@@ -23,7 +34,7 @@ const documentOf = ({ id, title, cloudProjectId, revision, createdAt, modifiedAt
 let session;
 let step = 'set up a paid synthetic Team and sign in';
 
-try {
+async function run() {
   const team = await fixture.createPaidTeam();
   assert.match(team.id, /^[a-f0-9-]{36}$/i);
   session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { cloudFixtureOrigin: fixture.origin });
@@ -72,6 +83,25 @@ try {
     assert.equal(confirm.title, 'Share');
     assert.ok(active.some(node => byID('team-share-cancel')(node) && node.windowPath === confirm.windowPath));
   }
+  async function shareLocalProject() {
+    step = 'share an unsynced local project without making a copy';
+    const input = { ...audioProjectFixture(), title: 'Synthetic local Team project' };
+    assert.deepEqual(await session.command('import-json', { text: JSON.stringify(input) }), { dispatched: true, projectChanged: true });
+    const local = await waitForSavedProject(session, project => project.title === input.title);
+    assert.equal(local.cloudProjectId, undefined);
+    await openTeams();
+    await openConfirmation(shareLocal);
+    await click(byID('team-share-confirm'));
+    await waitForSavedProject(session, project => project.id === local.id && !!project.cloudProjectId);
+    await click(button('Open project'));
+    await readyControl(projectButton);
+    const loadedShared = (await session.command('loaded-project')).project;
+    const shared = await waitForSavedProject(session, project => isDeepStrictEqual(project, loadedShared));
+    assert.equal(shared.id, local.id);
+    assert.equal(shared.title, local.title);
+    assert.deepEqual(documentOf(shared), documentOf(local));
+    return shared;
+  }
 
   await ui.tab('Script');
   await session.command('key', { input: 's', modifiers: ['command'] });
@@ -87,6 +117,57 @@ try {
   await click(button('Close Projects'));
   await readyControl(projectButton);
   assert.deepEqual(await fixture.projectTeams(), []);
+
+  if (livePresence) {
+    const shared = await shareLocalProject();
+    assert.deepEqual(await fixture.projectTeams(), [{ id: shared.cloudProjectId, title: shared.title, teamId: team.id }]);
+    step = 'publish native Script selections to another live session';
+    await session.waitFor(nodes => nodes.some(node => node.text?.endsWith(' · Live')));
+    assert.equal(await fixture.openPresenceObserver(shared.cloudProjectId), true);
+    async function waitForPresence(predicate, message, timeoutMs = 5000) {
+      const deadline = Date.now() + timeoutMs;
+      do {
+        const result = predicate(await fixture.observedPresence());
+        if (result) return result;
+        await delay(75);
+      } while (Date.now() < deadline);
+      assert.fail(message);
+    }
+    await waitForPresence(state => state.ready, 'The second session joins the live project');
+    const script = scriptAuthoringSteps(session);
+    await script.selectTab('Script');
+    const [line] = shared.entries;
+    await script.displayed(line.id, line.text, { finished: true });
+    const editKey = (await session.command('keys')).find(command => keyIs(command, '\r', ['command'])
+      && command.action === 'toggleScriptEditingFromKeyboard:');
+    assert.ok(editKey, 'The selected script line exposes the edit shortcut');
+    await script.key(editKey.input, editKey.modifiers);
+    const editorID = `script-editor-${line.id}`;
+    await session.waitFor(nodes => nodes.some(node => node.identifier === editorID && node.firstResponder));
+    let connectionId;
+    const latestSelection = { start: 4, end: 7 };
+    for (const selection of [{ start: 1, end: 3 }, latestSelection]) {
+      await session.command('selection', { target: editorID, ...selection });
+      await script.waitEditor(editorID, line.text, selection.start, selection.end);
+      const update = await waitForPresence(state => state.updates.findLast(update => update.itemId === line.id
+        && isDeepStrictEqual(update.selection, selection)), 'The second session receives the exact Script selection');
+      connectionId ??= update.connectionId;
+      assert.equal(update.connectionId, connectionId);
+    }
+    step = 'restore the unchanged Script selection after an isolated socket closure';
+    assert.equal(await fixture.closeObservedPresenceConnection(shared.cloudProjectId, connectionId), true);
+    await waitForPresence(state => state.updates.findLast(update => update.connectionId !== connectionId
+      && update.itemId === line.id && isDeepStrictEqual(update.selection, latestSelection)),
+    'The second session receives the exact selection again over a new app connection', 10_000);
+    await script.waitEditor(editorID, line.text, latestSelection.start, latestSelection.end);
+    await script.finishEditor();
+    assert.deepEqual((await session.command('loaded-project')).project, shared);
+    assert.deepEqual(await packages(), sortedProjects([sample, shared]));
+    assert.deepEqual(await session.command('presented-alerts'), []);
+    await fixture.assertNoOutbound();
+    console.log('PASS: another live session receives both native Script selections and the restored selection after reconnect');
+    return;
+  }
 
   step = 'create a personal cloud project without Team membership';
   await openPanel('workspace-discussion', 'Discussion');
@@ -123,29 +204,16 @@ try {
   const teamCopy = { id: copy.cloudProjectId, title: copy.title, teamId: team.id };
   assert.deepEqual(byTitle(await fixture.projectTeams()), byTitle([personalCloud, teamCopy]));
   assert.deepEqual(await packages(), sortedProjects([personal, copy]));
-  step = 'share an unsynced local project without making a copy';
-  const input = { ...audioProjectFixture(), title: 'Synthetic local Team project' };
-  assert.deepEqual(await session.command('import-json', { text: JSON.stringify(input) }), { dispatched: true, projectChanged: true });
-  const local = await waitForSavedProject(session, project => project.title === input.title);
-  assert.equal(local.cloudProjectId, undefined);
-  await openTeams();
-  await openConfirmation(shareLocal);
-  await click(byID('team-share-confirm'));
-  await waitForSavedProject(session, project => project.id === local.id && !!project.cloudProjectId);
-  await click(button('Open project'));
-  await readyControl(projectButton);
-  const loadedShared = (await session.command('loaded-project')).project;
-  const shared = await waitForSavedProject(session, project => isDeepStrictEqual(project, loadedShared));
-  assert.equal(shared.id, local.id);
-  assert.equal(shared.title, local.title);
-  assert.deepEqual(documentOf(shared), documentOf(local));
+  const shared = await shareLocalProject();
   assert.deepEqual(await packages(), sortedProjects([personal, copy, shared]));
   const sharedCloud = { id: shared.cloudProjectId, title: shared.title, teamId: team.id };
   assert.deepEqual(byTitle(await fixture.projectTeams()), byTitle([personalCloud, teamCopy, sharedCloud]));
   assert.deepEqual(await ui.openProject(personal), personalLoaded);
   assert.deepEqual(await session.command('presented-alerts'), []);
   await fixture.assertNoOutbound();
-} catch (error) { throw new Error(`Native Team sharing failed during ${step}`, { cause: error }); }
+}
+try { await run(); }
+catch (error) { throw new Error(`Native Team sharing failed during ${step}`, { cause: error }); }
 finally {
   try { await session?.close(); }
   finally { await fixture.close(); }
