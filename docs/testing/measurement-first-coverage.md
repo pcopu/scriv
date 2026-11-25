@@ -2,12 +2,16 @@
 
 Start at a production entry point and identify the user behavior that reaches
 it. Discover the actual CLI actions and use `tracer app -- test --list` to find
-existing scenarios. Use `tracer proposal bind` with that discovery catalog to
-reuse a scenario, find a missing condition, or identify where the CLI needs a
-production action. Confirm the action reaches the intended control, especially
-for generic commands such as `activate`. Query retained measurements for that
-behavior before changing the scenario, then compare the passing union against
-the same reference scope after each batch.
+existing scenarios. Pass that discovery catalog and retained captures to
+`tracer worklist`. Use repeatable `--source PATH[:RANGE]` to examine a controller
+and its shared code together. Check existing witnesses and use
+`extensionCandidates.items` to find scenarios whose passing intervals reached
+both sides of a gap. `marginalGapLines` counts candidate lines beyond earlier
+items on that shortlist. Review the production caller and the exact control
+before adding a condition, especially for generic actions such as `activate`.
+Use `tracer proposal bind` to classify reviewed plans that need a new scenario or
+a missing CLI action. Query retained measurements for the behavior before
+changing the scenario, then compare the passing union after each batch.
 
 For a focused native capture, list the scenario and select one of its
 advertised groups. Use the explicit group to select a focused fixture variant.
@@ -22,6 +26,12 @@ Add the normal pinned coverage options to measure a group. The run receipt,
 session receipts, and capture intervals carry the selected group. Use the
 group name when labeling its evidence so a passing focused run identifies the
 conditions that ran.
+
+The existing `journeys/cue-draft-recovery` scenario scopes “Discard draft…” to
+the image-direction composer. The confirmation sheet exposes the ordinary
+`activate` action for its Cancel and Discard buttons. The journey checks that
+Cancel preserves the exact local journal bytes, confirmation clears the
+journal, and the saved direction survives reopening the owned workspace.
 
 The `journeys/native-cloud-project-sync` groups `staged-edit` and
 `staged-receipt-retry` use the Script tab's Dialogue button to insert between

@@ -13,12 +13,12 @@ const oversized = 'x'.repeat(29999) + '🎬'; // 30,001 UTF-16 units, 30,003 UTF
 const corrected = 'Cafe\u0301 🎬 recovery corrected';
 const refusal = 'Image direction exceeds 30,000 UTF-16 characters. Shorten the draft before applying it; the exact draft remains saved on this Mac.';
 const cases = ['retain-rejected-direction', 'cold-recovery', 'repeated-cold-recovery', 'correct-and-save', 'cold-clean-state',
-  'review-recovered-direction-after-undo'];
+  'review-recovered-direction-after-undo', 'cancel-and-discard-local-direction'];
 assert.ok(process.argv.slice(2).every(arg => arg === '--list-cases'), 'Unknown argument');
 if (process.argv.includes('--list-cases')) {
   console.log(JSON.stringify({ journey: 'cue-draft-recovery', nativeVerified: false, status: 'prepared-not-run', cases,
     excluded: ['crash durability', 'PendingProjectSaveJournal replay', 'EditorDraftJournal', 'account conflicts',
-      'discard alert', 'CAS contention', 'storage exhaustion', 'physical keyboard parity'] }, null, 2));
+      'CAS contention', 'storage exhaustion', 'physical keyboard parity'] }, null, 2));
 } else {
   assert.ok(process.env.SCRIV_E2E_APP, 'Requires a verified automation-enabled Catalyst bundle on macOS');
   let session = await ScrivSession.launch(process.env.SCRIV_E2E_APP, { persistent: true });
@@ -206,6 +206,43 @@ if (process.argv.includes('--list-cases')) {
     assert.deepEqual(await session.command('presented-alerts'), []);
     assert.deepEqual((await session.command('image-evidence')).jobs, []);
     console.log('PASS: cue-draft-recovery: workspace Undo retains the draft until Use this draft explicitly commits it');
+    stage = cases[6];
+    await enterDirection(oversized);
+    await session.waitFor(nodes => nodes.some(node => node.text === refusal));
+    const retainedDraft = await journals();
+    assert.equal(retainedDraft.length, 1);
+    assert.equal(retainedDraft[0].record.text, oversized);
+    assert.equal(retainedDraft[0].record.sourcePrompt, recovery);
+    const button = title => node => (node.title === title || node.label === title);
+    const confirmationTitle = 'Discard this local visual direction draft?';
+    async function discardConfirmation() {
+      const direction = await reviewSteps(session).reveal('generation-optional-direction');
+      const composer = direction.path.slice(0, direction.path.lastIndexOf('.'));
+      await review.activate(node => node.type === 'UIButton' && button('Discard draft…')(node)
+        && node.path.startsWith(composer + '.'));
+      await session.waitFor(nodes => nodes.some(node => node.text === confirmationTitle)
+        && ['direction-draft-discard-cancel', 'direction-draft-discard-confirm'].every(id =>
+          nodes.some(node => node.identifier === id && node.enabled && node.hittable)));
+    }
+    await discardConfirmation();
+    await review.activate(node => node.identifier === 'direction-draft-discard-cancel');
+    await session.waitFor(nodes => !nodes.some(node => node.text === confirmationTitle));
+    assert.deepEqual(await journals(), retainedDraft, 'Cancel preserves the exact draft bytes and revision');
+    assert.deepEqual((await session.command('loaded-project')).project, rebased);
+    await discardConfirmation();
+    await review.activate(node => node.identifier === 'direction-draft-discard-confirm');
+    await session.waitFor(nodes => !nodes.some(node => node.text === confirmationTitle || node.text === refusal)
+      && byID(nodes, 'generation-optional-direction')?.text === recovery);
+    assert.deepEqual(await journals(), []);
+    assert.deepEqual((await session.command('loaded-project')).project, rebased);
+    assert.deepEqual(sortedProjects(await session.command('persisted-projects')), sortedProjects([sentinel, rebased]));
+    await relaunch(rebased);
+    await session.waitFor(nodes => byID(nodes, 'generation-optional-direction')?.editable
+      && byID(nodes, 'generation-optional-direction')?.text === recovery);
+    assert.deepEqual(await journals(), []);
+    assert.deepEqual((await session.command('image-evidence')).jobs, []);
+    console.log('PASS: cue-draft-recovery: only confirmation removes the local draft and the saved direction survives cold reopen');
+
   } catch (error) { throw new Error(`cue-draft-recovery/${stage}; no uncertain mutation retried`, { cause: error }); }
   finally { await session.close(); } // Release lease/process; preserve synthetic data, no recursive deletion.
 }

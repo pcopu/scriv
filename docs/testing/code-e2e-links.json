@@ -81985,8 +81985,8 @@
       "id": "51e28860f7ecbdd0",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 286,
-        "end": 292,
+        "start": 297,
+        "end": 303,
         "sha256": "dad6298488565548b9c6cff554a6eeede48285104d78c60b5d2aab49ed9743d8"
       },
       "actions": [
@@ -82689,8 +82689,8 @@
       "id": "b32f480f3ca7f637",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 275,
-        "end": 275,
+        "start": 286,
+        "end": 286,
         "sha256": "db432e8158a521f5b4ed9a793853b70b1a16a9fbb0badb2f053621c8aa1ee30c"
       },
       "actions": [
@@ -98389,6 +98389,48 @@
         "sha256": "420985d9099c5775006b64c4f737660640fdc2b181bd4535a650e541c212a720"
       },
       "why": "The second session sees the unchanged item and selection over a different connection after the isolated socket closes."
+    },
+    {
+      "id": "9d238fb312ef9e8a",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift",
+        "start": 396,
+        "end": 406,
+        "sha256": "2c8f24c638802887a7098142db92b474ef6a8f949f81784e8376f414900f5240"
+      },
+      "actions": [
+        "activate direction-draft-discard-confirm",
+        "relaunch the owned workspace and reopen the project"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+        "start": 233,
+        "end": 243,
+        "sha256": "e9a49bce49737701ea2da5da00535ae41362a58ba0f4095dfb5584ccbd310df0"
+      },
+      "why": "Only the confirmed local discard removes the draft file. The complete saved packages and reopened direction remain unchanged."
+    },
+    {
+      "id": "bd562c7a16be9823",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
+        "start": 271,
+        "end": 282,
+        "sha256": "f73f9bcc3cd3ed63671557c33a7846489989064b6012f2b283defb5044cc5dfb"
+      },
+      "actions": [
+        "activate the image-direction composer Discard draft\u2026 button",
+        "activate direction-draft-discard-cancel",
+        "activate the image-direction composer Discard draft\u2026 button",
+        "activate direction-draft-discard-confirm"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/cue-draft-recovery.mjs",
+        "start": 218,
+        "end": 238,
+        "sha256": "ace87a050146a63e2ae1cc9a1ad512bd7ffb415e2943c441b9abfaeb3fc9df3d"
+      },
+      "why": "Both scoped sheet controls act on the presented image-direction draft. Cancel preserves its exact bytes, and confirmation removes the draft and reveals the same saved direction."
     }
   ],
   "commentExclusions": [
@@ -99530,7 +99572,7 @@
         "end": 19,
         "sha256": "968e98c64aa041bb3ddfdd3a459d4c540c1b53cc15405195805dfa60a9a31a9e"
       },
-      "fileSha256": "b65fa7c0556dbbdb3ee1ec55b388e40d72a6e0bcfb5fb073933e30493b7b5884"
+      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
     },
     {
       "id": "1d0028d2a9e17649",
@@ -101500,7 +101542,7 @@
         "end": 28,
         "sha256": "38c5003eafec65643c928bb6da68ab093ea1e7b479cdab1e259a0c1815049f4e"
       },
-      "fileSha256": "b65fa7c0556dbbdb3ee1ec55b388e40d72a6e0bcfb5fb073933e30493b7b5884"
+      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
     },
     {
       "id": "4575142c0d5ae61e",
@@ -102350,7 +102392,7 @@
         "end": 225,
         "sha256": "0761fe3f28180d2f6c2af26fe1824bb2840f0a2a7536a629320f5a5c34dcefd0"
       },
-      "fileSha256": "b65fa7c0556dbbdb3ee1ec55b388e40d72a6e0bcfb5fb073933e30493b7b5884"
+      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
     },
     {
       "id": "56e70cbbe6b4f3db",
@@ -103516,11 +103558,11 @@
       "id": "6fed2bc33af91027",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 296,
-        "end": 296,
+        "start": 307,
+        "end": 307,
         "sha256": "5be9e10bd1b36e06637592a284550c5f3416f5ef45c1f9d0797820b79ff30fae"
       },
-      "fileSha256": "b65fa7c0556dbbdb3ee1ec55b388e40d72a6e0bcfb5fb073933e30493b7b5884"
+      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
     },
     {
       "id": "700f5cf2b2e321b9",
@@ -106150,7 +106192,7 @@
         "end": 64,
         "sha256": "01feb036e0ffd841a5ac7e42b269dd495172361a85ebbfd85a10f9ae557d8592"
       },
-      "fileSha256": "b65fa7c0556dbbdb3ee1ec55b388e40d72a6e0bcfb5fb073933e30493b7b5884"
+      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
     },
     {
       "id": "a60f5933b3447f92",
@@ -108820,7 +108862,7 @@
         "end": 121,
         "sha256": "96c1fe196d3f82e25aa4099c36e0567b9b9cf18a39f4213720e90820ead118fb"
       },
-      "fileSha256": "b65fa7c0556dbbdb3ee1ec55b388e40d72a6e0bcfb5fb073933e30493b7b5884"
+      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
     },
     {
       "id": "dd55e6a0e1b884c2",
@@ -109136,11 +109178,11 @@
       "id": "e396823008cfe916",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift",
-        "start": 279,
-        "end": 279,
+        "start": 290,
+        "end": 290,
         "sha256": "db3a1961262cea87df8a46a87303a87c5264f3ba7d32205c6e2752ea954d75ff"
       },
-      "fileSha256": "b65fa7c0556dbbdb3ee1ec55b388e40d72a6e0bcfb5fb073933e30493b7b5884"
+      "fileSha256": "d89d0a88f007d675bfc1483b0d2f2265f7a3f9bb6988ab6d42911d4ac422813c"
     },
     {
       "id": "e3984197f06699d9",

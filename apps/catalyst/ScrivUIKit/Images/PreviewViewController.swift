@@ -268,7 +268,18 @@ import ScrivCore
                 recovery.addArrangedSubview(ImageUI.label("Draft on this Mac", size: 11, weight: .semibold)); recovery.addArrangedSubview(ImageUI.text(store.generationPrompt))
             }
             let retry = ImageUI.button(store.generationPromptNeedsReview ? "Use this draft" : "Retry save", primary: true) { [weak self] in guard let self, self.scope == expectedScope, self.store.generationPromptScopeKey == expectedScope, self.store.generationPrompt.utf16.elementsEqual(expectedDraft.utf16), self.store.generationPromptNeedsReview == expectedReview else { return }; if expectedReview { guard self.store.generationPromptRecoveryIsReady else { return }; self.store.rebaseGenerationPrompt() } else { self.store.prepareGenerationPromptForPresentation(force:true) } }
-            let discard = ImageUI.button("Discard draft…") { [weak self] in guard let self, self.scope == expectedScope, self.store.generationPromptScopeKey == expectedScope else { return }; let expected = expectedScope; ImageUI.confirm("Discard this local visual direction draft?", message: "The saved picture direction stays unchanged.", destructiveTitle: "Discard local draft", from: self) { [weak self] in guard let self, self.store.generationPromptRecoveryIsReady, self.scope == expected, self.store.generationPromptScopeKey == expected, self.store.generationPrompt.utf16.elementsEqual(expectedDraft.utf16) else { return }; self.store.discardGenerationPrompt(); self.unacceptedText = nil; self.prompt.text = self.store.generationPrompt } }
+            let discard = ImageUI.button("Discard draft…") { [weak self] in
+                guard let self, self.scope == expectedScope, self.store.generationPromptScopeKey == expectedScope else { return }
+                CharacterTeamUI.confirmRemoval("Discard this local visual direction draft?",
+                                               message: "The saved picture direction stays unchanged.",
+                                               buttonTitle: "Discard local draft", identifier: "direction-draft-discard",
+                                               from: self) { [weak self] in
+                    guard let self, self.store.generationPromptRecoveryIsReady, self.scope == expectedScope,
+                          self.store.generationPromptScopeKey == expectedScope,
+                          self.store.generationPrompt.utf16.elementsEqual(expectedDraft.utf16) else { return }
+                    self.store.discardGenerationPrompt(); self.unacceptedText = nil; self.prompt.text = self.store.generationPrompt
+                }
+            }
             recovery.addArrangedSubview(ImageUI.row([retry, discard]))
         }
     }
