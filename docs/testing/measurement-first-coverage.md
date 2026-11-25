@@ -13,6 +13,14 @@ Use `tracer proposal bind` to classify reviewed plans that need a new scenario o
 a missing CLI action. Query retained measurements for the behavior before
 changing the scenario, then compare the passing union after each batch.
 
+For an advertised Scriv menu scope such as `script-entries`, pass the scope
+as `--action script-entries`, the saved app `--capabilities` response, and the
+caller as `--source`. New session captures derive an exact label from the
+completed menu command and its advertised scope. The ordinary ordered
+command names are preserved. Old captures with only command names still
+answer `--action menu-action`. Use an updated Tracer to import captures with
+scope labels.
+
 For a focused native capture, list the scenario and select one of its
 advertised groups. Use the explicit group to select a focused fixture variant.
 

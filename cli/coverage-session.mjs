@@ -10,6 +10,9 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const hex = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
 const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value);
 const fail = () => { throw new Error('coverage-session-unavailable'); };
+export function isMenuActionScope(value) {
+  return typeof value === 'string' && /^[a-z][a-z0-9-]{0,63}$/.test(value);
+}
 export async function hashFile(path) {
   const hash = createHash('sha256');
   for await (const chunk of createReadStream(path)) hash.update(chunk);
@@ -85,6 +88,8 @@ export async function observeSession(session, executable, capabilities) {
   };
   const write = async (name, data) => { await ensure(); await writeFile(join(output, name), data, { flag: 'wx', mode: 0o600 }); };
   const commands = [];
+  const menuScopes = new Set(Array.isArray(capabilities.semanticMenuActionScopes)
+    ? capabilities.semanticMenuActionScopes.filter(isMenuActionScope) : []);
   const record = { version: 1, kind: 'scriv-session-coverage', status: 'capturing', invocationID: context.invocationID,
     scenario: context.scenario, runID: sessionID, workspaceID: capabilities.runID, slot, startedAt: new Date().toISOString(), endedAt: null,
     ...(context.group && { group: context.group }),
@@ -98,7 +103,7 @@ export async function observeSession(session, executable, capabilities) {
       context.startup ? 'Startup measures the Swift entry point through the first post-handshake snapshot.'
         : 'Initial launch and isolation handshake precede the before snapshot.',
       'Capture transport, polling and background work overlap; snapshots are not globally atomic.',
-      'Ordered command names and completion states are recorded, not parameters or results; this is not a replay recipe.',
+      'Records ordered command names, completion states and completed menu scopes from public discovery. Other request fields and response values are omitted.',
       'Expected command errors may pass scenario assertions; command completion alone does not prove assertions.',
       context.startup ? 'Both snapshots were taken before scenario commands. The early buffer is transferred second.'
         : 'Session close captures before termination; work after that snapshot is outside the interval.'] };
@@ -123,10 +128,13 @@ export async function observeSession(session, executable, capabilities) {
   } catch (error) { record.status = 'failed'; record.endedAt = new Date().toISOString(); await save(); throw error; }
   let finishing = null;
   return {
-    record(command) {
+    record(command, menuScope) {
       if (commands.length >= 32768 || typeof command !== 'string' || !/^[a-z][a-z0-9-]{0,63}$/.test(command)) throw new Error('coverage-command-limit-or-name');
       const item = { ordinal: commands.length + 1, command, status: 'pending' }; commands.push(item);
-      return status => { item.status = status; };
+      return status => {
+        item.status = status;
+        if (status === 'completed' && command === 'menu-action' && menuScopes.has(menuScope)) item.scope = menuScope;
+      };
     },
     finish() {
       finishing ??= (async () => {

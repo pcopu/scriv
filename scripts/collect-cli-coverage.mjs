@@ -6,7 +6,7 @@ import { constants } from 'node:fs';
 import { access, lstat, realpath, readFile, writeFile, mkdir, readdir, rename } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { hashFile, probeIdentity, verifyCoverageContextSources } from '../cli/coverage-session.mjs';
+import { hashFile, isMenuActionScope, probeIdentity, verifyCoverageContextSources } from '../cli/coverage-session.mjs';
 import { compactFile } from './compact-cli-archive.mjs';
 import { prepareAnalysisRoot } from './prepare-coverage-analysis.mjs';
 import { safeSourcePath, verifySourceManifest } from './export-cli-source-manifest.mjs';
@@ -211,7 +211,9 @@ export async function exportCoverage(capture, scenarios) {
       && record.slot >= 0 && record.slot < capture.maximumSessions);
     required((await input(join(capture.directory, 'slots', String(record.slot)), 128)).toString() === runID);
     required(Array.isArray(record.commands) && record.commands.length > 0 && record.commands.length <= 32768);
-    required(record.commands.every((entry, i) => entry.ordinal === i + 1 && /^[a-z][a-z0-9-]{0,63}$/.test(entry.command) && ['completed', 'failed-or-uncertain'].includes(entry.status)));
+    required(record.commands.every((entry, i) => entry.ordinal === i + 1 && /^[a-z][a-z0-9-]{0,63}$/.test(entry.command)
+      && ['completed', 'failed-or-uncertain'].includes(entry.status)
+      && (entry.scope === undefined || entry.command === 'menu-action' && entry.status === 'completed' && isMenuActionScope(entry.scope))));
     records.push({ directory, record, scenario });
   }
   required(new Set(records.map(row => row.record.slot)).size === records.length);
@@ -256,7 +258,9 @@ export async function exportCoverage(capture, scenarios) {
       sourceManifestSha256: capture.sourceManifestSHA256, toolchainSha256: sha(JSON.stringify(tools)) });
     const actions = capture.startup ? ['launch isolated Scriv through the CLI', 'scriv capabilities']
       : record.commands.map(entry => `scriv ${entry.command}`);
-    const manifest = { version: 1, runId: record.runID, actions,
+    const actionLabels = capture.startup ? [] : [...new Set(record.commands.flatMap(({ scope }) =>
+      scope === undefined ? [] : [`scriv menu-action --scope ${scope}`]))];
+    const manifest = { version: 1, runId: record.runID, actions, ...(actionLabels.length && { actionLabels }),
       counterMode: 'cumulative', counterReset: false, sourceManifestSha256: capture.sourceManifestSHA256,
       probeSha256: capture.probe.sha256, tools, limitations: [...capture.report.limitations, ...record.limitations,
         `Scenario ${record.scenario} ended ${scenario.status}; this interval records observation, not assertion acceptance.`,
