@@ -36,6 +36,16 @@ export const historyReviewManifest = {
     assertions: ['the image version and its source-relative placement appear in the change cards',
       'review leaves the loaded model and saved packages unchanged'],
     sources: ['apps/mac/Sources/ScrivApp/Views/ProjectHistoryPresentation.swift::fields/imageLabel/anchorLabel'],
+  }, { key: 'script-change-with-unchanged-image', group: 'change-cards',
+    sequence: ['Edit the pictured direction', 'Script history', 'Current revision', 'Close'],
+    assertions: ['the comparison shows distinct read-only text and the same attached image',
+      'review leaves the saved project and local image bytes unchanged'],
+    sources: ['apps/catalyst/ScrivUIKit/Projects/HistoryController.swift::changeCard'],
+  }, { key: 'expand-all-change-cards', group: 'change-cards',
+    sequence: ['Import a local project with ten directions', 'Script history', 'Show more changes', 'Close'],
+    assertions: ['the first page has eight cards', 'the final read-only direction appears after expansion',
+      'review leaves every saved project unchanged'],
+    sources: ['apps/catalyst/ScrivUIKit/Projects/HistoryController.swift::renderDetail'],
   }],
   excluded: ['Explicit revision selection is exercised in the native cloud project journey.',
     'Cloud history, account/provider access, journal corruption/recovery, process restart and crash durability.'],
@@ -44,6 +54,15 @@ const originalText = 'History baseline lantern.';
 const editedText = 'History edited compass.';
 const sorted = projects => [...projects].sort((a, b) => a.id.localeCompare(b.id));
 const header = (nodes, title) => nodes.some(node => node.identifier === 'workspace-project' && node.title === title && node.hittable);
+
+function historyFixture(title, milliseconds = 0) {
+  return { schemaVersion: 1, id: 'history-input', title,
+    createdAt: 1700000000000, modifiedAt: 1700000000000, revision: 0,
+    scenes: [{ id: 'history-scene', title: 'Synthetic room', order: 0 }],
+    entries: [{ id: 'history-line', sceneId: 'history-scene', order: 0, kind: 'direction',
+      text: originalText, ownedDurationMs: milliseconds, coverageDurationMs: milliseconds, color: 'purple', words: [], characterLinks: [] }],
+    cues: [], characters: [], images: [], audioAssets: [], audioClips: [], audioVolume: 1 };
+}
 
 export async function runHistoryReview(session) {
   const step = scriptAuthoringSteps(session);
@@ -55,12 +74,7 @@ export async function runHistoryReview(session) {
   await step.workspaceCommand('s');
   const other = await step.saved(project => project.title === 'YAM MAN');
   const title = `History review ${randomUUID()}`;
-  const fixture = { schemaVersion: 1, id: 'history-input', title,
-    createdAt: 1700000000000, modifiedAt: 1700000000000, revision: 0,
-    scenes: [{ id: 'history-scene', title: 'Synthetic room', order: 0 }],
-    entries: [{ id: 'history-line', sceneId: 'history-scene', order: 0, kind: 'direction',
-      text: originalText, ownedDurationMs: 0, coverageDurationMs: 0, color: 'purple', words: [], characterLinks: [] }],
-    cues: [], characters: [], images: [], audioAssets: [], audioClips: [], audioVolume: 1 };
+  const fixture = historyFixture(title);
   assert.deepEqual(await session.command('import-json', { text: JSON.stringify(fixture) }),
     { dispatched: true, projectChanged: true });
   await session.waitFor(nodes => header(nodes, title));
@@ -278,6 +292,97 @@ export async function runHistoryReview(session) {
   assert.deepEqual(await session.command('loaded-project'), picturedModel);
   assert.deepEqual(sorted(await session.command('persisted-projects')), sorted([other, pictured]));
   console.log('PASS: native image history shows the saved version and anchored placement without editing either');
+}
+
+
+export async function runHistoryChangeCards(session) {
+  const step = scriptAuthoringSteps(session);
+  await session.waitFor(nodes => header(nodes, 'YAM MAN'));
+  await step.workspaceCommand('s');
+  const other = await step.saved(project => project.title === 'YAM MAN');
+  const title = `History change cards ${randomUUID()}`;
+  const fixture = historyFixture(title, 1250);
+  assert.deepEqual(await session.command('import-json', { text: JSON.stringify(fixture) }), { dispatched: true, projectChanged: true });
+  await session.waitFor(nodes => header(nodes, title));
+  await step.selectTab('Script');
+  const imported = await step.saved(project => project.title === title);
+  assert.deepEqual(await session.command('import-local-image', { fixture: 'coral' }, 30_000),
+    { dispatched: true, imported: true, cleanupVerified: true });
+  const pictured = await step.saved(project => project.id === imported.id && project.images.length === 1);
+  assert.equal(pictured.revision, imported.revision + 1);
+  assert.deepEqual(pictured.entries, imported.entries);
+  assert.equal(pictured.cues.length, 1);
+  assert.equal(pictured.cues[0].imageId, pictured.images[0].id);
+  async function compareCurrentTo(previous) {
+    await step.activate('Script history');
+    const currentRow = nodes => nodes.find(node => node.type === 'HistoryEventCell' && node.hittable
+      && nodes.some(child => child.path.startsWith(node.path + '.') && child.text === 'Current revision'));
+    const history = await session.waitFor(nodes => currentRow(nodes)
+      && nodes.some(node => node.text === `Revision ${previous.revision}`));
+    assert.deepEqual(await session.command('activate', { target: currentRow(history).path }), { dispatched: true });
+  }
+
+  const sourceAssets = (await session.command('local-image-evidence')).assets;
+  const revisedText = 'History direction with the attached image unchanged.';
+  await step.key('\r', ['command']);
+  await session.waitFor(nodes => focusedEditors(nodes).some(node => node.identifier === 'script-editor-history-line'));
+  await session.command('text', { target: 'script-editor-history-line', text: revisedText });
+  await step.finishEditor();
+  const revised = await step.saved(project => project.id === pictured.id && project.entries[0]?.text === revisedText);
+  assert.equal(revised.revision, pictured.revision + 1);
+  assert.deepEqual(revised.entries, [{ ...pictured.entries[0], text: revisedText }]);
+  assert.deepEqual(revised.cues, pictured.cues);
+  assert.deepEqual(revised.images, pictured.images);
+  const revisedModel = await session.command('loaded-project');
+  assert.deepEqual(revisedModel.project, revised);
+  await compareCurrentTo(pictured);
+  const unchangedImageMessage = 'This image was not changed in this revision.';
+  const picturedChanges = await session.waitFor(nodes => nodes.some(node => node.text === unchangedImageMessage));
+  const [imageMessage] = picturedChanges.filter(node => node.text === unchangedImageMessage);
+  const cardPath = imageMessage.path.split('.').slice(0, -3).join('.');
+  const card = picturedChanges.filter(node => node.windowPath === imageMessage.windowPath && node.path.startsWith(cardPath + '.'));
+  assert.ok(card.some(node => node.text === `${pictured.cues[0].label || 'Image'} · unchanged`));
+  assert.ok(card.some(node => node.type === 'ProjectCoverView'), 'The same change card includes the unchanged image cover');
+  for (const text of [originalText, revisedText]) {
+    assert.ok(card.some(node => node.type === 'ScriptTextView' && node.editable === false && node.text === text),
+      'The same card shows each exact read-only direction');
+  }
+  await step.activate('Close');
+  await session.waitFor(nodes => header(nodes, title) && !nodes.some(node => node.title === 'Restore revision…'));
+  assert.deepEqual(await session.command('loaded-project'), revisedModel);
+  assert.deepEqual(sorted(await session.command('persisted-projects')), sorted([other, revised]));
+  const evidenceFields = assets => assets.map(({ assetID, sha256, byteCount, width, height, decoded }) =>
+    ({ assetID, sha256, byteCount, width, height, decoded }));
+  assert.deepEqual(evidenceFields((await session.command('local-image-evidence')).assets), evidenceFields(sourceAssets));
+  console.log('PASS: native history compares edited script while preserving its attached image');
+
+  const longer = { ...fixture, title: title + ' expanded', entries: Array.from({ length: 10 }, (_, index) => ({
+    ...fixture.entries[0], id: 'long-history-line-' + index, order: index, text: 'History comparison direction ' + index,
+  })) };
+  assert.deepEqual(await session.command('import-json', { text: JSON.stringify(longer) }), { dispatched: true, projectChanged: true });
+  await session.waitFor(nodes => header(nodes, longer.title));
+  const longProject = await step.saved(project => project.title === longer.title);
+  assert.deepEqual(longProject.entries, longer.entries);
+  const longModel = await session.command('loaded-project');
+  await step.activate('Script history');
+  const isMore = node => node.type === 'UIButton' && /^Show \d+ more changes?$/.test(node.title ?? '');
+  const firstPage = await session.waitFor(nodes => nodes.some(isMore));
+  const more = firstPage.find(isMore);
+  const changesPath = more.path.slice(0, more.path.lastIndexOf('.')) + '.';
+  const inChanges = node => node.windowPath === more.windowPath && node.path.startsWith(changesPath);
+  const finalDirection = node => inChanges(node) && node.type === 'ScriptTextView' && node.editable === false
+    && node.text === longer.entries.at(-1).text;
+  assert.equal(firstPage.filter(node => inChanges(node) && node.title === 'Technical details').length, 8);
+  assert.ok(!firstPage.some(finalDirection));
+  await step.reveal(more, firstPage);
+  await step.activate(more.title);
+  const allChanges = await session.waitFor(nodes => nodes.some(finalDirection));
+  assert.ok(!allChanges.some(node => inChanges(node) && isMore(node)));
+  await step.activate('Close');
+  await session.waitFor(nodes => header(nodes, longer.title) && !nodes.some(node => node.title === 'Restore revision…'));
+  assert.deepEqual(await session.command('loaded-project'), longModel);
+  assert.deepEqual(sorted(await session.command('persisted-projects')), sorted([other, revised, longProject]));
+  console.log('PASS: native history expands the complete local revision without changing it');
 }
 
 export async function activateHistoryRestore(session, decision) {
