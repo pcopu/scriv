@@ -23,7 +23,7 @@ const activeRequests = new Map([
 
 // Model the app-server protocol at its socket boundary. No backend, account,
 // tools, credentials, arbitrary file names, or real model are available here.
-export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = false, manualAccountCheck = false, ownedPort, onSubmittedPrompt, referenceSHA256 } = {}) {
+export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = false, manualAccountCheck = false, holdAccountRefresh = false, ownedPort, onSubmittedPrompt, referenceSHA256 } = {}) {
   const handshake = ['initialize', 'initialized', 'account/read', 'model/list'];
   const anonymous = { account: null, requiresOpenaiAuth: true };
   const updated = { method: 'account/updated', params: {} };
@@ -36,6 +36,9 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
   if (manualAccountCheck) {
     assert.ok(!accountRefresh && outcomes.length === 0, 'Manual account checks own the entire fixture');
     assert.ok(Number.isInteger(ownedPort) && ownedPort > 0 && ownedPort <= 65535, 'The sign-in fixture uses its own loopback port');
+  }
+  if (holdAccountRefresh) {
+    assert.ok(!manualAccountCheck && !accountRefresh && !outcomes.length, 'A held refresh owns the entire fixture');
   }
   const manualAccountSteps = manualAccountCheck ? [
     { method: 'account/login/start', reply: { result: { loginId: 'synthetic-rejected-login', authUrl: 'http://127.0.0.1/fixture-login' } } },
@@ -58,7 +61,7 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
     { result: { account: null, requiresOpenaiAuth: true } },
     { result: { account: null, requiresOpenaiAuth: false } },
   ] : [];
-  const expected = [...handshake, ...manualAccountSteps.map(step => step.method), ...accountUpdates.map(() => 'account/read'), ...outcomes.flatMap(outcome => {
+  const expected = [...handshake, ...(holdAccountRefresh ? ['account/read'] : []), ...manualAccountSteps.map(step => step.method), ...accountUpdates.map(() => 'account/read'), ...outcomes.flatMap(outcome => {
     const turn = ['thread/start', 'turn/start'];
     if (outcome === 'cancel') return [...turn, 'turn/interrupt', 'transport-drop', ...handshake, 'model/list', 'thread/read', 'thread/read', 'thread/read'];
     if (outcome === 'recover' || outcome === 'missing-artifact') return [...turn, 'turn/interrupt', 'thread/read'];
@@ -92,6 +95,7 @@ export function createCodexFixtureProtocol(root, outcomes, { accountRefresh = fa
       return [reply({ userAgent: 'Scriv local fixture' })];
     case 'account/read': {
       assert.equal(params.refreshToken, false);
+      if (holdAccountRefresh) return position <= handshake.length ? [reply(anonymous)] : [];
       if (manualAccountCheck) {
         if (!accountStep) return [reply(anonymous)];
         if (accountStep.announce) {
@@ -289,6 +293,8 @@ export async function startCodexFixture(root, outcomes, options) {
   let pending = Promise.resolve();
   let requestedID;
   let requestNumber = 0;
+  let markHeld;
+  const heldAccountRefresh = options?.holdAccountRefresh && new Promise(resolve => { markHeld = resolve; });
   const failed = new Promise((_, reject) => { server.once('error', reject); });
   // Retain failures for race()/close() without an unhandled rejection if no
   // app command is currently awaiting a socket message.
@@ -316,7 +322,9 @@ export async function startCodexFixture(root, outcomes, options) {
           socket.emit('fixture-response', response);
           return;
         }
-        for (const reply of await protocol.receive(message)) await send(socket, reply);
+        const replies = await protocol.receive(message);
+        if (markHeld && message.method === 'account/read' && replies.length === 0) markHeld(socket);
+        for (const reply of replies) await send(socket, reply);
         if (message.method === 'turn/start') socket.emit('fixture-turn-started');
       }).catch(error => { fail(error); socket.terminate(); });
     });
@@ -325,6 +333,10 @@ export async function startCodexFixture(root, outcomes, options) {
     endpoint: `ws://127.0.0.1:${ownedPort}`,
     race: promise => Promise.race([failed, promise]),
     assertNoTurns: protocol.assertNoTurns,
+    ...(heldAccountRefresh && { async waitForHeldAccountRefresh() {
+      const socket = await Promise.race([failed, heldAccountRefresh]);
+      return { disconnected: once(socket, 'close', { signal: AbortSignal.timeout(5000) }) };
+    } }),
     async notify(variant) {
       await pending;
       if (failure) throw failure;

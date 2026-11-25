@@ -96693,8 +96693,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 66,
-        "end": 71,
+        "start": 69,
+        "end": 74,
         "sha256": "8b9099778714dd8b575d1d071eb7758426d05a9e40f6b59b1bb4296a85d7c5e6"
       },
       "why": "A later account read fails. The native Settings pane shows the provider failure and exposes the retry control after the connection is cleared."
@@ -96713,8 +96713,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 43,
-        "end": 45,
+        "start": 46,
+        "end": 48,
         "sha256": "8b4cfe2cbb660be24ff92d99c22bd718f281cf9b2c6719fff02a71a28afa1ec9"
       },
       "why": "The owned provider returns a login identifier and a non-HTTPS URL. The native Settings pane shows the rejection and allows a new sign-in attempt."
@@ -96737,8 +96737,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 43,
-        "end": 71,
+        "start": 46,
+        "end": 74,
         "sha256": "06d164a442ef5c7f7c51b6d678b2eb411e12b27e9f62d79eefdfffc60c94520a"
       },
       "why": "The journey invokes the native sign-in and refresh controls and observes each resulting account status."
@@ -96757,8 +96757,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 43,
-        "end": 45,
+        "start": 46,
+        "end": 48,
         "sha256": "8b4cfe2cbb660be24ff92d99c22bd718f281cf9b2c6719fff02a71a28afa1ec9"
       },
       "why": "The owned provider returns a login identifier and a non-HTTPS URL. The native Settings pane shows the rejection and allows a new sign-in attempt."
@@ -96779,8 +96779,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 47,
-        "end": 71,
+        "start": 50,
+        "end": 74,
         "sha256": "7573d3260f5990cfe6abff187d6f893802b5964b574d906ba04ade687c91d77d"
       },
       "why": "Two consecutive real checks complete with different visible readiness states after the provider replies."
@@ -96799,8 +96799,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 47,
-        "end": 49,
+        "start": 50,
+        "end": 52,
         "sha256": "4d012dcc3eef15941f5e1415f44451a1ba6d9aefde38896235871876969e9287"
       },
       "why": "The explicit refresh sends one account read and a model list request and settles in the connected sign-in-required state."
@@ -96819,8 +96819,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 47,
-        "end": 49,
+        "start": 50,
+        "end": 52,
         "sha256": "4d012dcc3eef15941f5e1415f44451a1ba6d9aefde38896235871876969e9287"
       },
       "why": "The explicit refresh sends one account read and a model list request and settles in the connected sign-in-required state."
@@ -97182,8 +97182,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 51,
-        "end": 60,
+        "start": 54,
+        "end": 63,
         "sha256": "875db7ff0043933cf14abbd0d38ece9a3c990a62cec063f807b0e22262c08d1d"
       },
       "why": "The direct loopback provider emits early completion for the same login identifier and the final account status reflects that outcome."
@@ -97202,8 +97202,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 51,
-        "end": 60,
+        "start": 54,
+        "end": 63,
         "sha256": "875db7ff0043933cf14abbd0d38ece9a3c990a62cec063f807b0e22262c08d1d"
       },
       "why": "The first provider decline becomes visible, then a successful completion refreshes the fixture identity and distinct model catalog."
@@ -97222,8 +97222,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 51,
-        "end": 60,
+        "start": 54,
+        "end": 63,
         "sha256": "875db7ff0043933cf14abbd0d38ece9a3c990a62cec063f807b0e22262c08d1d"
       },
       "why": "The owned provider emits completion before its login-start reply. Its matching early success and decline are both resolved in Settings."
@@ -97242,8 +97242,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-account-check.mjs",
-        "start": 62,
-        "end": 64,
+        "start": 65,
+        "end": 67,
         "sha256": "e5c94761e83eff000fefe4a4821d61b325e590d7ade680455497c8765cee6296"
       },
       "why": "Overlapping provider update messages precede an old account result and a superseded error. The final UI shows the newest signed-out state and no stale error."
@@ -98031,8 +98031,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/support/codex-loopback-fixture.mjs",
-        "start": 186,
-        "end": 194,
+        "start": 190,
+        "end": 198,
         "sha256": "cfaa4b23f94c4e81787e6486057978632753d545341e58e681d738748fe9ac16"
       },
       "why": "With the existing portrait selected, require an exact localImage reference path inside each new owned job directory and verify the actual image digest at the socket boundary."
@@ -98552,6 +98552,44 @@
         "sha256": "f8c2f0e55e6846f1f1e560954eb01d60fdc91a5006a7385b6c3f9c18cd9b19fb"
       },
       "why": "The empty-scene branch exposes text and a real transition to Script. The journey verifies no picture cards and unchanged loaded and saved projects."
+    },
+    {
+      "id": "475a3bbcd3e57fc2",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Account/ScrivSettingsController.swift",
+        "start": 107,
+        "end": 109,
+        "sha256": "795a7bdee1546782fd56696aa111f3a692a7bdec26ec9e3c3a2882ace1f0da98"
+      },
+      "actions": [
+        "Reconnect Codex Settings through a new saved loopback endpoint and activate Disconnect"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 103,
+        "end": 113,
+        "sha256": "9bcb38e40ce416b550ef4d6ed97e6533edfea0f8a806f2af11aebce86b478567"
+      },
+      "why": "Checks that the new provider is ready before Disconnect clears connection and model state without creating a job or editing projects."
+    },
+    {
+      "id": "84d484c9ecf4b6ba",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CodexController.swift",
+        "start": 288,
+        "end": 292,
+        "sha256": "80ed7c7b346b99ac3c84e7c878c80ec457ca002cec8878285449ea4c3c934392"
+      },
+      "actions": [
+        "Activate the Codex refresh and cancel controls during a recorded provider request"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-account-check.mjs",
+        "start": 87,
+        "end": 95,
+        "sha256": "5c981e18fe06a8866e6763b4f8430356678dffbfb86ca85e71789ecf753357aa"
+      },
+      "why": "Checks that cancellation closes the owned transport and shows the cancelled state without keeping a previous error or account action."
     }
   ],
   "commentExclusions": [
