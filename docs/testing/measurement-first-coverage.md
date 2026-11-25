@@ -80,6 +80,13 @@ session receipts, and capture intervals carry the selected group. Use the
 group name when labeling its evidence so a passing focused run identifies the
 conditions that ran.
 
+When cases use one signed build and the same capture options, pass them in
+execution order as repeated `--case ID[#GROUP]` arguments. For example,
+`--case 'projects#malformed-checkpoint' --case 'projects#duplicate-history-revision'`
+uses one pinned capture and runs each Projects case in its own app session.
+Use the resulting evidence file in `tracer measure batch` to get the unique
+passing-line change and each case's outcome and elapsed time.
+
 Grouped discovery can declare `groupWitnessPaths` for checked-in support
 assertions. Tracer's focused worklist can match those paths to the exact
 selector, even when the linked assertion covers a nearby observed line in the

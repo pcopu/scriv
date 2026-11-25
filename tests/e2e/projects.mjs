@@ -1,12 +1,28 @@
 import assert from 'node:assert/strict';
+import { readFile, readdir, realpath, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { setTimeout as delay } from 'node:timers/promises';
 import { ScrivSession } from '../../cli/scriv.mjs';
 import { waitForSavedProject } from './support/saved-projects.mjs';
+const groups = ['malformed-checkpoint', 'duplicate-history-revision'];
+const args = process.argv.slice(2);
+if (args.length === 1 && args[0] === '--list-cases') {
+  console.log(JSON.stringify({ groups }));
+  process.exit(0);
+}
+assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]), 'Unknown Projects case');
+const group = args[1];
 assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
 const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
 const buttons = (nodes, title) => nodes.filter(node => node.enabled && node.hittable && (node.title === title || node.label === title));
 async function click(title) {
   const nodes = await session.waitFor(nodes => buttons(nodes, title).length === 1);
   await session.command('activate', { target: buttons(nodes, title)[0].path });
+}
+if (group) {
+  try { await verifyProjectOpenRefusal(group); }
+  finally { await session.close(); }
+  process.exit(0);
 }
 try {
   await session.waitFor(nodes => nodes.some(node => node.identifier === 'workspace-project' && node.enabled && node.hittable));
@@ -198,3 +214,66 @@ try {
   }
   console.log('PASS: actual project browser search, sources, local open/reopen, keyboard cancellation/open, signed-out sign-in and Teams, model preservation, and modal routing');
 } finally { await session.close(); }
+
+
+async function verifyProjectOpenRefusal(group) {
+  const workspace = node => node.identifier === 'workspace-project' && node.enabled && node.hittable;
+  await session.waitFor(nodes => nodes.some(workspace));
+  await session.command('key', { input: 's', modifiers: ['command'] });
+  const original = await waitForSavedProject(session, project => project.title === 'YAM MAN');
+  await session.command('key', { input: 'n', modifiers: ['command'] });
+  const active = await waitForSavedProject(session, project => project.id !== original.id);
+  await session.waitFor(nodes => nodes.some(node => workspace(node) && node.title === active.title));
+
+  for (const id of [original.id, active.id]) assert.match(id, /^[a-f0-9-]{36}$/i);
+  const packagePath = join(session.root, 'Projects', original.id + '.scriv');
+  const saved = [original, active].map(project => join(session.root, 'Projects', project.id + '.scriv', 'project.json'));
+  assert.equal(await realpath(packagePath), packagePath);
+  assert.deepEqual(await Promise.all(saved.map(path => realpath(path))), saved);
+  const before = await Promise.all(saved.map(path => readFile(path)));
+  let fault, bytes, stage, originalHistory;
+  if (group === 'malformed-checkpoint') {
+    fault = join(packagePath, 'cloud-sync.json');
+    bytes = Buffer.from('{"headSeq":');
+    stage = "read the package's sync checkpoint";
+  } else {
+    const history = join(packagePath, 'history');
+    assert.equal(await realpath(history), history);
+    const name = (await readdir(history)).find(name => /^\d{12}\.json$/.test(name));
+    assert.ok(name, 'Save produces an owned history revision');
+    originalHistory = join(history, name);
+    assert.equal(await realpath(originalHistory), originalHistory);
+    fault = join(history, '0' + name);
+    bytes = await readFile(originalHistory);
+    stage = "read the package's history";
+  }
+  await writeFile(fault, bytes, { flag: 'wx', mode: 0o600 });
+
+  await session.command('activate', { target: 'workspace-project' });
+  await click('On this Mac');
+  const search = node => node.placeholder === 'Find a project' && node.hittable;
+  const nodes = await session.waitFor(nodes => nodes.filter(search).length === 1);
+  await session.command('text', { target: nodes.find(search).path, text: original.title });
+  await session.waitFor(nodes => nodes.some(node => node.text === original.title + ' · '
+    + original.scenes.length + (original.scenes.length === 1 ? ' scene' : ' scenes')));
+  await click('Open project');
+  const deadline = Date.now() + 15000;
+  let alert;
+  do {
+    const presented = await session.command('presented-alerts');
+    alert = presented.find(row => row.title === 'Scriv' && row.message.startsWith('Scriv could not ' + stage + '.')
+      && row.viewAttachedToWindow && !row.beingPresented && !row.beingDismissed);
+    if (alert) break;
+    await delay(50);
+  } while (Date.now() < deadline);
+  assert.ok(alert, 'The project-open refusal must be attached to the native window');
+  assert.equal(alert.observation, 'public-controller-presentation-state');
+  assert.deepEqual(alert.actions, [{ title: 'OK', enabled: true, style: 'default' }]);
+  if (originalHistory) assert.match(alert.message, /History contains duplicate revision numbers/);
+  const stillActive = await session.command('snapshot');
+  assert.ok(stillActive.some(node => node.identifier === 'workspace-project' && node.title === active.title));
+  assert.deepEqual(await Promise.all(saved.map(path => readFile(path))), before);
+  assert.deepEqual(await readFile(fault), bytes);
+  if (originalHistory) assert.deepEqual(await readFile(originalHistory), bytes);
+  console.log('PASS: Projects refused the unreadable package state and kept both owned projects intact');
+}

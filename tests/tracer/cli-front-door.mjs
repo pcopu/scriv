@@ -155,6 +155,32 @@ export async function main() {
     assert.equal(receipt.status, 'not-run');
     assert.equal(receipt.fullSuitePassed, false);
   });
+  await journey('select multiple named cases in explicit order without launching a native app', async () => {
+    const scenario = 'journeys/script-authoring-source';
+    const groups = ['retime-edited-words', 'write-exact-source'];
+    const selectors = groups.flatMap(group => ['--case', `${scenario}#${group}`]);
+    const prefix = ['app', '--', 'test'];
+    const output = await realpath(await mkdtemp(join(tmpdir(), 'scriv-tracer-case-batch-')));
+    for (const flags of [
+      ['--case', `${scenario}#unknown`], ['--case', '../outside#case'], ['--case', `${scenario}#`],
+      [selectors[0], selectors[1], selectors[0], selectors[1]],
+      [...selectors, '--scenario', scenario], [...selectors, '--group', groups[0]], [...selectors, '--list'],
+    ]) {
+      assert.equal(run([...prefix, ...flags, '--output-dir', output], 2).stdout, '');
+      assert.deepEqual(await readdir(output), []);
+    }
+    const result = run([...prefix, ...selectors, '--output-dir', output], 2);
+    const path = result.stdout.match(/; evidence: (.+)\n$/)?.[1];
+    assert.ok(path);
+    const evidence = JSON.parse(await readFile(path, 'utf8'));
+    const cases = groups.map(group => ({ scenario: `tests/e2e/${scenario}.mjs`, group }));
+    assert.deepEqual(evidence.selection.cases, cases);
+    assert.equal(evidence.selection.selectedScenarioCount, 2);
+    assert.equal(evidence.selection.mode, 'subset');
+    assert.deepEqual(evidence.scenarios.map(({ scenario, group, status }) => ({ scenario, group, status })),
+      cases.map(row => ({ ...row, status: 'not-run' })));
+    assert.equal(evidence.fullSuitePassed, false);
+  });
   await journey('reject unsafe, unknown and ambiguous arguments before evidence creation', async () => {
     const id = catalog.scenarios[0].id;
     const traversal = run(['app', '--', 'test', '--scenario', '../outside'], 2);
