@@ -4,6 +4,7 @@ import { characterCatalogSteps, inspectCreationEntries, named, same, ribbons, se
 import { catalogCases, fixtures } from './support/character-catalog-cases.mjs';
 import { mentionCatalogCases } from './support/character-mention-cases.mjs';
 import { runMentionDetection } from './support/character-mention-steps.mjs';
+import { observePresentedAlert } from '../support/presented-error.mjs';
 
 // AUT-J05 catalog portion: actual UIKit create → validate → save → find →
 // reopen/edit → clear/restore → cancel. Independent workflows launch fresh apps;
@@ -82,6 +83,21 @@ async function createFindReopen(session) {
   await editorClosed();
   const after = await saved(project => project.id === baseline.id && project.characters.some(item => item.id === character.id));
   assert.deepEqual(after.characters, created.characters, 'Clean cancel/reopen does not mutate saved character profiles');
+
+  const packages = await session.command('persisted-projects');
+  await activate('Edit');
+  await control(node => node.placeholder === 'Name' && node.text === characterName);
+  await text('Name', fixtures.unsavedName);
+  await activate('Cancel');
+  await observePresentedAlert(session, {
+    title: 'Discard character changes?',
+    message: 'Your changes have not been saved.',
+    actions: [
+      { title: 'Keep editing', enabled: true, style: 'cancel' },
+      { title: 'Discard changes', enabled: true, style: 'destructive' },
+    ],
+  });
+  assert.deepEqual(await session.command('persisted-projects'), packages, 'Presenting dirty Cancel preserves saved packages');
 }
 
 async function editProfile(session) {
@@ -297,9 +313,20 @@ for (let index = 0; index < args.length; index++) {
   selected = [group];
 }
 if (listCases) {
+  const characterEditorSource = 'apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift';
   console.log(JSON.stringify({ journey: selected.length === 1 && selected[0] === 'mention-detection' ? 'AUT-J06' : 'AUT-J05',
     ...(selected.includes('mention-detection') && selected.length > 1 ? { companions: ['AUT-J06'] } : {}), nativeVerified: false,
-    cases: [...catalogCases, ...mentionCatalogCases].filter(test => selected.includes(test.group)) }, null, 2));
+    groups: selected,
+    cases: [...catalogCases, ...mentionCatalogCases].filter(test => selected.includes(test.group)),
+    ...(selected.includes('create-find-reopen') ? { groupActions: {
+      'create-find-reopen': [{
+        id: 'character-editor-cancel', command: 'activate', condition: 'dirty-existing-character-name',
+        entryPoint: { path: characterEditorSource, start: 53, end: 53,
+          sha256: 'cdd6f12c9d6b229cd82dab400a60dd7cf4f582a36010d4c224a6de863a5adb7a' },
+        branch: { path: characterEditorSource, start: 174, end: 182,
+          sha256: '6fa43f9591c36a89c3f6b14cd61f96b42de0662b1d53d667afa649f7f3b948f0' },
+      }],
+    } } : {}) }, null, 2));
 } else {
   assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
   for (const group of selected) {

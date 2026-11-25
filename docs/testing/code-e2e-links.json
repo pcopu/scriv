@@ -144,8 +144,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 25,
-        "end": 31,
+        "start": 26,
+        "end": 32,
         "sha256": "1c7f3650fb649e6e78b7e309713bbcdf93f6f5d2303f90a3ad79168b35230483"
       },
       "why": "The actual footer Cancel action requests clean editor closure; this witness never dispatches Save. Preconditions: createFindReopen has saved the isolated sample and captured baseline characters at :19-23. Only blank clean creation/cancel is witnessed. Navigation/account changes, dismissed-in-flight opening, sizing and visual styling remain untested by this block. Reviewed static association only; no native execution, measured coverage or branch-complete result."
@@ -244,8 +244,8 @@
       "id": "00324f769e9f6195",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 221,
-        "end": 222,
+        "start": 222,
+        "end": 223,
         "sha256": "ed17746d631a4bfffdce23eeb12ebf1fdca88d966ee0e55cf51a0c1eb61ef679"
       },
       "actions": [
@@ -1782,8 +1782,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 97,
-        "end": 120,
+        "start": 113,
+        "end": 136,
         "sha256": "b90e1356501e78068d7c5d1483b670e38e6807cb2b53cc82a391f579528a1f1c"
       },
       "why": "AUT-J05: creates exact Unicode profile fixture via mounted real fields, preserves draft until Save, trims only name and checks all existing profiles/entries. Snapshot paths and fixture variables resolve in characterCatalogSteps. Reviewed static association only; this Linux audit did not run the native test."
@@ -5889,8 +5889,8 @@
       "id": "363005482f3f4c31",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 381,
-        "end": 383,
+        "start": 382,
+        "end": 384,
         "sha256": "4163ac4331a6167f7daad8dbbf913542d0d68f6df0ca446cbf8df91ff8421b29"
       },
       "actions": [
@@ -6800,8 +6800,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 122,
-        "end": 129,
+        "start": 138,
+        "end": 145,
         "sha256": "c76d93963e9c7358c9b02e09cb9dd21907e3ddf2bbcd1cb8cef54261c9dc8d38"
       },
       "why": "CharacterEditorController Save validates the form then invokes updateCharacter. editProfile calls persisted for changed biography/appearance/color, clear/restore, repeated saves and canonical-only Unicode edits. The oracle compares the complete character list and unchanged entries. Name/alias-change bootstrap at 1234-1235, missing ID, form validation interception and concurrent edit refusal are deliberately excluded."
@@ -10735,8 +10735,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 25,
-        "end": 31,
+        "start": 26,
+        "end": 32,
         "sha256": "1c7f3650fb649e6e78b7e309713bbcdf93f6f5d2303f90a3ad79168b35230483"
       },
       "why": "Editor construction retains a local original/draft and the request navigation/account context. Preconditions: createFindReopen has saved the isolated sample and captured baseline characters at :19-23. Only blank clean creation/cancel is witnessed. Navigation/account changes, dismissed-in-flight opening, sizing and visual styling remain untested by this block. Reviewed static association only; no native execution, measured coverage or branch-complete result."
@@ -12141,8 +12141,8 @@
       "id": "27c9916e5a2be34f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 253,
-        "end": 254,
+        "start": 254,
+        "end": 255,
         "sha256": "6802dd13c9923d0334e04a434570bf0eb6439f1331e5102bae5b2b0c89a8d978"
       },
       "actions": [
@@ -14389,8 +14389,8 @@
       "id": "2feba792cdefff92",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 390,
-        "end": 391,
+        "start": 391,
+        "end": 392,
         "sha256": "97da2e3e0497e4e4ef0df44b1dd78c095946d81f0987de5b0c883b46922517a9"
       },
       "actions": [
@@ -17139,8 +17139,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 25,
-        "end": 31,
+        "start": 26,
+        "end": 32,
         "sha256": "1c7f3650fb649e6e78b7e309713bbcdf93f6f5d2303f90a3ad79168b35230483"
       },
       "why": "The labeled Add character button calls the new-character navigation route. Preconditions: createFindReopen has saved the isolated sample and captured baseline characters at :19-23. Only blank clean creation/cancel is witnessed. Navigation/account changes, dismissed-in-flight opening, sizing and visual styling remain untested by this block. Reviewed static association only; no native execution, measured coverage or branch-complete result."
@@ -19045,8 +19045,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 97,
-        "end": 120,
+        "start": 113,
+        "end": 136,
         "sha256": "b90e1356501e78068d7c5d1483b670e38e6807cb2b53cc82a391f579528a1f1c"
       },
       "why": "The palette includes standard colors and retains its opening color during rerender. Uses inspectEditor :59-75 and inspectCreationEntries :114-149 in character-catalog-steps.mjs. Mapping does not claim visual icon/color pixel correctness or every palette branch. Input strings use JSON escape notation for exact synthetic characters. Preconditions: A fresh isolated sample app has been saved and Characters opened by editProfile; fixtures.initialProfile is the literal synthetic profile in character-catalog-cases.mjs. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -19567,8 +19567,8 @@
       "id": "41d08f126e99879f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 305,
-        "end": 308,
+        "start": 306,
+        "end": 309,
         "sha256": "8a6ecb47c8ebcc33e555ec8935dfe0ed064debe2213cf3d2ffc23d952f58d259"
       },
       "actions": [
@@ -20872,8 +20872,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 72,
-        "end": 84,
+        "start": 73,
+        "end": 85,
         "sha256": "359a1b98a19a35a8cf4447aa3c2b796cd15432a2b1827e14552db513ffe0e1c2"
       },
       "why": "Clean Cancel dismisses without entering dirty-discard confirmation. Only the clean/unlocked path is witnessed. Failure to acquire a lease, account change, dirty-discard confirmation and release races remain gaps. Preconditions: The synthetic character has been saved and lowercase name search has isolated its ribbon in the same createFindReopen workflow. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -23369,8 +23369,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 25,
-        "end": 31,
+        "start": 26,
+        "end": 32,
         "sha256": "1c7f3650fb649e6e78b7e309713bbcdf93f6f5d2303f90a3ad79168b35230483"
       },
       "why": "The actual Name field starts with its placeholder and empty value. Preconditions: createFindReopen has saved the isolated sample and captured baseline characters at :19-23. Only blank clean creation/cancel is witnessed. Navigation/account changes, dismissed-in-flight opening, sizing and visual styling remain untested by this block. Reviewed static association only; no native execution, measured coverage or branch-complete result."
@@ -23620,8 +23620,8 @@
       "id": "51a85849aeda565e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 223,
-        "end": 224,
+        "start": 224,
+        "end": 225,
         "sha256": "9f42f39113593acce58361794626f20f4a741404f9ed9f435e49c65e6bcba4bf"
       },
       "actions": [
@@ -24772,8 +24772,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 25,
-        "end": 31,
+        "start": 26,
+        "end": 32,
         "sha256": "1c7f3650fb649e6e78b7e309713bbcdf93f6f5d2303f90a3ad79168b35230483"
       },
       "why": "The empty initial draft leaves Save disabled. Preconditions: createFindReopen has saved the isolated sample and captured baseline characters at :19-23. Only blank clean creation/cancel is witnessed. Navigation/account changes, dismissed-in-flight opening, sizing and visual styling remain untested by this block. Reviewed static association only; no native execution, measured coverage or branch-complete result."
@@ -25257,8 +25257,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 154,
-        "end": 158,
+        "start": 170,
+        "end": 174,
         "sha256": "90801bf645b1cd6eb640e2f6f4c4e742875337240bfe55037033f38ed99becdd"
       },
       "why": "AUT-J05: saved initial profile is reopened; overlong 202-UTF16-unit name is rejected inline and preserved draft remains visible, while saved profile stays unchanged. Reviewed static association only; this Linux audit did not run the native test."
@@ -26176,8 +26176,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 97,
-        "end": 120,
+        "start": 113,
+        "end": 136,
         "sha256": "b90e1356501e78068d7c5d1483b670e38e6807cb2b53cc82a391f579528a1f1c"
       },
       "why": "Biography and Appearance delegate callbacks preserve the authored local draft and clear displayed validation error. Uses inspectEditor :59-75 and inspectCreationEntries :114-149 in character-catalog-steps.mjs. Mapping does not claim visual icon/color pixel correctness or every palette branch. Input strings use JSON escape notation for exact synthetic characters. Preconditions: A fresh isolated sample app has been saved and Characters opened by editProfile; fixtures.initialProfile is the literal synthetic profile in character-catalog-cases.mjs. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -26370,8 +26370,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 122,
-        "end": 129,
+        "start": 138,
+        "end": 145,
         "sha256": "c76d93963e9c7358c9b02e09cb9dd21907e3ddf2bbcd1cb8cef54261c9dc8d38"
       },
       "why": "CharacterEditorController Save validates the form then invokes updateCharacter. editProfile calls persisted for changed biography/appearance/color, clear/restore, repeated saves and canonical-only Unicode edits. The oracle compares the complete character list and unchanged entries. Name/alias-change bootstrap at 1234-1235, missing ID, form validation interception and concurrent edit refusal are deliberately excluded."
@@ -26772,8 +26772,8 @@
       "id": "5d8f4c4296b6296e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 199,
-        "end": 202,
+        "start": 200,
+        "end": 203,
         "sha256": "33db45876f99cdf9e2550b39845934921f8dc66fcde8f2145523224716999bdb"
       },
       "actions": [
@@ -27345,8 +27345,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 258,
-        "end": 281,
+        "start": 274,
+        "end": 297,
         "sha256": "e15161bb5512d57bf5f5e81e8190b1f26ffff45fe6177da78bfd2bbe95e9e4f2"
       },
       "why": "Characters installs one priority Escape command and gates its eligibility on search focus. Uses character-catalog-steps.mjs:93-107. Does not claim physical keyboard dispatch, aliases, or project-switch filtering. waitFor snapshot polling repeats dynamically. Preconditions: A fresh isolated sample app is launched for the search-focus workflow; openCatalog({persist:false}) does not save a package. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -32805,8 +32805,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 258,
-        "end": 281,
+        "start": 274,
+        "end": 297,
         "sha256": "e15161bb5512d57bf5f5e81e8190b1f26ffff45fe6177da78bfd2bbe95e9e4f2"
       },
       "why": "Escape clears the stored/UI query, resigns focus and restores the case-insensitively filtered character list. Uses character-catalog-steps.mjs:93-107. Does not claim physical keyboard dispatch, aliases, or project-switch filtering. waitFor snapshot polling repeats dynamically. Preconditions: A fresh isolated sample app is launched for the search-focus workflow; openCatalog({persist:false}) does not save a package. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -34501,8 +34501,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 97,
-        "end": 120,
+        "start": 113,
+        "end": 136,
         "sha256": "b90e1356501e78068d7c5d1483b670e38e6807cb2b53cc82a391f579528a1f1c"
       },
       "why": "AUT-J05: successful creation dispatches store.createCharacter and closes; test checks exact saved profile. Update/conflict/failure branches are not inferred. Reviewed static association only; this Linux audit did not run the native test."
@@ -35412,8 +35412,8 @@
       "id": "7ade705ad8e0afa0",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 212,
-        "end": 214,
+        "start": 213,
+        "end": 215,
         "sha256": "72f1b6d99d9a4d4c97bb8bacabf926cacaeb2c0d56b5d24c555268ec2a179302"
       },
       "actions": [
@@ -35570,8 +35570,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 72,
-        "end": 84,
+        "start": 73,
+        "end": 85,
         "sha256": "359a1b98a19a35a8cf4447aa3c2b796cd15432a2b1827e14552db513ffe0e1c2"
       },
       "why": "Reopening loads the saved character name into the actual editor; this combined source line also assigns the two notes fields. Only the clean/unlocked path is witnessed. Failure to acquire a lease, account change, dirty-discard confirmation and release races remain gaps. Preconditions: The synthetic character has been saved and lowercase name search has isolated its ribbon in the same createFindReopen workflow. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -36048,8 +36048,8 @@
       "id": "7c8c5ec4146dd2c8",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 243,
-        "end": 245,
+        "start": 244,
+        "end": 246,
         "sha256": "a6912d66c983665ce6ffc1cf0d24956a93db7a302a00dfc155079082c66600c1"
       },
       "actions": [
@@ -41042,8 +41042,8 @@
       "id": "8d9ad3c2259185f7",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 261,
-        "end": 264,
+        "start": 262,
+        "end": 265,
         "sha256": "879ca4f5a6737d68c0033dbc5a29fda48bc677ed32826eccf0e706186eedf22e"
       },
       "actions": [
@@ -42098,8 +42098,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 72,
-        "end": 84,
+        "start": 73,
+        "end": 85,
         "sha256": "359a1b98a19a35a8cf4447aa3c2b796cd15432a2b1827e14552db513ffe0e1c2"
       },
       "why": "Edit opens that character editor; the isolated unlocked fixture enables the control. Only the clean/unlocked path is witnessed. Failure to acquire a lease, account change, dirty-discard confirmation and release races remain gaps. Preconditions: The synthetic character has been saved and lowercase name search has isolated its ribbon in the same createFindReopen workflow. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -43107,8 +43107,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 63,
-        "end": 71,
+        "start": 64,
+        "end": 72,
         "sha256": "c5f2daf160f9ffa4754921f79fbe4b350185f099d43eeaaff7e6f625e9ca5e55"
       },
       "why": "Character names and aliases are filtered using localized case-insensitive matching. This witness exercises name matching and restoration only, not alias matching. Snapshot helpers may reveal offscreen controls using scroll. Preconditions: createFindReopen has already saved the new synthetic CLI Validation Z\u00e9phyr character at character-catalog.mjs:51-61; the saved catalog is current. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -43706,8 +43706,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 25,
-        "end": 31,
+        "start": 26,
+        "end": 32,
         "sha256": "1c7f3650fb649e6e78b7e309713bbcdf93f6f5d2303f90a3ad79168b35230483"
       },
       "why": "The router creates an empty local draft with isNew true instead of persisting a placeholder. Preconditions: createFindReopen has saved the isolated sample and captured baseline characters at :19-23. Only blank clean creation/cancel is witnessed. Navigation/account changes, dismissed-in-flight opening, sizing and visual styling remain untested by this block. Reviewed static association only; no native execution, measured coverage or branch-complete result."
@@ -46317,8 +46317,8 @@
       "id": "9f671d81d53b2e92",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 266,
-        "end": 294,
+        "start": 267,
+        "end": 295,
         "sha256": "5bf0285e9e05d273bedcc8e54eb5190163faae09b4a05ab28972554939085d3a"
       },
       "actions": [
@@ -48591,8 +48591,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 25,
-        "end": 31,
+        "start": 26,
+        "end": 32,
         "sha256": "1c7f3650fb649e6e78b7e309713bbcdf93f6f5d2303f90a3ad79168b35230483"
       },
       "why": "New character routes to the editor with no existing character ID. Preconditions: createFindReopen has saved the isolated sample and captured baseline characters at :19-23. Only blank clean creation/cancel is witnessed. Navigation/account changes, dismissed-in-flight opening, sizing and visual styling remain untested by this block. Reviewed static association only; no native execution, measured coverage or branch-complete result."
@@ -50900,8 +50900,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 258,
-        "end": 281,
+        "start": 274,
+        "end": 297,
         "sha256": "e15161bb5512d57bf5f5e81e8190b1f26ffff45fe6177da78bfd2bbe95e9e4f2"
       },
       "why": "UISearchBar text changes update searchText and rerender the filtered ribbon. Uses character-catalog-steps.mjs:93-107. Does not claim physical keyboard dispatch, aliases, or project-switch filtering. waitFor snapshot polling repeats dynamically. Preconditions: A fresh isolated sample app is launched for the search-focus workflow; openCatalog({persist:false}) does not save a package. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -53196,8 +53196,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 159,
-        "end": 177,
+        "start": 175,
+        "end": 193,
         "sha256": "7b52af6db3fa8c5e6c559b942f859f10e9031e5b70217b01e22fca45cdbaeeb9"
       },
       "why": "AUT-J05: oversized appearance and separately encoded-size-overlimit Biography remain in draft with distinct inline errors and unchanged saved profile. Alias bound branch is deliberately excluded. Reviewed static association only; this Linux audit did not run the native test."
@@ -53280,8 +53280,8 @@
       "id": "b414825514bbe57b",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 324,
-        "end": 324,
+        "start": 325,
+        "end": 325,
         "sha256": "2001e995fa2f490b3c7b10d4666b7f82f6f7cac1d5d440eecf1db9a34562d8d5"
       },
       "actions": [
@@ -54322,8 +54322,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 63,
-        "end": 71,
+        "start": 64,
+        "end": 72,
         "sha256": "c5f2daf160f9ffa4754921f79fbe4b350185f099d43eeaaff7e6f625e9ca5e55"
       },
       "why": "Search input reaches the live search callback. This witness exercises name matching and restoration only, not alias matching. Snapshot helpers may reveal offscreen controls using scroll. Preconditions: createFindReopen has already saved the new synthetic CLI Validation Z\u00e9phyr character at character-catalog.mjs:51-61; the saved catalog is current. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -55760,8 +55760,8 @@
       "id": "bc1b5d8dce9d5bea",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 238,
-        "end": 241,
+        "start": 239,
+        "end": 242,
         "sha256": "2f1e9a00012b5b035160ef6bab0550946224c789f548f5ed7abcde8f9f4961ce"
       },
       "actions": [
@@ -56529,8 +56529,8 @@
       "id": "bead27d811030a06",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 312,
-        "end": 312,
+        "start": 313,
+        "end": 313,
         "sha256": "635722f828162803f7415bffb896eeca61f597233ad2ae2b1a228a1b3820da9e"
       },
       "actions": [
@@ -56596,8 +56596,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 63,
-        "end": 71,
+        "start": 64,
+        "end": 72,
         "sha256": "c5f2daf160f9ffa4754921f79fbe4b350185f099d43eeaaff7e6f625e9ca5e55"
       },
       "why": "No matches produces the actual empty state and Clear search restores query and ribbon. This witness exercises name matching and restoration only, not alias matching. Snapshot helpers may reveal offscreen controls using scroll. Preconditions: createFindReopen has already saved the new synthetic CLI Validation Z\u00e9phyr character at character-catalog.mjs:51-61; the saved catalog is current. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -59910,8 +59910,8 @@
       "id": "cc2bfd2318f202c5",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 314,
-        "end": 314,
+        "start": 315,
+        "end": 315,
         "sha256": "5dad5827ad70c283195e105f6805d9a73a68bde4c32ec27cc6fb37bb9a613b98"
       },
       "actions": [
@@ -61912,8 +61912,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 227,
-        "end": 254,
+        "start": 243,
+        "end": 270,
         "sha256": "590ac08d8c15053a740af96e72d9ea3dbb726b726d7ad2f9f1d344155b054f17"
       },
       "why": "Character equality compares biography and appearance by exact UTF-16 rather than canonical equivalence. Preconditions: editProfile has restored the literal initial profile before :227: biography is two leading spaces then cafe+U+0301 and newline; appearance is Warm light; color/name remain unchanged during canonical-only edits. The two real loop iterations are expanded in order. Snapshot polling/conditional scroll are not fixed execution counts; no name/alias canonical-only update or unsupported visual claim. Reviewed static association only; no native execution, measured coverage or branch-complete result."
@@ -62010,8 +62010,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 97,
-        "end": 120,
+        "start": 113,
+        "end": 136,
         "sha256": "b90e1356501e78068d7c5d1483b670e38e6807cb2b53cc82a391f579528a1f1c"
       },
       "why": "AUT-J05: actual catalog creation bootstraps only absent legacy links and appends one character. inspectCreationEntries explicitly preserves all other entry fields and pre-existing links; duplicate-ID branch is not tested. Reviewed static association only; this Linux audit did not run the native test."
@@ -62959,8 +62959,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 227,
-        "end": 254,
+        "start": 243,
+        "end": 270,
         "sha256": "590ac08d8c15053a740af96e72d9ea3dbb726b726d7ad2f9f1d344155b054f17"
       },
       "why": "The equality no-op gate does not swallow a canonically equivalent but byte-distinct authored profile update. Preconditions: editProfile has restored the literal initial profile before :227: biography is two leading spaces then cafe+U+0301 and newline; appearance is Warm light; color/name remain unchanged during canonical-only edits. The two real loop iterations are expanded in order. Snapshot polling/conditional scroll are not fixed execution counts; no name/alias canonical-only update or unsupported visual claim. Reviewed static association only; no native execution, measured coverage or branch-complete result."
@@ -63241,8 +63241,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 72,
-        "end": 84,
+        "start": 73,
+        "end": 85,
         "sha256": "359a1b98a19a35a8cf4447aa3c2b796cd15432a2b1827e14552db513ffe0e1c2"
       },
       "why": "Opening the existing editor requests the normal edit scope for that character. Preconditions: The newly created CLI Validation Z\u00e9phyr character is isolated by a case-insensitive search immediately before this block. Only the successful isolated edit-scope path is witnessed. No lease contention, stale project, removed character or canceled opening is claimed. Reviewed static association only; no native execution, measured coverage or branch-complete result."
@@ -63693,6 +63693,27 @@
       "why": "Route read-only local-image-evidence to the real native observer after unchanged request/workspace checks. Positive-path static association only; native NOT RUN, no measured execution or branch-complete claim."
     },
     {
+      "id": "dc7df5e5fe11848c",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Characters/CharacterEditorController.swift",
+        "start": 174,
+        "end": 182,
+        "sha256": "6fa43f9591c36a89c3f6b14cd61f96b42de0662b1d53d667afa649f7f3b948f0"
+      },
+      "actions": [
+        "Edit the saved character by sending text to its Name field",
+        "Activate the editor Cancel button with an unsaved name",
+        "Observe the attached native UIAlertController and reread the saved packages"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/character-catalog.mjs",
+        "start": 87,
+        "end": 100,
+        "sha256": "da50924873e12208a0a6bcb37d2eefa1f10ef761b25650a876375fa160ce2899"
+      },
+      "why": "Dirty Cancel offers Keep editing and Discard changes through the public alert and leaves persisted packages intact"
+    },
+    {
       "id": "dc9091c1ae2e8af7",
       "source": {
         "path": "cloud/src/teams.ts",
@@ -63746,8 +63767,8 @@
       "id": "dcb760654ed41c8d",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 189,
-        "end": 196,
+        "start": 190,
+        "end": 197,
         "sha256": "4de99e3f4f3e360d3729141c710ae53e96416dda81511b3bdcd9bea64fcfc121"
       },
       "actions": [
@@ -63911,8 +63932,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 72,
-        "end": 84,
+        "start": 73,
+        "end": 85,
         "sha256": "359a1b98a19a35a8cf4447aa3c2b796cd15432a2b1827e14552db513ffe0e1c2"
       },
       "why": "Identified character ribbons select the intended character in the store. Only the clean/unlocked path is witnessed. Failure to acquire a lease, account change, dirty-discard confirmation and release races remain gaps. Preconditions: The synthetic character has been saved and lowercase name search has isolated its ribbon in the same createFindReopen workflow. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -64783,8 +64804,8 @@
       "id": "dfe1dff3a81c0759",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 216,
-        "end": 218,
+        "start": 217,
+        "end": 219,
         "sha256": "9038120b7ee4960c8676af3a6ea4557ab73afde4ab9061965173cf3fec2a3681"
       },
       "actions": [
@@ -64823,8 +64844,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 97,
-        "end": 120,
+        "start": 113,
+        "end": 136,
         "sha256": "b90e1356501e78068d7c5d1483b670e38e6807cb2b53cc82a391f579528a1f1c"
       },
       "why": "Named palette controls update only draft color and rerender the choices. Uses inspectEditor :59-75 and inspectCreationEntries :114-149 in character-catalog-steps.mjs. Mapping does not claim visual icon/color pixel correctness or every palette branch. Input strings use JSON escape notation for exact synthetic characters. Preconditions: A fresh isolated sample app has been saved and Characters opened by editProfile; fixtures.initialProfile is the literal synthetic profile in character-catalog-cases.mjs. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -65091,8 +65112,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 72,
-        "end": 84,
+        "start": 73,
+        "end": 85,
         "sha256": "359a1b98a19a35a8cf4447aa3c2b796cd15432a2b1827e14552db513ffe0e1c2"
       },
       "why": "Closing the editor releases its scope and dismisses it. Only the clean/unlocked path is witnessed. Failure to acquire a lease, account change, dirty-discard confirmation and release races remain gaps. Preconditions: The synthetic character has been saved and lowercase name search has isolated its ribbon in the same createFindReopen workflow. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -66530,8 +66551,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 72,
-        "end": 84,
+        "start": 73,
+        "end": 85,
         "sha256": "359a1b98a19a35a8cf4447aa3c2b796cd15432a2b1827e14552db513ffe0e1c2"
       },
       "why": "Successful opening refreshes the saved original/draft and enables the editor. Preconditions: The newly created CLI Validation Z\u00e9phyr character is isolated by a case-insensitive search immediately before this block. Only the successful isolated edit-scope path is witnessed. No lease contention, stale project, removed character or canceled opening is claimed. Reviewed static association only; no native execution, measured coverage or branch-complete result."
@@ -69767,8 +69788,8 @@
       "id": "edfb106ba7599e62",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 220,
-        "end": 220,
+        "start": 221,
+        "end": 221,
         "sha256": "30030c597bb8d222fa5708425ec863c8d63fdfb4ba9620fae5fa53a58f39468c"
       },
       "actions": [
@@ -71529,8 +71550,8 @@
       "id": "f3e4765df137a31f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 309,
-        "end": 309,
+        "start": 310,
+        "end": 310,
         "sha256": "2eee146c7f11991ffabccbcb02ecd812a1816104fce4814ba13453206029bf09"
       },
       "actions": [
@@ -71832,8 +71853,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 72,
-        "end": 84,
+        "start": 73,
+        "end": 85,
         "sha256": "359a1b98a19a35a8cf4447aa3c2b796cd15432a2b1827e14552db513ffe0e1c2"
       },
       "why": "The character editor router resolves the selected existing character and constructs an isNew false editor. Preconditions: The newly created CLI Validation Z\u00e9phyr character is isolated by a case-insensitive search immediately before this block. Only the successful isolated edit-scope path is witnessed. No lease contention, stale project, removed character or canceled opening is claimed. Reviewed static association only; no native execution, measured coverage or branch-complete result."
@@ -73412,8 +73433,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 97,
-        "end": 120,
+        "start": 113,
+        "end": 136,
         "sha256": "b90e1356501e78068d7c5d1483b670e38e6807cb2b53cc82a391f579528a1f1c"
       },
       "why": "Name callback updates the local draft/display and Save eligibility without publishing it. Uses inspectEditor :59-75 and inspectCreationEntries :114-149 in character-catalog-steps.mjs. Mapping does not claim visual icon/color pixel correctness or every palette branch. Input strings use JSON escape notation for exact synthetic characters. Preconditions: A fresh isolated sample app has been saved and Characters opened by editProfile; fixtures.initialProfile is the literal synthetic profile in character-catalog-cases.mjs. Reviewed static CLI association only; no native run, measured coverage or branch-complete claim."
@@ -80558,8 +80579,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 97,
-        "end": 120,
+        "start": 113,
+        "end": 136,
         "sha256": "b90e1356501e78068d7c5d1483b670e38e6807cb2b53cc82a391f579528a1f1c"
       },
       "why": "The form binds name editing and both notes delegates, and mounts the two labeled text views used by the journey. Exact field and saved-profile assertions witness these functional connections; styling and name Return are outside this association."
@@ -80582,8 +80603,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 63,
-        "end": 71,
+        "start": 64,
+        "end": 72,
         "sha256": "c5f2daf160f9ffa4754921f79fbe4b350185f099d43eeaaff7e6f625e9ca5e55"
       },
       "why": "Render obtains the filtered collection, selects its current/first item, rebuilds mounted ribbon controls with exact names and replaces the selected profile. Zero/full/single ribbon assertions and the no-match notice witness these ordinary rebuild paths; no layout, selection outline, portrait or automatic-scroll result is claimed."
@@ -80664,8 +80685,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 97,
-        "end": 120,
+        "start": 113,
+        "end": 136,
         "sha256": "b90e1356501e78068d7c5d1483b670e38e6807cb2b53cc82a391f579528a1f1c"
       },
       "why": "The form binds name editing and both notes delegates, and mounts the two labeled text views used by the journey. Exact field and saved-profile assertions witness these functional connections; styling and name Return are outside this association."
@@ -80724,8 +80745,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 63,
-        "end": 71,
+        "start": 64,
+        "end": 72,
         "sha256": "c5f2daf160f9ffa4754921f79fbe4b350185f099d43eeaaff7e6f625e9ca5e55"
       },
       "why": "Render obtains the filtered collection, selects its current/first item, rebuilds mounted ribbon controls with exact names and replaces the selected profile. Zero/full/single ribbon assertions and the no-match notice witness these ordinary rebuild paths; no layout, selection outline, portrait or automatic-scroll result is claimed."
@@ -80784,8 +80805,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 227,
-        "end": 254,
+        "start": 243,
+        "end": 270,
         "sha256": "590ac08d8c15053a740af96e72d9ea3dbb726b726d7ad2f9f1d344155b054f17"
       },
       "why": "Reopening reaches the current, existing character through the successful lease/context guards before inspectEditor observes enabled Save and exact fields. Error bodies, canceled acquisition and missing-character handling are not asserted."
@@ -80808,8 +80829,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 63,
-        "end": 71,
+        "start": 64,
+        "end": 72,
         "sha256": "c5f2daf160f9ffa4754921f79fbe4b350185f099d43eeaaff7e6f625e9ca5e55"
       },
       "why": "Render obtains the filtered collection, selects its current/first item, rebuilds mounted ribbon controls with exact names and replaces the selected profile. Zero/full/single ribbon assertions and the no-match notice witness these ordinary rebuild paths; no layout, selection outline, portrait or automatic-scroll result is claimed."
@@ -80897,8 +80918,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 227,
-        "end": 254,
+        "start": 243,
+        "end": 270,
         "sha256": "590ac08d8c15053a740af96e72d9ea3dbb726b726d7ad2f9f1d344155b054f17"
       },
       "why": "The accepted existing-profile Save uses the current navigation/account context and unchanged original authored fields, then retains the current nil portrait identity. Exact persisted character equality witnesses the normal path; no rejection branch or non-nil portrait concurrency claim."
@@ -81097,8 +81118,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 227,
-        "end": 254,
+        "start": 243,
+        "end": 270,
         "sha256": "590ac08d8c15053a740af96e72d9ea3dbb726b726d7ad2f9f1d344155b054f17"
       },
       "why": "The unchanged empty alias list passes the shared form validator during each accepted canonical-only Save. This is the empty-list success path, with no alias input or alias-limit rejection credit."
@@ -81150,8 +81171,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 159,
-        "end": 177,
+        "start": 175,
+        "end": 193,
         "sha256": "7b52af6db3fa8c5e6c559b942f859f10e9031e5b70217b01e22fca45cdbaeeb9"
       },
       "why": "The actual inline issue label is mounted and made visible with the validator message. The journey waits for each exact message and untruncated draft field; no alert or concurrent-store error is inferred."
@@ -81201,8 +81222,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 159,
-        "end": 177,
+        "start": 175,
+        "end": 193,
         "sha256": "7b52af6db3fa8c5e6c559b942f859f10e9031e5b70217b01e22fca45cdbaeeb9"
       },
       "why": "The actual inline issue label is mounted and made visible with the validator message. The journey waits for each exact message and untruncated draft field; no alert or concurrent-store error is inferred."
@@ -81245,8 +81266,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 63,
-        "end": 71,
+        "start": 64,
+        "end": 72,
         "sha256": "c5f2daf160f9ffa4754921f79fbe4b350185f099d43eeaaff7e6f625e9ca5e55"
       },
       "why": "Render obtains the filtered collection, selects its current/first item, rebuilds mounted ribbon controls with exact names and replaces the selected profile. Zero/full/single ribbon assertions and the no-match notice witness these ordinary rebuild paths; no layout, selection outline, portrait or automatic-scroll result is claimed."
@@ -81415,8 +81436,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 227,
-        "end": 254,
+        "start": 243,
+        "end": 270,
         "sha256": "590ac08d8c15053a740af96e72d9ea3dbb726b726d7ad2f9f1d344155b054f17"
       },
       "why": "Reopening reaches the current, existing character through the successful lease/context guards before inspectEditor observes enabled Save and exact fields. Error bodies, canceled acquisition and missing-character handling are not asserted."
@@ -81475,8 +81496,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 227,
-        "end": 254,
+        "start": 243,
+        "end": 270,
         "sha256": "590ac08d8c15053a740af96e72d9ea3dbb726b726d7ad2f9f1d344155b054f17"
       },
       "why": "Save and clean Cancel close the form and allow the same character to be reopened and edited repeatedly. This associates ordinary session/task cleanup and local lease release only; it does not assert release races or competing-client behavior."
@@ -81669,8 +81690,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 227,
-        "end": 254,
+        "start": 243,
+        "end": 270,
         "sha256": "590ac08d8c15053a740af96e72d9ea3dbb726b726d7ad2f9f1d344155b054f17"
       },
       "why": "The accepted existing-profile Save uses the current navigation/account context and unchanged original authored fields, then retains the current nil portrait identity. Exact persisted character equality witnesses the normal path; no rejection branch or non-nil portrait concurrency claim."
@@ -81758,8 +81779,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 227,
-        "end": 254,
+        "start": 243,
+        "end": 270,
         "sha256": "590ac08d8c15053a740af96e72d9ea3dbb726b726d7ad2f9f1d344155b054f17"
       },
       "why": "The accepted existing-profile Save uses the current navigation/account context and unchanged original authored fields, then retains the current nil portrait identity. Exact persisted character equality witnesses the normal path; no rejection branch or non-nil portrait concurrency claim."
@@ -81818,8 +81839,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 227,
-        "end": 254,
+        "start": 243,
+        "end": 270,
         "sha256": "590ac08d8c15053a740af96e72d9ea3dbb726b726d7ad2f9f1d344155b054f17"
       },
       "why": "The accepted existing-profile Save uses the current navigation/account context and unchanged original authored fields, then retains the current nil portrait identity. Exact persisted character equality witnesses the normal path; no rejection branch or non-nil portrait concurrency claim."
@@ -81842,8 +81863,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 63,
-        "end": 71,
+        "start": 64,
+        "end": 72,
         "sha256": "c5f2daf160f9ffa4754921f79fbe4b350185f099d43eeaaff7e6f625e9ca5e55"
       },
       "why": "The real searchable field is labeled and connected to this controller as delegate. The journey types through that field and asserts the resulting catalog state; search-bar styling is not asserted."
@@ -81895,8 +81916,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 63,
-        "end": 71,
+        "start": 64,
+        "end": 72,
         "sha256": "c5f2daf160f9ffa4754921f79fbe4b350185f099d43eeaaff7e6f625e9ca5e55"
       },
       "why": "Render obtains the filtered collection, selects its current/first item, rebuilds mounted ribbon controls with exact names and replaces the selected profile. Zero/full/single ribbon assertions and the no-match notice witness these ordinary rebuild paths; no layout, selection outline, portrait or automatic-scroll result is claimed."
@@ -81990,8 +82011,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 97,
-        "end": 120,
+        "start": 113,
+        "end": 136,
         "sha256": "b90e1356501e78068d7c5d1483b670e38e6807cb2b53cc82a391f579528a1f1c"
       },
       "why": "The form binds name editing and both notes delegates, and mounts the two labeled text views used by the journey. Exact field and saved-profile assertions witness these functional connections; styling and name Return are outside this association."
@@ -84554,8 +84575,8 @@
       "id": "4579e95b6742509b",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 321,
-        "end": 321,
+        "start": 322,
+        "end": 322,
         "sha256": "251af02bdf06578e58a84c767afd9e956728e2dcfe6df02fa8e6a30d26dc0748"
       },
       "actions": [
@@ -84598,8 +84619,8 @@
       "id": "75ae20557ed42cfa",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 403,
-        "end": 404,
+        "start": 404,
+        "end": 405,
         "sha256": "1674ec57dbd55226a5f98694ec55383a91fb7974f94917174dfd0878836309cc"
       },
       "actions": [
@@ -84618,8 +84639,8 @@
       "id": "8cf7a26516801711",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 325,
-        "end": 325,
+        "start": 326,
+        "end": 326,
         "sha256": "155b99c4fcc8c5940e6ad104d7a26b3a079f0b25c675fef1e383f0117d5a59f0"
       },
       "actions": [
@@ -84657,8 +84678,8 @@
       "id": "a9154208c8debc65",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 297,
-        "end": 300,
+        "start": 298,
+        "end": 301,
         "sha256": "865723df71091dc297a11f0a48b7237fb47cc73dff698e5e859975758577b256"
       },
       "actions": [
@@ -84676,8 +84697,8 @@
       "id": "a930773617cb8f6f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 315,
-        "end": 316,
+        "start": 316,
+        "end": 317,
         "sha256": "5714b5016a5823b874d5af4bede595e152076077087c31e8dbc36352847db9f6"
       },
       "actions": [
@@ -95395,8 +95416,8 @@
       "id": "33720f3b1724fc03",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 380,
-        "end": 383,
+        "start": 381,
+        "end": 384,
         "sha256": "6a904c79ec0c0e5f9b36259dd596081dbe4d8c47edad699777135187d0af49fa"
       },
       "actions": [
@@ -95433,8 +95454,8 @@
       "id": "ed7558e490db107f",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 318,
-        "end": 320,
+        "start": 319,
+        "end": 321,
         "sha256": "8de45ae475fd12c6ac0e8886fa94b189913a287f268e8fbf150e362d4066b27c"
       },
       "actions": [
@@ -96295,8 +96316,8 @@
       "id": "1d8fbd0cc16034c9",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 203,
-        "end": 203,
+        "start": 204,
+        "end": 204,
         "sha256": "c2f220899b72eee623adb8310c1209be841530a23487bcce09afcab17542eab6"
       },
       "actions": [
@@ -97139,8 +97160,8 @@
       "id": "97533ef6aeb0075e",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 266,
-        "end": 293,
+        "start": 267,
+        "end": 294,
         "sha256": "6ca00133a1a363a6f2606b07d5977aec67fb6b5d1c68d670b960653d1d307741"
       },
       "actions": [
@@ -99245,8 +99266,8 @@
       "id": "697a3568d34c766a",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 254,
-        "end": 260,
+        "start": 255,
+        "end": 261,
         "sha256": "670316272ac7e5906c037a1882487a3c53fd385fec1dfb91e3b75cb307436b80"
       },
       "actions": [
@@ -99345,8 +99366,8 @@
       "id": "f7777456308bd228",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 273,
-        "end": 286,
+        "start": 274,
+        "end": 287,
         "sha256": "3bb9b98b259f3cbd477e259101178601f3ffc19a49c81f76b3e3731b0ecc0252"
       },
       "actions": [
@@ -99724,8 +99745,8 @@
       "id": "d7085f64d41f6dda",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 162,
-        "end": 182,
+        "start": 163,
+        "end": 183,
         "sha256": "7ecd781a19e8d939050c8ef37f960d51e0379bc9fd78d23037eac9d8b1f1f0ab"
       },
       "actions": [
@@ -100052,8 +100073,8 @@
       "id": "62b2b4d512e6f618",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 172,
-        "end": 180,
+        "start": 173,
+        "end": 181,
         "sha256": "64bb8c619ac97854c72d1372e613cad8d9de6f7ed35bb5fb5d8dcbc72cfaf629"
       },
       "actions": [
@@ -101016,11 +101037,11 @@
       "id": "180d02008d7cbcf3",
       "source": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 8,
-        "end": 15,
+        "start": 9,
+        "end": 16,
         "sha256": "31d4fa826501ebb1ff58c16e50ae4369a227e1367771f99d453777cdb2e26832"
       },
-      "fileSha256": "aab4fb6bbafbdec87285992fb6b1c78563ac9e90deead26480c440d4bae0f17f"
+      "fileSha256": "c10cec816d74f772983772b1df69b98ab13df98e803ec95e2f6090fe199cb5de"
     },
     {
       "id": "186fa024d9b57f6a",
@@ -101666,11 +101687,11 @@
       "id": "269884d4df18d438",
       "source": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 266,
-        "end": 266,
+        "start": 282,
+        "end": 282,
         "sha256": "60a4a1e62e56bcdc1258a766be370d06535b00b914122310828c15fcd0868b0e"
       },
-      "fileSha256": "aab4fb6bbafbdec87285992fb6b1c78563ac9e90deead26480c440d4bae0f17f"
+      "fileSha256": "c10cec816d74f772983772b1df69b98ab13df98e803ec95e2f6090fe199cb5de"
     },
     {
       "id": "26b4a579ffd5920b",
@@ -102756,11 +102777,11 @@
       "id": "3c78dc9bfef370e8",
       "source": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 44,
-        "end": 45,
+        "start": 45,
+        "end": 46,
         "sha256": "797996c6bb8f9549435ae716c05de3f7b6a28bd0a36f67ef5155f044e25a81c2"
       },
-      "fileSha256": "aab4fb6bbafbdec87285992fb6b1c78563ac9e90deead26480c440d4bae0f17f"
+      "fileSha256": "c10cec816d74f772983772b1df69b98ab13df98e803ec95e2f6090fe199cb5de"
     },
     {
       "id": "3cdf6d8764ae6a55",
@@ -104100,7 +104121,7 @@
         "end": 136,
         "sha256": "c6712d9952f5f921d3bb4b586ed4475f3c99e93d05be53a3b31a0594f9d9d9b5"
       },
-      "fileSha256": "25fc44beb4ba52902f7c5e8cab8293d2875606ee5fd6ef765b26f7536ca7f67c"
+      "fileSha256": "8a3a9604125c934595c03bac60f93f910a811d66a0aee3cabbbd4a9e69e9fa50"
     },
     {
       "id": "58267d3510d79430",
@@ -104176,11 +104197,11 @@
       "id": "2ca9d6c803785da5",
       "source": {
         "path": "scripts/run-cli-e2e.mjs",
-        "start": 296,
-        "end": 296,
+        "start": 297,
+        "end": 297,
         "sha256": "ecd431b3a14e4b29dd5bdcffed69b6d546c760d6aa91fdf372a82ebeb0bc81de"
       },
-      "fileSha256": "25fc44beb4ba52902f7c5e8cab8293d2875606ee5fd6ef765b26f7536ca7f67c"
+      "fileSha256": "8a3a9604125c934595c03bac60f93f910a811d66a0aee3cabbbd4a9e69e9fa50"
     },
     {
       "id": "59c64d2ace520826",
@@ -105156,11 +105177,11 @@
       "id": "6ddbf9807b2fd265",
       "source": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 63,
-        "end": 64,
+        "start": 64,
+        "end": 65,
         "sha256": "d4178c1316d3c149fa44cba1ec6622c70d422c27bd7b4ed05060fb61835a63b6"
       },
-      "fileSha256": "aab4fb6bbafbdec87285992fb6b1c78563ac9e90deead26480c440d4bae0f17f"
+      "fileSha256": "c10cec816d74f772983772b1df69b98ab13df98e803ec95e2f6090fe199cb5de"
     },
     {
       "id": "6de1df84104bf832",
@@ -105370,7 +105391,7 @@
         "end": 1,
         "sha256": "29b989bc322bd58d82ea7c7ddc8a92c8cc64e0f163e5286d84d091460d71d8d2"
       },
-      "fileSha256": "9a28903f45249064052d291d2ee56575023d1f8522c08688ed8e6d98fc599578"
+      "fileSha256": "4da06e4870f0f6a31284c12adf76d5694d1d39482b96c47f2b6ab02130ea47c2"
     },
     {
       "id": "732c87b3a0fdc368",
@@ -105556,11 +105577,11 @@
       "id": "76f17b385f2ef8d4",
       "source": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 211,
-        "end": 212,
+        "start": 227,
+        "end": 228,
         "sha256": "5ed6997e6fd0e8dd3d060812162da76137449b261f6ff372402910e51c0b8747"
       },
-      "fileSha256": "aab4fb6bbafbdec87285992fb6b1c78563ac9e90deead26480c440d4bae0f17f"
+      "fileSha256": "c10cec816d74f772983772b1df69b98ab13df98e803ec95e2f6090fe199cb5de"
     },
     {
       "id": "7742225dae55714d",
@@ -105830,7 +105851,7 @@
         "end": 82,
         "sha256": "9887347b9f2218fa3a5bd87d8b51975bd5e8dd8b2e7b61f7f0ea29aff62bf059"
       },
-      "fileSha256": "25fc44beb4ba52902f7c5e8cab8293d2875606ee5fd6ef765b26f7536ca7f67c"
+      "fileSha256": "8a3a9604125c934595c03bac60f93f910a811d66a0aee3cabbbd4a9e69e9fa50"
     },
     {
       "id": "7e4a8f19915d9b4e",
@@ -106126,11 +106147,11 @@
       "id": "84190bb67609ef92",
       "source": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 227,
-        "end": 229,
+        "start": 243,
+        "end": 245,
         "sha256": "d0fa5c13b0e15c3b1d1f90c1742b7f0cc43d93a07996af5eadcbdbceb797a48a"
       },
-      "fileSha256": "aab4fb6bbafbdec87285992fb6b1c78563ac9e90deead26480c440d4bae0f17f"
+      "fileSha256": "c10cec816d74f772983772b1df69b98ab13df98e803ec95e2f6090fe199cb5de"
     },
     {
       "id": "843cb50b336c94bb",
@@ -106620,7 +106641,7 @@
         "end": 2,
         "sha256": "4ead8511821dcd95c2efee74b114bac02b04cb9252a4405b4149f9930c721b52"
       },
-      "fileSha256": "25fc44beb4ba52902f7c5e8cab8293d2875606ee5fd6ef765b26f7536ca7f67c"
+      "fileSha256": "8a3a9604125c934595c03bac60f93f910a811d66a0aee3cabbbd4a9e69e9fa50"
     },
     {
       "id": "8e40d7512c7266e1",
@@ -107916,11 +107937,11 @@
       "id": "a757b1cb8b03212c",
       "source": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 165,
-        "end": 167,
+        "start": 181,
+        "end": 183,
         "sha256": "a42d775ee30ec4aaa91ca7e0c0c1804f69fe5541f5927eae1bf223fc5c330b2c"
       },
-      "fileSha256": "aab4fb6bbafbdec87285992fb6b1c78563ac9e90deead26480c440d4bae0f17f"
+      "fileSha256": "c10cec816d74f772983772b1df69b98ab13df98e803ec95e2f6090fe199cb5de"
     },
     {
       "id": "a7661aa2acb67cd8",
@@ -109310,7 +109331,7 @@
         "end": 39,
         "sha256": "da22a6a09e9a6d7bbf1e35ecdac04e969fad1ac1a051025596a84831ff070202"
       },
-      "fileSha256": "25fc44beb4ba52902f7c5e8cab8293d2875606ee5fd6ef765b26f7536ca7f67c"
+      "fileSha256": "8a3a9604125c934595c03bac60f93f910a811d66a0aee3cabbbd4a9e69e9fa50"
     },
     {
       "id": "c3fa07d2ab6ca6a5",
@@ -109736,11 +109757,11 @@
       "id": "cbf1f2a033b458c0",
       "source": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 25,
-        "end": 25,
+        "start": 26,
+        "end": 26,
         "sha256": "84dfe50682899c3adc09f92c29186abca3f8c945a5b0ca23d00df311d5bf461b"
       },
-      "fileSha256": "aab4fb6bbafbdec87285992fb6b1c78563ac9e90deead26480c440d4bae0f17f"
+      "fileSha256": "c10cec816d74f772983772b1df69b98ab13df98e803ec95e2f6090fe199cb5de"
     },
     {
       "id": "cc0b9dde1e499dc7",
@@ -110956,11 +110977,11 @@
       "id": "e58b0ccc1dacc0ec",
       "source": {
         "path": "tests/e2e/journeys/character-catalog.mjs",
-        "start": 152,
-        "end": 153,
+        "start": 168,
+        "end": 169,
         "sha256": "1447454a4f1d347e600ea6e355b4a2ff24ad64fa25a6337651a6da6e0f583ee7"
       },
-      "fileSha256": "aab4fb6bbafbdec87285992fb6b1c78563ac9e90deead26480c440d4bae0f17f"
+      "fileSha256": "c10cec816d74f772983772b1df69b98ab13df98e803ec95e2f6090fe199cb5de"
     },
     {
       "id": "e5b7117e98fd5c7d",

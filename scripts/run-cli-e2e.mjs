@@ -151,6 +151,7 @@ const groupedScenarios = new Set([
   'journeys/native-team-management.mjs', 'journeys/native-team-invitations.mjs',
   'journeys/native-codex-account-check.mjs', 'journeys/script-duration-scrub.mjs',
   'journeys/native-first-launch.mjs', 'journeys/local-images.mjs',
+  'journeys/character-catalog.mjs',
 ]);
 const validGroup = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(value);
 function discoverGroupCatalog(name, includeConditionBranches = false) {
