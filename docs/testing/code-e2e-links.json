@@ -99611,8 +99611,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/native-codex-setup-popup.mjs",
-        "start": 60,
-        "end": 81,
+        "start": 62,
+        "end": 83,
         "sha256": "7566c8c02488591b5760c0fadf6f5816d1e6ef1c667293fbceffc9d02fb56ad8"
       },
       "why": "The General switch retains its off value across sidebar navigation and the scenario restores its on value."
@@ -99719,6 +99719,26 @@
         "sha256": "14ab5a4171778636f84d6755eba8a7dd5a5e20a2ec3b912a5b13d01dcd09b531"
       },
       "why": "A real accepted import advances the background cursor before the older snapshot returns. The client replays from the advanced cursor and preserves the saved script."
+    },
+    {
+      "id": "42bb5e6e4044e649",
+      "source": {
+        "path": "apps/mac/Sources/ScrivApp/Services/CloudClient.swift",
+        "start": 90,
+        "end": 95,
+        "sha256": "b4d43e6c82cba67ae75583bfd0d51a82c5f72c2151c8233550455f3cfdceec8f"
+      },
+      "actions": [
+        "scriv activate Server settings",
+        "scriv activate Save address"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/native-codex-setup-popup.mjs",
+        "start": 86,
+        "end": 111,
+        "sha256": "c6f3b77f4d1ba559fa0810d0cbef527ed7852b1d6c4acf4104f95e32daaa71da"
+      },
+      "why": "Saving a syntactically valid but unapproved endpoint presents the real isolation refusal and retains the launch network policy."
     }
   ],
   "commentExclusions": [

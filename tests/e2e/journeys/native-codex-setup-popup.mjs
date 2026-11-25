@@ -46,7 +46,9 @@ try {
   await followPlaybackInGeneralSettings();
   assert.deepEqual(await session.command('persisted-projects'), saved);
   assert.deepEqual(await session.command('loaded-project'), loaded);
-  console.log('PASS: Codex Settings handoff and General playback preference preserve the active project');
+  await rejectUnapprovedServerAddress(caps.cloudIsolation);
+  assert.deepEqual(await session.command('persisted-projects'), saved);
+  console.log('PASS: the Settings handoff, playback preference and server isolation preserve the saved project');
 } finally {
   await session.close();
 }
@@ -79,4 +81,31 @@ async function followPlaybackInGeneralSettings() {
   await followSwitch(true);
   await selectSettingsPane('codex');
   await session.waitFor(nodes => nodes.some(byID('codex-settings')) && idle(nodes));
+}
+
+async function rejectUnapprovedServerAddress(isolation) {
+  await selectSettingsPane('account');
+  await ui.activate(node => node.title === 'Server settings');
+  const serverField = node => node.type === 'UITextField' && node.placeholder === 'https://your-scriv-service';
+  const field = await ui.reveal(serverField);
+  assert.equal(field.text, 'http://127.0.0.1:1');
+  const unapproved = 'https://scriv-test.example.invalid';
+  await session.command('text', { target: field.path, text: unapproved });
+  await session.command('end-editing');
+  await session.waitFor(nodes => nodes.some(node => serverField(node) && node.text === unapproved));
+  await ui.activate(node => node.title === 'Save address');
+
+  const expected = 'Isolated CLI cloud access is unavailable.';
+  const deadline = Date.now() + 10000;
+  let alert;
+  while (Date.now() < deadline) {
+    const presented = await session.command('presented-alerts');
+    alert = presented.find(row => row.title === 'Scriv' && row.message === expected
+      && row.viewAttachedToWindow && !row.beingPresented && !row.beingDismissed);
+    if (alert) break;
+    await new Promise(resolve => setTimeout(resolve, 50));
+  }
+  assert.ok(alert, 'The actual Save address action must surface the isolated server refusal');
+  assert.deepEqual(alert.actions, [{ title: 'OK', enabled: true, style: 'default' }]);
+  assert.deepEqual((await session.command('capabilities')).cloudIsolation, isolation);
 }
