@@ -22,6 +22,7 @@ final class ScrivCLI {
     static let shared = ScrivCLI()
     private weak var window: UIWindow?
     private weak var pictureTimingGesture: (any ScrivCLIPictureTimingDriver)?
+    private weak var scriptDurationGesture: ScriptDurationScrubDriver?
     private var started = false
     private var asynchronousCommandInProgress = false
     private var nativeAccessibility: ScrivCLIAccessibility?
@@ -272,7 +273,8 @@ final class ScrivCLI {
         switch phase {
         case "begin":
             guard keys == required else { throw Failure("Invalid picture timing sample") }
-            guard pictureTimingGesture?.cliGestureInFlight != true, !driver.cliGestureInFlight else { throw Failure("An active picture timing gesture already owns input") }
+            guard pictureTimingGesture?.cliGestureInFlight != true, scriptDurationGesture?.cliGestureInFlight != true,
+                  !driver.cliGestureInFlight else { throw Failure("An active picture timing gesture already owns input") }
             guard isHittable(view), (view as? UIControl)?.isEnabled != false else { throw Failure("Picture timing control is unavailable") }
             driver.cliBeginGesture()
             guard driver.cliGestureInFlight else { throw Failure("Picture timing control is unavailable") }
@@ -289,6 +291,38 @@ final class ScrivCLI {
             guard pictureTimingGesture === driver, driver.cliAcceptsSample else { throw Failure("Target has no active picture timing gesture") }
             driver.cancel()
         default: throw Failure("Invalid picture timing sample")
+        }
+        return ["dispatched": true]
+    }
+    private func scriptDurationSample(_ request: [String: Any], at view: UIView) throws -> [String: Bool] {
+        let keys = Set(request.keys)
+        let required: Set<String> = ["id", "command", "target", "phase"]
+        guard let phase = request["phase"] as? String, !isSensitiveSubtree(view) else { throw Failure("Invalid script duration sample") }
+        let drivers = (view.gestureRecognizers ?? []).compactMap { recognizer in
+            recognizer.isEnabled ? (recognizer as? ScriptDurationHoldRecognizer)?.driver : nil
+        }
+        guard drivers.count == 1, let driver = drivers.first else { throw Failure("Target has no script duration gesture") }
+        switch phase {
+        case "begin":
+            guard keys == required else { throw Failure("Invalid script duration sample") }
+            guard scriptDurationGesture?.cliGestureInFlight != true, pictureTimingGesture?.cliGestureInFlight != true,
+                  !driver.cliGestureInFlight else { throw Failure("An active script duration gesture already owns input") }
+            guard isHittable(view), (view as? UIButton)?.isEnabled == true else { throw Failure("Script duration control is unavailable") }
+            driver.cliBeginGesture()
+            guard driver.cliGestureInFlight else { throw Failure("Script duration control is unavailable") }
+            scriptDurationGesture = driver
+        case "change", "end":
+            guard keys == required.union(["translation"]), let displacement = request["translation"] as? NSNumber,
+                  CFGetTypeID(displacement) != CFBooleanGetTypeID(), abs(displacement.doubleValue) <= 32_768 else {
+                throw Failure("Invalid script duration sample")
+            }
+            guard scriptDurationGesture === driver, driver.cliAcceptsSample else { throw Failure("Target has no active script duration gesture") }
+            driver.cliSampleGesture(displacement.doubleValue, releasing: phase == "end")
+        case "cancel":
+            guard keys == required else { throw Failure("Invalid script duration sample") }
+            guard scriptDurationGesture === driver, driver.cliAcceptsSample else { throw Failure("Target has no active script duration gesture") }
+            driver.cancel()
+        default: throw Failure("Invalid script duration sample")
         }
         return ["dispatched": true]
     }
@@ -375,7 +409,7 @@ final class ScrivCLI {
                     "scriptInteractionCountsSchemaVersion": 1,
                     "cloudIsolation": run.publicStatus,
                     "semanticApplicationCommands": ["import-local-image", "import-audio", "import-fountain", "export-fountain", "export-project", "import-json", "acknowledge-json-import-error"],
-                    "semanticGestureCommands": ["picture-timing-gesture"],
+                    "semanticGestureCommands": ["picture-timing-gesture", "script-duration-gesture"],
                     "jsonImportAcknowledgementScope": "owned-presentations",
                     "syntheticFixtureCommands": ["stage-package-fixture"],
                     "publicDelegateCommands": ["return", "script-insert", "script-delete-selection"],
@@ -690,6 +724,7 @@ final class ScrivCLI {
         guard matches.count == 1, let view = matches.first?.1 else { throw Failure("Target must match exactly one visible view") }
         guard isInActivePresentation(view) else { throw Failure("Target is behind the active presentation") }
         if command == "picture-timing-gesture" { return try pictureTimingSample(request, at: view) }
+        if command == "script-duration-gesture" { return try scriptDurationSample(request, at: view) }
         if command == "menu" {
             var count = 0
             func describe(_ element: UIMenuElement, depth: Int) throws -> [String: Any] {
