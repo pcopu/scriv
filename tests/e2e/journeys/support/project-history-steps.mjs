@@ -31,6 +31,11 @@ export const historyReviewManifest = {
     assertions: ['read-only comparison shows old and new time and coverage, and original script text',
       'review leaves the loaded model and saved packages unchanged'],
     sources: ['apps/catalyst/ScrivUIKit/Projects/HistoryController.swift::changeCard'],
+  }, { key: 'attached-image-change',
+    sequence: ['Import local image', 'Script history', 'Current revision', 'Close'],
+    assertions: ['the image version and its source-relative placement appear in the change cards',
+      'review leaves the loaded model and saved packages unchanged'],
+    sources: ['apps/mac/Sources/ScrivApp/Views/ProjectHistoryPresentation.swift::fields/imageLabel/anchorLabel'],
   }],
   excluded: ['Explicit revision selection is exercised in the native cloud project journey.',
     'Cloud history, account/provider access, journal corruption/recovery, process restart and crash durability.'],
@@ -250,6 +255,29 @@ export async function runHistoryReview(session) {
   assert.deepEqual(await session.command('loaded-project'), timedModel);
   assert.deepEqual(sorted(await session.command('persisted-projects')), sorted([other, timed]));
   console.log('PASS: native timing-only history preserves the script and shows both exact duration and coverage changes');
+
+  assert.deepEqual(await session.command('import-local-image', { fixture: 'coral' }, 30_000),
+    { dispatched: true, imported: true, cleanupVerified: true });
+  const pictured = await step.saved(project => project.id === timed.id && project.images.length === 1);
+  const [asset] = pictured.images;
+  assert.equal(pictured.revision, timed.revision + 1);
+  assert.deepEqual(pictured.entries, timed.entries);
+  assert.equal(pictured.cues.length, 1);
+  assert.equal(pictured.cues[0].imageId, asset.id);
+  assert.deepEqual(pictured.cues[0].startAnchor, { entryId: 'history-line', offsetMs: 0 });
+  const picturedModel = await session.command('loaded-project');
+  assert.deepEqual(picturedModel.project, pictured);
+  await step.activate('Script history');
+  const versionHistory = await session.waitFor(nodes => !!currentRow(nodes));
+  assert.deepEqual(await session.command('activate', { target: currentRow(versionHistory).path }), { dispatched: true });
+  const imageFields = ['Image version 1', 'Imported image', 'Visible characters', 'File', asset.fileName];
+  const placementFields = ['Image', `Version ${asset.version} · ${asset.fileName}`, 'Script anchor', 'Script-relative · 0.0 s offset'];
+  await session.waitFor(nodes => [...imageFields, ...placementFields].every(text => nodes.some(node => node.text === text)));
+  await step.activate('Close');
+  await waitForWorkspace();
+  assert.deepEqual(await session.command('loaded-project'), picturedModel);
+  assert.deepEqual(sorted(await session.command('persisted-projects')), sorted([other, pictured]));
+  console.log('PASS: native image history shows the saved version and anchored placement without editing either');
 }
 
 export async function activateHistoryRestore(session, decision) {
