@@ -183,13 +183,14 @@ export async function main() {
   await journey('discover the discussion attachment and cloud lease cases', async () => {
     const scenario = 'journeys/native-cloud-project-sync';
     const { scenarios: [entry] } = JSON.parse(run(['app', '--', 'test', '--list', '--scenario', scenario]).stdout);
-    assert.deepEqual(Object.entries(entry.groupActions).map(([name, [action]]) =>
+    const discussionAndLeases = Object.entries(entry.groupActions).filter(([name]) => name === 'sync' || name.startsWith('lease-'));
+    assert.deepEqual(discussionAndLeases.map(([name, [action]]) =>
       [name, action.id, action.command, action.trigger, action.condition]), [
       ['sync', 'attach-discussion-item', 'menu-action', 'discussion-attachment', 'selected-dialogue-attaches-once'],
       ['lease-renewal', 'edit-line', 'key', 'Command-Return', 'lease-available'],
       ['lease-contention', 'edit-line', 'key', 'Command-Return', 'lease-held-by-peer'],
     ]);
-    for (const [group, [action]] of Object.entries(entry.groupActions)) {
+    for (const [group, [action]] of discussionAndLeases) {
       assert.ok(entry.groups.includes(group));
       const { path, start, end, sha256 } = action.entryPoint;
       assert.equal(path, 'apps/mac/Sources/ScrivApp/Services/WorkspaceStore.swift');
@@ -660,6 +661,21 @@ throw new Error('wrapper-only error text', { cause });
   await runStorageInputsJourney({ run, output, journey });
   await runStorageMeasureJourney({ run, output, journey });
   await runStorageRetentionJourney({ run, output, journey, tracerCLI: await immutableTracer() });
+  await journey('verify the exact source of each declared native action', async () => {
+    const { scenarios } = JSON.parse(run(['app', '--', 'test', '--list']).stdout);
+    for (const { id, groups, groupActions } of scenarios) {
+      for (const [group, actions] of Object.entries(groupActions ?? {})) {
+        assert.ok(groups.includes(group));
+        for (const { id: action, entryPoint } of actions) {
+          if (!entryPoint) continue;
+          const { path, start, end, sha256 } = entryPoint;
+          const lines = (await readFile(join(root, path), 'utf8')).split(/(?<=\n)/);
+          const actual = createHash('sha256').update(lines.slice(start - 1, end).join('')).digest('hex');
+          assert.equal(sha256, actual, `${id}#${group} ${action} must anchor the exact source snippet`);
+        }
+      }
+    }
+  });
   console.log(`PASS ${passed}/${passed} public Tracer CLI journeys. Native scenarios executed: 0; tooling artifacts: ${output}`);
   return 0;
 }

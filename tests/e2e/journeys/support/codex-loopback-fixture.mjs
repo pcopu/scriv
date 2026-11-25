@@ -216,6 +216,8 @@ export function createCodexFixtureProtocol(root, outcomes, {
         await writeFile(savedPath, job.outcome === 'retry-success' ? recoveredPng : png, { flag: 'wx', mode: 0o600 });
         turn.status = 'completed';
         turn.items.push({ type: 'imageGeneration', savedPath });
+      } else if (job.outcome === 'completed-without-image') {
+        turn.status = 'completed';
       } else {
         turn.status = 'failed';
         turn.error = { message: refusal };

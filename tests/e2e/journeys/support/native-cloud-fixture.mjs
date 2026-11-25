@@ -71,6 +71,8 @@ export async function startNativeCloudFixture() {
       takeCode: () => response('take-code'),
       createFreeTeam: () => response('create-free-team'),
       createPaidTeam: () => response('create-paid-team'),
+      createEmptyCloudCopy: title => response(['create-empty-cloud-copy', title]),
+      emptyCloudCopy: () => response('empty-cloud-copy'),
       openPresenceObserver: projectId => response(['open-presence-observer', projectId]),
       observedPresence: () => response('observed-presence'),
       closeObservedPresenceConnection: (projectId, connectionId) => response(['close-observed-presence', { projectId, connectionId }]),
@@ -672,6 +674,25 @@ async function startWorker(root) {
       const team = await seedPaidTeam(token);
       return seedProject(project, token, team.id);
     }
+    let emptyCopy;
+    async function createEmptyCloudCopy(title) {
+      assert.ok(!emptyCopy && typeof title === 'string' && title.length > 0);
+      const token = await fixtureOwnerToken('Owned empty cloud project');
+      const { project } = await post('/v1/projects', 201, { title }, token);
+      emptyCopy = { id: project.id, token };
+      return emptyCloudCopy();
+    }
+    async function emptyCloudCopy() {
+      assert.ok(emptyCopy);
+      const { id, token } = emptyCopy;
+      const response = await fixture.dispatchFetch(new URL('/v1/projects/' + id + '/snapshot', base),
+        { headers: { Authorization: `Bearer ${token}` }, redirect: 'error' });
+      assert.equal(response.status, 200);
+      const { projectId, headSeq, canImport, items } = await response.json();
+      assert.equal(projectId, id);
+      return { id, headSeq, canImport, entries: items.filter(item => item.kind === 'entry')
+        .map(({ id, data }) => ({ id, text: data.text })) };
+    }
     function prepareHistoryPages() {
       return withFixtureOwner(async token => {
         const title = 'Synthetic paged history';
@@ -873,6 +894,7 @@ async function startWorker(root) {
     }
     return { origin: base.origin, createFreeTeam, revokeOnlyAppSession, primeOwnedEmailQuota,
       createPaidTeam: () => withFixtureOwner(async token => ({ id: (await seedPaidTeam(token)).id })),
+      createEmptyCloudCopy, emptyCloudCopy,
       openPresenceObserver,
       closeObservedPresenceConnection,
       observedPresence: () => {
@@ -933,6 +955,7 @@ if (process.argv[2] === '--owned-worker' && process.send) {
         'open-presence-observer': worker.openPresenceObserver, 'observed-presence': worker.observedPresence,
         'close-observed-presence': worker.closeObservedPresenceConnection,
         'session-states': worker.sessionStates, 'refuse-next-logout': worker.refuseNextLogout,
+        'create-empty-cloud-copy': worker.createEmptyCloudCopy, 'empty-cloud-copy': worker.emptyCloudCopy,
         'revoke-only-app-session': worker.revokeOnlyAppSession, 'prime-owned-email-quota': worker.primeOwnedEmailQuota,
         'lose-edit-receipt': worker.loseEditReceipt,
         'edit-receipt-state': worker.editReceiptState, 'matches-pending-edit': worker.matchesPendingEdit,

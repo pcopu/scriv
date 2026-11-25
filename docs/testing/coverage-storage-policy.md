@@ -228,8 +228,9 @@ a live or foreign-host lease. Stop other archive writers before applying policy.
 ## APFS acceptance measurement and next 100 runs
 
 Keep measurement output in a separate `CHECKPOINTS` directory so redirected JSON
-does not grow inside the archive while it is being measured. Use one quiet APFS
-container and record unrelated activity. Do not delete snapshots as part of this
+does not grow inside the archive while it is being measured. Prefer a different
+container so checkpoint output also stays outside the physical growth sample.
+Use one quiet APFS container and record unrelated activity. Do not delete snapshots as part of this
 benchmark. The implementation records their listing when available.
 
 1. Before migration, run `test storage audit --archive "$ARCHIVE"` and save its
@@ -245,19 +246,35 @@ benchmark. The implementation records their listing when available.
    relaunches if those are part of that workload. Count completed imported **runner
    invocations**, not raw profiles or repeated observed lines. Preserve native
    failures honestly. Do not mix a new native build into this sample.
-4. Save an audit immediately after the batch, then run archive-wide `clean --apply`
-   with the final real capture set/reference and save that cleanup report. Review
+4. Save an audit immediately after the batch. Build a new immutable capture set
+   from the baseline and every added completed imported invocation; do not reuse
+   a baseline capture set that omits the new runs. Then run archive-wide `clean --apply`
+   with that final capture set/reference and save the cleanup report. Review
    the automatic per-run storage receipts too. The final cleanup must verify the
    original and added captures and their outcomes. An unresolved run prevents the
    benchmark from qualifying as fully verified.
 5. Produce the projection from equally cleaned states:
 
 ```sh
+node "$TRACER" --root "$SCRIV_SOURCE" measure batch \
+  --baseline-capture-set "$CAPTURES_BEFORE" \
+  --receipt "$RUN1/evidence.json" --receipt "$RUN2/evidence.json" \
+  --reference-root "$REFERENCE" --output "$CHECKPOINTS/batch"
+
+node "$TRACER" --root "$SCRIV_SOURCE" app -- test storage clean \
+  --archive "$ARCHIVE" --tracer "$TRACER" \
+  --capture-set "$CHECKPOINTS/batch/captures.json" \
+  --reference-root "$REFERENCE" --apply > "$CHECKPOINTS/batch-cleanup.json"
+
 node "$TRACER" --root "$SCRIV_SOURCE" app -- test storage forecast \
   --before "$CHECKPOINTS/initial-cleanup.json" \
   --after "$CHECKPOINTS/batch-cleanup.json" --runs 100 \
   > "$CHECKPOINTS/next-100.json"
 ```
+
+Repeat `--receipt` for every added invocation. Preserve the batch's `outcomes.json`
+beside `captures.json`. If historical cleanup used `--inputs`, pass that identical
+registration plan to the final cleanup too; the abbreviated example omits it.
 
 The conditional estimate is `ceil(100 * retained_container_growth / completed_runs)`.
 Both snapshots must describe the same archive/APFS container and preserve all

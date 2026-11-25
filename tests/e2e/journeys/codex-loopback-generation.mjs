@@ -9,10 +9,16 @@ import { reviewSteps } from './support/generation-review-steps.mjs';
 import { generationContextInput } from './support/generation-context-cases.mjs';
 import { fixtureImageHash, recoveredImageHash, startCodexFixture } from './support/codex-loopback-fixture.mjs';
 
-const groups = ['history-prompt', 'history-retry', 'history-artifact', 'history-retry-portrait', 'cancel-unconfirmed'];
+const groups = ['history-prompt', 'history-retry', 'history-artifact', 'history-retry-portrait', 'cancel-unconfirmed', 'completed-without-image'];
 const args = process.argv.slice(2);
 if (args.length === 1 && args[0] === '--list-cases') {
-  console.log(JSON.stringify({ groups }));
+  console.log(JSON.stringify({ groups, groupActions: {
+    'completed-without-image': [{ id: 'generate-image', command: 'activate', trigger: 'generation-generate-image',
+      condition: 'provider-completes-without-an-image', entryPoint: {
+        path: 'apps/catalyst/ScrivUIKit/Images/PreviewViewController.swift', start: 175, end: 181,
+        sha256: 'eeefc45ca6579f22f405fa2c447d4f157bffd72ae659d12a5083ad0bea7093ff',
+      } }],
+  } }));
   process.exit(0);
 }
 assert.ok(args.length === 0 || args.length === 2 && args[0] === '--group' && groups.includes(args[1]), 'Choose a supported local Codex group');
@@ -22,6 +28,7 @@ const portraitSHA256 = '3fba282698b3df63c76fb40e529943fb6da6d28bafa6ff9e3a75c0c4
 const historyRetry = args[1] === 'history-retry' || retryPortrait;
 const historyArtifact = args[1] === 'history-artifact';
 const cancelUnconfirmed = args[1] === 'cancel-unconfirmed';
+const completedWithoutImage = args[1] === 'completed-without-image';
 
 assert.ok(process.env.SCRIV_E2E_APP, 'Set SCRIV_E2E_APP to an automation-enabled Catalyst bundle');
 const session = await ScrivSession.launch(process.env.SCRIV_E2E_APP);
@@ -141,10 +148,10 @@ try {
 
   step = 'connect to the owned loopback fixture in Settings';
   const submittedRequests = [];
-  const outcomes = ['success'];
+  const outcomes = [completedWithoutImage ? 'completed-without-image' : 'success'];
   if (cancelUnconfirmed) outcomes.push('cancel-unconfirmed');
   else if (historyRetry) outcomes.push('cancel', 'retry-success');
-  else if (!historyPrompt && !historyArtifact) outcomes.push('cancel', 'recover', 'missing-artifact', 'input-request', 'failure');
+  else if (args.length === 0) outcomes.push('cancel', 'recover', 'missing-artifact', 'input-request', 'failure');
   fixture = await startCodexFixture(session.root, outcomes, {
     accountRefresh: true,
     ...((historyPrompt || historyRetry) && { onSubmittedPrompt: request => submittedRequests.push(request) }),
@@ -229,6 +236,31 @@ try {
     fixture.assertNoTurns();
     assert.deepEqual(await jobs(), []);
     assert.deepEqual(await session.command('persisted-projects'), unchangedOnConnect);
+
+    if (completedWithoutImage) {
+      step = 'report a completed provider turn that returned no image';
+      await activate(await reveal(generate));
+      const alerts = await poll(() => session.command('presented-alerts'), alerts => alerts.length > 0);
+      assert.equal(alerts.length, 1);
+      assert.equal(alerts[0].title, 'Scriv');
+      assert.match(alerts[0].message, /^Codex completed without a valid generated image/);
+      const [job, ...unexpected] = await jobs();
+      assert.deepEqual(unexpected, []);
+      assert.equal(job.status, 'failed');
+      assert.equal(job.projectID, before.id);
+      assert.equal(job.cueID, 'cue');
+      assert.equal(job.hasThreadID && job.hasTurnID, true);
+      assert.equal(job.journalVerified, false);
+      assert.equal(job.attachmentVerified, false);
+      assert.equal(job.artifact, undefined);
+      assert.match(job.jobID, /^[0-9a-f-]{36}$/i);
+      const journal = JSON.parse(await readFile(join(session.root, 'Generation', 'Journal', job.jobID + '.json'), 'utf8'));
+      assert.equal(journal.id, job.jobID);
+      assert.equal(journal.status, 'failed');
+      assert.equal(journal.outputImageID, undefined);
+      assert.deepEqual(await session.command('persisted-projects'), unchangedOnConnect);
+      return;
+    }
 
     step = 'generate and attach the fixture image';
     await activate(await reveal(generate));
@@ -603,6 +635,7 @@ try {
   else if (historyRetry) console.log('PASS: Cancel preserves the job and confirmed Retry submits its recorded request once');
   else if (cancelUnconfirmed) console.log('PASS: refused interruption retains the original turn for inspection without a duplicate');
   else if (historyArtifact) console.log('PASS: Generation history rejects modified artifact bytes and opens the restored original');
+  else if (completedWithoutImage) console.log('PASS: Scriv reports the missing image and preserves the failed job and saved projects');
   else console.log('PASS: native Codex loopback fixture generation, cancellation, reconnect, recovery inspection and refusal');
 } catch (error) {
   failed = true;
