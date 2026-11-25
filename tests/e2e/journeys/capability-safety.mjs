@@ -81,6 +81,9 @@ async function run(app) {
       await refuse('activate', { target: 'synthetic-absent-target-v89' }, 'Target must match exactly one visible view');
       for (const index of [-1, tabs[0].segments.length, '0']) await refuse('select', { target: 'workspace-tabs', index }, 'Invalid segment');
       await refuse('text', { target: 'workspace-tabs', text: 'No mutation' }, 'Target is not a text editor');
+      await refuse('type', { target: 'workspace-tabs', text: 'No mutation' }, 'Target is not a text input');
+      await refuse('return', { target: 'workspace-tabs' }, 'Return requires the focused editable text view without composition');
+      await refuse('accessibility-activate', { target: 'workspace-tabs' }, 'Target is not an enabled accessibility button');
       await refuse('key', { input: 's' }, 'Expected input and modifier names');
       for (const [command, error] of [
         ['loaded-project', 'Synthetic loaded-project observation is unavailable or invalid.'],

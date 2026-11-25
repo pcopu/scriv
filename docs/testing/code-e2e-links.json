@@ -2827,6 +2827,25 @@
       "why": "The stored scene import menu action presents its native document chooser. The journey checks the presented controller and verifies that saved projects stay unchanged before any selection."
     },
     {
+      "id": "0f152d3d125ef3e5",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 1151,
+        "end": 1156,
+        "sha256": "cfcac0b90806f912bfdb383dd0c11e0263fde4b0423a3afa7d2faa51ecf63465"
+      },
+      "actions": [
+        "Try type on the mounted workspace tab selector"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/capability-safety.mjs",
+        "start": 84,
+        "end": 84,
+        "sha256": "3334fa309d14defb7f61fb305f8c1e18282cc910eaaabb79162f47f614d48a57"
+      },
+      "why": "Typing on a nontext control is refused and the app, saved packages and alerts are unchanged"
+    },
+    {
       "id": "26aed7484ea958fa",
       "source": {
         "path": "apps/catalyst/ScrivUIKit/Images/GenerationBriefReviewController.swift",
@@ -3011,6 +3030,25 @@
         "sha256": "ea01faf4a8f0f106c505e218f43824768872fcb5e7c4ad161cf64e983e793fa2"
       },
       "why": "Preview identifies the derived indexes. Apply removes only those files and is safe to repeat. The test checks exact retained bytes and rechecks the imported dataset."
+    },
+    {
+      "id": "631b21c275930820",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 949,
+        "end": 954,
+        "sha256": "d53f7a3d2946472b3e8fb59b9ffe51fafbb438370e09d8a4778bfdd7330b3573"
+      },
+      "actions": [
+        "Try UIKit accessibility activation on the mounted tab selector"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/capability-safety.mjs",
+        "start": 86,
+        "end": 86,
+        "sha256": "0ea794ad4713bc7737b8165aa58c3a87872a85d79de0418f76c4a3dafbe88990"
+      },
+      "why": "The in-process UIKit route refuses a non-button target without changing the app, packages or alerts"
     },
     {
       "id": "6a6ba1115104c72a",
@@ -3217,6 +3255,25 @@
         "sha256": "5b1f85521bc1b8141b2859e4bae3a3436ef9efd8a8badc26d3915918d2cf7207"
       },
       "why": "Production audio storage refusal becomes a stable attached Scriv alert with the real error message."
+    },
+    {
+      "id": "b0d2d58f2acbac0a",
+      "source": {
+        "path": "apps/catalyst/ScrivUIKit/Automation/ScrivCLI.swift",
+        "start": 1023,
+        "end": 1028,
+        "sha256": "a907ec2d02c430a2cf0fb0330d6d5ede00b54f155bcd05ce99df57909465cc07"
+      },
+      "actions": [
+        "Try Return on the mounted tab selector without an editable text responder"
+      ],
+      "step": {
+        "path": "tests/e2e/journeys/capability-safety.mjs",
+        "start": 85,
+        "end": 85,
+        "sha256": "7c095871a5893fa994960f883c01506799a49b4b677cc9dd873904a314796a27"
+      },
+      "why": "Return requires the focused editable text view without composition and leaves the owned project unchanged"
     },
     {
       "id": "b4aba535b0f0e334",
@@ -15310,8 +15367,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/capability-safety.mjs",
-        "start": 103,
-        "end": 119,
+        "start": 106,
+        "end": 122,
         "sha256": "06ebaf8994ca5376ecf5a38dceb5f13a3f7880fc5a4d6367ad00a63b2f271347"
       },
       "why": "Inherited owned descriptor and successful bounded retained-tree validation admit a real cold reopen without changing persisted models. No tamper, bounds rejection or lock contention claim Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
@@ -21863,8 +21920,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/capability-safety.mjs",
-        "start": 103,
-        "end": 119,
+        "start": 106,
+        "end": 122,
         "sha256": "06ebaf8994ca5376ecf5a38dceb5f13a3f7880fc5a4d6367ad00a63b2f271347"
       },
       "why": "Inherited owned descriptor and successful bounded retained-tree validation admit a real cold reopen without changing persisted models. No tamper, bounds rejection or lock contention claim Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
@@ -31385,8 +31442,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/capability-safety.mjs",
-        "start": 103,
-        "end": 119,
+        "start": 106,
+        "end": 122,
         "sha256": "06ebaf8994ca5376ecf5a38dceb5f13a3f7880fc5a4d6367ad00a63b2f271347"
       },
       "why": "Inherited owned descriptor and successful bounded retained-tree validation admit a real cold reopen without changing persisted models. No tamper, bounds rejection or lock contention claim Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
@@ -45717,8 +45774,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/capability-safety.mjs",
-        "start": 103,
-        "end": 119,
+        "start": 106,
+        "end": 122,
         "sha256": "06ebaf8994ca5376ecf5a38dceb5f13a3f7880fc5a4d6367ad00a63b2f271347"
       },
       "why": "Both real persistent process rotations duplicate the inherited owned descriptor and close the original inherited descriptor before opening other files. The public capabilities and cold-open model assertions depend on this admitted resume path; failure cleanup is not claimed. Static association only; native execution is recorded separately. Guard-failure, tamper, contention and unobserved OS metadata/security properties are excluded."
@@ -57563,8 +57620,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/capability-safety.mjs",
-        "start": 103,
-        "end": 119,
+        "start": 106,
+        "end": 122,
         "sha256": "06ebaf8994ca5376ecf5a38dceb5f13a3f7880fc5a4d6367ad00a63b2f271347"
       },
       "why": "Preparation opens the resolved temporary parent, checks the successful open, arranges its close and selects the resumed branch. The two public rotations rely on this parent setup. The following fstat/privateDirectory/childMatches checks are outside this exact range and are not attributed to it. Static association only; native execution is recorded separately. Guard-failure, tamper, contention and unobserved OS metadata/security properties are excluded."
@@ -71209,8 +71266,8 @@
       ],
       "step": {
         "path": "tests/e2e/journeys/capability-safety.mjs",
-        "start": 96,
-        "end": 100,
+        "start": 99,
+        "end": 103,
         "sha256": "cb693030c8fb8135e5b404e7206b34d0ce4556230ebb056790d77e655682de5f"
       },
       "why": "Host rejects argument-bearing relaunch before stopping the owner Prepared static relationship only; native NOT RUN. Failure alternatives and unobserved OS/security properties are excluded."
